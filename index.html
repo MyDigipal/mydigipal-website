@@ -1,1 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyDigipal - More Than a Pair of Hands | AI-Powered Digital Marketing Agency</title>
+    <meta name="description" content="MyDigipal is an AI-powered international digital marketing agency specializing in B2B & B2C marketing. Expert in ABM, Paid Social, Google Ads, and AI-driven campaign optimization.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-P4TSQ9Q');</script>
+    
+    <style>
+        /* Variables CSS MyDigipal */
+        :root {
+            /* Couleurs principales */
+            --primary-blue: #0ea5e9;
+            --secondary-purple: #8b5cf6;
+            --dark-gray: #1f2937;
+            --medium-gray: #6b7280;
+            --light-gray: #f9fafb;
+            --success-green: #16a34a;
+            --warning-orange: #ea580c;
+            --error-red: #dc2626;
+            --white: #ffffff;
+            
+            /* Typographie */
+            --font-family: 'DM Sans', sans-serif;
+            --font-regular: 400;
+            --font-medium: 500;
+            --font-semibold: 600;
+            --font-bold: 700;
+            
+            /* Espacements */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --spacing-2xl: 4rem;
+            
+            /* Transitions */
+            --transition-fast: 0.2s ease;
+            --transition-medium: 0.3s ease;
+        }
 
+        /* Reset et base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            font-weight: var(--font-regular);
+            color: var(--dark-gray);
+            line-height: 1.6;
+            background-color: var(--white);
+        }
+
+        /* Header et Navigation */
+        .header {
+            background: var(--white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: var(--font-bold);
+            color: var(--primary-blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .logo::before {
+            content: "■";
+            color: var(--secondary-purple);
+            font-size: 1.2rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: var(--spacing-lg);
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--dark-gray);
+            text-decoration: none;
+            font-weight: var(--font-medium);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 6px;
+            transition: var(--transition-fast);
+        }
+
+        .nav-link:hover {
+            color: var(--primary-blue);
+            background: var(--light-gray);
+        }
+
+        .language-switcher {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 6px;
+            font-weight: var(--font-medium);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .language-switcher:hover {
+            background: var(--secondary-purple);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-purple) 100%);
+            color: var(--white);
+            padding: 120px var(--spacing-lg) var(--spacing-2xl);
+            text-align: center;
+            margin-top: 70px;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: var(--font-bold);
+            margin-bottom: var(--spacing-md);
+            line-height: 1.2;
+        }
+
+        .hero .tagline {
+            font-size: 1.5rem;
+            font-weight: var(--font-medium);
+            margin-bottom: var(--spacing-sm);
+            opacity: 0.9;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: var(--spacing-xl);
+            opacity: 0.9;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: 8px;
+            font-weight: var(--font-semibold);
+            text-decoration: none;
+            transition: var(--transition-medium);
+            cursor: pointer;
+            border: 2px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .btn-primary {
+            background: var(--white);
+            color: var(--primary-blue);
+        }
+
+        .btn-primary:hover {
+            background: var(--light-gray);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            border-color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--white);
+            color: var(--primary-blue);
+        }
+
+        /* AI Badge */
+        .ai-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: var(--font-medium);
+            margin-bottom: var(--spacing-lg);
+            display: inline-block;
+        }
+
+        /* Services Section */
+        .services {
+            padding: var(--spacing-2xl) var(--spacing-lg);
+            background: var(--light-gray);
+        }
+
+        .services-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .services h2 {
+            font-size: 2.5rem;
+            font-weight: var(--font-bold);
+            margin-bottom: var(--spacing-md);
+            color: var(--dark-gray);
+        }
+
+        .services-subtitle {
+            font-size: 1.2rem;
+            color: var(--medium-gray);
+            margin-bottom: var(--spacing-2xl);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .service-card {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: var(--transition-medium);
+            text-align: left;
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-purple));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-md);
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        .service-card h3 {
+            font-size: 1.3rem;
+            font-weight: var(--font-semibold);
+            margin-bottom: var(--spacing-sm);
+            color: var(--dark-gray);
+        }
+
+        .service-card p {
+            color: var(--medium-gray);
+            line-height: 1.6;
+        }
+
+        /* AI Features Section */
+        .ai-features {
+            padding: var(--spacing-2xl) var(--spacing-lg);
+            background: var(--white);
+        }
+
+        .ai-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .ai-header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .ai-header h2 {
+            font-size: 2.5rem;
+            font-weight: var(--font-bold);
+            margin-bottom: var(--spacing-md);
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-xl);
+        }
+
+        .ai-feature {
+            padding: var(--spacing-xl);
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            transition: var(--transition-medium);
+        }
+
+        .ai-feature:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: var(--spacing-2xl) var(--spacing-lg);
+            background: var(--light-gray);
+        }
+
+        .testimonials-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonials h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: var(--font-bold);
+            margin-bottom: var(--spacing-2xl);
+            color: var(--dark-gray);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-xl);
+        }
+
+        .testimonial {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .testimonial-quote {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: var(--spacing-lg);
+            color: var(--dark-gray);
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .author-info h4 {
+            font-weight: var(--font-semibold);
+            color: var(--dark-gray);
+        }
+
+        .author-info p {
+            color: var(--medium-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Clients Section */
+        .clients {
+            padding: var(--spacing-xl) var(--spacing-lg);
+            background: var(--white);
+            text-align: center;
+        }
+
+        .clients h3 {
+            font-size: 1.2rem;
+            font-weight: var(--font-medium);
+            color: var(--medium-gray);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .clients-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--spacing-xl);
+            flex-wrap: wrap;
+            opacity: 0.7;
+        }
+
+        .client-logo {
+            height: 40px;
+            filter: grayscale(100%);
+            transition: var(--transition-fast);
+        }
+
+        .client-logo:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark-gray);
+            color: var(--white);
+            padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-lg);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer h3 {
+            font-size: 1.8rem;
+            font-weight: var(--font-semibold);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .footer p {
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.9;
+        }
+
+        .footer-cta {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: var(--transition-fast);
+        }
+
+        .footer-link:hover {
+            opacity: 1;
+            color: var(--primary-blue);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: var(--spacing-lg);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .services-grid,
+            .ai-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P4TSQ9Q"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <a href="/" class="logo">MyDigipal</a>
+            <ul class="nav-menu">
+                <li><a href="/abm" class="nav-link">B2B Marketing</a></li>
+                <li><a href="/paid-social" class="nav-link">Services</a></li>
+                <li><a href="/automotive/google-ads" class="nav-link">Automotive</a></li>
+                <li><a href="/case-studies" class="nav-link">Case Studies</a></li>
+                <li><a href="/our-team" class="nav-link">Our Team</a></li>
+                <li><a href="/contact-us" class="nav-link">Contact</a></li>
+            </ul>
+            <button class="language-switcher" onclick="switchLanguage()">🇫🇷 FR</button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="ai-badge">🤖 AI-Powered Digital Marketing</div>
+            <h1>More Than a Pair of Hands</h1>
+            <p class="tagline">AI-Enhanced Digital Marketing Agency 2.0</p>
+            <p>Forget about the fluff or long SLAs, benefit from a truly international agency formed of passionate marketeers working as an extension of your internal team. We leverage AI to optimize campaigns, create compelling content, and deliver results that matter.</p>
+            <div class="cta-buttons">
+                <a href="/contact-us" class="btn btn-primary">Start Your Project</a>
+                <a href="/case-studies" class="btn btn-secondary">View Case Studies</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services">
+        <div class="services-container">
+            <h2>Digital Marketing Toolbox</h2>
+            <p class="services-subtitle">From AI-driven campaign optimization to strategic account-based marketing, we provide the full spectrum of digital marketing services.</p>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🎯</div>
+                    <h3>Account Based Marketing (ABM)</h3>
+                    <p>Connect with high-value prospects by implementing a targeted lead-generation strategy. Align your marketing and sales efforts to build stronger relationships and maximize revenue.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">📱</div>
+                    <h3>AI-Powered Paid Social</h3>
+                    <p>Leverage AI-driven insights for Facebook, LinkedIn, and Instagram campaigns. Our algorithms optimize targeting, creative testing, and budget allocation in real-time.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">🔍</div>
+                    <h3>Google Ads & SEO</h3>
+                    <p>Get your website to the top of search results with AI-enhanced keyword strategies, automated bid management, and conversion optimization.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">⚙️</div>
+                    <h3>Marketing Automation & CRM</h3>
+                    <p>Save time and enhance customer engagement with AI-powered automated workflows. Deliver personalized experiences that nurture leads and drive conversions.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">📊</div>
+                    <h3>Campaign Management</h3>
+                    <p>Launch and optimize your campaigns with AI-driven insights. From setup to daily budget tracking, we ensure your ads perform at their best.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">📈</div>
+                    <h3>Reporting & Analytics</h3>
+                    <p>Turn data into actionable insights with AI-powered analytics. Monitor your marketing performance and make data-driven decisions to optimize your strategy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Features Section -->
+    <section class="ai-features">
+        <div class="ai-container">
+            <div class="ai-header">
+                <h2>AI-Enhanced Marketing Solutions</h2>
+                <p class="services-subtitle">We use AI strategically to enhance our marketing services while maintaining the human touch that drives authentic connections.</p>
+            </div>
+            
+            <div class="ai-grid">
+                <div class="ai-feature">
+                    <div class="service-icon">🤖</div>
+                    <h3>AI Campaign Optimization</h3>
+                    <p>Our AI algorithms continuously analyze campaign performance across Google Ads and social media platforms, automatically adjusting bids, targeting, and budgets to maximize ROI while you focus on strategy.</p>
+                </div>
+                
+                <div class="ai-feature">
+                    <div class="service-icon">✍️</div>
+                    <h3>Intelligent Content Creation</h3>
+                    <p>We create compelling content with just the right amount of AI assistance to boost efficiency while preserving the human creativity and authenticity that resonates with your audience.</p>
+                </div>
+                
+                <div class="ai-feature">
+                    <div class="service-icon">🎓</div>
+                    <h3>AI Training & Workshops</h3>
+                    <p>Empower your team with our comprehensive AI training programs. Learn effective prompting techniques, AI tool integration, and how to leverage AI in your marketing workflows - available remotely or on-site.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="testimonials-container">
+            <h2>Don't Take Our Word for It</h2>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <p class="testimonial-quote">"We were looking to improve our digital marketing efforts, but had a gap in the marketing team and over 12 internal tools to handle all digital marketing aspects. MyDigipal was able to overcome significant challenges, clearing the backlog of digital support in the regions, and successfully executed an ABM revamp across LinkedIn. Very Impressive."</p>
+                    <div class="testimonial-author">
+                        <img src="https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/66a8c81987fc1c9e891a99d4_Brett%20Reiser%20100px.webp" alt="Brett Rieser" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Brett Rieser</h4>
+                            <p>Digital Marketing Director EMEA, Genesys</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial">
+                    <p class="testimonial-quote">"From the ground up, MyDigipal's strategic acumen was invaluable. They didn't just consult; they immersed themselves in our mission, helping to orchestrate a digital symphony that resonated across the B2B landscape. Their contributions led to a suite of high-value leads, a significant uptick in conversions."</p>
+                    <div class="testimonial-author">
+                        <img src="https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/658bfb59bff3f1c0d42aa4a8_Surbhi%20Rathore.webp" alt="Surbhi Rathore" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Surbhi Rathore</h4>
+                            <p>CEO & Co-founder, Symbl.ai</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial">
+                    <p class="testimonial-quote">"The ABM programs MyDigipal put in place helped Quantum Metrics identify and focus on the most valuable target accounts. We had refreshingly better lead quality and higher conversion rates. We were able to accelerate the deal closing process by 30%!"</p>
+                    <div class="testimonial-author">
+                        <img src="https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/65705ec9b5160a80c8b72771_Kelly%20Wright.webp" alt="Kelly Wright" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Kelly Wright</h4>
+                            <p>Global Marketing Director, Quantum Metric</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients Section -->
+    <section class="clients">
+        <h3>Trusted by Leading Companies Worldwide</h3>
+        <div class="clients-logos">
+            <!-- Les logos clients seront ajoutés ici -->
+            <span style="padding: 10px 20px; background: #f3f4f6; border-radius: 6px; font-weight: 600; color: #6b7280;">Genesys</span>
+            <span style="padding: 10px 20px; background: #f3f4f6; border-radius: 6px; font-weight: 600; color: #6b7280;">Symbl.ai</span>
+            <span style="padding: 10px 20px; background: #f3f4f6; border-radius: 6px; font-weight: 600; color: #6b7280;">Quantum Metric</span>
+            <span style="padding: 10px 20px; background: #f3f4f6; border-radius: 6px; font-weight: 600; color: #6b7280;">DMD Group</span>
+            <span style="padding: 10px 20px; background: #f3f4f6; border-radius: 6px; font-weight: 600; color: #6b7280;">50+ More</span>
+        </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <footer class="footer">
+        <div class="footer-container">
+            <h3>Ready to Take Your Digital Activity to the Next Level?</h3>
+            <p>Try the anti-agency model for a ride. No long-term commitments, just results.</p>
+            <div class="footer-cta">
+                <a href="/contact-us" class="btn btn-primary">Start Your Project Today</a>
+            </div>
+            
+            <div class="footer-links">
+                <a href="/abm" class="footer-link">B2B Marketing</a>
+                <a href="/paid-social" class="footer-link">Services</a>
+                <a href="/automotive/google-ads" class="footer-link">Automotive</a>
+                <a href="/case-studies" class="footer-link">Case Studies</a>
+                <a href="/our-team" class="footer-link">Our Team</a>
+                <a href="/blogs" class="footer-link">Blog</a>
+                <a href="/contact-us" class="footer-link">Contact</a>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 MyDigipal. All rights reserved. | More Than a Pair of Hands</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Fonction pour changer de langue
+        function switchLanguage() {
+            window.location.href = '/fr/';
+        }
+
+        // Animation au scroll (optionnel)
+        window.addEventListener('scroll', function() {
+            const cards = document.querySelectorAll('.service-card, .ai-feature, .testimonial');
+            cards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top;
+                const cardVisible = 150;
+                
+                if (cardTop < window.innerHeight - cardVisible) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        // Initialiser l'animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.service-card, .ai-feature, .testimonial');
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            });
+        });
+    </script>
+</body>
+</html>
