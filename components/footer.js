@@ -309,3 +309,6 @@ function initializeFooter() {
         });
     });
 }
+
+// Export de la fonction initializeFooter
+export { initializeFooter };
