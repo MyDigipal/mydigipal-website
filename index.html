@@ -412,7 +412,7 @@
 
         /* Clients Section */
         .clients {
-            padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-xl);
+            padding: var(--spacing-2xl) var(--spacing-lg);
             background: var(--white);
             text-align: center;
             overflow: hidden;
@@ -440,6 +440,8 @@
 
         .logos-row {
             margin-bottom: var(--spacing-xl);
+            position: relative;
+            z-index: 1;
         }
 
         .logos-row:last-child {
@@ -530,40 +532,40 @@
         a.client-logo-text::after {
             content: "📋";
             position: absolute;
-            top: -10px;
-            right: -10px;
-            font-size: 1rem;
+            bottom: 5px;
+            right: 8px;
+            font-size: 0.7rem;
             background: var(--success-green);
             color: var(--white);
-            width: 24px;
-            height: 24px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
-            border: 2px solid var(--white);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
             transition: var(--transition-fast);
         }
 
         a.client-logo-text::before {
             content: "Case Study";
             position: absolute;
-            bottom: -40px;
+            bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
             background: var(--dark-gray);
             color: var(--white);
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
             font-weight: var(--font-medium);
             white-space: nowrap;
             opacity: 0;
             pointer-events: none;
             transition: var(--transition-fast);
-            z-index: 10;
+            z-index: 100;
+            margin-bottom: 5px;
         }
 
         a.client-logo-text:hover::before {
