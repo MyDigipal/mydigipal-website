@@ -11,13 +11,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-P4TSQ9Q');</script>
-    
     <!-- Main CSS -->
     <link rel="stylesheet" href="/css/main.css">
     
@@ -270,10 +263,6 @@
     </style>
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P4TSQ9Q"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    
     <!-- Header (will be loaded by component) -->
     <div id="header"></div>
 
@@ -468,7 +457,7 @@
             <div class="cta-container">
                 <h2 class="fade-in">Ready to Work with Our Expert Team?</h2>
                 <p class="fade-in">Let's discuss how our international team of AI-powered marketing experts can help accelerate your business growth. No long-term commitments, just results.</p>
-                <a href="/contact-us" class="btn btn-primary fade-in" onclick="trackCTAClick('Start Your Project Today', 'team_cta')">Start Your Project Today</a>
+                <a href="/contact-us" class="btn btn-primary fade-in" onclick="MyDigipal.trackCTAClick('Start Your Project Today', 'team_cta', '/contact-us')">Start Your Project Today</a>
             </div>
         </section>
     </main>
@@ -478,13 +467,16 @@
 
     <!-- Scripts -->
     <script type="module">
+        // Import the main app (includes GTM initialization)
+        import app from './js/app.js';
+        
         // Import components
         import { loadHeader } from './components/header.js';
         import { loadFooter } from './components/footer.js';
         
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('👥 Loading our-team page components...');
+            console.log('👥 Loading our-team page...');
             
             // Load components
             loadHeader();
@@ -547,32 +539,6 @@
                     element.textContent = Math.floor(current) + '+';
                 }
             }, 16);
-        }
-
-        // CTA tracking
-        window.trackCTAClick = function(ctaText, location) {
-            if (window.dataLayer) {
-                window.dataLayer.push({
-                    event: 'cta_click',
-                    cta_text: ctaText,
-                    cta_location: location,
-                    page_url: window.location.href,
-                    page_type: 'our_team',
-                    timestamp: new Date().toISOString()
-                });
-            }
-            console.log('CTA clicked:', ctaText, location);
-        };
-
-        // Page view tracking
-        if (window.dataLayer) {
-            window.dataLayer.push({
-                event: 'page_view',
-                page_title: document.title,
-                page_url: window.location.href,
-                page_type: 'our_team',
-                timestamp: new Date().toISOString()
-            });
         }
     </script>
 </body>
