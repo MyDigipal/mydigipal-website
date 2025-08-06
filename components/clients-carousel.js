@@ -432,3 +432,6 @@ export function updateClientCaseStudy(clientName, caseStudyUrl) {
         }
     }
 }
+
+// Export de la fonction initializeClientsCarousel
+export { initializeClientsCarousel };
