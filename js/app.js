@@ -4,6 +4,7 @@ import { loadHeader, initializeHeader } from '../components/header.js';
 import { loadFooter, initializeFooter } from '../components/footer.js';
 import { loadClientsCarousel, initializeClientsCarousel } from '../components/clients-carousel.js';
 import { loadLanguageSwitcher, initializeLanguageSwitcher, getCurrentLanguage, autoDetectLanguage } from '../components/language-switcher.js';
+import { initGTM, getGTM, setupGlobalErrorTracking, trackCTAClick } from '../components/gtm.js';
 
 // Configuration globale de l'application
 const AppConfig = {
@@ -72,8 +73,11 @@ class MyDigipalApp {
 
     // Initialisation des systèmes de base
     async initializeCore() {
-        // Initialize dataLayer for GTM
-        window.dataLayer = window.dataLayer || [];
+        // Détecter le type de page et si elle contient des formulaires
+        const pageConfig = this.detectPageConfiguration();
+        
+        // Initialiser GTM avec la configuration détectée
+        this.gtm = initGTM(pageConfig);
         
         // Auto-detect language if enabled
         if (AppConfig.features.autoLanguageDetect) {
@@ -87,6 +91,52 @@ class MyDigipalApp {
         if (AppConfig.features.performanceMonitoring) {
             this.initializePerformanceMonitoring();
         }
+        
+        // Setup global error tracking avec GTM
+        setupGlobalErrorTracking();
+    }
+    
+    // Détecter la configuration de la page
+    detectPageConfiguration() {
+        const path = window.location.pathname;
+        const hasContactForm = document.querySelector('form[id*="contact"], form[onsubmit*="handleFormSubmit"]') !== null;
+        const hasLeadForms = hasContactForm || 
+                           path.includes('/contact') || 
+                           path.includes('/training') ||
+                           document.querySelector('form[data-lead-form="true"]') !== null;
+        
+        // Déterminer le type de page
+        let pageType = 'standard';
+        if (path === '/' || path === '') pageType = 'homepage';
+        else if (path.includes('/our-team')) pageType = 'our_team';
+        else if (path.includes('/contact')) pageType = 'contact';
+        else if (path.includes('/training')) pageType = 'training';
+        else if (path.includes('/case-study')) pageType = 'case_study';
+        else if (path.includes('/services')) pageType = 'services';
+        else if (path.includes('/b2b-marketing') || path.includes('/abm')) pageType = 'b2b_marketing';
+        else if (path.includes('/automotive')) pageType = 'automotive';
+        
+        return {
+            pageType,
+            hasLeadForms,
+            customDimensions: {
+                page_category: this.getPageCategory(path),
+                content_language: getCurrentLanguage()
+            }
+        };
+    }
+    
+    // Obtenir la catégorie de page
+    getPageCategory(path) {
+        if (path.includes('/training')) return 'training';
+        if (path.includes('/services')) return 'services';
+        if (path.includes('/b2b-marketing') || path.includes('/abm')) return 'b2b_marketing';
+        if (path.includes('/automotive')) return 'automotive';
+        if (path.includes('/case-study')) return 'case_studies';
+        if (path.includes('/our-team')) return 'about';
+        if (path.includes('/contact')) return 'contact';
+        if (path === '/' || path === '') return 'homepage';
+        return 'other';
     }
 
     // Chargement des composants
@@ -456,13 +506,16 @@ class MyDigipalApp {
 
     // Gestionnaires d'événements
     handlePageLoad() {
-        this.trackEvent('page_view', {
-            page_title: document.title,
-            page_url: window.location.href,
-            page_language: this.currentLanguage,
-            referrer: document.referrer,
-            timestamp: new Date().toISOString()
-        });
+        // Le page_view est automatiquement tracké par GTM à l'initialisation
+        // Pas besoin de tracker ici sauf données supplémentaires
+        const additionalData = {
+            load_time: performance.now(),
+            dom_ready: document.readyState === 'complete'
+        };
+        
+        if (this.gtm) {
+            this.gtm.trackPageView(additionalData);
+        }
     }
 
     handleScroll() {
@@ -510,22 +563,18 @@ class MyDigipalApp {
 
     // Analytics et tracking
     initializeAnalytics() {
+        // GTM est déjà initialisé dans initializeCore()
+        // Ici on peut ajouter d'autres analytics si nécessaire
+        
         if (!AppConfig.features.analytics) return;
         
-        // GTM is already initialized in HTML
-        // Add custom dimensions or configurations here
-        this.trackEvent('app_initialized', {
-            version: AppConfig.version,
-            language: this.currentLanguage,
-            user_agent: navigator.userAgent,
-            screen_resolution: `${screen.width}x${screen.height}`,
-            viewport: `${window.innerWidth}x${window.innerHeight}`
-        });
+        console.log('📊 Analytics initialized via GTM component');
     }
 
     trackEvent(eventName, parameters = {}) {
-        if (window.dataLayer) {
-            window.dataLayer.push({
+        // Utiliser GTM pour le tracking au lieu de dataLayer direct
+        if (this.gtm) {
+            this.gtm.push({
                 event: eventName,
                 ...parameters,
                 timestamp: new Date().toISOString()
@@ -534,7 +583,7 @@ class MyDigipalApp {
         
         // Debug en mode développement
         if (AppConfig.environment === 'development') {
-            console.log('📊 Event tracked:', eventName, parameters);
+            console.log('📊 Event tracked via GTM:', eventName, parameters);
         }
     }
 
@@ -638,11 +687,13 @@ window.MyDigipal = {
     app,
     version: AppConfig.version,
     trackEvent: app.trackEvent.bind(app),
+    trackCTAClick: (text, location, url) => trackCTAClick(text, location, url),
     getCurrentLanguage,
     switchLanguage: () => {
         const switcher = document.getElementById('languageSwitcher');
         if (switcher) switcher.click();
-    }
+    },
+    getGTM: () => getGTM()
 };
 
 // Styles CSS pour les erreurs et animations
