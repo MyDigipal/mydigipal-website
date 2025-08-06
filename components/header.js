@@ -351,3 +351,6 @@ function switchLanguage() {
         }
     }
 }
+
+// Export de la fonction initializeHeader
+export { initializeHeader };
