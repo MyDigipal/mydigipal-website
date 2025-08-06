@@ -1,8 +1,8 @@
 // js/app.js - Application principale MyDigipal
 
-import { loadHeader, initializeHeader } from '../components/header.js';
-import { loadFooter, initializeFooter } from '../components/footer.js';
-import { loadClientsCarousel, initializeClientsCarousel } from '../components/clients-carousel.js';
+import { loadHeader } from '../components/header.js';
+import { loadFooter } from '../components/footer.js';
+import { loadClientsCarousel } from '../components/clients-carousel.js';
 import { loadLanguageSwitcher, initializeLanguageSwitcher, getCurrentLanguage, autoDetectLanguage } from '../components/language-switcher.js';
 import { initGTM, getGTM, setupGlobalErrorTracking, trackCTAClick } from '../components/gtm.js';
 
