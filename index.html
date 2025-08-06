@@ -11,13 +11,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-P4TSQ9Q');</script>
-    
     <!-- Main CSS -->
     <link rel="stylesheet" href="/css/main.css">
     
@@ -296,10 +289,6 @@
     </style>
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P4TSQ9Q"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    
     <!-- Header (will be loaded by component) -->
     <div id="header"></div>
 
@@ -312,8 +301,8 @@
                 <p class="tagline fade-in">AI-Enhanced Digital Marketing Agency 2.0</p>
                 <p class="fade-in">Forget about the fluff or long SLAs, benefit from a truly international agency formed of passionate marketeers working as an extension of your internal team. We leverage AI to optimize campaigns, create compelling content, and deliver results that matter.</p>
                 <div class="cta-buttons fade-in">
-                    <a href="/contact-us" class="btn btn-primary" onclick="trackCTAClick('Start Your Project', 'hero')">Start Your Project</a>
-                    <a href="/case-studies" class="btn btn-secondary" onclick="trackCTAClick('View Case Studies', 'hero')">View Case Studies</a>
+                    <a href="/contact-us" class="btn btn-primary" onclick="MyDigipal.trackCTAClick('Start Your Project', 'hero', '/contact-us')">Start Your Project</a>
+                    <a href="/case-studies" class="btn btn-secondary" onclick="MyDigipal.trackCTAClick('View Case Studies', 'hero', '/case-studies')">View Case Studies</a>
                 </div>
             </div>
         </section>
@@ -445,6 +434,9 @@
 
     <!-- Scripts -->
     <script type="module">
+        // Import the main app (includes GTM initialization)
+        import app from './js/app.js';
+        
         // Import components
         import { loadHeader } from './components/header.js';
         import { loadFooter } from './components/footer.js';
@@ -452,7 +444,7 @@
         
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🏠 Loading homepage components...');
+            console.log('🏠 Loading homepage...');
             
             // Load components
             loadHeader();
@@ -482,20 +474,6 @@
                 animationObserver.observe(el);
             });
         }
-
-        // CTA tracking
-        window.trackCTAClick = function(ctaText, location) {
-            if (window.dataLayer) {
-                window.dataLayer.push({
-                    event: 'cta_click',
-                    cta_text: ctaText,
-                    cta_location: location,
-                    page_url: window.location.href,
-                    timestamp: new Date().toISOString()
-                });
-            }
-            console.log('CTA clicked:', ctaText, location);
-        };
     </script>
 </body>
 </html>
