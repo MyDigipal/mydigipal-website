@@ -18,150 +18,58 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-P4TSQ9Q');</script>
     
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+    
+    <!-- Page-specific styles -->
     <style>
-        /* Variables CSS MyDigipal */
-        :root {
-            /* Couleurs principales */
-            --primary-blue: #0ea5e9;
-            --secondary-purple: #8b5cf6;
-            --dark-gray: #1f2937;
-            --medium-gray: #6b7280;
-            --light-gray: #f9fafb;
-            --success-green: #16a34a;
-            --warning-orange: #ea580c;
-            --error-red: #dc2626;
-            --white: #ffffff;
-            
-            /* Typographie */
-            --font-family: 'DM Sans', sans-serif;
-            --font-regular: 400;
-            --font-medium: 500;
-            --font-semibold: 600;
-            --font-bold: 700;
-            
-            /* Espacements */
-            --spacing-xs: 0.5rem;
-            --spacing-sm: 1rem;
-            --spacing-md: 1.5rem;
-            --spacing-lg: 2rem;
-            --spacing-xl: 3rem;
-            --spacing-2xl: 4rem;
-            
-            /* Transitions */
-            --transition-fast: 0.2s ease;
-            --transition-medium: 0.3s ease;
-        }
-
-        /* Reset et base */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-family);
-            font-weight: var(--font-regular);
-            color: var(--dark-gray);
-            line-height: 1.6;
-            background-color: var(--white);
-        }
-
-        /* Header et Navigation */
-        .header {
-            background: var(--white);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-
-        .navbar {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 var(--spacing-lg);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 70px;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: var(--font-bold);
-            color: var(--primary-blue);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-
-        .logo::before {
-            content: "■";
-            color: var(--secondary-purple);
-            font-size: 1.2rem;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: var(--spacing-lg);
-            align-items: center;
-        }
-
-        .nav-link {
-            color: var(--dark-gray);
-            text-decoration: none;
-            font-weight: var(--font-medium);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: 6px;
-            transition: var(--transition-fast);
-        }
-
-        .nav-link:hover {
-            color: var(--primary-blue);
-            background: var(--light-gray);
-        }
-
-        .language-switcher {
-            background: var(--primary-blue);
-            color: var(--white);
-            border: none;
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: 6px;
-            font-weight: var(--font-medium);
-            cursor: pointer;
-            transition: var(--transition-fast);
-        }
-
-        .language-switcher:hover {
-            background: var(--secondary-purple);
-        }
-
         /* Hero Section */
         .hero {
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-purple) 100%);
             color: var(--white);
-            padding: 120px var(--spacing-lg) var(--spacing-2xl);
+            padding: calc(70px + var(--spacing-2xl)) var(--spacing-lg) var(--spacing-2xl);
             text-align: center;
-            margin-top: 70px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -20%;
+            width: 40%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: skewX(-15deg);
         }
 
         .hero-container {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ai-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: var(--font-medium);
+            margin-bottom: var(--spacing-lg);
+            display: inline-block;
         }
 
         .hero h1 {
             font-size: 3.5rem;
             font-weight: var(--font-bold);
             margin-bottom: var(--spacing-md);
-            line-height: 1.2;
+            line-height: 1.1;
         }
 
-        .hero .tagline {
+        .tagline {
             font-size: 1.5rem;
             font-weight: var(--font-medium);
             margin-bottom: var(--spacing-sm);
@@ -182,52 +90,6 @@
             gap: var(--spacing-md);
             justify-content: center;
             flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: var(--spacing-sm) var(--spacing-lg);
-            border-radius: 8px;
-            font-weight: var(--font-semibold);
-            text-decoration: none;
-            transition: var(--transition-medium);
-            cursor: pointer;
-            border: 2px solid transparent;
-            display: inline-flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-
-        .btn-primary {
-            background: var(--white);
-            color: var(--primary-blue);
-        }
-
-        .btn-primary:hover {
-            background: var(--light-gray);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--white);
-            border-color: var(--white);
-        }
-
-        .btn-secondary:hover {
-            background: var(--white);
-            color: var(--primary-blue);
-        }
-
-        /* AI Badge */
-        .ai-badge {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            padding: var(--spacing-xs) var(--spacing-md);
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: var(--font-medium);
-            margin-bottom: var(--spacing-lg);
-            display: inline-block;
         }
 
         /* Services Section */
@@ -410,247 +272,13 @@
             font-size: 0.9rem;
         }
 
-        /* Clients Section */
-        .clients {
-            padding: var(--spacing-2xl) var(--spacing-lg);
-            background: var(--white);
-            text-align: center;
-            overflow: hidden;
-        }
-
-        .clients h3 {
-            font-size: 1.4rem;
-            font-weight: var(--font-semibold);
-            color: var(--dark-gray);
-            margin-bottom: var(--spacing-md);
-        }
-
-        .clients-subtitle {
-            font-size: 1rem;
-            color: var(--medium-gray);
-            margin-bottom: var(--spacing-2xl);
-        }
-
-        .logos-carousel {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            margin: 0 auto;
-        }
-
-        .logos-row {
-            margin-bottom: var(--spacing-xl);
-            position: relative;
-            z-index: 1;
-        }
-
-        .logos-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .logos-track {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-2xl);
-            width: fit-content;
-        }
-
-        .logos-track.left-to-right {
-            animation: scroll-logos-right 40s linear infinite;
-        }
-
-        .logos-track.right-to-left {
-            animation: scroll-logos-left 35s linear infinite;
-        }
-
-        .client-logo {
-            height: 60px;
-            width: auto;
-            filter: grayscale(100%) opacity(0.6);
-            transition: var(--transition-fast);
-            flex-shrink: 0;
-        }
-
-        .client-logo:hover {
-            filter: grayscale(0%) opacity(1);
-            transform: scale(1.05);
-        }
-
-        /* Animation de défilement des logos */
-        @keyframes scroll-logos-right {
-            0% {
-                transform: translateX(-50%);
-            }
-            100% {
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes scroll-logos-left {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        .logos-track:hover {
-            animation-play-state: paused;
-        }
-
-        /* Logos en tant que texte stylisé pour les marques sans image */
-        .client-logo-text {
-            font-size: 1.2rem;
-            font-weight: var(--font-bold);
-            color: var(--medium-gray);
-            background: var(--light-gray);
-            padding: var(--spacing-md) var(--spacing-lg);
-            border-radius: 12px;
-            white-space: nowrap;
-            transition: var(--transition-fast);
-            height: 60px;
-            display: flex;
-            align-items: center;
-            flex-shrink: 0;
-            border: 2px solid transparent;
-        }
-
-        .client-logo-text:hover {
-            color: var(--primary-blue);
-            background: var(--white);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-color: var(--light-gray);
-        }
-
-        /* Style spécial pour les liens vers case studies */
-        a.client-logo-text {
-            text-decoration: none;
-            position: relative;
-        }
-
-        a.client-logo-text::after {
-            content: "📋";
-            position: absolute;
-            bottom: 5px;
-            right: 8px;
-            font-size: 0.7rem;
-            background: var(--success-green);
-            color: var(--white);
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--white);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-            transition: var(--transition-fast);
-        }
-
-        a.client-logo-text::before {
-            content: "Case Study";
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--dark-gray);
-            color: var(--white);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: var(--font-medium);
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: var(--transition-fast);
-            z-index: 100;
-            margin-bottom: 5px;
-        }
-
-        a.client-logo-text:hover::before {
-            opacity: 1;
-        }
-
-        a.client-logo-text:hover::after {
-            background: var(--primary-blue);
-            transform: scale(1.1);
-        }
-
-        a.client-logo-text:hover {
-            color: var(--white);
-            background: var(--primary-blue);
-            transform: scale(1.05);
-            border-color: var(--primary-blue);
-        }
-
-        /* Footer */
-        .footer {
-            background: var(--dark-gray);
-            color: var(--white);
-            padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-lg);
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .footer h3 {
-            font-size: 1.8rem;
-            font-weight: var(--font-semibold);
-            margin-bottom: var(--spacing-md);
-        }
-
-        .footer p {
-            font-size: 1.1rem;
-            margin-bottom: var(--spacing-lg);
-            opacity: 0.9;
-        }
-
-        .footer-cta {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-lg);
-            flex-wrap: wrap;
-        }
-
-        .footer-link {
-            color: var(--white);
-            text-decoration: none;
-            opacity: 0.8;
-            transition: var(--transition-fast);
-        }
-
-        .footer-link:hover {
-            opacity: 1;
-            color: var(--primary-blue);
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: var(--spacing-lg);
-            opacity: 0.7;
-            font-size: 0.9rem;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-            }
-            
             .hero h1 {
                 font-size: 2.5rem;
             }
             
-            .hero .tagline {
+            .tagline {
                 font-size: 1.2rem;
             }
             
@@ -672,276 +300,202 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P4TSQ9Q"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     
-    <!-- Header -->
-    <header class="header">
-        <nav class="navbar">
-            <a href="/" class="logo">MyDigipal</a>
-            <ul class="nav-menu">
-                <li><a href="/abm" class="nav-link">B2B Marketing</a></li>
-                <li><a href="/paid-social" class="nav-link">Services</a></li>
-                <li><a href="/automotive/google-ads" class="nav-link">Automotive</a></li>
-                <li><a href="/case-studies" class="nav-link">Case Studies</a></li>
-                <li><a href="/our-team" class="nav-link">Our Team</a></li>
-                <li><a href="/contact-us" class="nav-link">Contact</a></li>
-            </ul>
-            <button class="language-switcher" onclick="switchLanguage()">🇫🇷 FR</button>
-        </nav>
-    </header>
+    <!-- Header (will be loaded by component) -->
+    <div id="header"></div>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-container">
-            <div class="ai-badge">🤖 AI-Powered Digital Marketing</div>
-            <h1>More Than a Pair of Hands</h1>
-            <p class="tagline">AI-Enhanced Digital Marketing Agency 2.0</p>
-            <p>Forget about the fluff or long SLAs, benefit from a truly international agency formed of passionate marketeers working as an extension of your internal team. We leverage AI to optimize campaigns, create compelling content, and deliver results that matter.</p>
-            <div class="cta-buttons">
-                <a href="/contact-us" class="btn btn-primary">Start Your Project</a>
-                <a href="/case-studies" class="btn btn-secondary">View Case Studies</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section class="services">
-        <div class="services-container">
-            <h2>Digital Marketing Toolbox</h2>
-            <p class="services-subtitle">From AI-driven campaign optimization to strategic account-based marketing, we provide the full spectrum of digital marketing services.</p>
-            
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🎯</div>
-                    <h3>Account Based Marketing (ABM)</h3>
-                    <p>Connect with high-value prospects by implementing a targeted lead-generation strategy. Align your marketing and sales efforts to build stronger relationships and maximize revenue.</p>
-                </div>
-                
-                <div class="service-card">
-                    <div class="service-icon">📱</div>
-                    <h3>AI-Powered Paid Social</h3>
-                    <p>Leverage AI-driven insights for Facebook, LinkedIn, and Instagram campaigns. Our algorithms optimize targeting, creative testing, and budget allocation in real-time.</p>
-                </div>
-                
-                <div class="service-card">
-                    <div class="service-icon">🔍</div>
-                    <h3>Google Ads & SEO</h3>
-                    <p>Get your website to the top of search results with AI-enhanced keyword strategies, automated bid management, and conversion optimization.</p>
-                </div>
-                
-                <div class="service-card">
-                    <div class="service-icon">⚙️</div>
-                    <h3>Marketing Automation & CRM</h3>
-                    <p>Save time and enhance customer engagement with AI-powered automated workflows. Deliver personalized experiences that nurture leads and drive conversions.</p>
-                </div>
-                
-                <div class="service-card">
-                    <div class="service-icon">📊</div>
-                    <h3>Campaign Management</h3>
-                    <p>Launch and optimize your campaigns with AI-driven insights. From setup to daily budget tracking, we ensure your ads perform at their best.</p>
-                </div>
-                
-                <div class="service-card">
-                    <div class="service-icon">📈</div>
-                    <h3>Reporting & Analytics</h3>
-                    <p>Turn data into actionable insights with AI-powered analytics. Monitor your marketing performance and make data-driven decisions to optimize your strategy.</p>
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-container">
+                <div class="ai-badge fade-in">🤖 AI-Powered Digital Marketing</div>
+                <h1 class="fade-in">More Than a Pair of Hands</h1>
+                <p class="tagline fade-in">AI-Enhanced Digital Marketing Agency 2.0</p>
+                <p class="fade-in">Forget about the fluff or long SLAs, benefit from a truly international agency formed of passionate marketeers working as an extension of your internal team. We leverage AI to optimize campaigns, create compelling content, and deliver results that matter.</p>
+                <div class="cta-buttons fade-in">
+                    <a href="/contact-us" class="btn btn-primary" onclick="trackCTAClick('Start Your Project', 'hero')">Start Your Project</a>
+                    <a href="/case-studies" class="btn btn-secondary" onclick="trackCTAClick('View Case Studies', 'hero')">View Case Studies</a>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- AI Features Section -->
-    <section class="ai-features">
-        <div class="ai-container">
-            <div class="ai-header">
-                <h2>AI-Enhanced Marketing Solutions</h2>
-                <p class="services-subtitle">We use AI strategically to enhance our marketing services while maintaining the human touch that drives authentic connections.</p>
-            </div>
-            
-            <div class="ai-grid">
-                <div class="ai-feature">
-                    <div class="service-icon">🤖</div>
-                    <h3>AI Campaign Optimization</h3>
-                    <p>Our AI algorithms continuously analyze campaign performance across Google Ads and social media platforms, automatically adjusting bids, targeting, and budgets to maximize ROI while you focus on strategy.</p>
-                </div>
+        <!-- Services Section -->
+        <section class="services">
+            <div class="services-container">
+                <h2 class="fade-in">Digital Marketing Toolbox</h2>
+                <p class="services-subtitle fade-in">From AI-driven campaign optimization to strategic account-based marketing, we provide the full spectrum of digital marketing services.</p>
                 
-                <div class="ai-feature">
-                    <div class="service-icon">✍️</div>
-                    <h3>Intelligent Content Creation</h3>
-                    <p>We create compelling content with just the right amount of AI assistance to boost efficiency while preserving the human creativity and authenticity that resonates with your audience.</p>
-                </div>
-                
-                <div class="ai-feature">
-                    <div class="service-icon">🎓</div>
-                    <h3>AI Training & Workshops</h3>
-                    <p>Empower your team with our comprehensive AI training programs. Learn effective prompting techniques, AI tool integration, and how to leverage AI in your marketing workflows - available remotely or on-site.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="testimonials">
-        <div class="testimonials-container">
-            <h2>Don't Take Our Word for It</h2>
-            
-            <div class="testimonials-grid">
-                <div class="testimonial">
-                    <p class="testimonial-quote">"We were looking to improve our digital marketing efforts, but had a gap in the marketing team and over 12 internal tools to handle all digital marketing aspects. MyDigipal was able to overcome significant challenges, clearing the backlog of digital support in the regions, and successfully executed an ABM revamp across LinkedIn. Very Impressive."</p>
-                    <div class="testimonial-author">
-                        <img src="https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/66a8c81987fc1c9e891a99d4_Brett%20Reiser%20100px.webp" alt="Brett Rieser" class="author-avatar">
-                        <div class="author-info">
-                            <h4>Brett Rieser</h4>
-                            <p>Digital Marketing Director EMEA, Genesys</p>
-                        </div>
+                <div class="services-grid">
+                    <div class="service-card fade-in">
+                        <div class="service-icon">🎯</div>
+                        <h3>Account Based Marketing (ABM)</h3>
+                        <p>Connect with high-value prospects by implementing a targeted lead-generation strategy. Align your marketing and sales efforts to build stronger relationships and maximize revenue.</p>
+                    </div>
+                    
+                    <div class="service-card fade-in">
+                        <div class="service-icon">📱</div>
+                        <h3>AI-Powered Paid Social</h3>
+                        <p>Leverage AI-driven insights for Facebook, LinkedIn, and Instagram campaigns. Our algorithms optimize targeting, creative testing, and budget allocation in real-time.</p>
+                    </div>
+                    
+                    <div class="service-card fade-in">
+                        <div class="service-icon">🔍</div>
+                        <h3>Google Ads & SEO</h3>
+                        <p>Get your website to the top of search results with AI-enhanced keyword strategies, automated bid management, and conversion optimization.</p>
+                    </div>
+                    
+                    <div class="service-card fade-in">
+                        <div class="service-icon">⚙️</div>
+                        <h3>Marketing Automation & CRM</h3>
+                        <p>Save time and enhance customer engagement with AI-powered automated workflows. Deliver personalized experiences that nurture leads and drive conversions.</p>
+                    </div>
+                    
+                    <div class="service-card fade-in">
+                        <div class="service-icon">📊</div>
+                        <h3>Campaign Management</h3>
+                        <p>Launch and optimize your campaigns with AI-driven insights. From setup to daily budget tracking, we ensure your ads perform at their best.</p>
+                    </div>
+                    
+                    <div class="service-card fade-in">
+                        <div class="service-icon">📈</div>
+                        <h3>Reporting & Analytics</h3>
+                        <p>Turn data into actionable insights with AI-powered analytics. Monitor your marketing performance and make data-driven decisions to optimize your strategy.</p>
                     </div>
                 </div>
-                
-                <div class="testimonial">
-                    <p class="testimonial-quote">"From the ground up, MyDigipal's strategic acumen was invaluable. They didn't just consult; they immersed themselves in our mission, helping to orchestrate a digital symphony that resonated across the B2B landscape. Their contributions led to a suite of high-value leads, a significant uptick in conversions."</p>
-                    <div class="testimonial-author">
-                        <img src="https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/658bfb59bff3f1c0d42aa4a8_Surbhi%20Rathore.webp" alt="Surbhi Rathore" class="author-avatar">
-                        <div class="author-info">
-                            <h4>Surbhi Rathore</h4>
-                            <p>CEO & Co-founder, Symbl.ai</p>
-                        </div>
-                    </div>
+            </div>
+        </section>
+
+        <!-- AI Features Section -->
+        <section class="ai-features">
+            <div class="ai-container">
+                <div class="ai-header">
+                    <h2 class="fade-in">AI-Enhanced Marketing Solutions</h2>
+                    <p class="services-subtitle fade-in">We use AI strategically to enhance our marketing services while maintaining the human touch that drives authentic connections.</p>
                 </div>
                 
-                <div class="testimonial">
-                    <p class="testimonial-quote">"The ABM programs MyDigipal put in place helped Quantum Metrics identify and focus on the most valuable target accounts. We had refreshingly better lead quality and higher conversion rates. We were able to accelerate the deal closing process by 30%!"</p>
-                    <div class="testimonial-author">
-                        <img src="https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/65705ec9b5160a80c8b72771_Kelly%20Wright.webp" alt="Kelly Wright" class="author-avatar">
-                        <div class="author-info">
-                            <h4>Kelly Wright</h4>
-                            <p>Global Marketing Director, Quantum Metric</p>
+                <div class="ai-grid">
+                    <div class="ai-feature fade-in">
+                        <div class="service-icon">🤖</div>
+                        <h3>AI Campaign Optimization</h3>
+                        <p>Our AI algorithms continuously analyze campaign performance across Google Ads and social media platforms, automatically adjusting bids, targeting, and budgets to maximize ROI while you focus on strategy.</p>
+                    </div>
+                    
+                    <div class="ai-feature fade-in">
+                        <div class="service-icon">✍️</div>
+                        <h3>Intelligent Content Creation</h3>
+                        <p>We create compelling content with just the right amount of AI assistance to boost efficiency while preserving the human creativity and authenticity that resonates with your audience.</p>
+                    </div>
+                    
+                    <div class="ai-feature fade-in">
+                        <div class="service-icon">🎓</div>
+                        <h3>AI Training & Workshops</h3>
+                        <p>Empower your team with our comprehensive AI training programs. Learn effective prompting techniques, AI tool integration, and how to leverage AI in your marketing workflows - available remotely or on-site.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="testimonials">
+            <div class="testimonials-container">
+                <h2 class="fade-in">Don't Take Our Word for It</h2>
+                
+                <div class="testimonials-grid">
+                    <div class="testimonial fade-in">
+                        <p class="testimonial-quote">"We were looking to improve our digital marketing efforts, but had a gap in the marketing team and over 12 internal tools to handle all digital marketing aspects. MyDigipal was able to overcome significant challenges, clearing the backlog of digital support in the regions, and successfully executed an ABM revamp across LinkedIn. Very Impressive."</p>
+                        <div class="testimonial-author">
+                            <img src="https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/66a8c81987fc1c9e891a99d4_Brett%20Reiser%20100px.webp" alt="Brett Rieser" class="author-avatar">
+                            <div class="author-info">
+                                <h4>Brett Rieser</h4>
+                                <p>Digital Marketing Director EMEA, Genesys</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial fade-in">
+                        <p class="testimonial-quote">"From the ground up, MyDigipal's strategic acumen was invaluable. They didn't just consult; they immersed themselves in our mission, helping to orchestrate a digital symphony that resonated across the B2B landscape. Their contributions led to a suite of high-value leads, a significant uptick in conversions."</p>
+                        <div class="testimonial-author">
+                            <img src="https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/658bfb59bff3f1c0d42aa4a8_Surbhi%20Rathore.webp" alt="Surbhi Rathore" class="author-avatar">
+                            <div class="author-info">
+                                <h4>Surbhi Rathore</h4>
+                                <p>CEO & Co-founder, Symbl.ai</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial fade-in">
+                        <p class="testimonial-quote">"The ABM programs MyDigipal put in place helped Quantum Metrics identify and focus on the most valuable target accounts. We had refreshingly better lead quality and higher conversion rates. We were able to accelerate the deal closing process by 30%!"</p>
+                        <div class="testimonial-author">
+                            <img src="https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/65705ec9b5160a80c8b72771_Kelly%20Wright.webp" alt="Kelly Wright" class="author-avatar">
+                            <div class="author-info">
+                                <h4>Kelly Wright</h4>
+                                <p>Global Marketing Director, Quantum Metric</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Clients Section -->
-    <section class="clients">
-        <h3>Trusted by Leading Companies Worldwide</h3>
-        <p class="clients-subtitle">Join 50+ global companies that trust MyDigipal for their AI-powered digital marketing success</p>
+        <!-- Clients Carousel (will be loaded by component) -->
+        <div id="clients-carousel"></div>
+    </main>
+
+    <!-- Footer (will be loaded by component) -->
+    <div id="footer"></div>
+
+    <!-- Scripts -->
+    <script type="module">
+        // Import components
+        import { loadHeader } from './components/header.js';
+        import { loadFooter } from './components/footer.js';
+        import { loadClientsCarousel } from './components/clients-carousel.js';
         
-        <div class="logos-carousel">
-            <!-- Première ligne : Gauche vers Droite -->
-            <div class="logos-row">
-                <div class="logos-track left-to-right">
-                    <!-- Entreprises avec case studies en premier (liens cliquables) -->
-                    <a href="/case-study/dmd" class="client-logo-text" title="View DMD Group Case Study">Groupe DMD</a>
-                    <a href="/case-study/gwi-paid-media-success" class="client-logo-text" title="View GWI Case Study">GWI</a>
-                    <a href="/case-study/symbl-digital-marketing-introduction" class="client-logo-text" title="View Symbl.ai Case Study">Symbl.ai</a>
-                    <a href="/case-study/genesys-revamping-abm" class="client-logo-text" title="View Genesys Case Study">Genesys</a>
-                    
-                    <!-- Autres clients importants (sans liens) -->
-                    <div class="client-logo-text">Goliath Technologies</div>
-                    <div class="client-logo-text">Servion Global</div>
-                    <div class="client-logo-text">CX Ninjas</div>
-                    <div class="client-logo-text">Edenred</div>
-                    <div class="client-logo-text">Frontline Education</div>
-                    
-                    <!-- Duplication pour l'effet de défilement infini -->
-                    <a href="/case-study/dmd" class="client-logo-text" title="View DMD Group Case Study">Groupe DMD</a>
-                    <a href="/case-study/gwi-paid-media-success" class="client-logo-text" title="View GWI Case Study">GWI</a>
-                    <a href="/case-study/symbl-digital-marketing-introduction" class="client-logo-text" title="View Symbl.ai Case Study">Symbl.ai</a>
-                    <a href="/case-study/genesys-revamping-abm" class="client-logo-text" title="View Genesys Case Study">Genesys</a>
-                    
-                    <div class="client-logo-text">Goliath Technologies</div>
-                    <div class="client-logo-text">Servion Global</div>
-                    <div class="client-logo-text">CX Ninjas</div>
-                    <div class="client-logo-text">Edenred</div>
-                    <div class="client-logo-text">Frontline Education</div>
-                </div>
-            </div>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏠 Loading homepage components...');
             
-            <!-- Deuxième ligne : Droite vers Gauche -->
-            <div class="logos-row">
-                <div class="logos-track right-to-left">
-                    <!-- Entreprises avec case studies (suite) -->
-                    <a href="/case-study/theobald" class="client-logo-text" title="View Theobald Case Study">Groupe Theobald</a>
-                    <a href="/case-study/vulcain-group-increased-digital-strategy" class="client-logo-text" title="View Vulcain Group Case Study">Vulcain Group</a>
-                    <a href="/case-study/abm-from-scratch-to-the-cloud" class="client-logo-text" title="View Quantum Metric Case Study">Quantum Metric</a>
-                    
-                    <!-- Autres clients -->
-                    <div class="client-logo-text">LuxSci</div>
-                    <div class="client-logo-text">Omilia</div>
-                    <div class="client-logo-text">Prêt à Pousser</div>
-                    <div class="client-logo-text">We Factory</div>
-                    <div class="client-logo-text">Integrate</div>
-                    <div class="client-logo-text">Velocity Partners</div>
-                    
-                    <!-- Duplication pour l'effet de défilement infini -->
-                    <a href="/case-study/theobald" class="client-logo-text" title="View Theobald Case Study">Groupe Theobald</a>
-                    <a href="/case-study/vulcain-group-increased-digital-strategy" class="client-logo-text" title="View Vulcain Group Case Study">Vulcain Group</a>
-                    <a href="/case-study/abm-from-scratch-to-the-cloud" class="client-logo-text" title="View Quantum Metric Case Study">Quantum Metric</a>
-                    
-                    <div class="client-logo-text">LuxSci</div>
-                    <div class="client-logo-text">Omilia</div>
-                    <div class="client-logo-text">Prêt à Pousser</div>
-                    <div class="client-logo-text">We Factory</div>
-                    <div class="client-logo-text">Integrate</div>
-                    <div class="client-logo-text">Velocity Partners</div>
-                </div>
-            </div>
-        </div>
-    </section>
+            // Load components
+            loadHeader();
+            loadFooter();
+            loadClientsCarousel();
+            
+            // Initialize animations
+            initScrollAnimations();
+        });
 
-    <!-- Footer CTA -->
-    <footer class="footer">
-        <div class="footer-container">
-            <h3>Ready to Take Your Digital Activity to the Next Level?</h3>
-            <p>Try the anti-agency model for a ride. No long-term commitments, just results.</p>
-            <div class="footer-cta">
-                <a href="/contact-us" class="btn btn-primary">Start Your Project Today</a>
-            </div>
-            
-            <div class="footer-links">
-                <a href="/abm" class="footer-link">B2B Marketing</a>
-                <a href="/paid-social" class="footer-link">Services</a>
-                <a href="/automotive/google-ads" class="footer-link">Automotive</a>
-                <a href="/case-studies" class="footer-link">Case Studies</a>
-                <a href="/our-team" class="footer-link">Our Team</a>
-                <a href="/blogs" class="footer-link">Blog</a>
-                <a href="/contact-us" class="footer-link">Contact</a>
-            </div>
-            
-            <div class="footer-bottom">
-                <p>&copy; 2025 MyDigipal. All rights reserved. | More Than a Pair of Hands</p>
-            </div>
-        </div>
-    </footer>
+        // Scroll animations
+        function initScrollAnimations() {
+            const animationObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        animationObserver.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
 
-    <script>
-        // Fonction pour changer de langue
-        function switchLanguage() {
-            window.location.href = '/fr/';
+            const animatedElements = document.querySelectorAll('.fade-in');
+            animatedElements.forEach(el => {
+                animationObserver.observe(el);
+            });
         }
 
-        // Animation au scroll (optionnel)
-        window.addEventListener('scroll', function() {
-            const cards = document.querySelectorAll('.service-card, .ai-feature, .testimonial');
-            cards.forEach(card => {
-                const cardTop = card.getBoundingClientRect().top;
-                const cardVisible = 150;
-                
-                if (cardTop < window.innerHeight - cardVisible) {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }
-            });
-        });
-
-        // Initialiser l'animation
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.service-card, .ai-feature, .testimonial');
-            cards.forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            });
-        });
+        // CTA tracking
+        window.trackCTAClick = function(ctaText, location) {
+            if (window.dataLayer) {
+                window.dataLayer.push({
+                    event: 'cta_click',
+                    cta_text: ctaText,
+                    cta_location: location,
+                    page_url: window.location.href,
+                    timestamp: new Date().toISOString()
+                });
+            }
+            console.log('CTA clicked:', ctaText, location);
+        };
     </script>
 </body>
 </html>
