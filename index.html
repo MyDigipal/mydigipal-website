@@ -412,36 +412,160 @@
 
         /* Clients Section */
         .clients {
-            padding: var(--spacing-xl) var(--spacing-lg);
+            padding: var(--spacing-2xl) var(--spacing-lg);
             background: var(--white);
             text-align: center;
+            overflow: hidden;
         }
 
         .clients h3 {
-            font-size: 1.2rem;
-            font-weight: var(--font-medium);
-            color: var(--medium-gray);
-            margin-bottom: var(--spacing-lg);
+            font-size: 1.4rem;
+            font-weight: var(--font-semibold);
+            color: var(--dark-gray);
+            margin-bottom: var(--spacing-md);
         }
 
-        .clients-logos {
+        .clients-subtitle {
+            font-size: 1rem;
+            color: var(--medium-gray);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .logos-carousel {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .logos-track {
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: var(--spacing-xl);
-            flex-wrap: wrap;
-            opacity: 0.7;
+            gap: var(--spacing-2xl);
+            animation: scroll-logos 30s linear infinite;
+            width: fit-content;
         }
 
         .client-logo {
-            height: 40px;
-            filter: grayscale(100%);
+            height: 50px;
+            width: auto;
+            filter: grayscale(100%) opacity(0.6);
             transition: var(--transition-fast);
+            flex-shrink: 0;
         }
 
         .client-logo:hover {
-            filter: grayscale(0%);
+            filter: grayscale(0%) opacity(1);
+            transform: scale(1.05);
+        }
+
+        /* Animation de défilement des logos */
+        @keyframes scroll-logos {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .logos-track:hover {
+            animation-play-state: paused;
+        }
+
+        /* Logos en tant que texte stylisé pour les marques sans image */
+        .client-logo-text {
+            font-size: 1.1rem;
+            font-weight: var(--font-bold);
+            color: var(--medium-gray);
+            background: var(--light-gray);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: 8px;
+            white-space: nowrap;
+            transition: var(--transition-fast);
+            height: 50px;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .client-logo-text:hover {
+            color: var(--primary-blue);
+            background: var(--white);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style spécial pour les liens vers case studies */
+        a.client-logo-text {
+            text-decoration: none;
+            position: relative;
+        }
+
+        a.client-logo-text::after {
+            content: "📋";
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 1rem;
+            background: var(--success-green);
+            color: var(--white);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            border: 2px solid var(--white);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: var(--transition-fast);
+        }
+
+        a.client-logo-text::before {
+            content: "Case Study";
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark-gray);
+            color: var(--white);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: var(--font-medium);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition-fast);
+            z-index: 10;
+        }
+
+        a.client-logo-text::before:after {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 4px solid var(--dark-gray);
+        }
+
+        a.client-logo-text:hover::before {
             opacity: 1;
+        }
+
+        a.client-logo-text:hover::after {
+            background: var(--primary-blue);
+            transform: scale(1.1);
+        }
+
+        a.client-logo-text:hover {
+            color: var(--white);
+            background: var(--primary-blue);
+            transform: scale(1.05);
         }
 
         /* Footer */
@@ -683,13 +807,49 @@
     <!-- Clients Section -->
     <section class="clients">
         <h3>Trusted by Leading Companies Worldwide</h3>
-        <div class="clients-logos">
-            <!-- Les logos clients seront ajoutés ici -->
-            <span style="padding: 10px 20px; background: #f3f4f6; border-radius: 6px; font-weight: 600; color: #6b7280;">Genesys</span>
-            <span style="padding: 10px 20px; background: #f3f4f6; border-radius: 6px; font-weight: 600; color: #6b7280;">Symbl.ai</span>
-            <span style="padding: 10px 20px; background: #f3f4f6; border-radius: 6px; font-weight: 600; color: #6b7280;">Quantum Metric</span>
-            <span style="padding: 10px 20px; background: #f3f4f6; border-radius: 6px; font-weight: 600; color: #6b7280;">DMD Group</span>
-            <span style="padding: 10px 20px; background: #f3f4f6; border-radius: 6px; font-weight: 600; color: #6b7280;">50+ More</span>
+        <p class="clients-subtitle">Join 50+ global companies that trust MyDigipal for their AI-powered digital marketing success</p>
+        
+        <div class="logos-carousel">
+            <div class="logos-track">
+                <!-- Entreprises avec case studies en premier (liens cliquables) -->
+                <a href="/case-study/dmd" class="client-logo-text" title="View DMD Group Case Study">Groupe DMD</a>
+                <a href="/case-study/gwi-paid-media-success" class="client-logo-text" title="View GWI Case Study">GWI</a>
+                <a href="/case-study/symbl-digital-marketing-introduction" class="client-logo-text" title="View Symbl.ai Case Study">Symbl.ai</a>
+                <a href="/case-study/genesys-revamping-abm" class="client-logo-text" title="View Genesys Case Study">Genesys</a>
+                <a href="/case-study/theobald" class="client-logo-text" title="View Theobald Case Study">Groupe Theobald</a>
+                <a href="/case-study/vulcain-group-increased-digital-strategy" class="client-logo-text" title="View Vulcain Group Case Study">Vulcain Group</a>
+                <a href="/case-study/abm-from-scratch-to-the-cloud" class="client-logo-text" title="View Quantum Metric Case Study">Quantum Metric</a>
+                
+                <!-- Autres clients importants (sans liens) -->
+                <div class="client-logo-text">Goliath Technologies</div>
+                <div class="client-logo-text">Servion Global</div>
+                <div class="client-logo-text">CX Ninjas</div>
+                <div class="client-logo-text">Edenred</div>
+                <div class="client-logo-text">Frontline Education</div>
+                <div class="client-logo-text">LuxSci</div>
+                <div class="client-logo-text">Omilia</div>
+                <div class="client-logo-text">Prêt à Pousser</div>
+                <div class="client-logo-text">We Factory</div>
+                
+                <!-- Duplication pour l'effet de défilement infini -->
+                <a href="/case-study/dmd" class="client-logo-text" title="View DMD Group Case Study">Groupe DMD</a>
+                <a href="/case-study/gwi-paid-media-success" class="client-logo-text" title="View GWI Case Study">GWI</a>
+                <a href="/case-study/symbl-digital-marketing-introduction" class="client-logo-text" title="View Symbl.ai Case Study">Symbl.ai</a>
+                <a href="/case-study/genesys-revamping-abm" class="client-logo-text" title="View Genesys Case Study">Genesys</a>
+                <a href="/case-study/theobald" class="client-logo-text" title="View Theobald Case Study">Groupe Theobald</a>
+                <a href="/case-study/vulcain-group-increased-digital-strategy" class="client-logo-text" title="View Vulcain Group Case Study">Vulcain Group</a>
+                <a href="/case-study/abm-from-scratch-to-the-cloud" class="client-logo-text" title="View Quantum Metric Case Study">Quantum Metric</a>
+                
+                <div class="client-logo-text">Goliath Technologies</div>
+                <div class="client-logo-text">Servion Global</div>
+                <div class="client-logo-text">CX Ninjas</div>
+                <div class="client-logo-text">Edenred</div>
+                <div class="client-logo-text">Frontline Education</div>
+                <div class="client-logo-text">LuxSci</div>
+                <div class="client-logo-text">Omilia</div>
+                <div class="client-logo-text">Prêt à Pousser</div>
+                <div class="client-logo-text">We Factory</div>
+            </div>
         </div>
     </section>
 
