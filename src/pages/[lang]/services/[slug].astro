@@ -16,8 +16,9 @@ import WhyChooseUs from '@/components/sections/WhyChooseUs.astro';
 import AuditStrategySection from '@/components/sections/AuditStrategySection.astro';
 import TechnicalSEOSection from '@/components/sections/TechnicalSEOSection.astro';
 import AIContentShowcase from '@/components/sections/AIContentShowcase.astro';
-import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
 import CalculatorPreview from '@/components/sections/CalculatorPreview.astro';
+import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -100,6 +101,16 @@ const isSEOService = slug === 'seo';
     </>
   )}
 
+  <!-- Calculator Preview (Build Your Package) -->
+  {calculatorServiceId && (
+    <CalculatorPreview
+      lang={lang}
+      serviceId={calculatorServiceId}
+      serviceName={title}
+      color={color}
+    />
+  )}
+
   <!-- Testimonial Spotlight -->
   {testimonial && (
     <TestimonialSpotlight
@@ -111,15 +122,8 @@ const isSEOService = slug === 'seo';
     />
   )}
 
-  <!-- Calculator Preview -->
-  {calculatorServiceId && (
-    <CalculatorPreview
-      lang={lang}
-      serviceId={calculatorServiceId}
-      serviceName={title}
-      color={color}
-    />
-  )}
+  <!-- Final CTA -->
+  <FinalCTA lang={lang} />
 </PageLayout>
 
 <style>

@@ -1,0 +1,62 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const content = {
+  en: {
+    title: 'Ready to Take Your Digital Activity to the Next Level?',
+    subtitle: 'Try the anti-agency model for a ride. No long-term commitments, just results.',
+    chatButton: 'Chat with us',
+    quoteButton: 'Build your quote',
+  },
+  fr: {
+    title: 'Prêt à Propulser Votre Activité Digitale ?',
+    subtitle: 'Essayez le modèle anti-agence. Pas d\'engagement long terme, juste des résultats.',
+    chatButton: 'Discutons ensemble',
+    quoteButton: 'Construire votre devis',
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="py-24 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 relative overflow-hidden">
+  <!-- Background effects -->
+  <div class="absolute inset-0">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-400/20 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl lg:text-5xl font-bold text-white mb-6">
+        {t.title}
+      </h2>
+      <p class="text-lg text-violet-100 mb-10">
+        {t.subtitle}
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href={`/${lang}/contact`}
+          class="inline-flex items-center gap-3 px-8 py-4 bg-white text-violet-700 font-semibold text-lg rounded-xl hover:bg-violet-50 transition-all duration-300 hover:scale-105 shadow-xl shadow-black/20"
+        >
+          <Icon name="message-circle" size={22} />
+          {t.chatButton}
+        </a>
+        <a
+          href={`/${lang}/calculator`}
+          class="inline-flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-white/40 text-white font-semibold text-lg rounded-xl hover:bg-white/10 hover:border-white/60 transition-all duration-300"
+        >
+          <Icon name="bar-chart" size={22} />
+          {t.quoteButton}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
