@@ -51,20 +51,51 @@ const colorConfig = {
 const colors = colorConfig[color];
 ---
 
-<section class="relative min-h-[90vh] flex items-center overflow-hidden bg-slate-950">
-  <!-- Animated Background -->
-  <div class="absolute inset-0">
-    <!-- Gradient orbs -->
-    <div class={`absolute top-1/4 -left-32 w-96 h-96 bg-gradient-to-r ${colors.gradient} rounded-full blur-3xl opacity-20 animate-blob`}></div>
-    <div class={`absolute bottom-1/4 -right-32 w-96 h-96 bg-gradient-to-r ${colors.gradient} rounded-full blur-3xl opacity-20 animate-blob animation-delay-2000`}></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-slate-800 to-slate-900 rounded-full blur-3xl opacity-50"></div>
+<section class="hero-section relative min-h-screen flex items-center overflow-hidden bg-slate-950">
+  <!-- Animated Background with Parallax -->
+  <div class="absolute inset-0 pointer-events-none">
+    <!-- Main gradient orbs - will move with mouse -->
+    <div
+      class={`parallax-orb orb-1 absolute w-[500px] h-[500px] bg-gradient-to-r ${colors.gradient} rounded-full blur-[100px] opacity-30`}
+      data-speed="0.05"
+    ></div>
+    <div
+      class={`parallax-orb orb-2 absolute w-[400px] h-[400px] bg-gradient-to-r ${colors.gradient} rounded-full blur-[80px] opacity-25`}
+      data-speed="0.03"
+    ></div>
+    <div
+      class={`parallax-orb orb-3 absolute w-[300px] h-[300px] bg-gradient-to-br from-purple-500 to-pink-500 rounded-full blur-[60px] opacity-20`}
+      data-speed="0.07"
+    ></div>
+    <div
+      class="parallax-orb orb-4 absolute w-[600px] h-[600px] bg-gradient-to-r from-slate-800 to-slate-900 rounded-full blur-[100px] opacity-60"
+      data-speed="0.02"
+    ></div>
+
+    <!-- Floating particles -->
+    <div class="particles">
+      {Array.from({ length: 20 }).map((_, i) => (
+        <div
+          class={`particle absolute w-1 h-1 rounded-full bg-gradient-to-r ${colors.gradient} opacity-40`}
+          style={`
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            animation-delay: ${Math.random() * 5}s;
+            animation-duration: ${3 + Math.random() * 4}s;
+          `}
+        ></div>
+      ))}
+    </div>
 
     <!-- Grid pattern -->
-    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiMxZTI5M2IiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6TTEgMWg1OHY1OEgxVjF6IiBmaWxsPSIjMzM0MTU1IiBmaWxsLW9wYWNpdHk9Ii4zIi8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiMxZTI5M2IiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6TTEgMWg1OHY1OEgxVjF6IiBmaWxsPSIjMzM0MTU1IiBmaWxsLW9wYWNpdHk9Ii4zIi8+PC9nPjwvc3ZnPg==')] opacity-10"></div>
+
+    <!-- Radial gradient overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/50 to-slate-950"></div>
   </div>
 
   <!-- Content -->
-  <div class="relative z-10 container-custom py-20">
+  <div class="relative z-10 container-custom py-20 pb-32">
     <div class="max-w-4xl mx-auto text-center">
       <!-- Badge -->
       {badge && (
@@ -110,40 +141,58 @@ const colors = colorConfig[color];
           {t(lang, 'cta.viewCaseStudies')}
         </a>
       </div>
+    </div>
+  </div>
 
-      <!-- Scroll indicator -->
-      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div class="flex flex-col items-center gap-2 text-white/40">
-          <span class="text-sm">Scroll</span>
-          <Icon name="chevron-down" size={24} />
-        </div>
-      </div>
+  <!-- Scroll indicator - positioned at very bottom -->
+  <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 animate-bounce">
+    <div class="flex flex-col items-center gap-1 text-white/30 hover:text-white/50 transition-colors cursor-pointer">
+      <span class="text-xs uppercase tracking-wider">Scroll</span>
+      <Icon name="chevron-down" size={20} />
     </div>
   </div>
 </section>
 
 <style>
-  /* Blob animation */
-  @keyframes blob {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    25% { transform: translate(20px, -30px) scale(1.1); }
-    50% { transform: translate(-20px, 20px) scale(0.9); }
-    75% { transform: translate(30px, 10px) scale(1.05); }
+  /* Orb positions */
+  .orb-1 {
+    top: 10%;
+    left: -10%;
+  }
+  .orb-2 {
+    bottom: 20%;
+    right: -5%;
+  }
+  .orb-3 {
+    top: 50%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+  }
+  .orb-4 {
+    top: 40%;
+    left: 30%;
   }
 
-  .animate-blob {
-    animation: blob 15s ease-in-out infinite;
+  /* Particle animation */
+  .particle {
+    animation: float-particle linear infinite;
   }
 
-  /* Floating animation */
-  @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    25% { transform: translateY(-15px) rotate(3deg); }
-    75% { transform: translateY(10px) rotate(-3deg); }
-  }
-
-  .floating-element {
-    animation: float 6s ease-in-out infinite;
+  @keyframes float-particle {
+    0%, 100% {
+      transform: translateY(0) translateX(0) scale(1);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.4;
+    }
+    50% {
+      transform: translateY(-100px) translateX(20px) scale(1.5);
+      opacity: 0.6;
+    }
+    90% {
+      opacity: 0.4;
+    }
   }
 
   /* Text reveal animation */
@@ -164,9 +213,6 @@ const colors = colorConfig[color];
   .animation-delay-300 { animation-delay: 300ms; }
   .animation-delay-500 { animation-delay: 500ms; }
   .animation-delay-700 { animation-delay: 700ms; }
-  .animation-delay-1000 { animation-delay: 1000ms; }
-  .animation-delay-2000 { animation-delay: 2000ms; }
-  .animation-delay-3000 { animation-delay: 3000ms; }
 
   /* Fade animations */
   @keyframes fade-in {
@@ -189,3 +235,39 @@ const colors = colorConfig[color];
     opacity: 0;
   }
 </style>
+
+<script>
+  // Mouse parallax effect for orbs
+  const heroSection = document.querySelector('.hero-section');
+  const orbs = document.querySelectorAll('.parallax-orb');
+
+  if (heroSection && orbs.length > 0) {
+    let mouseX = 0;
+    let mouseY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    heroSection.addEventListener('mousemove', (e) => {
+      const rect = heroSection.getBoundingClientRect();
+      mouseX = (e.clientX - rect.left - rect.width / 2) / rect.width;
+      mouseY = (e.clientY - rect.top - rect.height / 2) / rect.height;
+    });
+
+    function animate() {
+      // Smooth interpolation
+      currentX += (mouseX - currentX) * 0.05;
+      currentY += (mouseY - currentY) * 0.05;
+
+      orbs.forEach((orb) => {
+        const speed = parseFloat(orb.getAttribute('data-speed') || '0.05');
+        const x = currentX * 100 * speed;
+        const y = currentY * 100 * speed;
+        (orb as HTMLElement).style.transform = `translate(${x}px, ${y}px)`;
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+</script>

@@ -12,12 +12,12 @@ import Icon from '@/components/ui/Icon.astro';
 // Sections
 import HeroService from '@/components/sections/HeroService.astro';
 import MetricsCounter from '@/components/sections/MetricsCounter.astro';
+import WhyChooseUs from '@/components/sections/WhyChooseUs.astro';
 import AuditStrategySection from '@/components/sections/AuditStrategySection.astro';
 import TechnicalSEOSection from '@/components/sections/TechnicalSEOSection.astro';
 import AIContentShowcase from '@/components/sections/AIContentShowcase.astro';
 import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
 import CalculatorPreview from '@/components/sections/CalculatorPreview.astro';
-import ServiceCTA from '@/components/sections/ServiceCTA.astro';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -45,7 +45,6 @@ export async function getStaticPaths() {
 
 const { lang, slug } = Astro.params as { lang: Language; slug: string };
 const { service } = Astro.props;
-const { Content } = await service.render();
 
 const {
   title,
@@ -67,7 +66,7 @@ const isSEOService = slug === 'seo';
   title={seo?.title || title}
   description={seo?.description || description}
 >
-  <!-- Hero Section - Immersive -->
+  <!-- Hero Section - Immersive with Parallax -->
   <HeroService
     lang={lang}
     badge={hero?.badge}
@@ -82,6 +81,11 @@ const isSEOService = slug === 'seo';
     <MetricsCounter metrics={metrics} color={color} />
   )}
 
+  <!-- Why Choose Us - 4 Blocks -->
+  {isSEOService && (
+    <WhyChooseUs lang={lang} color={color} />
+  )}
+
   <!-- SEO Service: 3 Interactive Sections -->
   {isSEOService && (
     <>
@@ -91,19 +95,10 @@ const isSEOService = slug === 'seo';
       <!-- Phase 2: Technical SEO (Flip Cards) -->
       <TechnicalSEOSection lang={lang} color={color} />
 
-      <!-- Phase 3: AI Content Production (Immersive Showcase) -->
+      <!-- Phase 3: AI Content Production (Immersive Showcase with CTA) -->
       <AIContentShowcase lang={lang} color={color} />
     </>
   )}
-
-  <!-- Content from MDX (if any additional content) -->
-  <section class="py-20 bg-white">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="prose-custom animate-on-scroll">
-        <Content />
-      </div>
-    </div>
-  </section>
 
   <!-- Testimonial Spotlight -->
   {testimonial && (
@@ -125,9 +120,6 @@ const isSEOService = slug === 'seo';
       color={color}
     />
   )}
-
-  <!-- Final CTA -->
-  <ServiceCTA lang={lang} />
 </PageLayout>
 
 <style>
