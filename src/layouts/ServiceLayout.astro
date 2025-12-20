@@ -1,0 +1,155 @@
+---
+import PageLayout from './PageLayout.astro';
+import type { Language } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+import ServiceCTA from '@/components/sections/ServiceCTA.astro';
+
+interface Props {
+  lang: Language;
+  service: {
+    title: string;
+    description: string;
+    color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+    hero?: {
+      badge?: string;
+      headline: string;
+      subheadline?: string;
+      image?: string;
+    };
+    metrics?: Array<{
+      value: string;
+      label: string;
+    }>;
+    calculatorServiceId?: string;
+  };
+  seo?: {
+    title?: string;
+    description?: string;
+    image?: string;
+  };
+}
+
+const { lang, service, seo } = Astro.props;
+
+const colorClasses = {
+  seo: 'badge-seo',
+  ads: 'badge-ads',
+  social: 'badge-social',
+  abm: 'badge-abm',
+  primary: 'badge-primary',
+};
+
+const badgeClass = colorClasses[service.color || 'primary'];
+---
+
+<PageLayout
+  lang={lang}
+  title={seo?.title || service.title}
+  description={seo?.description || service.description}
+  image={seo?.image}
+>
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden bg-gradient-hero">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-1/2 -right-1/4 w-[800px] h-[800px] rounded-full bg-primary-500/5 blur-3xl"></div>
+      <div class="absolute -bottom-1/2 -left-1/4 w-[600px] h-[600px] rounded-full bg-violet-500/5 blur-3xl"></div>
+    </div>
+
+    <div class="relative container-custom section">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <!-- Content -->
+        <div class="animate-on-scroll">
+          {service.hero?.badge && (
+            <span class={`${badgeClass} mb-6`}>{service.hero.badge}</span>
+          )}
+
+          <h1 class="heading-display mb-6">
+            {service.hero?.headline || service.title}
+          </h1>
+
+          {service.hero?.subheadline && (
+            <p class="body-large mb-8 max-w-xl">
+              {service.hero.subheadline}
+            </p>
+          )}
+
+          <p class="body mb-8 max-w-xl">
+            {service.description}
+          </p>
+
+          <div class="flex flex-wrap gap-4">
+            <Button href={`/${lang}/contact`} variant="primary" size="lg">
+              {t(lang, 'cta.startProject')}
+            </Button>
+            <Button href={`/${lang}/case-studies`} variant="secondary" size="lg">
+              {t(lang, 'cta.viewCaseStudies')}
+            </Button>
+          </div>
+        </div>
+
+        <!-- Image -->
+        {service.hero?.image && (
+          <div class="animate-on-scroll animation-delay-200">
+            <div class="relative">
+              <div class="absolute inset-0 bg-gradient-to-tr from-primary-500/20 to-violet-500/20 rounded-3xl transform rotate-3"></div>
+              <img
+                src={service.hero.image}
+                alt={service.title}
+                class="relative rounded-3xl shadow-strong w-full"
+                loading="eager"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Metrics Section -->
+  {service.metrics && service.metrics.length > 0 && (
+    <section class="py-12 border-b border-slate-100">
+      <div class="container-custom">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 stagger-children">
+          {service.metrics.map((metric) => (
+            <div class="text-center">
+              <div class="text-4xl lg:text-5xl font-bold text-slate-900 mb-2">
+                {metric.value}
+              </div>
+              <div class="text-sm text-slate-500 uppercase tracking-wide">
+                {metric.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Main content slot -->
+  <slot />
+
+  <!-- Calculator CTA -->
+  {service.calculatorServiceId && (
+    <section class="section bg-slate-50">
+      <div class="container-custom">
+        <div class="max-w-3xl mx-auto text-center animate-on-scroll">
+          <h2 class="heading-2 mb-4">{t(lang, 'calculator.title')}</h2>
+          <p class="body-large mb-8">{t(lang, 'calculator.subtitle')}</p>
+          <Button
+            href={`/${lang}/calculator?service=${service.calculatorServiceId}`}
+            variant="primary"
+            size="lg"
+          >
+            {t(lang, 'cta.getQuote')}
+          </Button>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Bottom CTA -->
+  <ServiceCTA lang={lang} />
+</PageLayout>

@@ -1,0 +1,36 @@
+---
+import { cn } from '@/lib/utils';
+
+interface Props {
+  variant?: 'primary' | 'seo' | 'ads' | 'social' | 'abm' | 'neutral';
+  size?: 'sm' | 'md';
+  class?: string;
+}
+
+const { variant = 'primary', size = 'md', class: className } = Astro.props;
+
+const variants = {
+  primary: 'bg-primary-50 text-primary-600',
+  seo: 'bg-emerald-50 text-emerald-600',
+  ads: 'bg-amber-50 text-amber-600',
+  social: 'bg-violet-50 text-violet-600',
+  abm: 'bg-pink-50 text-pink-600',
+  neutral: 'bg-slate-100 text-slate-600',
+};
+
+const sizes = {
+  sm: 'px-2 py-0.5 text-xs',
+  md: 'px-3 py-1 text-sm',
+};
+
+const classes = cn(
+  'inline-flex items-center gap-1.5 rounded-full font-medium',
+  variants[variant],
+  sizes[size],
+  className
+);
+---
+
+<span class={classes}>
+  <slot />
+</span>

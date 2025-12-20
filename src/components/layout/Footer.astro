@@ -1,0 +1,188 @@
+---
+import { type Language } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const currentYear = new Date().getFullYear();
+
+const footerLinks = {
+  services: [
+    { label: 'SEO', href: `/${lang}/services/seo` },
+    { label: 'Google Ads', href: `/${lang}/services/google-ads` },
+    { label: 'Paid Social', href: `/${lang}/services/paid-social` },
+    { label: t(lang, 'services.contentCreation.name'), href: `/${lang}/services/content-creation` },
+    { label: t(lang, 'services.marketingAutomation.name'), href: `/${lang}/services/marketing-automation` },
+  ],
+  b2bMarketing: [
+    { label: 'ABM', href: `/${lang}/services/abm` },
+    { label: 'Campaign Management', href: `/${lang}/services/campaign-management` },
+    { label: 'Marketing Strategy', href: `/${lang}/services/marketing-strategy` },
+  ],
+  company: [
+    { label: t(lang, 'nav.ourTeam'), href: `/${lang}/our-team` },
+    { label: t(lang, 'nav.caseStudies'), href: `/${lang}/case-studies` },
+    { label: t(lang, 'nav.blog'), href: `/${lang}/blog` },
+    { label: t(lang, 'nav.contact'), href: `/${lang}/contact` },
+  ],
+  legal: [
+    { label: t(lang, 'footer.privacyPolicy'), href: `/${lang}/privacy-policy` },
+    { label: t(lang, 'footer.termsOfService'), href: `/${lang}/terms-of-service` },
+  ],
+};
+
+const socialLinks = [
+  { icon: 'linkedin', href: 'https://www.linkedin.com/company/mydigipal', label: 'LinkedIn' },
+  { icon: 'twitter', href: 'https://twitter.com/mydigipal', label: 'Twitter' },
+];
+---
+
+<footer class="bg-slate-900 text-white">
+  <!-- CTA Section -->
+  <div class="container-custom py-16 lg:py-20">
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-500 to-violet-600 p-8 lg:p-12 text-center">
+      <!-- Background decoration -->
+      <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute -top-1/2 -right-1/4 w-96 h-96 rounded-full bg-white/10 blur-3xl"></div>
+        <div class="absolute -bottom-1/2 -left-1/4 w-96 h-96 rounded-full bg-white/10 blur-3xl"></div>
+      </div>
+
+      <div class="relative z-10 max-w-2xl mx-auto">
+        <h2 class="text-3xl lg:text-4xl font-bold mb-4">
+          {t(lang, 'sections.cta.title')}
+        </h2>
+        <p class="text-lg lg:text-xl text-white/90 mb-8">
+          {t(lang, 'sections.cta.subtitle')}
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <Button href={`/${lang}/contact`} variant="secondary" size="lg" class="bg-white text-primary-600 border-white hover:bg-white/90">
+            {t(lang, 'cta.startProject')}
+          </Button>
+          <Button href={`/${lang}/calculator`} variant="ghost" size="lg" class="text-white hover:bg-white/10">
+            {t(lang, 'cta.getQuote')}
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Footer -->
+  <div class="border-t border-slate-800">
+    <div class="container-custom py-12 lg:py-16">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-12">
+        <!-- Brand -->
+        <div class="col-span-2 md:col-span-3 lg:col-span-2">
+          <a href={`/${lang}`} class="flex items-center gap-2 mb-4">
+            <span class="w-10 h-10 bg-gradient-to-br from-primary-500 to-violet-500 rounded-xl flex items-center justify-center text-white font-bold">
+              M
+            </span>
+            <span class="text-2xl font-bold">MyDigipal</span>
+          </a>
+          <p class="text-primary-400 font-medium mb-3">
+            {t(lang, 'site.tagline')}
+          </p>
+          <p class="text-slate-400 text-sm leading-relaxed mb-6 max-w-sm">
+            {t(lang, 'footer.description')}
+          </p>
+
+          <!-- Social links -->
+          <div class="flex gap-3">
+            {socialLinks.map((social) => (
+              <a
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-10 h-10 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
+                aria-label={social.label}
+              >
+                <Icon name={social.icon} size={20} class="text-slate-400" />
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <!-- Services -->
+        <div>
+          <h4 class="font-semibold text-white mb-4">{t(lang, 'footer.services')}</h4>
+          <ul class="space-y-3">
+            {footerLinks.services.map((link) => (
+              <li>
+                <a href={link.href} class="text-slate-400 hover:text-white text-sm transition-colors">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- B2B Marketing -->
+        <div>
+          <h4 class="font-semibold text-white mb-4">{t(lang, 'footer.b2bMarketing')}</h4>
+          <ul class="space-y-3">
+            {footerLinks.b2bMarketing.map((link) => (
+              <li>
+                <a href={link.href} class="text-slate-400 hover:text-white text-sm transition-colors">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Company -->
+        <div>
+          <h4 class="font-semibold text-white mb-4">{t(lang, 'footer.company')}</h4>
+          <ul class="space-y-3">
+            {footerLinks.company.map((link) => (
+              <li>
+                <a href={link.href} class="text-slate-400 hover:text-white text-sm transition-colors">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <h4 class="font-semibold text-white mb-4">{t(lang, 'nav.contact')}</h4>
+          <ul class="space-y-3">
+            <li>
+              <a href="mailto:hello@mydigipal.com" class="flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors">
+                <Icon name="mail" size={16} />
+                hello@mydigipal.com
+              </a>
+            </li>
+            <li class="text-slate-400 text-sm">
+              London, UK
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="border-t border-slate-800">
+    <div class="container-custom py-6">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="text-slate-500 text-sm">
+          &copy; {currentYear} MyDigipal. {t(lang, 'footer.allRightsReserved')}
+        </p>
+        <div class="flex gap-6">
+          {footerLinks.legal.map((link) => (
+            <a href={link.href} class="text-slate-500 hover:text-slate-300 text-sm transition-colors">
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

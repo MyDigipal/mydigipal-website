@@ -1,13 +1,27 @@
+# Render.yaml configuration for MyDigipal Website
+# Static site deployment on Render
+
 services:
   - type: web
     name: mydigipal-website
-    runtime: static
-    buildCommand: ""
-    staticPublishPath: .
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
     headers:
-      - path: "*.js"
-        name: Content-Type
-        value: application/javascript
-      - path: "*.css"
-        name: Content-Type
-        value: text/css
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /_astro/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: redirect
+        source: /
+        destination: /en
+        status: 302

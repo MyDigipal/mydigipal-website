@@ -1,0 +1,31 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import type { Language } from '@/i18n/config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  lang?: Language;
+  noindex?: boolean;
+  canonicalURL?: string;
+}
+
+const { lang = 'en', ...props } = Astro.props;
+---
+
+<BaseLayout lang={lang} {...props}>
+  <slot name="head" slot="head" />
+
+  <Header lang={lang} />
+
+  <main class="flex-grow">
+    <slot />
+  </main>
+
+  <Footer lang={lang} />
+
+  <slot name="analytics" slot="analytics" />
+</BaseLayout>

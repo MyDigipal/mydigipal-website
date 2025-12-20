@@ -1,0 +1,53 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  quote: string;
+  author: string;
+  role: string;
+  company: string;
+  image?: string;
+}
+
+const { quote, author, role, company, image } = Astro.props;
+---
+
+<section class="section">
+  <div class="container-custom">
+    <div class="max-w-4xl mx-auto animate-on-scroll">
+      <div class="relative">
+        <!-- Quote icon -->
+        <div class="absolute -top-4 -left-4 w-16 h-16 rounded-2xl bg-primary-50 flex items-center justify-center">
+          <Icon name="quote" size={32} class="text-primary-500" />
+        </div>
+
+        <div class="bg-white rounded-3xl border border-slate-100 p-8 lg:p-12 shadow-soft">
+          <blockquote class="text-xl lg:text-2xl text-slate-700 leading-relaxed mb-8">
+            "{quote}"
+          </blockquote>
+
+          <div class="flex items-center gap-4">
+            {image ? (
+              <img
+                src={image}
+                alt={author}
+                class="w-14 h-14 rounded-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center">
+                <span class="text-lg font-semibold text-slate-500">
+                  {author.split(' ').map(n => n[0]).join('')}
+                </span>
+              </div>
+            )}
+            <div>
+              <div class="font-semibold text-slate-900">{author}</div>
+              <div class="text-sm text-slate-500">{role}, {company}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

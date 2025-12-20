@@ -1,0 +1,123 @@
+---
+import { getCollection } from 'astro:content';
+import ServiceLayout from '@/layouts/ServiceLayout.astro';
+import FeatureGrid from '@/components/sections/FeatureGrid.astro';
+import ProcessSteps from '@/components/sections/ProcessSteps.astro';
+import Testimonial from '@/components/sections/Testimonial.astro';
+import { type Language, languages } from '@/i18n/config';
+
+export async function getStaticPaths() {
+  const paths = [];
+
+  for (const lang of Object.keys(languages)) {
+    try {
+      const services = await getCollection('services', ({ id }) => {
+        return id.startsWith(`${lang}/`);
+      });
+
+      for (const service of services) {
+        const slug = service.id.replace(`${lang}/`, '').replace('.mdx', '');
+        paths.push({
+          params: { lang, slug },
+          props: { service },
+        });
+      }
+    } catch (e) {
+      // Collection might be empty, that's ok
+    }
+  }
+
+  return paths;
+}
+
+interface Props {
+  service: {
+    data: {
+      title: string;
+      description: string;
+      color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+      hero?: {
+        badge?: string;
+        headline: string;
+        subheadline?: string;
+        image?: string;
+      };
+      metrics?: Array<{ value: string; label: string }>;
+      features?: Array<{ icon?: string; title: string; description: string }>;
+      process?: Array<{ step: number; title: string; description: string }>;
+      testimonial?: {
+        quote: string;
+        author: string;
+        role: string;
+        company: string;
+        image?: string;
+      };
+      calculatorServiceId?: string;
+      seo?: {
+        title?: string;
+        description?: string;
+        image?: string;
+      };
+    };
+    body: string;
+    render: () => Promise<{ Content: any }>;
+  };
+}
+
+const { lang } = Astro.params as { lang: Language };
+const { service } = Astro.props;
+const { Content } = await service.render();
+
+const { title, description, color, hero, metrics, features, process, testimonial, calculatorServiceId, seo } = service.data;
+---
+
+<ServiceLayout
+  lang={lang}
+  service={{
+    title,
+    description,
+    color,
+    hero,
+    metrics,
+    calculatorServiceId,
+  }}
+  seo={seo}
+>
+  <!-- Features Section -->
+  {features && features.length > 0 && (
+    <FeatureGrid
+      title={lang === 'fr' ? 'Ce Que Nous Faisons' : 'What We Do'}
+      subtitle={lang === 'fr' ? 'Des solutions complètes pour votre croissance digitale' : 'Comprehensive solutions for your digital growth'}
+      features={features}
+    />
+  )}
+
+  <!-- Process Section -->
+  {process && process.length > 0 && (
+    <ProcessSteps
+      title={lang === 'fr' ? 'Notre Processus' : 'Our Process'}
+      subtitle={lang === 'fr' ? 'Une approche structurée pour des résultats durables' : 'A structured approach for lasting results'}
+      steps={process}
+    />
+  )}
+
+  <!-- Content from MDX -->
+  <section class="section">
+    <div class="container-narrow">
+      <div class="prose-custom animate-on-scroll">
+        <Content />
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonial -->
+  {testimonial && (
+    <Testimonial
+      quote={testimonial.quote}
+      author={testimonial.author}
+      role={testimonial.role}
+      company={testimonial.company}
+      image={testimonial.image}
+    />
+  )}
+</ServiceLayout>
