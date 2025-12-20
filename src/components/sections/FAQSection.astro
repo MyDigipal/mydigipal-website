@@ -1,0 +1,230 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, color = 'seo' } = Astro.props;
+
+const colorConfig = {
+  seo: {
+    gradient: 'from-emerald-500 to-teal-600',
+    text: 'text-emerald-500',
+    bg: 'bg-emerald-500',
+    border: 'border-emerald-500/30',
+    hover: 'hover:border-emerald-500/50',
+    glow: 'shadow-emerald-500/20',
+  },
+  ads: {
+    gradient: 'from-amber-500 to-orange-600',
+    text: 'text-amber-500',
+    bg: 'bg-amber-500',
+    border: 'border-amber-500/30',
+    hover: 'hover:border-amber-500/50',
+    glow: 'shadow-amber-500/20',
+  },
+  social: {
+    gradient: 'from-violet-500 to-purple-600',
+    text: 'text-violet-500',
+    bg: 'bg-violet-500',
+    border: 'border-violet-500/30',
+    hover: 'hover:border-violet-500/50',
+    glow: 'shadow-violet-500/20',
+  },
+  abm: {
+    gradient: 'from-pink-500 to-rose-600',
+    text: 'text-pink-500',
+    bg: 'bg-pink-500',
+    border: 'border-pink-500/30',
+    hover: 'hover:border-pink-500/50',
+    glow: 'shadow-pink-500/20',
+  },
+  primary: {
+    gradient: 'from-blue-500 to-indigo-600',
+    text: 'text-blue-500',
+    bg: 'bg-blue-500',
+    border: 'border-blue-500/30',
+    hover: 'hover:border-blue-500/50',
+    glow: 'shadow-blue-500/20',
+  },
+};
+
+const colors = colorConfig[color];
+
+const content = {
+  en: {
+    title: 'Frequently Asked Questions',
+    subtitle: 'Everything you need to know about our SEO services',
+    faqs: [
+      {
+        question: 'What is SEO and why does it matter?',
+        answer: 'SEO (Search Engine Optimization) is the process of improving your website to increase its visibility on search engines like Google. Unlike paid ads, SEO brings sustainable, long-term organic traffic without continuous ad spending. It builds trust, credibility, and positions your brand as an authority in your industry.',
+      },
+      {
+        question: 'How does SEO differ from Google Ads?',
+        answer: 'SEO builds your organic ranking naturally over time, creating lasting results that continue even after you stop investing. Google Ads provides immediate visibility through paid placements, but traffic stops when your budget runs out. The best digital strategy combines both: Ads for immediate impact, SEO for sustainable growth.',
+      },
+      {
+        question: 'What are the most common SEO mistakes?',
+        answer: 'The biggest mistakes we see are: neglecting mobile optimization (60%+ of traffic is mobile), keyword stuffing instead of natural content, ignoring technical SEO (site speed, structured data), thin content that doesn\'t provide value, and not tracking performance with analytics. Our approach addresses all of these systematically.',
+      },
+      {
+        question: 'How does AI transform SEO content?',
+        answer: 'AI revolutionizes SEO by enabling personalized content at scale, better keyword research, predictive analytics, and automated optimization. Our AI is trained on YOUR brand voice, creating content that sounds authentically human while being perfectly optimized. We combine AI efficiency with human strategy and review.',
+      },
+      {
+        question: 'How long until I see SEO results?',
+        answer: 'SEO is a long-term investment. Typically, you\'ll see initial improvements in 3-4 months, with significant results in 6-12 months. Competitive industries may take longer. Our AI-powered approach often accelerates this timeline by publishing more optimized content faster. We provide monthly reports so you can track progress.',
+      },
+      {
+        question: 'What makes MyDigipal\'s approach different?',
+        answer: 'We combine data-driven strategy (Ahrefs + Search Console integration), AI-powered content production trained on your brand, and transparent month-to-month contracts. No lock-ins, no black-box tactics. You get a dedicated team, real-time dashboards, and content that actually sounds like your brand.',
+      },
+    ],
+  },
+  fr: {
+    title: 'Questions Fréquentes',
+    subtitle: 'Tout ce que vous devez savoir sur nos services SEO',
+    faqs: [
+      {
+        question: 'Qu\'est-ce que le SEO et pourquoi est-ce important ?',
+        answer: 'Le SEO (Search Engine Optimization) est le processus d\'amélioration de votre site web pour augmenter sa visibilité sur les moteurs de recherche comme Google. Contrairement aux publicités payantes, le SEO apporte un trafic organique durable et à long terme sans dépenses publicitaires continues. Il construit la confiance, la crédibilité et positionne votre marque comme une autorité dans votre secteur.',
+      },
+      {
+        question: 'Quelle différence entre SEO et Google Ads ?',
+        answer: 'Le SEO construit votre classement organique naturellement dans le temps, créant des résultats durables qui continuent même après avoir arrêté d\'investir. Google Ads offre une visibilité immédiate via des placements payants, mais le trafic s\'arrête quand votre budget est épuisé. La meilleure stratégie digitale combine les deux : Ads pour l\'impact immédiat, SEO pour la croissance durable.',
+      },
+      {
+        question: 'Quelles sont les erreurs SEO les plus courantes ?',
+        answer: 'Les plus grosses erreurs que nous voyons sont : négliger l\'optimisation mobile (60%+ du trafic est mobile), le keyword stuffing au lieu d\'un contenu naturel, ignorer le SEO technique (vitesse du site, données structurées), un contenu léger qui n\'apporte pas de valeur, et ne pas suivre les performances avec les analytics. Notre approche adresse tous ces points systématiquement.',
+      },
+      {
+        question: 'Comment l\'IA transforme le contenu SEO ?',
+        answer: 'L\'IA révolutionne le SEO en permettant du contenu personnalisé à grande échelle, une meilleure recherche de mots-clés, des analyses prédictives et une optimisation automatisée. Notre IA est entraînée sur VOTRE voix de marque, créant du contenu qui sonne authentiquement humain tout en étant parfaitement optimisé. Nous combinons l\'efficacité de l\'IA avec la stratégie et la revue humaine.',
+      },
+      {
+        question: 'Combien de temps pour voir des résultats SEO ?',
+        answer: 'Le SEO est un investissement à long terme. Typiquement, vous verrez des améliorations initiales en 3-4 mois, avec des résultats significatifs en 6-12 mois. Les industries compétitives peuvent prendre plus de temps. Notre approche propulsée par l\'IA accélère souvent ce délai en publiant plus de contenu optimisé plus rapidement. Nous fournissons des rapports mensuels pour suivre les progrès.',
+      },
+      {
+        question: 'Qu\'est-ce qui différencie l\'approche MyDigipal ?',
+        answer: 'Nous combinons une stratégie data-driven (intégration Ahrefs + Search Console), une production de contenu IA entraînée sur votre marque, et des contrats transparents au mois. Pas d\'engagement, pas de tactiques opaques. Vous avez une équipe dédiée, des dashboards en temps réel, et du contenu qui sonne vraiment comme votre marque.',
+      },
+    ],
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="py-24 bg-white relative overflow-hidden">
+  <!-- Background decoration -->
+  <div class="absolute inset-0">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-slate-100 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+    <div class="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-slate-100 to-transparent rounded-full translate-y-1/2 -translate-x-1/2"></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <h2 class="text-3xl lg:text-5xl font-bold text-slate-900 mb-4">
+        {t.title}
+      </h2>
+      <p class="text-xl text-slate-600">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- FAQ Grid -->
+    <div class="max-w-4xl mx-auto space-y-4">
+      {t.faqs.map((faq, index) => (
+        <div
+          class={`faq-item group bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 ${colors.hover} hover:shadow-lg ${colors.glow}`}
+          data-index={index}
+        >
+          <button
+            class="faq-trigger w-full flex items-center justify-between p-6 text-left cursor-pointer"
+            aria-expanded="false"
+          >
+            <span class="flex items-center gap-4">
+              <span class={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center text-white font-bold text-sm`}>
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span class="text-lg font-semibold text-slate-900 group-hover:text-slate-700 transition-colors">
+                {faq.question}
+              </span>
+            </span>
+            <span class={`faq-icon flex-shrink-0 w-8 h-8 rounded-full ${colors.border} border-2 flex items-center justify-center transition-all duration-300`}>
+              <svg class="w-4 h-4 text-slate-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+          </button>
+          <div class="faq-content overflow-hidden max-h-0 transition-all duration-500 ease-out">
+            <div class="px-6 pb-6 pl-20">
+              <p class="text-slate-600 leading-relaxed">
+                {faq.answer}
+              </p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-item.active {
+    border-color: var(--active-border-color, #10B981);
+  }
+
+  .faq-item.active .faq-icon {
+    background: linear-gradient(135deg, #10B981, #14B8A6);
+    border-color: transparent;
+  }
+
+  .faq-item.active .faq-icon svg {
+    color: white;
+    transform: rotate(180deg);
+  }
+
+  .faq-item.active .faq-content {
+    max-height: 500px;
+  }
+
+  /* Hover effect on number badge */
+  .faq-item:hover .faq-icon {
+    transform: scale(1.1);
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.faq-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const item = trigger.closest('.faq-item');
+      const isActive = item?.classList.contains('active');
+
+      // Close all other items
+      document.querySelectorAll('.faq-item.active').forEach((activeItem) => {
+        if (activeItem !== item) {
+          activeItem.classList.remove('active');
+          activeItem.querySelector('.faq-trigger')?.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Toggle current item
+      if (item) {
+        item.classList.toggle('active');
+        trigger.setAttribute('aria-expanded', (!isActive).toString());
+      }
+    });
+  });
+
+  // Open first item by default
+  const firstItem = document.querySelector('.faq-item');
+  firstItem?.classList.add('active');
+  firstItem?.querySelector('.faq-trigger')?.setAttribute('aria-expanded', 'true');
+</script>

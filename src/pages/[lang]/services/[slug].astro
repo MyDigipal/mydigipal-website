@@ -19,6 +19,7 @@ import AIContentShowcase from '@/components/sections/AIContentShowcase.astro';
 import CalculatorPreview from '@/components/sections/CalculatorPreview.astro';
 import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
+import FAQSection from '@/components/sections/FAQSection.astro';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -123,7 +124,12 @@ const isSEOService = slug === 'seo';
   )}
 
   <!-- Final CTA -->
-  <FinalCTA lang={lang} />
+  <FinalCTA lang={lang} color={color} />
+
+  <!-- FAQ Section (SEO only for now) -->
+  {isSEOService && (
+    <FAQSection lang={lang} color={color} />
+  )}
 </PageLayout>
 
 <style>
