@@ -1,0 +1,321 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, color = 'seo' } = Astro.props;
+
+const colorConfig = {
+  seo: {
+    gradient: 'from-emerald-500 to-teal-600',
+    gradientDark: 'from-emerald-600 to-teal-700',
+    light: 'bg-emerald-50',
+    text: 'text-emerald-600',
+    border: 'border-emerald-500',
+  },
+  ads: {
+    gradient: 'from-amber-500 to-orange-600',
+    gradientDark: 'from-amber-600 to-orange-700',
+    light: 'bg-amber-50',
+    text: 'text-amber-600',
+    border: 'border-amber-500',
+  },
+  social: {
+    gradient: 'from-violet-500 to-purple-600',
+    gradientDark: 'from-violet-600 to-purple-700',
+    light: 'bg-violet-50',
+    text: 'text-violet-600',
+    border: 'border-violet-500',
+  },
+  abm: {
+    gradient: 'from-pink-500 to-rose-600',
+    gradientDark: 'from-pink-600 to-rose-700',
+    light: 'bg-pink-50',
+    text: 'text-pink-600',
+    border: 'border-pink-500',
+  },
+  primary: {
+    gradient: 'from-blue-500 to-indigo-600',
+    gradientDark: 'from-blue-600 to-indigo-700',
+    light: 'bg-blue-50',
+    text: 'text-blue-600',
+    border: 'border-blue-500',
+  },
+};
+
+const colors = colorConfig[color];
+
+const content = {
+  en: {
+    badge: 'Phase 2',
+    title: 'Technical SEO',
+    subtitle: 'Ongoing optimization to build authority and fix issues that hold you back',
+    hint: 'Hover or tap cards to reveal details',
+    items: [
+      {
+        icon: 'external-link',
+        title: 'Backlink Building',
+        frontText: 'Quality over quantity',
+        backDetails: [
+          'Strategic outreach campaigns',
+          'Digital PR & brand mentions',
+          'Guest posting on authoritative sites',
+          'Broken link building',
+          'Competitor backlink analysis',
+          'Toxic link disavowal',
+        ],
+      },
+      {
+        icon: 'map-pin',
+        title: 'Local SEO',
+        frontText: 'Dominate local search',
+        backDetails: [
+          'Google Business Profile optimization',
+          'Local citation building & cleanup',
+          'Review management strategy',
+          'Local schema markup',
+          'NAP consistency audit',
+          'Local keyword targeting',
+        ],
+      },
+      {
+        icon: 'trending-up',
+        title: 'Performance Reporting',
+        frontText: 'Data-driven decisions',
+        backDetails: [
+          'Monthly ranking reports',
+          'Traffic & conversion tracking',
+          'Competitor movement monitoring',
+          'ROI & KPI dashboards',
+          'Custom Google Data Studio reports',
+          'Quarterly strategy reviews',
+        ],
+      },
+      {
+        icon: 'settings',
+        title: 'Technical Fixes',
+        frontText: 'Clean foundation',
+        backDetails: [
+          '404 error detection & fixes',
+          'Redirect chain optimization',
+          'Duplicate content resolution',
+          'Canonical tag implementation',
+          'Meta data optimization',
+          'Schema markup deployment',
+        ],
+      },
+    ],
+  },
+  fr: {
+    badge: 'Phase 2',
+    title: 'SEO Technique',
+    subtitle: 'Optimisation continue pour bâtir votre autorité et corriger les freins',
+    hint: 'Survolez ou tapez les cartes pour révéler les détails',
+    items: [
+      {
+        icon: 'external-link',
+        title: 'Netlinking',
+        frontText: 'Qualité plutôt que quantité',
+        backDetails: [
+          'Campagnes d\'outreach stratégiques',
+          'RP digitales & mentions de marque',
+          'Guest posting sur sites autoritaires',
+          'Broken link building',
+          'Analyse backlinks concurrents',
+          'Désaveu des liens toxiques',
+        ],
+      },
+      {
+        icon: 'map-pin',
+        title: 'SEO Local',
+        frontText: 'Dominez la recherche locale',
+        backDetails: [
+          'Optimisation Google Business Profile',
+          'Construction & nettoyage citations locales',
+          'Stratégie de gestion des avis',
+          'Balisage schema local',
+          'Audit cohérence NAP',
+          'Ciblage mots-clés locaux',
+        ],
+      },
+      {
+        icon: 'trending-up',
+        title: 'Reporting Performance',
+        frontText: 'Décisions data-driven',
+        backDetails: [
+          'Rapports de positions mensuels',
+          'Suivi trafic & conversions',
+          'Monitoring mouvements concurrents',
+          'Tableaux de bord ROI & KPIs',
+          'Rapports Google Data Studio personnalisés',
+          'Revues stratégiques trimestrielles',
+        ],
+      },
+      {
+        icon: 'settings',
+        title: 'Corrections Techniques',
+        frontText: 'Fondations propres',
+        backDetails: [
+          'Détection & correction erreurs 404',
+          'Optimisation chaînes de redirections',
+          'Résolution contenu dupliqué',
+          'Implémentation balises canonical',
+          'Optimisation meta données',
+          'Déploiement balisage schema',
+        ],
+      },
+    ],
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="py-24 bg-slate-50 overflow-hidden">
+  <div class="container-custom">
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <span class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${colors.light} ${colors.text} mb-4`}>
+        <span class="w-2 h-2 rounded-full bg-current animate-pulse"></span>
+        {t.badge}
+      </span>
+      <h2 class="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
+        {t.title}
+      </h2>
+      <p class="text-lg text-slate-600 mb-4">
+        {t.subtitle}
+      </p>
+      <p class="text-sm text-slate-400 flex items-center justify-center gap-2">
+        <svg class="w-4 h-4 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+        </svg>
+        {t.hint}
+      </p>
+    </div>
+
+    <!-- Flip Cards Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {t.items.map((item, index) => (
+        <div
+          class="flip-card h-80 perspective-1000"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <div class="flip-card-inner relative w-full h-full transition-transform duration-700 transform-style-preserve-3d">
+            {/* Front of card */}
+            <div class="flip-card-front absolute inset-0 backface-hidden">
+              <div class="h-full bg-white rounded-3xl border border-slate-200 p-8 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-lg transition-shadow">
+                <div class={`w-16 h-16 rounded-2xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center text-white mb-6`}>
+                  <Icon name={item.icon} size={32} />
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">
+                  {item.title}
+                </h3>
+                <p class="text-slate-500 text-sm">
+                  {item.frontText}
+                </p>
+                <div class={`mt-6 w-12 h-1 rounded-full bg-gradient-to-r ${colors.gradient}`}></div>
+              </div>
+            </div>
+
+            {/* Back of card */}
+            <div class="flip-card-back absolute inset-0 backface-hidden rotate-y-180">
+              <div class={`h-full bg-gradient-to-br ${colors.gradientDark} rounded-3xl p-6 flex flex-col text-white shadow-xl`}>
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                  <Icon name={item.icon} size={20} />
+                  {item.title}
+                </h3>
+                <ul class="space-y-2 flex-1">
+                  {item.backDetails.map((detail) => (
+                    <li class="flex items-start gap-2 text-sm text-white/90">
+                      <svg class="w-4 h-4 flex-shrink-0 mt-0.5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                      <span>{detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
+  .flip-card {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .flip-card:hover .flip-card-inner,
+  .flip-card:focus-within .flip-card-inner,
+  .flip-card.is-flipped .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+
+  /* Touch device support */
+  @media (hover: none) {
+    .flip-card {
+      cursor: pointer;
+    }
+  }
+</style>
+
+<script>
+  // Touch support for mobile
+  document.querySelectorAll('.flip-card').forEach((card) => {
+    card.addEventListener('click', (e) => {
+      // Only toggle on touch devices
+      if (window.matchMedia('(hover: none)').matches) {
+        card.classList.toggle('is-flipped');
+      }
+    });
+  });
+
+  // Intersection Observer for animation
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate');
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
+
+  document.querySelectorAll('.flip-card').forEach((card) => {
+    observer.observe(card);
+  });
+</script>

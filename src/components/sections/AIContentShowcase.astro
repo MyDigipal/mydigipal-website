@@ -1,0 +1,469 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, color = 'seo' } = Astro.props;
+
+const colorConfig = {
+  seo: {
+    gradient: 'from-emerald-500 to-teal-600',
+    text: 'text-emerald-500',
+    bg: 'bg-emerald-500',
+  },
+  ads: {
+    gradient: 'from-amber-500 to-orange-600',
+    text: 'text-amber-500',
+    bg: 'bg-amber-500',
+  },
+  social: {
+    gradient: 'from-violet-500 to-purple-600',
+    text: 'text-violet-500',
+    bg: 'bg-violet-500',
+  },
+  abm: {
+    gradient: 'from-pink-500 to-rose-600',
+    text: 'text-pink-500',
+    bg: 'bg-pink-500',
+  },
+  primary: {
+    gradient: 'from-blue-500 to-indigo-600',
+    text: 'text-blue-500',
+    bg: 'bg-blue-500',
+  },
+};
+
+const colors = colorConfig[color];
+
+const content = {
+  en: {
+    badge: 'Phase 3 - Game Changer',
+    title: 'AI-Powered Content Production',
+    subtitle: 'Our secret weapon: automated content that sounds like YOU, optimized by data, published at scale',
+    metrics: [
+      { value: '68', suffix: '%', label: 'Time Saved', description: 'vs. traditional content creation' },
+      { value: '1500', suffix: '+', label: 'Words/Article', description: 'Comprehensive, valuable content' },
+      { value: '2-4', suffix: '/week', label: 'Articles Published', description: 'Consistent publishing schedule' },
+      { value: '+200', suffix: '%', label: 'Traffic Increase', description: 'Average after 6 months' },
+    ],
+    features: {
+      title: 'Why Our AI Content Is Different',
+      items: [
+        {
+          icon: 'sparkles',
+          title: 'Trained on YOUR Voice',
+          description: 'Our AI learns your brand guidelines, tone, vocabulary, and writing style. Every article sounds authentically YOU, not like a robot.',
+        },
+        {
+          icon: 'bar-chart',
+          title: 'Powered by Ahrefs Data',
+          description: 'Real-time keyword research, difficulty scoring, and competitive analysis feed directly into content strategy. No guessing.',
+        },
+        {
+          icon: 'trending-up',
+          title: 'Search Console Integration',
+          description: 'We connect to your GSC to identify what\'s already working, find quick wins, and optimize for queries you\'re close to ranking.',
+        },
+        {
+          icon: 'target',
+          title: 'SEO-First Structure',
+          description: 'Every article follows optimal structure: H1-H6 hierarchy, FAQ sections for featured snippets, internal linking, and schema markup.',
+        },
+      ],
+    },
+    process: {
+      title: 'The Process',
+      steps: [
+        {
+          number: '01',
+          title: 'Topic Identification',
+          description: 'We analyze trends, your priorities, and SEO opportunities to identify high-impact topics.',
+        },
+        {
+          number: '02',
+          title: 'Keyword Analysis',
+          description: 'Ahrefs API provides volume, difficulty, and related keywords. We select 1-3 focus keywords max.',
+        },
+        {
+          number: '03',
+          title: 'AI Article Generation',
+          description: 'Claude Sonnet 4 / GPT-5 generates content trained on your brand voice and SEO best practices.',
+        },
+        {
+          number: '04',
+          title: 'Human Review',
+          description: 'Every article is reviewed by our team. Draft or direct publish - you choose.',
+        },
+        {
+          number: '05',
+          title: 'Performance Tracking',
+          description: 'Continuous monitoring and optimization based on real ranking and traffic data.',
+        },
+      ],
+    },
+    comparison: {
+      title: 'Traditional vs. Our Approach',
+      traditional: {
+        label: 'Traditional Agency',
+        items: [
+          '100% generic ChatGPT output',
+          'Keyword stuffing (5%+ density)',
+          '500-word thin content',
+          'No tracking after publish',
+          '1 article/week max',
+        ],
+      },
+      ours: {
+        label: 'MyDigipal AI',
+        items: [
+          'Custom-trained AI + human review',
+          'Natural density (1-2%)',
+          '1500+ word comprehensive guides',
+          'Continuous performance monitoring',
+          '2-4 articles/week',
+        ],
+      },
+    },
+    cta: {
+      title: 'Ready to Scale Your Content?',
+      description: 'Join 50+ companies already dominating their niches with AI-powered content.',
+      button: 'Start Your Content Engine',
+    },
+  },
+  fr: {
+    badge: 'Phase 3 - Game Changer',
+    title: 'Production de Contenu IA',
+    subtitle: 'Notre arme secrète : du contenu automatisé qui sonne comme VOUS, optimisé par la data, publié à grande échelle',
+    metrics: [
+      { value: '68', suffix: '%', label: 'Temps Économisé', description: 'vs. création traditionnelle' },
+      { value: '1500', suffix: '+', label: 'Mots/Article', description: 'Contenu complet et valuable' },
+      { value: '2-4', suffix: '/sem', label: 'Articles Publiés', description: 'Calendrier de publication régulier' },
+      { value: '+200', suffix: '%', label: 'Augmentation Trafic', description: 'Moyenne après 6 mois' },
+    ],
+    features: {
+      title: 'Pourquoi Notre Contenu IA Est Différent',
+      items: [
+        {
+          icon: 'sparkles',
+          title: 'Entraîné sur VOTRE Voix',
+          description: 'Notre IA apprend vos guidelines de marque, ton, vocabulaire et style d\'écriture. Chaque article sonne authentiquement VOUS, pas comme un robot.',
+        },
+        {
+          icon: 'bar-chart',
+          title: 'Propulsé par Ahrefs',
+          description: 'Recherche de mots-clés en temps réel, scoring de difficulté et analyse concurrentielle alimentent directement la stratégie de contenu.',
+        },
+        {
+          icon: 'trending-up',
+          title: 'Intégration Search Console',
+          description: 'Nous connectons votre GSC pour identifier ce qui marche, trouver les quick wins, et optimiser pour les requêtes proches du top.',
+        },
+        {
+          icon: 'target',
+          title: 'Structure SEO-First',
+          description: 'Chaque article suit une structure optimale : hiérarchie H1-H6, sections FAQ pour featured snippets, maillage interne, et balisage schema.',
+        },
+      ],
+    },
+    process: {
+      title: 'Le Process',
+      steps: [
+        {
+          number: '01',
+          title: 'Identification des Sujets',
+          description: 'Nous analysons les tendances, vos priorités et opportunités SEO pour identifier les sujets à fort impact.',
+        },
+        {
+          number: '02',
+          title: 'Analyse de Mots-clés',
+          description: 'L\'API Ahrefs fournit volumes, difficulté et mots-clés associés. Nous sélectionnons 1-3 mots-clés focus max.',
+        },
+        {
+          number: '03',
+          title: 'Génération IA',
+          description: 'Claude Sonnet 4 / GPT-5 génère le contenu entraîné sur votre voix de marque et meilleures pratiques SEO.',
+        },
+        {
+          number: '04',
+          title: 'Revue Humaine',
+          description: 'Chaque article est revu par notre équipe. Brouillon ou publication directe - vous choisissez.',
+        },
+        {
+          number: '05',
+          title: 'Suivi Performance',
+          description: 'Monitoring continu et optimisation basée sur les données réelles de ranking et trafic.',
+        },
+      ],
+    },
+    comparison: {
+      title: 'Traditionnel vs. Notre Approche',
+      traditional: {
+        label: 'Agence Traditionnelle',
+        items: [
+          '100% output ChatGPT générique',
+          'Keyword stuffing (5%+ densité)',
+          'Contenu léger de 500 mots',
+          'Pas de suivi après publication',
+          '1 article/semaine max',
+        ],
+      },
+      ours: {
+        label: 'MyDigipal IA',
+        items: [
+          'IA personnalisée + revue humaine',
+          'Densité naturelle (1-2%)',
+          'Guides complets de 1500+ mots',
+          'Monitoring performance continu',
+          '2-4 articles/semaine',
+        ],
+      },
+    },
+    cta: {
+      title: 'Prêt à Scaler Votre Contenu ?',
+      description: 'Rejoignez 50+ entreprises qui dominent déjà leurs niches avec du contenu IA.',
+      button: 'Lancez Votre Machine à Contenu',
+    },
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="relative py-24 bg-slate-950 overflow-hidden">
+  <!-- Background Effects -->
+  <div class="absolute inset-0 overflow-hidden">
+    <div class={`absolute top-1/4 -left-32 w-96 h-96 bg-gradient-to-br ${colors.gradient} rounded-full opacity-10 blur-3xl animate-pulse`}></div>
+    <div class="absolute bottom-1/4 -right-32 w-96 h-96 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full opacity-10 blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+    <div class="absolute inset-0" style="background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px;"></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <!-- Section Header -->
+    <div class="text-center max-w-4xl mx-auto mb-20">
+      <span class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r ${colors.gradient} text-white mb-6`}>
+        <Icon name="zap" size={16} />
+        {t.badge}
+      </span>
+      <h2 class="text-4xl lg:text-6xl font-bold text-white mb-6">
+        {t.title}
+      </h2>
+      <p class="text-xl text-slate-400">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
+      {t.metrics.map((metric, index) => (
+        <div
+          class="metric-card group relative bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-6 text-center hover:border-slate-700 transition-all duration-300 hover:transform hover:-translate-y-2"
+          style={`animation-delay: ${index * 100}ms`}
+          data-value={metric.value}
+        >
+          <div class={`text-4xl lg:text-5xl font-bold bg-gradient-to-r ${colors.gradient} bg-clip-text text-transparent mb-2`}>
+            <span class="metric-value">0</span>{metric.suffix}
+          </div>
+          <div class="text-white font-semibold mb-1">{metric.label}</div>
+          <div class="text-slate-500 text-sm">{metric.description}</div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Features Grid -->
+    <div class="mb-24">
+      <h3 class="text-2xl lg:text-3xl font-bold text-white text-center mb-12">
+        {t.features.title}
+      </h3>
+      <div class="grid md:grid-cols-2 gap-6">
+        {t.features.items.map((feature, index) => (
+          <div
+            class="feature-item group relative bg-gradient-to-br from-slate-900 to-slate-900/50 border border-slate-800 rounded-2xl p-8 hover:border-slate-700 transition-all duration-500"
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            <div class={`w-14 h-14 rounded-xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300`}>
+              <Icon name={feature.icon} size={28} />
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">{feature.title}</h4>
+            <p class="text-slate-400 leading-relaxed">{feature.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Process Timeline -->
+    <div class="mb-24">
+      <h3 class="text-2xl lg:text-3xl font-bold text-white text-center mb-12">
+        {t.process.title}
+      </h3>
+      <div class="relative">
+        <!-- Connecting Line -->
+        <div class="hidden lg:block absolute top-8 left-0 right-0 h-0.5 bg-slate-800">
+          <div class={`process-line h-full bg-gradient-to-r ${colors.gradient} w-0`}></div>
+        </div>
+
+        <div class="grid lg:grid-cols-5 gap-8">
+          {t.process.steps.map((step, index) => (
+            <div class="process-step relative text-center lg:text-left" style={`animation-delay: ${index * 150}ms`}>
+              <div class="relative inline-flex lg:block">
+                <div class={`w-16 h-16 rounded-full bg-slate-900 border-2 border-slate-700 flex items-center justify-center text-2xl font-bold ${colors.text} mx-auto lg:mx-0 mb-4 group-hover:border-current transition-colors`}>
+                  {step.number}
+                </div>
+              </div>
+              <h4 class="text-lg font-bold text-white mb-2">{step.title}</h4>
+              <p class="text-slate-400 text-sm">{step.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison Section -->
+    <div class="mb-24">
+      <h3 class="text-2xl lg:text-3xl font-bold text-white text-center mb-12">
+        {t.comparison.title}
+      </h3>
+      <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <!-- Traditional -->
+        <div class="bg-slate-900/50 border border-red-900/30 rounded-2xl p-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-full bg-red-900/30 flex items-center justify-center">
+              <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <span class="text-lg font-semibold text-slate-300">{t.comparison.traditional.label}</span>
+          </div>
+          <ul class="space-y-3">
+            {t.comparison.traditional.items.map((item) => (
+              <li class="flex items-start gap-3 text-slate-400">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5 text-red-500/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                </svg>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Ours -->
+        <div class={`bg-gradient-to-br from-slate-900 to-slate-800 border border-emerald-900/50 rounded-2xl p-8 relative overflow-hidden`}>
+          <div class={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${colors.gradient} opacity-10 blur-2xl`}></div>
+          <div class="relative">
+            <div class="flex items-center gap-3 mb-6">
+              <div class={`w-10 h-10 rounded-full bg-gradient-to-br ${colors.gradient} flex items-center justify-center`}>
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span class="text-lg font-semibold text-white">{t.comparison.ours.label}</span>
+            </div>
+            <ul class="space-y-3">
+              {t.comparison.ours.items.map((item) => (
+                <li class="flex items-start gap-3 text-slate-300">
+                  <svg class={`w-5 h-5 flex-shrink-0 mt-0.5 ${colors.text}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="text-center">
+      <div class={`inline-block bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 rounded-3xl p-12 max-w-2xl`}>
+        <h3 class="text-2xl lg:text-3xl font-bold text-white mb-4">
+          {t.cta.title}
+        </h3>
+        <p class="text-slate-400 mb-8">
+          {t.cta.description}
+        </p>
+        <a
+          href={`/${lang}/contact`}
+          class={`inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r ${colors.gradient} text-white font-semibold rounded-xl hover:opacity-90 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/25`}
+        >
+          <Icon name="zap" size={20} />
+          {t.cta.button}
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .metric-card,
+  .feature-item,
+  .process-step {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .process-line {
+    animation: expand-line 2s ease forwards;
+    animation-delay: 0.5s;
+  }
+
+  @keyframes expand-line {
+    to {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // Animated counters
+  const observerCallback = (entries: IntersectionObserverEntry[]) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const card = entry.target as HTMLElement;
+        const valueEl = card.querySelector('.metric-value');
+        const targetValue = parseInt(card.dataset.value || '0');
+
+        if (valueEl && !card.classList.contains('counted')) {
+          card.classList.add('counted');
+          animateValue(valueEl, 0, targetValue, 2000);
+        }
+      }
+    });
+  };
+
+  function animateValue(el: Element, start: number, end: number, duration: number) {
+    const range = end - start;
+    const startTime = performance.now();
+
+    function update(currentTime: number) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(start + range * easeProgress);
+      el.textContent = current.toString();
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  const observer = new IntersectionObserver(observerCallback, { threshold: 0.3 });
+  document.querySelectorAll('.metric-card').forEach((card) => observer.observe(card));
+</script>

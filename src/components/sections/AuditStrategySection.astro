@@ -1,0 +1,294 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, color = 'seo' } = Astro.props;
+
+const colorConfig = {
+  seo: {
+    gradient: 'from-emerald-500 to-teal-600',
+    light: 'bg-emerald-50',
+    border: 'border-emerald-500',
+    text: 'text-emerald-600',
+    ring: 'ring-emerald-500/20',
+  },
+  ads: {
+    gradient: 'from-amber-500 to-orange-600',
+    light: 'bg-amber-50',
+    border: 'border-amber-500',
+    text: 'text-amber-600',
+    ring: 'ring-amber-500/20',
+  },
+  social: {
+    gradient: 'from-violet-500 to-purple-600',
+    light: 'bg-violet-50',
+    border: 'border-violet-500',
+    text: 'text-violet-600',
+    ring: 'ring-violet-500/20',
+  },
+  abm: {
+    gradient: 'from-pink-500 to-rose-600',
+    light: 'bg-pink-50',
+    border: 'border-pink-500',
+    text: 'text-pink-600',
+    ring: 'ring-pink-500/20',
+  },
+  primary: {
+    gradient: 'from-blue-500 to-indigo-600',
+    light: 'bg-blue-50',
+    border: 'border-blue-500',
+    text: 'text-blue-600',
+    ring: 'ring-blue-500/20',
+  },
+};
+
+const colors = colorConfig[color];
+
+const content = {
+  en: {
+    badge: 'Phase 1',
+    title: 'Audit & Strategy',
+    subtitle: 'We start by understanding your current situation and building a roadmap for success',
+    items: [
+      {
+        icon: 'search',
+        title: 'Technical SEO Audit',
+        summary: 'Complete analysis of your website\'s technical health',
+        details: [
+          'Core Web Vitals analysis (LCP, FID, CLS)',
+          'URL structure & site architecture review',
+          'Meta tags optimization (titles, descriptions, H1-H6)',
+          'Internal linking & crawlability assessment',
+          'Mobile compatibility & responsive design check',
+          'Sitemap.xml & robots.txt verification',
+          'Indexation status & coverage analysis',
+        ],
+      },
+      {
+        icon: 'bar-chart',
+        title: 'Keyword Strategy & Clustering',
+        summary: 'AI-powered research organized to avoid cannibalization',
+        details: [
+          'Comprehensive keyword research using Ahrefs API',
+          'Search volume & difficulty scoring by market',
+          'Thematic clustering to prevent SEO cannibalization',
+          'Competitor keyword gap analysis',
+          'Long-tail opportunity identification',
+          'Search intent mapping (informational, transactional, navigational)',
+        ],
+      },
+      {
+        icon: 'globe',
+        title: 'Competitive & Market Analysis',
+        summary: 'Understand your position and find untapped opportunities',
+        details: [
+          'Top 10 competitor deep-dive analysis',
+          'Market share & visibility benchmarking',
+          'Content gap identification',
+          'Backlink profile comparison',
+          'SERP feature opportunities (featured snippets, PAA)',
+          'Country/language-specific market research',
+        ],
+      },
+      {
+        icon: 'users',
+        title: 'UX & Content Assessment',
+        summary: 'Improve user experience to boost engagement and conversions',
+        details: [
+          'User journey & navigation analysis',
+          'Content quality & relevance audit',
+          'Conversion path optimization',
+          'Page speed & performance recommendations',
+          'Accessibility compliance check (WCAG)',
+          'Engagement metrics review (bounce rate, time on page)',
+        ],
+      },
+    ],
+  },
+  fr: {
+    badge: 'Phase 1',
+    title: 'Audit & Stratégie',
+    subtitle: 'Nous commençons par comprendre votre situation actuelle et construire une feuille de route vers le succès',
+    items: [
+      {
+        icon: 'search',
+        title: 'Audit SEO Technique',
+        summary: 'Analyse complète de la santé technique de votre site',
+        details: [
+          'Analyse des Core Web Vitals (LCP, FID, CLS)',
+          'Revue de la structure des URLs & architecture du site',
+          'Optimisation des balises meta (titres, descriptions, H1-H6)',
+          'Évaluation du maillage interne & crawlabilité',
+          'Vérification compatibilité mobile & responsive design',
+          'Vérification sitemap.xml & robots.txt',
+          'Analyse du statut d\'indexation & couverture',
+        ],
+      },
+      {
+        icon: 'bar-chart',
+        title: 'Stratégie & Clustering de Mots-clés',
+        summary: 'Recherche IA organisée pour éviter la cannibalisation',
+        details: [
+          'Recherche de mots-clés complète via API Ahrefs',
+          'Scoring volume de recherche & difficulté par marché',
+          'Clustering thématique pour éviter la cannibalisation SEO',
+          'Analyse des gaps de mots-clés concurrents',
+          'Identification des opportunités long-tail',
+          'Mapping de l\'intention de recherche (informationnelle, transactionnelle, navigationnelle)',
+        ],
+      },
+      {
+        icon: 'globe',
+        title: 'Analyse Concurrentielle & Marché',
+        summary: 'Comprenez votre position et trouvez les opportunités inexploitées',
+        details: [
+          'Analyse approfondie des 10 principaux concurrents',
+          'Benchmarking part de marché & visibilité',
+          'Identification des gaps de contenu',
+          'Comparaison des profils de backlinks',
+          'Opportunités de SERP features (featured snippets, PAA)',
+          'Étude de marché spécifique par pays/langue',
+        ],
+      },
+      {
+        icon: 'users',
+        title: 'Évaluation UX & Contenu',
+        summary: 'Améliorer l\'expérience utilisateur pour booster engagement et conversions',
+        details: [
+          'Analyse du parcours utilisateur & navigation',
+          'Audit qualité & pertinence du contenu',
+          'Optimisation des chemins de conversion',
+          'Recommandations vitesse & performance',
+          'Vérification conformité accessibilité (WCAG)',
+          'Revue des métriques d\'engagement (taux de rebond, temps sur page)',
+        ],
+      },
+    ],
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="py-24 bg-white overflow-hidden">
+  <div class="container-custom">
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${colors.light} ${colors.text} mb-4`}>
+        <span class="w-2 h-2 rounded-full bg-current animate-pulse"></span>
+        {t.badge}
+      </span>
+      <h2 class="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
+        {t.title}
+      </h2>
+      <p class="text-lg text-slate-600">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Accordion Items -->
+    <div class="max-w-4xl mx-auto space-y-4">
+      {t.items.map((item, index) => (
+        <div
+          class="accordion-item group border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-300"
+          data-index={index}
+        >
+          <!-- Accordion Header -->
+          <button
+            class="accordion-trigger w-full flex items-center gap-4 p-6 text-left transition-all duration-300 hover:bg-slate-50"
+            aria-expanded="false"
+          >
+            <div class={`flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center ${colors.light} ${colors.text} transition-all duration-300 group-hover:scale-110`}>
+              <Icon name={item.icon} size={28} />
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="text-xl font-bold text-slate-900 mb-1">
+                {item.title}
+              </h3>
+              <p class="text-slate-600 text-sm">
+                {item.summary}
+              </p>
+            </div>
+            <div class={`flex-shrink-0 w-10 h-10 rounded-full ${colors.light} flex items-center justify-center transition-all duration-300`}>
+              <svg class="accordion-icon w-5 h-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </button>
+
+          <!-- Accordion Content -->
+          <div class="accordion-content overflow-hidden transition-all duration-300" style="max-height: 0;">
+            <div class="p-6 pt-0">
+              <div class={`pl-[4.5rem] border-l-2 ${colors.border} ml-7`}>
+                <ul class="space-y-3">
+                  {item.details.map((detail) => (
+                    <li class="flex items-start gap-3 text-slate-600">
+                      <svg class={`w-5 h-5 flex-shrink-0 mt-0.5 ${colors.text}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>{detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .accordion-item.active {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+  }
+
+  .accordion-item.active .accordion-icon {
+    transform: rotate(180deg);
+  }
+
+  .accordion-item.active .accordion-trigger {
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.05), transparent);
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.accordion-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const item = trigger.closest('.accordion-item');
+      const content = item?.querySelector('.accordion-content') as HTMLElement;
+      const isActive = item?.classList.contains('active');
+
+      // Close all other items
+      document.querySelectorAll('.accordion-item').forEach((otherItem) => {
+        if (otherItem !== item) {
+          otherItem.classList.remove('active');
+          const otherContent = otherItem.querySelector('.accordion-content') as HTMLElement;
+          if (otherContent) {
+            otherContent.style.maxHeight = '0';
+          }
+          otherItem.querySelector('.accordion-trigger')?.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Toggle current item
+      if (item && content) {
+        if (isActive) {
+          item.classList.remove('active');
+          content.style.maxHeight = '0';
+          trigger.setAttribute('aria-expanded', 'false');
+        } else {
+          item.classList.add('active');
+          content.style.maxHeight = content.scrollHeight + 'px';
+          trigger.setAttribute('aria-expanded', 'true');
+        }
+      }
+    });
+  });
+</script>

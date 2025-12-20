@@ -12,8 +12,9 @@ import Icon from '@/components/ui/Icon.astro';
 // Sections
 import HeroService from '@/components/sections/HeroService.astro';
 import MetricsCounter from '@/components/sections/MetricsCounter.astro';
-import FeaturesShowcase from '@/components/sections/FeaturesShowcase.astro';
-import ProcessTimeline from '@/components/sections/ProcessTimeline.astro';
+import AuditStrategySection from '@/components/sections/AuditStrategySection.astro';
+import TechnicalSEOSection from '@/components/sections/TechnicalSEOSection.astro';
+import AIContentShowcase from '@/components/sections/AIContentShowcase.astro';
 import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
 import CalculatorPreview from '@/components/sections/CalculatorPreview.astro';
 import ServiceCTA from '@/components/sections/ServiceCTA.astro';
@@ -42,7 +43,7 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { lang } = Astro.params as { lang: Language };
+const { lang, slug } = Astro.params as { lang: Language; slug: string };
 const { service } = Astro.props;
 const { Content } = await service.render();
 
@@ -52,12 +53,13 @@ const {
   color = 'primary',
   hero,
   metrics,
-  features,
-  process,
   testimonial,
   calculatorServiceId,
   seo
 } = service.data;
+
+// Check if this is the SEO service page
+const isSEOService = slug === 'seo';
 ---
 
 <PageLayout
@@ -80,25 +82,21 @@ const {
     <MetricsCounter metrics={metrics} color={color} />
   )}
 
-  <!-- Features Showcase - Varied Styles -->
-  {features && features.length > 0 && (
-    <FeaturesShowcase
-      lang={lang}
-      features={features}
-      color={color}
-    />
+  <!-- SEO Service: 3 Interactive Sections -->
+  {isSEOService && (
+    <>
+      <!-- Phase 1: Audit & Strategy (Accordion) -->
+      <AuditStrategySection lang={lang} color={color} />
+
+      <!-- Phase 2: Technical SEO (Flip Cards) -->
+      <TechnicalSEOSection lang={lang} color={color} />
+
+      <!-- Phase 3: AI Content Production (Immersive Showcase) -->
+      <AIContentShowcase lang={lang} color={color} />
+    </>
   )}
 
-  <!-- Process Timeline - Interactive -->
-  {process && process.length > 0 && (
-    <ProcessTimeline
-      lang={lang}
-      steps={process}
-      color={color}
-    />
-  )}
-
-  <!-- Content from MDX -->
+  <!-- Content from MDX (if any additional content) -->
   <section class="py-20 bg-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="prose-custom animate-on-scroll">
