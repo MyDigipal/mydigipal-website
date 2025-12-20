@@ -321,16 +321,14 @@ const t = content[lang];
     </div>
 
     <!-- Metrics Grid - 3 big cards -->
-    <div class="grid md:grid-cols-3 gap-8 mb-24 max-w-5xl mx-auto" id="metrics-grid">
+    <div class="grid md:grid-cols-3 gap-8 mb-24 max-w-5xl mx-auto">
       {t.metrics.map((metric, index) => (
         <div
           class="metric-card group relative bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-8 text-center hover:border-slate-700 transition-all duration-300 hover:transform hover:-translate-y-2"
           style={`animation-delay: ${index * 100}ms`}
-          data-value={metric.value}
-          data-prefix={metric.prefix || ''}
         >
           <div class={`text-5xl lg:text-6xl font-bold bg-gradient-to-r ${colors.gradient} bg-clip-text text-transparent mb-3`}>
-            <span class="metric-prefix">{metric.prefix || ''}</span><span class="metric-value">0</span>{metric.suffix}
+            {metric.prefix || ''}{metric.value}{metric.suffix}
           </div>
           <div class="text-white font-semibold text-lg mb-2">{metric.label}</div>
           <div class="text-slate-400">{metric.description}</div>
