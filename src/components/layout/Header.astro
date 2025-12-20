@@ -1,0 +1,221 @@
+---
+import { languages, type Language } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const currentPath = Astro.url.pathname;
+const pathWithoutLang = currentPath.replace(/^\/(en|fr)/, '');
+
+// Navigation structure
+const navigation = [
+  {
+    label: t(lang, 'nav.services'),
+    href: `/${lang}/services`,
+    children: [
+      { label: 'SEO', href: `/${lang}/services/seo` },
+      { label: 'Google Ads', href: `/${lang}/services/google-ads` },
+      { label: 'Paid Social', href: `/${lang}/services/paid-social` },
+      { label: t(lang, 'services.contentCreation.name'), href: `/${lang}/services/content-creation` },
+      { label: t(lang, 'services.marketingAutomation.name'), href: `/${lang}/services/marketing-automation` },
+    ],
+  },
+  {
+    label: t(lang, 'nav.b2bMarketing'),
+    href: `/${lang}/b2b-marketing`,
+    children: [
+      { label: 'ABM', href: `/${lang}/services/abm` },
+      { label: 'Campaign Management', href: `/${lang}/services/campaign-management` },
+      { label: 'Marketing Strategy', href: `/${lang}/services/marketing-strategy` },
+    ],
+  },
+  {
+    label: t(lang, 'nav.training'),
+    href: `/${lang}/training`,
+    children: [
+      { label: 'AI Training', href: `/${lang}/training/ai` },
+      { label: 'ABM Training', href: `/${lang}/training/abm` },
+    ],
+  },
+  { label: t(lang, 'nav.caseStudies'), href: `/${lang}/case-studies` },
+  { label: t(lang, 'nav.blog'), href: `/${lang}/blog` },
+  { label: t(lang, 'nav.ourTeam'), href: `/${lang}/our-team` },
+];
+
+const alternateLang = lang === 'en' ? 'fr' : 'en';
+const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100" id="header">
+  <nav class="container-custom h-18 flex items-center justify-between">
+    <!-- Logo -->
+    <a href={`/${lang}`} class="flex items-center gap-2 group">
+      <span class="w-8 h-8 bg-gradient-to-br from-primary-500 to-violet-500 rounded-lg flex items-center justify-center text-white font-bold text-sm group-hover:scale-105 transition-transform">
+        M
+      </span>
+      <span class="text-xl font-bold text-slate-900">
+        MyDigipal
+      </span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <div class="hidden lg:flex items-center gap-1">
+      {navigation.map((item) => (
+        <div class="relative group">
+          <a
+            href={item.href}
+            class={`
+              flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors
+              ${currentPath.startsWith(item.href) ? 'text-primary-500 bg-primary-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}
+            `}
+          >
+            {item.label}
+            {item.children && (
+              <Icon name="chevron-down" size={16} class="transition-transform group-hover:rotate-180" />
+            )}
+          </a>
+
+          {item.children && (
+            <div class="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <div class="bg-white rounded-xl shadow-strong border border-slate-100 py-2 min-w-[220px]">
+                {item.children.map((child) => (
+                  <a
+                    href={child.href}
+                    class={`
+                      block px-4 py-2.5 text-sm transition-colors
+                      ${currentPath === child.href ? 'text-primary-500 bg-primary-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}
+                    `}
+                  >
+                    {child.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <!-- Right side -->
+    <div class="flex items-center gap-3">
+      <!-- Language switcher -->
+      <a
+        href={alternateUrl}
+        class="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+        title={languages[alternateLang].name}
+      >
+        <span>{languages[alternateLang].flag}</span>
+        <span class="hidden md:inline">{languages[alternateLang].code.toUpperCase()}</span>
+      </a>
+
+      <!-- CTA Button -->
+      <Button href={`/${lang}/contact`} variant="primary" size="sm" class="hidden sm:inline-flex">
+        {t(lang, 'nav.calculator')}
+      </Button>
+
+      <!-- Mobile menu button -->
+      <button
+        type="button"
+        class="lg:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+        id="mobile-menu-btn"
+        aria-label="Toggle menu"
+      >
+        <Icon name="menu" size={24} id="menu-icon" />
+        <Icon name="close" size={24} id="close-icon" class="hidden" />
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Navigation -->
+  <div class="lg:hidden hidden" id="mobile-menu">
+    <div class="container-custom py-4 border-t border-slate-100 bg-white">
+      <div class="space-y-1">
+        {navigation.map((item) => (
+          <div>
+            <a
+              href={item.href}
+              class={`
+                flex items-center justify-between px-4 py-3 text-base font-medium rounded-lg transition-colors
+                ${currentPath.startsWith(item.href) ? 'text-primary-500 bg-primary-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}
+              `}
+            >
+              {item.label}
+              {item.children && <Icon name="chevron-right" size={20} />}
+            </a>
+
+            {item.children && (
+              <div class="ml-4 mt-1 space-y-1">
+                {item.children.map((child) => (
+                  <a
+                    href={child.href}
+                    class={`
+                      block px-4 py-2.5 text-sm rounded-lg transition-colors
+                      ${currentPath === child.href ? 'text-primary-500 bg-primary-50' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}
+                    `}
+                  >
+                    {child.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-4 pt-4 border-t border-slate-100 flex items-center gap-3">
+        <a
+          href={alternateUrl}
+          class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+        >
+          <span>{languages[alternateLang].flag}</span>
+          <span>{languages[alternateLang].name}</span>
+        </a>
+        <Button href={`/${lang}/contact`} variant="primary" class="flex-1">
+          {t(lang, 'nav.calculator')}
+        </Button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Spacer for fixed header -->
+<div class="h-18"></div>
+
+<script>
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuIcon = document.getElementById('menu-icon');
+  const closeIcon = document.getElementById('close-icon');
+
+  if (mobileMenuBtn && mobileMenu && menuIcon && closeIcon) {
+    mobileMenuBtn.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+
+      if (isOpen) {
+        mobileMenu.classList.add('hidden');
+        menuIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      } else {
+        mobileMenu.classList.remove('hidden');
+        menuIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
+      }
+    });
+  }
+
+  // Close mobile menu on outside click
+  document.addEventListener('click', (e) => {
+    const header = document.getElementById('header');
+    if (header && mobileMenu && !header.contains(e.target as Node)) {
+      mobileMenu.classList.add('hidden');
+      menuIcon?.classList.remove('hidden');
+      closeIcon?.classList.add('hidden');
+    }
+  });
+</script>

@@ -1,0 +1,146 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { type Language, languages } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+import { getCollection } from 'astro:content';
+
+// Components
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+
+// Sections
+import HeroService from '@/components/sections/HeroService.astro';
+import MetricsCounter from '@/components/sections/MetricsCounter.astro';
+import WhyChooseUs from '@/components/sections/WhyChooseUs.astro';
+import AuditStrategySection from '@/components/sections/AuditStrategySection.astro';
+import TechnicalSEOSection from '@/components/sections/TechnicalSEOSection.astro';
+import AIContentShowcase from '@/components/sections/AIContentShowcase.astro';
+import CalculatorPreview from '@/components/sections/CalculatorPreview.astro';
+import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+import FAQSection from '@/components/sections/FAQSection.astro';
+
+export async function getStaticPaths() {
+  const paths = [];
+
+  for (const lang of Object.keys(languages)) {
+    try {
+      const services = await getCollection('services', ({ id }) => {
+        return id.startsWith(`${lang}/`);
+      });
+
+      for (const service of services) {
+        const slug = service.id.replace(`${lang}/`, '').replace('.mdx', '');
+        paths.push({
+          params: { lang, slug },
+          props: { service },
+        });
+      }
+    } catch (e) {
+      // Collection might be empty
+    }
+  }
+
+  return paths;
+}
+
+const { lang, slug } = Astro.params as { lang: Language; slug: string };
+const { service } = Astro.props;
+
+const {
+  title,
+  description,
+  color = 'primary',
+  hero,
+  metrics,
+  testimonial,
+  calculatorServiceId,
+  seo
+} = service.data;
+
+// Check if this is the SEO service page
+const isSEOService = slug === 'seo';
+---
+
+<PageLayout
+  lang={lang}
+  title={seo?.title || title}
+  description={seo?.description || description}
+>
+  <!-- Hero Section - Immersive with Parallax -->
+  <HeroService
+    lang={lang}
+    badge={hero?.badge}
+    headline={hero?.headline || title}
+    subheadline={hero?.subheadline}
+    description={description}
+    color={color}
+  />
+
+  <!-- Metrics Counter -->
+  {metrics && metrics.length > 0 && (
+    <MetricsCounter metrics={metrics} color={color} />
+  )}
+
+  <!-- Why Choose Us - 4 Blocks -->
+  {isSEOService && (
+    <WhyChooseUs lang={lang} color={color} />
+  )}
+
+  <!-- SEO Service: 3 Interactive Sections -->
+  {isSEOService && (
+    <>
+      <!-- Phase 1: Audit & Strategy (Accordion) -->
+      <AuditStrategySection lang={lang} color={color} />
+
+      <!-- Phase 2: Technical SEO (Flip Cards) -->
+      <TechnicalSEOSection lang={lang} color={color} />
+
+      <!-- Phase 3: AI Content Production (Immersive Showcase with CTA) -->
+      <AIContentShowcase lang={lang} color={color} />
+    </>
+  )}
+
+  <!-- Calculator Preview (Build Your Package) -->
+  {calculatorServiceId && (
+    <CalculatorPreview
+      lang={lang}
+      serviceId={calculatorServiceId}
+      serviceName={title}
+      color={color}
+    />
+  )}
+
+  <!-- Testimonial Spotlight -->
+  {testimonial && (
+    <TestimonialSpotlight
+      quote={testimonial.quote}
+      author={testimonial.author}
+      role={testimonial.role}
+      company={testimonial.company}
+      image={testimonial.image}
+    />
+  )}
+
+  <!-- Final CTA -->
+  <FinalCTA lang={lang} color={color} />
+
+  <!-- FAQ Section (SEO only for now) -->
+  {isSEOService && (
+    <FAQSection lang={lang} color={color} />
+  )}
+</PageLayout>
+
+<style>
+  /* Page-specific animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
+  }
+</style>

@@ -1,0 +1,175 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, color = 'seo' } = Astro.props;
+
+const colorConfig = {
+  seo: {
+    gradient: 'from-emerald-500 to-teal-600',
+    light: 'bg-emerald-50',
+    text: 'text-emerald-600',
+    border: 'border-emerald-200 hover:border-emerald-400',
+  },
+  ads: {
+    gradient: 'from-amber-500 to-orange-600',
+    light: 'bg-amber-50',
+    text: 'text-amber-600',
+    border: 'border-amber-200 hover:border-amber-400',
+  },
+  social: {
+    gradient: 'from-violet-500 to-purple-600',
+    light: 'bg-violet-50',
+    text: 'text-violet-600',
+    border: 'border-violet-200 hover:border-violet-400',
+  },
+  abm: {
+    gradient: 'from-pink-500 to-rose-600',
+    light: 'bg-pink-50',
+    text: 'text-pink-600',
+    border: 'border-pink-200 hover:border-pink-400',
+  },
+  primary: {
+    gradient: 'from-blue-500 to-indigo-600',
+    light: 'bg-blue-50',
+    text: 'text-blue-600',
+    border: 'border-blue-200 hover:border-blue-400',
+  },
+};
+
+const colors = colorConfig[color];
+
+const content = {
+  en: {
+    title: 'Why Choose MyDigipal for SEO?',
+    subtitle: 'We combine AI-powered tools with human expertise to deliver SEO strategies that actually work. No black-hat tactics, no empty promises—just data-driven optimization that improves your visibility and drives real business results.',
+    aspects: [
+      {
+        icon: 'bar-chart',
+        title: 'Transparent Reporting',
+        description: 'Monthly reports that actually make sense, with clear KPIs and actionable recommendations.',
+      },
+      {
+        icon: 'zap',
+        title: 'No Long-Term Contracts',
+        description: 'We earn your business every month with results, not lock-in contracts.',
+      },
+      {
+        icon: 'users',
+        title: 'Dedicated Team',
+        description: 'Work directly with SEO specialists, not account managers who outsource the work.',
+      },
+      {
+        icon: 'sparkles',
+        title: 'AI-Enhanced',
+        description: 'We leverage the latest AI tools for keyword research, content optimization, and competitive analysis.',
+      },
+    ],
+  },
+  fr: {
+    title: 'Pourquoi Choisir MyDigipal pour le SEO ?',
+    subtitle: 'Nous combinons des outils propulsés par l\'IA avec une expertise humaine pour délivrer des stratégies SEO qui fonctionnent vraiment. Pas de techniques black-hat, pas de promesses vides—juste de l\'optimisation data-driven qui améliore votre visibilité et génère de vrais résultats business.',
+    aspects: [
+      {
+        icon: 'bar-chart',
+        title: 'Reporting Transparent',
+        description: 'Des rapports mensuels qui ont du sens, avec des KPIs clairs et des recommandations actionnables.',
+      },
+      {
+        icon: 'zap',
+        title: 'Pas de Contrat Long Terme',
+        description: 'Nous gagnons votre confiance chaque mois avec des résultats, pas des engagements contraignants.',
+      },
+      {
+        icon: 'users',
+        title: 'Équipe Dédiée',
+        description: 'Travaillez directement avec des spécialistes SEO, pas des account managers qui sous-traitent.',
+      },
+      {
+        icon: 'sparkles',
+        title: 'Optimisé par l\'IA',
+        description: 'Nous utilisons les derniers outils IA pour la recherche de mots-clés, l\'optimisation du contenu et l\'analyse concurrentielle.',
+      },
+    ],
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="py-24 bg-white">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="max-w-3xl mx-auto text-center mb-16">
+      <h2 class="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
+        {t.title}
+      </h2>
+      <p class="text-lg text-slate-600 leading-relaxed">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- 4 Aspects Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {t.aspects.map((aspect, index) => (
+        <div
+          class={`aspect-card group relative bg-white border-2 ${colors.border} rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2`}
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <!-- Icon -->
+          <div class={`w-14 h-14 rounded-xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center text-white mb-5 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+            <Icon name={aspect.icon} size={28} />
+          </div>
+
+          <!-- Content -->
+          <h3 class="text-lg font-bold text-slate-900 mb-2">
+            {aspect.title}
+          </h3>
+          <p class="text-slate-600 text-sm leading-relaxed">
+            {aspect.description}
+          </p>
+
+          <!-- Hover decoration -->
+          <div class={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${colors.gradient} rounded-b-2xl transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`}></div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .aspect-card {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate');
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
+
+  document.querySelectorAll('.aspect-card').forEach((card) => {
+    observer.observe(card);
+  });
+</script>

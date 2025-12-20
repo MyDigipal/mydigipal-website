@@ -1,0 +1,103 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, color = 'primary' } = Astro.props;
+
+const colorConfig = {
+  seo: {
+    gradient: 'from-emerald-600 via-teal-600 to-green-700',
+    buttonText: 'text-emerald-700',
+    buttonHover: 'hover:bg-emerald-50',
+    subtitleText: 'text-emerald-100',
+    orbColor: 'bg-teal-400/20',
+  },
+  ads: {
+    gradient: 'from-amber-500 via-orange-500 to-red-600',
+    buttonText: 'text-amber-700',
+    buttonHover: 'hover:bg-amber-50',
+    subtitleText: 'text-amber-100',
+    orbColor: 'bg-orange-400/20',
+  },
+  social: {
+    gradient: 'from-violet-600 via-purple-600 to-indigo-700',
+    buttonText: 'text-violet-700',
+    buttonHover: 'hover:bg-violet-50',
+    subtitleText: 'text-violet-100',
+    orbColor: 'bg-purple-400/20',
+  },
+  abm: {
+    gradient: 'from-pink-600 via-rose-600 to-red-700',
+    buttonText: 'text-pink-700',
+    buttonHover: 'hover:bg-pink-50',
+    subtitleText: 'text-pink-100',
+    orbColor: 'bg-rose-400/20',
+  },
+  primary: {
+    gradient: 'from-blue-600 via-indigo-600 to-violet-700',
+    buttonText: 'text-blue-700',
+    buttonHover: 'hover:bg-blue-50',
+    subtitleText: 'text-blue-100',
+    orbColor: 'bg-indigo-400/20',
+  },
+};
+
+const colors = colorConfig[color];
+
+const content = {
+  en: {
+    title: 'Ready to Take Your Digital Activity to the Next Level?',
+    subtitle: 'Try the anti-agency model for a ride. No long-term commitments, just results.',
+    chatButton: 'Chat with us',
+    quoteButton: 'Build your quote',
+  },
+  fr: {
+    title: 'Prêt à Propulser Votre Activité Digitale ?',
+    subtitle: 'Essayez le modèle anti-agence. Pas d\'engagement long terme, juste des résultats.',
+    chatButton: 'Discutons ensemble',
+    quoteButton: 'Construire votre devis',
+  },
+};
+
+const t = content[lang];
+---
+
+<section class={`py-24 bg-gradient-to-br ${colors.gradient} relative overflow-hidden`}>
+  <!-- Background effects -->
+  <div class="absolute inset-0">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+    <div class={`absolute bottom-0 right-1/4 w-80 h-80 ${colors.orbColor} rounded-full blur-3xl`}></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl lg:text-5xl font-bold text-white mb-6">
+        {t.title}
+      </h2>
+      <p class={`text-lg ${colors.subtitleText} mb-10`}>
+        {t.subtitle}
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href={`/${lang}/contact`}
+          class={`inline-flex items-center gap-3 px-8 py-4 bg-white ${colors.buttonText} font-semibold text-lg rounded-xl ${colors.buttonHover} transition-all duration-300 hover:scale-105 shadow-xl shadow-black/20`}
+        >
+          <Icon name="message-circle" size={22} />
+          {t.chatButton}
+        </a>
+        <a
+          href={`/${lang}/calculator`}
+          class="inline-flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-white/40 text-white font-semibold text-lg rounded-xl hover:bg-white/10 hover:border-white/60 transition-all duration-300"
+        >
+          <Icon name="bar-chart" size={22} />
+          {t.quoteButton}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

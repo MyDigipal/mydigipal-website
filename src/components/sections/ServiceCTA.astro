@@ -1,0 +1,37 @@
+---
+import { type Language } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+import Button from '@/components/ui/Button.astro';
+
+interface Props {
+  lang: Language;
+  title?: string;
+  subtitle?: string;
+}
+
+const { lang, title, subtitle } = Astro.props;
+
+const ctaTitle = title || t(lang, 'sections.cta.title');
+const ctaSubtitle = subtitle || t(lang, 'sections.cta.subtitle');
+---
+
+<section class="section bg-slate-900 text-white">
+  <div class="container-custom">
+    <div class="max-w-3xl mx-auto text-center animate-on-scroll">
+      <h2 class="heading-2 text-white mb-4">
+        {ctaTitle}
+      </h2>
+      <p class="body-large text-slate-300 mb-8">
+        {ctaSubtitle}
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <Button href={`/${lang}/contact`} variant="primary" size="lg">
+          {t(lang, 'cta.startProject')}
+        </Button>
+        <Button href={`/${lang}/calculator`} variant="secondary" size="lg" class="border-slate-600 text-white hover:bg-slate-800">
+          {t(lang, 'cta.getQuote')}
+        </Button>
+      </div>
+    </div>
+  </div>
+</section>

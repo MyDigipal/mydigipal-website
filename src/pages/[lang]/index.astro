@@ -1,0 +1,220 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import Card from '@/components/ui/Card.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { type Language, languages } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+// Services data
+const services = [
+  {
+    icon: 'search',
+    color: 'seo' as const,
+    name: t(lang, 'services.seo.name'),
+    description: t(lang, 'services.seo.description'),
+    href: `/${lang}/services/seo`,
+  },
+  {
+    icon: 'trending-up',
+    color: 'ads' as const,
+    name: t(lang, 'services.paidSearch.name'),
+    description: t(lang, 'services.paidSearch.description'),
+    href: `/${lang}/services/google-ads`,
+  },
+  {
+    icon: 'users',
+    color: 'social' as const,
+    name: t(lang, 'services.paidSocial.name'),
+    description: t(lang, 'services.paidSocial.description'),
+    href: `/${lang}/services/paid-social`,
+  },
+  {
+    icon: 'target',
+    color: 'abm' as const,
+    name: t(lang, 'services.abm.name'),
+    description: t(lang, 'services.abm.description'),
+    href: `/${lang}/services/abm`,
+  },
+  {
+    icon: 'zap',
+    color: 'primary' as const,
+    name: t(lang, 'services.contentCreation.name'),
+    description: t(lang, 'services.contentCreation.description'),
+    href: `/${lang}/services/content-creation`,
+  },
+  {
+    icon: 'settings',
+    color: 'primary' as const,
+    name: t(lang, 'services.marketingAutomation.name'),
+    description: t(lang, 'services.marketingAutomation.description'),
+    href: `/${lang}/services/marketing-automation`,
+  },
+];
+
+// Testimonials
+const testimonials = [
+  {
+    quote: lang === 'fr'
+      ? "Nous cherchions à améliorer nos efforts marketing digital, mais nous avions un gap dans l'équipe et plus de 12 outils internes à gérer. MyDigipal a su surmonter ces défis et exécuter avec succès une refonte ABM sur LinkedIn. Très impressionnant."
+      : "We were looking to improve our digital marketing efforts, but had a gap in the marketing team and over 12 internal tools to handle. MyDigipal was able to overcome significant challenges and successfully executed an ABM revamp across LinkedIn. Very impressive.",
+    author: "Brett Rieser",
+    role: "Digital Marketing Director EMEA",
+    company: "Genesys",
+    image: "https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/66a8c81987fc1c9e891a99d4_Brett%20Reiser%20100px.webp",
+  },
+  {
+    quote: lang === 'fr'
+      ? "Dès le départ, l'acuité stratégique de MyDigipal a été inestimable. Ils ne se sont pas contentés de conseiller ; ils se sont immergés dans notre mission. Leurs contributions ont généré des leads à haute valeur et une hausse significative des conversions."
+      : "From the ground up, MyDigipal's strategic acumen was invaluable. They didn't just consult; they immersed themselves in our mission. Their contributions led to a suite of high-value leads, a significant uptick in conversions.",
+    author: "Surbhi Rathore",
+    role: "CEO & Co-founder",
+    company: "Symbl.ai",
+    image: "https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/658bfb59bff3f1c0d42aa4a8_Surbhi%20Rathore.webp",
+  },
+  {
+    quote: lang === 'fr'
+      ? "Les programmes ABM mis en place par MyDigipal ont aidé Quantum Metrics à identifier et se concentrer sur les comptes cibles les plus précieux. Nous avons accéléré le processus de closing de 30% !"
+      : "The ABM programs MyDigipal put in place helped Quantum Metrics identify and focus on the most valuable target accounts. We were able to accelerate the deal closing process by 30%!",
+    author: "Kelly Wright",
+    role: "Global Marketing Director",
+    company: "Quantum Metric",
+    image: "https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/65705ec9b5160a80c8b72771_Kelly%20Wright.webp",
+  },
+];
+
+const colorMap = {
+  seo: 'bg-emerald-50 text-emerald-600',
+  ads: 'bg-amber-50 text-amber-600',
+  social: 'bg-violet-50 text-violet-600',
+  abm: 'bg-pink-50 text-pink-600',
+  primary: 'bg-primary-50 text-primary-600',
+};
+---
+
+<PageLayout lang={lang}>
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden bg-gradient-hero">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-1/2 -right-1/4 w-[800px] h-[800px] rounded-full bg-primary-500/5 blur-3xl"></div>
+      <div class="absolute -bottom-1/2 -left-1/4 w-[600px] h-[600px] rounded-full bg-violet-500/5 blur-3xl"></div>
+    </div>
+
+    <div class="relative container-custom section">
+      <div class="max-w-4xl mx-auto text-center">
+        <Badge variant="primary" class="mb-6 animate-fade-in">
+          <Icon name="sparkles" size={14} />
+          {lang === 'fr' ? 'Marketing Digital Propulsé par l\'IA' : 'AI-Powered Digital Marketing'}
+        </Badge>
+
+        <h1 class="heading-display mb-6 animate-fade-in-up">
+          {t(lang, 'site.tagline')}
+        </h1>
+
+        <p class="body-large max-w-2xl mx-auto mb-8 animate-fade-in-up animation-delay-100">
+          {lang === 'fr'
+            ? 'Oubliez les processus longs et les engagements contraignants. Bénéficiez d\'une agence vraiment internationale formée de marketeurs passionnés qui travaillent comme une extension de votre équipe interne.'
+            : 'Forget about the fluff or long SLAs. Benefit from a truly international agency formed of passionate marketeers working as an extension of your internal team.'
+          }
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-4 animate-fade-in-up animation-delay-200">
+          <Button href={`/${lang}/contact`} variant="primary" size="lg">
+            {t(lang, 'cta.startProject')}
+          </Button>
+          <Button href={`/${lang}/case-studies`} variant="secondary" size="lg">
+            {t(lang, 'cta.viewCaseStudies')}
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="section bg-slate-50">
+    <div class="container-custom">
+      <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+        <h2 class="heading-2 mb-4">{t(lang, 'sections.services.title')}</h2>
+        <p class="body-large">{t(lang, 'sections.services.subtitle')}</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+        {services.map((service) => (
+          <Card href={service.href} variant="interactive" padding="lg">
+            <div class={`w-12 h-12 rounded-xl ${colorMap[service.color]} flex items-center justify-center mb-4`}>
+              <Icon name={service.icon} size={24} />
+            </div>
+            <h3 class="heading-4 mb-3">{service.name}</h3>
+            <p class="body-small text-slate-500 mb-4">{service.description}</p>
+            <span class="inline-flex items-center gap-1 text-primary-500 font-medium text-sm">
+              {t(lang, 'cta.learnMore')}
+              <Icon name="arrow-right" size={16} />
+            </span>
+          </Card>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="section">
+    <div class="container-custom">
+      <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+        <h2 class="heading-2 mb-4">{t(lang, 'sections.testimonials.title')}</h2>
+        <p class="body-large">{t(lang, 'sections.testimonials.subtitle')}</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children">
+        {testimonials.map((testimonial) => (
+          <Card padding="lg" class="flex flex-col">
+            <div class="flex-1">
+              <Icon name="quote" size={32} class="text-primary-200 mb-4" />
+              <p class="text-slate-600 leading-relaxed mb-6">
+                "{testimonial.quote}"
+              </p>
+            </div>
+            <div class="flex items-center gap-4 pt-4 border-t border-slate-100">
+              <img
+                src={testimonial.image}
+                alt={testimonial.author}
+                class="w-12 h-12 rounded-full object-cover"
+                loading="lazy"
+              />
+              <div>
+                <div class="font-semibold text-slate-900">{testimonial.author}</div>
+                <div class="text-sm text-slate-500">{testimonial.role}, {testimonial.company}</div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Calculator CTA -->
+  <section class="section bg-slate-50">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto text-center animate-on-scroll">
+        <Badge variant="primary" class="mb-6">
+          <Icon name="zap" size={14} />
+          {lang === 'fr' ? 'Devis Instantané' : 'Instant Quote'}
+        </Badge>
+        <h2 class="heading-2 mb-4">{t(lang, 'calculator.title')}</h2>
+        <p class="body-large mb-8">{t(lang, 'calculator.subtitle')}</p>
+        <Button href={`/${lang}/calculator`} variant="primary" size="lg">
+          {t(lang, 'cta.getQuote')}
+        </Button>
+      </div>
+    </div>
+  </section>
+</PageLayout>
