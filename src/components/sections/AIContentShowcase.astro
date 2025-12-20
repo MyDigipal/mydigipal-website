@@ -45,10 +45,9 @@ const content = {
     title: 'AI-Powered Content Production',
     subtitle: 'Our secret weapon: automated content that sounds like YOU, optimized by data, published at scale',
     metrics: [
-      { value: '68', suffix: '%', label: 'Time Saved', description: 'vs. traditional content creation' },
-      { value: '1500', suffix: '+', label: 'Words/Article', description: 'Comprehensive, valuable content' },
-      { value: '2-4', suffix: '/week', label: 'Articles Published', description: 'Consistent publishing schedule' },
-      { value: '+200', suffix: '%', label: 'Traffic Increase', description: 'Average after 6 months' },
+      { value: '+68', suffix: '%', label: 'Organic Traffic', description: 'increase with this process' },
+      { value: '3', suffix: 'h', label: 'Saved per Article', description: 'vs. traditional creation' },
+      { value: '74', suffix: '%', label: 'LLM Visibility', description: 'on ChatGPT, Gemini, Perplexity' },
     ],
     features: {
       title: 'Why Our AI Content Is Different',
@@ -172,10 +171,9 @@ const content = {
     title: 'Production de Contenu IA',
     subtitle: 'Notre arme secrète : du contenu automatisé qui sonne comme VOUS, optimisé par la data, publié à grande échelle',
     metrics: [
-      { value: '68', suffix: '%', label: 'Temps Économisé', description: 'vs. création traditionnelle' },
-      { value: '1500', suffix: '+', label: 'Mots/Article', description: 'Contenu complet et valuable' },
-      { value: '2-4', suffix: '/sem', label: 'Articles Publiés', description: 'Calendrier de publication régulier' },
-      { value: '+200', suffix: '%', label: 'Augmentation Trafic', description: 'Moyenne après 6 mois' },
+      { value: '+68', suffix: '%', label: 'Trafic Organique', description: 'augmentation avec ce process' },
+      { value: '3', suffix: 'h', label: 'Économisées par Article', description: 'vs. création traditionnelle' },
+      { value: '74', suffix: '%', label: 'Visibilité LLM', description: 'sur ChatGPT, Gemini, Perplexity' },
     ],
     features: {
       title: 'Pourquoi Notre Contenu IA Est Différent',
@@ -322,19 +320,19 @@ const t = content[lang];
       </p>
     </div>
 
-    <!-- Metrics Grid -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
+    <!-- Metrics Grid - 3 big cards -->
+    <div class="grid md:grid-cols-3 gap-8 mb-24 max-w-5xl mx-auto">
       {t.metrics.map((metric, index) => (
         <div
-          class="metric-card group relative bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-6 text-center hover:border-slate-700 transition-all duration-300 hover:transform hover:-translate-y-2"
+          class="metric-card group relative bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-8 text-center hover:border-slate-700 transition-all duration-300 hover:transform hover:-translate-y-2"
           style={`animation-delay: ${index * 100}ms`}
           data-value={metric.value}
         >
-          <div class={`text-4xl lg:text-5xl font-bold bg-gradient-to-r ${colors.gradient} bg-clip-text text-transparent mb-2`}>
+          <div class={`text-5xl lg:text-6xl font-bold bg-gradient-to-r ${colors.gradient} bg-clip-text text-transparent mb-3`}>
             <span class="metric-value">0</span>{metric.suffix}
           </div>
-          <div class="text-white font-semibold mb-1">{metric.label}</div>
-          <div class="text-slate-500 text-sm">{metric.description}</div>
+          <div class="text-white font-semibold text-lg mb-2">{metric.label}</div>
+          <div class="text-slate-400">{metric.description}</div>
         </div>
       ))}
     </div>
@@ -366,35 +364,9 @@ const t = content[lang];
         {t.process.title}
       </h3>
       <div class="relative">
-        <!-- Progress bar container with curved arrow -->
-        <div class="hidden lg:block">
-          <!-- Main horizontal progress bar (centered through circles) -->
-          <div class="absolute left-0 right-0 h-1.5 bg-slate-800 rounded-full overflow-visible z-0" style="top: 30px;">
-            <div class={`process-progress-bar h-full bg-gradient-to-r ${colors.gradient} rounded-full`} style="width: 0%; transition: width 0.1s linear;"></div>
-          </div>
-
-          <!-- Curved arrow SVG that extends from step 4 and curves down -->
-          <svg class="curved-arrow absolute w-full h-48 opacity-0 pointer-events-none" style="top: 24px; left: 0;" viewBox="0 0 1200 180" fill="none" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="curvedArrowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#10B981" />
-                <stop offset="100%" stop-color="#14B8A6" />
-              </linearGradient>
-            </defs>
-            <!-- Path: horizontal extension from step 4, then curve down to center -->
-            <path
-              class="curved-arrow-path"
-              d="M 1050 6 L 1150 6 Q 1190 6 1190 46 L 1190 120 Q 1190 160 1150 160 L 620 160"
-              stroke="url(#curvedArrowGradient)"
-              stroke-width="6"
-              stroke-linecap="round"
-              fill="none"
-              stroke-dasharray="800"
-              stroke-dashoffset="800"
-            />
-            <!-- Arrow head pointing left -->
-            <polygon class="curved-arrow-head opacity-0" points="630,150 610,160 630,170" fill="#14B8A6" />
-          </svg>
+        <!-- Progress bar (centered through circles) -->
+        <div class="hidden lg:block absolute left-0 right-0 h-1.5 bg-slate-800 rounded-full overflow-visible z-0" style="top: 30px;">
+          <div class={`process-progress-bar h-full bg-gradient-to-r ${colors.gradient} rounded-full`} style="width: 0%; transition: width 0.1s linear;"></div>
         </div>
 
         <div class="grid lg:grid-cols-4 gap-8 mb-12 relative z-10">
@@ -581,33 +553,6 @@ const t = content[lang];
     box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
   }
 
-  /* Curved arrow animation */
-  .curved-arrow.visible {
-    opacity: 1;
-    transition: opacity 0.3s ease;
-  }
-
-  .curved-arrow.visible .curved-arrow-path {
-    animation: draw-curved-arrow 1s ease forwards;
-  }
-
-  .curved-arrow.visible .curved-arrow-head {
-    animation: show-arrow-head 0.3s ease forwards;
-    animation-delay: 0.9s;
-  }
-
-  @keyframes draw-curved-arrow {
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-
-  @keyframes show-arrow-head {
-    to {
-      opacity: 1;
-    }
-  }
-
   /* Delivery header box animation */
   .delivery-header-box.visible {
     animation: pop-scale 0.5s ease forwards;
@@ -642,22 +587,7 @@ const t = content[lang];
 </style>
 
 <script>
-  // Animated counters
-  const observerCallback = (entries: IntersectionObserverEntry[]) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const card = entry.target as HTMLElement;
-        const valueEl = card.querySelector('.metric-value');
-        const targetValue = parseInt(card.dataset.value || '0');
-
-        if (valueEl && !card.classList.contains('counted')) {
-          card.classList.add('counted');
-          animateValue(valueEl, 0, targetValue, 2000);
-        }
-      }
-    });
-  };
-
+  // Animated counters - improved to always trigger
   function animateValue(el: Element, start: number, end: number, duration: number) {
     const range = end - start;
     const startTime = performance.now();
@@ -677,14 +607,33 @@ const t = content[lang];
     requestAnimationFrame(update);
   }
 
-  const observer = new IntersectionObserver(observerCallback, { threshold: 0.3 });
-  document.querySelectorAll('.metric-card').forEach((card) => observer.observe(card));
+  // Use lower threshold and rootMargin to ensure it triggers
+  const metricsObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const card = entry.target as HTMLElement;
+          const valueEl = card.querySelector('.metric-value');
+          const rawValue = card.dataset.value || '0';
+          // Handle values like "+68" - remove the + for parsing
+          const targetValue = parseInt(rawValue.replace('+', ''));
+
+          if (valueEl && !card.classList.contains('counted')) {
+            card.classList.add('counted');
+            animateValue(valueEl, 0, targetValue, 1500);
+          }
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: '50px 0px' }
+  );
+
+  document.querySelectorAll('.metric-card').forEach((card) => metricsObserver.observe(card));
 
   // Progress bar scroll animation
   const processContainer = document.getElementById('process-container');
   const progressBar = document.querySelector('.process-progress-bar') as HTMLElement;
   const stepCircles = document.querySelectorAll('.step-circle');
-  const curvedArrow = document.querySelector('.curved-arrow');
   const deliveryHeaderBox = document.querySelector('.delivery-header-box');
   const deliveryOptions = document.querySelectorAll('.delivery-option');
 
@@ -700,8 +649,8 @@ const t = content[lang];
     const containerTop = containerRect.top;
 
     // Start filling when container enters viewport, complete when fully visible
-    const startPoint = viewportHeight * 0.7; // Start when 70% down viewport
-    const endPoint = viewportHeight * 0.3; // End when 30% down viewport
+    const startPoint = viewportHeight * 0.7;
+    const endPoint = viewportHeight * 0.3;
 
     // Calculate progress (0 to 1)
     let progress = 0;
@@ -723,28 +672,23 @@ const t = content[lang];
       }
     });
 
-    // When progress reaches 100% (step 4 complete), trigger curved arrow
+    // When progress reaches 100% (step 4 complete), show delivery options
     if (progress >= 1 && !deliveryAnimationTriggered) {
       deliveryAnimationTriggered = true;
 
       // Activate step 4
       stepCircles[3]?.classList.add('active');
 
-      // Show curved arrow
-      setTimeout(() => {
-        curvedArrow?.classList.add('visible');
-      }, 100);
-
-      // Show delivery header box after arrow draws
+      // Show delivery header box immediately
       setTimeout(() => {
         deliveryHeaderBox?.classList.add('visible');
-      }, 1100);
+      }, 200);
 
       // Show delivery options one by one
       deliveryOptions.forEach((option, index) => {
         setTimeout(() => {
           option.classList.add('visible');
-        }, 1500 + (index * 250));
+        }, 600 + (index * 200));
       });
     }
   }
