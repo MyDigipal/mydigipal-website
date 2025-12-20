@@ -1,0 +1,209 @@
+---
+import { type Language } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  serviceId: string;
+  serviceName: string;
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, serviceId, serviceName, color = 'primary' } = Astro.props;
+
+const colorConfig = {
+  seo: { gradient: 'from-emerald-500 to-teal-600', bg: 'bg-emerald-500', light: 'bg-emerald-50 text-emerald-600' },
+  ads: { gradient: 'from-amber-500 to-orange-600', bg: 'bg-amber-500', light: 'bg-amber-50 text-amber-600' },
+  social: { gradient: 'from-violet-500 to-purple-600', bg: 'bg-violet-500', light: 'bg-violet-50 text-violet-600' },
+  abm: { gradient: 'from-pink-500 to-rose-600', bg: 'bg-pink-500', light: 'bg-pink-50 text-pink-600' },
+  primary: { gradient: 'from-blue-500 to-indigo-600', bg: 'bg-blue-500', light: 'bg-blue-50 text-blue-600' },
+};
+
+const colors = colorConfig[color];
+
+const title = lang === 'fr' ? 'Composez Votre Offre' : 'Build Your Package';
+const subtitle = lang === 'fr'
+  ? 'Obtenez une estimation instantanée et personnalisée'
+  : 'Get an instant, personalized estimate';
+
+const packages = [
+  { name: 'Starter', price: '€1,500', description: lang === 'fr' ? 'Idéal pour démarrer' : 'Perfect to get started' },
+  { name: 'Growth', price: '€2,500', description: lang === 'fr' ? 'Le plus populaire' : 'Most popular', popular: true },
+  { name: 'Enterprise', price: '€5,000', description: lang === 'fr' ? 'Pour les grandes ambitions' : 'For big ambitions' },
+];
+
+const addOns = [
+  { id: 'google-ads', name: 'Google Ads', icon: 'trending-up' },
+  { id: 'paid-social', name: 'Paid Social', icon: 'users' },
+  { id: 'content', name: 'Content', icon: 'zap' },
+];
+---
+
+<section class="py-24 bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+  <div class="container-custom">
+    <div class="max-w-5xl mx-auto">
+      <!-- Section Header -->
+      <div class="text-center mb-12">
+        <span class={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${colors.light} text-sm font-medium mb-4`}>
+          <span class="text-lg">🎮</span>
+          {lang === 'fr' ? 'Simulateur' : 'Calculator'}
+        </span>
+        <h2 class="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
+          {title}
+        </h2>
+        <p class="text-lg text-slate-600">
+          {subtitle}
+        </p>
+      </div>
+
+      <!-- Calculator Card -->
+      <div class="relative">
+        <!-- Decorative elements -->
+        <div class={`absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br ${colors.gradient} rounded-3xl opacity-10 blur-xl`}></div>
+        <div class={`absolute -bottom-4 -right-4 w-32 h-32 bg-gradient-to-br ${colors.gradient} rounded-3xl opacity-10 blur-xl`}></div>
+
+        <div class="relative bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden">
+          <!-- Header -->
+          <div class={`bg-gradient-to-r ${colors.gradient} p-6 text-white`}>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                  <Icon name="search" size={24} />
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold">{serviceName}</h3>
+                  <p class="text-white/80 text-sm">{lang === 'fr' ? 'Service sélectionné' : 'Selected service'}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-white/30"></span>
+                <span class="w-3 h-3 rounded-full bg-white/30"></span>
+                <span class="w-3 h-3 rounded-full bg-white/50"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="p-8">
+            <!-- Package Selection -->
+            <div class="mb-8">
+              <label class="block text-sm font-semibold text-slate-700 mb-4">
+                {lang === 'fr' ? 'Choisissez votre niveau' : 'Choose your level'}
+              </label>
+              <div class="grid grid-cols-3 gap-4">
+                {packages.map((pkg, index) => (
+                  <button
+                    class={`package-option relative p-4 rounded-2xl border-2 text-left transition-all duration-300 ${
+                      pkg.popular
+                        ? `border-transparent bg-gradient-to-br ${colors.gradient} text-white shadow-lg scale-105`
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                    }`}
+                    data-index={index}
+                  >
+                    {pkg.popular && (
+                      <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-white text-xs font-bold rounded-full shadow-md text-slate-900">
+                        ⭐ {lang === 'fr' ? 'Populaire' : 'Popular'}
+                      </span>
+                    )}
+                    <div class={`font-bold text-lg ${pkg.popular ? 'text-white' : 'text-slate-900'}`}>
+                      {pkg.name}
+                    </div>
+                    <div class={`text-2xl font-bold my-2 ${pkg.popular ? 'text-white' : colors.light.split(' ')[1]}`}>
+                      {pkg.price}
+                    </div>
+                    <div class={`text-sm ${pkg.popular ? 'text-white/80' : 'text-slate-500'}`}>
+                      {pkg.description}
+                    </div>
+
+                    <!-- Selection indicator -->
+                    <div class={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                      pkg.popular ? 'border-white bg-white' : 'border-slate-300'
+                    }`}>
+                      {pkg.popular && (
+                        <svg class={`w-4 h-4 ${colors.light.split(' ')[1]}`} fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <!-- Add-ons -->
+            <div class="mb-8">
+              <label class="block text-sm font-semibold text-slate-700 mb-4">
+                {lang === 'fr' ? 'Ajoutez d\'autres services' : 'Add more services'}
+              </label>
+              <div class="flex flex-wrap gap-3">
+                {addOns.map((addon) => (
+                  <button
+                    class="addon-btn group flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 transition-all duration-300"
+                    data-addon={addon.id}
+                  >
+                    <span class="w-8 h-8 rounded-lg bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center transition-colors">
+                      <Icon name={addon.icon} size={18} class="text-slate-500" />
+                    </span>
+                    <span class="font-medium text-slate-700">+ {addon.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <!-- Total & CTA -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-slate-100">
+              <div>
+                <span class="text-sm text-slate-500">{lang === 'fr' ? 'Total mensuel estimé' : 'Estimated monthly total'}</span>
+                <div class="text-3xl font-bold text-slate-900">
+                  €2,500<span class="text-lg font-normal text-slate-400">/mo</span>
+                </div>
+              </div>
+
+              <a
+                href={`/${lang}/calculator?service=${serviceId}`}
+                class={`group inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r ${colors.gradient} text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300`}
+              >
+                <span>🚀</span>
+                {t(lang, 'calculator.getQuote')}
+                <Icon name="arrow-right" size={20} class="group-hover:translate-x-1 transition-transform" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .package-option {
+    cursor: pointer;
+  }
+
+  .package-option:hover:not(.scale-105) {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  }
+
+  .addon-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Animation on scroll */
+  section {
+    animation: fade-up 0.8s ease forwards;
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

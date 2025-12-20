@@ -1,10 +1,22 @@
 ---
-import { getCollection } from 'astro:content';
-import ServiceLayout from '@/layouts/ServiceLayout.astro';
-import FeatureGrid from '@/components/sections/FeatureGrid.astro';
-import ProcessSteps from '@/components/sections/ProcessSteps.astro';
-import Testimonial from '@/components/sections/Testimonial.astro';
+import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+import { getCollection } from 'astro:content';
+
+// Components
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+
+// Sections
+import HeroService from '@/components/sections/HeroService.astro';
+import MetricsCounter from '@/components/sections/MetricsCounter.astro';
+import FeaturesShowcase from '@/components/sections/FeaturesShowcase.astro';
+import ProcessTimeline from '@/components/sections/ProcessTimeline.astro';
+import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
+import CalculatorPreview from '@/components/sections/CalculatorPreview.astro';
+import ServiceCTA from '@/components/sections/ServiceCTA.astro';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -23,96 +35,81 @@ export async function getStaticPaths() {
         });
       }
     } catch (e) {
-      // Collection might be empty, that's ok
+      // Collection might be empty
     }
   }
 
   return paths;
 }
 
-interface Props {
-  service: {
-    data: {
-      title: string;
-      description: string;
-      color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
-      hero?: {
-        badge?: string;
-        headline: string;
-        subheadline?: string;
-        image?: string;
-      };
-      metrics?: Array<{ value: string; label: string }>;
-      features?: Array<{ icon?: string; title: string; description: string }>;
-      process?: Array<{ step: number; title: string; description: string }>;
-      testimonial?: {
-        quote: string;
-        author: string;
-        role: string;
-        company: string;
-        image?: string;
-      };
-      calculatorServiceId?: string;
-      seo?: {
-        title?: string;
-        description?: string;
-        image?: string;
-      };
-    };
-    body: string;
-    render: () => Promise<{ Content: any }>;
-  };
-}
-
 const { lang } = Astro.params as { lang: Language };
 const { service } = Astro.props;
 const { Content } = await service.render();
 
-const { title, description, color, hero, metrics, features, process, testimonial, calculatorServiceId, seo } = service.data;
+const {
+  title,
+  description,
+  color = 'primary',
+  hero,
+  metrics,
+  features,
+  process,
+  testimonial,
+  calculatorServiceId,
+  seo
+} = service.data;
 ---
 
-<ServiceLayout
+<PageLayout
   lang={lang}
-  service={{
-    title,
-    description,
-    color,
-    hero,
-    metrics,
-    calculatorServiceId,
-  }}
-  seo={seo}
+  title={seo?.title || title}
+  description={seo?.description || description}
 >
-  <!-- Features Section -->
+  <!-- Hero Section - Immersive -->
+  <HeroService
+    lang={lang}
+    badge={hero?.badge}
+    headline={hero?.headline || title}
+    subheadline={hero?.subheadline}
+    description={description}
+    color={color}
+  />
+
+  <!-- Metrics Counter -->
+  {metrics && metrics.length > 0 && (
+    <MetricsCounter metrics={metrics} color={color} />
+  )}
+
+  <!-- Features Showcase - Varied Styles -->
   {features && features.length > 0 && (
-    <FeatureGrid
-      title={lang === 'fr' ? 'Ce Que Nous Faisons' : 'What We Do'}
-      subtitle={lang === 'fr' ? 'Des solutions complètes pour votre croissance digitale' : 'Comprehensive solutions for your digital growth'}
+    <FeaturesShowcase
+      lang={lang}
       features={features}
+      color={color}
     />
   )}
 
-  <!-- Process Section -->
+  <!-- Process Timeline - Interactive -->
   {process && process.length > 0 && (
-    <ProcessSteps
-      title={lang === 'fr' ? 'Notre Processus' : 'Our Process'}
-      subtitle={lang === 'fr' ? 'Une approche structurée pour des résultats durables' : 'A structured approach for lasting results'}
+    <ProcessTimeline
+      lang={lang}
       steps={process}
+      color={color}
     />
   )}
 
   <!-- Content from MDX -->
-  <section class="section">
-    <div class="container-narrow">
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="prose-custom animate-on-scroll">
         <Content />
       </div>
     </div>
   </section>
 
-  <!-- Testimonial -->
+  <!-- Testimonial Spotlight -->
   {testimonial && (
-    <Testimonial
+    <TestimonialSpotlight
       quote={testimonial.quote}
       author={testimonial.author}
       role={testimonial.role}
@@ -120,4 +117,30 @@ const { title, description, color, hero, metrics, features, process, testimonial
       image={testimonial.image}
     />
   )}
-</ServiceLayout>
+
+  <!-- Calculator Preview -->
+  {calculatorServiceId && (
+    <CalculatorPreview
+      lang={lang}
+      serviceId={calculatorServiceId}
+      serviceName={title}
+      color={color}
+    />
+  )}
+
+  <!-- Final CTA -->
+  <ServiceCTA lang={lang} />
+</PageLayout>
+
+<style>
+  /* Page-specific animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
+  }
+</style>

@@ -1,0 +1,151 @@
+---
+interface Metric {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  metrics: Metric[];
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { metrics, color = 'primary' } = Astro.props;
+
+const colorConfig = {
+  seo: 'from-emerald-500 to-teal-600',
+  ads: 'from-amber-500 to-orange-600',
+  social: 'from-violet-500 to-purple-600',
+  abm: 'from-pink-500 to-rose-600',
+  primary: 'from-blue-500 to-indigo-600',
+};
+
+const gradient = colorConfig[color];
+---
+
+<section class={`relative py-16 bg-gradient-to-r ${gradient} overflow-hidden`}>
+  <!-- Background pattern -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjEiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPjwvZz48L3N2Zz4=')]"></div>
+  </div>
+
+  <!-- Floating shapes -->
+  <div class="absolute top-0 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+  <div class="absolute bottom-0 right-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse animation-delay-1000"></div>
+
+  <div class="relative container-custom">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+      {metrics.map((metric, index) => (
+        <div
+          class="metric-card group text-center p-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-default"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <!-- Value with counter animation -->
+          <div class="relative mb-3">
+            <span
+              class="metric-value text-4xl lg:text-5xl font-bold text-white"
+              data-value={metric.value}
+            >
+              {metric.value}
+            </span>
+            <!-- Glow effect on hover -->
+            <div class="absolute inset-0 bg-white/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </div>
+
+          <!-- Progress bar -->
+          <div class="w-full h-1 bg-white/20 rounded-full mb-3 overflow-hidden">
+            <div
+              class="metric-bar h-full bg-white rounded-full"
+              style={`width: 0%; animation-delay: ${index * 100 + 500}ms`}
+            ></div>
+          </div>
+
+          <!-- Label -->
+          <span class="text-sm font-medium text-white/80 uppercase tracking-wider">
+            {metric.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .metric-card {
+    animation: slide-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  @keyframes slide-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .metric-bar {
+    animation: grow-bar 1.5s ease forwards;
+  }
+
+  @keyframes grow-bar {
+    to {
+      width: 100%;
+    }
+  }
+
+  .animation-delay-1000 {
+    animation-delay: 1000ms;
+  }
+</style>
+
+<script>
+  // Animate counters when in view
+  const observerOptions = {
+    threshold: 0.5,
+    rootMargin: '0px'
+  };
+
+  const animateValue = (element: HTMLElement, start: number, end: number, duration: number, prefix: string = '', suffix: string = '') => {
+    const startTime = performance.now();
+
+    const updateValue = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Easing function
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      const current = Math.floor(start + (end - start) * easeOutQuart);
+
+      element.textContent = prefix + current + suffix;
+
+      if (progress < 1) {
+        requestAnimationFrame(updateValue);
+      } else {
+        element.textContent = prefix + end + suffix;
+      }
+    };
+
+    requestAnimationFrame(updateValue);
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const element = entry.target as HTMLElement;
+        const value = element.dataset.value || '0';
+
+        // Parse the value
+        const prefix = value.match(/^[^0-9]*/)?.[0] || '';
+        const suffix = value.match(/[^0-9]*$/)?.[0] || '';
+        const numericValue = parseInt(value.replace(/[^0-9]/g, '')) || 0;
+
+        animateValue(element, 0, numericValue, 2000, prefix, suffix);
+        observer.unobserve(element);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.metric-value').forEach((el) => {
+    observer.observe(el);
+  });
+</script>
