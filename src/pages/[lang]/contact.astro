@@ -27,12 +27,8 @@ const t = {
       emailPlaceholder: "john@company.com",
       company: "Company",
       companyPlaceholder: "Your Company",
-      budget: "Monthly Budget",
-      budgetPlaceholder: "Select a range",
-      budgetOptions: ["< €2,000", "€2,000 - €5,000", "€5,000 - €10,000", "€10,000 - €20,000", "> €20,000"],
-      service: "Service Interested In",
-      servicePlaceholder: "Select a service",
-      serviceOptions: ["SEO", "Google Ads", "Paid Social", "ABM", "Content Creation", "Marketing Automation", "Full Strategy"],
+      service: "Services Interested In",
+      serviceOptions: ["SEO", "Google Ads", "Paid Social", "ABM", "Content Creation", "Marketing Automation", "Full Strategy", "Other"],
       message: "Tell us about your project",
       messagePlaceholder: "What are your goals? What challenges are you facing?",
       submit: "Send Message",
@@ -102,12 +98,8 @@ const t = {
       emailPlaceholder: "jean@entreprise.com",
       company: "Entreprise",
       companyPlaceholder: "Votre Entreprise",
-      budget: "Budget Mensuel",
-      budgetPlaceholder: "Sélectionnez une fourchette",
-      budgetOptions: ["< 2 000€", "2 000€ - 5 000€", "5 000€ - 10 000€", "10 000€ - 20 000€", "> 20 000€"],
-      service: "Service Souhaité",
-      servicePlaceholder: "Sélectionnez un service",
-      serviceOptions: ["SEO", "Google Ads", "Paid Social", "ABM", "Création de Contenu", "Marketing Automation", "Stratégie Complète"],
+      service: "Services Souhaités",
+      serviceOptions: ["SEO", "Google Ads", "Paid Social", "ABM", "Création de Contenu", "Marketing Automation", "Stratégie Complète", "Autre"],
       message: "Parlez-nous de votre projet",
       messagePlaceholder: "Quels sont vos objectifs ? Quels défis rencontrez-vous ?",
       submit: "Envoyer le Message",
@@ -238,48 +230,34 @@ const seo = {
               </div>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-6">
-              <!-- Company -->
-              <div>
-                <label for="company" class="block text-sm font-medium text-slate-700 mb-2">{t.form.company}</label>
-                <input
-                  type="text"
-                  id="company"
-                  name="company"
-                  placeholder={t.form.companyPlaceholder}
-                  class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
-                />
-              </div>
-
-              <!-- Budget -->
-              <div>
-                <label for="budget" class="block text-sm font-medium text-slate-700 mb-2">{t.form.budget}</label>
-                <select
-                  id="budget"
-                  name="budget"
-                  class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none bg-white"
-                >
-                  <option value="">{t.form.budgetPlaceholder}</option>
-                  {t.form.budgetOptions.map((option) => (
-                    <option value={option}>{option}</option>
-                  ))}
-                </select>
-              </div>
+            <!-- Company -->
+            <div>
+              <label for="company" class="block text-sm font-medium text-slate-700 mb-2">{t.form.company}</label>
+              <input
+                type="text"
+                id="company"
+                name="company"
+                placeholder={t.form.companyPlaceholder}
+                class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+              />
             </div>
 
-            <!-- Service -->
+            <!-- Services (Checkboxes) -->
             <div>
-              <label for="service" class="block text-sm font-medium text-slate-700 mb-2">{t.form.service}</label>
-              <select
-                id="service"
-                name="service"
-                class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none bg-white"
-              >
-                <option value="">{t.form.servicePlaceholder}</option>
+              <label class="block text-sm font-medium text-slate-700 mb-3">{t.form.service}</label>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {t.form.serviceOptions.map((option) => (
-                  <option value={option}>{option}</option>
+                  <label class="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      name="services"
+                      value={option}
+                      class="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500 focus:ring-2"
+                    />
+                    <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">{option}</span>
+                  </label>
                 ))}
-              </select>
+              </div>
             </div>
 
             <!-- Message -->
@@ -408,27 +386,32 @@ const seo = {
         </p>
       </div>
 
-      <!-- Team Grid - Placeholder for photos -->
+      <!-- Team Grid -->
       <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
         {[
-          { name: "Paul Andre", role: "CEO & Founder" },
-          { name: "Alizee Varloud", role: "ABM Lead" },
-          { name: "Bruce Eidsvik", role: "ABM Leader" },
-          { name: "Victoria Doherty", role: "Account Manager" },
-          { name: "Callum Dunbar", role: "Digital Marketing Manager" },
-          { name: "Jordan Langlois", role: "Digital Marketing Manager" },
-          { name: "Alexandre Echement", role: "Digital Marketing Manager" },
-          { name: "Diksha Mishra", role: "Performance Marketing Manager" },
-          { name: "Amna Khan", role: "Design Lead" },
-          { name: "Heather Mann", role: "Digital Marketing Executive" },
-          { name: "Juliette Joire", role: "Digital Marketing Executive" },
-          { name: "Shuai Yang", role: "Digital Marketing Executive" },
-          { name: "Sophie Roe", role: "Digital Marketing Executive" },
-          { name: "Chirag Solanki", role: "Marketing Ops Manager" },
-        ].map((member, index) => (
+          { name: "Paul Andre", role: "CEO & Founder", image: "/images/team/Team_Paul_Andre.webp" },
+          { name: "Alizee Varloud", role: "ABM Lead", image: "/images/team/Team_Alizee_Varloud.avif" },
+          { name: "Bruce Eidsvik", role: "ABM Leader", image: "/images/team/Team_Bruce_Eidsvik.avif" },
+          { name: "Victoria Doherty", role: "Account Manager", image: "/images/team/Team_Victoria_Doherty.avif" },
+          { name: "Callum Dunbar", role: "Digital Marketing Manager", image: "/images/team/Team_Callum_Dunbar.avif" },
+          { name: "Jordan Langlois", role: "Digital Marketing Manager", image: "/images/team/Team_Jordan_Langlois.avif" },
+          { name: "Alexandre Echement", role: "Digital Marketing Manager", image: "/images/team/Team_Alexandre_Echement.avif" },
+          { name: "Diksha Mishra", role: "Performance Marketing Manager", image: "/images/team/Team_Diksha_Mishra.avif" },
+          { name: "Amna Khan", role: "Design Lead", image: "/images/team/Team_Amna_Khan.avif" },
+          { name: "Heather Mann", role: "Digital Marketing Executive", image: "/images/team/Team_Heather_Mann.avif" },
+          { name: "Juliette Joire", role: "Digital Marketing Executive", image: "/images/team/Team_Juliette_Joire.avif" },
+          { name: "Shuai Yang", role: "Digital Marketing Executive", image: "/images/team/Team_Shuai_Yang.avif" },
+          { name: "Sophie Roe", role: "Digital Marketing Executive", image: "/images/team/Team_Sophie_Roe.avif" },
+          { name: "Chirag Solanki", role: "Marketing Ops Manager", image: "/images/team/Team_Chirag_Solanki.avif" },
+        ].map((member) => (
           <div class="text-center group">
-            <div class="aspect-square bg-gradient-to-br from-slate-200 to-slate-300 rounded-xl mb-3 overflow-hidden flex items-center justify-center">
-              <span class="text-4xl font-bold text-slate-400">{member.name.split(' ').map(n => n[0]).join('')}</span>
+            <div class="aspect-square rounded-xl mb-3 overflow-hidden">
+              <img
+                src={member.image}
+                alt={member.name}
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
             </div>
             <h3 class="font-semibold text-slate-900 text-sm">{member.name}</h3>
             <p class="text-slate-500 text-xs">{member.role}</p>
@@ -460,12 +443,18 @@ const seo = {
     errorMsg?.classList.add('hidden');
 
     const formData = new FormData(form);
+
+    // Collect all checked services
+    const services = [];
+    form.querySelectorAll('input[name="services"]:checked').forEach((checkbox) => {
+      services.push(checkbox.value);
+    });
+
     const data = {
       name: formData.get('name'),
       email: formData.get('email'),
       company: formData.get('company'),
-      budget: formData.get('budget'),
-      service: formData.get('service'),
+      services: services,
       message: formData.get('message'),
       timestamp: new Date().toISOString(),
       source: window.location.href,
