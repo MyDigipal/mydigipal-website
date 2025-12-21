@@ -1,0 +1,257 @@
+---
+/**
+ * TrustedBy - Animated client logo showcase
+ * Infinite scrolling carousel with hover effects
+ */
+import type { Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+  variant?: 'default' | 'compact' | 'featured';
+  showCount?: boolean;
+}
+
+const { lang, variant = 'default', showCount = true } = Astro.props;
+
+const content = {
+  en: {
+    badge: 'Trusted Partners',
+    title: 'Trusted by Industry Leaders',
+    subtitle: 'From startups to enterprises, we help businesses grow with data-driven digital marketing.',
+    count: '50+',
+    countLabel: 'Happy Clients',
+    cta: 'Join them →',
+  },
+  fr: {
+    badge: 'Partenaires de Confiance',
+    title: 'Ils Nous Font Confiance',
+    subtitle: 'Des startups aux grandes entreprises, nous aidons les businesses à croître avec du marketing digital data-driven.',
+    count: '50+',
+    countLabel: 'Clients Satisfaits',
+    cta: 'Rejoignez-les →',
+  },
+};
+
+const t = content[lang] || content.en;
+
+// Client logos with clean names - using the best quality versions
+const clients = [
+  { name: 'Genesys', logo: '/images/Client logo/genesys.png', industry: 'B2B Tech' },
+  { name: 'Quantum Metrics', logo: '/images/Client logo/quantum.png', industry: 'B2B SaaS' },
+  { name: 'Theobald', logo: '/images/Client logo/theobald.png', industry: 'B2B Tech' },
+  { name: 'OpenText', logo: '/images/Client logo/opentext-logo.png', industry: 'B2B Enterprise' },
+  { name: 'Edenred', logo: '/images/Client logo/Edenred_Logo_(depuis_2017).png', industry: 'B2B Services' },
+  { name: 'Ford', logo: '/images/Client logo/ford.png', industry: 'Automotive' },
+  { name: 'Vulcain', logo: '/images/Client logo/logo-VULCAIN.jpg', industry: 'Engineering' },
+  { name: 'Omilia', logo: '/images/Client logo/omilia.png', industry: 'B2B AI' },
+  { name: 'Veesion', logo: '/images/Client logo/veesion.png', industry: 'B2B AI' },
+  { name: 'Ubiquiti', logo: '/images/Client logo/ubiquiti.png', industry: 'B2B Tech' },
+  { name: 'Flighty', logo: '/images/Client logo/Flighty.png', industry: 'B2C App' },
+  { name: 'NuHerbs', logo: '/images/Client logo/nuherbs.png', industry: 'B2B Health' },
+  { name: 'FastSensor', logo: '/images/Client logo/fastsensor.png', industry: 'B2B IoT' },
+  { name: 'Frontline', logo: '/images/Client logo/frontline.png', industry: 'B2B' },
+  { name: 'Altitude', logo: '/images/Client logo/Altitude.png', industry: 'B2B' },
+  { name: 'Solita', logo: '/images/Client logo/Solita.png', industry: 'B2B Tech' },
+  { name: 'Unbound', logo: '/images/Client logo/Unbound.png', industry: 'B2B' },
+  { name: 'On Train', logo: '/images/Client logo/on train.png', industry: 'Transport' },
+  { name: 'CBCM', logo: '/images/Client logo/CBCM.png', industry: 'Finance' },
+  { name: 'Goola', logo: '/images/Client logo/goola.png', industry: 'B2C' },
+];
+
+// Duplicate for seamless loop
+const duplicatedClients = [...clients, ...clients];
+---
+
+<section class={`trusted-by overflow-hidden ${variant === 'compact' ? 'py-12' : 'section'} bg-slate-50`}>
+  <div class="container-custom">
+    {variant !== 'compact' && (
+      <div class="text-center max-w-3xl mx-auto mb-12 animate-on-scroll">
+        <span class="badge-primary mb-4">{t.badge}</span>
+        <h2 class="heading-2 mb-4">{t.title}</h2>
+        <p class="body-large text-slate-600">{t.subtitle}</p>
+      </div>
+    )}
+
+    {variant === 'compact' && (
+      <div class="flex items-center justify-between mb-8 animate-on-scroll">
+        <h3 class="heading-4 text-slate-500">{t.title}</h3>
+        {showCount && (
+          <div class="flex items-center gap-2">
+            <span class="text-3xl font-bold text-primary-500">{t.count}</span>
+            <span class="text-sm text-slate-500">{t.countLabel}</span>
+          </div>
+        )}
+      </div>
+    )}
+
+    {/* Stats row for default variant */}
+    {variant === 'default' && showCount && (
+      <div class="flex justify-center gap-12 mb-12 animate-on-scroll">
+        <div class="text-center">
+          <div class="text-5xl font-bold text-primary-500 counter" data-target="50">50+</div>
+          <div class="text-sm text-slate-500 mt-1">{t.countLabel}</div>
+        </div>
+        <div class="text-center">
+          <div class="text-5xl font-bold text-slate-900">12+</div>
+          <div class="text-sm text-slate-500 mt-1">{lang === 'fr' ? 'Industries' : 'Industries'}</div>
+        </div>
+        <div class="text-center">
+          <div class="text-5xl font-bold text-slate-900">8+</div>
+          <div class="text-sm text-slate-500 mt-1">{lang === 'fr' ? 'Pays' : 'Countries'}</div>
+        </div>
+      </div>
+    )}
+  </div>
+
+  {/* Infinite Scrolling Carousel */}
+  <div class="logo-carousel relative">
+    {/* Gradient masks */}
+    <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none"></div>
+
+    {/* First row - scrolls left */}
+    <div class="logo-track scroll-left flex gap-8 py-4">
+      {duplicatedClients.map((client) => (
+        <div class="logo-item group flex-shrink-0">
+          <div class="w-40 h-20 bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-4 transition-all duration-300 group-hover:shadow-lg group-hover:scale-110 group-hover:border-primary-500/30">
+            <img
+              src={client.logo}
+              alt={client.name}
+              class="max-w-full max-h-full object-contain filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+              loading="lazy"
+            />
+          </div>
+          <div class="text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs text-slate-500">{client.name}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Second row - scrolls right (only for default variant) */}
+    {variant === 'default' && (
+      <div class="logo-track scroll-right flex gap-8 py-4 mt-4">
+        {[...duplicatedClients].reverse().map((client) => (
+          <div class="logo-item group flex-shrink-0">
+            <div class="w-40 h-20 bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-4 transition-all duration-300 group-hover:shadow-lg group-hover:scale-110 group-hover:border-primary-500/30">
+              <img
+                src={client.logo}
+                alt={client.name}
+                class="max-w-full max-h-full object-contain filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                loading="lazy"
+              />
+            </div>
+            <div class="text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-xs text-slate-500">{client.name}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+
+  {/* CTA for default variant */}
+  {variant === 'default' && (
+    <div class="container-custom mt-12 text-center animate-on-scroll">
+      <a
+        href={`/${lang}/contact`}
+        class="inline-flex items-center gap-2 text-primary-500 font-medium hover:text-primary-600 transition-colors group"
+      >
+        {t.cta}
+        <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </a>
+    </div>
+  )}
+</section>
+
+<style>
+  /* Infinite scroll animation */
+  .logo-track {
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  .scroll-left {
+    animation: scroll-left 40s linear infinite;
+  }
+
+  .scroll-right {
+    animation: scroll-right 45s linear infinite;
+  }
+
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes scroll-right {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  /* Pause on hover */
+  .logo-carousel:hover .logo-track {
+    animation-play-state: paused;
+  }
+
+  /* Logo item hover effect */
+  .logo-item {
+    perspective: 1000px;
+  }
+
+  .logo-item:hover {
+    z-index: 10;
+  }
+
+  /* Smooth transition for grayscale */
+  .logo-item img {
+    will-change: filter, opacity;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .scroll-left {
+      animation-duration: 25s;
+    }
+    .scroll-right {
+      animation-duration: 30s;
+    }
+    .logo-item > div {
+      width: 120px;
+      height: 60px;
+    }
+  }
+</style>
+
+<script>
+  // Pause animation when not in viewport for performance
+  const carousel = document.querySelector('.logo-carousel');
+  if (carousel) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const tracks = entry.target.querySelectorAll('.logo-track');
+          tracks.forEach((track) => {
+            if (entry.isIntersecting) {
+              (track as HTMLElement).style.animationPlayState = 'running';
+            } else {
+              (track as HTMLElement).style.animationPlayState = 'paused';
+            }
+          });
+        });
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(carousel);
+  }
+</script>
