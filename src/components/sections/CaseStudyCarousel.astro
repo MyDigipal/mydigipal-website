@@ -1,0 +1,333 @@
+---
+/**
+ * CaseStudyCarousel - Displays case studies in a carousel with navigation arrows
+ * Can be configured with different case studies for each service page
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface CaseStudy {
+  id: string;
+  title: string;
+  titleFr: string;
+  subtitle: string;
+  subtitleFr: string;
+  description: string;
+  descriptionFr: string;
+  image: string;
+  logo?: string;
+  metrics?: { value: string; label: string; labelFr: string }[];
+  tags: string[];
+  tagsFr: string[];
+}
+
+interface Props {
+  lang: Language;
+  caseStudyIds: string[];
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, caseStudyIds, color = 'primary' } = Astro.props;
+
+// All available case studies
+const allCaseStudies: Record<string, CaseStudy> = {
+  'symbl': {
+    id: 'symbl',
+    title: 'Symbl.ai: From Code to Digital Campaigns',
+    titleFr: 'Symbl.ai : Du Code aux Campagnes Digitales',
+    subtitle: 'AI Meets Digital Craft',
+    subtitleFr: 'L\'IA Rencontre le Craft Digital',
+    description: 'How we helped Symbl.ai transform their B2B marketing with targeted paid social campaigns, generating qualified leads in the conversational AI space.',
+    descriptionFr: 'Comment nous avons aidé Symbl.ai à transformer leur marketing B2B avec des campagnes paid social ciblées, générant des leads qualifiés dans l\'espace de l\'IA conversationnelle.',
+    image: '/images/Creative Design /65a8dfe04be2b6b1e16d864d_Symbl.ai ebook.webp',
+    metrics: [
+      { value: '+156%', label: 'Lead Volume', labelFr: 'Volume de Leads' },
+      { value: '-42%', label: 'Cost per Lead', labelFr: 'Coût par Lead' },
+      { value: '3.5x', label: 'ROAS', labelFr: 'ROAS' },
+    ],
+    tags: ['LinkedIn Ads', 'Content Syndication', 'ABM'],
+    tagsFr: ['LinkedIn Ads', 'Syndication de Contenu', 'ABM'],
+  },
+  'gwi': {
+    id: 'gwi',
+    title: 'GWI: Tailored Campaigns for Targeted Success',
+    titleFr: 'GWI : Campagnes Sur Mesure pour un Succès Ciblé',
+    subtitle: 'Data-Driven Audience Insights',
+    subtitleFr: 'Insights Audience Data-Driven',
+    description: 'Leveraging GWI\'s own audience data platform, we created precision-targeted campaigns that reached decision-makers in the market research industry.',
+    descriptionFr: 'En exploitant la plateforme de données audience de GWI, nous avons créé des campagnes ultra-ciblées qui ont atteint les décideurs dans l\'industrie des études de marché.',
+    image: '/images/Creative Design /65a8dc1315456218895a001e_Landscape Book Mockup 6 large.webp',
+    metrics: [
+      { value: '+89%', label: 'Engagement Rate', labelFr: 'Taux d\'Engagement' },
+      { value: '2.8x', label: 'Pipeline Value', labelFr: 'Valeur Pipeline' },
+      { value: '-35%', label: 'CAC', labelFr: 'CAC' },
+    ],
+    tags: ['Meta Ads', 'LinkedIn', 'Remarketing'],
+    tagsFr: ['Meta Ads', 'LinkedIn', 'Remarketing'],
+  },
+  'genesys': {
+    id: 'genesys',
+    title: 'Genesys: Amplifying Dialogue through ABM',
+    titleFr: 'Genesys : Amplifier le Dialogue via l\'ABM',
+    subtitle: 'Streamlining ABM & Boosting Engagement',
+    subtitleFr: 'Optimisation ABM & Boost d\'Engagement',
+    description: 'A comprehensive ABM strategy that helped Genesys reach key accounts in the customer experience space with personalized messaging across multiple channels.',
+    descriptionFr: 'Une stratégie ABM complète qui a aidé Genesys à atteindre des comptes clés dans l\'espace de l\'expérience client avec des messages personnalisés sur plusieurs canaux.',
+    image: '/images/Creative Design /65a8dde82eab54a31967af7f_genesys ebook.webp',
+    metrics: [
+      { value: '+200%', label: 'Account Engagement', labelFr: 'Engagement Comptes' },
+      { value: '45', label: 'Target Accounts Reached', labelFr: 'Comptes Cibles Atteints' },
+      { value: '4.2x', label: 'ROI', labelFr: 'ROI' },
+    ],
+    tags: ['ABM', 'LinkedIn Ads', 'Display'],
+    tagsFr: ['ABM', 'LinkedIn Ads', 'Display'],
+  },
+  'quantum': {
+    id: 'quantum',
+    title: 'Quantum Metrics: ABM Excellence',
+    titleFr: 'Quantum Metrics : Excellence ABM',
+    subtitle: 'Accelerating Deal Velocity',
+    subtitleFr: 'Accélération de la Vélocité des Deals',
+    description: 'MyDigipal\'s ABM programs helped Quantum Metrics identify and focus on the most valuable target accounts, achieving better lead quality and higher conversion rates.',
+    descriptionFr: 'Les programmes ABM de MyDigipal ont aidé Quantum Metrics à identifier et se concentrer sur les comptes cibles les plus précieux, obtenant une meilleure qualité de leads et des taux de conversion plus élevés.',
+    image: '/images/Creative Design /65a8df66c72a2bb75fc8dfde_Genesys Ebook page.webp',
+    metrics: [
+      { value: '+30%', label: 'Deal Velocity', labelFr: 'Vélocité des Deals' },
+      { value: '+85%', label: 'Lead Quality', labelFr: 'Qualité des Leads' },
+      { value: '3.8x', label: 'ROAS', labelFr: 'ROAS' },
+    ],
+    tags: ['ABM', 'LinkedIn', 'Paid Social'],
+    tagsFr: ['ABM', 'LinkedIn', 'Paid Social'],
+  },
+  'dmd': {
+    id: 'dmd',
+    title: 'DMD Group: Search Domination',
+    titleFr: 'DMD Group : Domination Search',
+    subtitle: 'Maximizing Search ROI',
+    subtitleFr: 'Maximisation du ROI Search',
+    description: 'A comprehensive Google Ads strategy that positioned DMD Group at the top of relevant search queries, driving significant traffic and conversions.',
+    descriptionFr: 'Une stratégie Google Ads complète qui a positionné DMD Group en tête des requêtes de recherche pertinentes, générant un trafic et des conversions significatifs.',
+    image: '/images/Creative Design /65a8de5767ddc6df8a2d773f_Unlock Tax Savings_portrait.webp',
+    metrics: [
+      { value: '+225%', label: 'Traffic Increase', labelFr: 'Augmentation Trafic' },
+      { value: '57%', label: 'Conversion Boost', labelFr: 'Boost Conversions' },
+      { value: '-30%', label: 'Cost per Lead', labelFr: 'Coût par Lead' },
+    ],
+    tags: ['Google Ads', 'Search', 'Performance Max'],
+    tagsFr: ['Google Ads', 'Search', 'Performance Max'],
+  },
+};
+
+// Filter to only requested case studies
+const caseStudies = caseStudyIds
+  .map(id => allCaseStudies[id])
+  .filter(Boolean);
+
+const colorConfig = {
+  seo: { gradient: 'from-emerald-500 to-teal-600', text: 'text-emerald-500', bg: 'bg-emerald-500' },
+  ads: { gradient: 'from-amber-500 to-orange-600', text: 'text-amber-500', bg: 'bg-amber-500' },
+  social: { gradient: 'from-violet-500 to-purple-600', text: 'text-violet-500', bg: 'bg-violet-500' },
+  abm: { gradient: 'from-pink-500 to-rose-600', text: 'text-pink-500', bg: 'bg-pink-500' },
+  primary: { gradient: 'from-blue-500 to-indigo-600', text: 'text-blue-500', bg: 'bg-blue-500' },
+};
+
+const colors = colorConfig[color];
+
+const content = {
+  en: {
+    badge: 'Success Stories',
+    title: 'Real Results from Real Campaigns',
+    subtitle: 'See how we\'ve helped B2B companies achieve their marketing goals',
+    readMore: 'Read Case Study',
+  },
+  fr: {
+    badge: 'Études de Cas',
+    title: 'Résultats Réels de Vraies Campagnes',
+    subtitle: 'Découvrez comment nous avons aidé des entreprises B2B à atteindre leurs objectifs marketing',
+    readMore: 'Lire l\'Étude de Cas',
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="py-24 bg-slate-50 overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 bg-white ${colors.text} shadow-sm`}>
+        <Icon name="award" size={16} />
+        {t.badge}
+      </span>
+      <h2 class="heading-2 mb-4">{t.title}</h2>
+      <p class="body-large text-slate-600">{t.subtitle}</p>
+    </div>
+
+    <!-- Carousel Container -->
+    <div class="relative">
+      <!-- Navigation Arrows -->
+      <button
+        class="carousel-prev absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label="Previous case study"
+      >
+        <Icon name="chevron-left" size={24} />
+      </button>
+      <button
+        class="carousel-next absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label="Next case study"
+      >
+        <Icon name="chevron-right" size={24} />
+      </button>
+
+      <!-- Carousel Track -->
+      <div class="carousel-track overflow-hidden mx-8">
+        <div class="carousel-slides flex transition-transform duration-500 ease-out" style="transform: translateX(0%);">
+          {caseStudies.map((cs, index) => (
+            <div class="carousel-slide flex-shrink-0 w-full px-4" data-index={index}>
+              <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+                <div class="grid lg:grid-cols-2">
+                  <!-- Image Side -->
+                  <div class="relative h-64 lg:h-auto min-h-[300px]">
+                    <img
+                      src={cs.image}
+                      alt={lang === 'fr' ? cs.titleFr : cs.title}
+                      class="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div class={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-20`}></div>
+                  </div>
+
+                  <!-- Content Side -->
+                  <div class="p-8 lg:p-12 flex flex-col justify-center">
+                    <!-- Tags -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      {(lang === 'fr' ? cs.tagsFr : cs.tags).map((tag) => (
+                        <span class={`px-3 py-1 rounded-full text-xs font-medium ${colors.bg} text-white`}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <!-- Title & Subtitle -->
+                    <h3 class="heading-3 mb-2">
+                      {lang === 'fr' ? cs.titleFr : cs.title}
+                    </h3>
+                    <p class={`text-lg font-medium ${colors.text} mb-4`}>
+                      {lang === 'fr' ? cs.subtitleFr : cs.subtitle}
+                    </p>
+
+                    <!-- Description -->
+                    <p class="text-slate-600 mb-6">
+                      {lang === 'fr' ? cs.descriptionFr : cs.description}
+                    </p>
+
+                    <!-- Metrics -->
+                    {cs.metrics && (
+                      <div class="grid grid-cols-3 gap-4 mb-6">
+                        {cs.metrics.map((metric) => (
+                          <div class="text-center">
+                            <div class={`text-2xl font-bold ${colors.text}`}>{metric.value}</div>
+                            <div class="text-xs text-slate-500">{lang === 'fr' ? metric.labelFr : metric.label}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <!-- CTA Button -->
+                    <a
+                      href={`/${lang}/case-studies/${cs.id}`}
+                      class={`inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r ${colors.gradient} text-white font-medium hover:shadow-lg transition-shadow self-start`}
+                    >
+                      {t.readMore}
+                      <Icon name="arrow-right" size={18} />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Dots Indicator -->
+      <div class="flex justify-center gap-2 mt-8">
+        {caseStudies.map((_, index) => (
+          <button
+            class={`carousel-dot w-3 h-3 rounded-full transition-all ${index === 0 ? colors.bg : 'bg-slate-300'}`}
+            data-index={index}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function initCarousel() {
+    const track = document.querySelector('.carousel-slides') as HTMLElement;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const prevBtn = document.querySelector('.carousel-prev') as HTMLButtonElement;
+    const nextBtn = document.querySelector('.carousel-next') as HTMLButtonElement;
+    const dots = document.querySelectorAll('.carousel-dot');
+
+    if (!track || slides.length === 0) return;
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    function updateCarousel() {
+      // Update track position
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+      // Update dots
+      dots.forEach((dot, index) => {
+        if (index === currentIndex) {
+          dot.classList.remove('bg-slate-300');
+          dot.classList.add('bg-violet-500');
+        } else {
+          dot.classList.remove('bg-violet-500');
+          dot.classList.add('bg-slate-300');
+        }
+      });
+
+      // Update button states
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === totalSlides - 1;
+    }
+
+    prevBtn?.addEventListener('click', () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateCarousel();
+      }
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      if (currentIndex < totalSlides - 1) {
+        currentIndex++;
+        updateCarousel();
+      }
+    });
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        currentIndex = index;
+        updateCarousel();
+      });
+    });
+
+    // Initialize
+    updateCarousel();
+  }
+
+  // Run on load and after navigation
+  initCarousel();
+  document.addEventListener('astro:after-swap', initCarousel);
+</script>
+
+<style>
+  .carousel-track {
+    /* Ensure smooth scrolling on touch devices */
+    -webkit-overflow-scrolling: touch;
+  }
+</style>

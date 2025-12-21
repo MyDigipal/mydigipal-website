@@ -35,6 +35,9 @@ import PaidSocialServices from '@/components/sections/PaidSocialServices.astro';
 // Generic FAQ component
 import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
 
+// Case Study Carousel
+import CaseStudyCarousel from '@/components/sections/CaseStudyCarousel.astro';
+
 // Social proof
 import TrustedBy from '@/components/sections/TrustedBy.astro';
 
@@ -151,7 +154,15 @@ const isPaidSocialService = slug === 'paid-social';
 
       <!-- Process Timeline -->
       <PaidSocialProcess lang={lang} color={color} />
+
+      <!-- Case Studies Carousel -->
+      <CaseStudyCarousel lang={lang} caseStudyIds={['symbl', 'gwi', 'genesys']} color={color} />
     </>
+  )}
+
+  <!-- Google Ads Case Studies -->
+  {isGoogleAdsService && (
+    <CaseStudyCarousel lang={lang} caseStudyIds={['dmd', 'quantum', 'genesys']} color={color} />
   )}
 
   <!-- Calculator Preview (Build Your Package) -->
