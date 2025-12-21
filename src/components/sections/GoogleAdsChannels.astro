@@ -1,0 +1,216 @@
+---
+/**
+ * GoogleAdsChannels - Interactive showcase of Google Ads channels
+ * Visual cards showing Search, Display/pMax, Shopping with hover effects
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, color = 'ads' } = Astro.props;
+
+const content = {
+  en: {
+    badge: 'Google Ads Ecosystem',
+    title: 'Master Every Google Ads Channel',
+    subtitle: 'Reach your customers wherever they are in their buying journey with the right ad format.',
+    channels: [
+      {
+        id: 'search',
+        icon: 'search',
+        name: 'Search Ads',
+        description: 'Capture high-intent users actively searching for your products or services. Appear at the top of Google results when it matters most.',
+        stats: 'Up to 65% of clicks',
+        features: ['Keyword targeting', 'Ad extensions', 'Smart bidding', 'RSAs'],
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-50',
+        iconBg: 'bg-blue-500',
+      },
+      {
+        id: 'pmax',
+        icon: 'zap',
+        name: 'Performance Max',
+        description: 'AI-powered campaigns that reach customers across all Google channels—Search, Display, YouTube, Gmail, Maps, and Discover.',
+        stats: '5+ channels unified',
+        features: ['AI optimization', 'Asset groups', 'Audience signals', 'Auto-creative'],
+        color: 'from-amber-500 to-orange-500',
+        bgColor: 'bg-amber-50',
+        iconBg: 'bg-amber-500',
+      },
+      {
+        id: 'shopping',
+        icon: 'shopping-cart',
+        name: 'Shopping Ads',
+        description: 'Showcase your products with images, prices, and details directly in search results. Perfect for e-commerce businesses.',
+        stats: '+30% higher CTR',
+        features: ['Product feeds', 'Local inventory', 'Price benchmarks', 'Smart Shopping'],
+        color: 'from-emerald-500 to-teal-500',
+        bgColor: 'bg-emerald-50',
+        iconBg: 'bg-emerald-500',
+      },
+      {
+        id: 'display',
+        icon: 'monitor',
+        name: 'Display & Video',
+        description: 'Build brand awareness and retarget visitors across 3M+ websites and YouTube with visually engaging ads.',
+        stats: '90% web reach',
+        features: ['Remarketing', 'YouTube ads', 'Responsive display', 'Custom audiences'],
+        color: 'from-violet-500 to-purple-500',
+        bgColor: 'bg-violet-50',
+        iconBg: 'bg-violet-500',
+      },
+    ],
+  },
+  fr: {
+    badge: 'Écosystème Google Ads',
+    title: 'Maîtrisez Chaque Canal Google Ads',
+    subtitle: 'Atteignez vos clients où qu\'ils soient dans leur parcours d\'achat avec le bon format publicitaire.',
+    channels: [
+      {
+        id: 'search',
+        icon: 'search',
+        name: 'Search Ads',
+        description: 'Captez les utilisateurs à forte intention qui recherchent activement vos produits ou services. Apparaissez en tête de Google au moment crucial.',
+        stats: 'Jusqu\'à 65% des clics',
+        features: ['Ciblage par mots-clés', 'Extensions d\'annonce', 'Enchères intelligentes', 'RSAs'],
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-50',
+        iconBg: 'bg-blue-500',
+      },
+      {
+        id: 'pmax',
+        icon: 'zap',
+        name: 'Performance Max',
+        description: 'Campagnes optimisées par l\'IA qui atteignent vos clients sur tous les canaux Google—Search, Display, YouTube, Gmail, Maps et Discover.',
+        stats: '5+ canaux unifiés',
+        features: ['Optimisation IA', 'Groupes d\'assets', 'Signaux d\'audience', 'Créatifs auto'],
+        color: 'from-amber-500 to-orange-500',
+        bgColor: 'bg-amber-50',
+        iconBg: 'bg-amber-500',
+      },
+      {
+        id: 'shopping',
+        icon: 'shopping-cart',
+        name: 'Shopping Ads',
+        description: 'Présentez vos produits avec images, prix et détails directement dans les résultats de recherche. Parfait pour l\'e-commerce.',
+        stats: '+30% de CTR',
+        features: ['Flux produits', 'Inventaire local', 'Benchmarks prix', 'Smart Shopping'],
+        color: 'from-emerald-500 to-teal-500',
+        bgColor: 'bg-emerald-50',
+        iconBg: 'bg-emerald-500',
+      },
+      {
+        id: 'display',
+        icon: 'monitor',
+        name: 'Display & Vidéo',
+        description: 'Développez la notoriété de marque et reciblez les visiteurs sur 3M+ de sites et YouTube avec des annonces visuelles engageantes.',
+        stats: '90% de portée web',
+        features: ['Remarketing', 'YouTube ads', 'Display responsive', 'Audiences custom'],
+        color: 'from-violet-500 to-purple-500',
+        bgColor: 'bg-violet-50',
+        iconBg: 'bg-violet-500',
+      },
+    ],
+  },
+};
+
+const t = content[lang] || content.en;
+---
+
+<section class="section bg-slate-50 overflow-hidden" data-color={color}>
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <span class="badge-ads mb-4">{t.badge}</span>
+      <h2 class="heading-2 mb-4">{t.title}</h2>
+      <p class="body-large text-slate-600">{t.subtitle}</p>
+    </div>
+
+    <!-- Channels Grid -->
+    <div class="grid md:grid-cols-2 gap-6 lg:gap-8">
+      {t.channels.map((channel, index) => (
+        <div
+          class="channel-card group relative bg-white rounded-2xl border border-slate-200 p-6 lg:p-8 transition-all duration-500 hover:shadow-xl hover:-translate-y-2 cursor-pointer overflow-hidden animate-on-scroll"
+          style={`animation-delay: ${index * 100}ms`}
+          data-channel={channel.id}
+        >
+          <!-- Gradient overlay on hover -->
+          <div class={`absolute inset-0 bg-gradient-to-br ${channel.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+
+          <!-- Icon & Header -->
+          <div class="relative flex items-start gap-4 mb-6">
+            <div class={`${channel.iconBg} w-14 h-14 rounded-xl flex items-center justify-center text-white transform group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
+              <Icon name={channel.icon} class="w-7 h-7" />
+            </div>
+            <div class="flex-1">
+              <h3 class="heading-4 mb-1 group-hover:text-amber-600 transition-colors">{channel.name}</h3>
+              <span class={`inline-flex items-center gap-1 text-sm font-semibold bg-gradient-to-r ${channel.color} bg-clip-text text-transparent`}>
+                {channel.stats}
+              </span>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <p class="relative text-slate-600 mb-6 leading-relaxed">{channel.description}</p>
+
+          <!-- Features Tags -->
+          <div class="relative flex flex-wrap gap-2">
+            {channel.features.map((feature) => (
+              <span class={`${channel.bgColor} text-slate-700 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-300 group-hover:scale-105`}>
+                {feature}
+              </span>
+            ))}
+          </div>
+
+          <!-- Animated border on hover -->
+          <div class="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-amber-500/30 transition-all duration-300 pointer-events-none"></div>
+
+          <!-- Decorative element -->
+          <div class="absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-br from-amber-500/10 to-orange-500/10 transform scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Connection visualization -->
+    <div class="mt-12 text-center animate-on-scroll">
+      <div class="inline-flex items-center gap-3 bg-white rounded-full px-6 py-3 shadow-soft border border-slate-100">
+        <div class="flex -space-x-2">
+          <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs">S</div>
+          <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white text-xs">P</div>
+          <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs">Sh</div>
+          <div class="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center text-white text-xs">D</div>
+        </div>
+        <span class="text-slate-600 font-medium">
+          {lang === 'fr' ? 'Tous les canaux travaillent ensemble' : 'All channels work together'}
+        </span>
+        <Icon name="arrow-right" class="w-5 h-5 text-amber-500" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .channel-card {
+    will-change: transform, box-shadow;
+  }
+
+  /* Stagger animation for features */
+  .channel-card:hover .flex-wrap span {
+    animation: pop 0.3s ease forwards;
+  }
+
+  .channel-card:hover .flex-wrap span:nth-child(1) { animation-delay: 0ms; }
+  .channel-card:hover .flex-wrap span:nth-child(2) { animation-delay: 50ms; }
+  .channel-card:hover .flex-wrap span:nth-child(3) { animation-delay: 100ms; }
+  .channel-card:hover .flex-wrap span:nth-child(4) { animation-delay: 150ms; }
+
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1.05); }
+  }
+</style>

@@ -21,6 +21,11 @@ import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.ast
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import FAQSection from '@/components/sections/FAQSection.astro';
 
+// Google Ads specific sections
+import GoogleAdsChannels from '@/components/sections/GoogleAdsChannels.astro';
+import WhyGoogleAds from '@/components/sections/WhyGoogleAds.astro';
+import GoogleAdsProcess from '@/components/sections/GoogleAdsProcess.astro';
+
 export async function getStaticPaths() {
   const paths = [];
 
@@ -61,6 +66,8 @@ const {
 
 // Check if this is the SEO service page
 const isSEOService = slug === 'seo';
+// Check if this is the Google Ads service page
+const isGoogleAdsService = slug === 'google-ads';
 ---
 
 <PageLayout
@@ -99,6 +106,20 @@ const isSEOService = slug === 'seo';
 
       <!-- Phase 3: AI Content Production (Immersive Showcase with CTA) -->
       <AIContentShowcase lang={lang} color={color} />
+    </>
+  )}
+
+  <!-- Google Ads Service: Interactive Sections -->
+  {isGoogleAdsService && (
+    <>
+      <!-- Why Google Ads - Educational Section -->
+      <WhyGoogleAds lang={lang} color={color} />
+
+      <!-- Google Ads Channels - Visual Showcase -->
+      <GoogleAdsChannels lang={lang} color={color} />
+
+      <!-- Process Timeline -->
+      <GoogleAdsProcess lang={lang} color={color} />
     </>
   )}
 
