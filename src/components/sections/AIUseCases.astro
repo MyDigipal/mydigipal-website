@@ -1,0 +1,159 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "AI Applications",
+    headline: "What We Build",
+    subheadline: "Real solutions for real business challenges",
+    useCases: [
+      {
+        icon: "message-circle",
+        title: "AI Assistants & Chatbots",
+        description: "Intelligent assistants that handle customer queries, internal requests, bookings, searches, and more - so your team can focus on high-value work.",
+        examples: ["Customer service chatbots", "Internal HR assistants", "Sales qualification bots", "Booking & scheduling agents"],
+      },
+      {
+        icon: "zap",
+        title: "Automated Workflows",
+        description: "Remove repetitive tasks from your team's plate. From report generation to data entry, decision flows to email triage - AI handles the mundane.",
+        examples: ["Report generation", "Document processing", "Email triage & routing", "Data entry automation"],
+      },
+      {
+        icon: "database",
+        title: "RAG & Knowledge Systems",
+        description: "Knowledge often leaves with employees. Capture institutional knowledge in searchable AI systems that make information accessible to everyone.",
+        examples: ["Internal knowledge bases", "Document Q&A systems", "Policy & procedure assistants", "Training material search"],
+      },
+      {
+        icon: "bar-chart",
+        title: "Data Analysis & Insights",
+        description: "Turn raw data into actionable intelligence. AI can identify patterns, surface insights, and generate reports that would take humans hours or days.",
+        examples: ["Automated reporting", "Trend analysis", "Anomaly detection", "Predictive analytics"],
+      },
+      {
+        icon: "edit",
+        title: "Content Generation",
+        description: "AI-powered content creation that maintains your brand voice. From marketing copy to documentation, personalized emails to social posts.",
+        examples: ["Marketing copy", "Email personalization", "Documentation", "Social media content"],
+      },
+      {
+        icon: "code",
+        title: "System Integration",
+        description: "AI that works inside your existing tools, not alongside them. We integrate capabilities directly into your CRM, ERP, or custom applications.",
+        examples: ["CRM integration", "ERP automation", "Website chatbots", "Mobile app AI features"],
+      },
+    ],
+  },
+  fr: {
+    badge: "Applications IA",
+    headline: "Ce Que Nous Construisons",
+    subheadline: "Des solutions réelles pour des défis business réels",
+    useCases: [
+      {
+        icon: "message-circle",
+        title: "Assistants IA & Chatbots",
+        description: "Assistants intelligents qui gèrent les requêtes clients, demandes internes, réservations, recherches et plus - pour que votre équipe se concentre sur le travail à forte valeur.",
+        examples: ["Chatbots service client", "Assistants RH internes", "Bots de qualification commerciale", "Agents de réservation"],
+      },
+      {
+        icon: "zap",
+        title: "Workflows Automatisés",
+        description: "Libérez votre équipe des tâches répétitives. De la génération de rapports à la saisie de données, des flux décisionnels au tri d'emails - l'IA gère le routinier.",
+        examples: ["Génération de rapports", "Traitement de documents", "Tri & routage d'emails", "Automatisation de saisie"],
+      },
+      {
+        icon: "database",
+        title: "RAG & Systèmes de Connaissances",
+        description: "La connaissance part souvent avec les employés. Capturez le savoir institutionnel dans des systèmes IA interrogeables accessibles à tous.",
+        examples: ["Bases de connaissances internes", "Systèmes Q&A documentaire", "Assistants politiques & procédures", "Recherche de formations"],
+      },
+      {
+        icon: "bar-chart",
+        title: "Analyse de Données & Insights",
+        description: "Transformez les données brutes en intelligence actionnable. L'IA identifie les patterns, surface les insights et génère des rapports en un temps record.",
+        examples: ["Reporting automatisé", "Analyse de tendances", "Détection d'anomalies", "Analytics prédictifs"],
+      },
+      {
+        icon: "edit",
+        title: "Génération de Contenu",
+        description: "Création de contenu assistée par IA qui maintient votre ton de marque. Du copywriting marketing à la documentation, emails personnalisés aux posts sociaux.",
+        examples: ["Copy marketing", "Personnalisation email", "Documentation", "Contenu réseaux sociaux"],
+      },
+      {
+        icon: "code",
+        title: "Intégration Système",
+        description: "Une IA qui travaille à l'intérieur de vos outils existants, pas à côté. Nous intégrons les capacités directement dans votre CRM, ERP ou applications custom.",
+        examples: ["Intégration CRM", "Automatisation ERP", "Chatbots web", "Fonctionnalités IA mobile"],
+      },
+    ],
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-slate-50 overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 bg-white text-indigo-600 shadow-sm border border-indigo-100">
+        <Icon name="cpu" size={16} />
+        {t.badge}
+      </span>
+      <h2 class="text-3xl lg:text-5xl font-bold text-slate-900 mb-4">{t.headline}</h2>
+      <p class="text-xl text-slate-600">{t.subheadline}</p>
+    </div>
+
+    <!-- Use Cases Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {t.useCases.map((useCase, index) => (
+        <div
+          class="use-case-card group bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:border-indigo-200 transition-all duration-500"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          {/* Icon */}
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <Icon name={useCase.icon} size={28} />
+          </div>
+
+          {/* Title & Description */}
+          <h3 class="text-xl font-bold text-slate-900 mb-3">{useCase.title}</h3>
+          <p class="text-slate-600 mb-6">{useCase.description}</p>
+
+          {/* Examples */}
+          <div class="space-y-2">
+            {useCase.examples.map((example) => (
+              <div class="flex items-center gap-2 text-sm text-slate-500">
+                <div class="w-1.5 h-1.5 rounded-full bg-indigo-400"></div>
+                <span>{example}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .use-case-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

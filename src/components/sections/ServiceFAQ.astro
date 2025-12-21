@@ -3,8 +3,8 @@ import { type Language } from '@/i18n/config';
 
 interface Props {
   lang: Language;
-  service: 'seo' | 'google-ads' | 'paid-social' | 'abm' | 'ai-training' | 'emailing';
-  color?: 'seo' | 'ads' | 'social' | 'abm' | 'training' | 'emailing' | 'primary';
+  service: 'seo' | 'google-ads' | 'paid-social' | 'abm' | 'ai-training' | 'emailing' | 'ai-solutions';
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'training' | 'emailing' | 'ai' | 'primary';
 }
 
 const { lang, service, color = 'primary' } = Astro.props;
@@ -57,6 +57,14 @@ const colorConfig = {
     border: 'border-rose-500/30',
     hover: 'hover:border-rose-500/50',
     glow: 'shadow-rose-500/20',
+  },
+  ai: {
+    gradient: 'from-indigo-500 to-purple-600',
+    text: 'text-indigo-500',
+    bg: 'bg-indigo-500',
+    border: 'border-indigo-500/30',
+    hover: 'hover:border-indigo-500/50',
+    glow: 'shadow-indigo-500/20',
   },
   primary: {
     gradient: 'from-blue-500 to-indigo-600',
@@ -408,6 +416,68 @@ const faqContent = {
         {
           question: 'Pouvez-vous vous intégrer à notre CRM ?',
           answer: 'Oui ! Nous nous intégrons avec Salesforce, HubSpot, Pipedrive et autres CRMs majeurs. Cela garantit que vos campagnes email se synchronisent avec votre pipeline commercial, automatisant les relances et maintenant des données cohérentes entre les systèmes.',
+        },
+      ],
+    },
+  },
+  'ai-solutions': {
+    en: {
+      title: 'Frequently Asked Questions',
+      subtitle: 'Everything you need to know about AI Development',
+      faqs: [
+        {
+          question: 'Why does my company need custom AI development?',
+          answer: 'Off-the-shelf AI tools often don\'t fit specific business processes or integrate with existing systems. Custom AI development creates solutions tailored to your exact workflows, data, and objectives - automating repetitive tasks, extracting insights from your specific data, and connecting seamlessly with your current tools.',
+        },
+        {
+          question: 'What types of AI solutions can you build?',
+          answer: 'We develop custom AI assistants and chatbots, workflow automation systems, document processing tools, data analysis and reporting automation, RAG (Retrieval Augmented Generation) knowledge bases, and integrations with existing software. Each solution is designed specifically for your use case.',
+        },
+        {
+          question: 'How long does an AI project typically take?',
+          answer: 'Timeline depends on complexity. A proof of concept can be ready in 2-4 weeks. Full solutions typically take 2-4 months from discovery to deployment. We start with a discovery phase to understand your needs before providing a detailed timeline and quote.',
+        },
+        {
+          question: 'Do I need to have my own data to start?',
+          answer: 'Not necessarily. We can work with your existing documents, CRM data, or help you structure the data collection process. Many projects start with analyzing what data you have and determining what additional data would be valuable.',
+        },
+        {
+          question: 'Which AI models do you use?',
+          answer: 'We\'re model-agnostic and select the best fit for your needs: OpenAI GPT-4, Anthropic Claude, Google Gemini, or open-source options like Mistral or Llama. The choice depends on your requirements for accuracy, cost, speed, and data privacy.',
+        },
+        {
+          question: 'How do you handle data security and privacy?',
+          answer: 'Security is built in from day one. We implement enterprise-grade security practices, can work with on-premise or private cloud deployments, and ensure compliance with GDPR and other regulations. Your data is never used to train third-party models.',
+        },
+      ],
+    },
+    fr: {
+      title: 'Questions Fréquentes',
+      subtitle: 'Tout ce que vous devez savoir sur le Développement IA',
+      faqs: [
+        {
+          question: 'Pourquoi mon entreprise a-t-elle besoin d\'un développement IA personnalisé ?',
+          answer: 'Les outils IA standards ne s\'adaptent souvent pas aux processus métier spécifiques ou ne s\'intègrent pas aux systèmes existants. Le développement IA personnalisé crée des solutions sur mesure pour vos workflows, données et objectifs - automatisant les tâches répétitives, extrayant des insights de vos données et s\'intégrant parfaitement à vos outils actuels.',
+        },
+        {
+          question: 'Quels types de solutions IA pouvez-vous développer ?',
+          answer: 'Nous développons des assistants IA et chatbots personnalisés, des systèmes d\'automatisation de workflows, des outils de traitement de documents, de l\'automatisation d\'analyse et reporting de données, des bases de connaissances RAG (Retrieval Augmented Generation), et des intégrations avec vos logiciels existants. Chaque solution est conçue spécifiquement pour votre cas d\'usage.',
+        },
+        {
+          question: 'Combien de temps prend un projet IA typiquement ?',
+          answer: 'Le délai dépend de la complexité. Une preuve de concept peut être prête en 2-4 semaines. Les solutions complètes prennent généralement 2-4 mois de la découverte au déploiement. Nous commençons par une phase de découverte pour comprendre vos besoins avant de fournir un planning détaillé et un devis.',
+        },
+        {
+          question: 'Dois-je avoir mes propres données pour commencer ?',
+          answer: 'Pas nécessairement. Nous pouvons travailler avec vos documents existants, données CRM, ou vous aider à structurer le processus de collecte de données. Beaucoup de projets commencent par analyser les données disponibles et déterminer quelles données supplémentaires seraient utiles.',
+        },
+        {
+          question: 'Quels modèles IA utilisez-vous ?',
+          answer: 'Nous sommes agnostiques et sélectionnons le meilleur choix pour vos besoins : OpenAI GPT-4, Anthropic Claude, Google Gemini, ou des options open-source comme Mistral ou Llama. Le choix dépend de vos exigences en termes de précision, coût, vitesse et confidentialité des données.',
+        },
+        {
+          question: 'Comment gérez-vous la sécurité et la confidentialité des données ?',
+          answer: 'La sécurité est intégrée dès le premier jour. Nous implémentons des pratiques de sécurité entreprise, pouvons travailler avec des déploiements on-premise ou cloud privé, et assurons la conformité RGPD et autres régulations. Vos données ne sont jamais utilisées pour entraîner des modèles tiers.',
         },
       ],
     },

@@ -5,9 +5,10 @@ interface Props {
   role: string;
   company: string;
   image?: string;
+  companyLogo?: string;
 }
 
-const { quote, author, role, company, image } = Astro.props;
+const { quote, author, role, company, image, companyLogo } = Astro.props;
 
 // Split quote for animation effect
 const words = quote.split(' ');
@@ -100,7 +101,17 @@ const words = quote.split(' ');
         <div class="text-center sm:text-left">
           <div class="text-white font-semibold text-lg">{author}</div>
           <div class="text-slate-400">{role}</div>
-          <div class="text-blue-400 font-medium">{company}</div>
+          <div class="flex items-center gap-2 justify-center sm:justify-start">
+            {companyLogo && (
+              <img
+                src={companyLogo}
+                alt={company}
+                class="h-6 w-auto object-contain"
+                loading="lazy"
+              />
+            )}
+            <span class="text-blue-400 font-medium">{company}</span>
+          </div>
         </div>
       </div>
     </div>
