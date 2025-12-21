@@ -30,6 +30,10 @@ import GoogleAdsProcess from '@/components/sections/GoogleAdsProcess.astro';
 import WhyPaidSocial from '@/components/sections/WhyPaidSocial.astro';
 import PaidSocialChannels from '@/components/sections/PaidSocialChannels.astro';
 import PaidSocialProcess from '@/components/sections/PaidSocialProcess.astro';
+import PaidSocialServices from '@/components/sections/PaidSocialServices.astro';
+
+// Generic FAQ component
+import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
 
 // Social proof
 import TrustedBy from '@/components/sections/TrustedBy.astro';
@@ -142,6 +146,9 @@ const isPaidSocialService = slug === 'paid-social';
       <!-- Paid Social Channels - Visual Showcase -->
       <PaidSocialChannels lang={lang} color={color} />
 
+      <!-- Full-Service Offerings -->
+      <PaidSocialServices lang={lang} color={color} />
+
       <!-- Process Timeline -->
       <PaidSocialProcess lang={lang} color={color} />
     </>
@@ -174,9 +181,15 @@ const isPaidSocialService = slug === 'paid-social';
   <!-- Final CTA -->
   <FinalCTA lang={lang} color={color} />
 
-  <!-- FAQ Section (SEO only for now) -->
+  <!-- FAQ Section -->
   {isSEOService && (
-    <FAQSection lang={lang} color={color} />
+    <ServiceFAQ lang={lang} service="seo" color={color} />
+  )}
+  {isGoogleAdsService && (
+    <ServiceFAQ lang={lang} service="google-ads" color={color} />
+  )}
+  {isPaidSocialService && (
+    <ServiceFAQ lang={lang} service="paid-social" color={color} />
   )}
 </PageLayout>
 

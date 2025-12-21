@@ -1,0 +1,387 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+  service: 'seo' | 'google-ads' | 'paid-social' | 'abm';
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, service, color = 'primary' } = Astro.props;
+
+const colorConfig = {
+  seo: {
+    gradient: 'from-emerald-500 to-teal-600',
+    text: 'text-emerald-500',
+    bg: 'bg-emerald-500',
+    border: 'border-emerald-500/30',
+    hover: 'hover:border-emerald-500/50',
+    glow: 'shadow-emerald-500/20',
+  },
+  ads: {
+    gradient: 'from-amber-500 to-orange-600',
+    text: 'text-amber-500',
+    bg: 'bg-amber-500',
+    border: 'border-amber-500/30',
+    hover: 'hover:border-amber-500/50',
+    glow: 'shadow-amber-500/20',
+  },
+  social: {
+    gradient: 'from-violet-500 to-purple-600',
+    text: 'text-violet-500',
+    bg: 'bg-violet-500',
+    border: 'border-violet-500/30',
+    hover: 'hover:border-violet-500/50',
+    glow: 'shadow-violet-500/20',
+  },
+  abm: {
+    gradient: 'from-pink-500 to-rose-600',
+    text: 'text-pink-500',
+    bg: 'bg-pink-500',
+    border: 'border-pink-500/30',
+    hover: 'hover:border-pink-500/50',
+    glow: 'shadow-pink-500/20',
+  },
+  primary: {
+    gradient: 'from-blue-500 to-indigo-600',
+    text: 'text-blue-500',
+    bg: 'bg-blue-500',
+    border: 'border-blue-500/30',
+    hover: 'hover:border-blue-500/50',
+    glow: 'shadow-blue-500/20',
+  },
+};
+
+const colors = colorConfig[color];
+
+// FAQ content for each service
+const faqContent = {
+  'paid-social': {
+    en: {
+      title: 'Frequently Asked Questions',
+      subtitle: 'Everything you need to know about Paid Social advertising',
+      faqs: [
+        {
+          question: 'What is Paid Social Advertising?',
+          answer: 'Paid social advertising involves placing sponsored content on social media platforms to reach specific target audiences. It allows businesses to promote their products or services through tailored ads, increasing visibility and engagement.',
+        },
+        {
+          question: 'Which platforms are most effective for Paid Social campaigns?',
+          answer: 'For B2B marketing, platforms like LinkedIn, Xing, and Meta (for remarketing) are particularly effective. For B2C, all social media platforms are worth considering, but it\'s important not to spread efforts too thin across multiple channels. Each offers unique targeting capabilities to connect with professional audiences and decision-makers.',
+        },
+        {
+          question: 'How can I identify and target my ideal prospects on social media?',
+          answer: 'By analyzing factors such as interests, industry, job roles, and engagement behaviors, you can identify when your target audience shows interest. Implementing smart strategies, deep targeting, and proper budget allocation ensures your message reaches the right people at the right time.',
+        },
+        {
+          question: 'What content type works best for paid social campaigns?',
+          answer: 'Personalized and impactful content resonates most with audiences. Tailoring your strategy based on interests, funnel stage, and product demand enhances engagement. Using a mix of images, videos, and compelling copy often yields the best results.',
+        },
+        {
+          question: 'How do you measure the success of paid social campaigns?',
+          answer: 'Success is measured using various metrics, including click-through rate (CTR), conversion rate, engagement level, cost per lead (CPL), and return on ad spend (ROAS). Clear tracking is essential, and regular monitoring and optimization are crucial for ongoing performance improvements.',
+        },
+        {
+          question: 'What\'s the difference between Organic and Paid Social?',
+          answer: 'Organic social reaches followers naturally through engagement, building brand awareness over time. Paid social uses ads to target specific audiences instantly, driving leads and conversions. Combining both maximizes reach and impact. Both are important; however, organic reach continues to decline as social media platforms prioritize paid content to generate revenue.',
+        },
+      ],
+    },
+    fr: {
+      title: 'Questions Fréquentes',
+      subtitle: 'Tout ce que vous devez savoir sur la publicité Paid Social',
+      faqs: [
+        {
+          question: 'Qu\'est-ce que la publicité Paid Social ?',
+          answer: 'La publicité paid social consiste à placer du contenu sponsorisé sur les réseaux sociaux pour atteindre des audiences cibles spécifiques. Elle permet aux entreprises de promouvoir leurs produits ou services via des publicités personnalisées, augmentant la visibilité et l\'engagement.',
+        },
+        {
+          question: 'Quelles plateformes sont les plus efficaces pour les campagnes Paid Social ?',
+          answer: 'Pour le marketing B2B, des plateformes comme LinkedIn, Xing et Meta (pour le remarketing) sont particulièrement efficaces. Pour le B2C, tous les réseaux sociaux méritent d\'être considérés, mais il est important de ne pas trop disperser ses efforts. Chacune offre des capacités de ciblage uniques pour atteindre les audiences professionnelles et les décideurs.',
+        },
+        {
+          question: 'Comment identifier et cibler mes prospects idéaux sur les réseaux sociaux ?',
+          answer: 'En analysant des facteurs tels que les intérêts, le secteur, les postes et les comportements d\'engagement, vous pouvez identifier quand votre audience cible montre de l\'intérêt. La mise en place de stratégies intelligentes, d\'un ciblage approfondi et d\'une allocation budgétaire appropriée garantit que votre message atteint les bonnes personnes au bon moment.',
+        },
+        {
+          question: 'Quel type de contenu fonctionne le mieux pour les campagnes paid social ?',
+          answer: 'Le contenu personnalisé et impactant résonne le plus avec les audiences. Adapter votre stratégie en fonction des intérêts, de l\'étape du funnel et de la demande produit améliore l\'engagement. Un mix d\'images, de vidéos et de textes percutants donne généralement les meilleurs résultats.',
+        },
+        {
+          question: 'Comment mesurez-vous le succès des campagnes paid social ?',
+          answer: 'Le succès est mesuré à l\'aide de diverses métriques, notamment le taux de clic (CTR), le taux de conversion, le niveau d\'engagement, le coût par lead (CPL) et le retour sur investissement publicitaire (ROAS). Un tracking clair est essentiel, et un suivi et une optimisation réguliers sont cruciaux pour l\'amélioration continue des performances.',
+        },
+        {
+          question: 'Quelle différence entre Social Organique et Paid Social ?',
+          answer: 'Le social organique atteint les followers naturellement via l\'engagement, construisant la notoriété de marque au fil du temps. Le paid social utilise les publicités pour cibler des audiences spécifiques instantanément, générant des leads et des conversions. Combiner les deux maximise la portée et l\'impact. Les deux sont importants ; cependant, la portée organique continue de décliner car les plateformes privilégient le contenu payant pour générer des revenus.',
+        },
+      ],
+    },
+  },
+  'google-ads': {
+    en: {
+      title: 'Frequently Asked Questions',
+      subtitle: 'Everything you need to know about Google Ads',
+      faqs: [
+        {
+          question: 'What is Google Ads and how does it work?',
+          answer: 'Google Ads is a pay-per-click (PPC) advertising platform that displays your ads on Google Search, YouTube, and partner websites. You only pay when someone clicks on your ad. It works through an auction system where you bid on keywords relevant to your business.',
+        },
+        {
+          question: 'How much should I budget for Google Ads?',
+          answer: 'Budget depends on your industry, competition, and goals. We recommend starting with a test budget to gather data, then scaling based on performance. The key is focusing on ROI, not just spend. We help you allocate budget efficiently across Search, Display, and YouTube campaigns.',
+        },
+        {
+          question: 'How long until I see results from Google Ads?',
+          answer: 'Unlike SEO, Google Ads can generate traffic immediately once your campaigns are live. However, optimization takes time. Expect 2-4 weeks of learning phase where we gather data, then continuous improvements. Most clients see meaningful results within the first month.',
+        },
+        {
+          question: 'What\'s the difference between Search and Display campaigns?',
+          answer: 'Search campaigns show text ads to people actively searching for your keywords on Google. Display campaigns show visual ads across millions of websites to build awareness. Search captures high-intent users, while Display helps with remarketing and brand awareness.',
+        },
+        {
+          question: 'How do you track conversions and measure success?',
+          answer: 'We implement Google Tag Manager and conversion tracking to measure leads, sales, phone calls, and other valuable actions. You\'ll receive custom dashboards showing ROAS, cost per acquisition, and other KPIs. We integrate with your CRM for full-funnel attribution.',
+        },
+        {
+          question: 'Do you manage YouTube advertising?',
+          answer: 'Yes! YouTube is part of the Google Ads ecosystem. We create and manage video campaigns including skippable in-stream ads, bumper ads, and discovery ads. Video is powerful for B2B awareness and remarketing strategies.',
+        },
+      ],
+    },
+    fr: {
+      title: 'Questions Fréquentes',
+      subtitle: 'Tout ce que vous devez savoir sur Google Ads',
+      faqs: [
+        {
+          question: 'Qu\'est-ce que Google Ads et comment ça fonctionne ?',
+          answer: 'Google Ads est une plateforme publicitaire au coût par clic (CPC) qui affiche vos annonces sur Google Search, YouTube et les sites partenaires. Vous ne payez que lorsque quelqu\'un clique sur votre annonce. Le système fonctionne par enchères où vous misez sur des mots-clés pertinents pour votre activité.',
+        },
+        {
+          question: 'Quel budget prévoir pour Google Ads ?',
+          answer: 'Le budget dépend de votre secteur, de la concurrence et de vos objectifs. Nous recommandons de commencer avec un budget test pour collecter des données, puis de scaler selon les performances. L\'essentiel est de se concentrer sur le ROI, pas seulement sur les dépenses. Nous vous aidons à allouer efficacement le budget entre Search, Display et YouTube.',
+        },
+        {
+          question: 'Combien de temps avant de voir des résultats avec Google Ads ?',
+          answer: 'Contrairement au SEO, Google Ads peut générer du trafic immédiatement une fois vos campagnes en ligne. Cependant, l\'optimisation prend du temps. Comptez 2-4 semaines de phase d\'apprentissage pour collecter des données, puis des améliorations continues. La plupart des clients voient des résultats significatifs dès le premier mois.',
+        },
+        {
+          question: 'Quelle différence entre campagnes Search et Display ?',
+          answer: 'Les campagnes Search affichent des annonces textuelles aux personnes recherchant activement vos mots-clés sur Google. Les campagnes Display affichent des publicités visuelles sur des millions de sites web pour développer la notoriété. Search capture les utilisateurs à haute intention, tandis que Display aide au remarketing et à la notoriété de marque.',
+        },
+        {
+          question: 'Comment trackez-vous les conversions et mesurez le succès ?',
+          answer: 'Nous implémentons Google Tag Manager et le suivi des conversions pour mesurer les leads, ventes, appels téléphoniques et autres actions de valeur. Vous recevez des tableaux de bord personnalisés montrant le ROAS, le coût par acquisition et autres KPIs. Nous intégrons avec votre CRM pour une attribution full-funnel.',
+        },
+        {
+          question: 'Gérez-vous la publicité YouTube ?',
+          answer: 'Oui ! YouTube fait partie de l\'écosystème Google Ads. Nous créons et gérons des campagnes vidéo incluant les annonces in-stream désactivables, les bumper ads et les annonces discovery. La vidéo est puissante pour la notoriété B2B et les stratégies de remarketing.',
+        },
+      ],
+    },
+  },
+  'seo': {
+    en: {
+      title: 'Frequently Asked Questions',
+      subtitle: 'Everything you need to know about our SEO services',
+      faqs: [
+        {
+          question: 'What is SEO and why does it matter?',
+          answer: 'SEO (Search Engine Optimization) is the process of improving your website to increase its visibility on search engines like Google. Unlike paid ads, SEO brings sustainable, long-term organic traffic without continuous ad spending. It builds trust, credibility, and positions your brand as an authority in your industry.',
+        },
+        {
+          question: 'How does SEO differ from Google Ads?',
+          answer: 'SEO builds your organic ranking naturally over time, creating lasting results that continue even after you stop investing. Google Ads provides immediate visibility through paid placements, but traffic stops when your budget runs out. The best digital strategy combines both: Ads for immediate impact, SEO for sustainable growth.',
+        },
+        {
+          question: 'What are the most common SEO mistakes?',
+          answer: 'The biggest mistakes we see are: neglecting mobile optimization (60%+ of traffic is mobile), keyword stuffing instead of natural content, ignoring technical SEO (site speed, structured data), thin content that doesn\'t provide value, and not tracking performance with analytics. Our approach addresses all of these systematically.',
+        },
+        {
+          question: 'How does AI transform SEO content?',
+          answer: 'AI revolutionizes SEO by enabling personalized content at scale, better keyword research, predictive analytics, and automated optimization. Our AI is trained on YOUR brand voice, creating content that sounds authentically human while being perfectly optimized. We combine AI efficiency with human strategy and review.',
+        },
+        {
+          question: 'How long until I see SEO results?',
+          answer: 'SEO is a long-term investment. Typically, you\'ll see initial improvements in 3-4 months, with significant results in 6-12 months. Competitive industries may take longer. Our AI-powered approach often accelerates this timeline by publishing more optimized content faster. We provide monthly reports so you can track progress.',
+        },
+        {
+          question: 'What makes MyDigipal\'s approach different?',
+          answer: 'We combine data-driven strategy (Ahrefs + Search Console integration), AI-powered content production trained on your brand, and transparent month-to-month contracts. No lock-ins, no black-box tactics. You get a dedicated team, real-time dashboards, and content that actually sounds like your brand.',
+        },
+      ],
+    },
+    fr: {
+      title: 'Questions Fréquentes',
+      subtitle: 'Tout ce que vous devez savoir sur nos services SEO',
+      faqs: [
+        {
+          question: 'Qu\'est-ce que le SEO et pourquoi est-ce important ?',
+          answer: 'Le SEO (Search Engine Optimization) est le processus d\'amélioration de votre site web pour augmenter sa visibilité sur les moteurs de recherche comme Google. Contrairement aux publicités payantes, le SEO apporte un trafic organique durable et à long terme sans dépenses publicitaires continues. Il construit la confiance, la crédibilité et positionne votre marque comme une autorité dans votre secteur.',
+        },
+        {
+          question: 'Quelle différence entre SEO et Google Ads ?',
+          answer: 'Le SEO construit votre classement organique naturellement dans le temps, créant des résultats durables qui continuent même après avoir arrêté d\'investir. Google Ads offre une visibilité immédiate via des placements payants, mais le trafic s\'arrête quand votre budget est épuisé. La meilleure stratégie digitale combine les deux : Ads pour l\'impact immédiat, SEO pour la croissance durable.',
+        },
+        {
+          question: 'Quelles sont les erreurs SEO les plus courantes ?',
+          answer: 'Les plus grosses erreurs que nous voyons sont : négliger l\'optimisation mobile (60%+ du trafic est mobile), le keyword stuffing au lieu d\'un contenu naturel, ignorer le SEO technique (vitesse du site, données structurées), un contenu léger qui n\'apporte pas de valeur, et ne pas suivre les performances avec les analytics. Notre approche adresse tous ces points systématiquement.',
+        },
+        {
+          question: 'Comment l\'IA transforme le contenu SEO ?',
+          answer: 'L\'IA révolutionne le SEO en permettant du contenu personnalisé à grande échelle, une meilleure recherche de mots-clés, des analyses prédictives et une optimisation automatisée. Notre IA est entraînée sur VOTRE voix de marque, créant du contenu qui sonne authentiquement humain tout en étant parfaitement optimisé. Nous combinons l\'efficacité de l\'IA avec la stratégie et la revue humaine.',
+        },
+        {
+          question: 'Combien de temps pour voir des résultats SEO ?',
+          answer: 'Le SEO est un investissement à long terme. Typiquement, vous verrez des améliorations initiales en 3-4 mois, avec des résultats significatifs en 6-12 mois. Les industries compétitives peuvent prendre plus de temps. Notre approche propulsée par l\'IA accélère souvent ce délai en publiant plus de contenu optimisé plus rapidement. Nous fournissons des rapports mensuels pour suivre les progrès.',
+        },
+        {
+          question: 'Qu\'est-ce qui différencie l\'approche MyDigipal ?',
+          answer: 'Nous combinons une stratégie data-driven (intégration Ahrefs + Search Console), une production de contenu IA entraînée sur votre marque, et des contrats transparents au mois. Pas d\'engagement, pas de tactiques opaques. Vous avez une équipe dédiée, des dashboards en temps réel, et du contenu qui sonne vraiment comme votre marque.',
+        },
+      ],
+    },
+  },
+  'abm': {
+    en: {
+      title: 'Frequently Asked Questions',
+      subtitle: 'Everything you need to know about Account-Based Marketing',
+      faqs: [
+        {
+          question: 'What is Account-Based Marketing (ABM)?',
+          answer: 'ABM is a strategic B2B marketing approach that focuses resources on specific high-value target accounts. Instead of casting a wide net, ABM treats individual accounts as markets of one, creating personalized campaigns tailored to each account\'s needs.',
+        },
+        {
+          question: 'How is ABM different from traditional marketing?',
+          answer: 'Traditional marketing uses a funnel approach, generating many leads and filtering down. ABM flips this, starting with identified target accounts and building personalized engagement. It aligns sales and marketing around specific accounts, resulting in higher conversion rates and larger deal sizes.',
+        },
+      ],
+    },
+    fr: {
+      title: 'Questions Fréquentes',
+      subtitle: 'Tout ce que vous devez savoir sur le marketing basé sur les comptes',
+      faqs: [
+        {
+          question: 'Qu\'est-ce que l\'Account-Based Marketing (ABM) ?',
+          answer: 'L\'ABM est une approche marketing B2B stratégique qui concentre les ressources sur des comptes cibles spécifiques à haute valeur. Au lieu de ratisser large, l\'ABM traite les comptes individuels comme des marchés uniques, créant des campagnes personnalisées adaptées aux besoins de chaque compte.',
+        },
+        {
+          question: 'En quoi l\'ABM diffère du marketing traditionnel ?',
+          answer: 'Le marketing traditionnel utilise une approche entonnoir, générant beaucoup de leads et les filtrant. L\'ABM inverse cela, en commençant par des comptes cibles identifiés et en construisant un engagement personnalisé. Il aligne les ventes et le marketing autour de comptes spécifiques, résultant en des taux de conversion plus élevés et des deals plus importants.',
+        },
+      ],
+    },
+  },
+};
+
+const t = faqContent[service]?.[lang] || faqContent['seo'][lang];
+---
+
+<section class="py-24 bg-white relative overflow-hidden">
+  <!-- Background decoration -->
+  <div class="absolute inset-0">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-slate-100 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+    <div class="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-slate-100 to-transparent rounded-full translate-y-1/2 -translate-x-1/2"></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <h2 class="text-3xl lg:text-5xl font-bold text-slate-900 mb-4">
+        {t.title}
+      </h2>
+      <p class="text-xl text-slate-600">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- FAQ Grid -->
+    <div class="max-w-4xl mx-auto space-y-4">
+      {t.faqs.map((faq, index) => (
+        <div
+          class={`faq-item group bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 ${colors.hover} hover:shadow-lg ${colors.glow}`}
+          data-index={index}
+        >
+          <button
+            class="faq-trigger w-full flex items-center justify-between p-6 text-left cursor-pointer"
+            aria-expanded="false"
+          >
+            <span class="flex items-center gap-4">
+              <span class={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center text-white font-bold text-sm`}>
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span class="text-lg font-semibold text-slate-900 group-hover:text-slate-700 transition-colors">
+                {faq.question}
+              </span>
+            </span>
+            <span class={`faq-icon flex-shrink-0 w-8 h-8 rounded-full ${colors.border} border-2 flex items-center justify-center transition-all duration-300`}>
+              <svg class="w-4 h-4 text-slate-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+          </button>
+          <div class="faq-content overflow-hidden max-h-0 transition-all duration-500 ease-out">
+            <div class="px-6 pb-6 pl-20">
+              <p class="text-slate-600 leading-relaxed">
+                {faq.answer}
+              </p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-item.active {
+    border-color: var(--active-border-color, #8B5CF6);
+  }
+
+  .faq-item.active .faq-icon {
+    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    border-color: transparent;
+  }
+
+  .faq-item.active .faq-icon svg {
+    color: white;
+    transform: rotate(180deg);
+  }
+
+  .faq-item.active .faq-content {
+    max-height: 500px;
+  }
+
+  /* Hover effect on number badge */
+  .faq-item:hover .faq-icon {
+    transform: scale(1.1);
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.faq-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const item = trigger.closest('.faq-item');
+      const isActive = item?.classList.contains('active');
+
+      // Close all other items
+      document.querySelectorAll('.faq-item.active').forEach((activeItem) => {
+        if (activeItem !== item) {
+          activeItem.classList.remove('active');
+          activeItem.querySelector('.faq-trigger')?.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Toggle current item
+      if (item) {
+        item.classList.toggle('active');
+        trigger.setAttribute('aria-expanded', (!isActive).toString());
+      }
+    });
+  });
+
+  // Open first item by default
+  const firstItem = document.querySelector('.faq-item');
+  firstItem?.classList.add('active');
+  firstItem?.querySelector('.faq-trigger')?.setAttribute('aria-expanded', 'true');
+</script>

@@ -1,0 +1,292 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, color = 'social' } = Astro.props;
+
+const colorConfig = {
+  seo: {
+    gradient: 'from-emerald-500 to-teal-600',
+    text: 'text-emerald-500',
+    bg: 'bg-emerald-500',
+    border: 'border-emerald-500/30',
+    glow: 'shadow-emerald-500/20',
+    accent: '#10B981',
+  },
+  ads: {
+    gradient: 'from-amber-500 to-orange-600',
+    text: 'text-amber-500',
+    bg: 'bg-amber-500',
+    border: 'border-amber-500/30',
+    glow: 'shadow-amber-500/20',
+    accent: '#F59E0B',
+  },
+  social: {
+    gradient: 'from-violet-500 to-purple-600',
+    text: 'text-violet-500',
+    bg: 'bg-violet-500',
+    border: 'border-violet-500/30',
+    glow: 'shadow-violet-500/20',
+    accent: '#8B5CF6',
+  },
+  abm: {
+    gradient: 'from-pink-500 to-rose-600',
+    text: 'text-pink-500',
+    bg: 'bg-pink-500',
+    border: 'border-pink-500/30',
+    glow: 'shadow-pink-500/20',
+    accent: '#EC4899',
+  },
+  primary: {
+    gradient: 'from-blue-500 to-indigo-600',
+    text: 'text-blue-500',
+    bg: 'bg-blue-500',
+    border: 'border-blue-500/30',
+    glow: 'shadow-blue-500/20',
+    accent: '#3B82F6',
+  },
+};
+
+const colors = colorConfig[color];
+
+const content = {
+  en: {
+    badge: 'Full-Service Paid Social',
+    title: 'Everything You Need to Succeed',
+    subtitle: 'From strategy to execution, we handle every aspect of your paid social campaigns',
+    services: [
+      {
+        icon: 'tracking',
+        title: 'Tracking & Integration',
+        description: 'Pixel implementation, GTM setup, and seamless integration with your internal reporting systems (CRM, HubSpot, Salesforce)',
+        features: ['Pixel & Conversion API setup', 'GTM configuration', 'CRM integration', 'Cross-platform attribution'],
+      },
+      {
+        icon: 'reporting',
+        title: 'Custom Reporting',
+        description: 'Real-time dashboards tailored to your KPIs using Looker Studio, Power BI, Tableau, or our AI-powered chat analytics tool',
+        features: ['Looker Studio dashboards', 'Power BI reports', 'Tableau integration', 'AI chat analytics'],
+      },
+      {
+        icon: 'audience',
+        title: 'Audience Research & ICP',
+        description: 'Deep collaboration with your Sales & Marketing teams to define your Ideal Customer Profile and build precision audiences',
+        features: ['ICP workshops', 'Buyer persona mapping', 'Account list building', 'Intent signal analysis'],
+      },
+      {
+        icon: 'setup',
+        title: 'Account Setup or Audit',
+        description: 'Whether starting fresh or optimizing existing campaigns, we build the foundation for success',
+        features: ['New account setup', 'Existing account audit', 'Campaign restructuring', 'Best practice implementation'],
+      },
+      {
+        icon: 'creative',
+        title: 'Custom Creative Production',
+        description: 'Compelling ad copy and stunning visuals designed to capture attention and drive conversions',
+        features: ['Ad copywriting', 'Banner design', 'Video content', 'A/B creative testing'],
+      },
+      {
+        icon: 'management',
+        title: 'Campaign Management',
+        description: 'Ongoing optimization with A/B testing, bid management, and performance improvements across all ad formats',
+        features: ['Daily monitoring', 'A/B testing', 'Bid optimization', 'Multi-format campaigns'],
+      },
+    ],
+  },
+  fr: {
+    badge: 'Service Complet Paid Social',
+    title: 'Tout ce dont vous avez besoin',
+    subtitle: 'De la stratégie à l\'exécution, nous gérons chaque aspect de vos campagnes paid social',
+    services: [
+      {
+        icon: 'tracking',
+        title: 'Tracking & Intégration',
+        description: 'Implémentation du Pixel, configuration GTM, et intégration transparente avec vos systèmes de reporting internes (CRM, HubSpot, Salesforce)',
+        features: ['Pixel & Conversion API', 'Configuration GTM', 'Intégration CRM', 'Attribution cross-platform'],
+      },
+      {
+        icon: 'reporting',
+        title: 'Reporting Personnalisé',
+        description: 'Tableaux de bord en temps réel adaptés à vos KPIs via Looker Studio, Power BI, Tableau, ou notre outil d\'analytics IA conversationnel',
+        features: ['Dashboards Looker Studio', 'Rapports Power BI', 'Intégration Tableau', 'Analytics IA chat'],
+      },
+      {
+        icon: 'audience',
+        title: 'Recherche Audience & ICP',
+        description: 'Collaboration approfondie avec vos équipes Sales & Marketing pour définir votre Profil Client Idéal et construire des audiences précises',
+        features: ['Ateliers ICP', 'Mapping personas', 'Constitution de listes', 'Analyse signaux d\'intention'],
+      },
+      {
+        icon: 'setup',
+        title: 'Création ou Audit de Compte',
+        description: 'Que vous partiez de zéro ou optimisiez des campagnes existantes, nous construisons les fondations du succès',
+        features: ['Création de compte', 'Audit compte existant', 'Restructuration campagnes', 'Best practices'],
+      },
+      {
+        icon: 'creative',
+        title: 'Création de Contenu',
+        description: 'Copywriting percutant et visuels impactants conçus pour captiver l\'attention et générer des conversions',
+        features: ['Copywriting publicitaire', 'Design de bannières', 'Contenu vidéo', 'A/B testing créatif'],
+      },
+      {
+        icon: 'management',
+        title: 'Gestion de Campagnes',
+        description: 'Optimisation continue avec tests A/B, gestion des enchères et amélioration des performances sur tous les formats',
+        features: ['Monitoring quotidien', 'Tests A/B', 'Optimisation des enchères', 'Campagnes multi-format'],
+      },
+    ],
+  },
+};
+
+const t = content[lang];
+
+// SVG icons for each service
+const icons = {
+  tracking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-8 h-8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
+  </svg>`,
+  reporting: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-8 h-8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" />
+  </svg>`,
+  audience: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-8 h-8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+  </svg>`,
+  setup: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-8 h-8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>`,
+  creative: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-8 h-8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
+  </svg>`,
+  management: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-8 h-8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+  </svg>`,
+};
+---
+
+<section class="py-24 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
+  <!-- Animated background elements -->
+  <div class="absolute inset-0 overflow-hidden">
+    <div class={`absolute top-20 -right-20 w-96 h-96 bg-gradient-to-br ${colors.gradient} opacity-5 rounded-full blur-3xl animate-pulse`}></div>
+    <div class={`absolute bottom-20 -left-20 w-80 h-80 bg-gradient-to-tr ${colors.gradient} opacity-5 rounded-full blur-3xl animate-pulse`} style="animation-delay: 1s;"></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class={`inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r ${colors.gradient} bg-opacity-10 ${colors.text} text-sm font-semibold mb-6`}>
+        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        {t.badge}
+      </span>
+      <h2 class="text-3xl lg:text-5xl font-bold text-slate-900 mb-6">
+        {t.title}
+      </h2>
+      <p class="text-xl text-slate-600">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {t.services.map((service, index) => (
+        <div
+          class={`service-card group relative bg-white rounded-2xl p-8 border border-slate-200 hover:border-violet-300 transition-all duration-500 hover:shadow-xl hover:shadow-violet-100 hover:-translate-y-2`}
+          style={`animation-delay: ${index * 100}ms;`}
+        >
+          <!-- Icon -->
+          <div class={`w-14 h-14 rounded-xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300`}>
+            <Fragment set:html={icons[service.icon as keyof typeof icons]} />
+          </div>
+
+          <!-- Content -->
+          <h3 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-violet-600 transition-colors">
+            {service.title}
+          </h3>
+          <p class="text-slate-600 mb-6 leading-relaxed">
+            {service.description}
+          </p>
+
+          <!-- Features list -->
+          <ul class="space-y-2">
+            {service.features.map((feature) => (
+              <li class="flex items-center text-sm text-slate-500">
+                <svg class={`w-4 h-4 mr-2 ${colors.text} flex-shrink-0`} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                {feature}
+              </li>
+            ))}
+          </ul>
+
+          <!-- Hover gradient overlay -->
+          <div class={`absolute inset-0 rounded-2xl bg-gradient-to-br ${colors.gradient} opacity-0 group-hover:opacity-[0.02] transition-opacity duration-500 pointer-events-none`}></div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Creative Work Showcase Placeholder -->
+    <div class="mt-20">
+      <div class="text-center mb-12">
+        <h3 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-4">
+          {lang === 'fr' ? 'Nos Créations' : 'Our Creative Work'}
+        </h3>
+        <p class="text-slate-600">
+          {lang === 'fr'
+            ? 'Bannières et contenus créés par notre équipe'
+            : 'Banners and content crafted by our team'}
+        </p>
+      </div>
+
+      <!-- Creative examples grid - placeholder for images -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((_, index) => (
+          <div
+            class={`aspect-square rounded-xl bg-gradient-to-br ${colors.gradient} opacity-10 flex items-center justify-center relative overflow-hidden group cursor-pointer`}
+          >
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <span class="text-slate-400 text-sm">
+              {lang === 'fr' ? 'Création' : 'Creative'} #{index + 1}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p class="text-center text-sm text-slate-400 mt-4">
+        {lang === 'fr'
+          ? '📸 Images à venir - dossier Creative Design'
+          : '📸 Images coming soon - Creative Design folder'}
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .service-card {
+    opacity: 0;
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger animation for cards */
+  .service-card:nth-child(1) { animation-delay: 0.1s; }
+  .service-card:nth-child(2) { animation-delay: 0.2s; }
+  .service-card:nth-child(3) { animation-delay: 0.3s; }
+  .service-card:nth-child(4) { animation-delay: 0.4s; }
+  .service-card:nth-child(5) { animation-delay: 0.5s; }
+  .service-card:nth-child(6) { animation-delay: 0.6s; }
+</style>
