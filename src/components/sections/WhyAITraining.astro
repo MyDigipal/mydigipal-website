@@ -1,0 +1,169 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Why AI Training?",
+    headline: "AI Isn't Coming. It's Already Here.",
+    description: "Companies that embrace AI gain a critical edge. They save time, reduce errors, move faster, and free their teams to focus on what really matters: creativity, strategy, and decision-making.",
+    features: [
+      {
+        icon: "zap",
+        title: "40%+ Time Savings",
+        description: "Teams using AI report dramatic productivity gains on routine tasks like content creation, data analysis, and reporting."
+      },
+      {
+        icon: "shield",
+        title: "Proper Usage & Compliance",
+        description: "Training prevents misuse and ensures your team uses AI tools safely, respecting data privacy and company guidelines."
+      },
+      {
+        icon: "trending-up",
+        title: "Competitive Advantage",
+        description: "Companies embracing AI move faster and innovate more. Don't let your competitors get ahead while you wait."
+      },
+      {
+        icon: "users",
+        title: "Employee Empowerment",
+        description: "Give your team the skills they need for the future. Confident employees become AI champions in your organization."
+      }
+    ],
+    useCases: {
+      title: "Practical Use Cases",
+      items: [
+        { dept: "Marketing & Comms", tasks: "Write posts, summarize reports, localize content, draft campaigns" },
+        { dept: "HR & Legal", tasks: "Draft job ads, summarize CVs, rephrase clauses, write recaps" },
+        { dept: "Finance & Ops", tasks: "Clean data, check formulas, generate dashboards, translate metrics" },
+        { dept: "Customer Care", tasks: "Respond to FAQs, summarize feedback, generate scripts" }
+      ]
+    }
+  },
+  fr: {
+    badge: "Pourquoi une Formation IA ?",
+    headline: "L'IA n'arrive pas. Elle est déjà là.",
+    description: "Les entreprises qui adoptent l'IA gagnent un avantage crucial. Elles gagnent du temps, réduisent les erreurs, avancent plus vite, et libèrent leurs équipes pour se concentrer sur l'essentiel : créativité, stratégie et prise de décision.",
+    features: [
+      {
+        icon: "zap",
+        title: "40%+ de Temps Économisé",
+        description: "Les équipes utilisant l'IA rapportent des gains de productivité significatifs sur les tâches routinières."
+      },
+      {
+        icon: "shield",
+        title: "Usage Correct & Conformité",
+        description: "La formation prévient les mauvais usages et assure une utilisation sécurisée des outils IA."
+      },
+      {
+        icon: "trending-up",
+        title: "Avantage Concurrentiel",
+        description: "Les entreprises adoptant l'IA avancent plus vite et innovent davantage. Ne laissez pas vos concurrents prendre de l'avance."
+      },
+      {
+        icon: "users",
+        title: "Autonomisation des Équipes",
+        description: "Donnez à vos équipes les compétences pour l'avenir. Des employés confiants deviennent des champions de l'IA."
+      }
+    ],
+    useCases: {
+      title: "Cas d'Usage Pratiques",
+      items: [
+        { dept: "Marketing & Com", tasks: "Rédiger des posts, résumer des rapports, localiser du contenu" },
+        { dept: "RH & Juridique", tasks: "Rédiger des offres, résumer des CV, reformuler des clauses" },
+        { dept: "Finance & Ops", tasks: "Nettoyer les données, vérifier les formules, créer des dashboards" },
+        { dept: "Service Client", tasks: "Répondre aux FAQ, résumer les feedbacks, générer des scripts" }
+      ]
+    }
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-slate-950 text-white overflow-hidden">
+  <!-- Background Effects -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-20 left-10 w-72 h-72 bg-cyan-500/20 rounded-full blur-[100px]"></div>
+    <div class="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-[100px]"></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 mb-6">
+        <span class="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
+        <span class="text-white/90 font-medium">{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold mb-6">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+        {t.description}
+      </p>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+      {t.features.map((feature, index) => (
+        <div
+          class="feature-card group relative p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-500/50 transition-all duration-500 animate-on-scroll"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <!-- Icon -->
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <Icon name={feature.icon} size={24} class="text-white" />
+          </div>
+
+          <!-- Content -->
+          <h3 class="text-lg font-semibold text-white mb-2">{feature.title}</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">{feature.description}</p>
+
+          <!-- Hover glow -->
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Use Cases -->
+    <div class="max-w-4xl mx-auto animate-on-scroll">
+      <h3 class="text-2xl font-bold text-center mb-8">{t.useCases.title}</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        {t.useCases.items.map((useCase, index) => (
+          <div
+            class="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/30 transition-all duration-300"
+            style={`animation-delay: ${index * 50}ms`}
+          >
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center flex-shrink-0">
+              <span class="text-cyan-400 text-lg">✦</span>
+            </div>
+            <div>
+              <h4 class="font-semibold text-white mb-1">{useCase.dept}</h4>
+              <p class="text-sm text-slate-400">{useCase.tasks}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .feature-card {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
