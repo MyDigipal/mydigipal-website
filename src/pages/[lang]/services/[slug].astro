@@ -43,6 +43,11 @@ import TrainingBenefitsEmployees from '@/components/sections/TrainingBenefitsEmp
 import TrainingAgenda from '@/components/sections/TrainingAgenda.astro';
 import TrainingUseCases from '@/components/sections/TrainingUseCases.astro';
 
+// Emailing specific sections
+import WhyEmailing from '@/components/sections/WhyEmailing.astro';
+import EmailingServices from '@/components/sections/EmailingServices.astro';
+import EmailingAIPersonalization from '@/components/sections/EmailingAIPersonalization.astro';
+
 // Generic FAQ component
 import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
 
@@ -98,6 +103,8 @@ const isGoogleAdsService = slug === 'google-ads';
 const isPaidSocialService = slug === 'paid-social';
 // Check if this is the AI Training service page
 const isAITrainingService = slug === 'ai-training';
+// Check if this is the Emailing service page
+const isEmailingService = slug === 'emailing';
 ---
 
 <PageLayout
@@ -205,6 +212,20 @@ const isAITrainingService = slug === 'ai-training';
     </>
   )}
 
+  <!-- Emailing Service: Interactive Sections -->
+  {isEmailingService && (
+    <>
+      <!-- Why Email Marketing - Stats & Renaissance -->
+      <WhyEmailing lang={lang} />
+
+      <!-- Full-Service Offerings -->
+      <EmailingServices lang={lang} />
+
+      <!-- AI Personalization Process -->
+      <EmailingAIPersonalization lang={lang} />
+    </>
+  )}
+
   <!-- Google Ads Case Studies -->
   {isGoogleAdsService && (
     <CaseStudyCarousel lang={lang} caseStudyIds={['dmd', 'quantum', 'genesys']} color={color} />
@@ -251,6 +272,9 @@ const isAITrainingService = slug === 'ai-training';
   )}
   {isAITrainingService && (
     <ServiceFAQ lang={lang} service="ai-training" color="training" />
+  )}
+  {isEmailingService && (
+    <ServiceFAQ lang={lang} service="emailing" color="emailing" />
   )}
 </PageLayout>
 

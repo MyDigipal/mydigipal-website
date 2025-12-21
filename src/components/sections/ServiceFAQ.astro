@@ -3,8 +3,8 @@ import { type Language } from '@/i18n/config';
 
 interface Props {
   lang: Language;
-  service: 'seo' | 'google-ads' | 'paid-social' | 'abm' | 'ai-training';
-  color?: 'seo' | 'ads' | 'social' | 'abm' | 'training' | 'primary';
+  service: 'seo' | 'google-ads' | 'paid-social' | 'abm' | 'ai-training' | 'emailing';
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'training' | 'emailing' | 'primary';
 }
 
 const { lang, service, color = 'primary' } = Astro.props;
@@ -49,6 +49,14 @@ const colorConfig = {
     border: 'border-cyan-500/30',
     hover: 'hover:border-cyan-500/50',
     glow: 'shadow-cyan-500/20',
+  },
+  emailing: {
+    gradient: 'from-rose-500 to-pink-600',
+    text: 'text-rose-500',
+    bg: 'bg-rose-500',
+    border: 'border-rose-500/30',
+    hover: 'hover:border-rose-500/50',
+    glow: 'shadow-rose-500/20',
   },
   primary: {
     gradient: 'from-blue-500 to-indigo-600',
@@ -338,6 +346,68 @@ const faqContent = {
         {
           question: 'Comment vous assurez-vous que la formation soit retenue ?',
           answer: 'Nous combinons théorie et exercices pratiques utilisant des scénarios réels de votre industrie. Les participants créent leurs propres "prompts de base" qu\'ils peuvent réutiliser quotidiennement. Pour les formations complètes, nous incluons des sessions de suivi pour renforcer l\'apprentissage et aider les équipes à surmonter les obstacles.',
+        },
+      ],
+    },
+  },
+  'emailing': {
+    en: {
+      title: 'Frequently Asked Questions',
+      subtitle: 'Everything you need to know about Email Marketing',
+      faqs: [
+        {
+          question: 'Why is email marketing still relevant in 2025?',
+          answer: 'Email marketing delivers the highest ROI of any marketing channel - $36-40 for every dollar spent. With 4.6 billion email users worldwide, it\'s 40x more effective at customer acquisition than social media. The key is personalization: generic emails don\'t work anymore, but AI-powered personalized emails achieve 122% higher ROI.',
+        },
+        {
+          question: 'What email platforms do you work with?',
+          answer: 'We work with major platforms including Instantly, Lemlist, HubSpot, Mailchimp, SendGrid, and enterprise solutions. We help you select the right platform based on your needs - whether it\'s cold outreach, newsletter campaigns, or marketing automation sequences.',
+        },
+        {
+          question: 'How do you acquire contacts in a GDPR-compliant way?',
+          answer: 'We partner with verified B2B data providers who source contacts ethically. We target by job title, company size, industry, and location. All contacts are validated for deliverability before campaigns launch. We ensure compliance with GDPR, CAN-SPAM, and other regulations.',
+        },
+        {
+          question: 'What makes your AI personalization different?',
+          answer: 'We analyze each prospect\'s LinkedIn profile to create hyper-personalized content that references their specific role, company, and interests. Instead of generic templates, each email feels like it was written specifically for that person. This approach dramatically increases open and response rates.',
+        },
+        {
+          question: 'How do you measure email campaign success?',
+          answer: 'We track open rates, click-through rates, response rates, and ultimately conversions. You receive detailed reports showing what\'s working and what needs adjustment. We continuously A/B test subject lines, content, and timing to optimize performance.',
+        },
+        {
+          question: 'Can you integrate with our CRM?',
+          answer: 'Yes! We integrate with Salesforce, HubSpot, Pipedrive, and other major CRMs. This ensures your email campaigns sync with your sales pipeline, automating follow-ups and keeping data consistent across systems.',
+        },
+      ],
+    },
+    fr: {
+      title: 'Questions Fréquentes',
+      subtitle: 'Tout ce que vous devez savoir sur l\'Email Marketing',
+      faqs: [
+        {
+          question: 'Pourquoi l\'email marketing est-il encore pertinent en 2025 ?',
+          answer: 'L\'email marketing offre le meilleur ROI de tous les canaux marketing - 36-40€ pour chaque euro dépensé. Avec 4,6 milliards d\'utilisateurs email dans le monde, c\'est 40x plus efficace pour l\'acquisition client que les réseaux sociaux. La clé est la personnalisation : les emails génériques ne fonctionnent plus, mais les emails personnalisés par l\'IA atteignent un ROI 122% supérieur.',
+        },
+        {
+          question: 'Avec quelles plateformes email travaillez-vous ?',
+          answer: 'Nous travaillons avec les principales plateformes incluant Instantly, Lemlist, HubSpot, Mailchimp, SendGrid et des solutions entreprise. Nous vous aidons à sélectionner la bonne plateforme selon vos besoins - que ce soit pour la prospection à froid, les newsletters ou les séquences d\'automation marketing.',
+        },
+        {
+          question: 'Comment acquérez-vous des contacts de manière conforme au RGPD ?',
+          answer: 'Nous travaillons avec des fournisseurs de données B2B vérifiés qui sourcent les contacts de manière éthique. Nous ciblons par titre de poste, taille d\'entreprise, secteur et localisation. Tous les contacts sont validés pour la délivrabilité avant le lancement des campagnes. Nous assurons la conformité RGPD et autres régulations.',
+        },
+        {
+          question: 'Qu\'est-ce qui rend votre personnalisation IA différente ?',
+          answer: 'Nous analysons le profil LinkedIn de chaque prospect pour créer du contenu hyper-personnalisé qui fait référence à leur rôle spécifique, entreprise et intérêts. Au lieu de templates génériques, chaque email semble avoir été écrit spécifiquement pour cette personne. Cette approche augmente drastiquement les taux d\'ouverture et de réponse.',
+        },
+        {
+          question: 'Comment mesurez-vous le succès des campagnes email ?',
+          answer: 'Nous trackons les taux d\'ouverture, taux de clic, taux de réponse, et ultimement les conversions. Vous recevez des rapports détaillés montrant ce qui fonctionne et ce qui doit être ajusté. Nous testons continuellement en A/B les objets, contenus et timings pour optimiser les performances.',
+        },
+        {
+          question: 'Pouvez-vous vous intégrer à notre CRM ?',
+          answer: 'Oui ! Nous nous intégrons avec Salesforce, HubSpot, Pipedrive et autres CRMs majeurs. Cela garantit que vos campagnes email se synchronisent avec votre pipeline commercial, automatisant les relances et maintenant des données cohérentes entre les systèmes.',
         },
       ],
     },
