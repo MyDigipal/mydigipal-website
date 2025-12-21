@@ -1,0 +1,291 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { type Language, languages } from '@/i18n/config';
+import { getCollection } from 'astro:content';
+import Icon from '@/components/ui/Icon.astro';
+
+export async function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+// Get all blog posts
+const allPosts = await getCollection('blog');
+const posts = allPosts
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+// Categories and industries for filters
+const categories = [
+  { id: 'all', label: lang === 'fr' ? 'Tous' : 'All' },
+  { id: 'abm', label: 'ABM' },
+  { id: 'ai', label: lang === 'fr' ? 'IA' : 'AI' },
+  { id: 'paid-ads', label: lang === 'fr' ? 'Publicité' : 'Paid Ads' },
+  { id: 'seo', label: 'SEO' },
+  { id: 'marketing-ops', label: 'Marketing Ops' },
+  { id: 'strategy', label: lang === 'fr' ? 'Stratégie' : 'Strategy' },
+  { id: 'company-news', label: lang === 'fr' ? 'Actualités' : 'News' },
+];
+
+const industries = [
+  { id: 'all', label: lang === 'fr' ? 'Toutes' : 'All' },
+  { id: 'automotive', label: lang === 'fr' ? 'Automobile' : 'Automotive' },
+  { id: 'b2b-tech', label: 'B2B Tech' },
+  { id: 'general', label: lang === 'fr' ? 'Général' : 'General' },
+];
+
+const translations = {
+  en: {
+    title: 'Blog',
+    description: 'Insights, strategies, and trends in digital marketing, AI, and B2B growth.',
+    hero: {
+      badge: 'Insights & Resources',
+      headline: 'Our Blog',
+      subheadline: 'Expert insights on digital marketing, AI, and B2B growth strategies',
+    },
+    search: 'Search articles...',
+    filterCategory: 'Filter by Topic',
+    filterIndustry: 'Filter by Industry',
+    readMore: 'Read more',
+    noResults: 'No articles found matching your criteria.',
+    featured: 'Featured',
+    minRead: 'min read',
+  },
+  fr: {
+    title: 'Blog',
+    description: 'Insights, stratégies et tendances en marketing digital, IA et croissance B2B.',
+    hero: {
+      badge: 'Insights & Ressources',
+      headline: 'Notre Blog',
+      subheadline: 'Expertise en marketing digital, IA et stratégies de croissance B2B',
+    },
+    search: 'Rechercher des articles...',
+    filterCategory: 'Filtrer par Sujet',
+    filterIndustry: 'Filtrer par Industrie',
+    readMore: 'Lire la suite',
+    noResults: 'Aucun article trouvé correspondant à vos critères.',
+    featured: 'À la une',
+    minRead: 'min de lecture',
+  },
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<PageLayout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+>
+  <!-- Hero Section -->
+  <section class="relative bg-slate-950 text-white py-24 overflow-hidden">
+    <!-- Background Effects -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute top-20 -left-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-20 -right-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px]"></div>
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiMxZTI5M2IiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6TTEgMWg1OHY1OEgxVjF6IiBmaWxsPSIjMzM0MTU1IiBmaWxsLW9wYWNpdHk9Ii4yIi8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+    </div>
+
+    <div class="container-custom relative z-10 text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 font-medium mb-6">
+        <Icon name="book-open" size={16} />
+        <span>{t.hero.badge}</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">{t.hero.headline}</h1>
+      <p class="text-xl text-slate-300 max-w-2xl mx-auto">{t.hero.subheadline}</p>
+    </div>
+  </section>
+
+  <!-- Filters and Search -->
+  <section class="py-8 bg-white border-b border-slate-200 sticky top-16 z-40">
+    <div class="container-custom">
+      <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+        <!-- Search -->
+        <div class="relative w-full lg:w-80">
+          <Icon name="search" size={20} class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            id="blog-search"
+            placeholder={t.search}
+            class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+          />
+        </div>
+
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-3">
+          <!-- Category Filter -->
+          <div class="relative">
+            <select
+              id="category-filter"
+              class="appearance-none px-4 py-3 pr-10 rounded-xl border border-slate-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all cursor-pointer"
+            >
+              {categories.map((cat) => (
+                <option value={cat.id}>{cat.label}</option>
+              ))}
+            </select>
+            <Icon name="chevron-down" size={16} class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          </div>
+
+          <!-- Industry Filter -->
+          <div class="relative">
+            <select
+              id="industry-filter"
+              class="appearance-none px-4 py-3 pr-10 rounded-xl border border-slate-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all cursor-pointer"
+            >
+              {industries.map((ind) => (
+                <option value={ind.id}>{ind.label}</option>
+              ))}
+            </select>
+            <Icon name="chevron-down" size={16} class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog Grid -->
+  <section class="py-16 bg-slate-50">
+    <div class="container-custom">
+      <!-- No Results Message -->
+      <div id="no-results" class="hidden text-center py-16">
+        <Icon name="search" size={48} class="text-slate-300 mx-auto mb-4" />
+        <p class="text-xl text-slate-500">{t.noResults}</p>
+      </div>
+
+      <!-- Articles Grid -->
+      <div id="blog-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {posts.map((post) => (
+          <article
+            class="blog-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100"
+            data-title={post.data.title.toLowerCase()}
+            data-description={post.data.description.toLowerCase()}
+            data-category={post.data.category}
+            data-industry={post.data.industry}
+          >
+            <!-- Image -->
+            <a href={`/${lang}/blog/${post.slug.replace('en/', '')}`} class="block relative aspect-[16/10] overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600">
+                {/* Placeholder gradient if no image */}
+              </div>
+              {post.data.featured && (
+                <div class="absolute top-4 left-4 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full">
+                  {t.featured}
+                </div>
+              )}
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+            </a>
+
+            <!-- Content -->
+            <div class="p-6">
+              <!-- Meta -->
+              <div class="flex items-center gap-3 text-sm text-slate-500 mb-3">
+                <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded-md text-xs font-medium capitalize">
+                  {post.data.category.replace('-', ' ')}
+                </span>
+                <span>•</span>
+                <time datetime={post.data.date.toISOString()}>
+                  {post.data.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </time>
+              </div>
+
+              <!-- Title -->
+              <h2 class="text-xl font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <a href={`/${lang}/blog/${post.slug.replace('en/', '')}`}>
+                  {post.data.title}
+                </a>
+              </h2>
+
+              <!-- Description -->
+              <p class="text-slate-600 line-clamp-3 mb-4">
+                {post.data.description}
+              </p>
+
+              <!-- Read More -->
+              <a
+                href={`/${lang}/blog/${post.slug.replace('en/', '')}`}
+                class="inline-flex items-center gap-2 text-blue-600 font-medium hover:text-blue-700 transition-colors"
+              >
+                {t.readMore}
+                <Icon name="arrow-right" size={16} />
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+  // Search and filter functionality
+  const searchInput = document.getElementById('blog-search') as HTMLInputElement;
+  const categoryFilter = document.getElementById('category-filter') as HTMLSelectElement;
+  const industryFilter = document.getElementById('industry-filter') as HTMLSelectElement;
+  const blogGrid = document.getElementById('blog-grid');
+  const noResults = document.getElementById('no-results');
+  const cards = document.querySelectorAll('.blog-card');
+
+  function filterArticles() {
+    const searchTerm = searchInput?.value.toLowerCase() || '';
+    const selectedCategory = categoryFilter?.value || 'all';
+    const selectedIndustry = industryFilter?.value || 'all';
+
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const title = card.getAttribute('data-title') || '';
+      const description = card.getAttribute('data-description') || '';
+      const category = card.getAttribute('data-category') || '';
+      const industry = card.getAttribute('data-industry') || '';
+
+      const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+      const matchesCategory = selectedCategory === 'all' || category === selectedCategory;
+      const matchesIndustry = selectedIndustry === 'all' || industry === selectedIndustry;
+
+      if (matchesSearch && matchesCategory && matchesIndustry) {
+        (card as HTMLElement).style.display = 'block';
+        visibleCount++;
+      } else {
+        (card as HTMLElement).style.display = 'none';
+      }
+    });
+
+    // Show/hide no results message
+    if (noResults && blogGrid) {
+      if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+        blogGrid.classList.add('hidden');
+      } else {
+        noResults.classList.add('hidden');
+        blogGrid.classList.remove('hidden');
+      }
+    }
+  }
+
+  searchInput?.addEventListener('input', filterArticles);
+  categoryFilter?.addEventListener('change', filterArticles);
+  industryFilter?.addEventListener('change', filterArticles);
+</script>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
