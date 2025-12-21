@@ -23,6 +23,7 @@ const t = translations[lang] || translations.en;
 const testimonials = [
   {
     company: "KERING",
+    logo: "/images/Training Logo/Kering.svg",
     program: "Gen AI for Finance - AMER All Brands",
     rating: 10,
     quote: lang === 'fr'
@@ -33,6 +34,7 @@ const testimonials = [
   },
   {
     company: "PIERRE FABRE",
+    logo: "/images/Training Logo/Pierre fabre.avif",
     program: lang === 'fr' ? "Techniques de prompting avancées" : "Advanced Prompting Techniques",
     rating: 10,
     quote: lang === 'fr'
@@ -43,6 +45,7 @@ const testimonials = [
   },
   {
     company: "LA POSTE",
+    logo: "/images/Training Logo/La poste.png",
     program: lang === 'fr' ? "Ateliers Copilot - Collectif de l'Institut" : "Copilot Workshops - Institute Collective",
     rating: 10,
     quote: lang === 'fr'
@@ -53,6 +56,7 @@ const testimonials = [
   },
   {
     company: "BALENCIAGA",
+    logo: "/images/Training Logo/Kering.svg",
     program: "Gen AI for Finance",
     rating: 10,
     quote: lang === 'fr'
@@ -63,6 +67,7 @@ const testimonials = [
   },
   {
     company: "MOËT HENNESSY",
+    logo: null,
     program: "Media Path - Groupe 2",
     rating: 10,
     quote: lang === 'fr'
@@ -100,12 +105,24 @@ const generateStars = (count: number) => Array(count).fill('★').join('');
           class="testimonial-card group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-cyan-200 animate-on-scroll"
           style={`animation-delay: ${index * 100}ms`}
         >
-          <!-- Company Header -->
-          <div class="mb-4">
-            <h3 class={`text-lg font-bold bg-gradient-to-r ${testimonial.color} bg-clip-text text-transparent`}>
-              {testimonial.company}
-            </h3>
-            <p class="text-sm text-slate-500">{testimonial.program}</p>
+          <!-- Company Header with Logo -->
+          <div class="flex items-center gap-4 mb-4">
+            {testimonial.logo && (
+              <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-white border border-slate-100 p-2 flex items-center justify-center">
+                <img
+                  src={testimonial.logo}
+                  alt={testimonial.company}
+                  class="w-full h-full object-contain"
+                  loading="lazy"
+                />
+              </div>
+            )}
+            <div class="flex-1 min-w-0">
+              <h3 class={`text-lg font-bold bg-gradient-to-r ${testimonial.color} bg-clip-text text-transparent`}>
+                {testimonial.company}
+              </h3>
+              <p class="text-sm text-slate-500 truncate">{testimonial.program}</p>
+            </div>
           </div>
 
           <!-- Rating -->
