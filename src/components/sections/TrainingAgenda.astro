@@ -48,8 +48,7 @@ const translations = {
         { letter: "A", word: "Action", description: "What do you want it to do?" },
         { letter: "F", word: "Format", description: "What should the output look like?" },
         { letter: "T", word: "Tone", description: "How should it sound?" }
-      ],
-      example: "\"You work in a healthcare company as a recruitment specialist. Write a job ad for a marketing analyst. Make it concise and friendly, formatted as a LinkedIn post.\""
+      ]
     }
   },
   fr: {
@@ -92,8 +91,7 @@ const translations = {
         { letter: "A", word: "Action", description: "Que voulez-vous qu'elle fasse ?" },
         { letter: "F", word: "Format", description: "À quoi doit ressembler le résultat ?" },
         { letter: "T", word: "Ton", description: "Comment doit-elle s'exprimer ?" }
-      ],
-      example: "\"Tu travailles dans une entreprise de santé en tant que spécialiste recrutement. Rédige une offre d'emploi pour un analyste marketing. Fais-la concise et sympathique, formatée comme un post LinkedIn.\""
+      ]
     }
   }
 };
@@ -212,11 +210,6 @@ const t = translations[lang] || translations.en;
         </div>
       </div>
 
-      <!-- Example -->
-      <div class="craft-example mt-8 p-6 bg-white rounded-2xl border border-slate-200 shadow-lg opacity-0 transform translate-y-8">
-        <p class="text-sm text-slate-500 mb-2">{lang === 'fr' ? 'Exemple de prompt CRAFT :' : 'CRAFT prompt example:'}</p>
-        <p class="text-slate-700 italic leading-relaxed">{t.craft.example}</p>
-      </div>
     </div>
   </div>
 </section>
@@ -268,10 +261,6 @@ const t = translations[lang] || translations.en;
     animation-delay: 0.1s;
   }
 
-  .craft-example.visible {
-    animation: fadeInUp 0.6s ease forwards;
-  }
-
   @keyframes popIn {
     to {
       transform: scale(1);
@@ -317,11 +306,6 @@ const t = translations[lang] || translations.en;
             }, 200);
           }, index * 150);
         });
-
-        // Show example after all letters
-        setTimeout(() => {
-          document.querySelector('.craft-example')?.classList.add('visible');
-        }, letters.length * 150 + 400);
       }
     });
   }, { threshold: 0.5 });

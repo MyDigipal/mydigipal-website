@@ -35,15 +35,6 @@ const translations = {
         description: "Give your team the skills they need for the future. Confident employees become AI champions in your organization."
       }
     ],
-    useCases: {
-      title: "Practical Use Cases",
-      items: [
-        { dept: "Marketing & Comms", tasks: "Write posts, summarize reports, localize content, draft campaigns" },
-        { dept: "HR & Legal", tasks: "Draft job ads, summarize CVs, rephrase clauses, write recaps" },
-        { dept: "Finance & Ops", tasks: "Clean data, check formulas, generate dashboards, translate metrics" },
-        { dept: "Customer Care", tasks: "Respond to FAQs, summarize feedback, generate scripts" }
-      ]
-    }
   },
   fr: {
     badge: "Pourquoi une Formation IA ?",
@@ -71,15 +62,6 @@ const translations = {
         description: "Donnez à vos équipes les compétences pour l'avenir. Des employés confiants deviennent des champions de l'IA."
       }
     ],
-    useCases: {
-      title: "Cas d'Usage Pratiques",
-      items: [
-        { dept: "Marketing & Com", tasks: "Rédiger des posts, résumer des rapports, localiser du contenu" },
-        { dept: "RH & Juridique", tasks: "Rédiger des offres, résumer des CV, reformuler des clauses" },
-        { dept: "Finance & Ops", tasks: "Nettoyer les données, vérifier les formules, créer des dashboards" },
-        { dept: "Service Client", tasks: "Répondre aux FAQ, résumer les feedbacks, générer des scripts" }
-      ]
-    }
   }
 };
 
@@ -130,26 +112,6 @@ const t = translations[lang] || translations.en;
       ))}
     </div>
 
-    <!-- Use Cases -->
-    <div class="max-w-4xl mx-auto animate-on-scroll">
-      <h3 class="text-2xl font-bold text-center mb-8">{t.useCases.title}</h3>
-      <div class="grid md:grid-cols-2 gap-4">
-        {t.useCases.items.map((useCase, index) => (
-          <div
-            class="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/30 transition-all duration-300"
-            style={`animation-delay: ${index * 50}ms`}
-          >
-            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center flex-shrink-0">
-              <span class="text-cyan-400 text-lg">✦</span>
-            </div>
-            <div>
-              <h4 class="font-semibold text-white mb-1">{useCase.dept}</h4>
-              <p class="text-sm text-slate-400">{useCase.tasks}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
   </div>
 </section>
 
