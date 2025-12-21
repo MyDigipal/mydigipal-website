@@ -1,0 +1,261 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Our Approach",
+    headline: "Custom Solutions, Not Off-the-Shelf",
+    subheadline: "Every project is unique because every business is unique",
+    description: "We don't have pre-built solutions waiting on a shelf. Every AI project starts with understanding your specific challenges, workflows, and objectives. That's why we work on a custom quote basis.",
+    principles: [
+      {
+        icon: "target",
+        title: "Problem-First",
+        description: "We start by understanding the real business problem you're trying to solve. AI is a tool, not a goal - it has to deliver measurable value.",
+      },
+      {
+        icon: "sliders",
+        title: "Model-Agnostic",
+        description: "We use whatever AI model fits best - OpenAI, Anthropic Claude, Google Gemini, or open-source. The choice depends on your needs, not our preferences.",
+      },
+      {
+        icon: "shield",
+        title: "Secure by Design",
+        description: "Security isn't an afterthought. We build with guardrails from day one, support private deployments, and ensure compliance with your requirements.",
+      },
+      {
+        icon: "users",
+        title: "No Black Boxes",
+        description: "We train your team on how the automation works. You'll know where to update prompts, adjust workflows, and maintain the system.",
+      },
+    ],
+    process: {
+      title: "How We Work",
+      steps: [
+        {
+          number: "01",
+          title: "Discovery Call",
+          description: "We discuss your challenges, identify potential use cases, and assess feasibility. No commitment required.",
+          duration: "30-60 min",
+        },
+        {
+          number: "02",
+          title: "Deep Dive & Proposal",
+          description: "If there's a fit, we analyze your workflows in detail and create a custom proposal with scope, timeline, and investment.",
+          duration: "1-2 weeks",
+        },
+        {
+          number: "03",
+          title: "Proof of Concept",
+          description: "For complex projects, we often start with a PoC to validate the approach and demonstrate value before full development.",
+          duration: "2-4 weeks",
+        },
+        {
+          number: "04",
+          title: "Development",
+          description: "Iterative development with regular check-ins. You see progress throughout, not just at the end.",
+          duration: "2-4 months",
+        },
+        {
+          number: "05",
+          title: "Launch & Optimize",
+          description: "We deploy, train your team, and monitor performance. Real-world usage reveals optimization opportunities.",
+          duration: "Ongoing",
+        },
+      ],
+    },
+    cta: {
+      title: "Ready to Explore?",
+      description: "Let's discuss your challenges and see if custom AI development is right for your business.",
+      button: "Schedule a Discovery Call",
+    },
+    models: {
+      title: "Technologies We Work With",
+      items: [
+        { name: "OpenAI GPT-4", icon: "sparkles" },
+        { name: "Anthropic Claude", icon: "message-circle" },
+        { name: "Google Gemini", icon: "globe" },
+        { name: "Mistral / Llama", icon: "box" },
+        { name: "LangChain", icon: "link" },
+        { name: "Vector DBs", icon: "database" },
+      ],
+    },
+  },
+  fr: {
+    badge: "Notre Approche",
+    headline: "Solutions Sur Mesure, Pas de l'Étagère",
+    subheadline: "Chaque projet est unique car chaque entreprise est unique",
+    description: "Nous n'avons pas de solutions pré-fabriquées en attente sur une étagère. Chaque projet IA commence par comprendre vos défis spécifiques, workflows et objectifs. C'est pourquoi nous travaillons sur devis personnalisé.",
+    principles: [
+      {
+        icon: "target",
+        title: "Le Problème d'Abord",
+        description: "Nous commençons par comprendre le vrai problème business à résoudre. L'IA est un outil, pas un objectif - elle doit apporter une valeur mesurable.",
+      },
+      {
+        icon: "sliders",
+        title: "Agnostique de Modèle",
+        description: "Nous utilisons le modèle IA le plus adapté - OpenAI, Anthropic Claude, Google Gemini, ou open-source. Le choix dépend de vos besoins, pas de nos préférences.",
+      },
+      {
+        icon: "shield",
+        title: "Sécurisé dès la Conception",
+        description: "La sécurité n'est pas une réflexion tardive. Nous construisons avec des garde-fous dès le premier jour, supportons les déploiements privés et assurons la conformité.",
+      },
+      {
+        icon: "users",
+        title: "Pas de Boîtes Noires",
+        description: "Nous formons votre équipe au fonctionnement de l'automatisation. Vous saurez où mettre à jour les prompts, ajuster les workflows et maintenir le système.",
+      },
+    ],
+    process: {
+      title: "Comment Nous Travaillons",
+      steps: [
+        {
+          number: "01",
+          title: "Appel Découverte",
+          description: "Nous discutons de vos défis, identifions les cas d'usage potentiels et évaluons la faisabilité. Sans engagement.",
+          duration: "30-60 min",
+        },
+        {
+          number: "02",
+          title: "Analyse & Proposition",
+          description: "S'il y a une adéquation, nous analysons vos workflows en détail et créons une proposition sur mesure avec périmètre, planning et investissement.",
+          duration: "1-2 semaines",
+        },
+        {
+          number: "03",
+          title: "Preuve de Concept",
+          description: "Pour les projets complexes, nous commençons souvent par un PoC pour valider l'approche et démontrer la valeur avant le développement complet.",
+          duration: "2-4 semaines",
+        },
+        {
+          number: "04",
+          title: "Développement",
+          description: "Développement itératif avec points réguliers. Vous voyez l'avancement tout au long, pas seulement à la fin.",
+          duration: "2-4 mois",
+        },
+        {
+          number: "05",
+          title: "Lancement & Optimisation",
+          description: "Nous déployons, formons votre équipe et suivons les performances. L'usage réel révèle les opportunités d'optimisation.",
+          duration: "Continu",
+        },
+      ],
+    },
+    cta: {
+      title: "Prêt à Explorer ?",
+      description: "Discutons de vos défis et voyons si le développement IA sur mesure est adapté à votre entreprise.",
+      button: "Planifier un Appel Découverte",
+    },
+    models: {
+      title: "Technologies Avec Lesquelles Nous Travaillons",
+      items: [
+        { name: "OpenAI GPT-4", icon: "sparkles" },
+        { name: "Anthropic Claude", icon: "message-circle" },
+        { name: "Google Gemini", icon: "globe" },
+        { name: "Mistral / Llama", icon: "box" },
+        { name: "LangChain", icon: "link" },
+        { name: "Vector DBs", icon: "database" },
+      ],
+    },
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-white overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 bg-indigo-50 text-indigo-600 border border-indigo-100">
+        <Icon name="settings" size={16} />
+        {t.badge}
+      </span>
+      <h2 class="text-3xl lg:text-5xl font-bold text-slate-900 mb-4">{t.headline}</h2>
+      <p class="text-xl text-indigo-600 font-medium mb-4">{t.subheadline}</p>
+      <p class="text-lg text-slate-600">{t.description}</p>
+    </div>
+
+    <!-- Principles -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+      {t.principles.map((principle) => (
+        <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 group">
+          <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+            <Icon name={principle.icon} size={24} />
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">{principle.title}</h3>
+          <p class="text-sm text-slate-600">{principle.description}</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Process Timeline -->
+    <div class="mb-20">
+      <h3 class="text-2xl font-bold text-slate-900 text-center mb-12">{t.process.title}</h3>
+
+      <div class="relative">
+        {/* Timeline line - desktop only */}
+        <div class="hidden lg:block absolute top-16 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-200 via-indigo-400 to-purple-400"></div>
+
+        <div class="grid lg:grid-cols-5 gap-8">
+          {t.process.steps.map((step, index) => (
+            <div class="relative">
+              {/* Step indicator */}
+              <div class="flex lg:flex-col items-start lg:items-center gap-4 lg:gap-0">
+                {/* Circle */}
+                <div class="relative z-10 w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-indigo-500/30 lg:mb-6">
+                  {step.number}
+                </div>
+
+                {/* Content */}
+                <div class="flex-1 lg:text-center">
+                  <h4 class="font-bold text-slate-900 mb-2">{step.title}</h4>
+                  <p class="text-sm text-slate-600 mb-2">{step.description}</p>
+                  <span class="inline-block px-3 py-1 text-xs font-medium bg-indigo-50 text-indigo-600 rounded-full">
+                    {step.duration}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Technologies -->
+    <div class="bg-slate-900 rounded-3xl p-8 lg:p-12 mb-12">
+      <h3 class="text-xl font-bold text-white text-center mb-8">{t.models.title}</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {t.models.items.map((model) => (
+          <div class="flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors">
+            <Icon name={model.icon} size={20} class="text-indigo-400" />
+            <span class="text-sm font-medium">{model.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-12 border border-indigo-100">
+      <h3 class="text-2xl font-bold text-slate-900 mb-4">{t.cta.title}</h3>
+      <p class="text-slate-600 mb-8 max-w-xl mx-auto">{t.cta.description}</p>
+      <a
+        href={`/${lang}/contact`}
+        class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-lg shadow-xl shadow-indigo-500/25 hover:shadow-2xl hover:scale-105 transition-all duration-300"
+      >
+        <Icon name="calendar" size={20} />
+        {t.cta.button}
+        <Icon name="arrow-right" size={20} />
+      </a>
+    </div>
+  </div>
+</section>

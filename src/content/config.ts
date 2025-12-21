@@ -8,7 +8,7 @@ const servicesCollection = defineCollection({
     description: z.string(),
     shortDescription: z.string().optional(),
     icon: z.string().optional(),
-    color: z.enum(['seo', 'ads', 'social', 'abm', 'training', 'emailing', 'primary']).default('primary'),
+    color: z.enum(['seo', 'ads', 'social', 'abm', 'training', 'emailing', 'ai', 'primary']).default('primary'),
     order: z.number().default(0),
 
     // Hero section
@@ -49,6 +49,7 @@ const servicesCollection = defineCollection({
       role: z.string(),
       company: z.string(),
       image: z.string().optional(),
+      companyLogo: z.string().optional(),
     }).optional(),
 
     // SEO
