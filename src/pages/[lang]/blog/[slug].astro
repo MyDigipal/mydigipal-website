@@ -1,0 +1,292 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { type Language, languages } from '@/i18n/config';
+import { getCollection } from 'astro:content';
+import Icon from '@/components/ui/Icon.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const paths: { params: { lang: string; slug: string }; props: { post: any } }[] = [];
+
+  posts.forEach((post) => {
+    // Extract slug without language prefix
+    const slug = post.slug.replace(/^(en|fr)\//, '');
+
+    Object.keys(languages).forEach((lang) => {
+      paths.push({
+        params: { lang, slug },
+        props: { post },
+      });
+    });
+  });
+
+  return paths;
+}
+
+const { lang } = Astro.params as { lang: Language };
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+// Get related posts (same category, exclude current)
+const allPosts = await getCollection('blog');
+const relatedPosts = allPosts
+  .filter((p) => p.data.category === post.data.category && p.slug !== post.slug && !p.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const translations = {
+  en: {
+    backToBlog: 'Back to Blog',
+    readMore: 'Read more',
+    relatedArticles: 'Related Articles',
+    share: 'Share this article',
+    writtenBy: 'Written by',
+    publishedOn: 'Published on',
+  },
+  fr: {
+    backToBlog: 'Retour au Blog',
+    readMore: 'Lire la suite',
+    relatedArticles: 'Articles Similaires',
+    share: 'Partager cet article',
+    writtenBy: 'Écrit par',
+    publishedOn: 'Publié le',
+  },
+};
+
+const t = translations[lang] || translations.en;
+
+const categoryLabels: Record<string, Record<string, string>> = {
+  en: {
+    'abm': 'ABM',
+    'ai': 'AI',
+    'paid-ads': 'Paid Ads',
+    'seo': 'SEO',
+    'marketing-ops': 'Marketing Ops',
+    'strategy': 'Strategy',
+    'company-news': 'Company News',
+  },
+  fr: {
+    'abm': 'ABM',
+    'ai': 'IA',
+    'paid-ads': 'Publicité',
+    'seo': 'SEO',
+    'marketing-ops': 'Marketing Ops',
+    'strategy': 'Stratégie',
+    'company-news': 'Actualités',
+  },
+};
+---
+
+<PageLayout
+  lang={lang}
+  title={post.data.seo?.title || post.data.title}
+  description={post.data.seo?.description || post.data.description}
+>
+  <!-- Hero Section -->
+  <section class="relative bg-slate-950 text-white pt-32 pb-24 overflow-hidden">
+    <!-- Background Effects -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute top-20 -left-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-20 -right-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div class="container-custom relative z-10 max-w-4xl mx-auto">
+      <!-- Back Link -->
+      <a
+        href={`/${lang}/blog`}
+        class="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8"
+      >
+        <Icon name="arrow-left" size={16} />
+        {t.backToBlog}
+      </a>
+
+      <!-- Category & Date -->
+      <div class="flex items-center gap-4 mb-6">
+        <span class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm font-medium">
+          {categoryLabels[lang]?.[post.data.category] || post.data.category}
+        </span>
+        <span class="text-slate-400">•</span>
+        <time class="text-slate-400" datetime={post.data.date.toISOString()}>
+          {post.data.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </time>
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+        {post.data.title}
+      </h1>
+
+      <!-- Description -->
+      <p class="text-xl text-slate-300 mb-8">
+        {post.data.description}
+      </p>
+
+      <!-- Author -->
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+          {post.data.author.charAt(0)}
+        </div>
+        <div>
+          <div class="font-medium text-white">{post.data.author}</div>
+          <div class="text-sm text-slate-400">{t.publishedOn} {post.data.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Article Content -->
+  <section class="py-16 bg-white">
+    <div class="container-custom max-w-4xl mx-auto">
+      <article class="prose prose-lg prose-slate max-w-none">
+        <Content />
+      </article>
+
+      <!-- Tags -->
+      {post.data.tags && post.data.tags.length > 0 && (
+        <div class="mt-12 pt-8 border-t border-slate-200">
+          <div class="flex flex-wrap gap-2">
+            {post.data.tags.map((tag: string) => (
+              <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Share -->
+      <div class="mt-8 pt-8 border-t border-slate-200">
+        <h3 class="text-lg font-bold text-slate-900 mb-4">{t.share}</h3>
+        <div class="flex gap-3">
+          <a
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(Astro.url.href)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-10 h-10 rounded-full bg-slate-100 hover:bg-blue-500 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
+          >
+            <Icon name="twitter" size={18} />
+          </a>
+          <a
+            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-10 h-10 rounded-full bg-slate-100 hover:bg-blue-700 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
+          >
+            <Icon name="linkedin" size={18} />
+          </a>
+          <button
+            onclick={`navigator.clipboard.writeText('${Astro.url.href}')`}
+            class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors"
+            title="Copy link"
+          >
+            <Icon name="link" size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Articles -->
+  {relatedPosts.length > 0 && (
+    <section class="py-16 bg-slate-50">
+      <div class="container-custom">
+        <h2 class="text-2xl font-bold text-slate-900 mb-8">{t.relatedArticles}</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          {relatedPosts.map((relatedPost) => (
+            <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100">
+              <a href={`/${lang}/blog/${relatedPost.slug.replace('en/', '')}`} class="block relative aspect-[16/10] overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600"></div>
+              </a>
+              <div class="p-6">
+                <div class="text-sm text-slate-500 mb-2">
+                  {relatedPost.data.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                  <a href={`/${lang}/blog/${relatedPost.slug.replace('en/', '')}`}>
+                    {relatedPost.data.title}
+                  </a>
+                </h3>
+                <a
+                  href={`/${lang}/blog/${relatedPost.slug.replace('en/', '')}`}
+                  class="inline-flex items-center gap-2 text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
+                >
+                  {t.readMore}
+                  <Icon name="arrow-right" size={14} />
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- CTA -->
+  <section class="py-16 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+    <div class="container-custom text-center">
+      <h2 class="text-3xl font-bold mb-4">
+        {lang === 'fr' ? 'Besoin d\'aide avec votre marketing digital ?' : 'Need help with your digital marketing?'}
+      </h2>
+      <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+        {lang === 'fr' ? 'Discutons de vos objectifs et voyons comment nous pouvons vous aider à les atteindre.' : 'Let\'s discuss your goals and see how we can help you achieve them.'}
+      </p>
+      <a
+        href={`/${lang}/contact`}
+        class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-white text-blue-700 font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
+      >
+        {lang === 'fr' ? 'Contactez-nous' : 'Contact Us'}
+        <Icon name="arrow-right" size={20} />
+      </a>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Prose styles */
+  .prose h2 {
+    @apply text-2xl font-bold text-slate-900 mt-10 mb-4;
+  }
+
+  .prose h3 {
+    @apply text-xl font-bold text-slate-900 mt-8 mb-3;
+  }
+
+  .prose p {
+    @apply text-slate-600 leading-relaxed mb-4;
+  }
+
+  .prose ul, .prose ol {
+    @apply my-4 pl-6;
+  }
+
+  .prose li {
+    @apply text-slate-600 mb-2;
+  }
+
+  .prose a {
+    @apply text-blue-600 hover:text-blue-700 underline;
+  }
+
+  .prose strong {
+    @apply text-slate-900 font-semibold;
+  }
+
+  .prose blockquote {
+    @apply border-l-4 border-blue-500 pl-6 italic text-slate-600 my-6;
+  }
+</style>
