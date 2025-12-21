@@ -26,6 +26,11 @@ import GoogleAdsChannels from '@/components/sections/GoogleAdsChannels.astro';
 import WhyGoogleAds from '@/components/sections/WhyGoogleAds.astro';
 import GoogleAdsProcess from '@/components/sections/GoogleAdsProcess.astro';
 
+// Paid Social specific sections
+import WhyPaidSocial from '@/components/sections/WhyPaidSocial.astro';
+import PaidSocialChannels from '@/components/sections/PaidSocialChannels.astro';
+import PaidSocialProcess from '@/components/sections/PaidSocialProcess.astro';
+
 // Social proof
 import TrustedBy from '@/components/sections/TrustedBy.astro';
 
@@ -71,6 +76,8 @@ const {
 const isSEOService = slug === 'seo';
 // Check if this is the Google Ads service page
 const isGoogleAdsService = slug === 'google-ads';
+// Check if this is the Paid Social service page
+const isPaidSocialService = slug === 'paid-social';
 ---
 
 <PageLayout
@@ -123,6 +130,20 @@ const isGoogleAdsService = slug === 'google-ads';
 
       <!-- Process Timeline -->
       <GoogleAdsProcess lang={lang} color={color} />
+    </>
+  )}
+
+  <!-- Paid Social Service: Interactive Sections -->
+  {isPaidSocialService && (
+    <>
+      <!-- Why Paid Social - Educational Section -->
+      <WhyPaidSocial lang={lang} color={color} />
+
+      <!-- Paid Social Channels - Visual Showcase -->
+      <PaidSocialChannels lang={lang} color={color} />
+
+      <!-- Process Timeline -->
+      <PaidSocialProcess lang={lang} color={color} />
     </>
   )}
 
