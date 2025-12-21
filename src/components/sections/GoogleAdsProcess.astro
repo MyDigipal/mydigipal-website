@@ -1,0 +1,239 @@
+---
+/**
+ * GoogleAdsProcess - Interactive timeline showing our Google Ads methodology
+ * Visual step-by-step process with gamification elements
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+}
+
+const { lang, color = 'ads' } = Astro.props;
+
+const content = {
+  en: {
+    badge: 'Our Process',
+    title: 'From Audit to ROI in 4 Steps',
+    subtitle: 'A proven methodology that delivers measurable results consistently.',
+    steps: [
+      {
+        number: '01',
+        title: 'Audit & Discovery',
+        description: 'We analyze your current campaigns (if any), competitor landscape, and market opportunities. Identify quick wins and strategic gaps.',
+        icon: 'search',
+        deliverables: ['Account audit', 'Competitor analysis', 'Keyword opportunities', 'Budget recommendations'],
+        duration: 'Week 1',
+      },
+      {
+        number: '02',
+        title: 'Strategy & Setup',
+        description: 'We design your campaign structure, create compelling ad copy, set up conversion tracking, and configure smart bidding strategies.',
+        icon: 'settings',
+        deliverables: ['Campaign structure', 'Ad copy & creatives', 'Tracking setup', 'Audience targeting'],
+        duration: 'Week 2',
+      },
+      {
+        number: '03',
+        title: 'Launch & Optimize',
+        description: 'Campaigns go live with daily monitoring. We optimize bids, test ad variations, and refine targeting based on real data.',
+        icon: 'play',
+        deliverables: ['Campaign launch', 'A/B testing', 'Bid optimization', 'Negative keywords'],
+        duration: 'Weeks 3-4',
+      },
+      {
+        number: '04',
+        title: 'Scale & Report',
+        description: 'Once we find winning formulas, we scale budget efficiently. Monthly reports with clear ROI metrics and strategic recommendations.',
+        icon: 'trending-up',
+        deliverables: ['Monthly reports', 'ROI analysis', 'Scale strategy', 'New opportunities'],
+        duration: 'Ongoing',
+      },
+    ],
+    resultsBadge: 'Expected Results',
+    results: [
+      { value: '30%', label: 'faster deal closing' },
+      { value: '+57%', label: 'conversion increase' },
+      { value: '10.5K', label: 'store visits tracked' },
+    ],
+  },
+  fr: {
+    badge: 'Notre Processus',
+    title: 'De l\'Audit au ROI en 4 Étapes',
+    subtitle: 'Une méthodologie éprouvée qui délivre des résultats mesurables de façon constante.',
+    steps: [
+      {
+        number: '01',
+        title: 'Audit & Découverte',
+        description: 'Nous analysons vos campagnes actuelles (si existantes), le paysage concurrentiel et les opportunités de marché. Identification des quick wins et lacunes stratégiques.',
+        icon: 'search',
+        deliverables: ['Audit du compte', 'Analyse concurrentielle', 'Opportunités mots-clés', 'Recommandations budget'],
+        duration: 'Semaine 1',
+      },
+      {
+        number: '02',
+        title: 'Stratégie & Setup',
+        description: 'Nous concevons la structure de vos campagnes, créons les copies d\'annonces, configurons le tracking des conversions et les stratégies d\'enchères intelligentes.',
+        icon: 'settings',
+        deliverables: ['Structure campagne', 'Annonces & créatifs', 'Setup tracking', 'Ciblage audiences'],
+        duration: 'Semaine 2',
+      },
+      {
+        number: '03',
+        title: 'Lancement & Optimisation',
+        description: 'Les campagnes passent en live avec un monitoring quotidien. Nous optimisons les enchères, testons des variations et affinons le ciblage.',
+        icon: 'play',
+        deliverables: ['Lancement campagne', 'Tests A/B', 'Optimisation enchères', 'Mots-clés négatifs'],
+        duration: 'Semaines 3-4',
+      },
+      {
+        number: '04',
+        title: 'Scale & Reporting',
+        description: 'Une fois les formules gagnantes trouvées, nous scalons le budget efficacement. Rapports mensuels avec métriques ROI claires et recommandations.',
+        icon: 'trending-up',
+        deliverables: ['Rapports mensuels', 'Analyse ROI', 'Stratégie de scale', 'Nouvelles opportunités'],
+        duration: 'Continu',
+      },
+    ],
+    resultsBadge: 'Résultats Attendus',
+    results: [
+      { value: '30%', label: 'closing plus rapide' },
+      { value: '+57%', label: 'augmentation conversions' },
+      { value: '10.5K', label: 'visites magasin trackées' },
+    ],
+  },
+};
+
+const t = content[lang] || content.en;
+---
+
+<section class="section bg-gradient-to-b from-white to-slate-50 overflow-hidden" data-color={color}>
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <span class="badge-ads mb-4">{t.badge}</span>
+      <h2 class="heading-2 mb-4">{t.title}</h2>
+      <p class="body-large text-slate-600">{t.subtitle}</p>
+    </div>
+
+    <!-- Timeline -->
+    <div class="relative">
+      <!-- Connecting line -->
+      <div class="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 transform -translate-y-1/2 rounded-full"></div>
+
+      <!-- Steps -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+        {t.steps.map((step, index) => (
+          <div
+            class="process-step group relative animate-on-scroll"
+            style={`animation-delay: ${index * 150}ms`}
+            data-step={step.number}
+          >
+            <!-- Card -->
+            <div class="relative bg-white rounded-2xl p-6 border border-slate-200 shadow-soft transition-all duration-500 hover:shadow-xl hover:-translate-y-3 hover:border-amber-300">
+              <!-- Step number badge -->
+              <div class="absolute -top-4 left-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg group-hover:scale-110 transition-transform">
+                {step.number}
+              </div>
+
+              <!-- Duration badge -->
+              <div class="absolute -top-4 right-6 bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-medium">
+                {step.duration}
+              </div>
+
+              <!-- Icon -->
+              <div class="mt-4 mb-4">
+                <div class="w-14 h-14 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
+                  <Icon name={step.icon} class="w-7 h-7" />
+                </div>
+              </div>
+
+              <!-- Content -->
+              <h3 class="font-semibold text-lg text-slate-900 mb-2 group-hover:text-amber-600 transition-colors">
+                {step.title}
+              </h3>
+              <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+                {step.description}
+              </p>
+
+              <!-- Deliverables -->
+              <div class="space-y-2">
+                {step.deliverables.map((item, i) => (
+                  <div
+                    class="flex items-center gap-2 text-sm text-slate-500 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
+                    style={`transition-delay: ${i * 50}ms`}
+                  >
+                    <Icon name="check" class="w-4 h-4 text-amber-500 flex-shrink-0" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <!-- Progress indicator -->
+              <div class="mt-4 pt-4 border-t border-slate-100">
+                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    class="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Arrow connector (visible on lg) -->
+            {index < 3 && (
+              <div class="hidden lg:flex absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
+                <div class="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-amber-500">
+                  <Icon name="chevron-right" class="w-5 h-5" />
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Results Preview -->
+    <div class="mt-16 animate-on-scroll">
+      <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl p-8 lg:p-12 text-white">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div>
+            <span class="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-1 text-sm font-medium mb-4">
+              <Icon name="award" class="w-4 h-4" />
+              {t.resultsBadge}
+            </span>
+            <h3 class="text-2xl lg:text-3xl font-bold">
+              {lang === 'fr' ? 'Résultats prouvés par nos clients' : 'Proven results from our clients'}
+            </h3>
+          </div>
+
+          <div class="flex flex-wrap justify-center gap-8 lg:gap-12">
+            {t.results.map((result) => (
+              <div class="text-center">
+                <div class="text-4xl lg:text-5xl font-bold mb-1">{result.value}</div>
+                <div class="text-sm opacity-90">{result.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .process-step {
+    perspective: 1000px;
+  }
+
+  @media (min-width: 1024px) {
+    .process-step:nth-child(even) > div {
+      transform: translateY(40px);
+    }
+
+    .process-step:nth-child(even):hover > div {
+      transform: translateY(37px);
+    }
+  }
+</style>
