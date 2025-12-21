@@ -1,0 +1,205 @@
+---
+/**
+ * PaidSocialProcess - Action plan timeline for Paid Social campaigns
+ * Step-by-step process with deliverables and results
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  color?: string;
+}
+
+const { lang, color = 'social' } = Astro.props;
+
+const content = {
+  en: {
+    badge: 'Action Plan',
+    title: 'Scale Your Paid Social Campaigns',
+    subtitle: 'Pick and choose the support you need. Our flexible approach adapts to your goals.',
+    steps: [
+      {
+        number: '01',
+        title: 'Audience Research',
+        description: 'Deep dive into your ideal customer profile. We analyze demographics, behaviors, and interests to build precise targeting.',
+        deliverables: ['ICP Definition', 'Audience Segments', 'Competitor Analysis', 'Platform Selection'],
+        icon: 'search',
+      },
+      {
+        number: '02',
+        title: 'Strategy & Creative',
+        description: 'Develop compelling ad creative and messaging that resonates with your audience at each stage of the funnel.',
+        deliverables: ['Campaign Structure', 'Ad Copy Variants', 'Visual Assets', 'A/B Test Plan'],
+        icon: 'edit',
+      },
+      {
+        number: '03',
+        title: 'Launch & Optimize',
+        description: 'Deploy campaigns with continuous monitoring. We optimize bids, audiences, and creative based on real-time data.',
+        deliverables: ['Campaign Launch', 'Daily Monitoring', 'Bid Optimization', 'Audience Refinement'],
+        icon: 'play',
+      },
+      {
+        number: '04',
+        title: 'Scale & Report',
+        description: 'Identify winning combinations and scale budget to maximize ROI. Transparent reporting keeps you informed.',
+        deliverables: ['Performance Reports', 'ROI Analysis', 'Scaling Strategy', 'Recommendations'],
+        icon: 'bar-chart',
+      },
+    ],
+    results: {
+      title: 'Real Results from Real Campaigns',
+      metrics: [
+        { value: '-45%', label: 'Cost per Lead' },
+        { value: '+3.2x', label: 'ROAS Improvement' },
+        { value: '+180%', label: 'Qualified Leads' },
+      ],
+    },
+  },
+  fr: {
+    badge: 'Plan d\'Action',
+    title: 'Scalez Vos Campagnes Paid Social',
+    subtitle: 'Choisissez le support dont vous avez besoin. Notre approche flexible s\'adapte à vos objectifs.',
+    steps: [
+      {
+        number: '01',
+        title: 'Recherche d\'Audience',
+        description: 'Analyse approfondie de votre profil client idéal. Nous analysons les données démographiques, comportements et intérêts pour un ciblage précis.',
+        deliverables: ['Définition ICP', 'Segments d\'Audience', 'Analyse Concurrentielle', 'Sélection Plateformes'],
+        icon: 'search',
+      },
+      {
+        number: '02',
+        title: 'Stratégie & Créatif',
+        description: 'Développement de créatifs publicitaires et messages qui résonnent avec votre audience à chaque étape du funnel.',
+        deliverables: ['Structure Campagne', 'Variantes de Copie', 'Assets Visuels', 'Plan A/B Test'],
+        icon: 'edit',
+      },
+      {
+        number: '03',
+        title: 'Lancement & Optimisation',
+        description: 'Déploiement des campagnes avec monitoring continu. Nous optimisons les enchères, audiences et créatifs en temps réel.',
+        deliverables: ['Lancement Campagne', 'Monitoring Quotidien', 'Optimisation Enchères', 'Affinement Audience'],
+        icon: 'play',
+      },
+      {
+        number: '04',
+        title: 'Scale & Rapport',
+        description: 'Identification des combinaisons gagnantes et scaling du budget pour maximiser le ROI. Reporting transparent.',
+        deliverables: ['Rapports Performance', 'Analyse ROI', 'Stratégie de Scaling', 'Recommandations'],
+        icon: 'bar-chart',
+      },
+    ],
+    results: {
+      title: 'Résultats Réels de Vraies Campagnes',
+      metrics: [
+        { value: '-45%', label: 'Coût par Lead' },
+        { value: '+3.2x', label: 'Amélioration ROAS' },
+        { value: '+180%', label: 'Leads Qualifiés' },
+      ],
+    },
+  },
+};
+
+const t = content[lang] || content.en;
+---
+
+<section class="section bg-white overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 bg-violet-100 text-violet-700">
+        <Icon name="list" size={16} />
+        {t.badge}
+      </span>
+      <h2 class="heading-2 mb-4">{t.title}</h2>
+      <p class="body-large text-slate-600">{t.subtitle}</p>
+    </div>
+
+    <!-- Timeline Steps -->
+    <div class="relative max-w-5xl mx-auto">
+      <!-- Vertical line -->
+      <div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-violet-500 via-purple-500 to-pink-500 hidden md:block"></div>
+
+      <div class="space-y-12">
+        {t.steps.map((step, index) => (
+          <div class={`relative flex flex-col md:flex-row gap-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
+            <!-- Step number bubble -->
+            <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full bg-violet-500 text-white flex items-center justify-center font-bold text-xl z-10 shadow-lg hidden md:flex">
+              {step.number}
+            </div>
+
+            <!-- Content card -->
+            <div class={`md:w-[calc(50%-4rem)] ${index % 2 === 0 ? 'md:pr-8' : 'md:pl-8'}`}>
+              <div class="step-card group bg-white rounded-2xl border-2 border-slate-200 hover:border-violet-400 p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <!-- Mobile number -->
+                <div class="md:hidden w-12 h-12 rounded-full bg-violet-500 text-white flex items-center justify-center font-bold mb-4">
+                  {step.number}
+                </div>
+
+                <div class="flex items-start gap-4 mb-4">
+                  <div class="w-12 h-12 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Icon name={step.icon} size={24} />
+                  </div>
+                  <div>
+                    <h3 class="heading-4">{step.title}</h3>
+                  </div>
+                </div>
+
+                <p class="text-slate-600 mb-4">{step.description}</p>
+
+                <!-- Deliverables (revealed on hover) -->
+                <div class="deliverables overflow-hidden transition-all duration-300 max-h-0 group-hover:max-h-40">
+                  <div class="pt-4 border-t border-slate-100">
+                    <p class="text-xs font-semibold text-violet-600 uppercase tracking-wide mb-2">
+                      {lang === 'fr' ? 'Livrables' : 'Deliverables'}
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                      {step.deliverables.map((item) => (
+                        <span class="px-2 py-1 bg-violet-50 text-violet-700 rounded text-sm">
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="mt-20 animate-on-scroll">
+      <div class="relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 rounded-3xl transform rotate-1"></div>
+        <div class="relative bg-gradient-to-r from-violet-600 to-purple-600 rounded-3xl p-8 md:p-12 text-white">
+          <h3 class="heading-3 text-center mb-8">{t.results.title}</h3>
+
+          <div class="grid md:grid-cols-3 gap-8">
+            {t.results.metrics.map((metric) => (
+              <div class="text-center">
+                <div class="text-4xl md:text-5xl font-bold mb-2">{metric.value}</div>
+                <div class="text-violet-200">{metric.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .step-card:hover .deliverables {
+    max-height: 160px;
+  }
+
+  /* Timeline animation */
+  @keyframes draw-line {
+    from { height: 0; }
+    to { height: 100%; }
+  }
+</style>
