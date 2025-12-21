@@ -1,0 +1,197 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Our Approach",
+    headline: "How We Create Your Training",
+    subtitle: "A collaborative process designed to maximize impact",
+    steps: [
+      {
+        number: "01",
+        title: "Discovery",
+        description: "We learn about your team's needs through two discovery meetings to understand your context, challenges, and objectives.",
+        icon: "🔍"
+      },
+      {
+        number: "02",
+        title: "Use Case Definition",
+        description: "We define specific use cases tailored to your audience - real scenarios from their daily work that AI can improve.",
+        icon: "🎯"
+      },
+      {
+        number: "03",
+        title: "Content Creation",
+        description: "We create custom training materials with your branding. You review and can request modifications before delivery.",
+        icon: "📝"
+      },
+      {
+        number: "04",
+        title: "Training Delivery",
+        description: "We deliver the training either in-person at your offices or remotely via Zoom/Teams - whatever works best for your team.",
+        icon: "🎓"
+      },
+      {
+        number: "05",
+        title: "Recording & Transcripts",
+        description: "All sessions are recorded with generated transcripts, so participants can revisit the content anytime.",
+        icon: "🎥"
+      },
+      {
+        number: "06",
+        title: "Feedback & Follow-up",
+        description: "We collect post-training feedback to measure satisfaction and identify areas for continuous improvement.",
+        icon: "📊"
+      }
+    ]
+  },
+  fr: {
+    badge: "Notre Approche",
+    headline: "Comment Nous Créons Votre Formation",
+    subtitle: "Un processus collaboratif conçu pour maximiser l'impact",
+    steps: [
+      {
+        number: "01",
+        title: "Découverte",
+        description: "Nous découvrons les besoins de votre équipe à travers deux réunions pour comprendre votre contexte, défis et objectifs.",
+        icon: "🔍"
+      },
+      {
+        number: "02",
+        title: "Définition des Use Cases",
+        description: "Nous définissons des cas d'usage spécifiques adaptés à votre audience - des scénarios réels de leur quotidien que l'IA peut améliorer.",
+        icon: "🎯"
+      },
+      {
+        number: "03",
+        title: "Création du Contenu",
+        description: "Nous créons des supports de formation personnalisés à votre image. Vous validez et pouvez demander des modifications.",
+        icon: "📝"
+      },
+      {
+        number: "04",
+        title: "Réalisation du Training",
+        description: "Nous dispensons la formation en présentiel dans vos locaux ou à distance via Zoom/Teams - selon vos préférences.",
+        icon: "🎓"
+      },
+      {
+        number: "05",
+        title: "Enregistrement & Transcripts",
+        description: "Toutes les sessions sont enregistrées avec génération de transcripts, pour que les participants puissent revoir le contenu.",
+        icon: "🎥"
+      },
+      {
+        number: "06",
+        title: "Feedback & Suivi",
+        description: "Nous collectons les retours post-formation pour mesurer la satisfaction et identifier les axes d'amélioration.",
+        icon: "📊"
+      }
+    ]
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-gradient-to-b from-white to-slate-50 overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 font-medium mb-6">
+        <span>⚙️</span>
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Process Steps -->
+    <div class="relative max-w-5xl mx-auto">
+      <!-- Connection line -->
+      <div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-300 via-blue-300 to-cyan-300 hidden md:block"></div>
+
+      <div class="space-y-12 md:space-y-0">
+        {t.steps.map((step, index) => (
+          <div
+            class={`process-step relative flex flex-col md:flex-row items-start gap-6 md:gap-12 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            <!-- Content Card -->
+            <div class={`flex-1 ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
+              <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-slate-100">
+                <div class={`flex items-center gap-3 mb-3 ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
+                  <span class="text-3xl">{step.icon}</span>
+                  <h3 class="text-xl font-bold text-slate-900">{step.title}</h3>
+                </div>
+                <p class="text-slate-600 leading-relaxed">{step.description}</p>
+              </div>
+            </div>
+
+            <!-- Number Circle -->
+            <div class="absolute left-0 md:left-1/2 md:-translate-x-1/2 flex-shrink-0">
+              <div class="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/25">
+                <span class="text-white font-bold text-lg">{step.number}</span>
+              </div>
+            </div>
+
+            <!-- Spacer for the other side -->
+            <div class="flex-1 hidden md:block"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .process-step {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .process-step {
+      padding-left: 5rem;
+    }
+  }
+</style>
+
+<script>
+  // Intersection Observer for scroll animations
+  const observerOptions = {
+    threshold: 0.2,
+    rootMargin: '0px 0px -100px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.process-step').forEach(el => {
+    (el as HTMLElement).style.animationPlayState = 'paused';
+    observer.observe(el);
+  });
+</script>

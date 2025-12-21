@@ -1,0 +1,183 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    headline: "As a Manager, Here's What You'll Gain",
+    cta: "Book Meeting",
+    benefits: [
+      {
+        title: "AI Adoption, Even for Non-Technical Teams",
+        description: "Ignite curiosity and readiness by demonstrating clear, high-impact AI use cases, especially for teams unfamiliar with AI or advanced digital tools.",
+        detail: "This hands-on exposure translates into strong positive feedback and newfound credibility for AI within your organization.",
+        position: "top-left"
+      },
+      {
+        title: "AI Ambassadors Driving Workflow Innovation",
+        description: "By equipping your teams with practical AI skills, you naturally create internal ambassadors who identify process gaps and suggest smarter, AI-powered improvements.",
+        detail: "These insights fuel continuous innovation across the organization, helping optimize workflows and increase overall efficiency.",
+        icon: "workflow",
+        position: "top-right"
+      },
+      {
+        title: "Productivity Gains & Efficiency Boost",
+        description: "Teams will free themselves from repetitive, manual tasks by creating smart AI automations that work for them.",
+        detail: "This shift not only saves time but also enables employees to dedicate energy to strategic, value-adding initiatives.",
+        position: "bottom-left"
+      },
+      {
+        title: "Tangible Return on Investment",
+        description: "Training ROI becomes visible fast: AI automation can reduce time spent on manual tasks by up to 30-50%, depending on process complexity (e.g., McKinsey and Deloitte data).",
+        detail: "By reallocating that time, your teams drive faster results, deliver higher-quality work, and unlock business value.",
+        position: "bottom-center"
+      },
+      {
+        title: "Unified, Secure AI Access",
+        description: "Ditch fragmented personal licenses, end the risks of data leakage and AI models unintentionally learning from sensitive information.",
+        detail: "Empower teams to leverage AI within corporate-approved environments, ensuring full control and security of company data.",
+        position: "bottom-right"
+      }
+    ]
+  },
+  fr: {
+    headline: "En tant que Manager, Voici ce que Vous Gagnez",
+    cta: "Réserver un Meeting",
+    benefits: [
+      {
+        title: "Adoption IA, Même pour les Équipes Non-Techniques",
+        description: "Éveillez la curiosité et la confiance en démontrant des cas d'usage IA clairs et à fort impact, surtout pour les équipes peu familières avec l'IA.",
+        detail: "Cette exposition pratique génère des retours très positifs et une nouvelle crédibilité pour l'IA dans votre organisation.",
+        position: "top-left"
+      },
+      {
+        title: "Ambassadeurs IA Moteurs d'Innovation",
+        description: "En dotant vos équipes de compétences IA pratiques, vous créez naturellement des ambassadeurs internes qui identifient les lacunes et suggèrent des améliorations.",
+        detail: "Ces insights alimentent l'innovation continue, aidant à optimiser les workflows et augmenter l'efficacité globale.",
+        icon: "workflow",
+        position: "top-right"
+      },
+      {
+        title: "Gains de Productivité & Efficacité",
+        description: "Les équipes se libèrent des tâches répétitives et manuelles en créant des automatisations IA intelligentes qui travaillent pour eux.",
+        detail: "Ce changement économise du temps et permet aux employés de se consacrer aux initiatives stratégiques à valeur ajoutée.",
+        position: "bottom-left"
+      },
+      {
+        title: "Retour sur Investissement Tangible",
+        description: "Le ROI de la formation devient visible rapidement : l'automatisation IA peut réduire le temps passé sur les tâches manuelles de 30-50% (données McKinsey/Deloitte).",
+        detail: "En réallouant ce temps, vos équipes obtiennent des résultats plus rapides et débloquent de la valeur business.",
+        position: "bottom-center"
+      },
+      {
+        title: "Accès IA Unifié et Sécurisé",
+        description: "Abandonnez les licences personnelles fragmentées, éliminez les risques de fuite de données et d'apprentissage non voulu de l'IA sur des informations sensibles.",
+        detail: "Permettez aux équipes d'exploiter l'IA dans des environnements approuvés, avec contrôle total et sécurité des données.",
+        position: "bottom-right"
+      }
+    ]
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-16">
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900">
+        {t.headline}
+      </h2>
+      <a
+        href={`/${lang}/contact`}
+        class="flex-shrink-0 px-6 py-3 bg-gradient-to-r from-orange-500 to-rose-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-orange-500/25 hover:scale-105 transition-all duration-300"
+      >
+        {t.cta}
+      </a>
+    </div>
+
+    <!-- Benefits Grid - Bento Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Top Left - Large Card -->
+      <div class="benefit-card lg:row-span-1 bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 border border-white/50">
+        <h3 class="text-xl font-bold text-slate-900 mb-4">{t.benefits[0].title}</h3>
+        <p class="text-slate-600 mb-3">{t.benefits[0].description}</p>
+        <p class="text-slate-500 text-sm">{t.benefits[0].detail}</p>
+      </div>
+
+      <!-- Center - Image Card -->
+      <div class="benefit-card relative overflow-hidden rounded-3xl shadow-lg">
+        <img
+          src="/images/AI Training La poste 1.jpg"
+          alt="AI Training Session"
+          class="w-full h-full object-cover min-h-[300px]"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+      </div>
+
+      <!-- Top Right -->
+      <div class="benefit-card bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 border border-white/50">
+        <h3 class="text-xl font-bold text-slate-900 mb-4">{t.benefits[1].title}</h3>
+        <p class="text-slate-600 mb-3">{t.benefits[1].description}</p>
+        <p class="text-slate-500 text-sm">{t.benefits[1].detail}</p>
+
+        <!-- Workflow Icon -->
+        <div class="mt-6 p-4 bg-slate-50 rounded-xl inline-block">
+          <div class="flex items-center gap-2 text-slate-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+            </svg>
+            <span class="text-sm font-medium">Workflow Automation</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Row -->
+      <div class="benefit-card bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 border border-white/50">
+        <h3 class="text-xl font-bold text-slate-900 mb-4">{t.benefits[2].title}</h3>
+        <p class="text-slate-600 mb-3">{t.benefits[2].description}</p>
+        <p class="text-slate-500 text-sm">{t.benefits[2].detail}</p>
+      </div>
+
+      <div class="benefit-card bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 border border-white/50">
+        <h3 class="text-xl font-bold text-slate-900 mb-4">{t.benefits[3].title}</h3>
+        <p class="text-slate-600 mb-3">{t.benefits[3].description}</p>
+        <p class="text-slate-500 text-sm">{t.benefits[3].detail}</p>
+      </div>
+
+      <div class="benefit-card bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 border border-white/50">
+        <h3 class="text-xl font-bold text-slate-900 mb-4">{t.benefits[4].title}</h3>
+        <p class="text-slate-600 mb-3">{t.benefits[4].description}</p>
+        <p class="text-slate-500 text-sm">{t.benefits[4].detail}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .benefit-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  .benefit-card:nth-child(1) { animation-delay: 0ms; }
+  .benefit-card:nth-child(2) { animation-delay: 100ms; }
+  .benefit-card:nth-child(3) { animation-delay: 200ms; }
+  .benefit-card:nth-child(4) { animation-delay: 300ms; }
+  .benefit-card:nth-child(5) { animation-delay: 400ms; }
+  .benefit-card:nth-child(6) { animation-delay: 500ms; }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

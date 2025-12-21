@@ -1,0 +1,333 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Full Day Program",
+    headline: "AI Program - Full Day",
+    morning: {
+      label: "Morning",
+      duration: "3H",
+      sessions: [
+        {
+          title: "Session 1 (1h30)",
+          description: "Roundtable, fundamentals of AI, definition of key concepts, capabilities of AI, ethical issues. Discussion on the geopolitics of AI, its application in the functions represented in the training."
+        },
+        {
+          title: "Session 2 (1h30)",
+          description: "Introduction to prompting with a precise and recognized method. Trainer demonstration then individual exercise consisting of transforming a basic prompt into an advanced prompt. Exploration of advanced prompting techniques (Part 1), followed by a group exercise applying these methods in real-world prompting scenarios."
+        }
+      ]
+    },
+    afternoon: {
+      label: "Afternoon",
+      duration: "3H30",
+      sessions: [
+        {
+          title: "Session 3 (1 hour)",
+          description: "Continuation of the teaching of advanced prompting techniques (Part 2) with group practice. Demonstration of AI tools for different functions (cloning, dubbing, creation of text, image, video content, etc.) then analysis of scenarios of companies that have been able to combine several AIs to improve their processes."
+        },
+        {
+          title: "Session 4 (2h30)",
+          description: "Group exercise aimed at creating an AI application to improve one or more specific processes of the participants. Collection of the process in the form of a business case so that the company can then develop it internally."
+        }
+      ]
+    },
+    craft: {
+      title: "The CRAFT Method",
+      subtitle: "Our proven framework for effective AI prompts",
+      items: [
+        { letter: "C", word: "Context", description: "What's the situation or background?" },
+        { letter: "R", word: "Role", description: "Who is the AI supposed to act as?" },
+        { letter: "A", word: "Action", description: "What do you want it to do?" },
+        { letter: "F", word: "Format", description: "What should the output look like?" },
+        { letter: "T", word: "Tone", description: "How should it sound?" }
+      ],
+      example: "\"You work in a healthcare company as a recruitment specialist. Write a job ad for a marketing analyst. Make it concise and friendly, formatted as a LinkedIn post.\""
+    }
+  },
+  fr: {
+    badge: "Programme Journée Complète",
+    headline: "Programme IA - Journée Complète",
+    morning: {
+      label: "Matin",
+      duration: "3H",
+      sessions: [
+        {
+          title: "Session 1 (1h30)",
+          description: "Table ronde, fondamentaux de l'IA, définition des concepts clés, capacités de l'IA, enjeux éthiques. Discussion sur la géopolitique de l'IA, son application dans les fonctions représentées dans la formation."
+        },
+        {
+          title: "Session 2 (1h30)",
+          description: "Introduction au prompting avec une méthode précise et reconnue. Démonstration du formateur puis exercice individuel consistant à transformer un prompt basique en prompt avancé. Exploration des techniques de prompting avancées (Partie 1), suivie d'un exercice de groupe appliquant ces méthodes."
+        }
+      ]
+    },
+    afternoon: {
+      label: "Après-midi",
+      duration: "3H30",
+      sessions: [
+        {
+          title: "Session 3 (1 heure)",
+          description: "Suite de l'enseignement des techniques de prompting avancées (Partie 2) avec pratique en groupe. Démonstration d'outils IA pour différentes fonctions (clonage, doublage, création de texte, image, vidéo, etc.) puis analyse de scénarios d'entreprises ayant combiné plusieurs IA pour améliorer leurs processus."
+        },
+        {
+          title: "Session 4 (2h30)",
+          description: "Exercice de groupe visant à créer une application IA pour améliorer un ou plusieurs processus spécifiques des participants. Collecte du processus sous forme de business case pour que l'entreprise puisse ensuite le développer en interne."
+        }
+      ]
+    },
+    craft: {
+      title: "La Méthode CRAFT",
+      subtitle: "Notre framework éprouvé pour des prompts IA efficaces",
+      items: [
+        { letter: "C", word: "Contexte", description: "Quelle est la situation ou le contexte ?" },
+        { letter: "R", word: "Rôle", description: "Quel rôle doit jouer l'IA ?" },
+        { letter: "A", word: "Action", description: "Que voulez-vous qu'elle fasse ?" },
+        { letter: "F", word: "Format", description: "À quoi doit ressembler le résultat ?" },
+        { letter: "T", word: "Ton", description: "Comment doit-elle s'exprimer ?" }
+      ],
+      example: "\"Tu travailles dans une entreprise de santé en tant que spécialiste recrutement. Rédige une offre d'emploi pour un analyste marketing. Fais-la concise et sympathique, formatée comme un post LinkedIn.\""
+    }
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-gradient-to-br from-cyan-50 via-blue-50 to-violet-50 overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="mb-16">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 font-medium mb-6">
+        <span>📅</span>
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900">
+        {t.headline}
+      </h2>
+    </div>
+
+    <!-- Agenda Cards -->
+    <div class="grid lg:grid-cols-2 gap-8 mb-24">
+      <!-- Morning -->
+      <div class="agenda-card relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-cyan-100 to-teal-100 rounded-3xl transform -rotate-1"></div>
+        <div class="relative bg-white rounded-3xl p-8 shadow-xl">
+          <!-- Header -->
+          <div class="flex items-center gap-4 mb-8">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+              {t.morning.duration}
+            </div>
+            <div class="px-6 py-3 bg-slate-900 text-white rounded-full font-semibold text-lg">
+              {t.morning.label}
+            </div>
+          </div>
+
+          <!-- Sessions -->
+          <div class="space-y-6">
+            {t.morning.sessions.map((session, index) => (
+              <div
+                class="session-item"
+                style={`animation-delay: ${index * 200}ms`}
+              >
+                <h4 class="font-bold text-slate-900 mb-2">{session.title}</h4>
+                <p class="text-slate-600 text-sm leading-relaxed">{session.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Afternoon -->
+      <div class="agenda-card relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-violet-100 to-pink-100 rounded-3xl transform rotate-1"></div>
+        <div class="relative bg-white rounded-3xl p-8 shadow-xl">
+          <!-- Header -->
+          <div class="flex items-center gap-4 mb-8">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+              {t.afternoon.duration}
+            </div>
+            <div class="px-6 py-3 bg-slate-900 text-white rounded-full font-semibold text-lg">
+              {t.afternoon.label}
+            </div>
+          </div>
+
+          <!-- Sessions -->
+          <div class="space-y-6">
+            {t.afternoon.sessions.map((session, index) => (
+              <div
+                class="session-item"
+                style={`animation-delay: ${(index + 2) * 200}ms`}
+              >
+                <h4 class="font-bold text-slate-900 mb-2">{session.title}</h4>
+                <p class="text-slate-600 text-sm leading-relaxed">{session.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CRAFT Method Section - Interactive Scroll -->
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <h3 class="text-3xl md:text-4xl font-bold text-slate-900 mb-3">{t.craft.title}</h3>
+        <p class="text-slate-600">{t.craft.subtitle}</p>
+      </div>
+
+      <!-- CRAFT Letters - Scroll Reveal -->
+      <div class="craft-container relative py-12">
+        <!-- Connection line -->
+        <div class="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-cyan-200 via-blue-300 to-violet-200 -translate-y-1/2 hidden md:block"></div>
+
+        <div class="grid grid-cols-5 gap-2 md:gap-6">
+          {t.craft.items.map((item, index) => (
+            <div
+              class="craft-letter relative flex flex-col items-center text-center"
+              data-index={index}
+            >
+              <!-- Letter Circle -->
+              <div class="relative z-10 craft-circle w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-xl shadow-cyan-500/25 mb-4 transform scale-0 opacity-0">
+                <span class="text-2xl md:text-3xl font-bold text-white">{item.letter}</span>
+              </div>
+
+              <!-- Word -->
+              <h4 class="craft-word font-bold text-slate-900 text-sm md:text-base mb-2 opacity-0 transform translate-y-4">
+                {item.word}
+              </h4>
+
+              <!-- Description -->
+              <p class="craft-desc text-xs md:text-sm text-slate-500 leading-tight opacity-0 transform translate-y-4 hidden md:block">
+                {item.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Example -->
+      <div class="craft-example mt-8 p-6 bg-white rounded-2xl border border-slate-200 shadow-lg opacity-0 transform translate-y-8">
+        <p class="text-sm text-slate-500 mb-2">{lang === 'fr' ? 'Exemple de prompt CRAFT :' : 'CRAFT prompt example:'}</p>
+        <p class="text-slate-700 italic leading-relaxed">{t.craft.example}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .agenda-card {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s ease forwards;
+  }
+
+  .agenda-card:nth-child(1) { animation-delay: 0ms; }
+  .agenda-card:nth-child(2) { animation-delay: 200ms; }
+
+  .session-item {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  .session-item.visible {
+    animation: slideIn 0.6s ease forwards;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideIn {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* CRAFT animations */
+  .craft-circle.visible {
+    animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  }
+
+  .craft-word.visible {
+    animation: slideUp 0.4s ease forwards;
+  }
+
+  .craft-desc.visible {
+    animation: slideUp 0.4s ease forwards;
+    animation-delay: 0.1s;
+  }
+
+  .craft-example.visible {
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  @keyframes popIn {
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  // Intersection Observer for session items
+  const sessionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.session-item').forEach(el => {
+    sessionObserver.observe(el);
+  });
+
+  // CRAFT section scroll reveal
+  const craftObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const container = entry.target;
+        const letters = container.querySelectorAll('.craft-letter');
+
+        letters.forEach((letter, index) => {
+          setTimeout(() => {
+            letter.querySelector('.craft-circle')?.classList.add('visible');
+            setTimeout(() => {
+              letter.querySelector('.craft-word')?.classList.add('visible');
+              letter.querySelector('.craft-desc')?.classList.add('visible');
+            }, 200);
+          }, index * 150);
+        });
+
+        // Show example after all letters
+        setTimeout(() => {
+          document.querySelector('.craft-example')?.classList.add('visible');
+        }, letters.length * 150 + 400);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  const craftContainer = document.querySelector('.craft-container');
+  if (craftContainer) {
+    craftObserver.observe(craftContainer);
+  }
+</script>
