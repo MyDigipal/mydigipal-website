@@ -1,0 +1,243 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Our AI-Powered Process",
+    headline: "Ultra-Personalized Email Sequences",
+    subtitle: "How we create highly personalized email campaigns that stand out from typical prospecting",
+    objective: {
+      title: "Objective",
+      description: "Create a highly personalized email sequence for relevant prospects"
+    },
+    steps: [
+      {
+        number: "01",
+        title: "Define Audience Targeting",
+        description: "Based on job titles, geographic location, industry, etc. Alternatively, use an existing list of contacts or target company names.",
+        icon: "target"
+      },
+      {
+        number: "02",
+        title: "Gather Contacts via Sales Navigator",
+        description: "Identify and collect relevant leads using LinkedIn Sales Navigator's advanced search capabilities.",
+        icon: "search"
+      },
+      {
+        number: "03",
+        title: "Build the Email List with Airscale",
+        description: "Extract email addresses from multiple API sources and validate deliverability to ensure high inbox placement rates.",
+        icon: "database"
+      },
+      {
+        number: "04",
+        title: "Create Ultra-Personalized Content",
+        description: "Use their LinkedIn bio to generate an AI prompt that associates your product/brand with their profile, standing out from typical prospecting emails.",
+        icon: "sparkles"
+      },
+      {
+        number: "05",
+        title: "Draft Email Content in Instantly",
+        description: "Prepare the main sections and include recommendations for design and layout that maximize engagement.",
+        icon: "edit"
+      },
+      {
+        number: "06",
+        title: "Build Sequence & Personalization",
+        description: "Define the cadence and configure launch triggers. Integrate personalization elements at each touchpoint.",
+        icon: "layers"
+      },
+      {
+        number: "07",
+        title: "Track Results & Optimize",
+        description: "Analyze performance metrics and adjust the strategy accordingly to continuously improve results.",
+        icon: "chart"
+      }
+    ],
+    differentiator: {
+      title: "What Makes This Different?",
+      points: [
+        "AI analyzes each prospect's LinkedIn profile",
+        "Content feels personal, not templated",
+        "References specific details about their role and company",
+        "Higher open rates and response rates"
+      ]
+    }
+  },
+  fr: {
+    badge: "Notre Process IA",
+    headline: "Séquences Email Ultra-Personnalisées",
+    subtitle: "Comment nous créons des campagnes email personnalisées qui se démarquent du prospecting classique",
+    objective: {
+      title: "Objectif",
+      description: "Créer une séquence email hautement personnalisée pour des prospects pertinents"
+    },
+    steps: [
+      {
+        number: "01",
+        title: "Définir le Ciblage d'Audience",
+        description: "Basé sur les titres de poste, localisation géographique, secteur, etc. Ou utiliser une liste existante de contacts ou noms d'entreprises cibles.",
+        icon: "target"
+      },
+      {
+        number: "02",
+        title: "Collecter les Contacts via Sales Navigator",
+        description: "Identifier et collecter les leads pertinents avec les capacités de recherche avancée de LinkedIn Sales Navigator.",
+        icon: "search"
+      },
+      {
+        number: "03",
+        title: "Construire la Liste Email avec Airscale",
+        description: "Extraire les adresses email depuis plusieurs sources API et valider la délivrabilité pour garantir un bon taux d'arrivée en inbox.",
+        icon: "database"
+      },
+      {
+        number: "04",
+        title: "Créer du Contenu Ultra-Personnalisé",
+        description: "Utiliser leur bio LinkedIn pour générer un prompt IA qui associe votre produit/marque à leur profil, se démarquant des emails de prospection classiques.",
+        icon: "sparkles"
+      },
+      {
+        number: "05",
+        title: "Rédiger le Contenu dans Instantly",
+        description: "Préparer les sections principales et inclure des recommandations de design et mise en page qui maximisent l'engagement.",
+        icon: "edit"
+      },
+      {
+        number: "06",
+        title: "Construire la Séquence & Personnalisation",
+        description: "Définir la cadence et configurer les déclencheurs de lancement. Intégrer les éléments de personnalisation à chaque point de contact.",
+        icon: "layers"
+      },
+      {
+        number: "07",
+        title: "Suivre les Résultats & Optimiser",
+        description: "Analyser les métriques de performance et ajuster la stratégie en conséquence pour améliorer continuellement les résultats.",
+        icon: "chart"
+      }
+    ],
+    differentiator: {
+      title: "Qu'est-ce qui Change ?",
+      points: [
+        "L'IA analyse le profil LinkedIn de chaque prospect",
+        "Le contenu semble personnel, pas générique",
+        "Références spécifiques à leur rôle et entreprise",
+        "Taux d'ouverture et de réponse plus élevés"
+      ]
+    }
+  }
+};
+
+const t = translations[lang] || translations.en;
+
+const icons = {
+  target: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.5"/><circle cx="12" cy="12" r="6" stroke-width="1.5"/><circle cx="12" cy="12" r="2" stroke-width="1.5"/></svg>`,
+  search: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>`,
+  database: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>`,
+  sparkles: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>`,
+  edit: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>`,
+  layers: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`,
+  chart: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>`
+};
+---
+
+<section class="py-24 bg-gradient-to-br from-rose-50 via-pink-50 to-slate-50 overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100 text-rose-700 font-medium mb-6">
+        <span>🤖</span>
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Objective Box -->
+    <div class="max-w-2xl mx-auto mb-16">
+      <div class="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-rose-500">
+        <h3 class="text-lg font-bold text-rose-600 mb-2">{t.objective.title}</h3>
+        <p class="text-slate-700">{t.objective.description}</p>
+      </div>
+    </div>
+
+    <!-- Process Steps -->
+    <div class="max-w-4xl mx-auto relative">
+      <!-- Vertical line -->
+      <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-rose-300 via-pink-400 to-rose-300 hidden md:block"></div>
+
+      <div class="space-y-6">
+        {t.steps.map((step, index) => (
+          <div
+            class="process-step group relative flex gap-6"
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            <!-- Step Number -->
+            <div class="relative z-10 flex-shrink-0">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white shadow-lg shadow-rose-500/30 group-hover:scale-110 transition-transform duration-300">
+                <span class="text-xl font-bold">{step.number}</span>
+              </div>
+            </div>
+
+            <!-- Content Card -->
+            <div class="flex-1 bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-rose-200">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center flex-shrink-0">
+                  <Fragment set:html={icons[step.icon as keyof typeof icons]} />
+                </div>
+                <div class="flex-1">
+                  <h4 class="text-lg font-bold text-slate-900 mb-2">{step.title}</h4>
+                  <p class="text-slate-600 text-sm leading-relaxed">{step.description}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Differentiator Box -->
+    <div class="max-w-2xl mx-auto mt-16">
+      <div class="bg-gradient-to-br from-rose-500 to-pink-600 rounded-3xl p-8 text-white shadow-xl">
+        <h3 class="text-2xl font-bold mb-6">{t.differentiator.title}</h3>
+        <div class="grid sm:grid-cols-2 gap-4">
+          {t.differentiator.points.map((point) => (
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <span class="text-white/90">{point}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .process-step {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideIn 0.6s ease forwards;
+  }
+
+  @keyframes slideIn {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+</style>

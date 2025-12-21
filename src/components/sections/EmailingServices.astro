@@ -1,0 +1,203 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Full-Service Email Marketing",
+    headline: "Everything You Need for Email Success",
+    subtitle: "From setup to reporting, we handle the entire email marketing lifecycle",
+    services: [
+      {
+        icon: "settings",
+        title: "Email Software Setup",
+        description: "Implementation and configuration of the right email platform (Instantly, Lemlist, HubSpot, etc.) enabling your team to create and manage email sequences autonomously.",
+        features: ["Platform selection", "Account setup", "Team training", "Workflow configuration"]
+      },
+      {
+        icon: "database",
+        title: "Database & CRM Integration",
+        description: "Connect your email system with your CRM and data sources for seamless synchronization, ensuring your campaigns always use the most accurate and up-to-date information.",
+        features: ["CRM connection", "Data sync", "Field mapping", "Real-time updates"]
+      },
+      {
+        icon: "users",
+        title: "Audience Definition",
+        description: "Create precise audience segments based on behavior, demographics, purchase history, and engagement levels to maximize the relevance of every email sent.",
+        features: ["Behavior analysis", "Demographic segmentation", "Engagement scoring", "Custom audiences"]
+      },
+      {
+        icon: "user-plus",
+        title: "Contact Acquisition",
+        description: "GDPR-compliant contact purchasing through our partnerships, targeting prospects by job title, company size, industry, location, and other key criteria.",
+        features: ["Job title targeting", "Company size filters", "Industry selection", "GDPR compliance"]
+      },
+      {
+        icon: "file-text",
+        title: "Content Creation & Design",
+        description: "Compelling email copy and professional HTML designs that capture attention, communicate value, and drive action. We create templates you can reuse.",
+        features: ["Copywriting", "HTML design", "Template creation", "A/B variants"]
+      },
+      {
+        icon: "trending-up",
+        title: "Campaign Management",
+        description: "Full campaign execution including scheduling, A/B testing, deliverability optimization, and continuous performance improvement to maximize results.",
+        features: ["Campaign scheduling", "A/B testing", "Deliverability", "Optimization"]
+      },
+      {
+        icon: "bar-chart",
+        title: "Analytics & Reporting",
+        description: "Detailed performance reports with open rates, click rates, conversions, and actionable insights to continuously refine your strategy and maximize ROI.",
+        features: ["Performance metrics", "Conversion tracking", "Insights", "Recommendations"]
+      }
+    ]
+  },
+  fr: {
+    badge: "Email Marketing Full-Service",
+    headline: "Tout ce qu'il Vous Faut pour Réussir",
+    subtitle: "Du setup au reporting, nous gérons l'intégralité du cycle email marketing",
+    services: [
+      {
+        icon: "settings",
+        title: "Mise en Place Logiciel",
+        description: "Implémentation et configuration de la bonne plateforme email (Instantly, Lemlist, HubSpot, etc.) permettant à votre équipe de créer et gérer les séquences email en autonomie.",
+        features: ["Sélection plateforme", "Configuration compte", "Formation équipe", "Workflows"]
+      },
+      {
+        icon: "database",
+        title: "Intégration Base de Données & CRM",
+        description: "Connectez votre système email à votre CRM et sources de données pour une synchronisation fluide, garantissant des campagnes toujours basées sur des données précises et à jour.",
+        features: ["Connexion CRM", "Sync données", "Mapping champs", "Mises à jour temps réel"]
+      },
+      {
+        icon: "users",
+        title: "Définition des Audiences",
+        description: "Créez des segments précis basés sur le comportement, la démographie, l'historique d'achat et les niveaux d'engagement pour maximiser la pertinence de chaque email.",
+        features: ["Analyse comportement", "Segmentation démographique", "Scoring engagement", "Audiences custom"]
+      },
+      {
+        icon: "user-plus",
+        title: "Acquisition de Contacts",
+        description: "Achat de contacts conforme RGPD via nos partenariats, ciblant les prospects par titre de poste, taille d'entreprise, secteur, localisation et autres critères clés.",
+        features: ["Ciblage par poste", "Filtres taille entreprise", "Sélection secteur", "Conformité RGPD"]
+      },
+      {
+        icon: "file-text",
+        title: "Création Contenu & Design",
+        description: "Rédaction email percutante et designs HTML professionnels qui captent l'attention, communiquent la valeur et incitent à l'action. Nous créons des templates réutilisables.",
+        features: ["Copywriting", "Design HTML", "Création templates", "Variants A/B"]
+      },
+      {
+        icon: "trending-up",
+        title: "Gestion des Campagnes",
+        description: "Exécution complète incluant planification, tests A/B, optimisation de délivrabilité et amélioration continue des performances pour maximiser les résultats.",
+        features: ["Planification campagnes", "Tests A/B", "Délivrabilité", "Optimisation"]
+      },
+      {
+        icon: "bar-chart",
+        title: "Analytics & Reporting",
+        description: "Rapports de performance détaillés avec taux d'ouverture, taux de clic, conversions et insights actionnables pour affiner continuellement votre stratégie et maximiser le ROI.",
+        features: ["Métriques performance", "Suivi conversions", "Insights", "Recommandations"]
+      }
+    ]
+  }
+};
+
+const t = translations[lang] || translations.en;
+
+const icons = {
+  settings: `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`,
+  database: `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>`,
+  users: `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>`,
+  "user-plus": `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>`,
+  "file-text": `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>`,
+  "trending-up": `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>`,
+  "bar-chart": `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>`
+};
+---
+
+<section class="py-24 bg-gradient-to-b from-slate-50 to-white">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100 text-rose-700 font-medium mb-6">
+        <span>📧</span>
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      {t.services.slice(0, 6).map((service, index) => (
+        <div
+          class="service-card group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-rose-200"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <!-- Icon -->
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white mb-5 group-hover:scale-110 transition-transform duration-300">
+            <Fragment set:html={icons[service.icon as keyof typeof icons]} />
+          </div>
+
+          <!-- Content -->
+          <h3 class="text-xl font-bold text-slate-900 mb-3">{service.title}</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">{service.description}</p>
+
+          <!-- Features -->
+          <div class="flex flex-wrap gap-2">
+            {service.features.map((feature) => (
+              <span class="text-xs px-2 py-1 bg-rose-50 text-rose-600 rounded-full">
+                {feature}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Last service - full width -->
+    <div class="service-card group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-rose-200 max-w-2xl mx-auto">
+      <div class="flex items-start gap-6">
+        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+          <Fragment set:html={icons[t.services[6].icon as keyof typeof icons]} />
+        </div>
+        <div class="flex-1">
+          <h3 class="text-xl font-bold text-slate-900 mb-3">{t.services[6].title}</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">{t.services[6].description}</p>
+          <div class="flex flex-wrap gap-2">
+            {t.services[6].features.map((feature) => (
+              <span class="text-xs px-2 py-1 bg-rose-50 text-rose-600 rounded-full">
+                {feature}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .service-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
