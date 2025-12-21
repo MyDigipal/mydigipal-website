@@ -1,0 +1,269 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Training Options",
+    headline: "Flexible Training Packages",
+    subtitle: "From quick workshops to comprehensive programs, we adapt to your needs",
+    craftTitle: "The CRAFT Method",
+    craftSubtitle: "Our proven framework for writing effective AI prompts",
+    packages: [
+      {
+        name: "Consultancy",
+        duration: "Half Day",
+        price: "Starting at €900",
+        description: "Get support in sorting a specific AI challenge or learning a particular topic.",
+        features: [
+          "Focused problem-solving session",
+          "Expert guidance on specific tools",
+          "Actionable recommendations",
+          "Q&A with trainer"
+        ],
+        highlighted: false
+      },
+      {
+        name: "Workshop",
+        duration: "1-2 Days",
+        price: "Starting at €2,000",
+        description: "Complete training with custom slides, hands-on exercises, and recording access.",
+        features: [
+          "Custom training plan",
+          "Branded slide deck",
+          "Face-to-face or Zoom delivery",
+          "Recording access included",
+          "Group exercises"
+        ],
+        highlighted: true
+      },
+      {
+        name: "Full Training + Consulting",
+        duration: "2 Days + Follow-up",
+        price: "Starting at €3,500",
+        description: "Complete workshop plus ongoing support for long-term AI adoption.",
+        features: [
+          "Everything in Workshop",
+          "Regular follow-up sessions",
+          "Priority support",
+          "Custom use case development",
+          "Internal champions training"
+        ],
+        highlighted: false
+      }
+    ],
+    craft: [
+      { letter: "C", word: "Context", description: "What's the situation or background?" },
+      { letter: "R", word: "Role", description: "Who is the AI supposed to act as?" },
+      { letter: "A", word: "Action", description: "What do you want it to do?" },
+      { letter: "F", word: "Format", description: "What should the output look like?" },
+      { letter: "T", word: "Tone", description: "How should it sound?" }
+    ],
+    cta: "Get Your Custom Quote"
+  },
+  fr: {
+    badge: "Options de Formation",
+    headline: "Formations Flexibles",
+    subtitle: "Des ateliers rapides aux programmes complets, nous nous adaptons à vos besoins",
+    craftTitle: "La Méthode CRAFT",
+    craftSubtitle: "Notre framework éprouvé pour rédiger des prompts IA efficaces",
+    packages: [
+      {
+        name: "Consulting",
+        duration: "Demi-journée",
+        price: "À partir de 900€",
+        description: "Résolvez un défi IA spécifique ou apprenez un sujet particulier.",
+        features: [
+          "Session de résolution ciblée",
+          "Guidance experte sur les outils",
+          "Recommandations actionnables",
+          "Q&R avec le formateur"
+        ],
+        highlighted: false
+      },
+      {
+        name: "Atelier",
+        duration: "1-2 Jours",
+        price: "À partir de 2 000€",
+        description: "Formation complète avec slides personnalisés, exercices pratiques et accès aux enregistrements.",
+        features: [
+          "Plan de formation personnalisé",
+          "Slides à votre marque",
+          "En présentiel ou Zoom",
+          "Accès aux enregistrements",
+          "Exercices en groupe"
+        ],
+        highlighted: true
+      },
+      {
+        name: "Formation + Consulting",
+        duration: "2 Jours + Suivi",
+        price: "À partir de 3 500€",
+        description: "Atelier complet plus support continu pour une adoption IA à long terme.",
+        features: [
+          "Tout l'Atelier inclus",
+          "Sessions de suivi régulières",
+          "Support prioritaire",
+          "Développement de cas d'usage",
+          "Formation des champions internes"
+        ],
+        highlighted: false
+      }
+    ],
+    craft: [
+      { letter: "C", word: "Contexte", description: "Quelle est la situation ou le contexte ?" },
+      { letter: "R", word: "Rôle", description: "Quel rôle doit jouer l'IA ?" },
+      { letter: "A", word: "Action", description: "Que voulez-vous qu'elle fasse ?" },
+      { letter: "F", word: "Format", description: "À quoi doit ressembler le résultat ?" },
+      { letter: "T", word: "Ton", description: "Comment doit-elle s'exprimer ?" }
+    ],
+    cta: "Obtenir un Devis"
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-white">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 font-medium mb-6">
+        <Icon name="book-open" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Packages Grid -->
+    <div class="grid md:grid-cols-3 gap-6 mb-24">
+      {t.packages.map((pkg, index) => (
+        <div
+          class={`
+            package-card relative p-8 rounded-2xl border-2 transition-all duration-500 animate-on-scroll
+            ${pkg.highlighted
+              ? 'bg-gradient-to-b from-cyan-50 to-white border-cyan-300 shadow-xl shadow-cyan-500/10'
+              : 'bg-white border-slate-200 hover:border-cyan-200 hover:shadow-lg'}
+          `}
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          {pkg.highlighted && (
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+              <span class="px-4 py-1 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-full">
+                {lang === 'fr' ? 'Populaire' : 'Popular'}
+              </span>
+            </div>
+          )}
+
+          <div class="mb-6">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">{pkg.name}</h3>
+            <p class="text-sm text-slate-500 mb-4">{pkg.duration}</p>
+            <p class="text-2xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
+              {pkg.price}
+            </p>
+          </div>
+
+          <p class="text-slate-600 mb-6 text-sm leading-relaxed">
+            {pkg.description}
+          </p>
+
+          <ul class="space-y-3">
+            {pkg.features.map(feature => (
+              <li class="flex items-start gap-2 text-sm text-slate-600">
+                <span class="w-5 h-5 rounded-full bg-cyan-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg class="w-3 h-3 text-cyan-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </span>
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <!-- CRAFT Method -->
+    <div class="max-w-4xl mx-auto animate-on-scroll">
+      <div class="text-center mb-12">
+        <h3 class="text-3xl font-bold text-slate-900 mb-3">{t.craftTitle}</h3>
+        <p class="text-slate-600">{t.craftSubtitle}</p>
+      </div>
+
+      <div class="relative">
+        <!-- Connection line -->
+        <div class="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-cyan-200 via-blue-200 to-cyan-200 -translate-y-1/2 hidden md:block"></div>
+
+        <div class="grid grid-cols-5 gap-2 md:gap-4">
+          {t.craft.map((item, index) => (
+            <div
+              class="craft-item relative flex flex-col items-center text-center animate-on-scroll"
+              style={`animation-delay: ${index * 100}ms`}
+            >
+              <!-- Letter Circle -->
+              <div class="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/25 mb-3">
+                <span class="text-xl md:text-2xl font-bold text-white">{item.letter}</span>
+              </div>
+
+              <!-- Word -->
+              <h4 class="font-bold text-slate-900 text-sm md:text-base mb-1">{item.word}</h4>
+
+              <!-- Description -->
+              <p class="text-xs text-slate-500 leading-tight hidden md:block">{item.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Example -->
+      <div class="mt-12 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+        <p class="text-sm text-slate-500 mb-2">{lang === 'fr' ? 'Exemple de prompt CRAFT :' : 'CRAFT prompt example:'}</p>
+        <p class="text-slate-700 italic">
+          {lang === 'fr'
+            ? '"Tu travailles dans une entreprise de santé en tant que spécialiste recrutement. Rédige une offre d\'emploi pour un analyste marketing. Fais-la concise et sympathique, formatée comme un post LinkedIn."'
+            : '"You work in a healthcare company as a recruitment specialist. Write a job ad for a marketing analyst. Make it concise and friendly, formatted as a LinkedIn post."'
+          }
+        </p>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center mt-16 animate-on-scroll">
+      <a
+        href={`/${lang}/contact`}
+        class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl hover:shadow-xl hover:shadow-cyan-500/25 hover:scale-105 transition-all duration-300"
+      >
+        <span>{t.cta}</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .package-card, .craft-item {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

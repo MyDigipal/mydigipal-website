@@ -32,6 +32,12 @@ import PaidSocialChannels from '@/components/sections/PaidSocialChannels.astro';
 import PaidSocialProcess from '@/components/sections/PaidSocialProcess.astro';
 import PaidSocialServices from '@/components/sections/PaidSocialServices.astro';
 
+// AI Training specific sections
+import WhyAITraining from '@/components/sections/WhyAITraining.astro';
+import AITrainingModules from '@/components/sections/AITrainingModules.astro';
+import TrainingClients from '@/components/sections/TrainingClients.astro';
+import TrainingTestimonials from '@/components/sections/TrainingTestimonials.astro';
+
 // Generic FAQ component
 import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
 
@@ -85,6 +91,8 @@ const isSEOService = slug === 'seo';
 const isGoogleAdsService = slug === 'google-ads';
 // Check if this is the Paid Social service page
 const isPaidSocialService = slug === 'paid-social';
+// Check if this is the AI Training service page
+const isAITrainingService = slug === 'ai-training';
 ---
 
 <PageLayout
@@ -160,6 +168,23 @@ const isPaidSocialService = slug === 'paid-social';
     </>
   )}
 
+  <!-- AI Training Service: Interactive Sections -->
+  {isAITrainingService && (
+    <>
+      <!-- Why AI Training - Educational Section -->
+      <WhyAITraining lang={lang} />
+
+      <!-- Training Client Logos -->
+      <TrainingClients lang={lang} />
+
+      <!-- Training Packages & CRAFT Method -->
+      <AITrainingModules lang={lang} />
+
+      <!-- Training Testimonials with Photos -->
+      <TrainingTestimonials lang={lang} />
+    </>
+  )}
+
   <!-- Google Ads Case Studies -->
   {isGoogleAdsService && (
     <CaseStudyCarousel lang={lang} caseStudyIds={['dmd', 'quantum', 'genesys']} color={color} />
@@ -175,8 +200,8 @@ const isPaidSocialService = slug === 'paid-social';
     />
   )}
 
-  <!-- Testimonial Spotlight -->
-  {testimonial && (
+  <!-- Testimonial Spotlight (skip for AI Training which has its own testimonials section) -->
+  {testimonial && !isAITrainingService && (
     <TestimonialSpotlight
       quote={testimonial.quote}
       author={testimonial.author}
@@ -186,8 +211,10 @@ const isPaidSocialService = slug === 'paid-social';
     />
   )}
 
-  <!-- Trusted By - Client Logos -->
-  <TrustedBy lang={lang} variant="compact" />
+  <!-- Trusted By - Client Logos (skip for AI Training which has its own client logos section) -->
+  {!isAITrainingService && (
+    <TrustedBy lang={lang} variant="compact" />
+  )}
 
   <!-- Final CTA -->
   <FinalCTA lang={lang} color={color} />
@@ -201,6 +228,9 @@ const isPaidSocialService = slug === 'paid-social';
   )}
   {isPaidSocialService && (
     <ServiceFAQ lang={lang} service="paid-social" color={color} />
+  )}
+  {isAITrainingService && (
+    <ServiceFAQ lang={lang} service="ai-training" color="training" />
   )}
 </PageLayout>
 

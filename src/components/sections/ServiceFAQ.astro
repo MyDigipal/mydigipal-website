@@ -3,8 +3,8 @@ import { type Language } from '@/i18n/config';
 
 interface Props {
   lang: Language;
-  service: 'seo' | 'google-ads' | 'paid-social' | 'abm';
-  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+  service: 'seo' | 'google-ads' | 'paid-social' | 'abm' | 'ai-training';
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'training' | 'primary';
 }
 
 const { lang, service, color = 'primary' } = Astro.props;
@@ -41,6 +41,14 @@ const colorConfig = {
     border: 'border-pink-500/30',
     hover: 'hover:border-pink-500/50',
     glow: 'shadow-pink-500/20',
+  },
+  training: {
+    gradient: 'from-cyan-500 to-blue-600',
+    text: 'text-cyan-500',
+    bg: 'bg-cyan-500',
+    border: 'border-cyan-500/30',
+    hover: 'hover:border-cyan-500/50',
+    glow: 'shadow-cyan-500/20',
   },
   primary: {
     gradient: 'from-blue-500 to-indigo-600',
@@ -268,6 +276,68 @@ const faqContent = {
         {
           question: 'En quoi l\'ABM diffère du marketing traditionnel ?',
           answer: 'Le marketing traditionnel utilise une approche entonnoir, générant beaucoup de leads et les filtrant. L\'ABM inverse cela, en commençant par des comptes cibles identifiés et en construisant un engagement personnalisé. Il aligne les ventes et le marketing autour de comptes spécifiques, résultant en des taux de conversion plus élevés et des deals plus importants.',
+        },
+      ],
+    },
+  },
+  'ai-training': {
+    en: {
+      title: 'Frequently Asked Questions',
+      subtitle: 'Everything you need to know about AI Training',
+      faqs: [
+        {
+          question: 'Who is AI training for?',
+          answer: 'Our AI training is designed for teams of all levels across any department - marketing, HR, finance, operations, customer care, and more. Whether you\'re complete beginners or want to advance your existing AI skills, we tailor the content to your team\'s needs and industry context.',
+        },
+        {
+          question: 'What tools will we learn to use?',
+          answer: 'We cover the major AI tools including ChatGPT, Claude, Microsoft Copilot, and enterprise AI solutions. The training focuses on practical applications relevant to your daily work, not just theory. We also cover how to evaluate and choose the right AI tools for specific tasks.',
+        },
+        {
+          question: 'How long is the training?',
+          answer: 'We offer flexible formats: half-day consultancy sessions for specific challenges, 1-2 day workshops for comprehensive training, and full programs with ongoing support. The format depends on your team\'s needs, availability, and learning objectives.',
+        },
+        {
+          question: 'Is the training available in person or remote?',
+          answer: 'Both! We deliver training face-to-face at your offices or remotely via Zoom/Teams. Remote sessions include recording access so team members can revisit the content. For larger organizations, we can do hybrid formats with some participants in-person and others joining remotely.',
+        },
+        {
+          question: 'What is the CRAFT method?',
+          answer: 'CRAFT is our proven framework for writing effective AI prompts: Context (situation), Role (who the AI should be), Action (what to do), Format (output structure), and Tone (how it should sound). This method helps teams get consistently better results from AI tools.',
+        },
+        {
+          question: 'How do you ensure training sticks?',
+          answer: 'We combine theory with hands-on exercises using real-world scenarios from your industry. Participants create their own "base prompts" they can reuse daily. For full training packages, we include follow-up sessions to reinforce learning and help teams overcome obstacles as they apply their new skills.',
+        },
+      ],
+    },
+    fr: {
+      title: 'Questions Fréquentes',
+      subtitle: 'Tout ce que vous devez savoir sur la Formation IA',
+      faqs: [
+        {
+          question: 'À qui s\'adresse la formation IA ?',
+          answer: 'Notre formation IA est conçue pour des équipes de tous niveaux, dans tous les départements - marketing, RH, finance, opérations, service client, et plus. Que vous soyez débutants ou que vous souhaitiez perfectionner vos compétences IA existantes, nous adaptons le contenu aux besoins de votre équipe et au contexte de votre industrie.',
+        },
+        {
+          question: 'Quels outils allons-nous apprendre à utiliser ?',
+          answer: 'Nous couvrons les principaux outils IA incluant ChatGPT, Claude, Microsoft Copilot, et les solutions IA d\'entreprise. La formation se concentre sur les applications pratiques pertinentes pour votre travail quotidien, pas seulement la théorie. Nous couvrons aussi comment évaluer et choisir les bons outils IA pour des tâches spécifiques.',
+        },
+        {
+          question: 'Quelle est la durée de la formation ?',
+          answer: 'Nous offrons des formats flexibles : sessions de consulting d\'une demi-journée pour des défis spécifiques, ateliers de 1-2 jours pour une formation complète, et programmes complets avec support continu. Le format dépend des besoins de votre équipe, de sa disponibilité et de ses objectifs d\'apprentissage.',
+        },
+        {
+          question: 'La formation est-elle disponible en présentiel ou à distance ?',
+          answer: 'Les deux ! Nous dispensons la formation en présentiel dans vos locaux ou à distance via Zoom/Teams. Les sessions à distance incluent l\'accès aux enregistrements pour que les membres de l\'équipe puissent revoir le contenu. Pour les grandes organisations, nous pouvons faire des formats hybrides.',
+        },
+        {
+          question: 'Qu\'est-ce que la méthode CRAFT ?',
+          answer: 'CRAFT est notre framework éprouvé pour rédiger des prompts IA efficaces : Contexte (situation), Rôle (qui l\'IA doit être), Action (que faire), Format (structure du résultat), et Ton (comment ça doit sonner). Cette méthode aide les équipes à obtenir des résultats constamment meilleurs des outils IA.',
+        },
+        {
+          question: 'Comment vous assurez-vous que la formation soit retenue ?',
+          answer: 'Nous combinons théorie et exercices pratiques utilisant des scénarios réels de votre industrie. Les participants créent leurs propres "prompts de base" qu\'ils peuvent réutiliser quotidiennement. Pour les formations complètes, nous incluons des sessions de suivi pour renforcer l\'apprentissage et aider les équipes à surmonter les obstacles.',
         },
       ],
     },

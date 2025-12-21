@@ -1,0 +1,170 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    headline: "2500+ People Trained on AI",
+    subtitle: "Check out some of the companies we've trained. Are you next?",
+    cta: "Join These Companies"
+  },
+  fr: {
+    headline: "2500+ Personnes Formées à l'IA",
+    subtitle: "Découvrez quelques entreprises que nous avons formées. À vous ?",
+    cta: "Rejoignez Ces Entreprises"
+  }
+};
+
+const t = translations[lang] || translations.en;
+
+const clients = [
+  { name: 'Kering', logo: '/images/Training Logo/Kering.svg', size: 'large' },
+  { name: 'Chanel', logo: '/images/Training Logo/Chanel.webp', size: 'large' },
+  { name: 'Gucci', logo: '/images/Training Logo/Gucci.avif', size: 'medium' },
+  { name: 'Yves Saint Laurent', logo: '/images/Training Logo/Yves saint laurent.avif', size: 'medium' },
+  { name: 'La Poste', logo: '/images/Training Logo/La poste.png', size: 'medium' },
+  { name: 'E.Leclerc', logo: '/images/Training Logo/Leclerc.png', size: 'medium' },
+  { name: 'Pierre Fabre', logo: '/images/Training Logo/Pierre fabre.avif', size: 'medium' },
+  { name: 'Pernod Ricard', logo: '/images/Training Logo/Pernod Ricard.avif', size: 'medium' },
+  { name: 'Kaufman Broad', logo: '/images/Training Logo/Kaufman broad.avif', size: 'medium' },
+  { name: 'Grands Moulins de Paris', logo: '/images/Training Logo/Grand moulins de paris.avif', size: 'small' },
+  { name: 'Vanksen', logo: '/images/Training Logo/Vanksen.png', size: 'small' },
+];
+---
+
+<section class="py-24 bg-white overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Logos Grid - Interactive -->
+    <div class="relative">
+      <!-- Floating background elements -->
+      <div class="absolute -top-20 -left-20 w-40 h-40 bg-cyan-100 rounded-full blur-3xl opacity-50"></div>
+      <div class="absolute -bottom-20 -right-20 w-40 h-40 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
+
+      <!-- Main Grid -->
+      <div class="relative grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
+        {clients.map((client, index) => (
+          <div
+            class="client-logo-card group relative bg-white rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-slate-100 hover:border-cyan-200 animate-on-scroll"
+            style={`animation-delay: ${index * 50}ms`}
+          >
+            <!-- Hover glow effect -->
+            <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+            <!-- Logo container -->
+            <div class="relative h-16 lg:h-20 flex items-center justify-center">
+              <img
+                src={client.logo}
+                alt={`${client.name} - Formation IA`}
+                class={`
+                  object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500
+                  ${client.size === 'large' ? 'max-h-16 lg:max-h-20' : client.size === 'medium' ? 'max-h-12 lg:max-h-16' : 'max-h-10 lg:max-h-12'}
+                  max-w-full
+                `}
+                loading="lazy"
+              />
+            </div>
+
+            <!-- Company name on hover -->
+            <div class="absolute bottom-2 left-0 right-0 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <span class="text-xs font-medium text-cyan-600">{client.name}</span>
+            </div>
+
+            <!-- Decorative corner -->
+            <div class="absolute top-2 right-2 w-2 h-2 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="mt-16 grid grid-cols-3 gap-8 max-w-3xl mx-auto animate-on-scroll">
+      <div class="text-center">
+        <div class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
+          9.44/10
+        </div>
+        <div class="text-sm text-slate-500 mt-1">
+          {lang === 'fr' ? 'Note moyenne' : 'Average Rating'}
+        </div>
+      </div>
+      <div class="text-center">
+        <div class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
+          339
+        </div>
+        <div class="text-sm text-slate-500 mt-1">
+          {lang === 'fr' ? 'Feedbacks' : 'Feedbacks'}
+        </div>
+      </div>
+      <div class="text-center">
+        <div class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
+          100%
+        </div>
+        <div class="text-sm text-slate-500 mt-1">
+          {lang === 'fr' ? 'Recommandent' : 'Would Recommend'}
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-12 text-center animate-on-scroll">
+      <a
+        href={`/${lang}/contact`}
+        class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl hover:shadow-xl hover:shadow-cyan-500/25 hover:scale-105 transition-all duration-300"
+      >
+        <span>{t.cta}</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .client-logo-card {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  // Intersection Observer for scroll animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate-visible');
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.animate-on-scroll').forEach(el => {
+    observer.observe(el);
+  });
+</script>

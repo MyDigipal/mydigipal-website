@@ -1,0 +1,210 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    headline: "What They Say About Our Training",
+    subtitle: "Real feedback from real participants"
+  },
+  fr: {
+    headline: "Ce Qu'ils Disent de Nos Formations",
+    subtitle: "Retours réels de vrais participants"
+  }
+};
+
+const t = translations[lang] || translations.en;
+
+const testimonials = [
+  {
+    company: "KERING",
+    program: "Gen AI for Finance - AMER All Brands",
+    rating: 10,
+    quote: lang === 'fr'
+      ? "Le formateur et sa présentation ont rendu cette formation fantastique. Il nous a gardés engagés."
+      : "The trainer and his presentation made this training fantastic. He kept us engaged.",
+    author: "Jaclyn A.",
+    color: "from-slate-800 to-slate-900"
+  },
+  {
+    company: "PIERRE FABRE",
+    program: lang === 'fr' ? "Techniques de prompting avancées" : "Advanced Prompting Techniques",
+    rating: 10,
+    quote: lang === 'fr'
+      ? "Inspirante, enrichissante, ouvre de réelles perspectives pour notre métier."
+      : "Inspiring, enriching, opens up real perspectives for our profession.",
+    author: "Delphine L.",
+    color: "from-blue-600 to-blue-700"
+  },
+  {
+    company: "LA POSTE",
+    program: lang === 'fr' ? "Ateliers Copilot - Collectif de l'Institut" : "Copilot Workshops - Institute Collective",
+    rating: 10,
+    quote: lang === 'fr'
+      ? "Une bonne animation, dynamique et ludique qui permet d'apprendre sans effort. Bon équilibre entre théorie et pratique."
+      : "Great facilitation, dynamic and engaging that allows learning effortlessly. Good balance between theory and practice.",
+    author: "Delphine M.",
+    color: "from-yellow-500 to-yellow-600"
+  },
+  {
+    company: "BALENCIAGA",
+    program: "Gen AI for Finance",
+    rating: 10,
+    quote: lang === 'fr'
+      ? "Bien organisé, instructif et inspirant."
+      : "Well organized, informative and inspiring.",
+    author: "Emma L.",
+    color: "from-slate-900 to-black"
+  },
+  {
+    company: "MOËT HENNESSY",
+    program: "Media Path - Groupe 2",
+    rating: 10,
+    quote: lang === 'fr'
+      ? "C'était vraiment intéressant. Même si la session a duré 2h30, elle a captivé mon attention tout du long. J'ai vraiment apprécié cette formation."
+      : "It was really interesting. Even if the session took 2.5h, it got my attention the whole time. Really enjoyed this training.",
+    author: "Aurora S.",
+    color: "from-amber-600 to-amber-700"
+  }
+];
+
+// Generate stars
+const generateStars = (count: number) => Array(count).fill('★').join('');
+---
+
+<section class="py-24 bg-gradient-to-b from-slate-50 to-white">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 font-medium mb-6">
+        <span class="text-yellow-500">★</span>
+        <span>9.44/10 {lang === 'fr' ? 'Note Moyenne' : 'Average Rating'}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Testimonials Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {testimonials.map((testimonial, index) => (
+        <div
+          class="testimonial-card group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-cyan-200 animate-on-scroll"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <!-- Company Header -->
+          <div class="mb-4">
+            <h3 class={`text-lg font-bold bg-gradient-to-r ${testimonial.color} bg-clip-text text-transparent`}>
+              {testimonial.company}
+            </h3>
+            <p class="text-sm text-slate-500">{testimonial.program}</p>
+          </div>
+
+          <!-- Rating -->
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-yellow-400 text-lg tracking-wider">
+              {generateStars(testimonial.rating)}
+            </span>
+            <span class="text-cyan-600 font-bold">{testimonial.rating}/10</span>
+          </div>
+
+          <!-- Quote -->
+          <div class="relative mb-4">
+            <span class="absolute -top-2 -left-1 text-4xl text-cyan-200 font-serif">"</span>
+            <p class="text-slate-700 italic pl-4 leading-relaxed">
+              {testimonial.quote}
+            </p>
+            <span class="absolute -bottom-4 right-0 text-4xl text-cyan-200 font-serif">"</span>
+          </div>
+
+          <!-- Author -->
+          <div class="pt-4 mt-4 border-t border-slate-100">
+            <p class="text-slate-500 text-sm">— {testimonial.author}</p>
+          </div>
+
+          <!-- Decorative gradient border on hover -->
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Training Photos Section -->
+    <div class="mt-20 animate-on-scroll">
+      <h3 class="text-2xl font-bold text-slate-900 text-center mb-8">
+        {lang === 'fr' ? 'En Action' : 'In Action'}
+      </h3>
+      <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div class="relative group overflow-hidden rounded-2xl shadow-lg">
+          <img
+            src="/images/AI Training La poste 1.jpg"
+            alt="AI Training session at La Poste"
+            class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 text-white">
+            <p class="font-semibold">La Poste Training</p>
+            <p class="text-sm text-white/80">{lang === 'fr' ? 'Formation IA en entreprise' : 'Corporate AI Training'}</p>
+          </div>
+        </div>
+        <div class="relative group overflow-hidden rounded-2xl shadow-lg">
+          <img
+            src="/images/AI Training La poste 2.jpg"
+            alt="AI Training workshop"
+            class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 text-white">
+            <p class="font-semibold">{lang === 'fr' ? 'Atelier Pratique' : 'Hands-on Workshop'}</p>
+            <p class="text-sm text-white/80">{lang === 'fr' ? 'Exercices en groupe' : 'Group exercises'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .testimonial-card {
+    position: relative;
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  // Intersection Observer for scroll animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate-visible');
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.animate-on-scroll').forEach(el => {
+    observer.observe(el);
+  });
+</script>
