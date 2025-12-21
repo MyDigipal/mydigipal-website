@@ -1,0 +1,155 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    headline: "For Your Employees",
+    benefits: [
+      {
+        icon: "cloud",
+        title: "Overcome the fear of AI",
+        description: "Many employees feel intimidated by AI or see it as too \"technical\". During the training, we make AI accessible and practical, showing you step by step what's possible, and the feedback is always overwhelmingly positive"
+      },
+      {
+        icon: "prompt",
+        title: "Master better prompting techniques",
+        description: "Most people think \"AI doesn't work\" simply because they don't know how to ask the right questions. We teach you how to craft effective prompts that unlock accurate, high-quality outputs"
+      },
+      {
+        icon: "discover",
+        title: "Discover what AI can really do",
+        description: "From summarizing complex documents to generating images, creating content, or automating workflows, you'll explore the full potential of AI and leave knowing exactly how to use it in your day-to-day work"
+      },
+      {
+        icon: "ambassador",
+        title: "Become an AI ambassador in your team",
+        description: "Once you understand the tools and techniques, you'll be able to share what you've learned and help your colleagues adopt AI, naturally spreading knowledge and best practices across your team"
+      },
+      {
+        icon: "advanced",
+        title: "Think beyond — unlock advanced use cases",
+        description: "The training doesn't stop at basics. We guide you to identify more complex opportunities where AI can automate critical processes, empowering you to bring real innovation to your company"
+      }
+    ]
+  },
+  fr: {
+    headline: "Pour Vos Employés",
+    benefits: [
+      {
+        icon: "cloud",
+        title: "Surmonter la peur de l'IA",
+        description: "Beaucoup d'employés se sentent intimidés par l'IA ou la voient comme trop \"technique\". Pendant la formation, nous rendons l'IA accessible et pratique, vous montrant étape par étape ce qui est possible, et les retours sont toujours extrêmement positifs"
+      },
+      {
+        icon: "prompt",
+        title: "Maîtriser de meilleures techniques de prompting",
+        description: "La plupart des gens pensent que \"l'IA ne fonctionne pas\" simplement parce qu'ils ne savent pas poser les bonnes questions. Nous vous apprenons à créer des prompts efficaces qui débloquent des résultats précis et de qualité"
+      },
+      {
+        icon: "discover",
+        title: "Découvrir ce que l'IA peut vraiment faire",
+        description: "De la synthèse de documents complexes à la génération d'images, création de contenu ou automatisation de workflows, vous explorerez tout le potentiel de l'IA et saurez exactement comment l'utiliser au quotidien"
+      },
+      {
+        icon: "ambassador",
+        title: "Devenir ambassadeur IA dans votre équipe",
+        description: "Une fois que vous maîtrisez les outils et techniques, vous pourrez partager vos apprentissages et aider vos collègues à adopter l'IA, diffusant naturellement les connaissances et bonnes pratiques"
+      },
+      {
+        icon: "advanced",
+        title: "Aller plus loin — débloquer des use cases avancés",
+        description: "La formation ne s'arrête pas aux bases. Nous vous guidons pour identifier des opportunités plus complexes où l'IA peut automatiser des processus critiques, vous permettant d'apporter une vraie innovation"
+      }
+    ]
+  }
+};
+
+const t = translations[lang] || translations.en;
+
+const icons = {
+  cloud: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" /></svg>`,
+  prompt: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`,
+  discover: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>`,
+  ambassador: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>`,
+  advanced: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>`
+};
+---
+
+<section class="py-24 bg-white">
+  <div class="container-custom">
+    <div class="max-w-3xl mx-auto">
+      <!-- Header -->
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-16">
+        {t.headline}
+      </h2>
+
+      <!-- Benefits List with Timeline -->
+      <div class="relative">
+        <!-- Vertical Line -->
+        <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-violet-200 via-purple-300 to-violet-200"></div>
+
+        <div class="space-y-12">
+          {t.benefits.map((benefit, index) => (
+            <div
+              class="employee-benefit relative flex gap-8 items-start"
+              style={`animation-delay: ${index * 150}ms`}
+            >
+              <!-- Icon Circle -->
+              <div class="relative z-10 flex-shrink-0 w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 border-4 border-white shadow-sm">
+                <Fragment set:html={icons[benefit.icon as keyof typeof icons]} />
+              </div>
+
+              <!-- Content -->
+              <div class="flex-1 pb-4">
+                <h3 class="text-xl font-bold text-violet-700 mb-3">{benefit.title}</h3>
+                <p class="text-slate-600 leading-relaxed">{benefit.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .employee-benefit {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideInFromLeft 0.6s ease forwards;
+  }
+
+  @keyframes slideInFromLeft {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+</style>
+
+<script>
+  // Intersection Observer for scroll animations
+  const observerOptions = {
+    threshold: 0.2,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        (entry.target as HTMLElement).style.animationPlayState = 'running';
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.employee-benefit').forEach(el => {
+    (el as HTMLElement).style.animationPlayState = 'paused';
+    observer.observe(el);
+  });
+</script>
