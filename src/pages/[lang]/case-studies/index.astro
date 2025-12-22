@@ -1,0 +1,266 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { type Language, languages } from '@/i18n/config';
+import { getCollection } from 'astro:content';
+import Icon from '@/components/ui/Icon.astro';
+
+export async function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+// Get all case studies
+const allCaseStudies = await getCollection('case-studies');
+const caseStudies = allCaseStudies
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const translations = {
+  en: {
+    title: 'Case Studies',
+    description: 'Discover how we help businesses achieve exceptional results through strategic digital marketing.',
+    hero: {
+      badge: 'Success Stories',
+      headline: 'Our Case Studies',
+      subheadline: 'Real results for real businesses. See how our strategies drive growth.',
+    },
+    filterAll: 'All',
+    filterAutomotive: 'Automotive',
+    filterB2BTech: 'B2B Tech',
+    viewCaseStudy: 'View Case Study',
+    services: 'Services',
+    noResults: 'No case studies found.',
+  },
+  fr: {
+    title: 'Études de Cas',
+    description: 'Découvrez comment nous aidons les entreprises à obtenir des résultats exceptionnels grâce au marketing digital stratégique.',
+    hero: {
+      badge: 'Success Stories',
+      headline: 'Nos Études de Cas',
+      subheadline: 'Des résultats réels pour de vraies entreprises. Découvrez comment nos stratégies stimulent la croissance.',
+    },
+    filterAll: 'Tous',
+    filterAutomotive: 'Automobile',
+    filterB2BTech: 'B2B Tech',
+    viewCaseStudy: 'Voir l\'étude',
+    services: 'Services',
+    noResults: 'Aucune étude de cas trouvée.',
+  },
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<PageLayout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+>
+  <!-- Hero Section -->
+  <section class="relative bg-slate-950 text-white py-24 overflow-hidden">
+    <!-- Background Effects -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute top-20 -left-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-20 -right-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px]"></div>
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiMxZTI5M2IiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6TTEgMWg1OHY1OEgxVjF6IiBmaWxsPSIjMzM0MTU1IiBmaWxsLW9wYWNpdHk9Ii4yIi8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+    </div>
+
+    <div class="container-custom relative z-10 text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 font-medium mb-6">
+        <Icon name="trophy" size={16} />
+        <span>{t.hero.badge}</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">{t.hero.headline}</h1>
+      <p class="text-xl text-slate-300 max-w-2xl mx-auto">{t.hero.subheadline}</p>
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <section class="py-8 bg-white border-b border-slate-200 sticky top-16 z-40">
+    <div class="container-custom">
+      <div class="flex justify-center gap-2">
+        <button
+          class="category-filter px-6 py-3 rounded-xl font-medium transition-all active"
+          data-category="all"
+        >
+          {t.filterAll}
+        </button>
+        <button
+          class="category-filter px-6 py-3 rounded-xl font-medium transition-all"
+          data-category="automotive"
+        >
+          <Icon name="car" size={18} class="inline mr-2" />
+          {t.filterAutomotive}
+        </button>
+        <button
+          class="category-filter px-6 py-3 rounded-xl font-medium transition-all"
+          data-category="b2b-tech"
+        >
+          <Icon name="cpu" size={18} class="inline mr-2" />
+          {t.filterB2BTech}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Case Studies Grid -->
+  <section class="py-16 bg-slate-50">
+    <div class="container-custom">
+      <!-- No Results Message -->
+      <div id="no-results" class="hidden text-center py-16">
+        <Icon name="folder" size={48} class="text-slate-300 mx-auto mb-4" />
+        <p class="text-xl text-slate-500">{t.noResults}</p>
+      </div>
+
+      <!-- Grid -->
+      <div id="case-studies-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {caseStudies.map((study) => (
+          <article
+            class="case-study-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100"
+            data-category={study.data.category}
+          >
+            <!-- Image with Overlay -->
+            <a href={`/${lang}/case-studies/${study.slug.replace('en/', '')}`} class="block relative aspect-[16/10] overflow-hidden">
+              <img
+                src={study.data.image}
+                alt={study.data.client}
+                class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
+
+              <!-- Logo Badge -->
+              {study.data.logo && (
+                <div class="absolute top-4 left-4 p-2 bg-white rounded-xl shadow-lg">
+                  <img src={study.data.logo} alt={study.data.client} class="h-8 w-auto object-contain" />
+                </div>
+              )}
+
+              <!-- Category Badge -->
+              <div class="absolute top-4 right-4">
+                <span class={`px-3 py-1 rounded-full text-xs font-bold ${study.data.category === 'automotive' ? 'bg-amber-500 text-white' : 'bg-blue-500 text-white'}`}>
+                  {study.data.category === 'automotive' ? (lang === 'fr' ? 'Automobile' : 'Automotive') : 'B2B Tech'}
+                </span>
+              </div>
+
+              <!-- Bottom Info -->
+              <div class="absolute bottom-4 left-4 right-4">
+                <h3 class="text-xl font-bold text-white mb-1">{study.data.client}</h3>
+                <p class="text-slate-200 text-sm line-clamp-1">{study.data.title}</p>
+              </div>
+            </a>
+
+            <!-- Content -->
+            <div class="p-6">
+              <!-- KPIs Preview -->
+              <div class="flex flex-wrap gap-4 mb-4">
+                {study.data.kpis.slice(0, 2).map((kpi) => (
+                  <div class="flex items-center gap-2">
+                    <span class="text-xl font-bold text-blue-600">{kpi.value}</span>
+                    <span class="text-xs text-slate-500">{kpi.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              <!-- Services -->
+              <div class="flex flex-wrap gap-2 mb-4">
+                {study.data.services.slice(0, 3).map((service) => (
+                  <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-medium">
+                    {service}
+                  </span>
+                ))}
+              </div>
+
+              <!-- CTA -->
+              <a
+                href={`/${lang}/case-studies/${study.slug.replace('en/', '')}`}
+                class="inline-flex items-center gap-2 text-blue-600 font-medium hover:text-blue-700 transition-colors group/link"
+              >
+                {t.viewCaseStudy}
+                <Icon name="arrow-right" size={16} class="group-hover/link:translate-x-1 transition-transform" />
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
+    <div class="container-custom text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        {lang === 'fr' ? 'Prêt à écrire votre success story ?' : 'Ready to Write Your Success Story?'}
+      </h2>
+      <p class="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+        {lang === 'fr' ? 'Discutons de vos objectifs et voyons comment nous pouvons vous aider à les atteindre.' : 'Let\'s discuss your goals and see how we can help you achieve them.'}
+      </p>
+      <a
+        href={`/${lang}/contact`}
+        class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-white text-blue-700 font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
+      >
+        {lang === 'fr' ? 'Démarrer un projet' : 'Start a Project'}
+        <Icon name="arrow-right" size={20} />
+      </a>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+  // Category filter functionality
+  const filterButtons = document.querySelectorAll('.category-filter');
+  const cards = document.querySelectorAll('.case-study-card');
+  const noResults = document.getElementById('no-results');
+  const grid = document.getElementById('case-studies-grid');
+
+  filterButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      // Update active state
+      filterButtons.forEach((btn) => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      const category = button.getAttribute('data-category');
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const cardCategory = card.getAttribute('data-category');
+        if (category === 'all' || cardCategory === category) {
+          (card as HTMLElement).style.display = 'block';
+          visibleCount++;
+        } else {
+          (card as HTMLElement).style.display = 'none';
+        }
+      });
+
+      // Show/hide no results
+      if (noResults && grid) {
+        if (visibleCount === 0) {
+          noResults.classList.remove('hidden');
+          grid.classList.add('hidden');
+        } else {
+          noResults.classList.add('hidden');
+          grid.classList.remove('hidden');
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  .category-filter {
+    @apply bg-slate-100 text-slate-600 hover:bg-slate-200;
+  }
+
+  .category-filter.active {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
