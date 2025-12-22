@@ -138,8 +138,24 @@ const categoryLabels: Record<string, Record<string, string>> = {
     </div>
   </section>
 
+  <!-- Featured Image -->
+  {post.data.image && !post.data.image.includes('/images/blog/') && (
+    <section class="relative -mt-12 pb-8 bg-white">
+      <div class="container-custom max-w-5xl mx-auto">
+        <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+          <img
+            src={post.data.image}
+            alt={post.data.title}
+            class="w-full h-auto object-cover"
+            loading="eager"
+          />
+        </div>
+      </div>
+    </section>
+  )}
+
   <!-- Article Content -->
-  <section class="py-16 bg-white">
+  <section class={`py-16 bg-white ${post.data.image && !post.data.image.includes('/images/blog/') ? '' : 'pt-8'}`}>
     <div class="container-custom max-w-4xl mx-auto">
       <article class="prose prose-lg prose-slate max-w-none">
         <Content />
@@ -199,7 +215,16 @@ const categoryLabels: Record<string, Record<string, string>> = {
           {relatedPosts.map((relatedPost) => (
             <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100">
               <a href={`/${lang}/blog/${relatedPost.slug.replace('en/', '')}`} class="block relative aspect-[16/10] overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600"></div>
+                {relatedPost.data.image && !relatedPost.data.image.includes('/images/blog/') ? (
+                  <img
+                    src={relatedPost.data.image}
+                    alt={relatedPost.data.title}
+                    class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600"></div>
+                )}
               </a>
               <div class="p-6">
                 <div class="text-sm text-slate-500 mb-2">

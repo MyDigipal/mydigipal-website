@@ -167,11 +167,18 @@ const t = translations[lang] || translations.en;
           >
             <!-- Image -->
             <a href={`/${lang}/blog/${post.slug.replace('en/', '')}`} class="block relative aspect-[16/10] overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600">
-                {/* Placeholder gradient if no image */}
-              </div>
+              {post.data.image && !post.data.image.includes('/images/blog/') ? (
+                <img
+                  src={post.data.image}
+                  alt={post.data.title}
+                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+              ) : (
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600"></div>
+              )}
               {post.data.featured && (
-                <div class="absolute top-4 left-4 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full">
+                <div class="absolute top-4 left-4 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full z-10">
                   {t.featured}
                 </div>
               )}
