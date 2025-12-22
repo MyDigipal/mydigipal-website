@@ -70,7 +70,7 @@ const caseStudiesCollection = defineCollection({
   schema: z.object({
     title: z.string(),
     client: z.string(),
-    industry: z.string(),
+    category: z.enum(['automotive', 'b2b-tech']),
     description: z.string(),
     image: z.string(),
     logo: z.string().optional(),
@@ -80,12 +80,18 @@ const caseStudiesCollection = defineCollection({
     // Services used
     services: z.array(z.string()),
 
-    // Results
-    results: z.array(z.object({
-      metric: z.string(),
+    // Key Performance Indicators - main stats to highlight
+    kpis: z.array(z.object({
       value: z.string(),
-      description: z.string().optional(),
+      label: z.string(),
+      icon: z.string().optional(),
     })),
+
+    // Challenge faced
+    challenge: z.string(),
+
+    // Solution provided
+    solution: z.string(),
 
     // Testimonial
     testimonial: z.object({
