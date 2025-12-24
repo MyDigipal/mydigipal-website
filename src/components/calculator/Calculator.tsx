@@ -368,7 +368,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     };
 
     try {
-      const response = await fetch('https://n8n.mydigipal.com/webhook/calculateur-marketing', {
+      const response = await fetch('https://n8n.mydigipal.com:5678/webhook/calculateur-marketing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         mode: 'cors',
@@ -1064,42 +1064,6 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
                   {/* Tracking services - grayed out if "not sure" is selected */}
                   <div className={`transition-all duration-300 ${trackingNotSure ? 'opacity-40 pointer-events-none' : ''}`}>
-                    {/* Audit option */}
-                    <button
-                      onClick={() => setTrackingAudit(!trackingAudit)}
-                      className={`w-full p-4 mb-4 rounded-xl border-2 text-left transition-all ${
-                        trackingAudit
-                          ? 'border-cyan-500 bg-cyan-100'
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{trackingAuditOption.icon}</span>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-slate-900">
-                              {lang === 'fr' ? trackingAuditOption.titleFr : trackingAuditOption.title}
-                            </span>
-                            <Tooltip
-                              content={lang === 'fr' ? trackingAuditOption.detailedInfoFr : trackingAuditOption.detailedInfo}
-                              whyImportant={lang === 'fr' ? trackingAuditOption.whyImportantFr : trackingAuditOption.whyImportant}
-                              lang={lang}
-                            />
-                          </div>
-                          <p className="text-sm text-slate-500">
-                            {lang === 'fr' ? trackingAuditOption.descriptionFr : trackingAuditOption.description}
-                          </p>
-                        </div>
-                        <span className="font-bold text-cyan-700">{trackingAuditOption.price}€</span>
-                        {trackingAudit && (
-                          <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center">
-                            <CheckIcon />
-                          </span>
-                        )}
-                      </div>
-                    </button>
-
-                    {/* Tracking services */}
                     <div className="grid md:grid-cols-2 gap-4">
                       {trackingServices.map(service => (
                         <button
