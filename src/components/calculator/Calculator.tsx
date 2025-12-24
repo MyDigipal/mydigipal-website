@@ -939,7 +939,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                   <span className="text-2xl">{service.icon}</span>
                                   <div>
                                     <div className="flex items-center gap-1">
-                                      <h3 className="font-bold text-slate-900">{service.title}</h3>
+                                      <h3 className="font-bold text-slate-900">{lang === 'fr' ? service.title : (service.titleEn || service.title)}</h3>
                                       {service.detailedInfo && (
                                         <Tooltip
                                           content={service.detailedInfo.content.intro}
@@ -948,7 +948,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                         />
                                       )}
                                     </div>
-                                    <p className="text-sm text-slate-600">{service.description}</p>
+                                    <p className="text-sm text-slate-600">{lang === 'fr' ? service.description : (service.descriptionEn || service.description)}</p>
                                   </div>
                                 </div>
                               </div>
@@ -977,9 +977,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                         <span className="text-xs text-slate-500">{t.perMonth}</span>
                                       )}
                                     </div>
-                                    <div className="font-medium text-slate-900 mb-2">{level.name}</div>
+                                    <div className="font-medium text-slate-900 mb-2">{lang === 'fr' ? level.name : (level.nameEn || level.name)}</div>
                                     <ul className="space-y-1">
-                                      {level.features.slice(0, 3).map((feature, i) => (
+                                      {(lang === 'fr' ? level.features : (level.featuresEn || level.features)).slice(0, 3).map((feature, i) => (
                                         <li key={i} className="text-xs text-slate-600 flex items-start gap-1">
                                           <span className={`${colors.text} mt-0.5`}>•</span>
                                           {feature}
@@ -1398,7 +1398,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         if (!level) return null;
                         return (
                           <div key={service.id} className="flex justify-between text-slate-600">
-                            <span>{service.title} - {level.name}</span>
+                            <span>{lang === 'fr' ? service.title : (service.titleEn || service.title)} - {lang === 'fr' ? level.name : (level.nameEn || level.name)}</span>
                             <span>{level.price}€{service.isOneOff ? '' : (lang === 'fr' ? '/mois' : '/mo')}</span>
                           </div>
                         );

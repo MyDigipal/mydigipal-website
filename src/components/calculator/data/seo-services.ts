@@ -4,7 +4,9 @@ export const seoServices: ServiceItem[] = [
   {
     id: 'seo-audit',
     title: 'A. Audit SEO',
+    titleEn: 'A. SEO Audit',
     description: 'Analyse complète de votre site, votre marché et vos concurrents pour identifier les opportunités.',
+    descriptionEn: 'Complete analysis of your site, market and competitors to identify opportunities.',
     icon: '🔍',
     isOneOff: true,
     detailedInfo: {
@@ -40,15 +42,21 @@ export const seoServices: ServiceItem[] = [
     levels: [
       {
         name: 'Basic',
+        nameEn: 'Basic',
         price: 300,
         features: ['Audit technique complet', '15-20 mots-clés analysés', 'Recommandations générales'],
-        recommended: 'Sites récents ou petits budgets'
+        featuresEn: ['Complete technical audit', '15-20 keywords analyzed', 'General recommendations'],
+        recommended: 'Sites récents ou petits budgets',
+        recommendedEn: 'New sites or small budgets'
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 400,
         features: ['Audit approfondi', 'Étude des concurrents', '40+ mots-clés analysés', 'Plan d\'action technique priorisé'],
+        featuresEn: ['In-depth audit', 'Competitor study', '40+ keywords analyzed', 'Prioritized technical action plan'],
         recommended: 'Pour une vision stratégique complète',
+        recommendedEn: 'For a complete strategic view',
         popular: true
       }
     ]
@@ -56,7 +64,9 @@ export const seoServices: ServiceItem[] = [
   {
     id: 'seo-corrections',
     title: 'B. Corrections Techniques',
+    titleEn: 'B. Technical Fixes',
     description: 'Identification et correction des freins techniques qui empêchent votre bon référencement.',
+    descriptionEn: 'Identification and correction of technical issues hindering your SEO performance.',
     icon: '🔧',
     detailedInfo: {
       title: 'Corrections Techniques - C\'est quoi exactement ?',
@@ -82,30 +92,42 @@ export const seoServices: ServiceItem[] = [
     levels: [
       {
         name: 'Essentiel',
+        nameEn: 'Essential',
         price: 100,
         features: ['Liste des erreurs détectées', 'Export brut des problèmes'],
-        recommended: 'Vous avez un webmaster en interne'
+        featuresEn: ['List of detected errors', 'Raw issues export'],
+        recommended: 'Vous avez un webmaster en interne',
+        recommendedEn: 'You have an in-house webmaster'
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 250,
         features: ['Détection des erreurs', 'Explications détaillées', 'Recommandations actionnables'],
+        featuresEn: ['Error detection', 'Detailed explanations', 'Actionable recommendations'],
         recommended: 'Comprendre et prioriser',
+        recommendedEn: 'Understand and prioritize',
         popular: true
       },
       {
         name: 'Premium',
+        nameEn: 'Premium',
         price: 500,
         priceNote: '400-600€*',
+        priceNoteEn: '€400-600*',
         features: ['Détection complète', 'Implémentation par MyDigipal', 'Suivi des corrections'],
-        recommended: 'On s\'en occupe pour vous'
+        featuresEn: ['Complete detection', 'Implementation by MyDigipal', 'Fix tracking'],
+        recommended: 'On s\'en occupe pour vous',
+        recommendedEn: 'We handle it for you'
       }
     ]
   },
   {
     id: 'seo-strategy',
     title: 'C. Stratégie SEO Central',
+    titleEn: 'C. Core SEO Strategy',
     description: 'Pilotage stratégique continu : identification des opportunités, optimisation des pages et veille concurrentielle.',
+    descriptionEn: 'Ongoing strategic management: opportunity identification, page optimization and competitive monitoring.',
     icon: '🎯',
     detailedInfo: {
       title: 'Stratégie SEO Central - C\'est quoi exactement ?',
@@ -137,29 +159,40 @@ export const seoServices: ServiceItem[] = [
     levels: [
       {
         name: 'Essentiel',
+        nameEn: 'Essential',
         price: 200,
         features: ['5-10 pages suivies', 'Recherche mots-clés mensuelle', 'Recommandations d\'optimisation'],
-        recommended: 'Petits sites ou démarrage'
+        featuresEn: ['5-10 pages tracked', 'Monthly keyword research', 'Optimization recommendations'],
+        recommended: 'Petits sites ou démarrage',
+        recommendedEn: 'Small sites or getting started'
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 400,
         features: ['15-25 pages suivies', 'Recherche bi-mensuelle', 'Analyse concurrence trimestrielle', 'Plan d\'action priorisé'],
+        featuresEn: ['15-25 pages tracked', 'Bi-monthly research', 'Quarterly competitor analysis', 'Prioritized action plan'],
         recommended: 'Sites en croissance',
+        recommendedEn: 'Growing sites',
         popular: true
       },
       {
         name: 'Premium',
+        nameEn: 'Premium',
         price: 600,
         features: ['40+ pages suivies', 'Veille mots-clés continue', 'Analyse concurrence mensuelle', 'Accompagnement dédié'],
-        recommended: 'Sites ambitieux'
+        featuresEn: ['40+ pages tracked', 'Continuous keyword monitoring', 'Monthly competitor analysis', 'Dedicated support'],
+        recommended: 'Sites ambitieux',
+        recommendedEn: 'Ambitious sites'
       }
     ]
   },
   {
     id: 'seo-content',
     title: 'D. Contenu IA Optimisé',
+    titleEn: 'D. AI-Optimized Content',
     description: 'Articles SEO optimisés produits avec notre système IA pour publier régulièrement du contenu de qualité.',
+    descriptionEn: 'SEO-optimized articles produced with our AI system to regularly publish quality content.',
     icon: '✍️',
     hasAddon: true,
     detailedInfo: {
@@ -192,29 +225,40 @@ export const seoServices: ServiceItem[] = [
     levels: [
       {
         name: '2 articles',
+        nameEn: '2 articles',
         price: 350,
         features: ['2 articles/mois', 'Optimisés SEO', 'Livrés en document'],
-        recommended: 'Démarrage ou budget limité'
+        featuresEn: ['2 articles/month', 'SEO optimized', 'Delivered as document'],
+        recommended: 'Démarrage ou budget limité',
+        recommendedEn: 'Getting started or limited budget'
       },
       {
         name: '4 articles',
+        nameEn: '4 articles',
         price: 600,
         features: ['4 articles/mois', 'Optimisés SEO', 'Recherche mots-clés incluse'],
+        featuresEn: ['4 articles/month', 'SEO optimized', 'Keyword research included'],
         recommended: 'Croissance régulière',
+        recommendedEn: 'Regular growth',
         popular: true
       },
       {
         name: '8 articles',
+        nameEn: '8 articles',
         price: 750,
         features: ['8 articles/mois', 'Optimisés SEO', 'Stratégie éditoriale complète'],
-        recommended: 'Dominer votre secteur'
+        featuresEn: ['8 articles/month', 'SEO optimized', 'Complete editorial strategy'],
+        recommended: 'Dominer votre secteur',
+        recommendedEn: 'Dominate your industry'
       }
     ]
   },
   {
     id: 'seo-followup',
     title: 'E. Suivi & Collaboration',
+    titleEn: 'E. Follow-up & Collaboration',
     description: 'Accompagnement adapté à vos besoins, du simple reporting au suivi rapproché avec réunions.',
+    descriptionEn: 'Support tailored to your needs, from simple reporting to close follow-up with meetings.',
     icon: '🤝',
     detailedInfo: {
       title: 'Suivi & Collaboration - C\'est quoi exactement ?',
@@ -247,22 +291,31 @@ export const seoServices: ServiceItem[] = [
     levels: [
       {
         name: 'Essentiel',
+        nameEn: 'Essential',
         price: 100,
         features: ['Reporting email mensuel', 'Métriques clés'],
-        recommended: 'Autonome, peu de questions'
+        featuresEn: ['Monthly email reporting', 'Key metrics'],
+        recommended: 'Autonome, peu de questions',
+        recommendedEn: 'Autonomous, few questions'
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 200,
         features: ['1 meeting tous les 2 mois', 'Récap + brief mensuel', 'Support email'],
+        featuresEn: ['1 meeting every 2 months', 'Monthly recap + brief', 'Email support'],
         recommended: 'Échanges réguliers',
+        recommendedEn: 'Regular exchanges',
         popular: true
       },
       {
         name: 'Premium',
+        nameEn: 'Premium',
         price: 300,
         features: ['1 meeting/mois', 'Disponibilité email réactive', 'Accompagnement stratégique'],
-        recommended: 'Collaboration intensive'
+        featuresEn: ['1 meeting/month', 'Responsive email availability', 'Strategic support'],
+        recommended: 'Collaboration intensive',
+        recommendedEn: 'Intensive collaboration'
       }
     ]
   }

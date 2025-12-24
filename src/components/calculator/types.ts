@@ -4,10 +4,14 @@ export type ServiceDomain = 'seo' | 'google-ads' | 'paid-social' | 'ai-training'
 
 export interface ServiceLevel {
   name: string;
+  nameEn?: string;
   price: number;
   priceNote?: string;
+  priceNoteEn?: string;
   features: string[];
+  featuresEn?: string[];
   recommended?: string;
+  recommendedEn?: string;
   popular?: boolean;
   // For budget-based pricing (Ads)
   budgetBased?: boolean;
@@ -30,7 +34,9 @@ export interface DetailedInfo {
 export interface ServiceItem {
   id: string;
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   icon: string;
   levels: ServiceLevel[];
   isOneOff?: boolean;
