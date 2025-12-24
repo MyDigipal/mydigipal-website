@@ -105,7 +105,7 @@ export const DURATION_CONFIG = {
 } as const;
 
 // Tiered management fee configuration
-// Based on: < 2500€ = 500€ flat, 2500€-10000€ = 20%, > 10000€ = custom quote
+// Based on: < 2500€ = 500€ flat, 2500€-7500€ = 20%, 7500€-12500€ = 15%, > 12500€ = custom quote
 export const MANAGEMENT_FEE_CONFIG = {
   tiers: [
     {
@@ -116,11 +116,18 @@ export const MANAGEMENT_FEE_CONFIG = {
       descriptionEn: 'Minimum to cover essentials: optimization, campaign tracking, adjustments, reporting'
     },
     {
-      maxBudget: 10000,
+      maxBudget: 7500,
       type: 'percentage' as const,
       value: 20,
       description: 'Ajustement proportionnel aux efforts nécessaires : plus de campagnes, plus de données à analyser, plus d\'optimisations',
       descriptionEn: 'Proportional to required effort: more campaigns, more data to analyze, more optimizations'
+    },
+    {
+      maxBudget: 12500,
+      type: 'percentage' as const,
+      value: 15,
+      description: 'Tarif dégressif pour budgets moyens : économies d\'échelle sur la gestion et l\'optimisation',
+      descriptionEn: 'Degressive rate for medium budgets: economies of scale on management and optimization'
     },
     {
       maxBudget: Infinity,
