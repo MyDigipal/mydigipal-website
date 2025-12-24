@@ -108,7 +108,21 @@ export const translations = {
 
     // AI Training travel
     inPersonTravelNote: 'One-off travel fee (€300-700 depending on location)',
-    travelEstimate: 'Estimated travel cost: €500'
+    travelEstimate: 'Estimated travel cost: €500',
+
+    // Not sure option
+    notSureAbout: "I'm not sure about",
+    letsChat: "Let's chat",
+    notSureSelected: 'Contact us to discuss',
+
+    // Session count
+    howManySessions: 'How many sessions?',
+    sessionsCount: 'sessions',
+
+    // Department totals
+    departmentMonthly: 'Monthly',
+    departmentOneOff: 'One-off',
+    departmentTotal: 'Subtotal'
   },
   fr: {
     // Page title
@@ -219,7 +233,21 @@ export const translations = {
 
     // AI Training travel
     inPersonTravelNote: 'Frais de déplacement unique (300-700€ selon la localisation)',
-    travelEstimate: 'Frais de déplacement estimés : 500€'
+    travelEstimate: 'Frais de déplacement estimés : 500€',
+
+    // Not sure option
+    notSureAbout: 'Je ne suis pas sûr pour',
+    letsChat: 'Discutons-en',
+    notSureSelected: 'Contactez-nous pour en discuter',
+
+    // Session count
+    howManySessions: 'Combien de sessions ?',
+    sessionsCount: 'sessions',
+
+    // Department totals
+    departmentMonthly: 'Mensuel',
+    departmentOneOff: 'One-off',
+    departmentTotal: 'Sous-total'
   }
 } as const;
 

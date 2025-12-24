@@ -60,6 +60,20 @@ const CloseIcon = () => (
   </svg>
 );
 
+// Color theme helper for departments
+const getDomainColors = (colorClass: string) => {
+  const colors: Record<string, { border: string; bg: string; bgLight: string; text: string; button: string; buttonHover: string }> = {
+    indigo: { border: 'border-indigo-300', bg: 'bg-indigo-500', bgLight: 'bg-indigo-50', text: 'text-indigo-700', button: 'bg-indigo-100 text-indigo-700', buttonHover: 'hover:bg-indigo-200' },
+    blue: { border: 'border-blue-300', bg: 'bg-blue-500', bgLight: 'bg-blue-50', text: 'text-blue-700', button: 'bg-blue-100 text-blue-700', buttonHover: 'hover:bg-blue-200' },
+    purple: { border: 'border-purple-300', bg: 'bg-purple-500', bgLight: 'bg-purple-50', text: 'text-purple-700', button: 'bg-purple-100 text-purple-700', buttonHover: 'hover:bg-purple-200' },
+    emerald: { border: 'border-emerald-300', bg: 'bg-emerald-500', bgLight: 'bg-emerald-50', text: 'text-emerald-700', button: 'bg-emerald-100 text-emerald-700', buttonHover: 'hover:bg-emerald-200' },
+    amber: { border: 'border-amber-300', bg: 'bg-amber-500', bgLight: 'bg-amber-50', text: 'text-amber-700', button: 'bg-amber-100 text-amber-700', buttonHover: 'hover:bg-amber-200' },
+    violet: { border: 'border-violet-300', bg: 'bg-violet-500', bgLight: 'bg-violet-50', text: 'text-violet-700', button: 'bg-violet-100 text-violet-700', buttonHover: 'hover:bg-violet-200' },
+    cyan: { border: 'border-cyan-300', bg: 'bg-cyan-500', bgLight: 'bg-cyan-50', text: 'text-cyan-700', button: 'bg-cyan-100 text-cyan-700', buttonHover: 'hover:bg-cyan-200' }
+  };
+  return colors[colorClass] || colors.blue;
+};
+
 // Tooltip component
 const Tooltip = ({ content, whyImportant, lang }: { content: string; whyImportant?: string; lang: 'en' | 'fr' }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -143,6 +157,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const [dismissedDomains, setDismissedDomains] = useState<Record<string, boolean>>({});
   const [trackingDismissed, setTrackingDismissed] = useState(false);
 
+  // "Not sure about X" state - when selected, grays out the section
+  const [notSureAbout, setNotSureAbout] = useState<Record<string, boolean>>({});
+
+  // AI Training session count (for 5+ sessions)
+  const [sessionCount, setSessionCount] = useState(5);
+
   // Toggle domain selection
   const toggleDomain = useCallback((domain: ServiceDomain) => {
     setSelectedDomains(prev =>
@@ -191,8 +211,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     selectedDomains.forEach(domain => {
       const config = domainConfigs[domain];
 
-      // Skip dismissed domains
-      if (dismissedDomains[domain]) return;
+      // Skip dismissed domains or "not sure" domains
+      if (dismissedDomains[domain] || notSureAbout[domain]) return;
 
       // Skip AI Training and AI Solutions (special handling)
       if (domain === 'ai-training' || domain === 'ai-solutions') return;
@@ -222,11 +242,11 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       });
     });
 
-    // AI Training pricing (skip if dismissed)
-    if (selectedDomains.includes('ai-training') && !dismissedDomains['ai-training']) {
+    // AI Training pricing (skip if dismissed or not sure)
+    if (selectedDomains.includes('ai-training') && !dismissedDomains['ai-training'] && !notSureAbout['ai-training']) {
       const pricingTier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
       const basePrice = aiTraining.format === 'full-day' ? pricingTier.fullDay.price : pricingTier.halfDay.price;
-      const sessionMultiplier = aiTraining.sessions === '5+' ? 5 : 1;
+      const sessionMultiplier = aiTraining.sessions === '5+' ? sessionCount : 1;
       // Fixed travel cost of 500€ when in-person
       const trainingTotal = basePrice * sessionMultiplier + (aiTraining.inPerson ? 500 : 0);
       oneOffTotal += trainingTotal;
@@ -280,12 +300,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       grandTotalWithBudget,
       hasCustomQuote
     };
-  }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, trackingSelections, trackingAudit, duration, dismissedDomains, trackingDismissed]);
+  }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, trackingSelections, trackingAudit, duration, dismissedDomains, trackingDismissed, notSureAbout, sessionCount]);
 
-  // Check if any service is selected (excluding dismissed domains)
+  // Check if any service is selected (excluding dismissed/notSure domains)
   const hasSelections = useMemo(() => {
-    if (selectedDomains.includes('ai-training') && !dismissedDomains['ai-training']) return true;
-    if (selectedDomains.includes('ai-solutions') && !dismissedDomains['ai-solutions']) return true;
+    if (selectedDomains.includes('ai-training') && !dismissedDomains['ai-training'] && !notSureAbout['ai-training']) return true;
+    if (selectedDomains.includes('ai-solutions') && !dismissedDomains['ai-solutions'] && !notSureAbout['ai-solutions']) return true;
     // Check if any non-dismissed domain has selections
     const hasOtherSelections = Object.entries(selections).some(([serviceId, level]) => {
       if (level === null) return false;
@@ -293,10 +313,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       const domainId = Object.keys(domainConfigs).find(d =>
         domainConfigs[d as ServiceDomain].services.some(s => s.id === serviceId)
       );
-      return domainId && !dismissedDomains[domainId];
+      return domainId && !dismissedDomains[domainId] && !notSureAbout[domainId];
     });
     return hasOtherSelections;
-  }, [selectedDomains, selections, dismissedDomains]);
+  }, [selectedDomains, selections, dismissedDomains, notSureAbout]);
 
   // Check if user needs tracking (has marketing services selected)
   const needsTracking = useMemo(() => {
@@ -437,68 +457,38 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   // Configuration step
   return (
     <div className="min-h-[600px]">
-      {/* Sticky Header with Totals */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200 -mx-4 px-4 py-4 mb-8">
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => setStep('domains')}
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
-          >
-            <ArrowLeft />
-            {t.backToDomains}
-          </button>
-
-          {hasSelections && (
-            <div className="flex items-center gap-6">
-              {/* Monthly Total (without media budget) */}
-              <div className="text-right">
-                <p className="text-xs text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</p>
-                <p className="text-xl font-bold text-blue-600">
-                  {pricing.hasCustomQuote ? (
-                    <span className="text-amber-600">{lang === 'fr' ? 'Sur devis' : 'Custom'}</span>
-                  ) : (
-                    <>{Math.round(pricing.totalMonthlyWithoutBudget).toLocaleString()}€<span className="text-sm font-normal text-slate-400">/mois</span></>
-                  )}
-                </p>
-              </div>
-              {/* One-off Total */}
-              {pricing.oneOffTotal > 0 && (
-                <div className="text-right border-l border-slate-200 pl-6">
-                  <p className="text-xs text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'One-off' : 'One-time'}</p>
-                  <p className="text-xl font-bold text-emerald-600">
-                    {Math.round(pricing.oneOffTotal).toLocaleString()}€
-                  </p>
-                </div>
-              )}
-              {/* View Summary Button */}
-              <button
-                onClick={() => setShowSummaryPopup(true)}
-                className="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
-              >
-                {t.viewSummary}
-              </button>
-            </div>
-          )}
-        </div>
+      {/* Back button header */}
+      <div className="mb-8">
+        <button
+          onClick={() => setStep('domains')}
+          className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
+        >
+          <ArrowLeft />
+          {t.backToDomains}
+        </button>
       </div>
 
-      {/* Services configuration */}
-      <div className="space-y-12">
+      {/* Two-column layout: Services on left, Sticky totals on right */}
+      <div className="flex gap-8">
+        {/* Services configuration - main column */}
+        <div className="flex-1 space-y-12">
         {selectedDomains.map(domainId => {
           const domain = domainConfigs[domainId];
 
           // Special handling for AI Training
           if (domainId === 'ai-training') {
             const isDismissed = dismissedDomains[domainId];
+            const isNotSure = notSureAbout[domainId];
+            const colors = getDomainColors(domain.colorClass);
             return (
               <div
                 key={domainId}
-                className={`bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-300 ${
-                  isDismissed ? 'max-h-24 opacity-60' : 'max-h-[2000px]'
+                className={`rounded-2xl border-2 ${colors.border} overflow-hidden transition-all duration-300 ${
+                  isDismissed ? 'max-h-24 opacity-60 bg-white' : `max-h-[2000px] ${colors.bgLight}`
                 }`}
               >
                 <div className="p-8">
-                  <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
                       <span className="text-4xl">{domain.icon}</span>
                       <div>
@@ -512,8 +502,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                       onClick={() => toggleDomainDismissed(domainId)}
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                         isDismissed
-                          ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-                          : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                          ? `${colors.button} ${colors.buttonHover}`
+                          : 'bg-white/80 text-slate-500 hover:bg-white'
                       }`}
                     >
                       {isDismissed ? t.restoreSection : t.dismissSection}
@@ -522,103 +512,147 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
                   {!isDismissed && (
                     <>
-                      <div className="grid md:grid-cols-2 gap-8">
-                        {/* Format selection */}
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-3">{t.aiTrainingFormat}</label>
-                          <div className="grid grid-cols-2 gap-3">
-                            <button
-                              onClick={() => setAiTraining(prev => ({ ...prev, format: 'half-day' }))}
-                              className={`p-4 rounded-xl border-2 text-left transition-all ${
-                                aiTraining.format === 'half-day'
-                                  ? 'border-emerald-500 bg-emerald-50'
-                                  : 'border-slate-200 hover:border-slate-300'
-                              }`}
-                            >
-                              <div className="font-semibold text-slate-900">{t.halfDay}</div>
-                              <div className="text-sm text-slate-500">3 heures</div>
-                            </button>
-                            <button
-                              onClick={() => setAiTraining(prev => ({ ...prev, format: 'full-day' }))}
-                              className={`p-4 rounded-xl border-2 text-left transition-all ${
-                                aiTraining.format === 'full-day'
-                                  ? 'border-emerald-500 bg-emerald-50'
-                                  : 'border-slate-200 hover:border-slate-300'
-                              }`}
-                            >
-                              <div className="font-semibold text-slate-900">{t.fullDay}</div>
-                              <div className="text-sm text-slate-500">6.5 heures</div>
-                              <span className="inline-block mt-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded">
-                                {t.popular}
-                              </span>
-                            </button>
+                      {/* Not sure option */}
+                      <button
+                        onClick={() => setNotSureAbout(prev => ({ ...prev, [domainId]: !prev[domainId] }))}
+                        className={`w-full p-4 mb-6 rounded-xl border-2 text-left transition-all ${
+                          isNotSure
+                            ? `${colors.border} ${colors.bgLight} border-solid`
+                            : 'border-dashed border-slate-300 hover:border-slate-400 bg-white'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xl">🔍</span>
+                          <div className="flex-1">
+                            <span className="font-semibold text-slate-900">
+                              {t.notSureAbout} {lang === 'fr' ? domain.nameFr : domain.name} - {t.letsChat}
+                            </span>
                           </div>
+                          {isNotSure && (
+                            <span className={`w-6 h-6 rounded-full ${colors.bg} text-white flex items-center justify-center`}>
+                              <CheckIcon />
+                            </span>
+                          )}
                         </div>
+                      </button>
 
-                        {/* Sessions selection */}
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-3">{t.sessions}</label>
-                          <div className="grid grid-cols-2 gap-3">
-                            <button
-                              onClick={() => setAiTraining(prev => ({ ...prev, sessions: '1' }))}
-                              className={`p-4 rounded-xl border-2 text-left transition-all ${
-                                aiTraining.sessions === '1'
-                                  ? 'border-emerald-500 bg-emerald-50'
-                                  : 'border-slate-200 hover:border-slate-300'
-                              }`}
-                            >
-                              <div className="font-semibold text-slate-900">{t.singleSession}</div>
-                            </button>
-                            <button
-                              onClick={() => setAiTraining(prev => ({ ...prev, sessions: '5+' }))}
-                              className={`p-4 rounded-xl border-2 text-left transition-all ${
-                                aiTraining.sessions === '5+'
-                                  ? 'border-emerald-500 bg-emerald-50'
-                                  : 'border-slate-200 hover:border-slate-300'
-                              }`}
-                            >
-                              <div className="font-semibold text-slate-900">{t.bulkSessions}</div>
-                              <div className="text-xs text-emerald-600">-20% par session</div>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* In-person option - simplified with fixed 500€ estimate */}
-                      <div className="mt-6 p-4 bg-slate-50 rounded-xl">
-                        <label className="flex items-start gap-3 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={aiTraining.inPerson}
-                            onChange={(e) => setAiTraining(prev => ({ ...prev, inPerson: e.target.checked }))}
-                            className="w-5 h-5 mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                          />
+                      <div className={`transition-all duration-300 ${isNotSure ? 'opacity-40 pointer-events-none' : ''}`}>
+                        <div className="grid md:grid-cols-2 gap-8">
+                          {/* Format selection */}
                           <div>
-                            <span className="font-medium text-slate-900">{t.inPerson}</span>
-                            <p className="text-sm text-slate-500">{t.inPersonTravelNote}</p>
-                            {aiTraining.inPerson && (
-                              <p className="text-sm font-medium text-emerald-600 mt-1">{t.travelEstimate}</p>
+                            <label className="block text-sm font-medium text-slate-700 mb-3">{t.aiTrainingFormat}</label>
+                            <div className="grid grid-cols-2 gap-3">
+                              <button
+                                onClick={() => setAiTraining(prev => ({ ...prev, format: 'half-day' }))}
+                                className={`p-4 rounded-xl border-2 text-left transition-all bg-white ${
+                                  aiTraining.format === 'half-day'
+                                    ? 'border-emerald-500 bg-emerald-50'
+                                    : 'border-slate-200 hover:border-slate-300'
+                                }`}
+                              >
+                                <div className="font-semibold text-slate-900">{t.halfDay}</div>
+                                <div className="text-sm text-slate-500">3 heures</div>
+                              </button>
+                              <button
+                                onClick={() => setAiTraining(prev => ({ ...prev, format: 'full-day' }))}
+                                className={`p-4 rounded-xl border-2 text-left transition-all bg-white ${
+                                  aiTraining.format === 'full-day'
+                                    ? 'border-emerald-500 bg-emerald-50'
+                                    : 'border-slate-200 hover:border-slate-300'
+                                }`}
+                              >
+                                <div className="font-semibold text-slate-900">{t.fullDay}</div>
+                                <div className="text-sm text-slate-500">6.5 heures</div>
+                                <span className={`inline-block mt-1 px-2 py-0.5 ${colors.button} text-xs font-medium rounded`}>
+                                  {t.popular}
+                                </span>
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Sessions selection */}
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-3">{t.sessions}</label>
+                            <div className="grid grid-cols-2 gap-3">
+                              <button
+                                onClick={() => setAiTraining(prev => ({ ...prev, sessions: '1' }))}
+                                className={`p-4 rounded-xl border-2 text-left transition-all bg-white ${
+                                  aiTraining.sessions === '1'
+                                    ? 'border-emerald-500 bg-emerald-50'
+                                    : 'border-slate-200 hover:border-slate-300'
+                                }`}
+                              >
+                                <div className="font-semibold text-slate-900">{t.singleSession}</div>
+                              </button>
+                              <button
+                                onClick={() => setAiTraining(prev => ({ ...prev, sessions: '5+' }))}
+                                className={`p-4 rounded-xl border-2 text-left transition-all bg-white ${
+                                  aiTraining.sessions === '5+'
+                                    ? 'border-emerald-500 bg-emerald-50'
+                                    : 'border-slate-200 hover:border-slate-300'
+                                }`}
+                              >
+                                <div className="font-semibold text-slate-900">{t.bulkSessions}</div>
+                                <div className="text-xs text-emerald-600">-20% par session</div>
+                              </button>
+                            </div>
+
+                            {/* Session count input when 5+ selected */}
+                            {aiTraining.sessions === '5+' && (
+                              <div className="mt-4 p-4 bg-white rounded-xl border border-slate-200">
+                                <label className="block text-sm font-medium text-slate-700 mb-2">{t.howManySessions}</label>
+                                <div className="flex items-center gap-3">
+                                  <input
+                                    type="number"
+                                    min="5"
+                                    max="50"
+                                    value={sessionCount}
+                                    onChange={(e) => setSessionCount(Math.max(5, parseInt(e.target.value) || 5))}
+                                    className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-center font-semibold focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                  />
+                                  <span className="text-slate-600">{t.sessionsCount}</span>
+                                </div>
+                              </div>
                             )}
                           </div>
-                        </label>
-                      </div>
+                        </div>
 
-                      {/* Price display */}
-                      <div className="mt-6 p-6 bg-emerald-50 rounded-xl">
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-700">
-                            {aiTraining.format === 'full-day' ? t.fullDay : t.halfDay} × {aiTraining.sessions === '5+' ? '5' : '1'} session(s)
-                            {aiTraining.inPerson && ` + ${lang === 'fr' ? 'frais de déplacement' : 'travel'}`}
-                          </span>
-                          <span className="text-2xl font-bold text-emerald-700">
-                            {(() => {
-                              const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
-                              const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
-                              const multiplier = aiTraining.sessions === '5+' ? 5 : 1;
-                              const travel = aiTraining.inPerson ? 500 : 0;
-                              return ((base * multiplier) + travel).toLocaleString();
-                            })()}€
-                          </span>
+                        {/* In-person option */}
+                        <div className="mt-6 p-4 bg-white rounded-xl border border-slate-200">
+                          <label className="flex items-start gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={aiTraining.inPerson}
+                              onChange={(e) => setAiTraining(prev => ({ ...prev, inPerson: e.target.checked }))}
+                              className="w-5 h-5 mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                            />
+                            <div>
+                              <span className="font-medium text-slate-900">{t.inPerson}</span>
+                              <p className="text-sm text-slate-500">{t.inPersonTravelNote}</p>
+                              {aiTraining.inPerson && (
+                                <p className="text-sm font-medium text-emerald-600 mt-1">{t.travelEstimate}</p>
+                              )}
+                            </div>
+                          </label>
+                        </div>
+
+                        {/* Price display */}
+                        <div className={`mt-6 p-6 ${colors.bgLight} rounded-xl border ${colors.border}`}>
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-700">
+                              {aiTraining.format === 'full-day' ? t.fullDay : t.halfDay} × {aiTraining.sessions === '5+' ? sessionCount : '1'} session(s)
+                              {aiTraining.inPerson && ` + ${lang === 'fr' ? 'frais de déplacement' : 'travel'}`}
+                            </span>
+                            <span className={`text-2xl font-bold ${colors.text}`}>
+                              {(() => {
+                                const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
+                                const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
+                                const multiplier = aiTraining.sessions === '5+' ? sessionCount : 1;
+                                const travel = aiTraining.inPerson ? 500 : 0;
+                                return ((base * multiplier) + travel).toLocaleString();
+                              })()}€
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </>
@@ -631,11 +665,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           // Special handling for AI Solutions
           if (domainId === 'ai-solutions') {
             const isDismissed = dismissedDomains[domainId];
+            const colors = getDomainColors(domain.colorClass);
             return (
               <div
                 key={domainId}
-                className={`bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-300 ${
-                  isDismissed ? 'max-h-24 opacity-60' : 'max-h-[2000px]'
+                className={`rounded-2xl border-2 ${colors.border} overflow-hidden transition-all duration-300 ${
+                  isDismissed ? 'max-h-24 opacity-60 bg-white' : `max-h-[2000px] ${colors.bgLight}`
                 }`}
               >
                 <div className="p-8">
@@ -653,8 +688,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                       onClick={() => toggleDomainDismissed(domainId)}
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                         isDismissed
-                          ? 'bg-violet-100 text-violet-700 hover:bg-violet-200'
-                          : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                          ? `${colors.button} ${colors.buttonHover}`
+                          : 'bg-white/80 text-slate-500 hover:bg-white'
                       }`}
                     >
                       {isDismissed ? t.restoreSection : t.dismissSection}
@@ -665,7 +700,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                     <>
                       <div className="grid md:grid-cols-2 gap-8 mb-8">
                         {(lang === 'fr' ? aiSolutionsUseCases.fr : aiSolutionsUseCases.en).map((useCase, idx) => (
-                          <div key={idx} className="flex gap-4 p-4 bg-violet-50 rounded-xl">
+                          <div key={idx} className="flex gap-4 p-4 bg-white rounded-xl border border-violet-200">
                             <span className="text-2xl">{useCase.icon}</span>
                             <div>
                               <h4 className="font-semibold text-slate-900">{useCase.title}</h4>
@@ -718,15 +753,17 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
           // Standard service domain
           const isDismissed = dismissedDomains[domainId];
+          const isNotSure = notSureAbout[domainId];
+          const colors = getDomainColors(domain.colorClass);
           return (
             <div
               key={domainId}
-              className={`bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-300 ${
-                isDismissed ? 'max-h-24 opacity-60' : 'max-h-[5000px]'
+              className={`rounded-2xl border-2 ${colors.border} overflow-hidden transition-all duration-300 ${
+                isDismissed ? 'max-h-24 opacity-60 bg-white' : `max-h-[5000px] ${colors.bgLight}`
               }`}
             >
               <div className="p-8">
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-4">
                     <span className="text-4xl">{domain.icon}</span>
                     <div>
@@ -740,8 +777,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                     onClick={() => toggleDomainDismissed(domainId)}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                       isDismissed
-                        ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                        ? `${colors.button} ${colors.buttonHover}`
+                        : 'bg-white/80 text-slate-500 hover:bg-white'
                     }`}
                   >
                     {isDismissed ? t.restoreSection : t.dismissSection}
@@ -750,100 +787,116 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
                 {!isDismissed && (
                   <>
-                    {/* Budget slider for ads */}
-                    {domain.hasBudgetSlider && (() => {
-                      const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
-                      const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
-                      const feeDescription = getManagementFeeDescription(budget, lang);
-                      return (
-                        <div className="mb-8 p-6 bg-slate-50 rounded-xl">
-                          <label className="block text-sm font-medium text-slate-700 mb-4">{t.adBudget}</label>
-                          <input
-                            type="range"
-                            min={BUDGET_CONFIG.min}
-                            max={BUDGET_CONFIG.max}
-                            step={BUDGET_CONFIG.step}
-                            value={budget}
-                            onChange={(e) => setAdBudgets(prev => ({ ...prev, [domainId]: parseInt(e.target.value) }))}
-                            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                          />
-                          <div className="flex justify-between mt-2">
-                            <span className="text-sm text-slate-500">{BUDGET_CONFIG.min}€</span>
-                            <span className="text-xl font-bold text-slate-900">
-                              {budget.toLocaleString()}€/mois
-                            </span>
-                            <span className="text-sm text-slate-500">{BUDGET_CONFIG.max.toLocaleString()}€</span>
-                          </div>
-                          {/* Tiered management fee display */}
-                          <div className="mt-4 p-4 bg-white rounded-lg border border-slate-200">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-sm font-medium text-slate-700">{t.managementFee}</span>
-                              <span className="font-bold text-slate-900">
-                                {feeResult.isCustomQuote ? (
-                                  <span className="text-amber-600">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
-                                ) : (
-                                  <>{Math.round(feeResult.fee).toLocaleString()}€/mois</>
-                                )}
-                              </span>
-                            </div>
-                            <p className="text-xs text-slate-500">{feeDescription}</p>
-                            {/* Tier indicators */}
-                            <div className="mt-3 flex gap-1">
-                              <div className={`flex-1 h-1.5 rounded-full ${budget < 2500 ? 'bg-blue-500' : 'bg-slate-200'}`} title="< 2500€: 500€/mois" />
-                              <div className={`flex-1 h-1.5 rounded-full ${budget >= 2500 && budget < 10000 ? 'bg-blue-500' : 'bg-slate-200'}`} title="2500€-10000€: 20%" />
-                              <div className={`flex-1 h-1.5 rounded-full ${budget >= 10000 ? 'bg-amber-500' : 'bg-slate-200'}`} title="> 10000€: Sur devis" />
-                            </div>
-                            <div className="mt-1 flex justify-between text-[10px] text-slate-400">
-                              <span>500€/mois</span>
-                              <span>20%</span>
-                              <span>{lang === 'fr' ? 'Sur devis' : 'Quote'}</span>
-                            </div>
-                          </div>
+                    {/* Not sure option */}
+                    <button
+                      onClick={() => setNotSureAbout(prev => ({ ...prev, [domainId]: !prev[domainId] }))}
+                      className={`w-full p-4 mb-6 rounded-xl border-2 text-left transition-all ${
+                        isNotSure
+                          ? `${colors.border} ${colors.bgLight} border-solid`
+                          : 'border-dashed border-slate-300 hover:border-slate-400 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">🔍</span>
+                        <div className="flex-1">
+                          <span className="font-semibold text-slate-900">
+                            {t.notSureAbout} {lang === 'fr' ? domain.nameFr : domain.name} - {t.letsChat}
+                          </span>
                         </div>
-                      );
-                    })()}
+                        {isNotSure && (
+                          <span className={`w-6 h-6 rounded-full ${colors.bg} text-white flex items-center justify-center`}>
+                            <CheckIcon />
+                          </span>
+                        )}
+                      </div>
+                    </button>
 
-                    {/* Services */}
-                    <div className="space-y-8">
-                      {domain.services.map(service => {
-                        const isDisabled = disabledServices[service.id];
-                        const selectedLevel = selections[service.id];
-
+                    <div className={`transition-all duration-300 ${isNotSure ? 'opacity-40 pointer-events-none' : ''}`}>
+                      {/* Budget slider for ads */}
+                      {domain.hasBudgetSlider && (() => {
+                        const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
+                        const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
+                        const feeDescription = getManagementFeeDescription(budget, lang);
                         return (
-                          <div
-                            key={service.id}
-                            className={`p-6 rounded-xl border ${isDisabled ? 'opacity-50 bg-slate-50' : 'bg-white'} border-slate-200`}
-                          >
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="flex items-center gap-3">
-                                <span className="text-2xl">{service.icon}</span>
-                                <div>
-                                  <div className="flex items-center gap-1">
-                                    <h3 className="font-bold text-slate-900">{service.title}</h3>
-                                    {service.detailedInfo && (
-                                      <Tooltip
-                                        content={service.detailedInfo.content.intro}
-                                        whyImportant={service.detailedInfo.content.conclusion}
-                                        lang={lang}
-                                      />
-                                    )}
+                          <div className="mb-8 p-6 bg-white rounded-xl border border-slate-200">
+                            <label className="block text-sm font-medium text-slate-700 mb-4">{t.adBudget}</label>
+                            <input
+                              type="range"
+                              min={BUDGET_CONFIG.min}
+                              max={BUDGET_CONFIG.max}
+                              step={BUDGET_CONFIG.step}
+                              value={budget}
+                              onChange={(e) => setAdBudgets(prev => ({ ...prev, [domainId]: parseInt(e.target.value) }))}
+                              className={`w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer`}
+                              style={{ accentColor: domain.color }}
+                            />
+                            <div className="flex justify-between mt-2">
+                              <span className="text-sm text-slate-500">{BUDGET_CONFIG.min}€</span>
+                              <span className="text-xl font-bold text-slate-900">
+                                {budget.toLocaleString()}€/mois
+                              </span>
+                              <span className="text-sm text-slate-500">{BUDGET_CONFIG.max.toLocaleString()}€</span>
+                            </div>
+                            {/* Tiered management fee display */}
+                            <div className={`mt-4 p-4 ${colors.bgLight} rounded-lg border ${colors.border}`}>
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-slate-700">{t.managementFee}</span>
+                                <span className={`font-bold ${colors.text}`}>
+                                  {feeResult.isCustomQuote ? (
+                                    <span className="text-amber-600">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
+                                  ) : (
+                                    <>{Math.round(feeResult.fee).toLocaleString()}€/mois</>
+                                  )}
+                                </span>
+                              </div>
+                              <p className="text-xs text-slate-500">{feeDescription}</p>
+                              {/* 4-tier indicators */}
+                              <div className="mt-3 flex gap-1">
+                                <div className={`flex-1 h-1.5 rounded-full ${budget < 2500 ? colors.bg : 'bg-slate-200'}`} title="< 2500€: 500€/mois" />
+                                <div className={`flex-1 h-1.5 rounded-full ${budget >= 2500 && budget < 7500 ? colors.bg : 'bg-slate-200'}`} title="2500€-7500€: 20%" />
+                                <div className={`flex-1 h-1.5 rounded-full ${budget >= 7500 && budget < 12500 ? colors.bg : 'bg-slate-200'}`} title="7500€-12500€: 15%" />
+                                <div className={`flex-1 h-1.5 rounded-full ${budget >= 12500 ? 'bg-amber-500' : 'bg-slate-200'}`} title="> 12500€: Sur devis" />
+                              </div>
+                              <div className="mt-1 flex justify-between text-[10px] text-slate-400">
+                                <span>500€</span>
+                                <span>20%</span>
+                                <span>15%</span>
+                                <span>{lang === 'fr' ? 'Devis' : 'Quote'}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Services */}
+                      <div className="space-y-6">
+                        {domain.services.map(service => {
+                          const selectedLevel = selections[service.id];
+
+                          return (
+                            <div
+                              key={service.id}
+                              className="p-6 rounded-xl bg-white border border-slate-200"
+                            >
+                              <div className="flex items-start mb-4">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-2xl">{service.icon}</span>
+                                  <div>
+                                    <div className="flex items-center gap-1">
+                                      <h3 className="font-bold text-slate-900">{service.title}</h3>
+                                      {service.detailedInfo && (
+                                        <Tooltip
+                                          content={service.detailedInfo.content.intro}
+                                          whyImportant={service.detailedInfo.content.conclusion}
+                                          lang={lang}
+                                        />
+                                      )}
+                                    </div>
+                                    <p className="text-sm text-slate-600">{service.description}</p>
                                   </div>
-                                  <p className="text-sm text-slate-600">{service.description}</p>
                                 </div>
                               </div>
-                              <button
-                                onClick={() => toggleDisabled(service.id)}
-                                className={`text-sm px-3 py-1 rounded-full transition-colors ${
-                                  isDisabled
-                                    ? 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                                }`}
-                              >
-                                {isDisabled ? '+ Activer' : t.noThanks}
-                              </button>
-                            </div>
 
-                            {!isDisabled && (
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {service.levels.map((level, idx) => (
                                   <button
@@ -851,12 +904,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                     onClick={() => toggleServiceLevel(service.id, idx)}
                                     className={`p-4 rounded-xl border-2 text-left transition-all relative ${
                                       selectedLevel === idx
-                                        ? 'border-blue-500 bg-blue-50'
-                                        : 'border-slate-200 hover:border-slate-300'
+                                        ? `${colors.border} ${colors.bgLight}`
+                                        : 'border-slate-200 hover:border-slate-300 bg-white'
                                     }`}
                                   >
                                     {level.popular && (
-                                      <span className="absolute -top-2 right-2 px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded">
+                                      <span className={`absolute -top-2 right-2 px-2 py-0.5 ${colors.bg} text-white text-xs font-medium rounded`}>
                                         {t.popular}
                                       </span>
                                     )}
@@ -872,7 +925,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                     <ul className="space-y-1">
                                       {level.features.slice(0, 3).map((feature, i) => (
                                         <li key={i} className="text-xs text-slate-600 flex items-start gap-1">
-                                          <span className="text-blue-500 mt-0.5">•</span>
+                                          <span className={`${colors.text} mt-0.5`}>•</span>
                                           {feature}
                                         </li>
                                       ))}
@@ -880,10 +933,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                   </button>
                                 ))}
                               </div>
-                            )}
-                          </div>
-                        );
-                      })}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </>
                 )}
@@ -1034,22 +1087,15 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             <h3 className="text-2xl font-bold mb-8">{t.summary}</h3>
 
             <div className="space-y-4 mb-8">
-              {/* Monthly services */}
-              {pricing.monthlyTotal > 0 && (
+              {/* Monthly total (services + management fees merged) */}
+              {(pricing.monthlyTotal > 0 || pricing.managementFeesTotal > 0) && (
                 <div className="flex justify-between">
-                  <span className="text-slate-300">{t.monthlyServices}</span>
-                  <span className="font-semibold">{pricing.monthlyTotal.toLocaleString()}€/mois</span>
-                </div>
-              )}
-              {/* Management fees */}
-              {pricing.managementFeesTotal > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-slate-300">{t.managementFees}</span>
+                  <span className="text-slate-300">{t.managementFee}</span>
                   <span className="font-semibold">
                     {pricing.hasCustomQuote ? (
                       <span className="text-amber-400">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
                     ) : (
-                      <>{pricing.managementFeesTotal.toLocaleString()}€/mois</>
+                      <>{(pricing.monthlyTotal + pricing.managementFeesTotal).toLocaleString()}€/mois</>
                     )}
                   </span>
                 </div>
@@ -1165,6 +1211,61 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             )}
           </div>
         )}
+        </div>
+
+        {/* Sticky sidebar for totals - right column */}
+        <div className="hidden lg:block w-80 flex-shrink-0">
+          <div className="sticky top-8">
+            {hasSelections && (
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 space-y-4">
+                {/* Monthly Total */}
+                <div className="text-center pb-4 border-b border-slate-100">
+                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</p>
+                  <p className="text-3xl font-bold text-slate-900">
+                    {pricing.hasCustomQuote ? (
+                      <span className="text-amber-600 text-xl">{lang === 'fr' ? 'Sur devis' : 'Custom'}</span>
+                    ) : (
+                      <>{Math.round(pricing.totalMonthlyWithoutBudget).toLocaleString()}€</>
+                    )}
+                  </p>
+                  {!pricing.hasCustomQuote && <p className="text-sm text-slate-400">/mois</p>}
+                </div>
+
+                {/* One-off Total */}
+                {pricing.oneOffTotal > 0 && (
+                  <div className="text-center pb-4 border-b border-slate-100">
+                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">{lang === 'fr' ? 'One-off' : 'One-time'}</p>
+                    <p className="text-2xl font-bold text-emerald-600">
+                      {Math.round(pricing.oneOffTotal).toLocaleString()}€
+                    </p>
+                  </div>
+                )}
+
+                {/* Duration */}
+                <div className="text-center pb-4 border-b border-slate-100">
+                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">{t.duration}</p>
+                  <p className="text-lg font-semibold text-slate-700">{duration} {t.months}</p>
+                </div>
+
+                {/* Total over duration */}
+                <div className="text-center pb-4">
+                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">{lang === 'fr' ? 'Total engagement' : 'Total commitment'}</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {Math.round(pricing.grandTotalWithoutBudget).toLocaleString()}€
+                  </p>
+                </div>
+
+                {/* View Summary Button */}
+                <button
+                  onClick={() => setShowSummaryPopup(true)}
+                  className="w-full px-5 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+                >
+                  {t.viewSummary}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Tracking Reminder Popup */}
@@ -1244,9 +1345,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               {/* By department breakdown */}
               {selectedDomains.map(domainId => {
                 const domain = domainConfigs[domainId];
-                // Skip AI Solutions and dismissed domains
+                const colors = getDomainColors(domain.colorClass);
+                // Skip AI Solutions, dismissed domains, and "not sure" domains
                 if (domainId === 'ai-solutions') return null;
-                if (dismissedDomains[domainId]) return null;
+                if (dismissedDomains[domainId] || notSureAbout[domainId]) return null;
 
                 // Calculate domain total
                 let domainMonthly = 0;
@@ -1271,11 +1373,23 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   domainManagementFee = feeResult.fee;
                 }
 
+                // AI Training totals
+                let aiTrainingOneOff = 0;
+                if (domainId === 'ai-training') {
+                  const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
+                  const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
+                  const multiplier = aiTraining.sessions === '5+' ? sessionCount : 1;
+                  aiTrainingOneOff = base * multiplier + (aiTraining.inPerson ? 500 : 0);
+                }
+
                 // Skip if no services selected
                 if (domainMonthly === 0 && domainOneOff === 0 && domainManagementFee === 0 && domainId !== 'ai-training') return null;
 
+                const totalMonthly = domainMonthly + domainManagementFee;
+                const totalOneOff = domainOneOff + (domainId === 'ai-training' ? aiTrainingOneOff : 0);
+
                 return (
-                  <div key={domainId} className="bg-slate-50 rounded-xl p-4">
+                  <div key={domainId} className={`${colors.bgLight} rounded-xl p-4 border ${colors.border}`}>
                     <div className="flex items-center gap-3 mb-3">
                       <span className="text-2xl">{domain.icon}</span>
                       <h4 className="font-bold text-slate-900">{lang === 'fr' ? domain.nameFr : domain.name}</h4>
@@ -1296,17 +1410,17 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                       {domainManagementFee > 0 && (
                         <div className="flex justify-between text-slate-600">
                           <span>{t.managementFee}</span>
-                          <span>{domainManagementFee}€/mois</span>
+                          <span>{Math.round(domainManagementFee).toLocaleString()}€/mois</span>
                         </div>
                       )}
                       {domainId === 'ai-training' && selectedDomains.includes('ai-training') && (
                         <div className="flex justify-between text-slate-600">
-                          <span>{aiTraining.format === 'full-day' ? t.fullDay : t.halfDay} × {aiTraining.sessions === '5+' ? '5' : '1'}</span>
+                          <span>{aiTraining.format === 'full-day' ? t.fullDay : t.halfDay} × {aiTraining.sessions === '5+' ? sessionCount : '1'}</span>
                           <span>
                             {(() => {
                               const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
                               const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
-                              const multiplier = aiTraining.sessions === '5+' ? 5 : 1;
+                              const multiplier = aiTraining.sessions === '5+' ? sessionCount : 1;
                               return (base * multiplier).toLocaleString();
                             })()}€
                           </span>
@@ -1318,6 +1432,14 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                           <span>500€</span>
                         </div>
                       )}
+                      {/* Department subtotal */}
+                      <div className={`flex justify-between pt-2 mt-2 border-t border-slate-200 font-semibold ${colors.text}`}>
+                        <span>{t.departmentTotal}</span>
+                        <div className="text-right">
+                          {totalMonthly > 0 && <div>{Math.round(totalMonthly).toLocaleString()}€/mois</div>}
+                          {totalOneOff > 0 && <div>{Math.round(totalOneOff).toLocaleString()}€ one-off</div>}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 );
