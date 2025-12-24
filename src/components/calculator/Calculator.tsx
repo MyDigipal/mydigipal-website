@@ -139,6 +139,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const [showTrackingPopup, setShowTrackingPopup] = useState(false);
   const [trackingPopupDismissed, setTrackingPopupDismissed] = useState(false);
 
+  // Dismissed domains state (for "Not needed" button)
+  const [dismissedDomains, setDismissedDomains] = useState<Record<string, boolean>>({});
+  const [trackingDismissed, setTrackingDismissed] = useState(false);
+
   // Toggle domain selection
   const toggleDomain = useCallback((domain: ServiceDomain) => {
     setSelectedDomains(prev =>
@@ -146,6 +150,14 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         ? prev.filter(d => d !== domain)
         : [...prev, domain]
     );
+  }, []);
+
+  // Toggle domain dismissal (for "Not needed" button on section level)
+  const toggleDomainDismissed = useCallback((domainId: string) => {
+    setDismissedDomains(prev => ({
+      ...prev,
+      [domainId]: !prev[domainId]
+    }));
   }, []);
 
   // Toggle service level
@@ -179,6 +191,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     selectedDomains.forEach(domain => {
       const config = domainConfigs[domain];
 
+      // Skip dismissed domains
+      if (dismissedDomains[domain]) return;
+
       // Skip AI Training and AI Solutions (special handling)
       if (domain === 'ai-training' || domain === 'ai-solutions') return;
 
@@ -207,12 +222,13 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       });
     });
 
-    // AI Training pricing
-    if (selectedDomains.includes('ai-training')) {
+    // AI Training pricing (skip if dismissed)
+    if (selectedDomains.includes('ai-training') && !dismissedDomains['ai-training']) {
       const pricingTier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
       const basePrice = aiTraining.format === 'full-day' ? pricingTier.fullDay.price : pricingTier.halfDay.price;
       const sessionMultiplier = aiTraining.sessions === '5+' ? 5 : 1;
-      const trainingTotal = basePrice * sessionMultiplier + (aiTraining.inPerson ? aiTraining.travelCost : 0);
+      // Fixed travel cost of 500€ when in-person
+      const trainingTotal = basePrice * sessionMultiplier + (aiTraining.inPerson ? 500 : 0);
       oneOffTotal += trainingTotal;
     }
 
@@ -221,17 +237,19 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       monthlyTotal += 100;
     }
 
-    // Tracking services (one-off)
+    // Tracking services (one-off) - skip if dismissed
     let trackingTotal = 0;
-    if (trackingAudit) {
-      trackingTotal += trackingAuditOption.price;
-    }
-    trackingServices.forEach(service => {
-      if (trackingSelections[service.id]) {
-        trackingTotal += service.price;
+    if (!trackingDismissed) {
+      if (trackingAudit) {
+        trackingTotal += trackingAuditOption.price;
       }
-    });
-    oneOffTotal += trackingTotal;
+      trackingServices.forEach(service => {
+        if (trackingSelections[service.id]) {
+          trackingTotal += service.price;
+        }
+      });
+      oneOffTotal += trackingTotal;
+    }
 
     // Duration discount (only on monthly services, not on management fees for >10k budgets)
     const durationConfig = DURATION_CONFIG.options.find(d => d.months === duration);
@@ -262,25 +280,35 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       grandTotalWithBudget,
       hasCustomQuote
     };
-  }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, trackingSelections, trackingAudit, duration]);
+  }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, trackingSelections, trackingAudit, duration, dismissedDomains, trackingDismissed]);
 
-  // Check if any service is selected
+  // Check if any service is selected (excluding dismissed domains)
   const hasSelections = useMemo(() => {
-    if (selectedDomains.includes('ai-training')) return true;
-    if (selectedDomains.includes('ai-solutions')) return true;
-    return Object.values(selections).some(v => v !== null);
-  }, [selectedDomains, selections]);
+    if (selectedDomains.includes('ai-training') && !dismissedDomains['ai-training']) return true;
+    if (selectedDomains.includes('ai-solutions') && !dismissedDomains['ai-solutions']) return true;
+    // Check if any non-dismissed domain has selections
+    const hasOtherSelections = Object.entries(selections).some(([serviceId, level]) => {
+      if (level === null) return false;
+      // Find which domain this service belongs to
+      const domainId = Object.keys(domainConfigs).find(d =>
+        domainConfigs[d as ServiceDomain].services.some(s => s.id === serviceId)
+      );
+      return domainId && !dismissedDomains[domainId];
+    });
+    return hasOtherSelections;
+  }, [selectedDomains, selections, dismissedDomains]);
 
   // Check if user needs tracking (has marketing services selected)
   const needsTracking = useMemo(() => {
     return selectedDomains.some(d => servicesThatNeedTracking.includes(d));
   }, [selectedDomains]);
 
-  // Check if user has any tracking selected
+  // Check if user has any tracking selected (respect dismissal)
   const hasTrackingSelected = useMemo(() => {
+    if (trackingDismissed) return false;
     if (trackingAudit) return true;
     return Object.values(trackingSelections).some(v => v);
-  }, [trackingAudit, trackingSelections]);
+  }, [trackingAudit, trackingSelections, trackingDismissed]);
 
   // Submit handler
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
@@ -461,135 +489,140 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
           // Special handling for AI Training
           if (domainId === 'ai-training') {
+            const isDismissed = dismissedDomains[domainId];
             return (
-              <div key={domainId} className="bg-white rounded-2xl border border-slate-200 p-8">
-                <div className="flex items-center gap-4 mb-8">
-                  <span className="text-4xl">{domain.icon}</span>
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900">
-                      {lang === 'fr' ? domain.nameFr : domain.name}
-                    </h2>
-                    <p className="text-slate-600">{lang === 'fr' ? domain.descriptionFr : domain.description}</p>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-8">
-                  {/* Format selection */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-3">{t.aiTrainingFormat}</label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        onClick={() => setAiTraining(prev => ({ ...prev, format: 'half-day' }))}
-                        className={`p-4 rounded-xl border-2 text-left transition-all ${
-                          aiTraining.format === 'half-day'
-                            ? 'border-emerald-500 bg-emerald-50'
-                            : 'border-slate-200 hover:border-slate-300'
-                        }`}
-                      >
-                        <div className="font-semibold text-slate-900">{t.halfDay}</div>
-                        <div className="text-sm text-slate-500">3 heures</div>
-                      </button>
-                      <button
-                        onClick={() => setAiTraining(prev => ({ ...prev, format: 'full-day' }))}
-                        className={`p-4 rounded-xl border-2 text-left transition-all ${
-                          aiTraining.format === 'full-day'
-                            ? 'border-emerald-500 bg-emerald-50'
-                            : 'border-slate-200 hover:border-slate-300'
-                        }`}
-                      >
-                        <div className="font-semibold text-slate-900">{t.fullDay}</div>
-                        <div className="text-sm text-slate-500">6.5 heures</div>
-                        <span className="inline-block mt-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded">
-                          {t.popular}
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Sessions selection */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-3">{t.sessions}</label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        onClick={() => setAiTraining(prev => ({ ...prev, sessions: '1' }))}
-                        className={`p-4 rounded-xl border-2 text-left transition-all ${
-                          aiTraining.sessions === '1'
-                            ? 'border-emerald-500 bg-emerald-50'
-                            : 'border-slate-200 hover:border-slate-300'
-                        }`}
-                      >
-                        <div className="font-semibold text-slate-900">{t.singleSession}</div>
-                      </button>
-                      <button
-                        onClick={() => setAiTraining(prev => ({ ...prev, sessions: '5+' }))}
-                        className={`p-4 rounded-xl border-2 text-left transition-all ${
-                          aiTraining.sessions === '5+'
-                            ? 'border-emerald-500 bg-emerald-50'
-                            : 'border-slate-200 hover:border-slate-300'
-                        }`}
-                      >
-                        <div className="font-semibold text-slate-900">{t.bulkSessions}</div>
-                        <div className="text-xs text-emerald-600">-20% par session</div>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* In-person option */}
-                <div className="mt-6 p-4 bg-slate-50 rounded-xl">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={aiTraining.inPerson}
-                      onChange={(e) => setAiTraining(prev => ({ ...prev, inPerson: e.target.checked }))}
-                      className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                    />
-                    <div>
-                      <span className="font-medium text-slate-900">{t.inPerson}</span>
-                      <p className="text-sm text-slate-500">{t.inPersonNote}</p>
-                    </div>
-                  </label>
-
-                  {aiTraining.inPerson && (
-                    <div className="mt-4">
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        {t.travelCost} <span className="text-slate-400 font-normal">({lang === 'fr' ? 'frais unique' : 'one-off fee'})</span>
-                      </label>
-                      <input
-                        type="range"
-                        min={aiTrainingPricing.travelCost.min}
-                        max={aiTrainingPricing.travelCost.max}
-                        step={50}
-                        value={aiTraining.travelCost}
-                        onChange={(e) => setAiTraining(prev => ({ ...prev, travelCost: parseInt(e.target.value) }))}
-                        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-                      />
-                      <div className="flex justify-between mt-2 text-sm">
-                        <span className="text-slate-500">{aiTrainingPricing.travelCost.min}€ ({lang === 'fr' ? 'proche' : 'nearby'})</span>
-                        <span className="font-bold text-emerald-700">{aiTraining.travelCost}€</span>
-                        <span className="text-slate-500">{aiTrainingPricing.travelCost.max}€ ({lang === 'fr' ? 'hôtel requis' : 'hotel required'})</span>
+              <div
+                key={domainId}
+                className={`bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-300 ${
+                  isDismissed ? 'max-h-24 opacity-60' : 'max-h-[2000px]'
+                }`}
+              >
+                <div className="p-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <span className="text-4xl">{domain.icon}</span>
+                      <div>
+                        <h2 className="text-2xl font-bold text-slate-900">
+                          {lang === 'fr' ? domain.nameFr : domain.name}
+                        </h2>
+                        <p className="text-slate-600">{lang === 'fr' ? domain.descriptionFr : domain.description}</p>
                       </div>
                     </div>
-                  )}
-                </div>
-
-                {/* Price display */}
-                <div className="mt-6 p-6 bg-emerald-50 rounded-xl">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-700">
-                      {aiTraining.format === 'full-day' ? t.fullDay : t.halfDay} × {aiTraining.sessions === '5+' ? '5' : '1'} session(s)
-                      {aiTraining.inPerson && ` + ${t.travelCost.toLowerCase()}`}
-                    </span>
-                    <span className="text-2xl font-bold text-emerald-700">
-                      {(() => {
-                        const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
-                        const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
-                        const multiplier = aiTraining.sessions === '5+' ? 5 : 1;
-                        const travel = aiTraining.inPerson ? aiTraining.travelCost : 0;
-                        return ((base * multiplier) + travel).toLocaleString();
-                      })()}€
-                    </span>
+                    <button
+                      onClick={() => toggleDomainDismissed(domainId)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                        isDismissed
+                          ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                          : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                      }`}
+                    >
+                      {isDismissed ? t.restoreSection : t.dismissSection}
+                    </button>
                   </div>
+
+                  {!isDismissed && (
+                    <>
+                      <div className="grid md:grid-cols-2 gap-8">
+                        {/* Format selection */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-3">{t.aiTrainingFormat}</label>
+                          <div className="grid grid-cols-2 gap-3">
+                            <button
+                              onClick={() => setAiTraining(prev => ({ ...prev, format: 'half-day' }))}
+                              className={`p-4 rounded-xl border-2 text-left transition-all ${
+                                aiTraining.format === 'half-day'
+                                  ? 'border-emerald-500 bg-emerald-50'
+                                  : 'border-slate-200 hover:border-slate-300'
+                              }`}
+                            >
+                              <div className="font-semibold text-slate-900">{t.halfDay}</div>
+                              <div className="text-sm text-slate-500">3 heures</div>
+                            </button>
+                            <button
+                              onClick={() => setAiTraining(prev => ({ ...prev, format: 'full-day' }))}
+                              className={`p-4 rounded-xl border-2 text-left transition-all ${
+                                aiTraining.format === 'full-day'
+                                  ? 'border-emerald-500 bg-emerald-50'
+                                  : 'border-slate-200 hover:border-slate-300'
+                              }`}
+                            >
+                              <div className="font-semibold text-slate-900">{t.fullDay}</div>
+                              <div className="text-sm text-slate-500">6.5 heures</div>
+                              <span className="inline-block mt-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded">
+                                {t.popular}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Sessions selection */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-3">{t.sessions}</label>
+                          <div className="grid grid-cols-2 gap-3">
+                            <button
+                              onClick={() => setAiTraining(prev => ({ ...prev, sessions: '1' }))}
+                              className={`p-4 rounded-xl border-2 text-left transition-all ${
+                                aiTraining.sessions === '1'
+                                  ? 'border-emerald-500 bg-emerald-50'
+                                  : 'border-slate-200 hover:border-slate-300'
+                              }`}
+                            >
+                              <div className="font-semibold text-slate-900">{t.singleSession}</div>
+                            </button>
+                            <button
+                              onClick={() => setAiTraining(prev => ({ ...prev, sessions: '5+' }))}
+                              className={`p-4 rounded-xl border-2 text-left transition-all ${
+                                aiTraining.sessions === '5+'
+                                  ? 'border-emerald-500 bg-emerald-50'
+                                  : 'border-slate-200 hover:border-slate-300'
+                              }`}
+                            >
+                              <div className="font-semibold text-slate-900">{t.bulkSessions}</div>
+                              <div className="text-xs text-emerald-600">-20% par session</div>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* In-person option - simplified with fixed 500€ estimate */}
+                      <div className="mt-6 p-4 bg-slate-50 rounded-xl">
+                        <label className="flex items-start gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={aiTraining.inPerson}
+                            onChange={(e) => setAiTraining(prev => ({ ...prev, inPerson: e.target.checked }))}
+                            className="w-5 h-5 mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                          />
+                          <div>
+                            <span className="font-medium text-slate-900">{t.inPerson}</span>
+                            <p className="text-sm text-slate-500">{t.inPersonTravelNote}</p>
+                            {aiTraining.inPerson && (
+                              <p className="text-sm font-medium text-emerald-600 mt-1">{t.travelEstimate}</p>
+                            )}
+                          </div>
+                        </label>
+                      </div>
+
+                      {/* Price display */}
+                      <div className="mt-6 p-6 bg-emerald-50 rounded-xl">
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-700">
+                            {aiTraining.format === 'full-day' ? t.fullDay : t.halfDay} × {aiTraining.sessions === '5+' ? '5' : '1'} session(s)
+                            {aiTraining.inPerson && ` + ${lang === 'fr' ? 'frais de déplacement' : 'travel'}`}
+                          </span>
+                          <span className="text-2xl font-bold text-emerald-700">
+                            {(() => {
+                              const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
+                              const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
+                              const multiplier = aiTraining.sessions === '5+' ? 5 : 1;
+                              const travel = aiTraining.inPerson ? 500 : 0;
+                              return ((base * multiplier) + travel).toLocaleString();
+                            })()}€
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             );
@@ -597,215 +630,263 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
           // Special handling for AI Solutions
           if (domainId === 'ai-solutions') {
+            const isDismissed = dismissedDomains[domainId];
             return (
-              <div key={domainId} className="bg-white rounded-2xl border border-slate-200 p-8">
-                <div className="flex items-center gap-4 mb-8">
-                  <span className="text-4xl">{domain.icon}</span>
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900">
-                      {lang === 'fr' ? domain.nameFr : domain.name}
-                    </h2>
-                    <p className="text-slate-600">{t.aiSolutionsDesc}</p>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-8 mb-8">
-                  {(lang === 'fr' ? aiSolutionsUseCases.fr : aiSolutionsUseCases.en).map((useCase, idx) => (
-                    <div key={idx} className="flex gap-4 p-4 bg-violet-50 rounded-xl">
-                      <span className="text-2xl">{useCase.icon}</span>
+              <div
+                key={domainId}
+                className={`bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-300 ${
+                  isDismissed ? 'max-h-24 opacity-60' : 'max-h-[2000px]'
+                }`}
+              >
+                <div className="p-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <span className="text-4xl">{domain.icon}</span>
                       <div>
-                        <h4 className="font-semibold text-slate-900">{useCase.title}</h4>
-                        <p className="text-sm text-slate-600">{useCase.description}</p>
+                        <h2 className="text-2xl font-bold text-slate-900">
+                          {lang === 'fr' ? domain.nameFr : domain.name}
+                        </h2>
+                        <p className="text-slate-600">{t.aiSolutionsDesc}</p>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    <button
+                      onClick={() => toggleDomainDismissed(domainId)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                        isDismissed
+                          ? 'bg-violet-100 text-violet-700 hover:bg-violet-200'
+                          : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                      }`}
+                    >
+                      {isDismissed ? t.restoreSection : t.dismissSection}
+                    </button>
+                  </div>
 
-                <div className="space-y-6">
-                  {aiSolutionsQuestions.map(question => (
-                    <div key={question.id}>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        {lang === 'fr' ? question.labelFr : question.label}
-                        {question.required && <span className="text-red-500 ml-1">*</span>}
-                      </label>
-                      {question.type === 'select' ? (
-                        <select
-                          value={aiSolutions[question.id as keyof AISolutionsAnswers]}
-                          onChange={(e) => setAiSolutions(prev => ({ ...prev, [question.id]: e.target.value }))}
-                          className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                          required={question.required}
-                        >
-                          <option value="">-- {lang === 'fr' ? 'Sélectionner' : 'Select'} --</option>
-                          {question.options?.map(opt => (
-                            <option key={opt.value} value={opt.value}>
-                              {lang === 'fr' ? opt.labelFr : opt.label}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <textarea
-                          value={aiSolutions[question.id as keyof AISolutionsAnswers]}
-                          onChange={(e) => setAiSolutions(prev => ({ ...prev, [question.id]: e.target.value }))}
-                          placeholder={lang === 'fr' ? question.placeholderFr : question.placeholder}
-                          className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 resize-none"
-                          rows={3}
-                          required={question.required}
-                        />
-                      )}
-                    </div>
-                  ))}
+                  {!isDismissed && (
+                    <>
+                      <div className="grid md:grid-cols-2 gap-8 mb-8">
+                        {(lang === 'fr' ? aiSolutionsUseCases.fr : aiSolutionsUseCases.en).map((useCase, idx) => (
+                          <div key={idx} className="flex gap-4 p-4 bg-violet-50 rounded-xl">
+                            <span className="text-2xl">{useCase.icon}</span>
+                            <div>
+                              <h4 className="font-semibold text-slate-900">{useCase.title}</h4>
+                              <p className="text-sm text-slate-600">{useCase.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="space-y-6">
+                        {aiSolutionsQuestions.map(question => (
+                          <div key={question.id}>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                              {lang === 'fr' ? question.labelFr : question.label}
+                              {question.required && <span className="text-red-500 ml-1">*</span>}
+                            </label>
+                            {question.type === 'select' ? (
+                              <select
+                                value={aiSolutions[question.id as keyof AISolutionsAnswers]}
+                                onChange={(e) => setAiSolutions(prev => ({ ...prev, [question.id]: e.target.value }))}
+                                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                                required={question.required}
+                              >
+                                <option value="">-- {lang === 'fr' ? 'Sélectionner' : 'Select'} --</option>
+                                {question.options?.map(opt => (
+                                  <option key={opt.value} value={opt.value}>
+                                    {lang === 'fr' ? opt.labelFr : opt.label}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <textarea
+                                value={aiSolutions[question.id as keyof AISolutionsAnswers]}
+                                onChange={(e) => setAiSolutions(prev => ({ ...prev, [question.id]: e.target.value }))}
+                                placeholder={lang === 'fr' ? question.placeholderFr : question.placeholder}
+                                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 resize-none"
+                                rows={3}
+                                required={question.required}
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             );
           }
 
           // Standard service domain
+          const isDismissed = dismissedDomains[domainId];
           return (
-            <div key={domainId} className="bg-white rounded-2xl border border-slate-200 p-8">
-              <div className="flex items-center gap-4 mb-8">
-                <span className="text-4xl">{domain.icon}</span>
-                <div>
-                  <h2 className="text-2xl font-bold text-slate-900">
-                    {lang === 'fr' ? domain.nameFr : domain.name}
-                  </h2>
-                  <p className="text-slate-600">{lang === 'fr' ? domain.descriptionFr : domain.description}</p>
-                </div>
-              </div>
-
-              {/* Budget slider for ads */}
-              {domain.hasBudgetSlider && (() => {
-                const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
-                const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
-                const feeDescription = getManagementFeeDescription(budget, lang);
-                return (
-                  <div className="mb-8 p-6 bg-slate-50 rounded-xl">
-                    <label className="block text-sm font-medium text-slate-700 mb-4">{t.adBudget}</label>
-                    <input
-                      type="range"
-                      min={BUDGET_CONFIG.min}
-                      max={BUDGET_CONFIG.max}
-                      step={BUDGET_CONFIG.step}
-                      value={budget}
-                      onChange={(e) => setAdBudgets(prev => ({ ...prev, [domainId]: parseInt(e.target.value) }))}
-                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                    />
-                    <div className="flex justify-between mt-2">
-                      <span className="text-sm text-slate-500">{BUDGET_CONFIG.min}€</span>
-                      <span className="text-xl font-bold text-slate-900">
-                        {budget.toLocaleString()}€/mois
-                      </span>
-                      <span className="text-sm text-slate-500">{BUDGET_CONFIG.max.toLocaleString()}€</span>
-                    </div>
-                    {/* Tiered management fee display */}
-                    <div className="mt-4 p-4 bg-white rounded-lg border border-slate-200">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-slate-700">{t.managementFee}</span>
-                        <span className="font-bold text-slate-900">
-                          {feeResult.isCustomQuote ? (
-                            <span className="text-amber-600">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
-                          ) : (
-                            <>{Math.round(feeResult.fee).toLocaleString()}€/mois</>
-                          )}
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-500">{feeDescription}</p>
-                      {/* Tier indicators */}
-                      <div className="mt-3 flex gap-1">
-                        <div className={`flex-1 h-1.5 rounded-full ${budget < 2500 ? 'bg-blue-500' : 'bg-slate-200'}`} title="< 2500€: 500€/mois" />
-                        <div className={`flex-1 h-1.5 rounded-full ${budget >= 2500 && budget < 10000 ? 'bg-blue-500' : 'bg-slate-200'}`} title="2500€-10000€: 20%" />
-                        <div className={`flex-1 h-1.5 rounded-full ${budget >= 10000 ? 'bg-amber-500' : 'bg-slate-200'}`} title="> 10000€: Sur devis" />
-                      </div>
-                      <div className="mt-1 flex justify-between text-[10px] text-slate-400">
-                        <span>500€/mois</span>
-                        <span>20%</span>
-                        <span>{lang === 'fr' ? 'Sur devis' : 'Quote'}</span>
-                      </div>
+            <div
+              key={domainId}
+              className={`bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-300 ${
+                isDismissed ? 'max-h-24 opacity-60' : 'max-h-[5000px]'
+              }`}
+            >
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-4">
+                    <span className="text-4xl">{domain.icon}</span>
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-900">
+                        {lang === 'fr' ? domain.nameFr : domain.name}
+                      </h2>
+                      <p className="text-slate-600">{lang === 'fr' ? domain.descriptionFr : domain.description}</p>
                     </div>
                   </div>
-                );
-              })()}
+                  <button
+                    onClick={() => toggleDomainDismissed(domainId)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                      isDismissed
+                        ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                    }`}
+                  >
+                    {isDismissed ? t.restoreSection : t.dismissSection}
+                  </button>
+                </div>
 
-              {/* Services */}
-              <div className="space-y-8">
-                {domain.services.map(service => {
-                  const isDisabled = disabledServices[service.id];
-                  const selectedLevel = selections[service.id];
-
-                  return (
-                    <div
-                      key={service.id}
-                      className={`p-6 rounded-xl border ${isDisabled ? 'opacity-50 bg-slate-50' : 'bg-white'} border-slate-200`}
-                    >
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">{service.icon}</span>
-                          <div>
-                            <div className="flex items-center gap-1">
-                              <h3 className="font-bold text-slate-900">{service.title}</h3>
-                              {service.detailedInfo && (
-                                <Tooltip
-                                  content={service.detailedInfo.content.intro}
-                                  whyImportant={service.detailedInfo.content.conclusion}
-                                  lang={lang}
-                                />
-                              )}
+                {!isDismissed && (
+                  <>
+                    {/* Budget slider for ads */}
+                    {domain.hasBudgetSlider && (() => {
+                      const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
+                      const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
+                      const feeDescription = getManagementFeeDescription(budget, lang);
+                      return (
+                        <div className="mb-8 p-6 bg-slate-50 rounded-xl">
+                          <label className="block text-sm font-medium text-slate-700 mb-4">{t.adBudget}</label>
+                          <input
+                            type="range"
+                            min={BUDGET_CONFIG.min}
+                            max={BUDGET_CONFIG.max}
+                            step={BUDGET_CONFIG.step}
+                            value={budget}
+                            onChange={(e) => setAdBudgets(prev => ({ ...prev, [domainId]: parseInt(e.target.value) }))}
+                            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                          />
+                          <div className="flex justify-between mt-2">
+                            <span className="text-sm text-slate-500">{BUDGET_CONFIG.min}€</span>
+                            <span className="text-xl font-bold text-slate-900">
+                              {budget.toLocaleString()}€/mois
+                            </span>
+                            <span className="text-sm text-slate-500">{BUDGET_CONFIG.max.toLocaleString()}€</span>
+                          </div>
+                          {/* Tiered management fee display */}
+                          <div className="mt-4 p-4 bg-white rounded-lg border border-slate-200">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm font-medium text-slate-700">{t.managementFee}</span>
+                              <span className="font-bold text-slate-900">
+                                {feeResult.isCustomQuote ? (
+                                  <span className="text-amber-600">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
+                                ) : (
+                                  <>{Math.round(feeResult.fee).toLocaleString()}€/mois</>
+                                )}
+                              </span>
                             </div>
-                            <p className="text-sm text-slate-600">{service.description}</p>
+                            <p className="text-xs text-slate-500">{feeDescription}</p>
+                            {/* Tier indicators */}
+                            <div className="mt-3 flex gap-1">
+                              <div className={`flex-1 h-1.5 rounded-full ${budget < 2500 ? 'bg-blue-500' : 'bg-slate-200'}`} title="< 2500€: 500€/mois" />
+                              <div className={`flex-1 h-1.5 rounded-full ${budget >= 2500 && budget < 10000 ? 'bg-blue-500' : 'bg-slate-200'}`} title="2500€-10000€: 20%" />
+                              <div className={`flex-1 h-1.5 rounded-full ${budget >= 10000 ? 'bg-amber-500' : 'bg-slate-200'}`} title="> 10000€: Sur devis" />
+                            </div>
+                            <div className="mt-1 flex justify-between text-[10px] text-slate-400">
+                              <span>500€/mois</span>
+                              <span>20%</span>
+                              <span>{lang === 'fr' ? 'Sur devis' : 'Quote'}</span>
+                            </div>
                           </div>
                         </div>
-                        <button
-                          onClick={() => toggleDisabled(service.id)}
-                          className={`text-sm px-3 py-1 rounded-full transition-colors ${
-                            isDisabled
-                              ? 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                              : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                          }`}
-                        >
-                          {isDisabled ? '+ Activer' : t.noThanks}
-                        </button>
-                      </div>
+                      );
+                    })()}
 
-                      {!isDisabled && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          {service.levels.map((level, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => toggleServiceLevel(service.id, idx)}
-                              className={`p-4 rounded-xl border-2 text-left transition-all relative ${
-                                selectedLevel === idx
-                                  ? 'border-blue-500 bg-blue-50'
-                                  : 'border-slate-200 hover:border-slate-300'
-                              }`}
-                            >
-                              {level.popular && (
-                                <span className="absolute -top-2 right-2 px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded">
-                                  {t.popular}
-                                </span>
-                              )}
-                              <div className="flex items-baseline gap-1 mb-2">
-                                <span className="text-xl font-bold text-slate-900">{level.price}€</span>
-                                {service.isOneOff ? (
-                                  <span className="text-xs text-slate-500">{t.oneOff}</span>
-                                ) : (
-                                  <span className="text-xs text-slate-500">{t.perMonth}</span>
-                                )}
+                    {/* Services */}
+                    <div className="space-y-8">
+                      {domain.services.map(service => {
+                        const isDisabled = disabledServices[service.id];
+                        const selectedLevel = selections[service.id];
+
+                        return (
+                          <div
+                            key={service.id}
+                            className={`p-6 rounded-xl border ${isDisabled ? 'opacity-50 bg-slate-50' : 'bg-white'} border-slate-200`}
+                          >
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <span className="text-2xl">{service.icon}</span>
+                                <div>
+                                  <div className="flex items-center gap-1">
+                                    <h3 className="font-bold text-slate-900">{service.title}</h3>
+                                    {service.detailedInfo && (
+                                      <Tooltip
+                                        content={service.detailedInfo.content.intro}
+                                        whyImportant={service.detailedInfo.content.conclusion}
+                                        lang={lang}
+                                      />
+                                    )}
+                                  </div>
+                                  <p className="text-sm text-slate-600">{service.description}</p>
+                                </div>
                               </div>
-                              <div className="font-medium text-slate-900 mb-2">{level.name}</div>
-                              <ul className="space-y-1">
-                                {level.features.slice(0, 3).map((feature, i) => (
-                                  <li key={i} className="text-xs text-slate-600 flex items-start gap-1">
-                                    <span className="text-blue-500 mt-0.5">•</span>
-                                    {feature}
-                                  </li>
+                              <button
+                                onClick={() => toggleDisabled(service.id)}
+                                className={`text-sm px-3 py-1 rounded-full transition-colors ${
+                                  isDisabled
+                                    ? 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                }`}
+                              >
+                                {isDisabled ? '+ Activer' : t.noThanks}
+                              </button>
+                            </div>
+
+                            {!isDisabled && (
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {service.levels.map((level, idx) => (
+                                  <button
+                                    key={idx}
+                                    onClick={() => toggleServiceLevel(service.id, idx)}
+                                    className={`p-4 rounded-xl border-2 text-left transition-all relative ${
+                                      selectedLevel === idx
+                                        ? 'border-blue-500 bg-blue-50'
+                                        : 'border-slate-200 hover:border-slate-300'
+                                    }`}
+                                  >
+                                    {level.popular && (
+                                      <span className="absolute -top-2 right-2 px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded">
+                                        {t.popular}
+                                      </span>
+                                    )}
+                                    <div className="flex items-baseline gap-1 mb-2">
+                                      <span className="text-xl font-bold text-slate-900">{level.price}€</span>
+                                      {service.isOneOff ? (
+                                        <span className="text-xs text-slate-500">{t.oneOff}</span>
+                                      ) : (
+                                        <span className="text-xs text-slate-500">{t.perMonth}</span>
+                                      )}
+                                    </div>
+                                    <div className="font-medium text-slate-900 mb-2">{level.name}</div>
+                                    <ul className="space-y-1">
+                                      {level.features.slice(0, 3).map((feature, i) => (
+                                        <li key={i} className="text-xs text-slate-600 flex items-start gap-1">
+                                          <span className="text-blue-500 mt-0.5">•</span>
+                                          {feature}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </button>
                                 ))}
-                              </ul>
-                            </button>
-                          ))}
-                        </div>
-                      )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
+                  </>
+                )}
               </div>
             </div>
           );
@@ -813,87 +894,109 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
         {/* Tracking & Reporting section - shown proactively when marketing services selected */}
         {needsTracking && (
-          <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-2xl border-2 border-cyan-200 p-8">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-4xl">📊</span>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-bold text-slate-900">{t.trackingTitle}</h2>
-                  <span className="px-2 py-1 bg-cyan-500 text-white text-xs font-bold rounded-full">
-                    {t.trackingRecommended}
-                  </span>
-                </div>
-                <p className="text-slate-600">{t.trackingSubtitle}</p>
-              </div>
-            </div>
-
-            {/* Audit option at the top */}
-            <button
-              onClick={() => setTrackingAudit(!trackingAudit)}
-              className={`w-full p-4 mb-6 rounded-xl border-2 text-left transition-all ${
-                trackingAudit
-                  ? 'border-cyan-500 bg-cyan-100'
-                  : 'border-dashed border-cyan-300 hover:border-cyan-400 bg-white'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{trackingAuditOption.icon}</span>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-slate-900">
-                      {lang === 'fr' ? trackingAuditOption.titleFr : trackingAuditOption.title}
-                    </span>
-                    <Tooltip
-                      content={lang === 'fr' ? trackingAuditOption.detailedInfoFr : trackingAuditOption.detailedInfo}
-                      whyImportant={lang === 'fr' ? trackingAuditOption.whyImportantFr : trackingAuditOption.whyImportant}
-                      lang={lang}
-                    />
+          <div
+            className={`bg-gradient-to-br from-cyan-50 to-blue-50 rounded-2xl border-2 border-cyan-200 overflow-hidden transition-all duration-300 ${
+              trackingDismissed ? 'max-h-24 opacity-60' : 'max-h-[2000px]'
+            }`}
+          >
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <span className="text-4xl">📊</span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-2xl font-bold text-slate-900">{t.trackingTitle}</h2>
+                      <span className="px-2 py-1 bg-cyan-500 text-white text-xs font-bold rounded-full">
+                        {t.trackingRecommended}
+                      </span>
+                    </div>
+                    <p className="text-slate-600">{t.trackingSubtitle}</p>
                   </div>
-                  <p className="text-sm text-slate-500">
-                    {lang === 'fr' ? trackingAuditOption.descriptionFr : trackingAuditOption.description}
-                  </p>
                 </div>
-                <span className="font-bold text-cyan-700">{trackingAuditOption.price}€</span>
-                {trackingAudit && (
-                  <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center">
-                    <CheckIcon />
-                  </span>
-                )}
-              </div>
-            </button>
-
-            {/* Tracking services */}
-            <div className="grid md:grid-cols-2 gap-4">
-              {trackingServices.map(service => (
                 <button
-                  key={service.id}
-                  onClick={() => setTrackingSelections(prev => ({ ...prev, [service.id]: !prev[service.id] }))}
-                  className={`p-4 rounded-xl border-2 text-left transition-all ${
-                    trackingSelections[service.id]
-                      ? 'border-cyan-500 bg-cyan-50'
-                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  onClick={() => setTrackingDismissed(!trackingDismissed)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    trackingDismissed
+                      ? 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200'
+                      : 'bg-white/80 text-slate-500 hover:bg-white'
                   }`}
                 >
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-xl">{service.icon}</span>
-                    <div className="flex items-center gap-1 flex-1">
-                      <span className="font-semibold text-slate-900">
-                        {lang === 'fr' ? service.titleFr : service.title}
-                      </span>
-                      <Tooltip
-                        content={lang === 'fr' ? service.detailedInfoFr : service.detailedInfo}
-                        whyImportant={lang === 'fr' ? service.whyImportantFr : service.whyImportant}
-                        lang={lang}
-                      />
-                    </div>
-                    <span className="font-bold text-slate-900">{service.price}€</span>
-                  </div>
-                  <p className="text-sm text-slate-600">{lang === 'fr' ? service.descriptionFr : service.description}</p>
-                  {service.priceNote && (
-                    <p className="text-xs text-slate-400 mt-1">({service.priceNote})</p>
-                  )}
+                  {trackingDismissed ? t.restoreSection : t.dismissSection}
                 </button>
-              ))}
+              </div>
+
+              {!trackingDismissed && (
+                <>
+                  {/* Audit option at the top */}
+                  <button
+                    onClick={() => setTrackingAudit(!trackingAudit)}
+                    className={`w-full p-4 mb-6 rounded-xl border-2 text-left transition-all ${
+                      trackingAudit
+                        ? 'border-cyan-500 bg-cyan-100'
+                        : 'border-dashed border-cyan-300 hover:border-cyan-400 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{trackingAuditOption.icon}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-slate-900">
+                            {lang === 'fr' ? trackingAuditOption.titleFr : trackingAuditOption.title}
+                          </span>
+                          <Tooltip
+                            content={lang === 'fr' ? trackingAuditOption.detailedInfoFr : trackingAuditOption.detailedInfo}
+                            whyImportant={lang === 'fr' ? trackingAuditOption.whyImportantFr : trackingAuditOption.whyImportant}
+                            lang={lang}
+                          />
+                        </div>
+                        <p className="text-sm text-slate-500">
+                          {lang === 'fr' ? trackingAuditOption.descriptionFr : trackingAuditOption.description}
+                        </p>
+                      </div>
+                      <span className="font-bold text-cyan-700">{trackingAuditOption.price}€</span>
+                      {trackingAudit && (
+                        <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center">
+                          <CheckIcon />
+                        </span>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Tracking services */}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {trackingServices.map(service => (
+                      <button
+                        key={service.id}
+                        onClick={() => setTrackingSelections(prev => ({ ...prev, [service.id]: !prev[service.id] }))}
+                        className={`p-4 rounded-xl border-2 text-left transition-all ${
+                          trackingSelections[service.id]
+                            ? 'border-cyan-500 bg-cyan-50'
+                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-xl">{service.icon}</span>
+                          <div className="flex items-center gap-1 flex-1">
+                            <span className="font-semibold text-slate-900">
+                              {lang === 'fr' ? service.titleFr : service.title}
+                            </span>
+                            <Tooltip
+                              content={lang === 'fr' ? service.detailedInfoFr : service.detailedInfo}
+                              whyImportant={lang === 'fr' ? service.whyImportantFr : service.whyImportant}
+                              lang={lang}
+                            />
+                          </div>
+                          <span className="font-bold text-slate-900">{service.price}€</span>
+                        </div>
+                        <p className="text-sm text-slate-600">{lang === 'fr' ? service.descriptionFr : service.description}</p>
+                        {service.priceNote && (
+                          <p className="text-xs text-slate-400 mt-1">({service.priceNote})</p>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -1141,7 +1244,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               {/* By department breakdown */}
               {selectedDomains.map(domainId => {
                 const domain = domainConfigs[domainId];
-                if (domainId === 'ai-solutions') return null; // Skip AI Solutions
+                // Skip AI Solutions and dismissed domains
+                if (domainId === 'ai-solutions') return null;
+                if (dismissedDomains[domainId]) return null;
 
                 // Calculate domain total
                 let domainMonthly = 0;
@@ -1210,7 +1315,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                       {domainId === 'ai-training' && aiTraining.inPerson && (
                         <div className="flex justify-between text-slate-600">
                           <span>{t.travelCost}</span>
-                          <span>{aiTraining.travelCost}€</span>
+                          <span>500€</span>
                         </div>
                       )}
                     </div>

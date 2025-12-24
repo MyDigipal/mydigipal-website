@@ -100,7 +100,15 @@ export const translations = {
     trackingPopupMessage: 'You\'ve selected marketing services but no tracking setup. Without proper tracking, you won\'t be able to measure your ROI or optimize your campaigns effectively.',
     trackingPopupAdd: 'Add tracking to my quote',
     trackingPopupSkip: 'Continue without tracking',
-    whyImportant: 'Why is this important?'
+    whyImportant: 'Why is this important?',
+
+    // Section dismiss
+    dismissSection: 'Not needed',
+    restoreSection: 'Restore',
+
+    // AI Training travel
+    inPersonTravelNote: 'One-off travel fee (€300-700 depending on location)',
+    travelEstimate: 'Estimated travel cost: €500'
   },
   fr: {
     // Page title
@@ -203,7 +211,15 @@ export const translations = {
     trackingPopupMessage: 'Vous avez sélectionné des services marketing mais pas de tracking. Sans tracking correct, vous ne pourrez pas mesurer votre ROI ni optimiser vos campagnes efficacement.',
     trackingPopupAdd: 'Ajouter le tracking à mon devis',
     trackingPopupSkip: 'Continuer sans tracking',
-    whyImportant: 'Pourquoi c\'est important ?'
+    whyImportant: 'Pourquoi c\'est important ?',
+
+    // Section dismiss
+    dismissSection: 'Pas besoin',
+    restoreSection: 'Restaurer',
+
+    // AI Training travel
+    inPersonTravelNote: 'Frais de déplacement unique (300-700€ selon la localisation)',
+    travelEstimate: 'Frais de déplacement estimés : 500€'
   }
 } as const;
 
