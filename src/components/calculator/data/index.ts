@@ -37,10 +37,7 @@ export const domainConfigs: Record<ServiceDomain, DomainConfig> = {
     colorClass: 'blue',
     services: googleAdsServices,
     hasBudgetSlider: true,
-    managementFee: {
-      percentage: 20,
-      minimum: 300
-    }
+    hasTieredManagementFee: true
   },
   'paid-social': {
     id: 'paid-social',
@@ -53,10 +50,7 @@ export const domainConfigs: Record<ServiceDomain, DomainConfig> = {
     colorClass: 'purple',
     services: paidSocialServices,
     hasBudgetSlider: true,
-    managementFee: {
-      percentage: 20,
-      minimum: 300
-    }
+    hasTieredManagementFee: true
   },
   'ai-training': {
     id: 'ai-training',
@@ -110,27 +104,33 @@ export const DURATION_CONFIG = {
   ]
 } as const;
 
-// Setup options (cross-domain)
-export const SETUP_OPTIONS = [
-  {
-    id: 'tracking',
-    name: 'Tracking & Analytics Setup',
-    nameFr: 'Setup Tracking & Analytics',
-    description: 'Google Analytics 4, Google Tag Manager, conversion tracking',
-    descriptionFr: 'Google Analytics 4, Google Tag Manager, tracking des conversions',
-    price: 400,
-    icon: '📈'
-  },
-  {
-    id: 'dashboard',
-    name: 'Custom Dashboard',
-    nameFr: 'Dashboard Personnalisé',
-    description: 'Looker Studio dashboard combining all your marketing data',
-    descriptionFr: 'Dashboard Looker Studio regroupant toutes vos données marketing',
-    price: 500,
-    icon: '📊'
-  }
-] as const;
+// Tiered management fee configuration
+// Based on: < 2500€ = 500€ flat, 2500€-10000€ = 20%, > 10000€ = custom quote
+export const MANAGEMENT_FEE_CONFIG = {
+  tiers: [
+    {
+      maxBudget: 2500,
+      type: 'flat' as const,
+      value: 500,
+      description: 'Minimum pour couvrir le vital : optimisation, suivi des campagnes, ajustements, reporting',
+      descriptionEn: 'Minimum to cover essentials: optimization, campaign tracking, adjustments, reporting'
+    },
+    {
+      maxBudget: 10000,
+      type: 'percentage' as const,
+      value: 20,
+      description: 'Ajustement proportionnel aux efforts nécessaires : plus de campagnes, plus de données à analyser, plus d\'optimisations',
+      descriptionEn: 'Proportional to required effort: more campaigns, more data to analyze, more optimizations'
+    },
+    {
+      maxBudget: Infinity,
+      type: 'custom' as const,
+      value: 0,
+      description: 'Étude approfondie du volume de travail : nombre de marques, de campagnes, véhicules à promouvoir, canaux activés',
+      descriptionEn: 'In-depth study of workload: number of brands, campaigns, vehicles to promote, activated channels'
+    }
+  ]
+} as const;
 
 // Re-export AI Training specific configs
 export {
@@ -156,12 +156,35 @@ export {
   servicesThatNeedTracking
 };
 
-// Helper: Calculate management fee
-export function calculateManagementFee(domain: 'google-ads' | 'paid-social', budget: number): number {
-  const config = domainConfigs[domain].managementFee;
-  if (!config) return 0;
-  const calculated = budget * (config.percentage / 100);
-  return Math.max(calculated, config.minimum);
+// Helper: Calculate management fee using tiered structure
+export function calculateManagementFee(domain: 'google-ads' | 'paid-social', budget: number): { fee: number; type: 'flat' | 'percentage' | 'custom'; isCustomQuote: boolean } {
+  const config = domainConfigs[domain];
+  if (!config.hasTieredManagementFee) return { fee: 0, type: 'flat', isCustomQuote: false };
+
+  // Find the appropriate tier
+  for (const tier of MANAGEMENT_FEE_CONFIG.tiers) {
+    if (budget < tier.maxBudget) {
+      if (tier.type === 'flat') {
+        return { fee: tier.value, type: 'flat', isCustomQuote: false };
+      } else if (tier.type === 'percentage') {
+        return { fee: budget * (tier.value / 100), type: 'percentage', isCustomQuote: false };
+      } else {
+        // Custom quote - return 0 but flag it
+        return { fee: 0, type: 'custom', isCustomQuote: true };
+      }
+    }
+  }
+  return { fee: 0, type: 'custom', isCustomQuote: true };
+}
+
+// Helper: Get management fee description for display
+export function getManagementFeeDescription(budget: number, lang: 'en' | 'fr'): string {
+  for (const tier of MANAGEMENT_FEE_CONFIG.tiers) {
+    if (budget < tier.maxBudget) {
+      return lang === 'fr' ? tier.description : tier.descriptionEn;
+    }
+  }
+  return '';
 }
 
 // Helper: Get all domains for selection
