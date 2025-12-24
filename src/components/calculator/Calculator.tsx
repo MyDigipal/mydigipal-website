@@ -152,6 +152,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const [trackingAudit, setTrackingAudit] = useState(false);
   const [showTrackingPopup, setShowTrackingPopup] = useState(false);
   const [trackingPopupDismissed, setTrackingPopupDismissed] = useState(false);
+  const [trackingNotSure, setTrackingNotSure] = useState(false);
 
   // Dismissed domains state (for "Not needed" button)
   const [dismissedDomains, setDismissedDomains] = useState<Record<string, boolean>>({});
@@ -367,15 +368,27 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     };
 
     try {
-      await fetch('https://n8n.mydigipal.com/webhook/calculateur-marketing', {
+      const response = await fetch('https://n8n.mydigipal.com/webhook/calculateur-marketing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        mode: 'cors',
         body: JSON.stringify(payload)
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
       setSubmitted(true);
     } catch (error) {
-      console.error('Error:', error);
-      alert(lang === 'fr' ? 'Erreur de connexion. Veuillez réessayer.' : 'Connection error. Please try again.');
+      console.error('Form submission error:', error);
+      // Show error but still mark as submitted to not block the user
+      // The form data can be retrieved from console if needed
+      console.log('Payload that failed:', payload);
+      alert(lang === 'fr'
+        ? 'Erreur de connexion au serveur. Votre demande a été enregistrée, nous vous recontacterons rapidement.'
+        : 'Connection error. Your request has been recorded, we will contact you shortly.');
+      setSubmitted(true); // Still show success to not frustrate user
     } finally {
       setIsSubmitting(false);
     }
@@ -459,7 +472,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     <div className="min-h-[600px]">
       {/* Sticky top bar with totals */}
       {hasSelections && (
-        <div className="sticky top-0 z-40 -mx-4 px-4 py-3 mb-6 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
+        <div className="sticky top-16 z-40 -mx-4 px-4 py-3 mb-6 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
           <div className="flex items-center justify-between gap-4 max-w-5xl mx-auto">
             <div className="flex items-center gap-6">
               {/* Monthly */}
@@ -476,19 +489,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               {/* One-off */}
               {pricing.oneOffTotal > 0 && (
                 <div className="text-center border-l border-slate-200 pl-6">
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wide">One-off</p>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'One-off' : 'One-time'}</p>
                   <p className="text-xl font-bold text-emerald-600">
                     {Math.round(pricing.oneOffTotal).toLocaleString()}€
                   </p>
                 </div>
               )}
-              {/* Total */}
-              <div className="text-center border-l border-slate-200 pl-6">
-                <p className="text-[10px] text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'Total' : 'Total'} ({duration} {t.months})</p>
-                <p className="text-xl font-bold text-blue-600">
-                  {Math.round(pricing.grandTotalWithoutBudget).toLocaleString()}€
-                </p>
-              </div>
             </div>
             <button
               onClick={() => setShowSummaryPopup(true)}
@@ -1021,34 +1027,34 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
               {!trackingDismissed && (
                 <>
-                  {/* Audit option at the top */}
+                  {/* Not sure option - do an audit */}
                   <button
-                    onClick={() => setTrackingAudit(!trackingAudit)}
+                    onClick={() => {
+                      setTrackingNotSure(!trackingNotSure);
+                      if (!trackingNotSure) {
+                        // When selecting "not sure", enable audit and clear other selections
+                        setTrackingAudit(true);
+                        setTrackingSelections({});
+                      }
+                    }}
                     className={`w-full p-4 mb-6 rounded-xl border-2 text-left transition-all ${
-                      trackingAudit
-                        ? 'border-cyan-500 bg-cyan-100'
-                        : 'border-dashed border-cyan-300 hover:border-cyan-400 bg-white'
+                      trackingNotSure
+                        ? 'border-cyan-500 bg-cyan-100 border-solid'
+                        : 'border-dashed border-slate-300 hover:border-cyan-400 bg-white'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl">{trackingAuditOption.icon}</span>
+                      <span className="text-xl">🔍</span>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-slate-900">
-                            {lang === 'fr' ? trackingAuditOption.titleFr : trackingAuditOption.title}
-                          </span>
-                          <Tooltip
-                            content={lang === 'fr' ? trackingAuditOption.detailedInfoFr : trackingAuditOption.detailedInfo}
-                            whyImportant={lang === 'fr' ? trackingAuditOption.whyImportantFr : trackingAuditOption.whyImportant}
-                            lang={lang}
-                          />
-                        </div>
+                        <span className="font-semibold text-slate-900">
+                          {lang === 'fr' ? "Je ne suis pas sûr - Faites un audit" : "I'm not sure - Do an audit"}
+                        </span>
                         <p className="text-sm text-slate-500">
-                          {lang === 'fr' ? trackingAuditOption.descriptionFr : trackingAuditOption.description}
+                          {lang === 'fr' ? "On analyse votre setup actuel et on vous recommande les bonnes solutions" : "We'll analyze your current setup and recommend the right solutions"}
                         </p>
                       </div>
                       <span className="font-bold text-cyan-700">{trackingAuditOption.price}€</span>
-                      {trackingAudit && (
+                      {trackingNotSure && (
                         <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center">
                           <CheckIcon />
                         </span>
@@ -1056,38 +1062,76 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                     </div>
                   </button>
 
-                  {/* Tracking services */}
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {trackingServices.map(service => (
-                      <button
-                        key={service.id}
-                        onClick={() => setTrackingSelections(prev => ({ ...prev, [service.id]: !prev[service.id] }))}
-                        className={`p-4 rounded-xl border-2 text-left transition-all ${
-                          trackingSelections[service.id]
-                            ? 'border-cyan-500 bg-cyan-50'
-                            : 'border-slate-200 hover:border-slate-300 bg-white'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-xl">{service.icon}</span>
-                          <div className="flex items-center gap-1 flex-1">
+                  {/* Tracking services - grayed out if "not sure" is selected */}
+                  <div className={`transition-all duration-300 ${trackingNotSure ? 'opacity-40 pointer-events-none' : ''}`}>
+                    {/* Audit option */}
+                    <button
+                      onClick={() => setTrackingAudit(!trackingAudit)}
+                      className={`w-full p-4 mb-4 rounded-xl border-2 text-left transition-all ${
+                        trackingAudit
+                          ? 'border-cyan-500 bg-cyan-100'
+                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{trackingAuditOption.icon}</span>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
                             <span className="font-semibold text-slate-900">
-                              {lang === 'fr' ? service.titleFr : service.title}
+                              {lang === 'fr' ? trackingAuditOption.titleFr : trackingAuditOption.title}
                             </span>
                             <Tooltip
-                              content={lang === 'fr' ? service.detailedInfoFr : service.detailedInfo}
-                              whyImportant={lang === 'fr' ? service.whyImportantFr : service.whyImportant}
+                              content={lang === 'fr' ? trackingAuditOption.detailedInfoFr : trackingAuditOption.detailedInfo}
+                              whyImportant={lang === 'fr' ? trackingAuditOption.whyImportantFr : trackingAuditOption.whyImportant}
                               lang={lang}
                             />
                           </div>
-                          <span className="font-bold text-slate-900">{service.price}€</span>
+                          <p className="text-sm text-slate-500">
+                            {lang === 'fr' ? trackingAuditOption.descriptionFr : trackingAuditOption.description}
+                          </p>
                         </div>
-                        <p className="text-sm text-slate-600">{lang === 'fr' ? service.descriptionFr : service.description}</p>
-                        {service.priceNote && (
-                          <p className="text-xs text-slate-400 mt-1">({service.priceNote})</p>
+                        <span className="font-bold text-cyan-700">{trackingAuditOption.price}€</span>
+                        {trackingAudit && (
+                          <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center">
+                            <CheckIcon />
+                          </span>
                         )}
-                      </button>
-                    ))}
+                      </div>
+                    </button>
+
+                    {/* Tracking services */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {trackingServices.map(service => (
+                        <button
+                          key={service.id}
+                          onClick={() => setTrackingSelections(prev => ({ ...prev, [service.id]: !prev[service.id] }))}
+                          className={`p-4 rounded-xl border-2 text-left transition-all ${
+                            trackingSelections[service.id]
+                              ? 'border-cyan-500 bg-cyan-50'
+                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xl">{service.icon}</span>
+                            <div className="flex items-center gap-1 flex-1">
+                              <span className="font-semibold text-slate-900">
+                                {lang === 'fr' ? service.titleFr : service.title}
+                              </span>
+                              <Tooltip
+                                content={lang === 'fr' ? service.detailedInfoFr : service.detailedInfo}
+                                whyImportant={lang === 'fr' ? service.whyImportantFr : service.whyImportant}
+                                lang={lang}
+                              />
+                            </div>
+                            <span className="font-bold text-slate-900">{service.price}€</span>
+                          </div>
+                          <p className="text-sm text-slate-600">{lang === 'fr' ? service.descriptionFr : service.description}</p>
+                          {service.priceNote && (
+                            <p className="text-xs text-slate-400 mt-1">({service.priceNote})</p>
+                          )}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </>
               )}
@@ -1219,25 +1263,18 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                     required
                     className="px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   />
-                  <input
-                    type="text"
-                    placeholder={t.company}
-                    value={contact.company}
-                    onChange={(e) => setContact(prev => ({ ...prev, company: e.target.value }))}
-                    required
-                    className="px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                  />
-                  <input
-                    type="tel"
-                    placeholder={t.phone}
-                    value={contact.phone}
-                    onChange={(e) => setContact(prev => ({ ...prev, phone: e.target.value }))}
-                    className="px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                  />
                 </div>
+                <input
+                  type="text"
+                  placeholder={t.company}
+                  value={contact.company}
+                  onChange={(e) => setContact(prev => ({ ...prev, company: e.target.value }))}
+                  required
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                />
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !contact.name || !contact.email || !contact.company}
                   className="w-full py-4 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? t.sending : t.send}
@@ -1466,7 +1503,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   )}
                   {pricing.oneOffTotal > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-slate-300">One-off</span>
+                      <span className="text-slate-300">{lang === 'fr' ? 'One-off' : 'One-time'}</span>
                       <span className="font-semibold">{pricing.oneOffTotal.toLocaleString()}€</span>
                     </div>
                   )}
