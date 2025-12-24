@@ -19,9 +19,154 @@
     },
     {
       "parameters": {
-        "sendTo": "={{ $json.body.contact.email }}",
-        "subject": "=Votre devis Marketing Digital - {{ $json.body.pricing.effectiveMonthlyPrice || 'sur-mesure' }}€/mois | MyDigipal",
-        "message": "=<div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; background: #ffffff;\">\n\n<div style=\"background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); padding: 30px; border-radius: 12px 12px 0 0;\">\n<h1 style=\"color: white; margin: 0; font-size: 24px;\">Merci {{ $json.body.contact.name }} ! 🎉</h1>\n<p style=\"color: rgba(255,255,255,0.9); margin: 10px 0 0 0;\">Ton devis Marketing Digital est prêt</p>\n</div>\n\n<div style=\"padding: 30px; border: 1px solid #E5E7EB; border-top: none; border-radius: 0 0 12px 12px;\">\n\n<p style=\"color: #374151; line-height: 1.7; font-size: 15px;\">Merci pour ta demande de devis ! On voit que tu t'intéresses à {{ $json.body.selectedDomains.join(', ') }}. C'est une excellente combinaison pour booster ta présence digitale. Je te recontacte dans les prochaines 24-48h pour discuter de tout ça en détail. En attendant, n'hésite pas à répondre à cet email si tu as des questions !</p>\n\n<div style=\"background: #F9FAFB; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #E5E7EB;\">\n<h2 style=\"margin: 0 0 20px 0; color: #1F2937; font-size: 18px; border-bottom: 2px solid #4F46E5; padding-bottom: 10px;\">📋 Récapitulatif de ton devis</h2>\n\n<div style=\"margin-bottom: 15px;\">\n<p style=\"color: #6B7280; font-size: 12px; text-transform: uppercase; margin: 0 0 5px 0;\">Domaines sélectionnés</p>\n<p style=\"color: #1F2937; margin: 0; font-weight: 600;\">{{ $json.body.selectedDomains.join(', ') }}</p>\n</div>\n\n<div style=\"margin-bottom: 15px;\">\n<p style=\"color: #6B7280; font-size: 12px; text-transform: uppercase; margin: 0 0 5px 0;\">Durée d'engagement</p>\n<p style=\"color: #1F2937; margin: 0;\">{{ $json.body.duration }} mois</p>\n</div>\n\n<div style=\"background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); padding: 20px; border-radius: 8px; margin-top: 20px;\">\n<p style=\"color: rgba(255,255,255,0.9); margin: 0; font-size: 14px;\">Ton investissement</p>\n<p style=\"color: white; margin: 5px 0 0 0; font-size: 32px; font-weight: bold;\">{{ $json.body.pricing.effectiveMonthlyPrice }}€<span style=\"font-size: 16px; font-weight: normal;\">/mois</span></p>\n<p style=\"color: rgba(255,255,255,0.8); margin: 8px 0 0 0; font-size: 13px;\">Total sur {{ $json.body.duration }} mois : {{ $json.body.pricing.grandTotalWithoutBudget }}€</p>\n</div>\n</div>\n\n<div style=\"background: #F0FDF4; padding: 20px; border-radius: 12px; margin: 25px 0; border: 1px solid #BBF7D0;\">\n<h3 style=\"color: #166534; margin: 0 0 10px 0; font-size: 16px;\">✨ Inclus dans tous nos services</h3>\n<ul style=\"color: #15803D; margin: 0; padding-left: 20px; line-height: 1.8;\">\n<li>Optimisation pour les LLMs (ChatGPT, Perplexity, Copilot)</li>\n<li>Outils premium (Ahrefs, SEMrush, Meta Business Suite)</li>\n<li>Reporting mensuel détaillé</li>\n<li>Support réactif par email et visio</li>\n</ul>\n</div>\n\n<div style=\"background: #FEF3C7; padding: 15px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #F59E0B;\">\n<p style=\"color: #92400E; margin: 0; font-size: 14px;\">💬 <strong>Des questions ?</strong> Réponds directement à cet email, je te répondrai personnellement !</p>\n</div>\n\n<div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #E5E7EB;\">\n<p style=\"color: #374151; margin: 0;\">À très vite,</p>\n<p style=\"margin: 8px 0 0 0;\"><strong style=\"color: #1F2937; font-size: 16px;\">Paul MUSIC</strong></p>\n<p style=\"color: #6B7280; margin: 2px 0;\">CEO - MyDigipal</p>\n<p style=\"margin: 8px 0 0 0;\"><a href=\"mailto:paul@mydigipal.com\" style=\"color: #4F46E5; text-decoration: none;\">paul@mydigipal.com</a></p>\n<p style=\"margin: 4px 0 0 0;\"><a href=\"https://www.mydigipal.com\" style=\"color: #4F46E5; text-decoration: none;\">www.mydigipal.com</a></p>\n</div>\n\n</div>\n</div>",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "timestamp",
+              "name": "timestamp",
+              "type": "string",
+              "value": "={{ $now.format('dd/MM/yyyy HH:mm') }}"
+            },
+            {
+              "id": "lang",
+              "name": "lang",
+              "type": "string",
+              "value": "={{ $json.body.metadata.lang || 'fr' }}"
+            },
+            {
+              "id": "name",
+              "name": "name",
+              "type": "string",
+              "value": "={{ $json.body.contact.name }}"
+            },
+            {
+              "id": "email",
+              "name": "email",
+              "type": "string",
+              "value": "={{ $json.body.contact.email }}"
+            },
+            {
+              "id": "company",
+              "name": "company",
+              "type": "string",
+              "value": "={{ $json.body.contact.company || 'Non renseigné' }}"
+            },
+            {
+              "id": "domains",
+              "name": "domains",
+              "type": "string",
+              "value": "={{ $json.body.selectedDomains.join(', ') }}"
+            },
+            {
+              "id": "duration",
+              "name": "duration",
+              "type": "number",
+              "value": "={{ $json.body.duration }}"
+            },
+            {
+              "id": "monthlyPrice",
+              "name": "monthlyPrice",
+              "type": "number",
+              "value": "={{ $json.body.pricing.effectiveMonthlyPrice || 0 }}"
+            },
+            {
+              "id": "oneOffTotal",
+              "name": "oneOffTotal",
+              "type": "number",
+              "value": "={{ $json.body.pricing.oneOffTotal || 0 }}"
+            },
+            {
+              "id": "grandTotal",
+              "name": "grandTotal",
+              "type": "number",
+              "value": "={{ $json.body.pricing.grandTotalWithoutBudget || 0 }}"
+            },
+            {
+              "id": "monthlyAfterDiscount",
+              "name": "monthlyAfterDiscount",
+              "type": "number",
+              "value": "={{ $json.body.pricing.monthlyAfterDiscount || 0 }}"
+            },
+            {
+              "id": "hasCustomQuote",
+              "name": "hasCustomQuote",
+              "type": "boolean",
+              "value": "={{ $json.body.pricing.hasCustomQuote || false }}"
+            },
+            {
+              "id": "discountPercentage",
+              "name": "discountPercentage",
+              "type": "number",
+              "value": "={{ $json.body.pricing.discountPercentage || 0 }}"
+            },
+            {
+              "id": "totalAdBudget",
+              "name": "totalAdBudget",
+              "type": "number",
+              "value": "={{ $json.body.pricing.adBudgetTotal || 0 }}"
+            },
+            {
+              "id": "rawPayload",
+              "name": "rawPayload",
+              "type": "string",
+              "value": "={{ JSON.stringify($json.body) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b63d9fd5-ee23-4c93-8b3d-fcda631f6029",
+      "name": "Prepare Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        520,
+        500
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Tu es un expert marketing digital chez MyDigipal, une agence spécialisée en SEO, publicité digitale (Google Ads, Paid Social), email marketing, et formations IA.\n\nUn prospect vient de remplir notre calculateur de devis marketing. Voici les détails:\n\n**Contact:** {{ $('Prepare Data').item.json.name }} ({{ $('Prepare Data').item.json.company }})\n**Domaines sélectionnés:** {{ $('Prepare Data').item.json.domains }}\n**Durée:** {{ $('Prepare Data').item.json.duration }} mois\n**Budget mensuel:** {{ $('Prepare Data').item.json.monthlyPrice }}€/mois\n**Total:** {{ $('Prepare Data').item.json.grandTotal }}€\n**Budget pub:** {{ $('Prepare Data').item.json.totalAdBudget }}€/mois\n\n**Données complètes:**\n{{ $('Prepare Data').item.json.rawPayload }}\n\n---\n\n**LANGUE: {{ $('Prepare Data').item.json.lang === 'en' ? 'ANGLAIS' : 'FRANÇAIS' }}**\n\nRédige un paragraphe personnalisé (3-5 phrases) pour l'email de confirmation. Ce paragraphe doit:\n\n1. Reconnaître leurs priorités (SEO = visibilité organique, Ads = acquisition payante, AI Training = montée en compétences)\n2. Mentionner 1-2 services spécifiques choisis et pourquoi c'est stratégique\n3. Ton professionnel mais chaleureux, tutoiement en français, \"you\" en anglais\n4. Terminer en disant qu'on les recontacte sous 24-48h et qu'ils peuvent répondre à cet email\n\n**IMPORTANT:**\n- Réponds UNIQUEMENT avec le paragraphe, sans introduction\n- Maximum 150 mots\n- {{ $('Prepare Data').item.json.lang === 'en' ? 'Write in ENGLISH' : 'Écris en FRANÇAIS' }}\n- Pas de bullet points, juste un texte fluide",
+        "options": {}
+      },
+      "id": "claude-message-generator",
+      "name": "Generate Personalized Message",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        760,
+        500
+      ],
+      "typeVersion": 1.4
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "options": {
+          "maxTokensToSample": 500,
+          "temperature": 0.7
+        }
+      },
+      "id": "claude-model-node",
+      "name": "Claude Sonnet",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "position": [
+        780,
+        700
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "anthropicApi": {
+          "id": "YOUR_ANTHROPIC_CREDENTIAL_ID",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Prepare Data').item.json.email }}",
+        "subject": "={{ $('Prepare Data').item.json.lang === 'en' ? 'Your Marketing Quote - ' + $('Prepare Data').item.json.monthlyPrice + '€/month | MyDigipal' : 'Votre devis Marketing Digital - ' + $('Prepare Data').item.json.monthlyPrice + '€/mois | MyDigipal' }}",
+        "message": "=<div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; background: #ffffff;\">\n\n<div style=\"background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); padding: 30px; border-radius: 12px 12px 0 0;\">\n<h1 style=\"color: white; margin: 0; font-size: 24px;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Thank you, ' + $('Prepare Data').item.json.name + '! 🎉' : 'Merci ' + $('Prepare Data').item.json.name + ' ! 🎉' }}</h1>\n<p style=\"color: rgba(255,255,255,0.9); margin: 10px 0 0 0;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Your Marketing Quote is ready' : 'Ton devis Marketing Digital est prêt' }}</p>\n</div>\n\n<div style=\"padding: 30px; border: 1px solid #E5E7EB; border-top: none; border-radius: 0 0 12px 12px;\">\n\n<p style=\"color: #374151; line-height: 1.7; font-size: 15px;\">{{ $('Generate Personalized Message').item.json.text }}</p>\n\n<div style=\"background: #F9FAFB; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #E5E7EB;\">\n<h2 style=\"margin: 0 0 20px 0; color: #1F2937; font-size: 18px; border-bottom: 2px solid #4F46E5; padding-bottom: 10px;\">{{ $('Prepare Data').item.json.lang === 'en' ? '📋 Your Quote Summary' : '📋 Récapitulatif de ton devis' }}</h2>\n\n<div style=\"margin-bottom: 15px;\">\n<p style=\"color: #6B7280; font-size: 12px; text-transform: uppercase; margin: 0 0 5px 0;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Selected services' : 'Domaines sélectionnés' }}</p>\n<p style=\"color: #1F2937; margin: 0; font-weight: 600;\">{{ $('Prepare Data').item.json.domains }}</p>\n</div>\n\n<div style=\"margin-bottom: 15px;\">\n<p style=\"color: #6B7280; font-size: 12px; text-transform: uppercase; margin: 0 0 5px 0;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Commitment duration' : 'Durée d\\'engagement' }}</p>\n<p style=\"color: #1F2937; margin: 0;\">{{ $('Prepare Data').item.json.duration }} {{ $('Prepare Data').item.json.lang === 'en' ? 'months' : 'mois' }}{{ $('Prepare Data').item.json.discountPercentage > 0 ? ($('Prepare Data').item.json.lang === 'en' ? ' (' + $('Prepare Data').item.json.discountPercentage + '% discount included!)' : ' (remise ' + $('Prepare Data').item.json.discountPercentage + '% incluse !)') : '' }}</p>\n</div>\n\n{{ $('Prepare Data').item.json.oneOffTotal > 0 ? '<div style=\"margin-bottom: 15px; background: #F0FDF4; padding: 15px; border-radius: 8px;\"><p style=\"color: #166534; font-size: 12px; text-transform: uppercase; margin: 0 0 5px 0;\">' + ($('Prepare Data').item.json.lang === 'en' ? '🚀 One-time setup' : '🚀 Services one-off') + '</p><p style=\"color: #15803D; margin: 0; font-weight: 600;\">' + $('Prepare Data').item.json.oneOffTotal + '€</p></div>' : '' }}\n\n<div style=\"background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); padding: 20px; border-radius: 8px; margin-top: 20px;\">\n<p style=\"color: rgba(255,255,255,0.9); margin: 0; font-size: 14px;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Your investment' : 'Ton investissement' }}</p>\n<p style=\"color: white; margin: 5px 0 0 0; font-size: 32px; font-weight: bold;\">{{ $('Prepare Data').item.json.monthlyPrice }}€<span style=\"font-size: 16px; font-weight: normal;\">/{{ $('Prepare Data').item.json.lang === 'en' ? 'month' : 'mois' }}</span></p>\n<p style=\"color: rgba(255,255,255,0.8); margin: 8px 0 0 0; font-size: 13px;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Total over ' + $('Prepare Data').item.json.duration + ' months: ' : 'Total sur ' + $('Prepare Data').item.json.duration + ' mois : ' }}{{ $('Prepare Data').item.json.grandTotal }}€</p>\n</div>\n</div>\n\n<div style=\"background: #F0FDF4; padding: 20px; border-radius: 12px; margin: 25px 0; border: 1px solid #BBF7D0;\">\n<h3 style=\"color: #166534; margin: 0 0 10px 0; font-size: 16px;\">{{ $('Prepare Data').item.json.lang === 'en' ? '✨ Included in all our services' : '✨ Inclus dans tous nos services' }}</h3>\n<ul style=\"color: #15803D; margin: 0; padding-left: 20px; line-height: 1.8;\">\n<li>{{ $('Prepare Data').item.json.lang === 'en' ? 'LLM optimization (ChatGPT, Perplexity, Copilot)' : 'Optimisation pour les LLMs (ChatGPT, Perplexity, Copilot)' }}</li>\n<li>{{ $('Prepare Data').item.json.lang === 'en' ? 'Premium tools (Ahrefs, SEMrush, Meta Business Suite)' : 'Outils premium (Ahrefs, SEMrush, Meta Business Suite)' }}</li>\n<li>{{ $('Prepare Data').item.json.lang === 'en' ? 'Detailed monthly reporting' : 'Reporting mensuel détaillé' }}</li>\n<li>{{ $('Prepare Data').item.json.lang === 'en' ? 'Responsive support via email and video call' : 'Support réactif par email et visio' }}</li>\n</ul>\n</div>\n\n<div style=\"background: #FEF3C7; padding: 15px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #F59E0B;\">\n<p style=\"color: #92400E; margin: 0; font-size: 14px;\">{{ $('Prepare Data').item.json.lang === 'en' ? '💬 <strong>Questions?</strong> Reply directly to this email!' : '💬 <strong>Des questions ?</strong> Réponds directement à cet email !' }}</p>\n</div>\n\n<div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #E5E7EB;\">\n<p style=\"color: #374151; margin: 0;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Talk soon,' : 'À très vite,' }}</p>\n<p style=\"margin: 8px 0 0 0;\"><strong style=\"color: #1F2937; font-size: 16px;\">Paul MUSIC</strong></p>\n<p style=\"color: #6B7280; margin: 2px 0;\">CEO - MyDigipal</p>\n<p style=\"margin: 8px 0 0 0;\"><a href=\"mailto:paul@mydigipal.com\" style=\"color: #4F46E5; text-decoration: none;\">paul@mydigipal.com</a></p>\n<p style=\"margin: 4px 0 0 0;\"><a href=\"https://www.mydigipal.com\" style=\"color: #4F46E5; text-decoration: none;\">www.mydigipal.com</a></p>\n</div>\n\n</div>\n</div>",
         "options": {
           "ccList": "paul@mydigipal.com",
           "replyTo": "paul@mydigipal.com"
@@ -31,7 +176,7 @@
       "name": "Send Email to Prospect",
       "type": "n8n-nodes-base.gmail",
       "position": [
-        560,
+        1020,
         400
       ],
       "typeVersion": 2.1,
@@ -45,15 +190,15 @@
     {
       "parameters": {
         "sendTo": "paul@mydigipal.com",
-        "subject": "=🔔 Nouveau lead calculateur: {{ $json.body.contact.name }} ({{ $json.body.contact.company || 'Pas de société' }}) - {{ $json.body.pricing.grandTotalWithoutBudget }}€",
-        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 700px;\">\n\n<div style=\"background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); padding: 20px; border-radius: 8px 8px 0 0;\">\n<h2 style=\"color: white; margin: 0;\">🎯 Nouveau lead depuis le calculateur!</h2>\n<p style=\"color: rgba(255,255,255,0.9); margin: 5px 0 0 0;\">{{ $now.format('dd/MM/yyyy HH:mm') }}</p>\n</div>\n\n<div style=\"background: #fff; padding: 25px; border: 1px solid #E5E7EB; border-top: none; border-radius: 0 0 8px 8px;\">\n\n<h3 style=\"color: #4F46E5; margin: 0 0 15px 0;\">👤 Contact</h3>\n<table style=\"width: 100%; border-collapse: collapse; margin-bottom: 25px;\">\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee; width: 140px;\"><strong>Nom:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\">{{ $json.body.contact.name }}</td></tr>\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><strong>Email:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><a href=\"mailto:{{ $json.body.contact.email }}\">{{ $json.body.contact.email }}</a></td></tr>\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><strong>Entreprise:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\">{{ $json.body.contact.company || 'Non renseigné' }}</td></tr>\n</table>\n\n<h3 style=\"color: #4F46E5; margin: 0 0 15px 0;\">📊 Sélection</h3>\n<table style=\"width: 100%; border-collapse: collapse; margin-bottom: 25px;\">\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><strong>Domaines:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\">{{ $json.body.selectedDomains.join(', ') }}</td></tr>\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><strong>Durée:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\">{{ $json.body.duration }} mois</td></tr>\n</table>\n\n<div style=\"background: #F0FDF4; padding: 20px; border-radius: 8px; margin-bottom: 25px;\">\n<h3 style=\"color: #166534; margin: 0 0 10px 0;\">💰 Financier</h3>\n<table style=\"width: 100%; border-collapse: collapse;\">\n<tr><td style=\"padding: 5px 0;\">Mensuel:</td><td style=\"text-align: right;\">{{ $json.body.pricing.monthlyAfterDiscount }}€/mois</td></tr>\n<tr><td style=\"padding: 5px 0;\">One-off:</td><td style=\"text-align: right;\">{{ $json.body.pricing.oneOffTotal }}€</td></tr>\n<tr style=\"font-size: 18px; font-weight: bold; border-top: 2px solid #ccc;\"><td style=\"padding: 10px 0;\">TOTAL:</td><td style=\"text-align: right; color: #059669;\">{{ $json.body.pricing.grandTotalWithoutBudget }}€</td></tr>\n</table>\n</div>\n\n<div style=\"text-align: center; padding-top: 20px; border-top: 1px solid #E5E7EB;\">\n<a href=\"mailto:{{ $json.body.contact.email }}?subject=Re: Votre devis MyDigipal\" style=\"display: inline-block; background: #4F46E5; color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold;\">📧 Répondre au prospect</a>\n</div>\n\n</div>\n</div>",
+        "subject": "=🔔 Nouveau lead calculateur: {{ $('Prepare Data').item.json.name }} ({{ $('Prepare Data').item.json.company }}) - {{ $('Prepare Data').item.json.grandTotal }}€ [{{ $('Prepare Data').item.json.lang.toUpperCase() }}]",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 700px;\">\n\n<div style=\"background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); padding: 20px; border-radius: 8px 8px 0 0;\">\n<h2 style=\"color: white; margin: 0;\">🎯 Nouveau lead depuis le calculateur!</h2>\n<p style=\"color: rgba(255,255,255,0.9); margin: 5px 0 0 0;\">{{ $('Prepare Data').item.json.timestamp }} | Langue: {{ $('Prepare Data').item.json.lang.toUpperCase() }}</p>\n</div>\n\n<div style=\"background: #fff; padding: 25px; border: 1px solid #E5E7EB; border-top: none; border-radius: 0 0 8px 8px;\">\n\n<h3 style=\"color: #4F46E5; margin: 0 0 15px 0;\">👤 Contact</h3>\n<table style=\"width: 100%; border-collapse: collapse; margin-bottom: 25px;\">\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee; width: 140px;\"><strong>Nom:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\">{{ $('Prepare Data').item.json.name }}</td></tr>\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><strong>Email:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><a href=\"mailto:{{ $('Prepare Data').item.json.email }}\">{{ $('Prepare Data').item.json.email }}</a></td></tr>\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><strong>Entreprise:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\">{{ $('Prepare Data').item.json.company }}</td></tr>\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><strong>Langue:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\">{{ $('Prepare Data').item.json.lang === 'en' ? '🇬🇧 Anglais' : '🇫🇷 Français' }}</td></tr>\n</table>\n\n<h3 style=\"color: #4F46E5; margin: 0 0 15px 0;\">📊 Sélection</h3>\n<table style=\"width: 100%; border-collapse: collapse; margin-bottom: 25px;\">\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><strong>Domaines:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\">{{ $('Prepare Data').item.json.domains }}</td></tr>\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><strong>Durée:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\">{{ $('Prepare Data').item.json.duration }} mois</td></tr>\n<tr><td style=\"padding: 10px; border-bottom: 1px solid #eee;\"><strong>Budget pub:</strong></td><td style=\"padding: 10px; border-bottom: 1px solid #eee;\">{{ $('Prepare Data').item.json.totalAdBudget > 0 ? $('Prepare Data').item.json.totalAdBudget + '€/mois' : 'Aucun' }}</td></tr>\n</table>\n\n<div style=\"background: #F0FDF4; padding: 20px; border-radius: 8px; margin-bottom: 25px;\">\n<h3 style=\"color: #166534; margin: 0 0 10px 0;\">💰 Financier</h3>\n<table style=\"width: 100%; border-collapse: collapse;\">\n<tr><td style=\"padding: 5px 0;\">Mensuel:</td><td style=\"text-align: right;\">{{ $('Prepare Data').item.json.monthlyAfterDiscount }}€/mois</td></tr>\n<tr><td style=\"padding: 5px 0;\">One-off:</td><td style=\"text-align: right;\">{{ $('Prepare Data').item.json.oneOffTotal }}€</td></tr>\n{{ $('Prepare Data').item.json.discountPercentage > 0 ? '<tr style=\"color: #059669;\"><td style=\"padding: 5px 0;\">Remise:</td><td style=\"text-align: right;\">-' + $('Prepare Data').item.json.discountPercentage + '%</td></tr>' : '' }}\n<tr style=\"font-size: 18px; font-weight: bold; border-top: 2px solid #ccc;\"><td style=\"padding: 10px 0;\">TOTAL:</td><td style=\"text-align: right; color: #059669;\">{{ $('Prepare Data').item.json.grandTotal }}€</td></tr>\n</table>\n</div>\n\n<div style=\"background: #EFF6FF; padding: 20px; border-radius: 8px; margin-bottom: 25px;\">\n<h3 style=\"color: #1E40AF; margin: 0 0 10px 0;\">🤖 Message personnalisé (Claude)</h3>\n<p style=\"color: #1E3A8A; margin: 0; font-style: italic;\">\"{{ $('Generate Personalized Message').item.json.text }}\"</p>\n</div>\n\n<div style=\"text-align: center; padding-top: 20px; border-top: 1px solid #E5E7EB;\">\n<a href=\"mailto:{{ $('Prepare Data').item.json.email }}?subject=Re: {{ $('Prepare Data').item.json.lang === 'en' ? 'Your MyDigipal Quote' : 'Votre devis MyDigipal' }}\" style=\"display: inline-block; background: #4F46E5; color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold;\">📧 Répondre au prospect</a>\n</div>\n\n</div>\n</div>",
         "options": {}
       },
       "id": "b256f8d1-a2f0-4333-8d0b-ec7d1edb3152",
       "name": "Notify Paul",
       "type": "n8n-nodes-base.gmail",
       "position": [
-        560,
+        1020,
         600
       ],
       "typeVersion": 2.1,
@@ -72,7 +217,7 @@
       "name": "Respond to Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
       "position": [
-        800,
+        1280,
         500
       ],
       "typeVersion": 1
@@ -80,6 +225,39 @@
   ],
   "connections": {
     "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Data": {
+      "main": [
+        [
+          {
+            "node": "Generate Personalized Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Personalized Message",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Personalized Message": {
       "main": [
         [
           {
