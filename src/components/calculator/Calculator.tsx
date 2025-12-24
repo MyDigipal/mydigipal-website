@@ -370,9 +370,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     try {
       // DEBUG: Log payload to console for debugging
       console.log('📤 Sending webhook payload:', JSON.stringify(payload, null, 2));
-      console.log('📤 Webhook URL:', 'https://n8n.mydigipal.com:5678/webhook/calculateur-marketing');
+      console.log('📤 Webhook URL:', 'https://n8n.mydigipal.com/webhook/calculateur-marketing');
 
-      const response = await fetch('https://n8n.mydigipal.com:5678/webhook/calculateur-marketing', {
+      const response = await fetch('https://n8n.mydigipal.com/webhook/calculateur-marketing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         mode: 'cors',
