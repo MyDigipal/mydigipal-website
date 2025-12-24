@@ -457,6 +457,49 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   // Configuration step
   return (
     <div className="min-h-[600px]">
+      {/* Sticky top bar with totals */}
+      {hasSelections && (
+        <div className="sticky top-0 z-40 -mx-4 px-4 py-3 mb-6 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between gap-4 max-w-5xl mx-auto">
+            <div className="flex items-center gap-6">
+              {/* Monthly */}
+              <div className="text-center">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</p>
+                <p className="text-xl font-bold text-slate-900">
+                  {pricing.hasCustomQuote ? (
+                    <span className="text-amber-600 text-base">{lang === 'fr' ? 'Sur devis' : 'Custom'}</span>
+                  ) : (
+                    <>{Math.round(pricing.totalMonthlyWithoutBudget).toLocaleString()}€</>
+                  )}
+                </p>
+              </div>
+              {/* One-off */}
+              {pricing.oneOffTotal > 0 && (
+                <div className="text-center border-l border-slate-200 pl-6">
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wide">One-off</p>
+                  <p className="text-xl font-bold text-emerald-600">
+                    {Math.round(pricing.oneOffTotal).toLocaleString()}€
+                  </p>
+                </div>
+              )}
+              {/* Total */}
+              <div className="text-center border-l border-slate-200 pl-6">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'Total' : 'Total'} ({duration} {t.months})</p>
+                <p className="text-xl font-bold text-blue-600">
+                  {Math.round(pricing.grandTotalWithoutBudget).toLocaleString()}€
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowSummaryPopup(true)}
+              className="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-sm"
+            >
+              {t.viewSummary}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Back button header */}
       <div className="mb-8">
         <button
@@ -468,10 +511,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         </button>
       </div>
 
-      {/* Two-column layout: Services on left, Sticky totals on right */}
-      <div className="flex gap-8">
-        {/* Services configuration - main column */}
-        <div className="flex-1 space-y-12">
+      {/* Services configuration */}
+      <div className="space-y-12">
         {selectedDomains.map(domainId => {
           const domain = domainConfigs[domainId];
 
@@ -1211,61 +1252,6 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             )}
           </div>
         )}
-        </div>
-
-        {/* Sticky sidebar for totals - right column */}
-        <div className="hidden lg:block w-80 flex-shrink-0">
-          <div className="sticky top-8">
-            {hasSelections && (
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 space-y-4">
-                {/* Monthly Total */}
-                <div className="text-center pb-4 border-b border-slate-100">
-                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</p>
-                  <p className="text-3xl font-bold text-slate-900">
-                    {pricing.hasCustomQuote ? (
-                      <span className="text-amber-600 text-xl">{lang === 'fr' ? 'Sur devis' : 'Custom'}</span>
-                    ) : (
-                      <>{Math.round(pricing.totalMonthlyWithoutBudget).toLocaleString()}€</>
-                    )}
-                  </p>
-                  {!pricing.hasCustomQuote && <p className="text-sm text-slate-400">/mois</p>}
-                </div>
-
-                {/* One-off Total */}
-                {pricing.oneOffTotal > 0 && (
-                  <div className="text-center pb-4 border-b border-slate-100">
-                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">{lang === 'fr' ? 'One-off' : 'One-time'}</p>
-                    <p className="text-2xl font-bold text-emerald-600">
-                      {Math.round(pricing.oneOffTotal).toLocaleString()}€
-                    </p>
-                  </div>
-                )}
-
-                {/* Duration */}
-                <div className="text-center pb-4 border-b border-slate-100">
-                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">{t.duration}</p>
-                  <p className="text-lg font-semibold text-slate-700">{duration} {t.months}</p>
-                </div>
-
-                {/* Total over duration */}
-                <div className="text-center pb-4">
-                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">{lang === 'fr' ? 'Total engagement' : 'Total commitment'}</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {Math.round(pricing.grandTotalWithoutBudget).toLocaleString()}€
-                  </p>
-                </div>
-
-                {/* View Summary Button */}
-                <button
-                  onClick={() => setShowSummaryPopup(true)}
-                  className="w-full px-5 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
-                >
-                  {t.viewSummary}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Tracking Reminder Popup */}
