@@ -1,0 +1,175 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { type Language, languages } from '@/i18n/config';
+import Calculator from '@/components/calculator/Calculator';
+
+export async function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+// Get preselected service from URL params if any
+const preselectedService = Astro.url.searchParams.get('service') as string | null;
+
+const translations = {
+  en: {
+    title: 'Marketing Calculator',
+    description: 'Build your custom marketing package with our interactive calculator. Get an instant estimate for SEO, Google Ads, Paid Social, AI Training, Email Marketing, and AI Solutions.',
+    badge: 'Interactive Calculator',
+    headline: 'Build Your Marketing Package',
+    subheadline: 'Select the services you need, configure them to your needs, and get an instant estimate. No commitment required.',
+  },
+  fr: {
+    title: 'Calculateur Marketing',
+    description: 'Composez votre offre marketing sur-mesure avec notre calculateur interactif. Obtenez une estimation instantanée pour le SEO, Google Ads, Paid Social, Formation IA, Email Marketing et Solutions IA.',
+    badge: 'Calculateur Interactif',
+    headline: 'Composez Votre Offre Marketing',
+    subheadline: 'Sélectionnez les services dont vous avez besoin, configurez-les selon vos besoins et obtenez une estimation instantanée. Sans engagement.',
+  },
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<PageLayout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+>
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white pt-32 pb-16 overflow-hidden">
+    <!-- Background Effects -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute top-20 -left-20 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-20 -right-20 w-96 h-96 bg-indigo-500/20 rounded-full blur-[120px]"></div>
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiMxZTI5M2IiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6TTEgMWg1OHY1OEgxVjF6IiBmaWxsPSIjMzM0MTU1IiBmaWxsLW9wYWNpdHk9Ii4yIi8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+    </div>
+
+    <div class="container-custom relative z-10 text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 font-medium mb-6">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span>{t.badge}</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">{t.headline}</h1>
+      <p class="text-xl text-slate-300 max-w-2xl mx-auto">{t.subheadline}</p>
+    </div>
+  </section>
+
+  <!-- Calculator Section -->
+  <section class="py-16 bg-slate-50">
+    <div class="container-custom max-w-6xl">
+      <Calculator
+        client:load
+        lang={lang}
+        preselectedDomain={preselectedService as any}
+      />
+    </div>
+  </section>
+
+  <!-- Trust indicators -->
+  <section class="py-12 bg-white border-t border-slate-100">
+    <div class="container-custom">
+      <div class="grid md:grid-cols-4 gap-8 text-center">
+        <div>
+          <div class="text-3xl font-bold text-slate-900 mb-1">50+</div>
+          <div class="text-slate-600">{lang === 'fr' ? 'Clients actifs' : 'Active clients'}</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-slate-900 mb-1">+200%</div>
+          <div class="text-slate-600">{lang === 'fr' ? 'ROI moyen' : 'Average ROI'}</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-slate-900 mb-1">5+</div>
+          <div class="text-slate-600">{lang === 'fr' ? 'Années d\'expérience' : 'Years of experience'}</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-slate-900 mb-1">24h</div>
+          <div class="text-slate-600">{lang === 'fr' ? 'Délai de réponse' : 'Response time'}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-16 bg-slate-50">
+    <div class="container-custom max-w-3xl">
+      <h2 class="text-2xl font-bold text-slate-900 mb-8 text-center">
+        {lang === 'fr' ? 'Questions fréquentes' : 'Frequently Asked Questions'}
+      </h2>
+
+      <div class="space-y-4">
+        <details class="group bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <summary class="flex items-center justify-between p-6 cursor-pointer">
+            <h3 class="font-semibold text-slate-900">
+              {lang === 'fr' ? 'Comment fonctionne le calculateur ?' : 'How does the calculator work?'}
+            </h3>
+            <svg class="w-5 h-5 text-slate-500 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-6 pb-6 text-slate-600">
+            {lang === 'fr'
+              ? 'Sélectionnez les services dont vous avez besoin, configurez les options pour chaque service, et obtenez une estimation instantanée. Vous pouvez ensuite demander un devis personnalisé par email.'
+              : 'Select the services you need, configure the options for each service, and get an instant estimate. You can then request a personalized quote by email.'}
+          </div>
+        </details>
+
+        <details class="group bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <summary class="flex items-center justify-between p-6 cursor-pointer">
+            <h3 class="font-semibold text-slate-900">
+              {lang === 'fr' ? 'Les prix sont-ils définitifs ?' : 'Are the prices final?'}
+            </h3>
+            <svg class="w-5 h-5 text-slate-500 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-6 pb-6 text-slate-600">
+            {lang === 'fr'
+              ? 'Les prix affichés sont des estimations basées sur nos tarifs standards. Le devis final peut varier selon la complexité de votre projet et vos besoins spécifiques.'
+              : 'The displayed prices are estimates based on our standard rates. The final quote may vary depending on the complexity of your project and your specific needs.'}
+          </div>
+        </details>
+
+        <details class="group bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <summary class="flex items-center justify-between p-6 cursor-pointer">
+            <h3 class="font-semibold text-slate-900">
+              {lang === 'fr' ? 'Puis-je modifier ma sélection après avoir envoyé le devis ?' : 'Can I modify my selection after sending the quote?'}
+            </h3>
+            <svg class="w-5 h-5 text-slate-500 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-6 pb-6 text-slate-600">
+            {lang === 'fr'
+              ? 'Absolument ! Le devis est sans engagement. Nous discuterons de vos besoins lors d\'un appel et ajusterons la proposition selon vos retours.'
+              : 'Absolutely! The quote is non-binding. We\'ll discuss your needs during a call and adjust the proposal based on your feedback.'}
+          </div>
+        </details>
+
+        <details class="group bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <summary class="flex items-center justify-between p-6 cursor-pointer">
+            <h3 class="font-semibold text-slate-900">
+              {lang === 'fr' ? 'Quelle est la durée d\'engagement minimum ?' : 'What is the minimum commitment period?'}
+            </h3>
+            <svg class="w-5 h-5 text-slate-500 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-6 pb-6 text-slate-600">
+            {lang === 'fr'
+              ? 'La durée minimum est de 4 mois pour les services récurrents. Des remises sont proposées pour des engagements de 6 mois (-5%) ou 12 mois (-10%).'
+              : 'The minimum duration is 4 months for recurring services. Discounts are offered for 6-month (-5%) or 12-month (-10%) commitments.'}
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+</PageLayout>

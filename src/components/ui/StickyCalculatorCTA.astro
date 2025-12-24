@@ -1,0 +1,109 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const text = lang === 'fr' ? 'Calculer mon budget' : 'Calculate my budget';
+
+// Don't show on calculator page
+const currentPath = Astro.url.pathname;
+const isCalculatorPage = currentPath.includes('/calculator');
+---
+
+{!isCalculatorPage && (
+  <div
+    id="sticky-calculator-cta"
+    class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-500"
+  >
+    <a
+      href={`/${lang}/calculator`}
+      class="group flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-blue-500/25 hover:scale-105 transition-all duration-300"
+    >
+      <!-- Calculator Icon -->
+      <span class="flex items-center justify-center w-10 h-10 bg-white/20 rounded-xl group-hover:bg-white/30 transition-colors">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+          <line x1="8" y1="6" x2="16" y2="6"></line>
+          <line x1="8" y1="10" x2="8" y2="10"></line>
+          <line x1="12" y1="10" x2="12" y2="10"></line>
+          <line x1="16" y1="10" x2="16" y2="10"></line>
+          <line x1="8" y1="14" x2="8" y2="14"></line>
+          <line x1="12" y1="14" x2="12" y2="14"></line>
+          <line x1="16" y1="14" x2="16" y2="14"></line>
+          <line x1="8" y1="18" x2="8" y2="18"></line>
+          <line x1="12" y1="18" x2="16" y2="18"></line>
+        </svg>
+      </span>
+
+      <span class="hidden sm:inline">{text}</span>
+
+      <!-- Animated arrow -->
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="hidden sm:block group-hover:translate-x-1 transition-transform"
+      >
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12,5 19,12 12,19"></polyline>
+      </svg>
+    </a>
+
+    <!-- Pulse animation ring -->
+    <span class="absolute inset-0 rounded-2xl animate-ping-slow bg-blue-500/20 -z-10"></span>
+  </div>
+)}
+
+<script>
+  // Show sticky CTA after scrolling past 400px
+  const stickyCTA = document.getElementById('sticky-calculator-cta');
+
+  if (stickyCTA) {
+    let lastScrollY = 0;
+    let ticking = false;
+
+    const updateCTA = () => {
+      const scrollY = window.scrollY;
+
+      if (scrollY > 400) {
+        stickyCTA.classList.remove('translate-y-20', 'opacity-0');
+        stickyCTA.classList.add('translate-y-0', 'opacity-100');
+      } else {
+        stickyCTA.classList.add('translate-y-20', 'opacity-0');
+        stickyCTA.classList.remove('translate-y-0', 'opacity-100');
+      }
+
+      ticking = false;
+    };
+
+    window.addEventListener('scroll', () => {
+      lastScrollY = window.scrollY;
+      if (!ticking) {
+        window.requestAnimationFrame(updateCTA);
+        ticking = true;
+      }
+    });
+  }
+</script>
+
+<style>
+  @keyframes ping-slow {
+    75%, 100% {
+      transform: scale(1.1);
+      opacity: 0;
+    }
+  }
+
+  .animate-ping-slow {
+    animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+</style>
