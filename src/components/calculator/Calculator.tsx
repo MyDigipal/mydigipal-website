@@ -5,8 +5,9 @@ import {
   domainConfigs,
   BUDGET_CONFIG,
   DURATION_CONFIG,
-  SETUP_OPTIONS,
+  MANAGEMENT_FEE_CONFIG,
   calculateManagementFee,
+  getManagementFeeDescription,
   aiTrainingPricing,
   halfDayFeatures,
   fullDayAdditionalFeatures,
@@ -107,15 +108,15 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     'paid-social': BUDGET_CONFIG.default
   });
   const [duration, setDuration] = useState<4 | 6 | 12>(4);
-  const [setupSelections, setSetupSelections] = useState<Record<string, boolean>>({});
   const [cmsAddon, setCmsAddon] = useState(false);
+  const [showSummaryPopup, setShowSummaryPopup] = useState(false);
 
   // AI Training state
   const [aiTraining, setAiTraining] = useState<AITrainingSelection>({
     format: 'half-day',
     sessions: '1',
     inPerson: false,
-    travelCost: 300
+    travelCost: aiTrainingPricing.travelCost.default
   });
 
   // AI Solutions state
@@ -172,7 +173,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     let oneOffTotal = 0;
     let adBudgetTotal = 0;
     let managementFeesTotal = 0;
-    let setupTotal = 0;
+    let hasCustomQuote = false;
 
     // Calculate service prices
     selectedDomains.forEach(domain => {
@@ -181,11 +182,13 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       // Skip AI Training and AI Solutions (special handling)
       if (domain === 'ai-training' || domain === 'ai-solutions') return;
 
-      // Add management fees for ads domains
-      if (config.hasBudgetSlider) {
+      // Add management fees for ads domains (tiered structure)
+      if (config.hasBudgetSlider && config.hasTieredManagementFee) {
         const budget = adBudgets[domain as 'google-ads' | 'paid-social'];
         adBudgetTotal += budget;
-        managementFeesTotal += calculateManagementFee(domain as 'google-ads' | 'paid-social', budget);
+        const feeResult = calculateManagementFee(domain as 'google-ads' | 'paid-social', budget);
+        managementFeesTotal += feeResult.fee;
+        if (feeResult.isCustomQuote) hasCustomQuote = true;
       }
 
       // Add service prices
@@ -218,14 +221,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       monthlyTotal += 100;
     }
 
-    // Setup options
-    SETUP_OPTIONS.forEach(opt => {
-      if (setupSelections[opt.id]) {
-        setupTotal += opt.price;
-      }
-    });
-
-    // Tracking services
+    // Tracking services (one-off)
     let trackingTotal = 0;
     if (trackingAudit) {
       trackingTotal += trackingAuditOption.price;
@@ -237,33 +233,36 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     });
     oneOffTotal += trackingTotal;
 
-    // Duration discount
+    // Duration discount (only on monthly services, not on management fees for >10k budgets)
     const durationConfig = DURATION_CONFIG.options.find(d => d.months === duration);
     const discountPercentage = durationConfig?.discount || 0;
     const monthlyBeforeDiscount = monthlyTotal + managementFeesTotal;
     const discount = monthlyBeforeDiscount * (discountPercentage / 100);
 
     // Calculate totals
+    // Note: effectiveMonthly excludes media budget (adBudgetTotal) - media budget shown separately
     const monthlyAfterDiscount = monthlyBeforeDiscount - discount;
-    const totalMonthly = monthlyAfterDiscount + adBudgetTotal;
-    const grandTotal = (monthlyAfterDiscount * duration) + oneOffTotal + setupTotal + (adBudgetTotal * duration);
-    const effectiveMonthly = grandTotal / duration;
+    const totalMonthlyWithoutBudget = monthlyAfterDiscount;
+    const totalMonthlyWithBudget = monthlyAfterDiscount + adBudgetTotal;
+    const grandTotalWithoutBudget = (monthlyAfterDiscount * duration) + oneOffTotal;
+    const grandTotalWithBudget = grandTotalWithoutBudget + (adBudgetTotal * duration);
 
     return {
       monthlyTotal,
       oneOffTotal,
       adBudgetTotal,
       managementFeesTotal,
-      setupTotal,
       trackingTotal,
       discount,
       discountPercentage,
       monthlyAfterDiscount,
-      totalMonthly,
-      grandTotal,
-      effectiveMonthly
+      totalMonthlyWithoutBudget,
+      totalMonthlyWithBudget,
+      grandTotalWithoutBudget,
+      grandTotalWithBudget,
+      hasCustomQuote
     };
-  }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, setupSelections, trackingSelections, trackingAudit, duration]);
+  }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, trackingSelections, trackingAudit, duration]);
 
   // Check if any service is selected
   const hasSelections = useMemo(() => {
@@ -307,7 +306,6 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       aiSolutions: selectedDomains.includes('ai-solutions') ? aiSolutions : null,
       pricing,
       duration,
-      setupSelections,
       trackingSelections: Object.fromEntries(
         Object.entries(trackingSelections).filter(([_, v]) => v)
       ),
@@ -315,7 +313,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       cmsAddon,
       metadata: {
         timestamp: new Date().toISOString(),
-        source: 'marketing-calculator-v3',
+        source: 'marketing-calculator-v4',
         lang
       }
     };
@@ -333,7 +331,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     } finally {
       setIsSubmitting(false);
     }
-  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, setupSelections, trackingSelections, trackingAudit, cmsAddon, lang, isSubmitting, needsTracking, hasTrackingSelected, trackingPopupDismissed]);
+  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, cmsAddon, lang, isSubmitting, needsTracking, hasTrackingSelected, trackingPopupDismissed]);
 
   // Domain selection step
   if (step === 'domains') {
@@ -411,32 +409,49 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   // Configuration step
   return (
     <div className="min-h-[600px]">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <button
-          onClick={() => setStep('domains')}
-          className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
-        >
-          <ArrowLeft />
-          {t.backToDomains}
-        </button>
+      {/* Sticky Header with Totals */}
+      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200 -mx-4 px-4 py-4 mb-8">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setStep('domains')}
+            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
+          >
+            <ArrowLeft />
+            {t.backToDomains}
+          </button>
 
-        {hasSelections && (
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm text-slate-500">{t.estimatedMonthly}</p>
-              <p className="text-2xl font-bold text-blue-600">
-                {Math.round(pricing.effectiveMonthly).toLocaleString()}€<span className="text-sm font-normal text-slate-500">/mois</span>
-              </p>
+          {hasSelections && (
+            <div className="flex items-center gap-6">
+              {/* Monthly Total (without media budget) */}
+              <div className="text-right">
+                <p className="text-xs text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</p>
+                <p className="text-xl font-bold text-blue-600">
+                  {pricing.hasCustomQuote ? (
+                    <span className="text-amber-600">{lang === 'fr' ? 'Sur devis' : 'Custom'}</span>
+                  ) : (
+                    <>{Math.round(pricing.totalMonthlyWithoutBudget).toLocaleString()}€<span className="text-sm font-normal text-slate-400">/mois</span></>
+                  )}
+                </p>
+              </div>
+              {/* One-off Total */}
+              {pricing.oneOffTotal > 0 && (
+                <div className="text-right border-l border-slate-200 pl-6">
+                  <p className="text-xs text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'One-off' : 'One-time'}</p>
+                  <p className="text-xl font-bold text-emerald-600">
+                    {Math.round(pricing.oneOffTotal).toLocaleString()}€
+                  </p>
+                </div>
+              )}
+              {/* View Summary Button */}
+              <button
+                onClick={() => setShowSummaryPopup(true)}
+                className="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+              >
+                {t.viewSummary}
+              </button>
             </div>
-            <button
-              onClick={() => setStep('summary')}
-              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
-            >
-              {t.viewSummary}
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Services configuration */}
@@ -537,16 +552,23 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
                   {aiTraining.inPerson && (
                     <div className="mt-4">
-                      <label className="block text-sm font-medium text-slate-700 mb-2">{t.travelCost}</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        {t.travelCost} <span className="text-slate-400 font-normal">({lang === 'fr' ? 'frais unique' : 'one-off fee'})</span>
+                      </label>
                       <input
-                        type="number"
+                        type="range"
+                        min={aiTrainingPricing.travelCost.min}
+                        max={aiTrainingPricing.travelCost.max}
+                        step={50}
                         value={aiTraining.travelCost}
-                        onChange={(e) => setAiTraining(prev => ({ ...prev, travelCost: parseInt(e.target.value) || 0 }))}
-                        className="w-32 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                        min="0"
-                        step="50"
+                        onChange={(e) => setAiTraining(prev => ({ ...prev, travelCost: parseInt(e.target.value) }))}
+                        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
                       />
-                      <span className="ml-2 text-slate-600">€</span>
+                      <div className="flex justify-between mt-2 text-sm">
+                        <span className="text-slate-500">{aiTrainingPricing.travelCost.min}€ ({lang === 'fr' ? 'proche' : 'nearby'})</span>
+                        <span className="font-bold text-emerald-700">{aiTraining.travelCost}€</span>
+                        <span className="text-slate-500">{aiTrainingPricing.travelCost.max}€ ({lang === 'fr' ? 'hôtel requis' : 'hotel required'})</span>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -651,34 +673,57 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               </div>
 
               {/* Budget slider for ads */}
-              {domain.hasBudgetSlider && (
-                <div className="mb-8 p-6 bg-slate-50 rounded-xl">
-                  <label className="block text-sm font-medium text-slate-700 mb-4">{t.adBudget}</label>
-                  <input
-                    type="range"
-                    min={BUDGET_CONFIG.min}
-                    max={BUDGET_CONFIG.max}
-                    step={BUDGET_CONFIG.step}
-                    value={adBudgets[domainId as 'google-ads' | 'paid-social']}
-                    onChange={(e) => setAdBudgets(prev => ({ ...prev, [domainId]: parseInt(e.target.value) }))}
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-slate-500">{BUDGET_CONFIG.min}€</span>
-                    <span className="text-xl font-bold text-slate-900">
-                      {adBudgets[domainId as 'google-ads' | 'paid-social'].toLocaleString()}€/mois
-                    </span>
-                    <span className="text-sm text-slate-500">{BUDGET_CONFIG.max.toLocaleString()}€</span>
+              {domain.hasBudgetSlider && (() => {
+                const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
+                const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
+                const feeDescription = getManagementFeeDescription(budget, lang);
+                return (
+                  <div className="mb-8 p-6 bg-slate-50 rounded-xl">
+                    <label className="block text-sm font-medium text-slate-700 mb-4">{t.adBudget}</label>
+                    <input
+                      type="range"
+                      min={BUDGET_CONFIG.min}
+                      max={BUDGET_CONFIG.max}
+                      step={BUDGET_CONFIG.step}
+                      value={budget}
+                      onChange={(e) => setAdBudgets(prev => ({ ...prev, [domainId]: parseInt(e.target.value) }))}
+                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                    />
+                    <div className="flex justify-between mt-2">
+                      <span className="text-sm text-slate-500">{BUDGET_CONFIG.min}€</span>
+                      <span className="text-xl font-bold text-slate-900">
+                        {budget.toLocaleString()}€/mois
+                      </span>
+                      <span className="text-sm text-slate-500">{BUDGET_CONFIG.max.toLocaleString()}€</span>
+                    </div>
+                    {/* Tiered management fee display */}
+                    <div className="mt-4 p-4 bg-white rounded-lg border border-slate-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-slate-700">{t.managementFee}</span>
+                        <span className="font-bold text-slate-900">
+                          {feeResult.isCustomQuote ? (
+                            <span className="text-amber-600">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
+                          ) : (
+                            <>{Math.round(feeResult.fee).toLocaleString()}€/mois</>
+                          )}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500">{feeDescription}</p>
+                      {/* Tier indicators */}
+                      <div className="mt-3 flex gap-1">
+                        <div className={`flex-1 h-1.5 rounded-full ${budget < 2500 ? 'bg-blue-500' : 'bg-slate-200'}`} title="< 2500€: 500€/mois" />
+                        <div className={`flex-1 h-1.5 rounded-full ${budget >= 2500 && budget < 10000 ? 'bg-blue-500' : 'bg-slate-200'}`} title="2500€-10000€: 20%" />
+                        <div className={`flex-1 h-1.5 rounded-full ${budget >= 10000 ? 'bg-amber-500' : 'bg-slate-200'}`} title="> 10000€: Sur devis" />
+                      </div>
+                      <div className="mt-1 flex justify-between text-[10px] text-slate-400">
+                        <span>500€/mois</span>
+                        <span>20%</span>
+                        <span>{lang === 'fr' ? 'Sur devis' : 'Quote'}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="mt-4 flex items-center justify-between text-sm">
-                    <span className="text-slate-600">{t.managementFee}</span>
-                    <span className="font-medium text-slate-900">
-                      {calculateManagementFee(domainId as 'google-ads' | 'paid-social', adBudgets[domainId as 'google-ads' | 'paid-social']).toLocaleString()}€/mois
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 mt-1">{t.managementFeeNote}</p>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Services */}
               <div className="space-y-8">
@@ -765,35 +810,6 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             </div>
           );
         })}
-
-        {/* Setup options */}
-        {selectedDomains.length > 0 && !selectedDomains.every(d => d === 'ai-solutions') && (
-          <div className="bg-white rounded-2xl border border-slate-200 p-8">
-            <h3 className="text-xl font-bold text-slate-900 mb-6">{t.additionalSetup}</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              {SETUP_OPTIONS.map(opt => (
-                <button
-                  key={opt.id}
-                  onClick={() => setSetupSelections(prev => ({ ...prev, [opt.id]: !prev[opt.id] }))}
-                  className={`p-4 rounded-xl border-2 text-left transition-all ${
-                    setupSelections[opt.id]
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-xl">{opt.icon}</span>
-                    <span className="font-semibold text-slate-900">
-                      {lang === 'fr' ? opt.nameFr : opt.name}
-                    </span>
-                    <span className="ml-auto font-bold text-slate-900">{opt.price}€</span>
-                  </div>
-                  <p className="text-sm text-slate-600">{lang === 'fr' ? opt.descriptionFr : opt.description}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Tracking & Reporting section - shown proactively when marketing services selected */}
         {needsTracking && (
@@ -915,57 +931,78 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             <h3 className="text-2xl font-bold mb-8">{t.summary}</h3>
 
             <div className="space-y-4 mb-8">
+              {/* Monthly services */}
               {pricing.monthlyTotal > 0 && (
                 <div className="flex justify-between">
                   <span className="text-slate-300">{t.monthlyServices}</span>
                   <span className="font-semibold">{pricing.monthlyTotal.toLocaleString()}€/mois</span>
                 </div>
               )}
+              {/* Management fees */}
               {pricing.managementFeesTotal > 0 && (
                 <div className="flex justify-between">
                   <span className="text-slate-300">{t.managementFees}</span>
-                  <span className="font-semibold">{pricing.managementFeesTotal.toLocaleString()}€/mois</span>
+                  <span className="font-semibold">
+                    {pricing.hasCustomQuote ? (
+                      <span className="text-amber-400">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
+                    ) : (
+                      <>{pricing.managementFeesTotal.toLocaleString()}€/mois</>
+                    )}
+                  </span>
                 </div>
               )}
-              {pricing.adBudgetTotal > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-slate-300">{t.adBudgetTotal}</span>
-                  <span className="font-semibold">{pricing.adBudgetTotal.toLocaleString()}€/mois</span>
-                </div>
-              )}
+              {/* Duration discount */}
               {pricing.discount > 0 && (
                 <div className="flex justify-between text-green-400">
                   <span>{t.discount} ({pricing.discountPercentage}%)</span>
                   <span>-{Math.round(pricing.discount).toLocaleString()}€/mois</span>
                 </div>
               )}
+              {/* One-off services */}
               {pricing.oneOffTotal > 0 && (
                 <div className="flex justify-between">
                   <span className="text-slate-300">{t.oneOffServices}</span>
                   <span className="font-semibold">{pricing.oneOffTotal.toLocaleString()}€</span>
                 </div>
               )}
-              {pricing.setupTotal > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-slate-300">{t.setupServices}</span>
-                  <span className="font-semibold">{pricing.setupTotal.toLocaleString()}€</span>
-                </div>
-              )}
+              {/* Tracking services */}
               {pricing.trackingTotal > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-slate-300">{t.trackingTitle}</span>
-                  <span className="font-semibold">{pricing.trackingTotal.toLocaleString()}€</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400 ml-4">↳ {t.trackingTitle}</span>
+                  <span className="text-slate-300">{pricing.trackingTotal.toLocaleString()}€</span>
                 </div>
               )}
+
+              {/* Separator for media budget */}
               <div className="border-t border-slate-700 pt-4">
+                {/* Media budget (shown separately) */}
+                {pricing.adBudgetTotal > 0 && (
+                  <div className="flex justify-between text-amber-300">
+                    <span>{t.adBudgetTotal} <span className="text-xs text-slate-400">({lang === 'fr' ? 'non inclus dans les frais' : 'not included in fees'})</span></span>
+                    <span className="font-semibold">{pricing.adBudgetTotal.toLocaleString()}€/mois</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Totals */}
+              <div className="border-t border-slate-700 pt-4 mt-4">
+                {/* Total without budget */}
                 <div className="flex justify-between text-lg">
-                  <span>{t.total} ({duration} {t.months})</span>
-                  <span className="font-bold">{Math.round(pricing.grandTotal).toLocaleString()}€</span>
+                  <span>{lang === 'fr' ? 'Total services' : 'Services total'} ({duration} {t.months})</span>
+                  <span className="font-bold">{Math.round(pricing.grandTotalWithoutBudget).toLocaleString()}€</span>
                 </div>
-                <div className="flex justify-between mt-2">
-                  <span className="text-slate-300">{t.effectiveMonthly}</span>
+                {/* Total with budget (if applicable) */}
+                {pricing.adBudgetTotal > 0 && (
+                  <div className="flex justify-between mt-2 text-sm text-slate-400">
+                    <span>{lang === 'fr' ? 'Avec budget média' : 'With media budget'}</span>
+                    <span>{Math.round(pricing.grandTotalWithBudget).toLocaleString()}€</span>
+                  </div>
+                )}
+                {/* Effective monthly */}
+                <div className="flex justify-between mt-4">
+                  <span className="text-slate-300">{t.effectiveMonthly} <span className="text-xs">({lang === 'fr' ? 'hors budget média' : 'excl. media budget'})</span></span>
                   <span className="text-2xl font-bold text-blue-400">
-                    {Math.round(pricing.effectiveMonthly).toLocaleString()}€/mois
+                    {Math.round(pricing.grandTotalWithoutBudget / duration).toLocaleString()}€/mois
                   </span>
                 </div>
               </div>
@@ -1080,6 +1117,175 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               >
                 {t.trackingPopupSkip}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Summary Popup */}
+      {showSummaryPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-center justify-between">
+              <h3 className="text-2xl font-bold text-slate-900">{t.summary}</h3>
+              <button
+                onClick={() => setShowSummaryPopup(false)}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* By department breakdown */}
+              {selectedDomains.map(domainId => {
+                const domain = domainConfigs[domainId];
+                if (domainId === 'ai-solutions') return null; // Skip AI Solutions
+
+                // Calculate domain total
+                let domainMonthly = 0;
+                let domainOneOff = 0;
+
+                domain.services.forEach(service => {
+                  const selectedLevel = selections[service.id];
+                  if (selectedLevel !== null && selectedLevel !== undefined && !disabledServices[service.id]) {
+                    const level = service.levels[selectedLevel];
+                    if (level) {
+                      if (service.isOneOff) domainOneOff += level.price;
+                      else domainMonthly += level.price;
+                    }
+                  }
+                });
+
+                // Add management fee for ads domains
+                let domainManagementFee = 0;
+                if (domain.hasTieredManagementFee && domain.hasBudgetSlider) {
+                  const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
+                  const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
+                  domainManagementFee = feeResult.fee;
+                }
+
+                // Skip if no services selected
+                if (domainMonthly === 0 && domainOneOff === 0 && domainManagementFee === 0 && domainId !== 'ai-training') return null;
+
+                return (
+                  <div key={domainId} className="bg-slate-50 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-2xl">{domain.icon}</span>
+                      <h4 className="font-bold text-slate-900">{lang === 'fr' ? domain.nameFr : domain.name}</h4>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      {domain.services.map(service => {
+                        const selectedLevel = selections[service.id];
+                        if (selectedLevel === null || selectedLevel === undefined || disabledServices[service.id]) return null;
+                        const level = service.levels[selectedLevel];
+                        if (!level) return null;
+                        return (
+                          <div key={service.id} className="flex justify-between text-slate-600">
+                            <span>{service.title} - {level.name}</span>
+                            <span>{level.price}€{service.isOneOff ? '' : '/mois'}</span>
+                          </div>
+                        );
+                      })}
+                      {domainManagementFee > 0 && (
+                        <div className="flex justify-between text-slate-600">
+                          <span>{t.managementFee}</span>
+                          <span>{domainManagementFee}€/mois</span>
+                        </div>
+                      )}
+                      {domainId === 'ai-training' && selectedDomains.includes('ai-training') && (
+                        <div className="flex justify-between text-slate-600">
+                          <span>{aiTraining.format === 'full-day' ? t.fullDay : t.halfDay} × {aiTraining.sessions === '5+' ? '5' : '1'}</span>
+                          <span>
+                            {(() => {
+                              const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
+                              const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
+                              const multiplier = aiTraining.sessions === '5+' ? 5 : 1;
+                              return (base * multiplier).toLocaleString();
+                            })()}€
+                          </span>
+                        </div>
+                      )}
+                      {domainId === 'ai-training' && aiTraining.inPerson && (
+                        <div className="flex justify-between text-slate-600">
+                          <span>{t.travelCost}</span>
+                          <span>{aiTraining.travelCost}€</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Tracking services */}
+              {(pricing.trackingTotal > 0) && (
+                <div className="bg-cyan-50 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">📊</span>
+                    <h4 className="font-bold text-slate-900">{t.trackingTitle}</h4>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    {trackingAudit && (
+                      <div className="flex justify-between text-slate-600">
+                        <span>{lang === 'fr' ? trackingAuditOption.titleFr : trackingAuditOption.title}</span>
+                        <span>{trackingAuditOption.price}€</span>
+                      </div>
+                    )}
+                    {trackingServices.filter(s => trackingSelections[s.id]).map(service => (
+                      <div key={service.id} className="flex justify-between text-slate-600">
+                        <span>{lang === 'fr' ? service.titleFr : service.title}</span>
+                        <span>{service.price}€</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Totals */}
+              <div className="bg-gradient-to-br from-slate-900 to-blue-900 rounded-xl p-6 text-white">
+                <div className="space-y-3">
+                  {pricing.monthlyTotal + pricing.managementFeesTotal > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-300">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</span>
+                      <span className="font-semibold">{Math.round(pricing.monthlyAfterDiscount).toLocaleString()}€/mois</span>
+                    </div>
+                  )}
+                  {pricing.oneOffTotal > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-300">One-off</span>
+                      <span className="font-semibold">{pricing.oneOffTotal.toLocaleString()}€</span>
+                    </div>
+                  )}
+                  {pricing.adBudgetTotal > 0 && (
+                    <div className="flex justify-between text-amber-300">
+                      <span>{t.adBudgetTotal}</span>
+                      <span className="font-semibold">{pricing.adBudgetTotal.toLocaleString()}€/mois</span>
+                    </div>
+                  )}
+                  <div className="border-t border-slate-700 pt-3 mt-3">
+                    <div className="flex justify-between text-xl">
+                      <span>Total ({duration} {t.months})</span>
+                      <span className="font-bold">{Math.round(pricing.grandTotalWithoutBudget).toLocaleString()}€</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Email report button */}
+              <div className="text-center">
+                <button
+                  onClick={() => {
+                    setShowSummaryPopup(false);
+                    // Scroll to contact form
+                    const form = document.querySelector('form');
+                    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }}
+                  className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+                >
+                  {lang === 'fr' ? 'Recevoir ce récap par email' : 'Receive this summary by email'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

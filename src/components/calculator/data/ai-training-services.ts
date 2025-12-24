@@ -55,11 +55,13 @@ export const aiTrainingPricing = {
       nameFr: 'Demi-journée'
     }
   },
-  // In-person travel cost estimate
+  // In-person travel cost estimate (one-off fee)
   travelCost: {
-    default: 300, // Default travel estimate
-    description: 'Estimated travel cost (adjusted based on location)',
-    descriptionFr: 'Frais de déplacement estimés (ajustés selon la localisation)'
+    min: 300,
+    max: 700,
+    default: 500,
+    description: 'One-off travel fee based on client location (300€ nearby, 700€ if hotel required)',
+    descriptionFr: 'Frais de déplacement unique selon localisation (300€ proche, 700€ si hôtel nécessaire)'
   }
 };
 

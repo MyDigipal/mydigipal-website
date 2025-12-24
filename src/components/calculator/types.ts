@@ -52,10 +52,8 @@ export interface DomainConfig {
   services: ServiceItem[];
   // For domains with budget slider
   hasBudgetSlider?: boolean;
-  managementFee?: {
-    percentage: number;
-    minimum: number;
-  };
+  // For domains with tiered management fee (< 2500€ = 500€, 2500-10000€ = 20%, > 10000€ = custom)
+  hasTieredManagementFee?: boolean;
 }
 
 // AI Training specific types
