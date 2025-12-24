@@ -4,7 +4,9 @@ export const googleAdsServices: ServiceItem[] = [
   {
     id: 'ads-audit',
     title: 'A. Audit Google Ads',
+    titleEn: 'A. Google Ads Audit',
     description: 'Analyse complète de vos campagnes existantes pour identifier les optimisations et opportunités.',
+    descriptionEn: 'Complete analysis of your existing campaigns to identify optimizations and opportunities.',
     icon: '🔍',
     isOneOff: true,
     detailedInfo: {
@@ -40,15 +42,21 @@ export const googleAdsServices: ServiceItem[] = [
     levels: [
       {
         name: 'Basic',
+        nameEn: 'Basic',
         price: 300,
         features: ['Analyse de la structure', 'Audit des mots-clés', 'Recommandations générales'],
-        recommended: 'Comptes < 2000€/mois'
+        featuresEn: ['Structure analysis', 'Keyword audit', 'General recommendations'],
+        recommended: 'Comptes < 2000€/mois',
+        recommendedEn: 'Accounts < €2000/mo'
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 500,
         features: ['Analyse complète', 'Étude concurrentielle', 'Audit des conversions', 'Plan d\'action priorisé'],
+        featuresEn: ['Complete analysis', 'Competitive study', 'Conversion audit', 'Prioritized action plan'],
         recommended: 'Comptes > 2000€/mois',
+        recommendedEn: 'Accounts > €2000/mo',
         popular: true
       }
     ]
@@ -56,7 +64,9 @@ export const googleAdsServices: ServiceItem[] = [
   {
     id: 'ads-setup',
     title: 'B. Setup de Campagnes',
+    titleEn: 'B. Campaign Setup',
     description: 'Création et configuration de vos campagnes Google Ads avec une structure optimisée dès le départ.',
+    descriptionEn: 'Creation and configuration of your Google Ads campaigns with an optimized structure from the start.',
     icon: '⚙️',
     isOneOff: true,
     detailedInfo: {
@@ -91,29 +101,40 @@ export const googleAdsServices: ServiceItem[] = [
     levels: [
       {
         name: 'Essentiel',
+        nameEn: 'Essential',
         price: 400,
         features: ['1-2 campagnes Search', 'Recherche mots-clés', '3 groupes d\'annonces', 'Suivi conversions basique'],
-        recommended: 'Démarrage simple'
+        featuresEn: ['1-2 Search campaigns', 'Keyword research', '3 ad groups', 'Basic conversion tracking'],
+        recommended: 'Démarrage simple',
+        recommendedEn: 'Simple start'
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 700,
         features: ['3-5 campagnes Search', 'Recherche approfondie', 'Extensions complètes', 'Remarketing basique'],
+        featuresEn: ['3-5 Search campaigns', 'In-depth research', 'Complete extensions', 'Basic remarketing'],
         recommended: 'Stratégie complète',
+        recommendedEn: 'Complete strategy',
         popular: true
       },
       {
         name: 'Premium',
+        nameEn: 'Premium',
         price: 1200,
         features: ['Campagnes Search + Display', 'YouTube Ads', 'Remarketing avancé', 'Audiences personnalisées', 'A/B testing'],
-        recommended: 'Présence multi-canal'
+        featuresEn: ['Search + Display campaigns', 'YouTube Ads', 'Advanced remarketing', 'Custom audiences', 'A/B testing'],
+        recommended: 'Présence multi-canal',
+        recommendedEn: 'Multi-channel presence'
       }
     ]
   },
   {
     id: 'ads-management',
     title: 'C. Gestion Mensuelle',
+    titleEn: 'C. Monthly Management',
     description: 'Optimisation continue de vos campagnes pour maximiser votre ROI publicitaire.',
+    descriptionEn: 'Continuous optimization of your campaigns to maximize your advertising ROI.',
     icon: '📈',
     hasBudgetFee: true,
     detailedInfo: {
@@ -148,24 +169,33 @@ export const googleAdsServices: ServiceItem[] = [
     levels: [
       {
         name: 'Essentiel',
+        nameEn: 'Essential',
         price: 0,
         features: ['Optimisations hebdomadaires', 'Ajustement des enchères', 'Rapport mensuel'],
+        featuresEn: ['Weekly optimizations', 'Bid adjustments', 'Monthly report'],
         recommended: 'Budgets < 3000€/mois',
+        recommendedEn: 'Budgets < €3000/mo',
         budgetBased: true
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 200,
         features: ['Optimisations bi-hebdomadaires', 'Tests A/B continus', 'Rapport détaillé', '1 call/mois'],
+        featuresEn: ['Bi-weekly optimizations', 'Continuous A/B tests', 'Detailed report', '1 call/month'],
         recommended: 'Budgets 3000-10000€/mois',
+        recommendedEn: 'Budgets €3000-10000/mo',
         popular: true,
         budgetBased: true
       },
       {
         name: 'Premium',
+        nameEn: 'Premium',
         price: 400,
         features: ['Optimisations continues', 'Stratégies avancées', 'Reporting personnalisé', '2 calls/mois', 'Support prioritaire'],
+        featuresEn: ['Continuous optimizations', 'Advanced strategies', 'Custom reporting', '2 calls/month', 'Priority support'],
         recommended: 'Budgets > 10000€/mois',
+        recommendedEn: 'Budgets > €10000/mo',
         budgetBased: true
       }
     ]
@@ -173,7 +203,9 @@ export const googleAdsServices: ServiceItem[] = [
   {
     id: 'ads-reporting',
     title: 'D. Reporting & Analytics',
+    titleEn: 'D. Reporting & Analytics',
     description: 'Dashboards personnalisés et analyses approfondies pour piloter vos investissements.',
+    descriptionEn: 'Custom dashboards and in-depth analytics to drive your investments.',
     icon: '📊',
     detailedInfo: {
       title: 'Reporting & Analytics - C\'est quoi exactement ?',
@@ -205,22 +237,31 @@ export const googleAdsServices: ServiceItem[] = [
     levels: [
       {
         name: 'Essentiel',
+        nameEn: 'Essential',
         price: 150,
         features: ['Dashboard Looker Studio', 'Métriques clés Google Ads', 'Mise à jour automatique'],
-        recommended: 'Suivi basique'
+        featuresEn: ['Looker Studio dashboard', 'Key Google Ads metrics', 'Auto-update'],
+        recommended: 'Suivi basique',
+        recommendedEn: 'Basic tracking'
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 300,
         features: ['Dashboard multi-sources', 'Analytics + Ads intégrés', 'Segments personnalisés', 'Alertes email'],
+        featuresEn: ['Multi-source dashboard', 'Analytics + Ads integrated', 'Custom segments', 'Email alerts'],
         recommended: 'Vision complète',
+        recommendedEn: 'Complete overview',
         popular: true
       },
       {
         name: 'Premium',
+        nameEn: 'Premium',
         price: 500,
         features: ['Dashboard sur-mesure', 'Intégration CRM', 'Attribution avancée', 'Formation équipe', 'Modifications illimitées'],
-        recommended: 'Data-driven'
+        featuresEn: ['Custom dashboard', 'CRM integration', 'Advanced attribution', 'Team training', 'Unlimited modifications'],
+        recommended: 'Data-driven',
+        recommendedEn: 'Data-driven'
       }
     ]
   }

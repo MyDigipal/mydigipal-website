@@ -4,7 +4,9 @@ export const paidSocialServices: ServiceItem[] = [
   {
     id: 'social-audit',
     title: 'A. Audit Social Ads',
+    titleEn: 'A. Social Ads Audit',
     description: 'Analyse de vos campagnes Meta, LinkedIn ou TikTok existantes pour identifier les optimisations.',
+    descriptionEn: 'Analysis of your existing Meta, LinkedIn or TikTok campaigns to identify optimizations.',
     icon: '🔍',
     isOneOff: true,
     detailedInfo: {
@@ -39,15 +41,21 @@ export const paidSocialServices: ServiceItem[] = [
     levels: [
       {
         name: 'Basic',
+        nameEn: 'Basic',
         price: 300,
         features: ['Audit 1 plateforme', 'Analyse des performances', 'Recommandations générales'],
-        recommended: 'Une seule plateforme'
+        featuresEn: ['1 platform audit', 'Performance analysis', 'General recommendations'],
+        recommended: 'Une seule plateforme',
+        recommendedEn: 'Single platform'
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 500,
         features: ['Audit multi-plateformes', 'Analyse des audiences', 'Benchmark concurrentiel', 'Plan d\'action priorisé'],
+        featuresEn: ['Multi-platform audit', 'Audience analysis', 'Competitive benchmark', 'Prioritized action plan'],
         recommended: 'Présence multi-canal',
+        recommendedEn: 'Multi-channel presence',
         popular: true
       }
     ]
@@ -55,7 +63,9 @@ export const paidSocialServices: ServiceItem[] = [
   {
     id: 'social-setup',
     title: 'B. Setup de Campagnes',
+    titleEn: 'B. Campaign Setup',
     description: 'Configuration complète de vos campagnes publicitaires sur les réseaux sociaux.',
+    descriptionEn: 'Complete setup of your social media advertising campaigns.',
     icon: '⚙️',
     isOneOff: true,
     detailedInfo: {
@@ -89,29 +99,40 @@ export const paidSocialServices: ServiceItem[] = [
     levels: [
       {
         name: 'Essentiel',
+        nameEn: 'Essential',
         price: 400,
         features: ['1 plateforme', '2-3 campagnes', 'Audiences de base', 'Pixel configuré'],
-        recommended: 'Démarrage sur les socials'
+        featuresEn: ['1 platform', '2-3 campaigns', 'Basic audiences', 'Pixel configured'],
+        recommended: 'Démarrage sur les socials',
+        recommendedEn: 'Getting started on social'
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 700,
         features: ['2 plateformes', '4-6 campagnes', 'Audiences avancées', 'Retargeting'],
+        featuresEn: ['2 platforms', '4-6 campaigns', 'Advanced audiences', 'Retargeting'],
         recommended: 'Stratégie complète',
+        recommendedEn: 'Complete strategy',
         popular: true
       },
       {
         name: 'Premium',
+        nameEn: 'Premium',
         price: 1200,
         features: ['3+ plateformes', 'Campagnes illimitées', 'Audiences sur-mesure', 'Dynamic Ads', 'Tests A/B'],
-        recommended: 'Présence maximale'
+        featuresEn: ['3+ platforms', 'Unlimited campaigns', 'Custom audiences', 'Dynamic Ads', 'A/B tests'],
+        recommended: 'Présence maximale',
+        recommendedEn: 'Maximum presence'
       }
     ]
   },
   {
     id: 'social-management',
     title: 'C. Gestion Mensuelle',
+    titleEn: 'C. Monthly Management',
     description: 'Optimisation continue de vos campagnes pour maximiser votre retour sur investissement.',
+    descriptionEn: 'Continuous optimization of your campaigns to maximize your return on investment.',
     icon: '📈',
     hasBudgetFee: true,
     detailedInfo: {
@@ -146,24 +167,33 @@ export const paidSocialServices: ServiceItem[] = [
     levels: [
       {
         name: 'Essentiel',
+        nameEn: 'Essential',
         price: 0,
         features: ['Optimisations hebdomadaires', 'Gestion des budgets', 'Rapport mensuel'],
+        featuresEn: ['Weekly optimizations', 'Budget management', 'Monthly report'],
         recommended: 'Budgets < 3000€/mois',
+        recommendedEn: 'Budgets < €3000/mo',
         budgetBased: true
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 200,
         features: ['Optimisations bi-hebdomadaires', 'Tests créatives', 'Rapport détaillé', '1 call/mois'],
+        featuresEn: ['Bi-weekly optimizations', 'Creative tests', 'Detailed report', '1 call/month'],
         recommended: 'Budgets 3000-10000€/mois',
+        recommendedEn: 'Budgets €3000-10000/mo',
         popular: true,
         budgetBased: true
       },
       {
         name: 'Premium',
+        nameEn: 'Premium',
         price: 400,
         features: ['Optimisations continues', 'Stratégie créative', 'Reporting personnalisé', '2 calls/mois', 'Support prioritaire'],
+        featuresEn: ['Continuous optimizations', 'Creative strategy', 'Custom reporting', '2 calls/month', 'Priority support'],
         recommended: 'Budgets > 10000€/mois',
+        recommendedEn: 'Budgets > €10000/mo',
         budgetBased: true
       }
     ]
@@ -171,7 +201,9 @@ export const paidSocialServices: ServiceItem[] = [
   {
     id: 'social-creatives',
     title: 'D. Création de Visuels',
+    titleEn: 'D. Visual Creation',
     description: 'Production de visuels et vidéos publicitaires optimisés pour les réseaux sociaux.',
+    descriptionEn: 'Production of visuals and ad videos optimized for social media.',
     icon: '🎨',
     detailedInfo: {
       title: 'Création de Visuels - C\'est quoi exactement ?',
@@ -203,22 +235,31 @@ export const paidSocialServices: ServiceItem[] = [
     levels: [
       {
         name: 'Essentiel',
+        nameEn: 'Essential',
         price: 300,
         features: ['5 visuels statiques', 'Formats adaptés', 'Révisions incluses'],
-        recommended: 'Besoins ponctuels'
+        featuresEn: ['5 static visuals', 'Adapted formats', 'Revisions included'],
+        recommended: 'Besoins ponctuels',
+        recommendedEn: 'Occasional needs'
       },
       {
         name: 'Avancé',
+        nameEn: 'Advanced',
         price: 600,
         features: ['10 visuels + 2 vidéos', 'Déclinaisons formats', 'Direction artistique'],
+        featuresEn: ['10 visuals + 2 videos', 'Format variations', 'Art direction'],
         recommended: 'Campagnes régulières',
+        recommendedEn: 'Regular campaigns',
         popular: true
       },
       {
         name: 'Premium',
+        nameEn: 'Premium',
         price: 1200,
         features: ['20 visuels + 5 vidéos', 'UGC-style', 'Motion design', 'Refresh mensuel'],
-        recommended: 'Volume important'
+        featuresEn: ['20 visuals + 5 videos', 'UGC-style', 'Motion design', 'Monthly refresh'],
+        recommended: 'Volume important',
+        recommendedEn: 'High volume'
       }
     ]
   }

@@ -368,6 +368,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     };
 
     try {
+      // DEBUG: Log payload to console for debugging
+      console.log('📤 Sending webhook payload:', JSON.stringify(payload, null, 2));
+      console.log('📤 Webhook URL:', 'https://n8n.mydigipal.com:5678/webhook/calculateur-marketing');
+
       const response = await fetch('https://n8n.mydigipal.com:5678/webhook/calculateur-marketing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -375,10 +379,15 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         body: JSON.stringify(payload)
       });
 
+      console.log('📥 Webhook response:', response.status, response.statusText);
+
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        const errorText = await response.text().catch(() => 'Unable to read response');
+        console.error('📥 Error response body:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
+      console.log('✅ Webhook success!');
       setSubmitted(true);
     } catch (error) {
       console.error('Form submission error:', error);
@@ -880,7 +889,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                             <div className="flex justify-between mt-2">
                               <span className="text-sm text-slate-500">{BUDGET_CONFIG.min}€</span>
                               <span className="text-xl font-bold text-slate-900">
-                                {budget.toLocaleString()}€/mois
+                                {budget.toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}
                               </span>
                               <span className="text-sm text-slate-500">{BUDGET_CONFIG.max.toLocaleString()}€</span>
                             </div>
@@ -892,17 +901,17 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                   {feeResult.isCustomQuote ? (
                                     <span className="text-amber-600">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
                                   ) : (
-                                    <>{Math.round(feeResult.fee).toLocaleString()}€/mois</>
+                                    <>{Math.round(feeResult.fee).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</>
                                   )}
                                 </span>
                               </div>
                               <p className="text-xs text-slate-500">{feeDescription}</p>
                               {/* 4-tier indicators */}
                               <div className="mt-3 flex gap-1">
-                                <div className={`flex-1 h-1.5 rounded-full ${budget < 2500 ? colors.bg : 'bg-slate-200'}`} title="< 2500€: 500€/mois" />
+                                <div className={`flex-1 h-1.5 rounded-full ${budget < 2500 ? colors.bg : 'bg-slate-200'}`} title={lang === 'fr' ? '< 2500€: 500€/mois' : '< 2500€: 500€/mo'} />
                                 <div className={`flex-1 h-1.5 rounded-full ${budget >= 2500 && budget < 7500 ? colors.bg : 'bg-slate-200'}`} title="2500€-7500€: 20%" />
                                 <div className={`flex-1 h-1.5 rounded-full ${budget >= 7500 && budget < 12500 ? colors.bg : 'bg-slate-200'}`} title="7500€-12500€: 15%" />
-                                <div className={`flex-1 h-1.5 rounded-full ${budget >= 12500 ? 'bg-amber-500' : 'bg-slate-200'}`} title="> 12500€: Sur devis" />
+                                <div className={`flex-1 h-1.5 rounded-full ${budget >= 12500 ? 'bg-amber-500' : 'bg-slate-200'}`} title={lang === 'fr' ? '> 12500€: Sur devis' : '> 12500€: Custom'} />
                               </div>
                               <div className="mt-1 flex justify-between text-[10px] text-slate-400">
                                 <span>500€</span>
@@ -930,7 +939,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                   <span className="text-2xl">{service.icon}</span>
                                   <div>
                                     <div className="flex items-center gap-1">
-                                      <h3 className="font-bold text-slate-900">{service.title}</h3>
+                                      <h3 className="font-bold text-slate-900">{lang === 'fr' ? service.title : (service.titleEn || service.title)}</h3>
                                       {service.detailedInfo && (
                                         <Tooltip
                                           content={service.detailedInfo.content.intro}
@@ -939,7 +948,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                         />
                                       )}
                                     </div>
-                                    <p className="text-sm text-slate-600">{service.description}</p>
+                                    <p className="text-sm text-slate-600">{lang === 'fr' ? service.description : (service.descriptionEn || service.description)}</p>
                                   </div>
                                 </div>
                               </div>
@@ -968,9 +977,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                         <span className="text-xs text-slate-500">{t.perMonth}</span>
                                       )}
                                     </div>
-                                    <div className="font-medium text-slate-900 mb-2">{level.name}</div>
+                                    <div className="font-medium text-slate-900 mb-2">{lang === 'fr' ? level.name : (level.nameEn || level.name)}</div>
                                     <ul className="space-y-1">
-                                      {level.features.slice(0, 3).map((feature, i) => (
+                                      {(lang === 'fr' ? level.features : (level.featuresEn || level.features)).slice(0, 3).map((feature, i) => (
                                         <li key={i} className="text-xs text-slate-600 flex items-start gap-1">
                                           <span className={`${colors.text} mt-0.5`}>•</span>
                                           {feature}
@@ -1144,7 +1153,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                     {pricing.hasCustomQuote ? (
                       <span className="text-amber-400">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
                     ) : (
-                      <>{(pricing.monthlyTotal + pricing.managementFeesTotal).toLocaleString()}€/mois</>
+                      <>{(pricing.monthlyTotal + pricing.managementFeesTotal).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</>
                     )}
                   </span>
                 </div>
@@ -1153,7 +1162,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               {pricing.discount > 0 && (
                 <div className="flex justify-between text-green-400">
                   <span>{t.discount} ({pricing.discountPercentage}%)</span>
-                  <span>-{Math.round(pricing.discount).toLocaleString()}€/mois</span>
+                  <span>-{Math.round(pricing.discount).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
                 </div>
               )}
               {/* One-off services */}
@@ -1177,7 +1186,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 {pricing.adBudgetTotal > 0 && (
                   <div className="flex justify-between text-amber-300">
                     <span>{t.adBudgetTotal} <span className="text-xs text-slate-400">({lang === 'fr' ? 'non inclus dans les frais' : 'not included in fees'})</span></span>
-                    <span className="font-semibold">{pricing.adBudgetTotal.toLocaleString()}€/mois</span>
+                    <span className="font-semibold">{pricing.adBudgetTotal.toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
                   </div>
                 )}
               </div>
@@ -1200,7 +1209,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 <div className="flex justify-between mt-4">
                   <span className="text-slate-300">{t.effectiveMonthly} <span className="text-xs">({lang === 'fr' ? 'hors budget média' : 'excl. media budget'})</span></span>
                   <span className="text-2xl font-bold text-blue-400">
-                    {Math.round(pricing.grandTotalWithoutBudget / duration).toLocaleString()}€/mois
+                    {Math.round(pricing.grandTotalWithoutBudget / duration).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}
                   </span>
                 </div>
               </div>
@@ -1389,15 +1398,15 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         if (!level) return null;
                         return (
                           <div key={service.id} className="flex justify-between text-slate-600">
-                            <span>{service.title} - {level.name}</span>
-                            <span>{level.price}€{service.isOneOff ? '' : '/mois'}</span>
+                            <span>{lang === 'fr' ? service.title : (service.titleEn || service.title)} - {lang === 'fr' ? level.name : (level.nameEn || level.name)}</span>
+                            <span>{level.price}€{service.isOneOff ? '' : (lang === 'fr' ? '/mois' : '/mo')}</span>
                           </div>
                         );
                       })}
                       {domainManagementFee > 0 && (
                         <div className="flex justify-between text-slate-600">
                           <span>{t.managementFee}</span>
-                          <span>{Math.round(domainManagementFee).toLocaleString()}€/mois</span>
+                          <span>{Math.round(domainManagementFee).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
                         </div>
                       )}
                       {domainId === 'ai-training' && selectedDomains.includes('ai-training') && (
@@ -1423,8 +1432,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                       <div className={`flex justify-between pt-2 mt-2 border-t border-slate-200 font-semibold ${colors.text}`}>
                         <span>{t.departmentTotal}</span>
                         <div className="text-right">
-                          {totalMonthly > 0 && <div>{Math.round(totalMonthly).toLocaleString()}€/mois</div>}
-                          {totalOneOff > 0 && <div>{Math.round(totalOneOff).toLocaleString()}€ one-off</div>}
+                          {totalMonthly > 0 && <div>{Math.round(totalMonthly).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</div>}
+                          {totalOneOff > 0 && <div>{Math.round(totalOneOff).toLocaleString()}€ {lang === 'fr' ? 'unique' : 'one-off'}</div>}
                         </div>
                       </div>
                     </div>
@@ -1462,7 +1471,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   {pricing.monthlyTotal + pricing.managementFeesTotal > 0 && (
                     <div className="flex justify-between">
                       <span className="text-slate-300">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</span>
-                      <span className="font-semibold">{Math.round(pricing.monthlyAfterDiscount).toLocaleString()}€/mois</span>
+                      <span className="font-semibold">{Math.round(pricing.monthlyAfterDiscount).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
                     </div>
                   )}
                   {pricing.oneOffTotal > 0 && (
@@ -1474,7 +1483,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   {pricing.adBudgetTotal > 0 && (
                     <div className="flex justify-between text-amber-300">
                       <span>{t.adBudgetTotal}</span>
-                      <span className="font-semibold">{pricing.adBudgetTotal.toLocaleString()}€/mois</span>
+                      <span className="font-semibold">{pricing.adBudgetTotal.toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
                     </div>
                   )}
                   <div className="border-t border-slate-700 pt-3 mt-3">
