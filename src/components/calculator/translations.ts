@@ -23,7 +23,7 @@ export const translations = {
     // Budget
     adBudget: 'Monthly ad budget',
     managementFee: 'Management fee',
-    managementFeeNote: '15% of budget (min. €300/month)',
+    managementFeeNote: '20% of budget (min. €300/month)',
 
     // AI Training
     aiTrainingFormat: 'Training format',
@@ -89,7 +89,18 @@ export const translations = {
 
     // Sticky CTA
     getQuote: 'Get your quote',
-    estimatedMonthly: 'From'
+    estimatedMonthly: 'From',
+
+    // Tracking section
+    trackingTitle: 'Tracking & Reporting',
+    trackingSubtitle: 'Measure, analyze, and optimize your marketing performance',
+    trackingRecommended: 'Recommended',
+    trackingAuditTitle: 'Not sure about your tracking?',
+    trackingPopupTitle: 'Don\'t forget your tracking!',
+    trackingPopupMessage: 'You\'ve selected marketing services but no tracking setup. Without proper tracking, you won\'t be able to measure your ROI or optimize your campaigns effectively.',
+    trackingPopupAdd: 'Add tracking to my quote',
+    trackingPopupSkip: 'Continue without tracking',
+    whyImportant: 'Why is this important?'
   },
   fr: {
     // Page title
@@ -115,7 +126,7 @@ export const translations = {
     // Budget
     adBudget: 'Budget publicitaire mensuel',
     managementFee: 'Frais de gestion',
-    managementFeeNote: '15% du budget (min. 300€/mois)',
+    managementFeeNote: '20% du budget (min. 300€/mois)',
 
     // AI Training
     aiTrainingFormat: 'Format de formation',
@@ -181,7 +192,18 @@ export const translations = {
 
     // Sticky CTA
     getQuote: 'Obtenir un devis',
-    estimatedMonthly: 'À partir de'
+    estimatedMonthly: 'À partir de',
+
+    // Tracking section
+    trackingTitle: 'Tracking & Reporting',
+    trackingSubtitle: 'Mesurez, analysez et optimisez vos performances marketing',
+    trackingRecommended: 'Recommandé',
+    trackingAuditTitle: 'Pas sûr de votre tracking ?',
+    trackingPopupTitle: 'N\'oubliez pas votre tracking !',
+    trackingPopupMessage: 'Vous avez sélectionné des services marketing mais pas de tracking. Sans tracking correct, vous ne pourrez pas mesurer votre ROI ni optimiser vos campagnes efficacement.',
+    trackingPopupAdd: 'Ajouter le tracking à mon devis',
+    trackingPopupSkip: 'Continuer sans tracking',
+    whyImportant: 'Pourquoi c\'est important ?'
   }
 } as const;
 

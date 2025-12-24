@@ -11,7 +11,11 @@ import {
   halfDayFeatures,
   fullDayAdditionalFeatures,
   aiSolutionsQuestions,
-  aiSolutionsUseCases
+  aiSolutionsUseCases,
+  trackingAuditOption,
+  trackingServices,
+  trackingPopupContent,
+  servicesThatNeedTracking
 } from './data';
 import { translations } from './translations';
 
@@ -39,6 +43,54 @@ const ArrowLeft = () => (
     <polyline points="12,19 5,12 12,5"></polyline>
   </svg>
 );
+
+const InfoIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="12" y1="16" x2="12" y2="12"></line>
+    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+);
+
+// Tooltip component
+const Tooltip = ({ content, whyImportant, lang }: { content: string; whyImportant?: string; lang: 'en' | 'fr' }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  return (
+    <div className="relative inline-block">
+      <button
+        type="button"
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        onClick={(e) => { e.stopPropagation(); setIsVisible(!isVisible); }}
+        className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
+      >
+        <InfoIcon />
+      </button>
+      {isVisible && (
+        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-4 bg-slate-900 text-white text-sm rounded-xl shadow-xl">
+          <div className="mb-2">{content}</div>
+          {whyImportant && (
+            <div className="pt-2 border-t border-slate-700">
+              <span className="text-blue-400 font-medium text-xs block mb-1">
+                {lang === 'fr' ? 'Pourquoi c\'est important ?' : 'Why is this important?'}
+              </span>
+              <span className="text-slate-300">{whyImportant}</span>
+            </div>
+          )}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full border-8 border-transparent border-t-slate-900"></div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function Calculator({ lang = 'fr', preselectedDomain }: CalculatorProps) {
   const t = translations[lang];
@@ -79,6 +131,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const [contact, setContact] = useState<ContactInfo>({ name: '', email: '', company: '', phone: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  // Tracking state
+  const [trackingSelections, setTrackingSelections] = useState<Record<string, boolean>>({});
+  const [trackingAudit, setTrackingAudit] = useState(false);
+  const [showTrackingPopup, setShowTrackingPopup] = useState(false);
+  const [trackingPopupDismissed, setTrackingPopupDismissed] = useState(false);
 
   // Toggle domain selection
   const toggleDomain = useCallback((domain: ServiceDomain) => {
@@ -167,6 +225,18 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       }
     });
 
+    // Tracking services
+    let trackingTotal = 0;
+    if (trackingAudit) {
+      trackingTotal += trackingAuditOption.price;
+    }
+    trackingServices.forEach(service => {
+      if (trackingSelections[service.id]) {
+        trackingTotal += service.price;
+      }
+    });
+    oneOffTotal += trackingTotal;
+
     // Duration discount
     const durationConfig = DURATION_CONFIG.options.find(d => d.months === duration);
     const discountPercentage = durationConfig?.discount || 0;
@@ -185,6 +255,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       adBudgetTotal,
       managementFeesTotal,
       setupTotal,
+      trackingTotal,
       discount,
       discountPercentage,
       monthlyAfterDiscount,
@@ -192,7 +263,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       grandTotal,
       effectiveMonthly
     };
-  }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, setupSelections, duration]);
+  }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, setupSelections, trackingSelections, trackingAudit, duration]);
 
   // Check if any service is selected
   const hasSelections = useMemo(() => {
@@ -201,10 +272,27 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     return Object.values(selections).some(v => v !== null);
   }, [selectedDomains, selections]);
 
+  // Check if user needs tracking (has marketing services selected)
+  const needsTracking = useMemo(() => {
+    return selectedDomains.some(d => servicesThatNeedTracking.includes(d));
+  }, [selectedDomains]);
+
+  // Check if user has any tracking selected
+  const hasTrackingSelected = useMemo(() => {
+    if (trackingAudit) return true;
+    return Object.values(trackingSelections).some(v => v);
+  }, [trackingAudit, trackingSelections]);
+
   // Submit handler
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
+
+    // Show tracking popup if user needs tracking but hasn't selected any
+    if (needsTracking && !hasTrackingSelected && !trackingPopupDismissed) {
+      setShowTrackingPopup(true);
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -220,6 +308,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       pricing,
       duration,
       setupSelections,
+      trackingSelections: Object.fromEntries(
+        Object.entries(trackingSelections).filter(([_, v]) => v)
+      ),
+      trackingAudit,
       cmsAddon,
       metadata: {
         timestamp: new Date().toISOString(),
@@ -241,7 +333,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     } finally {
       setIsSubmitting(false);
     }
-  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, setupSelections, cmsAddon, lang, isSubmitting]);
+  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, setupSelections, trackingSelections, trackingAudit, cmsAddon, lang, isSubmitting, needsTracking, hasTrackingSelected, trackingPopupDismissed]);
 
   // Domain selection step
   if (step === 'domains') {
@@ -603,7 +695,16 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         <div className="flex items-center gap-3">
                           <span className="text-2xl">{service.icon}</span>
                           <div>
-                            <h3 className="font-bold text-slate-900">{service.title}</h3>
+                            <div className="flex items-center gap-1">
+                              <h3 className="font-bold text-slate-900">{service.title}</h3>
+                              {service.detailedInfo && (
+                                <Tooltip
+                                  content={service.detailedInfo.content.intro}
+                                  whyImportant={service.detailedInfo.content.conclusion}
+                                  lang={lang}
+                                />
+                              )}
+                            </div>
                             <p className="text-sm text-slate-600">{service.description}</p>
                           </div>
                         </div>
@@ -694,6 +795,93 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           </div>
         )}
 
+        {/* Tracking & Reporting section - shown proactively when marketing services selected */}
+        {needsTracking && (
+          <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-2xl border-2 border-cyan-200 p-8">
+            <div className="flex items-center gap-4 mb-6">
+              <span className="text-4xl">📊</span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-slate-900">{t.trackingTitle}</h2>
+                  <span className="px-2 py-1 bg-cyan-500 text-white text-xs font-bold rounded-full">
+                    {t.trackingRecommended}
+                  </span>
+                </div>
+                <p className="text-slate-600">{t.trackingSubtitle}</p>
+              </div>
+            </div>
+
+            {/* Audit option at the top */}
+            <button
+              onClick={() => setTrackingAudit(!trackingAudit)}
+              className={`w-full p-4 mb-6 rounded-xl border-2 text-left transition-all ${
+                trackingAudit
+                  ? 'border-cyan-500 bg-cyan-100'
+                  : 'border-dashed border-cyan-300 hover:border-cyan-400 bg-white'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{trackingAuditOption.icon}</span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-slate-900">
+                      {lang === 'fr' ? trackingAuditOption.titleFr : trackingAuditOption.title}
+                    </span>
+                    <Tooltip
+                      content={lang === 'fr' ? trackingAuditOption.detailedInfoFr : trackingAuditOption.detailedInfo}
+                      whyImportant={lang === 'fr' ? trackingAuditOption.whyImportantFr : trackingAuditOption.whyImportant}
+                      lang={lang}
+                    />
+                  </div>
+                  <p className="text-sm text-slate-500">
+                    {lang === 'fr' ? trackingAuditOption.descriptionFr : trackingAuditOption.description}
+                  </p>
+                </div>
+                <span className="font-bold text-cyan-700">{trackingAuditOption.price}€</span>
+                {trackingAudit && (
+                  <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center">
+                    <CheckIcon />
+                  </span>
+                )}
+              </div>
+            </button>
+
+            {/* Tracking services */}
+            <div className="grid md:grid-cols-2 gap-4">
+              {trackingServices.map(service => (
+                <button
+                  key={service.id}
+                  onClick={() => setTrackingSelections(prev => ({ ...prev, [service.id]: !prev[service.id] }))}
+                  className={`p-4 rounded-xl border-2 text-left transition-all ${
+                    trackingSelections[service.id]
+                      ? 'border-cyan-500 bg-cyan-50'
+                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-xl">{service.icon}</span>
+                    <div className="flex items-center gap-1 flex-1">
+                      <span className="font-semibold text-slate-900">
+                        {lang === 'fr' ? service.titleFr : service.title}
+                      </span>
+                      <Tooltip
+                        content={lang === 'fr' ? service.detailedInfoFr : service.detailedInfo}
+                        whyImportant={lang === 'fr' ? service.whyImportantFr : service.whyImportant}
+                        lang={lang}
+                      />
+                    </div>
+                    <span className="font-bold text-slate-900">{service.price}€</span>
+                  </div>
+                  <p className="text-sm text-slate-600">{lang === 'fr' ? service.descriptionFr : service.description}</p>
+                  {service.priceNote && (
+                    <p className="text-xs text-slate-400 mt-1">({service.priceNote})</p>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Duration selection */}
         {hasSelections && !selectedDomains.every(d => d === 'ai-solutions') && (
           <div className="bg-white rounded-2xl border border-slate-200 p-8">
@@ -761,6 +949,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 <div className="flex justify-between">
                   <span className="text-slate-300">{t.setupServices}</span>
                   <span className="font-semibold">{pricing.setupTotal.toLocaleString()}€</span>
+                </div>
+              )}
+              {pricing.trackingTotal > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-slate-300">{t.trackingTitle}</span>
+                  <span className="font-semibold">{pricing.trackingTotal.toLocaleString()}€</span>
                 </div>
               )}
               <div className="border-t border-slate-700 pt-4">
@@ -832,6 +1026,64 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           </div>
         )}
       </div>
+
+      {/* Tracking Reminder Popup */}
+      {showTrackingPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 animate-fade-in">
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">📊</span>
+                <h3 className="text-2xl font-bold text-slate-900">{t.trackingPopupTitle}</h3>
+              </div>
+              <button
+                onClick={() => setShowTrackingPopup(false)}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            <p className="text-slate-600 mb-6">{t.trackingPopupMessage}</p>
+
+            <ul className="space-y-3 mb-8">
+              {(lang === 'fr' ? trackingPopupContent.benefitsFr : trackingPopupContent.benefits).map((benefit, idx) => (
+                <li key={idx} className="flex items-center gap-3 text-slate-700">
+                  <span className="w-6 h-6 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center flex-shrink-0">
+                    <CheckIcon />
+                  </span>
+                  {benefit}
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => {
+                  setShowTrackingPopup(false);
+                  // Scroll to tracking section
+                  const trackingSection = document.querySelector('[class*="from-cyan-50"]');
+                  if (trackingSection) {
+                    trackingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }}
+                className="flex-1 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all"
+              >
+                {t.trackingPopupAdd}
+              </button>
+              <button
+                onClick={() => {
+                  setShowTrackingPopup(false);
+                  setTrackingPopupDismissed(true);
+                }}
+                className="flex-1 px-6 py-4 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors"
+              >
+                {t.trackingPopupSkip}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -5,6 +5,13 @@ import { paidSocialServices } from './paid-social-services';
 import { emailingServices } from './emailing-services';
 import { aiTrainingConfig, aiTrainingPricing, halfDayFeatures, fullDayAdditionalFeatures } from './ai-training-services';
 import { aiSolutionsConfig, aiSolutionsQuestions, aiSolutionsUseCases } from './ai-solutions-questions';
+import {
+  trackingReportingConfig,
+  trackingAuditOption,
+  trackingServices,
+  trackingPopupContent,
+  servicesThatNeedTracking
+} from './tracking-reporting-services';
 
 // Domain configurations
 export const domainConfigs: Record<ServiceDomain, DomainConfig> = {
@@ -31,7 +38,7 @@ export const domainConfigs: Record<ServiceDomain, DomainConfig> = {
     services: googleAdsServices,
     hasBudgetSlider: true,
     managementFee: {
-      percentage: 15,
+      percentage: 20,
       minimum: 300
     }
   },
@@ -47,7 +54,7 @@ export const domainConfigs: Record<ServiceDomain, DomainConfig> = {
     services: paidSocialServices,
     hasBudgetSlider: true,
     managementFee: {
-      percentage: 15,
+      percentage: 20,
       minimum: 300
     }
   },
@@ -98,8 +105,8 @@ export const BUDGET_CONFIG = {
 export const DURATION_CONFIG = {
   options: [
     { months: 4, discount: 0, label: '4 mois', labelEn: '4 months' },
-    { months: 6, discount: 5, label: '6 mois (-5%)', labelEn: '6 months (-5%)' },
-    { months: 12, discount: 10, label: '12 mois (-10%)', labelEn: '12 months (-10%)' }
+    { months: 6, discount: 3, label: '6 mois (-3%)', labelEn: '6 months (-3%)' },
+    { months: 12, discount: 5, label: '12 mois (-5%)', labelEn: '12 months (-5%)' }
   ]
 } as const;
 
@@ -138,6 +145,15 @@ export {
   aiSolutionsConfig,
   aiSolutionsQuestions,
   aiSolutionsUseCases
+};
+
+// Re-export Tracking & Reporting configs
+export {
+  trackingReportingConfig,
+  trackingAuditOption,
+  trackingServices,
+  trackingPopupContent,
+  servicesThatNeedTracking
 };
 
 // Helper: Calculate management fee
