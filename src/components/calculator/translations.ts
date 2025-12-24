@@ -1,0 +1,193 @@
+export const translations = {
+  en: {
+    // Page title
+    pageTitle: 'Marketing Calculator',
+    pageDescription: 'Build your custom marketing package and get an instant estimate',
+
+    // Domain selection
+    selectDomains: 'Select your services',
+    selectDomainsDesc: 'Choose the marketing services you need. You can combine multiple domains.',
+    continue: 'Continue',
+    selected: 'selected',
+
+    // Service configuration
+    configureServices: 'Configure your services',
+    selectLevel: 'Select a level',
+    noThanks: 'Not needed',
+    popular: 'Popular',
+    oneOff: 'One-time',
+    perMonth: '/month',
+    moreInfo: 'More info',
+    whatYouGet: 'What you get',
+
+    // Budget
+    adBudget: 'Monthly ad budget',
+    managementFee: 'Management fee',
+    managementFeeNote: '15% of budget (min. €300/month)',
+
+    // AI Training
+    aiTrainingFormat: 'Training format',
+    halfDay: 'Half Day (3h)',
+    fullDay: 'Full Day (6.5h)',
+    sessions: 'Number of sessions',
+    singleSession: '1 session',
+    bulkSessions: '5+ sessions',
+    inPerson: 'In-person training',
+    inPersonNote: 'Add travel costs',
+    travelCost: 'Estimated travel cost',
+    features: 'What\'s included',
+    additionalFeatures: 'Full day also includes',
+    pricePerSession: 'per session',
+
+    // AI Solutions
+    aiSolutionsTitle: 'Tell us about your project',
+    aiSolutionsDesc: 'AI Solutions projects are custom-priced. Fill out the form and we\'ll get back to you with a personalized quote.',
+    customQuote: 'Custom quote',
+
+    // Summary
+    summary: 'Summary',
+    yourSelection: 'Your selection',
+    monthly: 'Monthly',
+    monthlyServices: 'Monthly services',
+    oneOffServices: 'One-time services',
+    adBudgetTotal: 'Ad budget',
+    managementFees: 'Management fees',
+    setupServices: 'Setup services',
+    discount: 'Discount',
+    subtotal: 'Subtotal',
+    total: 'Total',
+    effectiveMonthly: 'Effective monthly cost',
+    effectiveMonthlyNote: '(services + budget spread over duration)',
+
+    // Duration
+    duration: 'Commitment duration',
+    months: 'months',
+
+    // Setup options
+    additionalSetup: 'Additional setup',
+
+    // Form
+    receiveQuote: 'Receive your quote',
+    name: 'Full name',
+    email: 'Email',
+    company: 'Company',
+    phone: 'Phone (optional)',
+    send: 'Send my quote',
+    sending: 'Sending...',
+    success: 'Quote sent!',
+    successMessage: 'Check your inbox. We\'ll also reach out shortly to discuss your needs.',
+
+    // Actions
+    backToDomains: 'Back to service selection',
+    viewSummary: 'View summary',
+    modifySelection: 'Modify selection',
+    startOver: 'Start over',
+
+    // Empty state
+    noServicesSelected: 'No services selected',
+    selectAtLeastOne: 'Select at least one service to see pricing',
+
+    // Sticky CTA
+    getQuote: 'Get your quote',
+    estimatedMonthly: 'From'
+  },
+  fr: {
+    // Page title
+    pageTitle: 'Calculateur Marketing',
+    pageDescription: 'Composez votre offre marketing sur-mesure et obtenez une estimation instantanée',
+
+    // Domain selection
+    selectDomains: 'Sélectionnez vos services',
+    selectDomainsDesc: 'Choisissez les services marketing dont vous avez besoin. Vous pouvez combiner plusieurs domaines.',
+    continue: 'Continuer',
+    selected: 'sélectionné(s)',
+
+    // Service configuration
+    configureServices: 'Configurez vos services',
+    selectLevel: 'Sélectionnez un niveau',
+    noThanks: 'Pas besoin',
+    popular: 'Populaire',
+    oneOff: 'Unique',
+    perMonth: '/mois',
+    moreInfo: 'Plus d\'infos',
+    whatYouGet: 'Ce que vous obtenez',
+
+    // Budget
+    adBudget: 'Budget publicitaire mensuel',
+    managementFee: 'Frais de gestion',
+    managementFeeNote: '15% du budget (min. 300€/mois)',
+
+    // AI Training
+    aiTrainingFormat: 'Format de formation',
+    halfDay: 'Demi-journée (3h)',
+    fullDay: 'Journée complète (6.5h)',
+    sessions: 'Nombre de sessions',
+    singleSession: '1 session',
+    bulkSessions: '5+ sessions',
+    inPerson: 'Formation en présentiel',
+    inPersonNote: 'Ajouter les frais de déplacement',
+    travelCost: 'Frais de déplacement estimés',
+    features: 'Ce qui est inclus',
+    additionalFeatures: 'La journée complète inclut aussi',
+    pricePerSession: 'par session',
+
+    // AI Solutions
+    aiSolutionsTitle: 'Parlez-nous de votre projet',
+    aiSolutionsDesc: 'Les projets AI Solutions sont tarifés sur-mesure. Remplissez le formulaire et nous vous recontacterons avec un devis personnalisé.',
+    customQuote: 'Devis sur-mesure',
+
+    // Summary
+    summary: 'Récapitulatif',
+    yourSelection: 'Votre sélection',
+    monthly: 'Mensuel',
+    monthlyServices: 'Services mensuels',
+    oneOffServices: 'Services ponctuels',
+    adBudgetTotal: 'Budget publicitaire',
+    managementFees: 'Frais de gestion',
+    setupServices: 'Services de setup',
+    discount: 'Remise',
+    subtotal: 'Sous-total',
+    total: 'Total',
+    effectiveMonthly: 'Coût mensuel effectif',
+    effectiveMonthlyNote: '(services + budget répartis sur la durée)',
+
+    // Duration
+    duration: 'Durée d\'engagement',
+    months: 'mois',
+
+    // Setup options
+    additionalSetup: 'Setup additionnel',
+
+    // Form
+    receiveQuote: 'Recevoir votre devis',
+    name: 'Nom complet',
+    email: 'Email',
+    company: 'Entreprise',
+    phone: 'Téléphone (optionnel)',
+    send: 'Envoyer mon devis',
+    sending: 'Envoi en cours...',
+    success: 'Devis envoyé !',
+    successMessage: 'Vérifiez votre boîte mail. Nous vous recontacterons également rapidement pour discuter de vos besoins.',
+
+    // Actions
+    backToDomains: 'Retour à la sélection',
+    viewSummary: 'Voir le récap',
+    modifySelection: 'Modifier la sélection',
+    startOver: 'Recommencer',
+
+    // Empty state
+    noServicesSelected: 'Aucun service sélectionné',
+    selectAtLeastOne: 'Sélectionnez au moins un service pour voir les tarifs',
+
+    // Sticky CTA
+    getQuote: 'Obtenir un devis',
+    estimatedMonthly: 'À partir de'
+  }
+} as const;
+
+export type TranslationKey = keyof typeof translations.en;
+export type Language = 'en' | 'fr';
+
+export function t(key: TranslationKey, lang: Language = 'fr'): string {
+  return translations[lang][key] || translations.en[key] || key;
+}
