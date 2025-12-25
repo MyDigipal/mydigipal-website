@@ -181,6 +181,47 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     }));
   }, []);
 
+  // Toggle "Not sure about X" - also resets selections for that domain
+  const toggleNotSure = useCallback((domainId: string) => {
+    setNotSureAbout(prev => {
+      const newValue = !prev[domainId];
+      // If toggling to "not sure", reset all selections for this domain's services
+      if (newValue) {
+        const domain = domainConfigs[domainId as ServiceDomain];
+        if (domain) {
+          setSelections(prevSelections => {
+            const newSelections = { ...prevSelections };
+            domain.services.forEach(service => {
+              newSelections[service.id] = null;
+            });
+            return newSelections;
+          });
+          // Reset ad budget for ads domains
+          if (domain.hasBudgetSlider) {
+            setAdBudgets(prevBudgets => ({
+              ...prevBudgets,
+              [domainId]: 1000
+            }));
+          }
+        }
+      }
+      return { ...prev, [domainId]: newValue };
+    });
+  }, []);
+
+  // Toggle tracking "Not sure" - resets tracking selections
+  const toggleTrackingNotSure = useCallback(() => {
+    setTrackingNotSure(prev => {
+      const newValue = !prev;
+      if (newValue) {
+        // Reset all tracking selections
+        setTrackingSelections({});
+        setTrackingAudit(false);
+      }
+      return newValue;
+    });
+  }, []);
+
   // Toggle service level
   const toggleServiceLevel = useCallback((serviceId: string, levelIndex: number) => {
     setSelections(prev => ({
@@ -258,9 +299,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       monthlyTotal += 100;
     }
 
-    // Tracking services (one-off) - skip if dismissed
+    // Tracking services (one-off) - skip if dismissed or "not sure"
     let trackingTotal = 0;
-    if (!trackingDismissed) {
+    if (!trackingDismissed && !trackingNotSure) {
       if (trackingAudit) {
         trackingTotal += trackingAuditOption.price;
       }
@@ -301,12 +342,26 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       grandTotalWithBudget,
       hasCustomQuote
     };
-  }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, trackingSelections, trackingAudit, duration, dismissedDomains, trackingDismissed, notSureAbout, sessionCount]);
+  }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, trackingSelections, trackingAudit, duration, dismissedDomains, trackingDismissed, trackingNotSure, notSureAbout, sessionCount]);
 
-  // Check if any domain has "not sure" selected
+  // Check if user needs tracking (has marketing services selected)
+  const needsTracking = useMemo(() => {
+    return selectedDomains.some(d => servicesThatNeedTracking.includes(d));
+  }, [selectedDomains]);
+
+  // Check if user has any tracking selected (respect dismissal)
+  const hasTrackingSelected = useMemo(() => {
+    if (trackingDismissed) return false;
+    if (trackingAudit) return true;
+    return Object.values(trackingSelections).some(v => v);
+  }, [trackingAudit, trackingSelections, trackingDismissed]);
+
+  // Check if any domain has "not sure" selected (including tracking)
   const hasNotSureSelections = useMemo(() => {
-    return selectedDomains.some(domainId => notSureAbout[domainId] && !dismissedDomains[domainId]);
-  }, [selectedDomains, notSureAbout, dismissedDomains]);
+    const hasNotSureDomains = selectedDomains.some(domainId => notSureAbout[domainId] && !dismissedDomains[domainId]);
+    const hasNotSureTracking = trackingNotSure && !trackingDismissed && needsTracking;
+    return hasNotSureDomains || hasNotSureTracking;
+  }, [selectedDomains, notSureAbout, dismissedDomains, trackingNotSure, trackingDismissed, needsTracking]);
 
   // Check if any service is selected (excluding dismissed/notSure domains)
   const hasActualSelections = useMemo(() => {
@@ -326,18 +381,6 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
   // Combined check - show summary if either actual selections or "not sure" domains exist
   const hasSelections = hasActualSelections || hasNotSureSelections;
-
-  // Check if user needs tracking (has marketing services selected)
-  const needsTracking = useMemo(() => {
-    return selectedDomains.some(d => servicesThatNeedTracking.includes(d));
-  }, [selectedDomains]);
-
-  // Check if user has any tracking selected (respect dismissal)
-  const hasTrackingSelected = useMemo(() => {
-    if (trackingDismissed) return false;
-    if (trackingAudit) return true;
-    return Object.values(trackingSelections).some(v => v);
-  }, [trackingAudit, trackingSelections, trackingDismissed]);
 
   // Submit handler
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
@@ -370,6 +413,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         Object.entries(trackingSelections).filter(([_, v]) => v)
       ),
       trackingAudit,
+      trackingNotSure,
       cmsAddon,
       metadata: {
         timestamp: new Date().toISOString(),
@@ -581,7 +625,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                     <>
                       {/* Not sure option */}
                       <button
-                        onClick={() => setNotSureAbout(prev => ({ ...prev, [domainId]: !prev[domainId] }))}
+                        onClick={() => toggleNotSure(domainId)}
                         className={`w-full p-4 mb-6 rounded-xl border-2 text-left transition-all ${
                           isNotSure
                             ? `${colors.border} ${colors.bgLight} border-solid`
@@ -856,7 +900,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   <>
                     {/* Not sure option */}
                     <button
-                      onClick={() => setNotSureAbout(prev => ({ ...prev, [domainId]: !prev[domainId] }))}
+                      onClick={() => toggleNotSure(domainId)}
                       className={`w-full p-4 mb-6 rounded-xl border-2 text-left transition-all ${
                         isNotSure
                           ? `${colors.border} ${colors.bgLight} border-solid`
@@ -1047,16 +1091,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
               {!trackingDismissed && (
                 <>
-                  {/* Not sure option - do an audit */}
+                  {/* Not sure option - like other departments */}
                   <button
-                    onClick={() => {
-                      setTrackingNotSure(!trackingNotSure);
-                      if (!trackingNotSure) {
-                        // When selecting "not sure", enable audit and clear other selections
-                        setTrackingAudit(true);
-                        setTrackingSelections({});
-                      }
-                    }}
+                    onClick={toggleTrackingNotSure}
                     className={`w-full p-4 mb-6 rounded-xl border-2 text-left transition-all ${
                       trackingNotSure
                         ? 'border-cyan-500 bg-cyan-100 border-solid'
@@ -1064,16 +1101,15 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-xl">🔍</span>
+                      <span className="text-xl">📊</span>
                       <div className="flex-1">
                         <span className="font-semibold text-slate-900">
-                          {lang === 'fr' ? "Je ne suis pas sûr - Faites un audit" : "I'm not sure - Do an audit"}
+                          {t.notSureAbout} Tracking - {t.letsChat}
                         </span>
                         <p className="text-sm text-slate-500">
-                          {lang === 'fr' ? "On analyse votre setup actuel et on vous recommande les bonnes solutions" : "We'll analyze your current setup and recommend the right solutions"}
+                          {lang === 'fr' ? "Vous n'êtes pas sûr de ce dont vous avez besoin ? Discutons-en !" : "Not sure what you need? Let's chat about it!"}
                         </p>
                       </div>
-                      <span className="font-bold text-cyan-700">{trackingAuditOption.price}€</span>
                       {trackingNotSure && (
                         <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center">
                           <CheckIcon />
@@ -1084,6 +1120,40 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
                   {/* Tracking services - grayed out if "not sure" is selected */}
                   <div className={`transition-all duration-300 ${trackingNotSure ? 'opacity-40 pointer-events-none' : ''}`}>
+                    {/* Tracking Audit - first option */}
+                    <button
+                      onClick={() => setTrackingAudit(!trackingAudit)}
+                      className={`w-full p-4 mb-4 rounded-xl border-2 text-left transition-all ${
+                        trackingAudit
+                          ? 'border-cyan-500 bg-cyan-50'
+                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">🔍</span>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-slate-900">
+                              {lang === 'fr' ? trackingAuditOption.titleFr : trackingAuditOption.title}
+                            </span>
+                            <Tooltip
+                              content={lang === 'fr' ? trackingAuditOption.detailedInfoFr : trackingAuditOption.detailedInfo}
+                              whyImportant={lang === 'fr' ? trackingAuditOption.whyImportantFr : trackingAuditOption.whyImportant}
+                              lang={lang}
+                            />
+                          </div>
+                          <p className="text-sm text-slate-500">
+                            {lang === 'fr' ? trackingAuditOption.descriptionFr : trackingAuditOption.description}
+                          </p>
+                        </div>
+                        <span className="font-bold text-slate-900">{trackingAuditOption.price}€</span>
+                        {trackingAudit && (
+                          <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center">
+                            <CheckIcon />
+                          </span>
+                        )}
+                      </div>
+                    </button>
                     <div className="grid md:grid-cols-2 gap-4">
                       {trackingServices.map(service => (
                         <button
@@ -1172,6 +1242,13 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                       </div>
                     );
                   })}
+                  {/* Tracking "not sure" */}
+                  {trackingNotSure && !trackingDismissed && needsTracking && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-400 ml-4">↳ 📊 {t.trackingTitle}</span>
+                      <span className="text-amber-400/70">💬</span>
+                    </div>
+                  )}
                 </div>
               )}
 
