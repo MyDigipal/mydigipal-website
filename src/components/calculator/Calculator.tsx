@@ -1575,12 +1575,39 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             </div>
 
             <div className="p-6 space-y-6">
+              {/* "To discuss" domains section */}
+              {hasNotSureSelections && (
+                <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">💬</span>
+                    <h4 className="font-bold text-amber-800">{t.toDiscuss}</h4>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    {selectedDomains.filter(d => notSureAbout[d] && !dismissedDomains[d]).map(domainId => {
+                      const domain = domainConfigs[domainId];
+                      return (
+                        <div key={domainId} className="flex justify-between text-amber-700">
+                          <span>{domain.icon} {lang === 'fr' ? domain.nameFr : domain.name}</span>
+                          <span className="text-amber-500">{t.needsDiscussion}</span>
+                        </div>
+                      );
+                    })}
+                    {trackingNotSure && !trackingDismissed && needsTracking && (
+                      <div className="flex justify-between text-amber-700">
+                        <span>📊 {t.trackingTitle}</span>
+                        <span className="text-amber-500">{t.needsDiscussion}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* By department breakdown */}
               {selectedDomains.map(domainId => {
                 const domain = domainConfigs[domainId];
                 const colors = getDomainColors(domain.colorClass);
-                // Skip AI Solutions, dismissed domains, and "not sure" domains
-                if (domainId === 'ai-solutions') return null;
+                // Skip AI Solutions, tracking-reporting, dismissed domains, and "not sure" domains
+                if (domainId === 'ai-solutions' || domainId === 'tracking-reporting') return null;
                 if (dismissedDomains[domainId] || notSureAbout[domainId]) return null;
 
                 // Calculate domain total
