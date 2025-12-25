@@ -122,7 +122,11 @@ export const translations = {
     // Department totals
     departmentMonthly: 'Monthly',
     departmentOneOff: 'One-off',
-    departmentTotal: 'Subtotal'
+    departmentTotal: 'Subtotal',
+
+    // To discuss section
+    toDiscuss: 'To discuss',
+    needsDiscussion: 'Needs discussion'
   },
   fr: {
     // Page title
@@ -247,7 +251,11 @@ export const translations = {
     // Department totals
     departmentMonthly: 'Mensuel',
     departmentOneOff: 'One-off',
-    departmentTotal: 'Sous-total'
+    departmentTotal: 'Sous-total',
+
+    // To discuss section
+    toDiscuss: 'À discuter',
+    needsDiscussion: 'Besoin d\'en discuter'
   }
 } as const;
 

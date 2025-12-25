@@ -303,8 +303,13 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     };
   }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, trackingSelections, trackingAudit, duration, dismissedDomains, trackingDismissed, notSureAbout, sessionCount]);
 
+  // Check if any domain has "not sure" selected
+  const hasNotSureSelections = useMemo(() => {
+    return selectedDomains.some(domainId => notSureAbout[domainId] && !dismissedDomains[domainId]);
+  }, [selectedDomains, notSureAbout, dismissedDomains]);
+
   // Check if any service is selected (excluding dismissed/notSure domains)
-  const hasSelections = useMemo(() => {
+  const hasActualSelections = useMemo(() => {
     if (selectedDomains.includes('ai-training') && !dismissedDomains['ai-training'] && !notSureAbout['ai-training']) return true;
     if (selectedDomains.includes('ai-solutions') && !dismissedDomains['ai-solutions'] && !notSureAbout['ai-solutions']) return true;
     // Check if any non-dismissed domain has selections
@@ -318,6 +323,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     });
     return hasOtherSelections;
   }, [selectedDomains, selections, dismissedDomains, notSureAbout]);
+
+  // Combined check - show summary if either actual selections or "not sure" domains exist
+  const hasSelections = hasActualSelections || hasNotSureSelections;
 
   // Check if user needs tracking (has marketing services selected)
   const needsTracking = useMemo(() => {
@@ -347,6 +355,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     const payload = {
       contact,
       selectedDomains,
+      notSureAbout: Object.fromEntries(
+        Object.entries(notSureAbout).filter(([_, v]) => v)
+      ),
       selections: Object.fromEntries(
         Object.entries(selections).filter(([_, v]) => v !== null)
       ),
@@ -1112,8 +1123,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           </div>
         )}
 
-        {/* Duration selection */}
-        {hasSelections && !selectedDomains.every(d => d === 'ai-solutions') && (
+        {/* Duration selection - only show if there are actual selections (not just "to discuss" domains) */}
+        {hasActualSelections && !selectedDomains.every(d => d === 'ai-solutions') && (
           <div className="bg-white rounded-2xl border border-slate-200 p-8">
             <h3 className="text-xl font-bold text-slate-900 mb-6">{t.duration}</h3>
             <div className="grid grid-cols-3 gap-4">
@@ -1145,18 +1156,68 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             <h3 className="text-2xl font-bold mb-8">{t.summary}</h3>
 
             <div className="space-y-4 mb-8">
+              {/* "To discuss" domains */}
+              {hasNotSureSelections && (
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-amber-300">{t.toDiscuss}</span>
+                    <span className="text-amber-300 font-semibold">{t.needsDiscussion}</span>
+                  </div>
+                  {selectedDomains.filter(d => notSureAbout[d] && !dismissedDomains[d]).map(domainId => {
+                    const domain = domainConfigs[domainId];
+                    return (
+                      <div key={domainId} className="flex justify-between text-sm">
+                        <span className="text-slate-400 ml-4">↳ {domain.icon} {lang === 'fr' ? domain.nameFr : domain.name}</span>
+                        <span className="text-amber-400/70">💬</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               {/* Monthly total (services + management fees merged) */}
               {(pricing.monthlyTotal > 0 || pricing.managementFeesTotal > 0) && (
-                <div className="flex justify-between">
-                  <span className="text-slate-300">{t.managementFee}</span>
-                  <span className="font-semibold">
-                    {pricing.hasCustomQuote ? (
-                      <span className="text-amber-400">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
-                    ) : (
-                      <>{(pricing.monthlyTotal + pricing.managementFeesTotal).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</>
-                    )}
-                  </span>
-                </div>
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">{t.managementFee}</span>
+                    <span className="font-semibold">
+                      {pricing.hasCustomQuote ? (
+                        <span className="text-amber-400">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
+                      ) : (
+                        <>{(pricing.monthlyTotal + pricing.managementFeesTotal).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</>
+                      )}
+                    </span>
+                  </div>
+                  {/* Management fee breakdown by domain */}
+                  {selectedDomains.filter(d => !dismissedDomains[d] && !notSureAbout[d] && d !== 'ai-training' && d !== 'ai-solutions').map(domainId => {
+                    const domain = domainConfigs[domainId];
+                    let domainMonthly = 0;
+                    domain.services.forEach(service => {
+                      const selectedLevel = selections[service.id];
+                      if (selectedLevel !== null && selectedLevel !== undefined && !disabledServices[service.id] && !service.isOneOff) {
+                        const level = service.levels[selectedLevel];
+                        if (level) domainMonthly += level.price;
+                      }
+                    });
+                    // Add management fee for ads domains
+                    if (domain.hasTieredManagementFee && domain.hasBudgetSlider) {
+                      const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
+                      const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
+                      domainMonthly += feeResult.fee;
+                    }
+                    // Add CMS addon if applicable
+                    if (domainId === 'seo' && cmsAddon && selections['seo-content'] !== null) {
+                      domainMonthly += 100;
+                    }
+                    if (domainMonthly === 0) return null;
+                    return (
+                      <div key={domainId} className="flex justify-between text-sm">
+                        <span className="text-slate-400 ml-4">↳ {domain.icon} {lang === 'fr' ? domain.nameFr : domain.name}</span>
+                        <span className="text-slate-300">{Math.round(domainMonthly).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
+                      </div>
+                    );
+                  })}
+                </>
               )}
               {/* Duration discount */}
               {pricing.discount > 0 && (
@@ -1167,10 +1228,41 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               )}
               {/* One-off services */}
               {pricing.oneOffTotal > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-slate-300">{t.oneOffServices}</span>
-                  <span className="font-semibold">{pricing.oneOffTotal.toLocaleString()}€</span>
-                </div>
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">{t.oneOffServices}</span>
+                    <span className="font-semibold">{pricing.oneOffTotal.toLocaleString()}€</span>
+                  </div>
+                  {/* One-off breakdown by domain */}
+                  {selectedDomains.filter(d => !dismissedDomains[d] && !notSureAbout[d] && d !== 'ai-solutions').map(domainId => {
+                    const domain = domainConfigs[domainId];
+                    let domainOneOff = 0;
+
+                    // AI Training special handling
+                    if (domainId === 'ai-training') {
+                      const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
+                      const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
+                      const multiplier = aiTraining.sessions === '5+' ? sessionCount : 1;
+                      domainOneOff = base * multiplier + (aiTraining.inPerson ? 500 : 0);
+                    } else {
+                      domain.services.forEach(service => {
+                        const selectedLevel = selections[service.id];
+                        if (selectedLevel !== null && selectedLevel !== undefined && !disabledServices[service.id] && service.isOneOff) {
+                          const level = service.levels[selectedLevel];
+                          if (level) domainOneOff += level.price;
+                        }
+                      });
+                    }
+
+                    if (domainOneOff === 0) return null;
+                    return (
+                      <div key={domainId} className="flex justify-between text-sm">
+                        <span className="text-slate-400 ml-4">↳ {domain.icon} {lang === 'fr' ? domain.nameFr : domain.name}</span>
+                        <span className="text-slate-300">{Math.round(domainOneOff).toLocaleString()}€</span>
+                      </div>
+                    );
+                  })}
+                </>
               )}
               {/* Tracking services */}
               {pricing.trackingTotal > 0 && (
@@ -1180,39 +1272,59 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 </div>
               )}
 
-              {/* Separator for media budget */}
-              <div className="border-t border-slate-700 pt-4">
-                {/* Media budget (shown separately) */}
-                {pricing.adBudgetTotal > 0 && (
-                  <div className="flex justify-between text-amber-300">
-                    <span>{t.adBudgetTotal} <span className="text-xs text-slate-400">({lang === 'fr' ? 'non inclus dans les frais' : 'not included in fees'})</span></span>
-                    <span className="font-semibold">{pricing.adBudgetTotal.toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
-                  </div>
-                )}
-              </div>
+              {/* Separator for media budget - only if there are actual selections */}
+              {hasActualSelections && (
+                <div className="border-t border-slate-700 pt-4">
+                  {/* Media budget (shown separately) */}
+                  {pricing.adBudgetTotal > 0 && (
+                    <div className="flex justify-between text-amber-300">
+                      <span>{t.adBudgetTotal} <span className="text-xs text-slate-400">({lang === 'fr' ? 'non inclus dans les frais' : 'not included in fees'})</span></span>
+                      <span className="font-semibold">{pricing.adBudgetTotal.toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Totals */}
-              <div className="border-t border-slate-700 pt-4 mt-4">
-                {/* Total without budget */}
-                <div className="flex justify-between text-lg">
-                  <span>{lang === 'fr' ? 'Total services' : 'Services total'} ({duration} {t.months})</span>
-                  <span className="font-bold">{Math.round(pricing.grandTotalWithoutBudget).toLocaleString()}€</span>
-                </div>
-                {/* Total with budget (if applicable) */}
-                {pricing.adBudgetTotal > 0 && (
-                  <div className="flex justify-between mt-2 text-sm text-slate-400">
-                    <span>{lang === 'fr' ? 'Avec budget média' : 'With media budget'}</span>
-                    <span>{Math.round(pricing.grandTotalWithBudget).toLocaleString()}€</span>
+              {/* Totals - only if there are actual selections */}
+              {hasActualSelections && (
+                <div className="border-t border-slate-700 pt-4 mt-4">
+                  {/* Total without budget */}
+                  <div className="flex justify-between text-lg">
+                    <span>{lang === 'fr' ? 'Total services' : 'Services total'} ({duration} {t.months})</span>
+                    <span className="font-bold">{Math.round(pricing.grandTotalWithoutBudget).toLocaleString()}€</span>
                   </div>
-                )}
-                {/* Effective monthly */}
-                <div className="flex justify-between mt-4">
-                  <span className="text-slate-300">{t.effectiveMonthly} <span className="text-xs">({lang === 'fr' ? 'hors budget média' : 'excl. media budget'})</span></span>
-                  <span className="text-2xl font-bold text-blue-400">
-                    {Math.round(pricing.grandTotalWithoutBudget / duration).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}
-                  </span>
+                  {/* Total with budget (if applicable) */}
+                  {pricing.adBudgetTotal > 0 && (
+                    <div className="flex justify-between mt-2 text-sm text-slate-400">
+                      <span>{lang === 'fr' ? 'Avec budget média' : 'With media budget'}</span>
+                      <span>{Math.round(pricing.grandTotalWithBudget).toLocaleString()}€</span>
+                    </div>
+                  )}
+                  {/* Effective monthly */}
+                  <div className="flex justify-between mt-4">
+                    <span className="text-slate-300">{t.effectiveMonthly} <span className="text-xs">({lang === 'fr' ? 'hors budget média' : 'excl. media budget'})</span></span>
+                    <span className="text-2xl font-bold text-blue-400">
+                      {Math.round(pricing.grandTotalWithoutBudget / duration).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* Message when only "to discuss" domains - no actual pricing */}
+              {!hasActualSelections && hasNotSureSelections && (
+                <div className="border-t border-slate-700 pt-4 mt-4">
+                  <div className="text-center py-4">
+                    <p className="text-amber-300 text-lg font-semibold mb-2">
+                      {lang === 'fr' ? '💬 Discutons de vos besoins' : '💬 Let\'s discuss your needs'}
+                    </p>
+                    <p className="text-slate-400 text-sm">
+                      {lang === 'fr'
+                        ? 'Remplissez le formulaire et nous vous recontacterons pour définir ensemble la meilleure solution.'
+                        : 'Fill out the form and we\'ll contact you to define the best solution together.'}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Contact form */}
