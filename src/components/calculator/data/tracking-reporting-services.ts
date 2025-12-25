@@ -30,12 +30,12 @@ export const trackingReportingConfig = {
 // Audit option at the top
 export const trackingAuditOption = {
   id: 'tracking-audit',
-  title: 'I\'m not sure about my tracking - Do an audit',
-  titleFr: 'Je ne suis pas sûr de mon tracking - Faites-moi un audit',
-  description: 'We\'ll analyze your current setup and recommend improvements',
-  descriptionFr: 'On analyse votre setup actuel et on vous recommande des améliorations',
-  detailedInfo: 'Complete audit of your tracking setup including GA4, GTM, conversion tracking, cookie consent, and data flow verification.',
-  detailedInfoFr: 'Audit complet de votre setup tracking incluant GA4, GTM, tracking des conversions, consentement cookies, et vérification du flux de données.',
+  title: 'A. Tracking Audit',
+  titleFr: 'A. Audit Tracking',
+  description: 'Complete analysis of your current tracking setup',
+  descriptionFr: 'Analyse complète de votre setup tracking actuel',
+  detailedInfo: 'Complete audit of your tracking setup including GA4, GTM, conversion tracking, cookie consent, and data flow verification. We identify what\'s missing and what needs improvement.',
+  detailedInfoFr: 'Audit complet de votre setup tracking incluant GA4, GTM, tracking des conversions, consentement cookies, et vérification du flux de données. On identifie ce qui manque et ce qui doit être amélioré.',
   whyImportant: 'Without proper tracking, you\'re flying blind. An audit reveals hidden issues that could be costing you money.',
   whyImportantFr: 'Sans tracking correct, vous naviguez à l\'aveugle. Un audit révèle des problèmes cachés qui peuvent vous coûter cher.',
   price: 300,
