@@ -84,6 +84,17 @@ export const domainConfigs: Record<ServiceDomain, DomainConfig> = {
     color: '#8b5cf6',
     colorClass: 'violet',
     services: [] // Special handling - quote-based
+  },
+  'tracking-reporting': {
+    id: 'tracking-reporting',
+    name: 'Tracking & Reporting',
+    nameFr: 'Tracking & Reporting',
+    icon: '📊',
+    description: 'Measure, analyze, and optimize your marketing performance',
+    descriptionFr: 'Mesurez, analysez et optimisez vos performances marketing',
+    color: '#06b6d4',
+    colorClass: 'cyan',
+    services: [] // Special handling - shown as separate section
   }
 };
 
@@ -99,8 +110,8 @@ export const BUDGET_CONFIG = {
 export const DURATION_CONFIG = {
   options: [
     { months: 4, discount: 0, label: '4 mois', labelEn: '4 months' },
-    { months: 6, discount: 3, label: '6 mois (-3%)', labelEn: '6 months (-3%)' },
-    { months: 12, discount: 5, label: '12 mois (-5%)', labelEn: '12 months (-5%)' }
+    { months: 6, discount: 5, label: '6 mois (-5%)', labelEn: '6 months (-5%)' },
+    { months: 12, discount: 10, label: '12 mois (-10%)', labelEn: '12 months (-10%)' }
   ]
 } as const;
 
