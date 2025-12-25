@@ -118,20 +118,27 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const [selections, setSelections] = useState<Record<string, number | null>>({});
   const [disabledServices, setDisabledServices] = useState<Record<string, boolean>>({});
   const [adBudgets, setAdBudgets] = useState({
-    'google-ads': BUDGET_CONFIG.default,
-    'paid-social': BUDGET_CONFIG.default
+    'google-ads': BUDGET_CONFIG.min,
+    'paid-social': BUDGET_CONFIG.min
+  });
+  // Track if user has activated budget slider (to not charge fees until they interact)
+  const [budgetActivated, setBudgetActivated] = useState({
+    'google-ads': false,
+    'paid-social': false
   });
   const [duration, setDuration] = useState<4 | 6 | 12>(4);
   const [cmsAddon, setCmsAddon] = useState(false);
   const [showSummaryPopup, setShowSummaryPopup] = useState(false);
 
-  // AI Training state
+  // AI Training state - null format means nothing selected yet
   const [aiTraining, setAiTraining] = useState<AITrainingSelection>({
-    format: 'half-day',
-    sessions: '1',
+    format: null as unknown as 'half-day' | 'full-day',
+    sessions: null as unknown as '1' | '5+',
     inPerson: false,
     travelCost: aiTrainingPricing.travelCost.default
   });
+  // Track if AI Training has been configured
+  const [aiTrainingActivated, setAiTrainingActivated] = useState(false);
 
   // AI Solutions state
   const [aiSolutions, setAiSolutions] = useState<AISolutionsAnswers>({
@@ -196,13 +203,27 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             });
             return newSelections;
           });
-          // Reset ad budget for ads domains
+          // Reset ad budget and budgetActivated for ads domains
           if (domain.hasBudgetSlider) {
             setAdBudgets(prevBudgets => ({
               ...prevBudgets,
-              [domainId]: 1000
+              [domainId]: BUDGET_CONFIG.min
+            }));
+            setBudgetActivated(prev => ({
+              ...prev,
+              [domainId]: false
             }));
           }
+        }
+        // Reset AI Training if applicable
+        if (domainId === 'ai-training') {
+          setAiTrainingActivated(false);
+          setAiTraining({
+            format: null as unknown as 'half-day' | 'full-day',
+            sessions: null as unknown as '1' | '5+',
+            inPerson: false,
+            travelCost: aiTrainingPricing.travelCost.default
+          });
         }
       }
       return { ...prev, [domainId]: newValue };
@@ -259,8 +280,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       // Skip AI Training and AI Solutions (special handling)
       if (domain === 'ai-training' || domain === 'ai-solutions') return;
 
-      // Add management fees for ads domains (tiered structure)
-      if (config.hasBudgetSlider && config.hasTieredManagementFee) {
+      // Add management fees for ads domains (tiered structure) - only if user has activated budget
+      if (config.hasBudgetSlider && config.hasTieredManagementFee && budgetActivated[domain as 'google-ads' | 'paid-social']) {
         const budget = adBudgets[domain as 'google-ads' | 'paid-social'];
         adBudgetTotal += budget;
         const feeResult = calculateManagementFee(domain as 'google-ads' | 'paid-social', budget);
@@ -284,8 +305,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       });
     });
 
-    // AI Training pricing (skip if dismissed or not sure)
-    if (selectedDomains.includes('ai-training') && !dismissedDomains['ai-training'] && !notSureAbout['ai-training']) {
+    // AI Training pricing (skip if dismissed, not sure, or not activated)
+    if (selectedDomains.includes('ai-training') && !dismissedDomains['ai-training'] && !notSureAbout['ai-training'] && aiTrainingActivated && aiTraining.format && aiTraining.sessions) {
       const pricingTier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
       const basePrice = aiTraining.format === 'full-day' ? pricingTier.fullDay.price : pricingTier.halfDay.price;
       const sessionMultiplier = aiTraining.sessions === '5+' ? sessionCount : 1;
@@ -342,19 +363,28 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       grandTotalWithBudget,
       hasCustomQuote
     };
-  }, [selectedDomains, selections, disabledServices, adBudgets, aiTraining, cmsAddon, trackingSelections, trackingAudit, duration, dismissedDomains, trackingDismissed, trackingNotSure, notSureAbout, sessionCount]);
+  }, [selectedDomains, selections, disabledServices, adBudgets, budgetActivated, aiTraining, aiTrainingActivated, cmsAddon, trackingSelections, trackingAudit, duration, dismissedDomains, trackingDismissed, trackingNotSure, notSureAbout, sessionCount]);
 
-  // Check if user needs tracking (has marketing services selected)
+  // Check if user needs tracking (has marketing services selected or explicitly selected tracking)
   const needsTracking = useMemo(() => {
-    return selectedDomains.some(d => servicesThatNeedTracking.includes(d));
+    return selectedDomains.some(d => servicesThatNeedTracking.includes(d)) || selectedDomains.includes('tracking-reporting');
   }, [selectedDomains]);
+
+  // Check if user has selected any marketing channel with actual selections (not just "I'm not sure")
+  const hasActualMarketingSelections = useMemo(() => {
+    return selectedDomains.some(d =>
+      servicesThatNeedTracking.includes(d) && !notSureAbout[d] && !dismissedDomains[d]
+    );
+  }, [selectedDomains, notSureAbout, dismissedDomains]);
 
   // Check if user has any tracking selected (respect dismissal)
   const hasTrackingSelected = useMemo(() => {
     if (trackingDismissed) return false;
+    if (trackingNotSure) return true; // "Not sure" counts as a selection for popup purposes
+    if (selectedDomains.includes('tracking-reporting')) return true; // User explicitly selected tracking from cards
     if (trackingAudit) return true;
     return Object.values(trackingSelections).some(v => v);
-  }, [trackingAudit, trackingSelections, trackingDismissed]);
+  }, [trackingAudit, trackingSelections, trackingDismissed, trackingNotSure, selectedDomains]);
 
   // Check if any domain has "not sure" selected (including tracking)
   const hasNotSureSelections = useMemo(() => {
@@ -382,17 +412,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   // Combined check - show summary if either actual selections or "not sure" domains exist
   const hasSelections = hasActualSelections || hasNotSureSelections;
 
-  // Submit handler
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Core submission logic (extracted for reuse)
+  const doSubmit = useCallback(async () => {
     if (isSubmitting) return;
-
-    // Show tracking popup if user needs tracking but hasn't selected any
-    if (needsTracking && !hasTrackingSelected && !trackingPopupDismissed) {
-      setShowTrackingPopup(true);
-      return;
-    }
-
     setIsSubmitting(true);
 
     const payload = {
@@ -456,7 +478,24 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     } finally {
       setIsSubmitting(false);
     }
-  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, cmsAddon, lang, isSubmitting, needsTracking, hasTrackingSelected, trackingPopupDismissed]);
+  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, trackingNotSure, cmsAddon, lang, isSubmitting, notSureAbout]);
+
+  // Submit handler with popup check
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    // Show tracking popup only if:
+    // - User has actual marketing selections (not just "I'm not sure")
+    // - User hasn't selected any tracking service
+    // - User hasn't dismissed the popup
+    if (hasActualMarketingSelections && !hasTrackingSelected && !trackingPopupDismissed) {
+      setShowTrackingPopup(true);
+      return;
+    }
+
+    await doSubmit();
+  }, [isSubmitting, hasActualMarketingSelections, hasTrackingSelected, trackingPopupDismissed, doSubmit]);
 
   // Domain selection step
   if (step === 'domains') {
@@ -476,7 +515,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               purple: 'border-purple-500 bg-purple-50',
               emerald: 'border-emerald-500 bg-emerald-50',
               amber: 'border-amber-500 bg-amber-50',
-              violet: 'border-violet-500 bg-violet-50'
+              violet: 'border-violet-500 bg-violet-50',
+              cyan: 'border-cyan-500 bg-cyan-50'
             };
 
             return (
@@ -586,6 +626,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         {selectedDomains.map(domainId => {
           const domain = domainConfigs[domainId];
 
+          // Skip tracking-reporting as it's rendered separately below
+          if (domainId === 'tracking-reporting') return null;
+
           // Special handling for AI Training
           if (domainId === 'ai-training') {
             const isDismissed = dismissedDomains[domainId];
@@ -654,7 +697,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                             <label className="block text-sm font-medium text-slate-700 mb-3">{t.aiTrainingFormat}</label>
                             <div className="grid grid-cols-2 gap-3">
                               <button
-                                onClick={() => setAiTraining(prev => ({ ...prev, format: 'half-day' }))}
+                                onClick={() => { setAiTrainingActivated(true); setAiTraining(prev => ({ ...prev, format: 'half-day', sessions: prev.sessions || '1' })); }}
                                 className={`p-4 rounded-xl border-2 text-left transition-all bg-white ${
                                   aiTraining.format === 'half-day'
                                     ? 'border-emerald-500 bg-emerald-50'
@@ -665,7 +708,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                 <div className="text-sm text-slate-500">3 heures</div>
                               </button>
                               <button
-                                onClick={() => setAiTraining(prev => ({ ...prev, format: 'full-day' }))}
+                                onClick={() => { setAiTrainingActivated(true); setAiTraining(prev => ({ ...prev, format: 'full-day', sessions: prev.sessions || '1' })); }}
                                 className={`p-4 rounded-xl border-2 text-left transition-all bg-white ${
                                   aiTraining.format === 'full-day'
                                     ? 'border-emerald-500 bg-emerald-50'
@@ -686,7 +729,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                             <label className="block text-sm font-medium text-slate-700 mb-3">{t.sessions}</label>
                             <div className="grid grid-cols-2 gap-3">
                               <button
-                                onClick={() => setAiTraining(prev => ({ ...prev, sessions: '1' }))}
+                                onClick={() => { setAiTrainingActivated(true); setAiTraining(prev => ({ ...prev, sessions: '1', format: prev.format || 'half-day' })); }}
                                 className={`p-4 rounded-xl border-2 text-left transition-all bg-white ${
                                   aiTraining.sessions === '1'
                                     ? 'border-emerald-500 bg-emerald-50'
@@ -696,7 +739,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                 <div className="font-semibold text-slate-900">{t.singleSession}</div>
                               </button>
                               <button
-                                onClick={() => setAiTraining(prev => ({ ...prev, sessions: '5+' }))}
+                                onClick={() => { setAiTrainingActivated(true); setAiTraining(prev => ({ ...prev, sessions: '5+', format: prev.format || 'half-day' })); }}
                                 className={`p-4 rounded-xl border-2 text-left transition-all bg-white ${
                                   aiTraining.sessions === '5+'
                                     ? 'border-emerald-500 bg-emerald-50'
@@ -937,7 +980,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                               max={BUDGET_CONFIG.max}
                               step={BUDGET_CONFIG.step}
                               value={budget}
-                              onChange={(e) => setAdBudgets(prev => ({ ...prev, [domainId]: parseInt(e.target.value) }))}
+                              onChange={(e) => {
+                                setBudgetActivated(prev => ({ ...prev, [domainId]: true }));
+                                setAdBudgets(prev => ({ ...prev, [domainId]: parseInt(e.target.value) }));
+                              }}
                               className={`w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer`}
                               style={{ accentColor: domain.color }}
                             />
@@ -1498,9 +1544,11 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 {t.trackingPopupAdd}
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
                   setShowTrackingPopup(false);
                   setTrackingPopupDismissed(true);
+                  // Submit the form directly
+                  await doSubmit();
                 }}
                 className="flex-1 px-6 py-4 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors"
               >

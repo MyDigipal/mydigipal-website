@@ -1,6 +1,6 @@
 // Calculator Types
 
-export type ServiceDomain = 'seo' | 'google-ads' | 'paid-social' | 'ai-training' | 'emailing' | 'ai-solutions';
+export type ServiceDomain = 'seo' | 'google-ads' | 'paid-social' | 'ai-training' | 'emailing' | 'ai-solutions' | 'tracking-reporting';
 
 export interface ServiceLevel {
   name: string;
