@@ -417,6 +417,179 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     if (isSubmitting) return;
     setIsSubmitting(true);
 
+    // Build detailed breakdown by department for email
+    const departmentBreakdown: Array<{
+      id: string;
+      name: string;
+      icon: string;
+      isNotSure: boolean;
+      services: Array<{
+        name: string;
+        level: string;
+        price: number;
+        isOneOff: boolean;
+      }>;
+      managementFee: number;
+      mediaBudget: number;
+      monthlySubtotal: number;
+      oneOffSubtotal: number;
+    }> = [];
+
+    selectedDomains.forEach(domainId => {
+      if (domainId === 'tracking-reporting') return; // Handle separately
+
+      const domain = domainConfigs[domainId];
+      if (!domain) return;
+
+      const deptData = {
+        id: domainId,
+        name: lang === 'fr' ? domain.nameFr : domain.name,
+        icon: domain.icon,
+        isNotSure: notSureAbout[domainId] || false,
+        services: [] as Array<{ name: string; level: string; price: number; isOneOff: boolean }>,
+        managementFee: 0,
+        mediaBudget: 0,
+        monthlySubtotal: 0,
+        oneOffSubtotal: 0
+      };
+
+      // Skip if dismissed
+      if (dismissedDomains[domainId]) return;
+
+      // If "not sure", add to breakdown but mark as isNotSure
+      if (notSureAbout[domainId]) {
+        departmentBreakdown.push(deptData);
+        return;
+      }
+
+      // AI Training special handling
+      if (domainId === 'ai-training' && aiTrainingActivated && aiTraining.format && aiTraining.sessions) {
+        const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
+        const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
+        const multiplier = aiTraining.sessions === '5+' ? sessionCount : 1;
+        const trainingPrice = base * multiplier;
+
+        deptData.services.push({
+          name: lang === 'fr' ? 'Formation IA' : 'AI Training',
+          level: `${aiTraining.format === 'full-day' ? (lang === 'fr' ? 'Journée complète' : 'Full day') : (lang === 'fr' ? 'Demi-journée' : 'Half day')} × ${multiplier} session(s)${aiTraining.inPerson ? (lang === 'fr' ? ' (présentiel)' : ' (in-person)') : ''}`,
+          price: trainingPrice,
+          isOneOff: true
+        });
+
+        if (aiTraining.inPerson) {
+          deptData.services.push({
+            name: lang === 'fr' ? 'Frais de déplacement' : 'Travel costs',
+            level: '',
+            price: 500,
+            isOneOff: true
+          });
+          deptData.oneOffSubtotal = trainingPrice + 500;
+        } else {
+          deptData.oneOffSubtotal = trainingPrice;
+        }
+
+        departmentBreakdown.push(deptData);
+        return;
+      }
+
+      // AI Solutions special handling
+      if (domainId === 'ai-solutions') {
+        deptData.services.push({
+          name: lang === 'fr' ? 'Solution IA sur-mesure' : 'Custom AI Solution',
+          level: lang === 'fr' ? 'Sur devis' : 'Custom quote',
+          price: 0,
+          isOneOff: false
+        });
+        departmentBreakdown.push(deptData);
+        return;
+      }
+
+      // Standard services
+      domain.services.forEach(service => {
+        const selectedLevel = selections[service.id];
+        if (selectedLevel !== null && selectedLevel !== undefined && !disabledServices[service.id]) {
+          const level = service.levels[selectedLevel];
+          if (level) {
+            deptData.services.push({
+              name: lang === 'fr' ? service.title : (service.titleEn || service.title),
+              level: lang === 'fr' ? level.name : (level.nameEn || level.name),
+              price: level.price,
+              isOneOff: service.isOneOff || false
+            });
+            if (service.isOneOff) {
+              deptData.oneOffSubtotal += level.price;
+            } else {
+              deptData.monthlySubtotal += level.price;
+            }
+          }
+        }
+      });
+
+      // CMS addon for SEO
+      if (domainId === 'seo' && cmsAddon && selections['seo-content'] !== null) {
+        deptData.services.push({
+          name: lang === 'fr' ? 'Publication CMS automatique' : 'Auto CMS Publishing',
+          level: 'Add-on',
+          price: 100,
+          isOneOff: false
+        });
+        deptData.monthlySubtotal += 100;
+      }
+
+      // Management fee for ads
+      if (domain.hasTieredManagementFee && domain.hasBudgetSlider && budgetActivated[domainId as 'google-ads' | 'paid-social']) {
+        const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
+        const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
+        deptData.managementFee = feeResult.fee;
+        deptData.mediaBudget = budget;
+        deptData.monthlySubtotal += feeResult.fee;
+      }
+
+      if (deptData.services.length > 0 || deptData.managementFee > 0) {
+        departmentBreakdown.push(deptData);
+      }
+    });
+
+    // Tracking breakdown
+    const trackingBreakdownData = {
+      id: 'tracking',
+      name: 'Tracking & Reporting',
+      icon: '📊',
+      isNotSure: trackingNotSure,
+      services: [] as Array<{ name: string; level: string; price: number; isOneOff: boolean }>,
+      managementFee: 0,
+      mediaBudget: 0,
+      monthlySubtotal: 0,
+      oneOffSubtotal: 0
+    };
+
+    if (!trackingDismissed && !trackingNotSure) {
+      if (trackingAudit) {
+        trackingBreakdownData.services.push({
+          name: lang === 'fr' ? trackingAuditOption.titleFr : trackingAuditOption.title,
+          level: '',
+          price: trackingAuditOption.price,
+          isOneOff: true
+        });
+        trackingBreakdownData.oneOffSubtotal += trackingAuditOption.price;
+      }
+      trackingServices.forEach(service => {
+        if (trackingSelections[service.id]) {
+          trackingBreakdownData.services.push({
+            name: lang === 'fr' ? service.titleFr : service.title,
+            level: '',
+            price: service.price,
+            isOneOff: true
+          });
+          trackingBreakdownData.oneOffSubtotal += service.price;
+        }
+      });
+    }
+
+    if (trackingBreakdownData.services.length > 0 || trackingNotSure) {
+      departmentBreakdown.push(trackingBreakdownData);
+    }
+
     const payload = {
       contact,
       selectedDomains,
@@ -437,6 +610,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       trackingAudit,
       trackingNotSure,
       cmsAddon,
+      departmentBreakdown,
       metadata: {
         timestamp: new Date().toISOString(),
         source: 'marketing-calculator-v4',
@@ -478,7 +652,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     } finally {
       setIsSubmitting(false);
     }
-  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, trackingNotSure, cmsAddon, lang, isSubmitting, notSureAbout]);
+  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, trackingNotSure, cmsAddon, lang, isSubmitting, notSureAbout, dismissedDomains, disabledServices, budgetActivated, aiTrainingActivated, sessionCount, trackingDismissed]);
 
   // Submit handler with popup check
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
