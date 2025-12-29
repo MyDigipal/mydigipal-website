@@ -11,237 +11,30 @@
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1.1,
-      "position": [
-        300,
-        500
-      ],
+      "position": [300, 500],
       "webhookId": "calculateur-marketing-form"
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "timestamp",
-              "name": "timestamp",
-              "type": "string",
-              "value": "={{ $now.format('dd/MM/yyyy HH:mm') }}"
-            },
-            {
-              "id": "lang",
-              "name": "lang",
-              "type": "string",
-              "value": "={{ $json.body.metadata.lang || 'fr' }}"
-            },
-            {
-              "id": "name",
-              "name": "name",
-              "type": "string",
-              "value": "={{ $json.body.contact.name }}"
-            },
-            {
-              "id": "email",
-              "name": "email",
-              "type": "string",
-              "value": "={{ $json.body.contact.email }}"
-            },
-            {
-              "id": "company",
-              "name": "company",
-              "type": "string",
-              "value": "={{ $json.body.contact.company || 'Non renseigné' }}"
-            },
-            {
-              "id": "domains",
-              "name": "domains",
-              "type": "string",
-              "value": "={{ $json.body.selectedDomains.join(', ') }}"
-            },
-            {
-              "id": "duration",
-              "name": "duration",
-              "type": "number",
-              "value": "={{ $json.body.duration }}"
-            },
-            {
-              "id": "monthlyTotal",
-              "name": "monthlyTotal",
-              "type": "number",
-              "value": "={{ $json.body.pricing.monthlyTotal || 0 }}"
-            },
-            {
-              "id": "oneOffTotal",
-              "name": "oneOffTotal",
-              "type": "number",
-              "value": "={{ $json.body.pricing.oneOffTotal || 0 }}"
-            },
-            {
-              "id": "grandTotal",
-              "name": "grandTotal",
-              "type": "number",
-              "value": "={{ $json.body.pricing.grandTotalWithoutBudget || 0 }}"
-            },
-            {
-              "id": "monthlyAfterDiscount",
-              "name": "monthlyAfterDiscount",
-              "type": "number",
-              "value": "={{ Math.round($json.body.pricing.monthlyAfterDiscount || 0) }}"
-            },
-            {
-              "id": "managementFees",
-              "name": "managementFees",
-              "type": "number",
-              "value": "={{ Math.round($json.body.pricing.managementFeesTotal || 0) }}"
-            },
-            {
-              "id": "hasCustomQuote",
-              "name": "hasCustomQuote",
-              "type": "boolean",
-              "value": "={{ $json.body.pricing.hasCustomQuote || false }}"
-            },
-            {
-              "id": "discountPercentage",
-              "name": "discountPercentage",
-              "type": "number",
-              "value": "={{ $json.body.pricing.discountPercentage || 0 }}"
-            },
-            {
-              "id": "totalAdBudget",
-              "name": "totalAdBudget",
-              "type": "number",
-              "value": "={{ $json.body.pricing.adBudgetTotal || 0 }}"
-            },
-            {
-              "id": "trackingTotal",
-              "name": "trackingTotal",
-              "type": "number",
-              "value": "={{ $json.body.pricing.trackingTotal || 0 }}"
-            },
-            {
-              "id": "googleAdsBudget",
-              "name": "googleAdsBudget",
-              "type": "number",
-              "value": "={{ $json.body.adBudgets && $json.body.adBudgets['google-ads'] ? $json.body.adBudgets['google-ads'] : 0 }}"
-            },
-            {
-              "id": "paidSocialBudget",
-              "name": "paidSocialBudget",
-              "type": "number",
-              "value": "={{ $json.body.adBudgets && $json.body.adBudgets['paid-social'] ? $json.body.adBudgets['paid-social'] : 0 }}"
-            },
-            {
-              "id": "hasGoogleAds",
-              "name": "hasGoogleAds",
-              "type": "boolean",
-              "value": "={{ $json.body.selectedDomains.includes('google-ads') }}"
-            },
-            {
-              "id": "hasPaidSocial",
-              "name": "hasPaidSocial",
-              "type": "boolean",
-              "value": "={{ $json.body.selectedDomains.includes('paid-social') }}"
-            },
-            {
-              "id": "notSureAbout",
-              "name": "notSureAbout",
-              "type": "string",
-              "value": "={{ Object.keys($json.body.notSureAbout || {}).filter(k => $json.body.notSureAbout[k]).join(', ') || '' }}"
-            },
-            {
-              "id": "trackingNotSure",
-              "name": "trackingNotSure",
-              "type": "boolean",
-              "value": "={{ $json.body.trackingNotSure || false }}"
-            },
-            {
-              "id": "hasNotSure",
-              "name": "hasNotSure",
-              "type": "boolean",
-              "value": "={{ Object.keys($json.body.notSureAbout || {}).filter(k => $json.body.notSureAbout[k]).length > 0 || $json.body.trackingNotSure }}"
-            },
-            {
-              "id": "trackingAudit",
-              "name": "trackingAudit",
-              "type": "boolean",
-              "value": "={{ $json.body.trackingAudit || false }}"
-            },
-            {
-              "id": "trackingServices",
-              "name": "trackingServices",
-              "type": "string",
-              "value": "={{ Object.keys($json.body.trackingSelections || {}).filter(k => $json.body.trackingSelections[k]).join(', ') }}"
-            },
-            {
-              "id": "aiTrainingFormat",
-              "name": "aiTrainingFormat",
-              "type": "string",
-              "value": "={{ $json.body.aiTraining ? ($json.body.aiTraining.format === 'full-day' ? 'Journée complète' : 'Demi-journée') : '' }}"
-            },
-            {
-              "id": "aiTrainingSessions",
-              "name": "aiTrainingSessions",
-              "type": "string",
-              "value": "={{ $json.body.aiTraining ? $json.body.aiTraining.sessions : '' }}"
-            },
-            {
-              "id": "aiTrainingInPerson",
-              "name": "aiTrainingInPerson",
-              "type": "boolean",
-              "value": "={{ $json.body.aiTraining ? $json.body.aiTraining.inPerson : false }}"
-            },
-            {
-              "id": "hasAiTraining",
-              "name": "hasAiTraining",
-              "type": "boolean",
-              "value": "={{ $json.body.selectedDomains.includes('ai-training') }}"
-            },
-            {
-              "id": "hasAiSolutions",
-              "name": "hasAiSolutions",
-              "type": "boolean",
-              "value": "={{ $json.body.selectedDomains.includes('ai-solutions') }}"
-            },
-            {
-              "id": "aiSolutionsInfo",
-              "name": "aiSolutionsInfo",
-              "type": "string",
-              "value": "={{ $json.body.aiSolutions ? JSON.stringify($json.body.aiSolutions) : '' }}"
-            },
-            {
-              "id": "rawPayload",
-              "name": "rawPayload",
-              "type": "string",
-              "value": "={{ JSON.stringify($json.body) }}"
-            }
-          ]
-        },
-        "options": {}
+        "jsCode": "// Generate detailed HTML from departmentBreakdown\nconst data = $input.first().json.body;\nconst breakdown = data.departmentBreakdown || [];\nconst pricing = data.pricing || {};\nconst lang = data.metadata?.lang || 'fr';\nconst duration = data.duration || 4;\n\n// Helper function to format price\nconst formatPrice = (price) => Math.round(price).toLocaleString('fr-FR');\n\n// Department colors based on ID\nconst deptColors = {\n  'seo': { bg: '#EEF2FF', border: '#818CF8', text: '#4F46E5', icon: '#6366F1' },\n  'google-ads': { bg: '#EFF6FF', border: '#60A5FA', text: '#2563EB', icon: '#3B82F6' },\n  'paid-social': { bg: '#F5F3FF', border: '#A78BFA', text: '#7C3AED', icon: '#8B5CF6' },\n  'emailing': { bg: '#FFFBEB', border: '#FBBF24', text: '#D97706', icon: '#F59E0B' },\n  'ai-training': { bg: '#ECFDF5', border: '#34D399', text: '#059669', icon: '#10B981' },\n  'ai-solutions': { bg: '#F5F3FF', border: '#A78BFA', text: '#7C3AED', icon: '#8B5CF6' },\n  'tracking': { bg: '#ECFEFF', border: '#22D3EE', text: '#0891B2', icon: '#06B6D4' }\n};\n\nconst defaultColors = { bg: '#F9FAFB', border: '#D1D5DB', text: '#374151', icon: '#6B7280' };\n\n// Generate department HTML blocks\nlet departmentsHtml = '';\nlet totalMonthly = 0;\nlet totalOneOff = 0;\nlet totalMediaBudget = 0;\n\nbreakdown.forEach(dept => {\n  const colors = deptColors[dept.id] || defaultColors;\n  \n  if (dept.isNotSure) {\n    // \"Not sure\" department - show as amber box\n    departmentsHtml += `\n      <div style=\"background: #FEF3C7; border: 2px solid #F59E0B; border-radius: 12px; padding: 16px; margin-bottom: 16px;\">\n        <div style=\"display: flex; align-items: center; gap: 12px;\">\n          <span style=\"font-size: 24px;\">${dept.icon}</span>\n          <div style=\"flex: 1;\">\n            <h3 style=\"margin: 0; color: #92400E; font-size: 16px; font-weight: 600;\">${dept.name}</h3>\n            <p style=\"margin: 4px 0 0 0; color: #B45309; font-size: 14px;\">💬 ${lang === 'fr' ? 'À discuter ensemble' : 'To discuss together'}</p>\n          </div>\n        </div>\n      </div>\n    `;\n    return;\n  }\n  \n  // Normal department with services\n  let servicesHtml = '';\n  dept.services.forEach(service => {\n    const priceText = service.price > 0 \n      ? `${formatPrice(service.price)}€${service.isOneOff ? '' : '/mois'}` \n      : (service.level || '');\n    servicesHtml += `\n      <tr>\n        <td style=\"padding: 8px 12px; border-bottom: 1px solid #E5E7EB; color: #374151; font-size: 14px;\">\n          ${service.name}${service.level && service.price > 0 ? ` <span style=\"color: #6B7280; font-size: 12px;\">(${service.level})</span>` : ''}\n        </td>\n        <td style=\"padding: 8px 12px; border-bottom: 1px solid #E5E7EB; text-align: right; font-weight: 500; color: ${colors.text}; font-size: 14px;\">\n          ${priceText}\n        </td>\n      </tr>\n    `;\n  });\n  \n  // Management fee row\n  if (dept.managementFee > 0) {\n    servicesHtml += `\n      <tr>\n        <td style=\"padding: 8px 12px; border-bottom: 1px solid #E5E7EB; color: #374151; font-size: 14px;\">\n          ${lang === 'fr' ? 'Frais de gestion publicitaire' : 'Ad management fee'}\n        </td>\n        <td style=\"padding: 8px 12px; border-bottom: 1px solid #E5E7EB; text-align: right; font-weight: 500; color: ${colors.text}; font-size: 14px;\">\n          ${formatPrice(dept.managementFee)}€/mois\n        </td>\n      </tr>\n    `;\n  }\n  \n  // Media budget row\n  if (dept.mediaBudget > 0) {\n    servicesHtml += `\n      <tr>\n        <td style=\"padding: 8px 12px; border-bottom: 1px solid #E5E7EB; color: #F59E0B; font-size: 14px;\">\n          ${lang === 'fr' ? 'Budget média (non inclus)' : 'Media budget (not included)'}\n        </td>\n        <td style=\"padding: 8px 12px; border-bottom: 1px solid #E5E7EB; text-align: right; font-weight: 500; color: #F59E0B; font-size: 14px;\">\n          ${formatPrice(dept.mediaBudget)}€/mois\n        </td>\n      </tr>\n    `;\n    totalMediaBudget += dept.mediaBudget;\n  }\n  \n  // Calculate subtotals\n  totalMonthly += dept.monthlySubtotal;\n  totalOneOff += dept.oneOffSubtotal;\n  \n  // Subtotal row\n  let subtotalHtml = '';\n  if (dept.monthlySubtotal > 0 || dept.oneOffSubtotal > 0) {\n    const parts = [];\n    if (dept.monthlySubtotal > 0) parts.push(`${formatPrice(dept.monthlySubtotal)}€/mois`);\n    if (dept.oneOffSubtotal > 0) parts.push(`${formatPrice(dept.oneOffSubtotal)}€ one-off`);\n    \n    subtotalHtml = `\n      <tr style=\"background: ${colors.bg};\">\n        <td style=\"padding: 10px 12px; font-weight: 600; color: ${colors.text}; font-size: 14px;\">\n          ${lang === 'fr' ? 'Sous-total' : 'Subtotal'} ${dept.name}\n        </td>\n        <td style=\"padding: 10px 12px; text-align: right; font-weight: 700; color: ${colors.text}; font-size: 15px;\">\n          ${parts.join(' + ')}\n        </td>\n      </tr>\n    `;\n  }\n  \n  departmentsHtml += `\n    <div style=\"background: white; border: 2px solid ${colors.border}; border-radius: 12px; overflow: hidden; margin-bottom: 16px;\">\n      <div style=\"background: ${colors.bg}; padding: 14px 16px; border-bottom: 1px solid ${colors.border};\">\n        <div style=\"display: flex; align-items: center; gap: 12px;\">\n          <span style=\"font-size: 28px;\">${dept.icon}</span>\n          <h3 style=\"margin: 0; color: ${colors.text}; font-size: 18px; font-weight: 700;\">${dept.name}</h3>\n        </div>\n      </div>\n      <table style=\"width: 100%; border-collapse: collapse;\">\n        ${servicesHtml}\n        ${subtotalHtml}\n      </table>\n    </div>\n  `;\n});\n\n// Generate totals section\nconst discountPct = pricing.discountPercentage || 0;\nconst monthlyAfterDiscount = pricing.monthlyAfterDiscount || 0;\nconst grandTotal = pricing.grandTotalWithoutBudget || 0;\n\nlet totalsHtml = `\n  <div style=\"background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%); border-radius: 12px; padding: 24px; color: white; margin-top: 24px;\">\n    <h3 style=\"margin: 0 0 16px 0; font-size: 18px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 12px;\">💰 ${lang === 'fr' ? 'Récapitulatif financier' : 'Financial Summary'}</h3>\n    <table style=\"width: 100%; border-collapse: collapse;\">\n`;\n\nif (totalMonthly > 0) {\n  totalsHtml += `\n    <tr>\n      <td style=\"padding: 8px 0; color: rgba(255,255,255,0.85); font-size: 14px;\">${lang === 'fr' ? 'Services mensuels' : 'Monthly services'}</td>\n      <td style=\"padding: 8px 0; text-align: right; font-weight: 500; font-size: 14px;\">${formatPrice(totalMonthly)}€/mois</td>\n    </tr>\n  `;\n}\n\nif (discountPct > 0) {\n  totalsHtml += `\n    <tr>\n      <td style=\"padding: 8px 0; color: #86EFAC; font-size: 14px;\">${lang === 'fr' ? 'Remise engagement' : 'Commitment discount'} ${duration} mois</td>\n      <td style=\"padding: 8px 0; text-align: right; color: #86EFAC; font-weight: 500; font-size: 14px;\">-${discountPct}%</td>\n    </tr>\n  `;\n}\n\nif (monthlyAfterDiscount > 0) {\n  totalsHtml += `\n    <tr>\n      <td style=\"padding: 8px 0; color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 600;\">${lang === 'fr' ? 'Mensuel après remise' : 'Monthly after discount'}</td>\n      <td style=\"padding: 8px 0; text-align: right; font-weight: 700; font-size: 16px;\">${formatPrice(monthlyAfterDiscount)}€/mois</td>\n    </tr>\n  `;\n}\n\nif (totalOneOff > 0) {\n  totalsHtml += `\n    <tr>\n      <td style=\"padding: 8px 0; color: rgba(255,255,255,0.85); font-size: 14px;\">${lang === 'fr' ? 'Services one-off' : 'One-time services'}</td>\n      <td style=\"padding: 8px 0; text-align: right; font-weight: 500; font-size: 14px;\">${formatPrice(totalOneOff)}€</td>\n    </tr>\n  `;\n}\n\nif (totalMediaBudget > 0) {\n  totalsHtml += `\n    <tr>\n      <td style=\"padding: 8px 0; color: #FCD34D; font-size: 14px;\">${lang === 'fr' ? 'Budget média (non inclus)' : 'Media budget (not included)'}</td>\n      <td style=\"padding: 8px 0; text-align: right; color: #FCD34D; font-weight: 500; font-size: 14px;\">${formatPrice(totalMediaBudget)}€/mois</td>\n    </tr>\n  `;\n}\n\ntotalsHtml += `\n    <tr style=\"border-top: 2px solid rgba(255,255,255,0.3);\">\n      <td style=\"padding: 16px 0 8px 0; font-size: 18px; font-weight: 700;\">${lang === 'fr' ? 'TOTAL' : 'TOTAL'} (${duration} mois)</td>\n      <td style=\"padding: 16px 0 8px 0; text-align: right; font-size: 28px; font-weight: 800;\">${grandTotal > 0 ? formatPrice(grandTotal) + '€' : (lang === 'fr' ? 'À discuter' : 'To discuss')}</td>\n    </tr>\n  </table>\n</div>\n`;\n\nreturn {\n  json: {\n    ...data,\n    departmentsHtml,\n    totalsHtml,\n    timestamp: new Date().toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),\n    langFlag: lang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR',\n    monthlyAfterDiscount: formatPrice(monthlyAfterDiscount),\n    grandTotal: grandTotal > 0 ? formatPrice(grandTotal) : (lang === 'fr' ? 'À discuter' : 'To discuss'),\n    hasNotSure: breakdown.some(d => d.isNotSure),\n    notSureList: breakdown.filter(d => d.isNotSure).map(d => d.name).join(', ')\n  }\n};"
       },
-      "id": "b63d9fd5-ee23-4c93-8b3d-fcda631f6029",
-      "name": "Prepare Data",
-      "type": "n8n-nodes-base.set",
-      "position": [
-        520,
-        500
-      ],
-      "typeVersion": 3.4
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Generate Email HTML",
+      "type": "n8n-nodes-base.code",
+      "position": [520, 500],
+      "typeVersion": 2
     },
     {
       "parameters": {
-        "sendTo": "={{ $('Prepare Data').item.json.email }}",
-        "subject": "={{ $('Prepare Data').item.json.lang === 'en' ? 'Your Marketing Quote - ' + ($('Prepare Data').item.json.monthlyAfterDiscount > 0 ? $('Prepare Data').item.json.monthlyAfterDiscount + '€/month' : 'Custom Quote') + ' | MyDigipal' : 'Votre devis Marketing Digital - ' + ($('Prepare Data').item.json.monthlyAfterDiscount > 0 ? $('Prepare Data').item.json.monthlyAfterDiscount + '€/mois' : 'Sur devis') + ' | MyDigipal' }}",
-        "message": "=<div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; background: #ffffff;\">\n\n<!-- Header -->\n<div style=\"background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%); padding: 40px 30px; border-radius: 16px 16px 0 0; text-align: center;\">\n<img src=\"https://mydigipal.com/mydigipal-logo-white.png\" alt=\"MyDigipal\" style=\"height: 40px; margin-bottom: 20px;\" />\n<h1 style=\"color: white; margin: 0; font-size: 28px; font-weight: 600;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Thank you, ' + $('Prepare Data').item.json.name + '!' : 'Merci ' + $('Prepare Data').item.json.name + ' !' }}</h1>\n<p style=\"color: rgba(255,255,255,0.9); margin: 12px 0 0 0; font-size: 16px;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Your personalized quote is ready' : 'Votre devis personnalisé est prêt' }}</p>\n</div>\n\n<!-- Main Content -->\n<div style=\"padding: 35px 30px; border: 1px solid #E5E7EB; border-top: none;\">\n\n<!-- Thank you message -->\n<div style=\"background: #F0F9FF; padding: 20px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #3b82f6;\">\n<p style=\"color: #1e40af; line-height: 1.7; font-size: 15px; margin: 0;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Thank you for using our marketing calculator! We have received your quote request for <strong>' + $('Prepare Data').item.json.company + '</strong>. Our team will carefully review your needs and contact you within <strong>24 to 48 hours</strong> to discuss your project in detail.' : 'Merci d\\'avoir utilisé notre calculateur marketing ! Nous avons bien reçu votre demande de devis pour <strong>' + $('Prepare Data').item.json.company + '</strong>. Notre équipe va analyser vos besoins et vous recontacter sous <strong>24 à 48h</strong> pour en discuter ensemble.' }}</p>\n</div>\n\n<!-- Quote Summary Box -->\n<div style=\"background: #F9FAFB; padding: 25px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #E5E7EB;\">\n<h2 style=\"margin: 0 0 20px 0; color: #1F2937; font-size: 18px; display: flex; align-items: center;\">\n<span style=\"background: #3b82f6; color: white; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 14px;\">📋</span>\n{{ $('Prepare Data').item.json.lang === 'en' ? 'Your Quote Summary' : 'Récapitulatif de votre devis' }}\n</h2>\n\n<!-- Services -->\n<div style=\"margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #E5E7EB;\">\n<p style=\"color: #6B7280; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 6px 0; font-weight: 600;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Selected services' : 'Services sélectionnés' }}</p>\n<p style=\"color: #1F2937; margin: 0; font-weight: 500; font-size: 15px;\">{{ $('Prepare Data').item.json.domains }}</p>\n</div>\n\n<!-- To Discuss Section (if any) -->\n{{ $('Prepare Data').item.json.hasNotSure ? '<div style=\"margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #E5E7EB; background: #FEF3C7; padding: 15px; border-radius: 8px;\"><p style=\"color: #92400E; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 6px 0; font-weight: 600;\">💬 ' + ($('Prepare Data').item.json.lang === 'en' ? 'To discuss together' : 'À discuter ensemble') + '</p><p style=\"color: #78350F; margin: 0; font-size: 14px;\">' + ($('Prepare Data').item.json.notSureAbout ? $('Prepare Data').item.json.notSureAbout : '') + ($('Prepare Data').item.json.trackingNotSure ? ($('Prepare Data').item.json.notSureAbout ? ', Tracking' : 'Tracking') : '') + '</p></div>' : '' }}\n\n<!-- Duration -->\n<div style=\"margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #E5E7EB;\">\n<p style=\"color: #6B7280; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 6px 0; font-weight: 600;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Commitment' : 'Engagement' }}</p>\n<p style=\"color: #1F2937; margin: 0; font-size: 15px;\">{{ $('Prepare Data').item.json.duration }} {{ $('Prepare Data').item.json.lang === 'en' ? 'months' : 'mois' }}{{ $('Prepare Data').item.json.discountPercentage > 0 ? ' <span style=\"background: #DEF7EC; color: #03543F; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;\">-' + $('Prepare Data').item.json.discountPercentage + '%</span>' : '' }}</p>\n</div>\n\n<!-- Monthly services if > 0 -->\n{{ ($('Prepare Data').item.json.monthlyTotal + $('Prepare Data').item.json.managementFees) > 0 ? '<div style=\"margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #E5E7EB;\"><p style=\"color: #6B7280; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 6px 0; font-weight: 600;\">' + ($('Prepare Data').item.json.lang === 'en' ? 'Monthly services' : 'Services mensuels') + '</p><p style=\"color: #1F2937; margin: 0; font-size: 15px;\">' + ($('Prepare Data').item.json.monthlyTotal + $('Prepare Data').item.json.managementFees) + '€/' + ($('Prepare Data').item.json.lang === 'en' ? 'month' : 'mois') + '</p></div>' : '' }}\n\n<!-- One-off if > 0 -->\n{{ $('Prepare Data').item.json.oneOffTotal > 0 ? '<div style=\"margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #E5E7EB;\"><p style=\"color: #6B7280; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 6px 0; font-weight: 600;\">' + ($('Prepare Data').item.json.lang === 'en' ? 'One-time services' : 'Services one-off') + '</p><p style=\"color: #1F2937; margin: 0; font-size: 15px;\">' + $('Prepare Data').item.json.oneOffTotal + '€</p></div>' : '' }}\n\n<!-- Ad Budget if > 0 -->\n{{ $('Prepare Data').item.json.totalAdBudget > 0 ? '<div style=\"margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #E5E7EB;\"><p style=\"color: #6B7280; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 6px 0; font-weight: 600;\">' + ($('Prepare Data').item.json.lang === 'en' ? 'Advertising budget (not included in fees)' : 'Budget publicitaire (non inclus dans les frais)') + '</p><p style=\"color: #F59E0B; margin: 0; font-size: 15px; font-weight: 500;\">' + $('Prepare Data').item.json.totalAdBudget + '€/' + ($('Prepare Data').item.json.lang === 'en' ? 'month' : 'mois') + '</p></div>' : '' }}\n\n<!-- Price Box - only if there's actual pricing -->\n{{ $('Prepare Data').item.json.monthlyAfterDiscount > 0 ? '<div style=\"background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%); padding: 25px; border-radius: 12px; text-align: center;\"><p style=\"color: rgba(255,255,255,0.85); margin: 0 0 5px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;\">' + ($('Prepare Data').item.json.lang === 'en' ? 'Monthly investment' : 'Investissement mensuel') + '</p><p style=\"color: white; margin: 0; font-size: 42px; font-weight: 700;\">' + $('Prepare Data').item.json.monthlyAfterDiscount + '€<span style=\"font-size: 18px; font-weight: 400; opacity: 0.9;\">/' + ($('Prepare Data').item.json.lang === 'en' ? 'mo' : 'mois') + '</span></p>' + ($('Prepare Data').item.json.grandTotal > 0 ? '<div style=\"border-top: 1px solid rgba(255,255,255,0.2); margin-top: 15px; padding-top: 15px;\"><p style=\"color: rgba(255,255,255,0.9); margin: 0; font-size: 14px;\">' + ($('Prepare Data').item.json.lang === 'en' ? 'Total over ' + $('Prepare Data').item.json.duration + ' months: <strong>' + Math.round($('Prepare Data').item.json.grandTotal) + '€</strong>' : 'Total sur ' + $('Prepare Data').item.json.duration + ' mois : <strong>' + Math.round($('Prepare Data').item.json.grandTotal) + '€</strong>') + '</p></div>' : '') + '</div>' : '<div style=\"background: #FEF3C7; padding: 25px; border-radius: 12px; text-align: center;\"><p style=\"color: #92400E; margin: 0; font-size: 18px; font-weight: 600;\">💬 ' + ($('Prepare Data').item.json.lang === 'en' ? 'Let\\'s discuss your needs' : 'Discutons de vos besoins') + '</p><p style=\"color: #78350F; margin: 10px 0 0 0; font-size: 14px;\">' + ($('Prepare Data').item.json.lang === 'en' ? 'We will contact you to define the best solution together.' : 'Nous vous recontacterons pour définir ensemble la meilleure solution.') + '</p></div>' }}\n</div>\n\n<!-- What's included -->\n<div style=\"background: #F0FDF4; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #BBF7D0;\">\n<h3 style=\"color: #166534; margin: 0 0 12px 0; font-size: 15px; font-weight: 600;\">{{ $('Prepare Data').item.json.lang === 'en' ? '✨ Included in all our services' : '✨ Inclus dans tous nos services' }}</h3>\n<ul style=\"color: #15803D; margin: 0; padding-left: 18px; line-height: 1.9; font-size: 14px;\">\n<li>{{ $('Prepare Data').item.json.lang === 'en' ? 'LLM optimization (ChatGPT, Perplexity, Copilot)' : 'Optimisation pour les LLMs (ChatGPT, Perplexity, Copilot)' }}</li>\n<li>{{ $('Prepare Data').item.json.lang === 'en' ? 'Premium tools (Ahrefs, SEMrush, Meta Business Suite)' : 'Outils premium (Ahrefs, SEMrush, Meta Business Suite)' }}</li>\n<li>{{ $('Prepare Data').item.json.lang === 'en' ? 'Detailed monthly reporting' : 'Reporting mensuel détaillé' }}</li>\n<li>{{ $('Prepare Data').item.json.lang === 'en' ? 'Responsive support via email and video call' : 'Support réactif par email et visio' }}</li>\n</ul>\n</div>\n\n<!-- CTA -->\n<div style=\"background: #FEF3C7; padding: 18px 20px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #F59E0B;\">\n<p style=\"color: #92400E; margin: 0; font-size: 14px;\">{{ $('Prepare Data').item.json.lang === 'en' ? '💬 <strong>Questions?</strong> Simply reply to this email - we\\'re here to help!' : '💬 <strong>Des questions ?</strong> Répondez simplement à cet email - nous sommes là pour vous aider !' }}</p>\n</div>\n\n<!-- Signature -->\n<div style=\"margin-top: 30px; padding-top: 25px; border-top: 1px solid #E5E7EB;\">\n<p style=\"color: #374151; margin: 0; font-size: 15px;\">{{ $('Prepare Data').item.json.lang === 'en' ? 'Looking forward to speaking with you,' : 'À très vite,' }}</p>\n<p style=\"margin: 12px 0 0 0;\"><strong style=\"color: #1F2937; font-size: 16px;\">Paul MUSIC</strong></p>\n<p style=\"color: #6B7280; margin: 2px 0; font-size: 14px;\">CEO - MyDigipal</p>\n<p style=\"margin: 10px 0 0 0;\"><a href=\"mailto:paul@mydigipal.com\" style=\"color: #3b82f6; text-decoration: none; font-size: 14px;\">paul@mydigipal.com</a></p>\n</div>\n\n</div>\n\n<!-- Footer -->\n<div style=\"background: #F9FAFB; padding: 20px 30px; border-radius: 0 0 16px 16px; border: 1px solid #E5E7EB; border-top: none; text-align: center;\">\n<p style=\"color: #9CA3AF; margin: 0; font-size: 12px;\">© 2025 MyDigipal - Digital Marketing Agency</p>\n<p style=\"margin: 8px 0 0 0;\"><a href=\"https://www.mydigipal.com\" style=\"color: #6B7280; text-decoration: none; font-size: 12px;\">www.mydigipal.com</a></p>\n</div>\n\n</div>",
-        "options": {
-          "replyTo": "paul@mydigipal.com"
-        }
+        "sendTo": "paul@mydigipal.com",
+        "subject": "=🔔 Nouveau lead: {{ $json.contact.name }} ({{ $json.contact.company }}) - {{ $json.grandTotal }}€",
+        "message": "=<div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 0 auto;\">\n\n<!-- Header -->\n<div style=\"background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%); padding: 25px 30px; border-radius: 12px 12px 0 0;\">\n<h2 style=\"color: white; margin: 0; font-size: 22px;\">🎯 Nouveau lead depuis le calculateur</h2>\n<p style=\"color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;\">{{ $json.timestamp }} | Langue: {{ $json.langFlag }}</p>\n</div>\n\n<!-- Main Content -->\n<div style=\"background: #fff; padding: 30px; border: 1px solid #E5E7EB; border-top: none; border-radius: 0 0 12px 12px;\">\n\n<!-- Contact Section -->\n<div style=\"background: #F8FAFC; padding: 20px; border-radius: 10px; margin-bottom: 25px;\">\n<h3 style=\"color: #3b82f6; margin: 0 0 15px 0; font-size: 16px;\">👤 Contact</h3>\n<table style=\"width: 100%; border-collapse: collapse;\">\n<tr>\n<td style=\"padding: 10px 15px; background: white; border-radius: 6px 0 0 0; width: 130px; font-weight: 600; color: #64748B; font-size: 13px;\">Nom</td>\n<td style=\"padding: 10px 15px; background: white; border-radius: 0 6px 0 0; color: #1F2937; font-size: 14px;\">{{ $json.contact.name }}</td>\n</tr>\n<tr>\n<td style=\"padding: 10px 15px; background: white; font-weight: 600; color: #64748B; font-size: 13px;\">Email</td>\n<td style=\"padding: 10px 15px; background: white;\"><a href=\"mailto:{{ $json.contact.email }}\" style=\"color: #3b82f6; text-decoration: none; font-size: 14px;\">{{ $json.contact.email }}</a></td>\n</tr>\n<tr>\n<td style=\"padding: 10px 15px; background: white; border-radius: 0 0 0 6px; font-weight: 600; color: #64748B; font-size: 13px;\">Entreprise</td>\n<td style=\"padding: 10px 15px; background: white; border-radius: 0 0 6px 0; color: #1F2937; font-size: 14px;\">{{ $json.contact.company }}</td>\n</tr>\n<tr>\n<td style=\"padding: 10px 15px; background: white; font-weight: 600; color: #64748B; font-size: 13px;\">Durée</td>\n<td style=\"padding: 10px 15px; background: white; color: #1F2937; font-size: 14px;\">{{ $json.duration }} mois{{ $json.pricing.discountPercentage > 0 ? ' <span style=\"background: #DEF7EC; color: #03543F; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;\">-' + $json.pricing.discountPercentage + '%</span>' : '' }}</td>\n</tr>\n</table>\n</div>\n\n<!-- \"To Discuss\" Section -->\n{{ $json.hasNotSure ? '<div style=\"background: #FEF3C7; padding: 16px 20px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #F59E0B;\"><h3 style=\"color: #92400E; margin: 0 0 8px 0; font-size: 16px;\">💬 À discuter avec le prospect</h3><p style=\"color: #78350F; margin: 0; font-size: 14px;\">' + $json.notSureList + '</p></div>' : '' }}\n\n<!-- Departments Breakdown -->\n<div style=\"margin-bottom: 10px;\">\n<h3 style=\"color: #1F2937; margin: 0 0 16px 0; font-size: 18px; font-weight: 700;\">📋 Détail par département</h3>\n{{ $json.departmentsHtml }}\n</div>\n\n<!-- Financial Summary -->\n{{ $json.totalsHtml }}\n\n<!-- CTA -->\n<div style=\"text-align: center; padding-top: 24px; margin-top: 24px; border-top: 1px solid #E5E7EB;\">\n<a href=\"mailto:{{ $json.contact.email }}?subject=Re: Votre devis MyDigipal - {{ $json.contact.company }}\" style=\"display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; padding: 14px 35px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 15px;\">📧 Répondre au prospect</a>\n</div>\n\n<!-- Raw JSON (collapsible) -->\n<details style=\"margin-top: 25px;\">\n<summary style=\"cursor: pointer; color: #6B7280; font-size: 13px;\">📄 Voir le JSON complet</summary>\n<pre style=\"background: #F3F4F6; padding: 15px; border-radius: 8px; overflow: auto; font-size: 11px; margin-top: 10px; white-space: pre-wrap; word-break: break-all;\">{{ JSON.stringify($json, null, 2) }}</pre>\n</details>\n\n</div>\n</div>",
+        "options": {}
       },
-      "id": "677e4e03-e4b6-428b-8904-a3dfd313111b",
-      "name": "Send Email to Prospect",
+      "id": "b256f8d1-a2f0-4333-8d0b-ec7d1edb3152",
+      "name": "Email to Paul",
       "type": "n8n-nodes-base.gmail",
-      "position": [
-        760,
-        400
-      ],
+      "position": [760, 400],
       "typeVersion": 2.1,
       "credentials": {
         "gmailOAuth2": {
@@ -252,18 +45,17 @@
     },
     {
       "parameters": {
-        "sendTo": "paul@mydigipal.com",
-        "subject": "=🔔 Nouveau lead: {{ $('Prepare Data').item.json.name }} ({{ $('Prepare Data').item.json.company }}) - {{ $('Prepare Data').item.json.grandTotal > 0 ? Math.round($('Prepare Data').item.json.grandTotal) + '€' : 'À discuter' }}",
-        "message": "=<div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 0 auto;\">\n\n<!-- Header -->\n<div style=\"background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%); padding: 25px 30px; border-radius: 12px 12px 0 0;\">\n<h2 style=\"color: white; margin: 0; font-size: 22px;\">🎯 Nouveau lead depuis le calculateur</h2>\n<p style=\"color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;\">{{ $('Prepare Data').item.json.timestamp }} | Langue: {{ $('Prepare Data').item.json.lang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR' }}</p>\n</div>\n\n<!-- Main Content -->\n<div style=\"background: #fff; padding: 30px; border: 1px solid #E5E7EB; border-top: none; border-radius: 0 0 12px 12px;\">\n\n<!-- Contact Section -->\n<div style=\"background: #F8FAFC; padding: 20px; border-radius: 10px; margin-bottom: 25px;\">\n<h3 style=\"color: #3b82f6; margin: 0 0 15px 0; font-size: 16px;\">👤 Contact</h3>\n<table style=\"width: 100%; border-collapse: collapse;\">\n<tr>\n<td style=\"padding: 10px 15px; background: white; border-radius: 6px 0 0 0; width: 130px; font-weight: 600; color: #64748B; font-size: 13px;\">Nom</td>\n<td style=\"padding: 10px 15px; background: white; border-radius: 0 6px 0 0; color: #1F2937; font-size: 14px;\">{{ $('Prepare Data').item.json.name }}</td>\n</tr>\n<tr>\n<td style=\"padding: 10px 15px; background: white; font-weight: 600; color: #64748B; font-size: 13px;\">Email</td>\n<td style=\"padding: 10px 15px; background: white;\"><a href=\"mailto:{{ $('Prepare Data').item.json.email }}\" style=\"color: #3b82f6; text-decoration: none; font-size: 14px;\">{{ $('Prepare Data').item.json.email }}</a></td>\n</tr>\n<tr>\n<td style=\"padding: 10px 15px; background: white; border-radius: 0 0 0 6px; font-weight: 600; color: #64748B; font-size: 13px;\">Entreprise</td>\n<td style=\"padding: 10px 15px; background: white; border-radius: 0 0 6px 0; color: #1F2937; font-size: 14px;\">{{ $('Prepare Data').item.json.company }}</td>\n</tr>\n</table>\n</div>\n\n<!-- Selection Section -->\n<div style=\"background: #F8FAFC; padding: 20px; border-radius: 10px; margin-bottom: 25px;\">\n<h3 style=\"color: #3b82f6; margin: 0 0 15px 0; font-size: 16px;\">📊 Sélection</h3>\n<table style=\"width: 100%; border-collapse: collapse;\">\n<tr>\n<td style=\"padding: 10px 15px; background: white; border-radius: 6px 0 0 0; width: 130px; font-weight: 600; color: #64748B; font-size: 13px;\">Domaines</td>\n<td style=\"padding: 10px 15px; background: white; border-radius: 0 6px 0 0; color: #1F2937; font-size: 14px;\">{{ $('Prepare Data').item.json.domains }}</td>\n</tr>\n<tr>\n<td style=\"padding: 10px 15px; background: white; font-weight: 600; color: #64748B; font-size: 13px;\">Durée</td>\n<td style=\"padding: 10px 15px; background: white; color: #1F2937; font-size: 14px;\">{{ $('Prepare Data').item.json.duration }} mois {{ $('Prepare Data').item.json.discountPercentage > 0 ? '<span style=\"background: #DEF7EC; color: #03543F; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;\">-' + $('Prepare Data').item.json.discountPercentage + '%</span>' : '' }}</td>\n</tr>\n<!-- Google Ads Budget -->\n{{ $('Prepare Data').item.json.hasGoogleAds && $('Prepare Data').item.json.googleAdsBudget > 0 ? '<tr><td style=\"padding: 10px 15px; background: white; font-weight: 600; color: #64748B; font-size: 13px;\">Budget Google Ads</td><td style=\"padding: 10px 15px; background: white; color: #F59E0B; font-size: 14px; font-weight: 500;\">' + $('Prepare Data').item.json.googleAdsBudget + '€/mois</td></tr>' : '' }}\n<!-- Paid Social Budget -->\n{{ $('Prepare Data').item.json.hasPaidSocial && $('Prepare Data').item.json.paidSocialBudget > 0 ? '<tr><td style=\"padding: 10px 15px; background: white; font-weight: 600; color: #64748B; font-size: 13px;\">Budget Paid Social</td><td style=\"padding: 10px 15px; background: white; color: #F59E0B; font-size: 14px; font-weight: 500;\">' + $('Prepare Data').item.json.paidSocialBudget + '€/mois</td></tr>' : '' }}\n<!-- AI Training -->\n{{ $('Prepare Data').item.json.hasAiTraining ? '<tr><td style=\"padding: 10px 15px; background: white; font-weight: 600; color: #64748B; font-size: 13px;\">Formation IA</td><td style=\"padding: 10px 15px; background: white; color: #1F2937; font-size: 14px;\">' + $('Prepare Data').item.json.aiTrainingFormat + ' × ' + $('Prepare Data').item.json.aiTrainingSessions + ' session(s)' + ($('Prepare Data').item.json.aiTrainingInPerson ? ' (présentiel)' : ' (distanciel)') + '</td></tr>' : '' }}\n<!-- Tracking Services -->\n{{ $('Prepare Data').item.json.trackingAudit || $('Prepare Data').item.json.trackingServices ? '<tr><td style=\"padding: 10px 15px; background: white; font-weight: 600; color: #64748B; font-size: 13px;\">Tracking</td><td style=\"padding: 10px 15px; background: white; color: #1F2937; font-size: 14px;\">' + ($('Prepare Data').item.json.trackingAudit ? 'Audit Tracking' : '') + ($('Prepare Data').item.json.trackingAudit && $('Prepare Data').item.json.trackingServices ? ', ' : '') + $('Prepare Data').item.json.trackingServices + '</td></tr>' : '' }}\n</table>\n</div>\n\n<!-- To Discuss Section -->\n{{ $('Prepare Data').item.json.hasNotSure ? '<div style=\"background: #FEF3C7; padding: 20px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #F59E0B;\"><h3 style=\"color: #92400E; margin: 0 0 10px 0; font-size: 16px;\">💬 À discuter</h3><p style=\"color: #78350F; margin: 0; font-size: 14px;\">Le prospect souhaite discuter de : <strong>' + ($('Prepare Data').item.json.notSureAbout ? $('Prepare Data').item.json.notSureAbout : '') + ($('Prepare Data').item.json.trackingNotSure ? ($('Prepare Data').item.json.notSureAbout ? ', Tracking' : 'Tracking') : '') + '</strong></p></div>' : '' }}\n\n<!-- Financial Section -->\n<div style=\"background: #F0FDF4; padding: 20px; border-radius: 10px; margin-bottom: 25px; border: 1px solid #BBF7D0;\">\n<h3 style=\"color: #166534; margin: 0 0 15px 0; font-size: 16px;\">💰 Financier</h3>\n<table style=\"width: 100%; border-collapse: collapse;\">\n{{ ($('Prepare Data').item.json.monthlyTotal + $('Prepare Data').item.json.managementFees) > 0 ? '<tr><td style=\"padding: 10px 0; color: #374151; font-size: 14px;\">Mensuel (après remise)</td><td style=\"padding: 10px 0; text-align: right; font-weight: 600; color: #1F2937; font-size: 14px;\">' + $('Prepare Data').item.json.monthlyAfterDiscount + '€/mois</td></tr>' : '' }}\n{{ $('Prepare Data').item.json.managementFees > 0 ? '<tr><td style=\"padding: 10px 0; color: #6B7280; font-size: 13px;\">↳ dont frais de gestion</td><td style=\"padding: 10px 0; text-align: right; color: #6B7280; font-size: 13px;\">' + $('Prepare Data').item.json.managementFees + '€/mois</td></tr>' : '' }}\n{{ $('Prepare Data').item.json.oneOffTotal > 0 ? '<tr><td style=\"padding: 10px 0; color: #374151; font-size: 14px;\">One-off</td><td style=\"padding: 10px 0; text-align: right; font-weight: 500; color: #1F2937; font-size: 14px;\">' + $('Prepare Data').item.json.oneOffTotal + '€</td></tr>' : '' }}\n{{ $('Prepare Data').item.json.trackingTotal > 0 ? '<tr><td style=\"padding: 10px 0; color: #6B7280; font-size: 13px;\">↳ dont Tracking</td><td style=\"padding: 10px 0; text-align: right; color: #6B7280; font-size: 13px;\">' + $('Prepare Data').item.json.trackingTotal + '€</td></tr>' : '' }}\n{{ $('Prepare Data').item.json.totalAdBudget > 0 ? '<tr><td style=\"padding: 10px 0; color: #F59E0B; font-size: 14px;\">Budget média (non inclus)</td><td style=\"padding: 10px 0; text-align: right; font-weight: 500; color: #F59E0B; font-size: 14px;\">' + $('Prepare Data').item.json.totalAdBudget + '€/mois</td></tr>' : '' }}\n<tr style=\"border-top: 2px solid #BBF7D0;\">\n<td style=\"padding: 15px 0; font-size: 18px; font-weight: bold; color: #1F2937;\">TOTAL ({{ $('Prepare Data').item.json.duration }} mois)</td>\n<td style=\"padding: 15px 0; text-align: right; font-size: 22px; font-weight: bold; color: #059669;\">{{ $('Prepare Data').item.json.grandTotal > 0 ? Math.round($('Prepare Data').item.json.grandTotal) + '€' : 'À discuter' }}</td>\n</tr>\n</table>\n</div>\n\n<!-- AI Solutions Info -->\n{{ $('Prepare Data').item.json.hasAiSolutions ? '<div style=\"background: #F5F3FF; padding: 20px; border-radius: 10px; margin-bottom: 25px; border: 1px solid #DDD6FE;\"><h3 style=\"color: #5B21B6; margin: 0 0 10px 0; font-size: 16px;\">🤖 Solutions IA - Demande sur devis</h3><pre style=\"background: #EDE9FE; padding: 12px; border-radius: 6px; font-size: 12px; overflow: auto; margin: 0;\">' + $('Prepare Data').item.json.aiSolutionsInfo + '</pre></div>' : '' }}\n\n<!-- CTA -->\n<div style=\"text-align: center; padding-top: 20px; border-top: 1px solid #E5E7EB;\">\n<a href=\"mailto:{{ $('Prepare Data').item.json.email }}?subject=Re: Votre devis MyDigipal - {{ $('Prepare Data').item.json.company }}\" style=\"display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; padding: 14px 35px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 15px;\">📧 Répondre au prospect</a>\n</div>\n\n<!-- Raw JSON -->\n<details style=\"margin-top: 25px;\">\n<summary style=\"cursor: pointer; color: #6B7280; font-size: 13px;\">📄 Voir le JSON complet</summary>\n<pre style=\"background: #F3F4F6; padding: 15px; border-radius: 8px; overflow: auto; font-size: 11px; margin-top: 10px;\">{{ $('Prepare Data').item.json.rawPayload }}</pre>\n</details>\n\n</div>\n</div>",
-        "options": {}
+        "sendTo": "={{ $json.contact.email }}",
+        "subject": "={{ $json.metadata.lang === 'en' ? 'Your Marketing Quote - ' + ($json.monthlyAfterDiscount !== '0' ? $json.monthlyAfterDiscount + '€/month' : 'Custom Quote') + ' | MyDigipal' : 'Votre devis Marketing Digital - ' + ($json.monthlyAfterDiscount !== '0' ? $json.monthlyAfterDiscount + '€/mois' : 'Sur devis') + ' | MyDigipal' }}",
+        "message": "=<div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; background: #ffffff;\">\n\n<!-- Header -->\n<div style=\"background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%); padding: 40px 30px; border-radius: 16px 16px 0 0; text-align: center;\">\n<img src=\"https://mydigipal.com/mydigipal-logo-white.png\" alt=\"MyDigipal\" style=\"height: 40px; margin-bottom: 20px;\" />\n<h1 style=\"color: white; margin: 0; font-size: 28px; font-weight: 600;\">{{ $json.metadata.lang === 'en' ? 'Thank you, ' + $json.contact.name + '!' : 'Merci ' + $json.contact.name + ' !' }}</h1>\n<p style=\"color: rgba(255,255,255,0.9); margin: 12px 0 0 0; font-size: 16px;\">{{ $json.metadata.lang === 'en' ? 'Your personalized quote is ready' : 'Votre devis personnalisé est prêt' }}</p>\n</div>\n\n<!-- Main Content -->\n<div style=\"padding: 35px 30px; border: 1px solid #E5E7EB; border-top: none;\">\n\n<!-- Thank you message -->\n<div style=\"background: #F0F9FF; padding: 20px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #3b82f6;\">\n<p style=\"color: #1e40af; line-height: 1.7; font-size: 15px; margin: 0;\">{{ $json.metadata.lang === 'en' ? 'Thank you for using our marketing calculator! We have received your quote request for <strong>' + $json.contact.company + '</strong>. Our team will carefully review your needs and contact you within <strong>24 to 48 hours</strong> to discuss your project in detail.' : 'Merci d\\'avoir utilisé notre calculateur marketing ! Nous avons bien reçu votre demande de devis pour <strong>' + $json.contact.company + '</strong>. Notre équipe va analyser vos besoins et vous recontacter sous <strong>24 à 48h</strong> pour en discuter ensemble.' }}</p>\n</div>\n\n<!-- Departments Breakdown -->\n<div style=\"margin-bottom: 25px;\">\n<h2 style=\"margin: 0 0 20px 0; color: #1F2937; font-size: 18px;\">\n<span style=\"background: #3b82f6; color: white; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 14px;\">📋</span>\n{{ $json.metadata.lang === 'en' ? 'Your Services Breakdown' : 'Détail de vos services' }}\n</h2>\n{{ $json.departmentsHtml }}\n</div>\n\n<!-- Financial Summary -->\n{{ $json.totalsHtml }}\n\n<!-- What's included -->\n<div style=\"background: #F0FDF4; padding: 20px; border-radius: 12px; margin: 25px 0; border: 1px solid #BBF7D0;\">\n<h3 style=\"color: #166534; margin: 0 0 12px 0; font-size: 15px; font-weight: 600;\">{{ $json.metadata.lang === 'en' ? '✨ Included in all our services' : '✨ Inclus dans tous nos services' }}</h3>\n<ul style=\"color: #15803D; margin: 0; padding-left: 18px; line-height: 1.9; font-size: 14px;\">\n<li>{{ $json.metadata.lang === 'en' ? 'LLM optimization (ChatGPT, Perplexity, Copilot)' : 'Optimisation pour les LLMs (ChatGPT, Perplexity, Copilot)' }}</li>\n<li>{{ $json.metadata.lang === 'en' ? 'Premium tools (Ahrefs, SEMrush, Meta Business Suite)' : 'Outils premium (Ahrefs, SEMrush, Meta Business Suite)' }}</li>\n<li>{{ $json.metadata.lang === 'en' ? 'Detailed monthly reporting' : 'Reporting mensuel détaillé' }}</li>\n<li>{{ $json.metadata.lang === 'en' ? 'Responsive support via email and video call' : 'Support réactif par email et visio' }}</li>\n</ul>\n</div>\n\n<!-- CTA -->\n<div style=\"background: #FEF3C7; padding: 18px 20px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #F59E0B;\">\n<p style=\"color: #92400E; margin: 0; font-size: 14px;\">{{ $json.metadata.lang === 'en' ? '💬 <strong>Questions?</strong> Simply reply to this email - we\\'re here to help!' : '💬 <strong>Des questions ?</strong> Répondez simplement à cet email - nous sommes là pour vous aider !' }}</p>\n</div>\n\n<!-- Signature -->\n<div style=\"margin-top: 30px; padding-top: 25px; border-top: 1px solid #E5E7EB;\">\n<p style=\"color: #374151; margin: 0; font-size: 15px;\">{{ $json.metadata.lang === 'en' ? 'Looking forward to speaking with you,' : 'À très vite,' }}</p>\n<p style=\"margin: 12px 0 0 0;\"><strong style=\"color: #1F2937; font-size: 16px;\">Paul MUSIC</strong></p>\n<p style=\"color: #6B7280; margin: 2px 0; font-size: 14px;\">CEO - MyDigipal</p>\n<p style=\"margin: 10px 0 0 0;\"><a href=\"mailto:paul@mydigipal.com\" style=\"color: #3b82f6; text-decoration: none; font-size: 14px;\">paul@mydigipal.com</a></p>\n</div>\n\n</div>\n\n<!-- Footer -->\n<div style=\"background: #F9FAFB; padding: 20px 30px; border-radius: 0 0 16px 16px; border: 1px solid #E5E7EB; border-top: none; text-align: center;\">\n<p style=\"color: #9CA3AF; margin: 0; font-size: 12px;\">© 2025 MyDigipal - Digital Marketing Agency</p>\n<p style=\"margin: 8px 0 0 0;\"><a href=\"https://www.mydigipal.com\" style=\"color: #6B7280; text-decoration: none; font-size: 12px;\">www.mydigipal.com</a></p>\n</div>\n\n</div>",
+        "options": {
+          "replyTo": "paul@mydigipal.com"
+        }
       },
-      "id": "b256f8d1-a2f0-4333-8d0b-ec7d1edb3152",
-      "name": "Notify Paul",
+      "id": "677e4e03-e4b6-428b-8904-a3dfd313111b",
+      "name": "Email to Prospect",
       "type": "n8n-nodes-base.gmail",
-      "position": [
-        760,
-        600
-      ],
+      "position": [760, 600],
       "typeVersion": 2.1,
       "credentials": {
         "gmailOAuth2": {
@@ -279,10 +71,7 @@
       "id": "62a7be75-1e4a-42af-b18e-f105aa434745",
       "name": "Respond to Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
-      "position": [
-        1000,
-        500
-      ],
+      "position": [1000, 500],
       "typeVersion": 1
     }
   ],
@@ -291,30 +80,30 @@
       "main": [
         [
           {
-            "node": "Prepare Data",
+            "node": "Generate Email HTML",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Prepare Data": {
+    "Generate Email HTML": {
       "main": [
         [
           {
-            "node": "Send Email to Prospect",
+            "node": "Email to Paul",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Notify Paul",
+            "node": "Email to Prospect",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Send Email to Prospect": {
+    "Email to Paul": {
       "main": [
         [
           {
