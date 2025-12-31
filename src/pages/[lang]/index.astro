@@ -16,53 +16,279 @@ export function getStaticPaths() {
 
 const { lang } = Astro.params as { lang: Language };
 
-// Services data
-const services = [
-  {
-    icon: 'search',
-    color: 'seo' as const,
-    name: t(lang, 'services.seo.name'),
-    description: t(lang, 'services.seo.description'),
-    href: `/${lang}/services/seo`,
+// Page content
+const content = {
+  en: {
+    hero: {
+      badge: "AI-Powered Digital Marketing Agency",
+      headline: "Your Growth Partner in Digital Marketing",
+      subheadline: "We're not just another agency. We're an extension of your team.",
+      description: "Forget about the fluff or long SLAs. Benefit from a truly international agency formed of passionate marketeers working as an extension of your internal team.",
+      cta1: "Get Your Free Quote",
+      cta2: "View Case Studies",
+    },
+    about: {
+      badge: "Who We Are",
+      headline: "A Team of Passionate Digital Experts",
+      description: "Based in Paris and Montreal, MyDigipal is a boutique digital marketing agency that combines strategic thinking with hands-on execution. We work with B2B tech companies, automotive dealers, and ambitious brands across the globe.",
+      values: [
+        {
+          icon: "users",
+          title: "People First",
+          description: "We believe in building genuine relationships. Your success is our success. No BS, just results.",
+        },
+        {
+          icon: "zap",
+          title: "Agility & Speed",
+          description: "No bureaucracy, no endless meetings. We move fast, iterate quickly, and adapt to your needs.",
+        },
+        {
+          icon: "target",
+          title: "Data-Driven",
+          description: "Every decision is backed by data. We measure, analyze, and optimize for maximum ROI.",
+        },
+      ],
+      stats: [
+        { value: "50+", label: "Happy Clients" },
+        { value: "8+", label: "Countries" },
+        { value: "12+", label: "Industries" },
+        { value: "5+", label: "Years Experience" },
+      ],
+    },
+    services: {
+      badge: "Our Services",
+      headline: "Full-Stack Digital Marketing",
+      subtitle: "From strategy to execution, we cover every aspect of your digital presence.",
+      items: [
+        {
+          icon: "search",
+          name: "SEO",
+          description: "Dominate organic search with technical optimization and content strategy.",
+          link: `/${lang}/services/seo`,
+          color: "emerald",
+          features: ["Technical SEO", "Content Strategy", "Link Building"],
+        },
+        {
+          icon: "trending-up",
+          name: "Google Ads",
+          description: "Search, Display, YouTube & Performance Max campaigns that convert.",
+          link: `/${lang}/services/google-ads`,
+          color: "amber",
+          features: ["Search Campaigns", "Display Ads", "YouTube Ads"],
+        },
+        {
+          icon: "users",
+          name: "Paid Social",
+          description: "LinkedIn, Meta, TikTok - reach your audience where they are.",
+          link: `/${lang}/services/paid-social`,
+          color: "violet",
+          features: ["LinkedIn Ads", "Meta Ads", "Audience Targeting"],
+        },
+        {
+          icon: "mail",
+          name: "Email Marketing",
+          description: "Nurture sequences, automation flows, and campaigns that drive engagement.",
+          link: `/${lang}/services/emailing`,
+          color: "rose",
+          features: ["Automation", "Nurture Flows", "A/B Testing"],
+        },
+        {
+          icon: "cpu",
+          name: "AI Training",
+          description: "Upskill your team with practical AI and automation workshops.",
+          link: `/${lang}/services/ai-training`,
+          color: "cyan",
+          features: ["ChatGPT", "Prompt Engineering", "Automation"],
+        },
+        {
+          icon: "settings",
+          name: "AI Solutions",
+          description: "Custom AI agents and automation workflows for your business.",
+          link: `/${lang}/services/ai-solutions`,
+          color: "indigo",
+          features: ["Custom Agents", "Workflows", "Integration"],
+        },
+      ],
+      cta: "Explore Service",
+    },
+    industries: {
+      badge: "Industry Expertise",
+      headline: "Specialists in B2B & Automotive",
+      subtitle: "We work with all industries, but we've developed deep expertise in two key sectors.",
+      b2b: {
+        title: "B2B / ABM",
+        description: "Account-Based Marketing for tech companies. From lead gen to pipeline acceleration, we help you close bigger deals faster.",
+        features: ["Account Targeting", "LinkedIn ABM", "Lead Generation", "Pipeline Acceleration"],
+        link: `/${lang}/services/b2b-abm`,
+        cta: "Explore B2B/ABM",
+        color: "from-indigo-500 to-purple-600",
+      },
+      automotive: {
+        title: "Automotive",
+        description: "Digital marketing for car dealers and OEMs. Dynamic ads, local SEO, and lead generation that fills your showroom.",
+        features: ["Facebook Dynamic Ads", "Google Vehicle Ads", "Local SEO", "Lead Generation"],
+        link: `/${lang}/automotive/google-ads`,
+        cta: "Explore Automotive",
+        color: "from-slate-700 to-slate-900",
+      },
+    },
+    calculator: {
+      badge: "Free Instant Quote",
+      headline: "Get Your Custom Marketing Budget",
+      description: "Use our interactive calculator to get an instant estimate for your digital marketing campaigns. No commitment, no sales call required.",
+      cta: "Try the Calculator",
+      features: ["Instant Results", "No Commitment", "Customizable"],
+    },
+    testimonials: {
+      badge: "What Our Clients Say",
+      headline: "Trusted by Marketing Leaders",
+      subtitle: "Don't just take our word for it. Here's what our clients have to say.",
+    },
+    finalCta: {
+      headline: "Ready to Grow Your Business?",
+      description: "Let's discuss how we can help you achieve your marketing goals.",
+      cta1: "Start a Project",
+      cta2: "Book a Call",
+    },
   },
-  {
-    icon: 'trending-up',
-    color: 'ads' as const,
-    name: t(lang, 'services.paidSearch.name'),
-    description: t(lang, 'services.paidSearch.description'),
-    href: `/${lang}/services/google-ads`,
+  fr: {
+    hero: {
+      badge: "Agence de Marketing Digital propulsée par l'IA",
+      headline: "Votre Partenaire de Croissance en Marketing Digital",
+      subheadline: "Nous ne sommes pas juste une agence. Nous sommes une extension de votre équipe.",
+      description: "Oubliez les processus longs et les engagements contraignants. Bénéficiez d'une agence vraiment internationale formée de marketeurs passionnés qui travaillent comme une extension de votre équipe interne.",
+      cta1: "Obtenez Votre Devis Gratuit",
+      cta2: "Voir les Études de Cas",
+    },
+    about: {
+      badge: "Qui Sommes-Nous",
+      headline: "Une Équipe d'Experts Digitaux Passionnés",
+      description: "Basés à Paris et Montréal, MyDigipal est une agence boutique de marketing digital qui combine réflexion stratégique et exécution terrain. Nous travaillons avec des entreprises tech B2B, des concessionnaires automobiles, et des marques ambitieuses à travers le monde.",
+      values: [
+        {
+          icon: "users",
+          title: "L'Humain d'Abord",
+          description: "Nous croyons en la construction de relations authentiques. Votre succès est notre succès. Pas de baratin, juste des résultats.",
+        },
+        {
+          icon: "zap",
+          title: "Agilité & Rapidité",
+          description: "Pas de bureaucratie, pas de réunions interminables. On avance vite, on itère rapidement, et on s'adapte à vos besoins.",
+        },
+        {
+          icon: "target",
+          title: "Data-Driven",
+          description: "Chaque décision est basée sur les données. On mesure, analyse, et optimise pour un ROI maximum.",
+        },
+      ],
+      stats: [
+        { value: "50+", label: "Clients Satisfaits" },
+        { value: "8+", label: "Pays" },
+        { value: "12+", label: "Industries" },
+        { value: "5+", label: "Ans d'Expérience" },
+      ],
+    },
+    services: {
+      badge: "Nos Services",
+      headline: "Marketing Digital Full-Stack",
+      subtitle: "De la stratégie à l'exécution, nous couvrons chaque aspect de votre présence digitale.",
+      items: [
+        {
+          icon: "search",
+          name: "SEO",
+          description: "Dominez la recherche organique avec l'optimisation technique et la stratégie de contenu.",
+          link: `/${lang}/services/seo`,
+          color: "emerald",
+          features: ["SEO Technique", "Stratégie Contenu", "Link Building"],
+        },
+        {
+          icon: "trending-up",
+          name: "Google Ads",
+          description: "Campagnes Search, Display, YouTube & Performance Max qui convertissent.",
+          link: `/${lang}/services/google-ads`,
+          color: "amber",
+          features: ["Campagnes Search", "Display Ads", "YouTube Ads"],
+        },
+        {
+          icon: "users",
+          name: "Paid Social",
+          description: "LinkedIn, Meta, TikTok - atteignez votre audience là où elle se trouve.",
+          link: `/${lang}/services/paid-social`,
+          color: "violet",
+          features: ["LinkedIn Ads", "Meta Ads", "Ciblage Audience"],
+        },
+        {
+          icon: "mail",
+          name: "Email Marketing",
+          description: "Séquences de nurturing, flux d'automatisation, et campagnes qui engagent.",
+          link: `/${lang}/services/emailing`,
+          color: "rose",
+          features: ["Automatisation", "Flux Nurturing", "A/B Testing"],
+        },
+        {
+          icon: "cpu",
+          name: "Formation IA",
+          description: "Montez en compétences votre équipe avec des ateliers pratiques IA et automatisation.",
+          link: `/${lang}/services/ai-training`,
+          color: "cyan",
+          features: ["ChatGPT", "Prompt Engineering", "Automatisation"],
+        },
+        {
+          icon: "settings",
+          name: "Solutions IA",
+          description: "Agents IA personnalisés et workflows d'automatisation pour votre business.",
+          link: `/${lang}/services/ai-solutions`,
+          color: "indigo",
+          features: ["Agents Custom", "Workflows", "Intégration"],
+        },
+      ],
+      cta: "Explorer le Service",
+    },
+    industries: {
+      badge: "Expertise Sectorielle",
+      headline: "Spécialistes du B2B & de l'Automobile",
+      subtitle: "Nous travaillons avec toutes les industries, mais nous avons développé une expertise approfondie dans deux secteurs clés.",
+      b2b: {
+        title: "B2B / ABM",
+        description: "Account-Based Marketing pour les entreprises tech. De la génération de leads à l'accélération du pipeline, nous vous aidons à closer des deals plus importants plus rapidement.",
+        features: ["Ciblage de Comptes", "LinkedIn ABM", "Génération de Leads", "Accélération Pipeline"],
+        link: `/${lang}/services/b2b-abm`,
+        cta: "Explorer B2B/ABM",
+        color: "from-indigo-500 to-purple-600",
+      },
+      automotive: {
+        title: "Automobile",
+        description: "Marketing digital pour concessionnaires et constructeurs. Ads dynamiques, SEO local, et génération de leads qui remplit votre showroom.",
+        features: ["Facebook Dynamic Ads", "Google Vehicle Ads", "SEO Local", "Génération de Leads"],
+        link: `/${lang}/automotive/google-ads`,
+        cta: "Explorer Automobile",
+        color: "from-slate-700 to-slate-900",
+      },
+    },
+    calculator: {
+      badge: "Devis Instantané Gratuit",
+      headline: "Obtenez Votre Budget Marketing Personnalisé",
+      description: "Utilisez notre calculateur interactif pour obtenir une estimation instantanée de vos campagnes marketing digital. Sans engagement, sans appel commercial.",
+      cta: "Essayer le Calculateur",
+      features: ["Résultats Instantanés", "Sans Engagement", "Personnalisable"],
+    },
+    testimonials: {
+      badge: "Ce que Disent Nos Clients",
+      headline: "La Confiance des Leaders Marketing",
+      subtitle: "Ne nous croyez pas sur parole. Voici ce que nos clients en disent.",
+    },
+    finalCta: {
+      headline: "Prêt à Développer Votre Business ?",
+      description: "Discutons de comment nous pouvons vous aider à atteindre vos objectifs marketing.",
+      cta1: "Démarrer un Projet",
+      cta2: "Réserver un Appel",
+    },
   },
-  {
-    icon: 'users',
-    color: 'social' as const,
-    name: t(lang, 'services.paidSocial.name'),
-    description: t(lang, 'services.paidSocial.description'),
-    href: `/${lang}/services/paid-social`,
-  },
-  {
-    icon: 'target',
-    color: 'abm' as const,
-    name: t(lang, 'services.abm.name'),
-    description: t(lang, 'services.abm.description'),
-    href: `/${lang}/services/abm`,
-  },
-  {
-    icon: 'zap',
-    color: 'primary' as const,
-    name: t(lang, 'services.contentCreation.name'),
-    description: t(lang, 'services.contentCreation.description'),
-    href: `/${lang}/services/content-creation`,
-  },
-  {
-    icon: 'settings',
-    color: 'primary' as const,
-    name: t(lang, 'services.marketingAutomation.name'),
-    description: t(lang, 'services.marketingAutomation.description'),
-    href: `/${lang}/services/marketing-automation`,
-  },
-];
+};
 
-// Testimonials
+const c = content[lang] || content.en;
+
+// Testimonials data
 const testimonials = [
   {
     quote: lang === 'fr'
@@ -93,132 +319,432 @@ const testimonials = [
   },
 ];
 
-const colorMap = {
-  seo: 'bg-emerald-50 text-emerald-600',
-  ads: 'bg-amber-50 text-amber-600',
-  social: 'bg-violet-50 text-violet-600',
-  abm: 'bg-pink-50 text-pink-600',
-  primary: 'bg-primary-50 text-primary-600',
+// Color mappings for services
+const colorMap: Record<string, { bg: string; text: string; gradient: string }> = {
+  emerald: { bg: "bg-emerald-50", text: "text-emerald-600", gradient: "from-emerald-500 to-teal-600" },
+  amber: { bg: "bg-amber-50", text: "text-amber-600", gradient: "from-amber-500 to-orange-600" },
+  violet: { bg: "bg-violet-50", text: "text-violet-600", gradient: "from-violet-500 to-purple-600" },
+  rose: { bg: "bg-rose-50", text: "text-rose-600", gradient: "from-rose-500 to-pink-600" },
+  cyan: { bg: "bg-cyan-50", text: "text-cyan-600", gradient: "from-cyan-500 to-blue-600" },
+  indigo: { bg: "bg-indigo-50", text: "text-indigo-600", gradient: "from-indigo-500 to-purple-600" },
 };
 ---
 
 <PageLayout lang={lang}>
-  <!-- Hero Section -->
-  <section class="relative overflow-hidden bg-gradient-hero">
+  <!-- ======================== -->
+  <!-- HERO SECTION -->
+  <!-- ======================== -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-indigo-50">
     <!-- Background decoration -->
     <div class="absolute inset-0 overflow-hidden">
-      <div class="absolute -top-1/2 -right-1/4 w-[800px] h-[800px] rounded-full bg-primary-500/5 blur-3xl"></div>
+      <div class="absolute -top-1/2 -right-1/4 w-[800px] h-[800px] rounded-full bg-indigo-500/5 blur-3xl"></div>
       <div class="absolute -bottom-1/2 -left-1/4 w-[600px] h-[600px] rounded-full bg-violet-500/5 blur-3xl"></div>
     </div>
 
-    <div class="relative container-custom section">
+    <div class="relative container-custom py-24 lg:py-32">
       <div class="max-w-4xl mx-auto text-center">
-        <Badge variant="primary" class="mb-6 animate-fade-in">
-          <Icon name="sparkles" size={14} />
-          {lang === 'fr' ? 'Marketing Digital Propulsé par l\'IA' : 'AI-Powered Digital Marketing'}
-        </Badge>
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-8 animate-fade-in">
+          <Icon name="sparkles" size={16} />
+          <span>{c.hero.badge}</span>
+        </div>
 
-        <h1 class="heading-display mb-6 animate-fade-in-up">
-          {t(lang, 'site.tagline')}
+        <!-- Headline -->
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-4 animate-fade-in-up">
+          {c.hero.headline}
         </h1>
 
-        <p class="body-large max-w-2xl mx-auto mb-8 animate-fade-in-up animation-delay-100">
-          {lang === 'fr'
-            ? 'Oubliez les processus longs et les engagements contraignants. Bénéficiez d\'une agence vraiment internationale formée de marketeurs passionnés qui travaillent comme une extension de votre équipe interne.'
-            : 'Forget about the fluff or long SLAs. Benefit from a truly international agency formed of passionate marketeers working as an extension of your internal team.'
-          }
+        <!-- Subheadline -->
+        <p class="text-xl md:text-2xl text-indigo-600 font-medium mb-6 animate-fade-in-up animation-delay-100">
+          {c.hero.subheadline}
         </p>
 
-        <div class="flex flex-wrap justify-center gap-4 animate-fade-in-up animation-delay-200">
-          <Button href={`/${lang}/contact`} variant="primary" size="lg">
-            {t(lang, 'cta.startProject')}
-          </Button>
-          <Button href={`/${lang}/case-studies`} variant="secondary" size="lg">
-            {t(lang, 'cta.viewCaseStudies')}
-          </Button>
+        <!-- Description -->
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto mb-10 animate-fade-in-up animation-delay-200">
+          {c.hero.description}
+        </p>
+
+        <!-- CTAs -->
+        <div class="flex flex-wrap justify-center gap-4 animate-fade-in-up animation-delay-300">
+          <a
+            href={`/${lang}/calculator`}
+            class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:shadow-xl hover:shadow-indigo-500/25 hover:scale-105 transition-all duration-300"
+          >
+            <Icon name="calculator" size={20} />
+            <span>{c.hero.cta1}</span>
+          </a>
+          <a
+            href={`/${lang}/case-studies`}
+            class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-700 font-semibold rounded-xl border-2 border-slate-200 hover:border-indigo-300 hover:text-indigo-600 transition-all duration-300"
+          >
+            <span>{c.hero.cta2}</span>
+            <Icon name="arrow-right" size={20} />
+          </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Trusted By Section -->
+  <!-- ======================== -->
+  <!-- TRUSTED BY -->
+  <!-- ======================== -->
   <TrustedBy lang={lang} variant="compact" />
 
-  <!-- Services Section -->
-  <section class="section bg-slate-50">
+  <!-- ======================== -->
+  <!-- ABOUT / WHO WE ARE -->
+  <!-- ======================== -->
+  <section class="py-24 bg-white">
     <div class="container-custom">
-      <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-        <h2 class="heading-2 mb-4">{t(lang, 'sections.services.title')}</h2>
-        <p class="body-large">{t(lang, 'sections.services.subtitle')}</p>
+      <!-- Header -->
+      <div class="text-center mb-16 animate-on-scroll">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+          <Icon name="heart" size={16} />
+          <span>{c.about.badge}</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          {c.about.headline}
+        </h2>
+        <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+          {c.about.description}
+        </p>
       </div>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
-        {services.map((service) => (
-          <Card href={service.href} variant="interactive" padding="lg">
-            <div class={`w-12 h-12 rounded-xl ${colorMap[service.color]} flex items-center justify-center mb-4`}>
-              <Icon name={service.icon} size={24} />
+      <!-- Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16 animate-on-scroll">
+        {c.about.stats.map((stat) => (
+          <div class="text-center p-6 bg-gradient-to-br from-slate-50 to-indigo-50 rounded-2xl">
+            <div class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
+              {stat.value}
             </div>
-            <h3 class="heading-4 mb-3">{service.name}</h3>
-            <p class="body-small text-slate-500 mb-4">{service.description}</p>
-            <span class="inline-flex items-center gap-1 text-primary-500 font-medium text-sm">
-              {t(lang, 'cta.learnMore')}
-              <Icon name="arrow-right" size={16} />
-            </span>
-          </Card>
+            <div class="text-sm text-slate-600 mt-2 font-medium">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Values -->
+      <div class="grid md:grid-cols-3 gap-8">
+        {c.about.values.map((value, index) => (
+          <div
+            class="value-card group p-8 bg-white rounded-2xl border-2 border-slate-100 hover:border-indigo-300 transition-all duration-300 hover:shadow-xl animate-on-scroll"
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+              <Icon name={value.icon} size={32} class="text-white" />
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">{value.title}</h3>
+            <p class="text-slate-600 leading-relaxed">{value.description}</p>
+          </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Testimonials Section -->
-  <section class="section">
+  <!-- ======================== -->
+  <!-- SERVICES -->
+  <!-- ======================== -->
+  <section class="py-24 bg-gradient-to-b from-slate-50 to-white">
     <div class="container-custom">
-      <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-        <h2 class="heading-2 mb-4">{t(lang, 'sections.testimonials.title')}</h2>
-        <p class="body-large">{t(lang, 'sections.testimonials.subtitle')}</p>
+      <!-- Header -->
+      <div class="text-center mb-16 animate-on-scroll">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+          <Icon name="layers" size={16} />
+          <span>{c.services.badge}</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          {c.services.headline}
+        </h2>
+        <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+          {c.services.subtitle}
+        </p>
       </div>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children">
-        {testimonials.map((testimonial) => (
-          <Card padding="lg" class="flex flex-col">
-            <div class="flex-1">
-              <Icon name="quote" size={32} class="text-primary-200 mb-4" />
-              <p class="text-slate-600 leading-relaxed mb-6">
-                "{testimonial.quote}"
-              </p>
+      <!-- Services Grid -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {c.services.items.map((service, index) => (
+          <a
+            href={service.link}
+            class="service-card group relative p-6 bg-white rounded-2xl border border-slate-200 hover:border-indigo-300 transition-all duration-300 hover:shadow-xl animate-on-scroll"
+            style={`animation-delay: ${index * 80}ms`}
+          >
+            <!-- Icon -->
+            <div class={`w-14 h-14 rounded-xl bg-gradient-to-br ${colorMap[service.color].gradient} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
+              <Icon name={service.icon} size={28} class="text-white" />
             </div>
-            <div class="flex items-center gap-4 pt-4 border-t border-slate-100">
+
+            <!-- Content -->
+            <h3 class="text-xl font-bold text-slate-900 mb-2">{service.name}</h3>
+            <p class="text-slate-600 text-sm mb-4 leading-relaxed">{service.description}</p>
+
+            <!-- Features -->
+            <div class="flex flex-wrap gap-2 mb-5">
+              {service.features.map(feature => (
+                <span class={`px-2 py-1 text-xs ${colorMap[service.color].bg} ${colorMap[service.color].text} rounded-md`}>
+                  {feature}
+                </span>
+              ))}
+            </div>
+
+            <!-- CTA -->
+            <span class="inline-flex items-center gap-2 text-indigo-600 font-medium text-sm group-hover:gap-3 transition-all">
+              <span>{c.services.cta}</span>
+              <Icon name="arrow-right" size={16} />
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== -->
+  <!-- INDUSTRY SPECIALTIES - SPLIT SCREEN -->
+  <!-- ======================== -->
+  <section class="py-24 bg-white">
+    <div class="container-custom">
+      <!-- Header -->
+      <div class="text-center mb-16 animate-on-scroll">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+          <Icon name="briefcase" size={16} />
+          <span>{c.industries.badge}</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          {c.industries.headline}
+        </h2>
+        <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+          {c.industries.subtitle}
+        </p>
+      </div>
+
+      <!-- Split Screen Cards -->
+      <div class="grid lg:grid-cols-2 gap-8">
+        <!-- B2B / ABM Card -->
+        <div class="industry-card group relative overflow-hidden rounded-3xl animate-on-scroll">
+          <div class={`absolute inset-0 bg-gradient-to-br ${c.industries.b2b.color}`}></div>
+          <div class="absolute inset-0 bg-[url('/images/patterns/grid.svg')] opacity-10"></div>
+
+          <div class="relative z-10 p-8 md:p-10 text-white">
+            <!-- Icon -->
+            <div class="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center mb-6">
+              <Icon name="target" size={32} class="text-white" />
+            </div>
+
+            <h3 class="text-3xl font-bold mb-4">{c.industries.b2b.title}</h3>
+            <p class="text-white/90 text-lg mb-6 leading-relaxed">{c.industries.b2b.description}</p>
+
+            <!-- Features -->
+            <div class="flex flex-wrap gap-2 mb-8">
+              {c.industries.b2b.features.map(feature => (
+                <span class="px-3 py-1.5 text-sm bg-white/20 backdrop-blur rounded-full">
+                  {feature}
+                </span>
+              ))}
+            </div>
+
+            <!-- CTA -->
+            <a
+              href={c.industries.b2b.link}
+              class="inline-flex items-center gap-3 px-6 py-3 bg-white text-indigo-600 font-semibold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300"
+            >
+              <span>{c.industries.b2b.cta}</span>
+              <Icon name="arrow-right" size={20} />
+            </a>
+          </div>
+        </div>
+
+        <!-- Automotive Card -->
+        <div class="industry-card group relative overflow-hidden rounded-3xl animate-on-scroll animation-delay-150">
+          <div class={`absolute inset-0 bg-gradient-to-br ${c.industries.automotive.color}`}></div>
+          <div class="absolute inset-0 bg-[url('/images/patterns/grid.svg')] opacity-10"></div>
+
+          <div class="relative z-10 p-8 md:p-10 text-white">
+            <!-- Icon -->
+            <div class="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center mb-6">
+              <Icon name="truck" size={32} class="text-white" />
+            </div>
+
+            <h3 class="text-3xl font-bold mb-4">{c.industries.automotive.title}</h3>
+            <p class="text-white/90 text-lg mb-6 leading-relaxed">{c.industries.automotive.description}</p>
+
+            <!-- Features -->
+            <div class="flex flex-wrap gap-2 mb-8">
+              {c.industries.automotive.features.map(feature => (
+                <span class="px-3 py-1.5 text-sm bg-white/20 backdrop-blur rounded-full">
+                  {feature}
+                </span>
+              ))}
+            </div>
+
+            <!-- CTA -->
+            <a
+              href={c.industries.automotive.link}
+              class="inline-flex items-center gap-3 px-6 py-3 bg-white text-slate-800 font-semibold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300"
+            >
+              <span>{c.industries.automotive.cta}</span>
+              <Icon name="arrow-right" size={20} />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== -->
+  <!-- CALCULATOR CTA -->
+  <!-- ======================== -->
+  <section class="py-24 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 relative overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute inset-0">
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="container-custom relative z-10">
+      <div class="max-w-4xl mx-auto text-center">
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur text-white font-medium mb-8 animate-on-scroll">
+          <Icon name="calculator" size={16} />
+          <span>{c.calculator.badge}</span>
+        </div>
+
+        <!-- Headline -->
+        <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 animate-on-scroll">
+          {c.calculator.headline}
+        </h2>
+
+        <!-- Description -->
+        <p class="text-xl text-indigo-100 mb-8 max-w-2xl mx-auto animate-on-scroll">
+          {c.calculator.description}
+        </p>
+
+        <!-- Features -->
+        <div class="flex flex-wrap justify-center gap-4 mb-10 animate-on-scroll">
+          {c.calculator.features.map(feature => (
+            <div class="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur rounded-full text-white">
+              <Icon name="check" size={16} class="text-green-400" />
+              <span>{feature}</span>
+            </div>
+          ))}
+        </div>
+
+        <!-- CTA -->
+        <a
+          href={`/${lang}/calculator`}
+          class="inline-flex items-center gap-3 px-10 py-5 bg-white text-indigo-600 font-bold text-lg rounded-2xl hover:shadow-2xl hover:scale-105 transition-all duration-300 animate-on-scroll"
+        >
+          <Icon name="zap" size={24} />
+          <span>{c.calculator.cta}</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== -->
+  <!-- TESTIMONIALS -->
+  <!-- ======================== -->
+  <section class="py-24 bg-slate-50">
+    <div class="container-custom">
+      <!-- Header -->
+      <div class="text-center mb-16 animate-on-scroll">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+          <Icon name="message-circle" size={16} />
+          <span>{c.testimonials.badge}</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          {c.testimonials.headline}
+        </h2>
+        <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+          {c.testimonials.subtitle}
+        </p>
+      </div>
+
+      <!-- Testimonials Grid -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {testimonials.map((testimonial, index) => (
+          <div
+            class="testimonial-card bg-white p-8 rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-xl transition-all duration-300 animate-on-scroll"
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            <!-- Quote icon -->
+            <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center mb-6">
+              <Icon name="quote" size={24} class="text-indigo-600" />
+            </div>
+
+            <!-- Quote -->
+            <p class="text-slate-600 leading-relaxed mb-8">
+              "{testimonial.quote}"
+            </p>
+
+            <!-- Author -->
+            <div class="flex items-center gap-4 pt-6 border-t border-slate-100">
               <img
                 src={testimonial.image}
                 alt={testimonial.author}
-                class="w-12 h-12 rounded-full object-cover"
+                class="w-14 h-14 rounded-full object-cover border-2 border-indigo-100"
                 loading="lazy"
               />
               <div>
-                <div class="font-semibold text-slate-900">{testimonial.author}</div>
-                <div class="text-sm text-slate-500">{testimonial.role}, {testimonial.company}</div>
+                <div class="font-bold text-slate-900">{testimonial.author}</div>
+                <div class="text-sm text-slate-500">{testimonial.role}</div>
+                <div class="text-sm font-medium text-indigo-600">{testimonial.company}</div>
               </div>
             </div>
-          </Card>
+          </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Calculator CTA -->
-  <section class="section bg-slate-50">
+  <!-- ======================== -->
+  <!-- FINAL CTA -->
+  <!-- ======================== -->
+  <section class="py-24 bg-white">
     <div class="container-custom">
-      <div class="max-w-3xl mx-auto text-center animate-on-scroll">
-        <Badge variant="primary" class="mb-6">
-          <Icon name="zap" size={14} />
-          {lang === 'fr' ? 'Devis Instantané' : 'Instant Quote'}
-        </Badge>
-        <h2 class="heading-2 mb-4">{t(lang, 'calculator.title')}</h2>
-        <p class="body-large mb-8">{t(lang, 'calculator.subtitle')}</p>
-        <Button href={`/${lang}/calculator`} variant="primary" size="lg">
-          {t(lang, 'cta.getQuote')}
-        </Button>
+      <div class="max-w-4xl mx-auto text-center animate-on-scroll">
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+          {c.finalCta.headline}
+        </h2>
+        <p class="text-xl text-slate-600 mb-10">
+          {c.finalCta.description}
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a
+            href={`/${lang}/contact`}
+            class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:shadow-xl hover:shadow-indigo-500/25 hover:scale-105 transition-all duration-300"
+          >
+            <Icon name="send" size={20} />
+            <span>{c.finalCta.cta1}</span>
+          </a>
+          <a
+            href={`/${lang}/contact`}
+            class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-700 font-semibold rounded-xl border-2 border-slate-200 hover:border-indigo-300 hover:text-indigo-600 transition-all duration-300"
+          >
+            <Icon name="calendar" size={20} />
+            <span>{c.finalCta.cta2}</span>
+          </a>
+        </div>
       </div>
     </div>
   </section>
 </PageLayout>
+
+<style>
+  .service-card,
+  .value-card,
+  .testimonial-card,
+  .industry-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fade-up 0.6s ease forwards;
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-150 { animation-delay: 150ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+</style>
