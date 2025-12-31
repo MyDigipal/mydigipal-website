@@ -9,14 +9,13 @@ export async function getStaticPaths() {
   const paths: { params: { lang: string; slug: string }; props: { post: any } }[] = [];
 
   posts.forEach((post) => {
-    // Extract slug without language prefix
+    // Generate pages for each language that has content
+    const postLang = post.id.startsWith('fr/') ? 'fr' : 'en';
     const slug = post.slug.replace(/^(en|fr)\//, '');
 
-    Object.keys(languages).forEach((lang) => {
-      paths.push({
-        params: { lang, slug },
-        props: { post },
-      });
+    paths.push({
+      params: { lang: postLang, slug },
+      props: { post },
     });
   });
 
@@ -27,12 +26,18 @@ const { lang } = Astro.params as { lang: Language };
 const { post } = Astro.props;
 const { Content } = await post.render();
 
-// Get related posts (same category, exclude current)
+// Get related posts (same category, exclude current, same language)
 const allPosts = await getCollection('blog');
 const relatedPosts = allPosts
-  .filter((p) => p.data.category === post.data.category && p.slug !== post.slug && !p.data.draft)
+  .filter((p) => p.id.startsWith(`${lang}/`) && p.data.category === post.data.category && p.slug !== post.slug && !p.data.draft)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
+
+// Helper to get blog URL for current language
+const getRelatedPostUrl = (relatedPost: typeof relatedPosts[0]) => {
+  const slug = relatedPost.slug.replace(/^(en|fr)\//, '');
+  return `/${lang}/blog/${slug}`;
+};
 
 const translations = {
   en: {
@@ -214,7 +219,7 @@ const categoryLabels: Record<string, Record<string, string>> = {
         <div class="grid md:grid-cols-3 gap-8">
           {relatedPosts.map((relatedPost) => (
             <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100">
-              <a href={`/${lang}/blog/${relatedPost.slug.replace('en/', '')}`} class="block relative aspect-[16/10] overflow-hidden">
+              <a href={getRelatedPostUrl(relatedPost)} class="block relative aspect-[16/10] overflow-hidden">
                 {relatedPost.data.image && !relatedPost.data.image.includes('/images/blog/') ? (
                   <img
                     src={relatedPost.data.image}
@@ -235,12 +240,12 @@ const categoryLabels: Record<string, Record<string, string>> = {
                   })}
                 </div>
                 <h3 class="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                  <a href={`/${lang}/blog/${relatedPost.slug.replace('en/', '')}`}>
+                  <a href={getRelatedPostUrl(relatedPost)}>
                     {relatedPost.data.title}
                   </a>
                 </h3>
                 <a
-                  href={`/${lang}/blog/${relatedPost.slug.replace('en/', '')}`}
+                  href={getRelatedPostUrl(relatedPost)}
                   class="inline-flex items-center gap-2 text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
                 >
                   {t.readMore}

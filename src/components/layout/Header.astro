@@ -203,73 +203,61 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
 <div class="h-18"></div>
 
 <script is:inline>
+  // Mobile menu toggle - using event delegation for robustness
   (function() {
-    // Track if already initialized
-    let initialized = false;
-    let outsideClickHandler = null;
+    function handleMobileMenu(e) {
+      // Check if click is on the mobile menu button or its children
+      const btn = e.target.closest('#mobile-menu-btn');
+      if (!btn) return;
 
-    function initMobileMenu() {
-      const btn = document.getElementById('mobile-menu-btn');
+      e.preventDefault();
+      e.stopPropagation();
+
       const menu = document.getElementById('mobile-menu');
+      const menuIcon = document.getElementById('menu-icon');
+      const closeIcon = document.getElementById('close-icon');
 
-      if (!btn || !menu) return;
+      if (!menu || !menuIcon || !closeIcon) return;
 
-      // Get icons from inside the button
-      const menuIcon = btn.querySelector('#menu-icon');
-      const closeIcon = btn.querySelector('#close-icon');
+      const isOpen = !menu.classList.contains('hidden');
 
-      if (!menuIcon || !closeIcon) return;
-
-      // Remove previous outside click handler if exists
-      if (outsideClickHandler) {
-        document.removeEventListener('click', outsideClickHandler);
+      if (isOpen) {
+        menu.classList.add('hidden');
+        menuIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      } else {
+        menu.classList.remove('hidden');
+        menuIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
       }
-
-      // Toggle function
-      function toggleMenu(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const isOpen = !menu.classList.contains('hidden');
-
-        if (isOpen) {
-          menu.classList.add('hidden');
-          menuIcon.classList.remove('hidden');
-          closeIcon.classList.add('hidden');
-        } else {
-          menu.classList.remove('hidden');
-          menuIcon.classList.add('hidden');
-          closeIcon.classList.remove('hidden');
-        }
-      }
-
-      // Close on outside click
-      outsideClickHandler = function(e) {
-        const header = document.getElementById('header');
-        if (header && !header.contains(e.target) && !menu.classList.contains('hidden')) {
-          menu.classList.add('hidden');
-          menuIcon.classList.remove('hidden');
-          closeIcon.classList.add('hidden');
-        }
-      };
-
-      // Use onclick to ensure it works (replaces any existing handler)
-      btn.onclick = toggleMenu;
-
-      // Add outside click handler
-      document.addEventListener('click', outsideClickHandler);
-
-      initialized = true;
     }
 
-    // Initialize on DOMContentLoaded
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initMobileMenu);
-    } else {
-      initMobileMenu();
+    function handleOutsideClick(e) {
+      const menu = document.getElementById('mobile-menu');
+      const header = document.getElementById('header');
+      const menuIcon = document.getElementById('menu-icon');
+      const closeIcon = document.getElementById('close-icon');
+
+      if (!menu || !header || menu.classList.contains('hidden')) return;
+
+      // If click is outside the header, close the menu
+      if (!header.contains(e.target)) {
+        menu.classList.add('hidden');
+        if (menuIcon) menuIcon.classList.remove('hidden');
+        if (closeIcon) closeIcon.classList.add('hidden');
+      }
     }
 
-    // Re-initialize after Astro page transitions
-    document.addEventListener('astro:page-load', initMobileMenu);
+    // Use event delegation on document - works with View Transitions
+    document.addEventListener('click', function(e) {
+      handleMobileMenu(e);
+    }, true); // Use capture phase
+
+    document.addEventListener('click', handleOutsideClick);
+
+    // Also handle touch events for mobile
+    document.addEventListener('touchend', function(e) {
+      handleMobileMenu(e);
+    }, true);
   })();
 </script>

@@ -101,20 +101,13 @@ export default defineConfig({
     '/blog/open-source-ai-agents': '/en/blog/open-source-ai-agents',
     '/blog/revolutionizing-b2b-marketing-with-abm': '/en/blog/revolutionizing-b2b-with-abm',
     '/blog/successful-linkedin-strategy': '/en/blog/successful-linkedin-strategy',
-    '/fr/blog/abm-deck': '/fr/blog/abm-deck',
-    '/fr/blog/beware-of-scammers': '/fr/blog/beware-of-scammers',
+    // French blog old URLs -> redirect to new French slugs
     '/fr/blog/facebook-dynamic-ads-for-automotive-dealers': '/fr/blog/facebook-dynamic-ads-automotive',
-    '/fr/blog/google-consent-mode-v2': '/fr/blog/google-consent-mode-v2',
     '/fr/blog/how-people-really-use-chatgpt': '/fr/blog/how-to-rank-on-chatgpt',
-    '/fr/blog/how-to-rank-on-chatgpt': '/fr/blog/how-to-rank-on-chatgpt',
-    '/fr/blog/how-to-train-teams-on-ai': '/fr/blog/how-to-train-teams-on-ai',
     '/fr/blog/intent-data-in-b2b-marketing': '/fr/blog/intent-data-b2b-marketing',
-    '/fr/blog/marketing-automation-tools': '/fr/blog/marketing-automation-tools',
     '/fr/blog/mydigipal-cx-ninjas-guide-to-partner-marketing': '/fr/blog/partner-marketing-guide',
     '/fr/blog/mydigipal-podcast-1-whats-wrong-with-your-abm': '/fr/blog/podcast-abm',
-    '/fr/blog/open-source-ai-agents': '/fr/blog/open-source-ai-agents',
     '/fr/blog/revolutionizing-b2b-marketing-with-abm': '/fr/blog/revolutionizing-b2b-with-abm',
-    '/fr/blog/successful-linkedin-strategy': '/fr/blog/successful-linkedin-strategy',
 
     // Case Studies
     '/case-studies': '/en/case-studies',
