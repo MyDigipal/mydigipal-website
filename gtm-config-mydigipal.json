@@ -1,0 +1,667 @@
+{
+  "exportFormatVersion": 2,
+  "exportTime": "2025-12-31 12:00:00",
+  "containerVersion": {
+    "path": "accounts/ACCOUNT_ID/containers/CONTAINER_ID/versions/0",
+    "accountId": "ACCOUNT_ID",
+    "containerId": "CONTAINER_ID",
+    "containerVersionId": "0",
+    "name": "MyDigipal Tracking Setup",
+    "description": "Complete tracking setup with Consent Mode V2, GA4, Meta Pixel, and 4 conversion events",
+    "container": {
+      "path": "accounts/ACCOUNT_ID/containers/CONTAINER_ID",
+      "accountId": "ACCOUNT_ID",
+      "containerId": "CONTAINER_ID",
+      "name": "MyDigipal Website",
+      "publicId": "GTM-P4TSQ9Q",
+      "usageContext": ["WEB"],
+      "fingerprint": "1735650000000",
+      "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/ACCOUNT_ID/containers/CONTAINER_ID/workspaces?apiLink=container"
+    },
+    "builtInVariable": [
+      {"type": "PAGE_URL"},
+      {"type": "PAGE_HOSTNAME"},
+      {"type": "PAGE_PATH"},
+      {"type": "REFERRER"},
+      {"type": "EVENT"},
+      {"type": "CLICK_URL"},
+      {"type": "CLICK_TEXT"}
+    ],
+    "variable": [
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "variableId": "1",
+        "name": "GA4 Measurement ID",
+        "type": "c",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "G-XXXXXXXXXX"
+          }
+        ],
+        "fingerprint": "1735650001000",
+        "formatValue": {},
+        "notes": "REPLACE WITH YOUR GA4 MEASUREMENT ID"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "variableId": "2",
+        "name": "Meta Pixel ID",
+        "type": "c",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "XXXXXXXXXXXXXXX"
+          }
+        ],
+        "fingerprint": "1735650002000",
+        "formatValue": {},
+        "notes": "REPLACE WITH YOUR META PIXEL ID (leave empty if not using)"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "variableId": "3",
+        "name": "DLV - Event",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "event"
+          }
+        ],
+        "fingerprint": "1735650003000",
+        "formatValue": {}
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "variableId": "4",
+        "name": "DLV - form_name",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "form_name"
+          }
+        ],
+        "fingerprint": "1735650004000",
+        "formatValue": {}
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "variableId": "5",
+        "name": "DLV - calculator_total",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "calculator_total"
+          }
+        ],
+        "fingerprint": "1735650005000",
+        "formatValue": {}
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "variableId": "6",
+        "name": "DLV - click_url",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "click_url"
+          }
+        ],
+        "fingerprint": "1735650006000",
+        "formatValue": {}
+      }
+    ],
+    "trigger": [
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "triggerId": "1",
+        "name": "All Pages",
+        "type": "PAGEVIEW",
+        "fingerprint": "1735650010000"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "triggerId": "2",
+        "name": "CE - Calculator Form Submit",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "calculator_form_submit"}
+            ]
+          }
+        ],
+        "fingerprint": "1735650011000"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "triggerId": "3",
+        "name": "CE - Contact Form Submit",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "contact_form_submit"}
+            ]
+          }
+        ],
+        "fingerprint": "1735650012000"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "triggerId": "4",
+        "name": "CE - Phone Click",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "phone_click"}
+            ]
+          }
+        ],
+        "fingerprint": "1735650013000"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "triggerId": "5",
+        "name": "CE - Email Click",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "email_click"}
+            ]
+          }
+        ],
+        "fingerprint": "1735650014000"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "triggerId": "6",
+        "name": "Consent Initialization - All Pages",
+        "type": "INIT_CONSENT",
+        "fingerprint": "1735650015000"
+      }
+    ],
+    "tag": [
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "tagId": "1",
+        "name": "Consent Mode - Default Settings",
+        "type": "googtag",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "tagId",
+            "value": "{{GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "configSettingsTable",
+            "list": []
+          }
+        ],
+        "fingerprint": "1735650020000",
+        "firingTriggerId": ["6"],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NOT_SET"
+        },
+        "notes": "Sets default consent mode. Loads before other tags."
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "tagId": "2",
+        "name": "GA4 - Configuration",
+        "type": "gaawc",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "measurementId",
+            "value": "{{GA4 Measurement ID}}"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "sendPageView",
+            "value": "true"
+          },
+          {
+            "type": "LIST",
+            "key": "fieldsToSet",
+            "list": []
+          }
+        ],
+        "fingerprint": "1735650021000",
+        "firingTriggerId": ["1"],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "list": [
+              {"type": "TEMPLATE", "value": "analytics_storage"}
+            ]
+          }
+        },
+        "notes": "GA4 base configuration tag. Fires on all pages."
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "tagId": "3",
+        "name": "GA4 - Event - Calculator Form Submit",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "generate_lead"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventParameters",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "name", "value": "form_name"},
+                  {"type": "TEMPLATE", "key": "value", "value": "calculator"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "name", "value": "value"},
+                  {"type": "TEMPLATE", "key": "value", "value": "{{DLV - calculator_total}}"}
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "name", "value": "currency"},
+                  {"type": "TEMPLATE", "key": "value", "value": "EUR"}
+                ]
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1735650022000",
+        "firingTriggerId": ["2"],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "list": [
+              {"type": "TEMPLATE", "value": "analytics_storage"}
+            ]
+          }
+        },
+        "notes": "Tracks calculator form submissions as generate_lead event"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "tagId": "4",
+        "name": "GA4 - Event - Contact Form Submit",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "generate_lead"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventParameters",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "name", "value": "form_name"},
+                  {"type": "TEMPLATE", "key": "value", "value": "contact"}
+                ]
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1735650023000",
+        "firingTriggerId": ["3"],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "list": [
+              {"type": "TEMPLATE", "value": "analytics_storage"}
+            ]
+          }
+        },
+        "notes": "Tracks contact form submissions as generate_lead event"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "tagId": "5",
+        "name": "GA4 - Event - Phone Click",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "phone_click"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventParameters",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "name", "value": "phone_number"},
+                  {"type": "TEMPLATE", "key": "value", "value": "{{DLV - click_url}}"}
+                ]
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1735650024000",
+        "firingTriggerId": ["4"],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "list": [
+              {"type": "TEMPLATE", "value": "analytics_storage"}
+            ]
+          }
+        },
+        "notes": "Tracks phone number clicks"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "tagId": "6",
+        "name": "GA4 - Event - Email Click",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "email_click"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventParameters",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {"type": "TEMPLATE", "key": "name", "value": "email_address"},
+                  {"type": "TEMPLATE", "key": "value", "value": "{{DLV - click_url}}"}
+                ]
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1735650025000",
+        "firingTriggerId": ["5"],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "list": [
+              {"type": "TEMPLATE", "value": "analytics_storage"}
+            ]
+          }
+        },
+        "notes": "Tracks email address clicks"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "tagId": "7",
+        "name": "Meta Pixel - Base Code",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n!function(f,b,e,v,n,t,s)\n{if(f.fbq)return;n=f.fbq=function(){n.callMethod?\nn.callMethod.apply(n,arguments):n.queue.push(arguments)};\nif(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';\nn.queue=[];t=b.createElement(e);t.async=!0;\nt.src=v;s=b.getElementsByTagName(e)[0];\ns.parentNode.insertBefore(t,s)}(window, document,'script',\n'https://connect.facebook.net/en_US/fbevents.js');\nfbq('init', '{{Meta Pixel ID}}');\nfbq('track', 'PageView');\n</script>\n<noscript><img height=\"1\" width=\"1\" style=\"display:none\"\nsrc=\"https://www.facebook.com/tr?id={{Meta Pixel ID}}&ev=PageView&noscript=1\"\n/></noscript>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "fingerprint": "1735650026000",
+        "firingTriggerId": ["1"],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "list": [
+              {"type": "TEMPLATE", "value": "ad_storage"}
+            ]
+          }
+        },
+        "notes": "Meta Pixel base code. Only fires when ad_storage consent is granted."
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "tagId": "8",
+        "name": "Meta Pixel - Lead (Calculator)",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\nif (typeof fbq === 'function') {\n  fbq('track', 'Lead', {\n    content_name: 'Calculator Form',\n    value: {{DLV - calculator_total}},\n    currency: 'EUR'\n  });\n}\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "fingerprint": "1735650027000",
+        "firingTriggerId": ["2"],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "list": [
+              {"type": "TEMPLATE", "value": "ad_storage"}
+            ]
+          }
+        },
+        "notes": "Meta Pixel Lead event for calculator form submissions"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "tagId": "9",
+        "name": "Meta Pixel - Lead (Contact)",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\nif (typeof fbq === 'function') {\n  fbq('track', 'Lead', {\n    content_name: 'Contact Form'\n  });\n}\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "fingerprint": "1735650028000",
+        "firingTriggerId": ["3"],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "list": [
+              {"type": "TEMPLATE", "value": "ad_storage"}
+            ]
+          }
+        },
+        "notes": "Meta Pixel Lead event for contact form submissions"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "tagId": "10",
+        "name": "Meta Pixel - Contact (Phone)",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\nif (typeof fbq === 'function') {\n  fbq('track', 'Contact', {\n    content_name: 'Phone Click'\n  });\n}\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "fingerprint": "1735650029000",
+        "firingTriggerId": ["4"],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "list": [
+              {"type": "TEMPLATE", "value": "ad_storage"}
+            ]
+          }
+        },
+        "notes": "Meta Pixel Contact event for phone clicks"
+      },
+      {
+        "accountId": "ACCOUNT_ID",
+        "containerId": "CONTAINER_ID",
+        "tagId": "11",
+        "name": "Meta Pixel - Contact (Email)",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\nif (typeof fbq === 'function') {\n  fbq('track', 'Contact', {\n    content_name: 'Email Click'\n  });\n}\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "fingerprint": "1735650030000",
+        "firingTriggerId": ["5"],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "list": [
+              {"type": "TEMPLATE", "value": "ad_storage"}
+            ]
+          }
+        },
+        "notes": "Meta Pixel Contact event for email clicks"
+      }
+    ],
+    "fingerprint": "1735650000001"
+  }
+}

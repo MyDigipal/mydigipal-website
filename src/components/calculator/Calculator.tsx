@@ -640,6 +640,16 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
       console.log('✅ Webhook success!');
       setSubmitted(true);
+
+      // Track conversion in GTM
+      if (typeof window !== 'undefined' && (window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          'event': 'calculator_form_submit',
+          'form_name': 'calculator',
+          'form_location': window.location.pathname,
+          'calculator_total': pricing.grandTotal
+        });
+      }
     } catch (error) {
       console.error('Form submission error:', error);
       // Show error but still mark as submitted to not block the user

@@ -2,6 +2,12 @@
 import '@/styles/global.css';
 import { languages, type Language } from '@/i18n/config';
 import { t } from '@/i18n/utils';
+import CookieConsent from '@/components/ui/CookieConsent.astro';
+
+// GTM Configuration - Replace with your IDs
+const GTM_ID = 'GTM-P4TSQ9Q'; // Your Google Tag Manager ID
+const GA4_ID = 'G-XXXXXXXXXX'; // Replace with your GA4 Measurement ID
+const META_PIXEL_ID = 'XXXXXXXXXXXXXXX'; // Replace with your Meta Pixel ID (optional)
 
 interface Props {
   title?: string;
@@ -91,11 +97,54 @@ const canonical = canonicalURL || Astro.url.href;
     <!-- View Transitions -->
     <meta name="view-transition" content="same-origin" />
 
+    <!-- Google Consent Mode V2 - MUST be before GTM -->
+    <script is:inline define:vars={{ GA4_ID }}>
+      // Initialize dataLayer
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+
+      // Set default consent to denied (GDPR compliant)
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'functionality_storage': 'granted',
+        'security_storage': 'granted',
+        'wait_for_update': 500
+      });
+
+      // Enable URL passthrough for better conversion modeling
+      gtag('set', 'url_passthrough', true);
+
+      // Enable ads data redaction when consent denied
+      gtag('set', 'ads_data_redaction', true);
+    </script>
+
+    <!-- Google Tag Manager -->
+    <script is:inline define:vars={{ GTM_ID }}>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer',GTM_ID);
+    </script>
+
     <!-- Additional head content -->
     <slot name="head" />
   </head>
 
   <body class="min-h-screen flex flex-col bg-white text-slate-900 antialiased">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+      <iframe
+        src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+      ></iframe>
+    </noscript>
+
     <slot />
 
     <!-- Scripts -->
@@ -128,5 +177,38 @@ const canonical = canonicalURL || Astro.url.href;
 
     <!-- Analytics slot -->
     <slot name="analytics" />
+
+    <!-- Phone and Email Click Tracking -->
+    <script is:inline>
+      (function() {
+        document.addEventListener('click', function(e) {
+          const link = e.target.closest('a[href^="tel:"], a[href^="mailto:"]');
+          if (!link) return;
+
+          const href = link.getAttribute('href');
+          const isPhone = href.startsWith('tel:');
+          const isEmail = href.startsWith('mailto:');
+
+          if (window.dataLayer) {
+            if (isPhone) {
+              window.dataLayer.push({
+                'event': 'phone_click',
+                'click_url': href,
+                'click_text': link.textContent?.trim() || href
+              });
+            } else if (isEmail) {
+              window.dataLayer.push({
+                'event': 'email_click',
+                'click_url': href,
+                'click_text': link.textContent?.trim() || href
+              });
+            }
+          }
+        });
+      })();
+    </script>
+
+    <!-- Cookie Consent Banner -->
+    <CookieConsent lang={lang} />
   </body>
 </html>
