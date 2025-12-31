@@ -1,0 +1,209 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "How We Work",
+    headline: "Choose Your Level of Involvement",
+    subtitle: "Whether you need strategic guidance or full execution, we adapt to your team's capabilities and needs.",
+    modes: [
+      {
+        name: "Consulting",
+        icon: "compass",
+        tagline: "We guide, you execute",
+        color: "from-blue-500 to-cyan-500",
+        description: "Perfect for teams with in-house execution capabilities who need strategic direction and expert guidance.",
+        includes: [
+          "Strategy development & roadmap",
+          "Campaign architecture & planning",
+          "Channel recommendations",
+          "Budget allocation guidance",
+          "Performance review sessions",
+          "Best practices & frameworks"
+        ],
+        ideal: "Ideal for: Teams with marketing ops capacity looking for expert direction"
+      },
+      {
+        name: "Execution",
+        icon: "zap",
+        tagline: "We handle everything",
+        color: "from-indigo-500 to-purple-600",
+        description: "Full-service execution where our team creates, launches, and optimizes your campaigns from A to Z.",
+        includes: [
+          "Complete campaign creation",
+          "Ad copy & creative production",
+          "Audience building & targeting",
+          "Daily optimization & bidding",
+          "A/B testing & iteration",
+          "Comprehensive reporting"
+        ],
+        ideal: "Ideal for: Teams lacking bandwidth or expertise who need a true partner"
+      }
+    ],
+    or: "or",
+    hybrid: "Hybrid Approach",
+    hybridDescription: "Most clients choose a mix — we consult on strategy while executing on specific channels. Let's find the right balance for your team.",
+    cta: "Let's Define Your Model"
+  },
+  fr: {
+    badge: "Comment Nous Travaillons",
+    headline: "Choisissez Votre Niveau d'Implication",
+    subtitle: "Que vous ayez besoin de conseil stratégique ou d'une exécution complète, nous nous adaptons aux capacités et besoins de votre équipe.",
+    modes: [
+      {
+        name: "Consulting",
+        icon: "compass",
+        tagline: "On vous guide, vous exécutez",
+        color: "from-blue-500 to-cyan-500",
+        description: "Parfait pour les équipes avec des capacités d'exécution en interne qui ont besoin de direction stratégique et de guidance experte.",
+        includes: [
+          "Développement stratégie & roadmap",
+          "Architecture & planning campagnes",
+          "Recommandations de canaux",
+          "Guidance allocation budget",
+          "Sessions de revue performance",
+          "Best practices & frameworks"
+        ],
+        ideal: "Idéal pour: Équipes avec capacité marketing ops cherchant une direction experte"
+      },
+      {
+        name: "Exécution",
+        icon: "zap",
+        tagline: "On gère tout",
+        color: "from-indigo-500 to-purple-600",
+        description: "Exécution full-service où notre équipe crée, lance et optimise vos campagnes de A à Z.",
+        includes: [
+          "Création complète des campagnes",
+          "Copywriting & production créative",
+          "Construction d'audiences & ciblage",
+          "Optimisation quotidienne & enchères",
+          "A/B testing & itération",
+          "Reporting complet"
+        ],
+        ideal: "Idéal pour: Équipes manquant de bande passante ou d'expertise nécessitant un vrai partenaire"
+      }
+    ],
+    or: "ou",
+    hybrid: "Approche Hybride",
+    hybridDescription: "La plupart de nos clients choisissent un mix — on conseille sur la stratégie tout en exécutant sur certains canaux. Trouvons le bon équilibre pour votre équipe.",
+    cta: "Définissons Votre Modèle"
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-white">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+        <Icon name="sliders" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Work Modes -->
+    <div class="grid lg:grid-cols-2 gap-8 mb-12">
+      {t.modes.map((mode, index) => (
+        <div
+          class="mode-card relative p-8 bg-white rounded-3xl border-2 border-slate-200 hover:border-indigo-300 transition-all duration-500 animate-on-scroll overflow-hidden"
+          style={`animation-delay: ${index * 150}ms`}
+        >
+          <!-- Background Gradient -->
+          <div class={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-br ${mode.color} opacity-5 rounded-full -translate-y-1/2 translate-x-1/2`}></div>
+
+          <div class="relative z-10">
+            <!-- Header -->
+            <div class="flex items-start gap-4 mb-6">
+              <div class={`w-16 h-16 rounded-2xl bg-gradient-to-br ${mode.color} flex items-center justify-center shadow-lg`}>
+                <Icon name={mode.icon} size={32} class="text-white" />
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-slate-900">{mode.name}</h3>
+                <p class={`text-sm font-medium bg-gradient-to-r ${mode.color} bg-clip-text text-transparent`}>
+                  {mode.tagline}
+                </p>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <p class="text-slate-600 mb-6 leading-relaxed">
+              {mode.description}
+            </p>
+
+            <!-- Includes List -->
+            <ul class="space-y-3 mb-6">
+              {mode.includes.map(item => (
+                <li class="flex items-start gap-3 text-sm text-slate-700">
+                  <span class={`w-5 h-5 rounded-full bg-gradient-to-br ${mode.color} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <!-- Ideal For -->
+            <div class="p-4 bg-slate-50 rounded-xl">
+              <p class="text-sm text-slate-600 italic">{mode.ideal}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Hybrid Approach -->
+    <div class="text-center animate-on-scroll">
+      <div class="inline-flex items-center gap-4 mb-6">
+        <div class="h-px w-12 bg-slate-300"></div>
+        <span class="text-slate-500 font-medium uppercase tracking-wide text-sm">{t.or}</span>
+        <div class="h-px w-12 bg-slate-300"></div>
+      </div>
+
+      <div class="max-w-2xl mx-auto p-8 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl border border-indigo-100">
+        <h3 class="text-2xl font-bold text-slate-900 mb-3">{t.hybrid}</h3>
+        <p class="text-slate-600 mb-6">{t.hybridDescription}</p>
+        <a
+          href={`/${lang}/contact`}
+          class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:shadow-xl hover:shadow-indigo-500/25 hover:scale-105 transition-all duration-300"
+        >
+          <span>{t.cta}</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .mode-card {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

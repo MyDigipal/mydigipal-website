@@ -1,0 +1,176 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "FAQ",
+    headline: "Frequently Asked Questions",
+    subtitle: "Everything you need to know about Account-Based Marketing and our services.",
+    faqs: [
+      {
+        question: "What is Account-Based Marketing (ABM)?",
+        answer: "Account-Based Marketing is a hyper-targeted growth strategy that brings sales and marketing teams together to create personalized campaigns delivered to an identified set of high-value target accounts. Unlike traditional marketing that casts a wide net, ABM focuses resources on specific accounts most likely to convert and generate significant revenue."
+      },
+      {
+        question: "Who is ABM best suited for?",
+        answer: "ABM is ideal for B2B companies — particularly Tech, SaaS, Finance, and Pharmaceutical industries — who have a defined Ideal Customer Profile (ICP) and sell high-value products or services with longer sales cycles. If your deals involve multiple stakeholders and require relationship building, ABM is likely a great fit."
+      },
+      {
+        question: "Which channels do you use for ABM campaigns?",
+        answer: "This depends on where your key accounts are. For most B2B accounts, LinkedIn is crucial. We also leverage Google Ads (Search & Display), programmatic advertising, email marketing, and sometimes direct mail. The key is understanding how to reach your audience in their preferred communication channels."
+      },
+      {
+        question: "How do you measure ABM success?",
+        answer: "ABM is highly measurable because it's so targeted. Your sales team will have their contact list of key accounts and can track all new inquiries, leads, and deals as campaigns run. We measure response rates, engagement, conversions, pipeline contribution, deal velocity, and ultimately revenue generated from target accounts."
+      },
+      {
+        question: "Can ABM work alongside our existing marketing automation?",
+        answer: "Absolutely! In fact, ABM works best when integrated with your existing marketing automation platform. This allows everything to be organized and flowing smoothly. Sales and marketing have visibility into all activities, ensuring momentum continues and your audience gets the best experience."
+      },
+      {
+        question: "How long does it take to see results from ABM?",
+        answer: "ABM is a longer-term strategy, but you should see early indicators within 3-6 months — increased engagement, more meetings booked, improved pipeline quality. Significant revenue impact typically shows within 6-12 months. We follow the Crawl, Walk, Run methodology to ensure sustainable success."
+      }
+    ]
+  },
+  fr: {
+    badge: "FAQ",
+    headline: "Questions Fréquentes",
+    subtitle: "Tout ce que vous devez savoir sur l'Account-Based Marketing et nos services.",
+    faqs: [
+      {
+        question: "Qu'est-ce que l'Account-Based Marketing (ABM) ?",
+        answer: "L'Account-Based Marketing est une stratégie de croissance hyper-ciblée qui réunit les équipes commerciales et marketing pour créer des campagnes personnalisées destinées à un ensemble identifié de comptes cibles à haute valeur. Contrairement au marketing traditionnel qui ratisse large, l'ABM concentre les ressources sur des comptes spécifiques les plus susceptibles de convertir et de générer des revenus significatifs."
+      },
+      {
+        question: "À qui l'ABM convient-il le mieux ?",
+        answer: "L'ABM est idéal pour les entreprises B2B — particulièrement les secteurs Tech, SaaS, Finance et Pharmaceutique — qui ont un Ideal Customer Profile (ICP) défini et vendent des produits ou services à haute valeur avec des cycles de vente plus longs. Si vos deals impliquent plusieurs parties prenantes et nécessitent la construction de relations, l'ABM est probablement un excellent choix."
+      },
+      {
+        question: "Quels canaux utilisez-vous pour les campagnes ABM ?",
+        answer: "Cela dépend de où se trouvent vos comptes clés. Pour la plupart des comptes B2B, LinkedIn est crucial. Nous exploitons également Google Ads (Search & Display), la publicité programmatique, l'email marketing, et parfois le direct mail. La clé est de comprendre comment atteindre votre audience dans ses canaux de communication préférés."
+      },
+      {
+        question: "Comment mesurez-vous le succès de l'ABM ?",
+        answer: "L'ABM est hautement mesurable car très ciblé. Votre équipe commerciale aura sa liste de contacts des comptes clés et pourra suivre toutes les nouvelles demandes, leads et deals au fil des campagnes. Nous mesurons les taux de réponse, l'engagement, les conversions, la contribution au pipeline, la vélocité des deals, et ultimement les revenus générés des comptes cibles."
+      },
+      {
+        question: "L'ABM peut-il fonctionner avec notre marketing automation existant ?",
+        answer: "Absolument ! En fait, l'ABM fonctionne mieux quand il est intégré à votre plateforme de marketing automation existante. Cela permet que tout soit organisé et fluide. Les équipes Sales et Marketing ont de la visibilité sur toutes les activités, assurant que le momentum continue et que votre audience ait la meilleure expérience."
+      },
+      {
+        question: "Combien de temps faut-il pour voir des résultats de l'ABM ?",
+        answer: "L'ABM est une stratégie à plus long terme, mais vous devriez voir des indicateurs précoces dans les 3-6 mois — engagement accru, plus de meetings bookés, qualité de pipeline améliorée. L'impact significatif sur les revenus se manifeste généralement dans les 6-12 mois. Nous suivons la méthodologie Crawl, Walk, Run pour assurer un succès durable."
+      }
+    ]
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-gradient-to-b from-slate-50 to-white">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+        <Icon name="help-circle" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="max-w-3xl mx-auto space-y-4">
+      {t.faqs.map((faq, index) => (
+        <div
+          class="faq-item bg-white rounded-2xl border border-slate-200 overflow-hidden animate-on-scroll"
+          style={`animation-delay: ${index * 80}ms`}
+        >
+          <button
+            class="faq-trigger w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition-colors"
+            aria-expanded="false"
+          >
+            <span class="font-semibold text-slate-900 pr-4">{faq.question}</span>
+            <span class="faq-icon w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 transition-transform duration-300">
+              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+          </button>
+          <div class="faq-content hidden px-6 pb-6">
+            <p class="text-slate-600 leading-relaxed">{faq.answer}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const faqItems = document.querySelectorAll('.faq-item');
+
+    faqItems.forEach(item => {
+      const trigger = item.querySelector('.faq-trigger');
+      const content = item.querySelector('.faq-content');
+      const icon = item.querySelector('.faq-icon');
+
+      trigger?.addEventListener('click', () => {
+        const isOpen = content?.classList.contains('hidden') === false;
+
+        // Close all other items
+        faqItems.forEach(otherItem => {
+          const otherContent = otherItem.querySelector('.faq-content');
+          const otherIcon = otherItem.querySelector('.faq-icon');
+          const otherTrigger = otherItem.querySelector('.faq-trigger');
+          otherContent?.classList.add('hidden');
+          otherIcon?.classList.remove('rotate-180');
+          otherTrigger?.setAttribute('aria-expanded', 'false');
+        });
+
+        // Toggle current item
+        if (!isOpen) {
+          content?.classList.remove('hidden');
+          icon?.classList.add('rotate-180');
+          trigger?.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .faq-item {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .faq-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .faq-icon.rotate-180 {
+    transform: rotate(180deg);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

@@ -1,0 +1,140 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "What is ABM?",
+    headline: "Account-Based Marketing Explained",
+    intro: "Account-Based Marketing is not a solution, it's not Display ads — ABM is a collaborative strategy to focus on quality & precision, over quantity and noise.",
+    paragraph: "Traditional methods aren't working as much anymore. Rules are getting stricter (GDPR), competition is fiercer, and buyers are more informed. A new era had to be born.",
+    deckCTA: "Read our ABM Deck",
+    points: [
+      {
+        icon: "target",
+        title: "Hyper-Targeted",
+        description: "Focus your efforts on high-value accounts that matter most to your business"
+      },
+      {
+        icon: "users",
+        title: "Sales & Marketing Alignment",
+        description: "Bridge the gap between teams with a unified approach to revenue generation"
+      },
+      {
+        icon: "trending-up",
+        title: "Higher ROI",
+        description: "ABM delivers 97% higher ROI than other marketing strategies according to ITSMA"
+      },
+      {
+        icon: "zap",
+        title: "Personalized Engagement",
+        description: "Craft tailored messages that resonate with specific decision-makers"
+      }
+    ]
+  },
+  fr: {
+    badge: "Qu'est-ce que l'ABM ?",
+    headline: "L'Account-Based Marketing Expliqué",
+    intro: "L'Account-Based Marketing n'est pas une solution, ce n'est pas du Display — l'ABM est une stratégie collaborative axée sur la qualité et la précision, plutôt que la quantité et le bruit.",
+    paragraph: "Les méthodes traditionnelles ne fonctionnent plus autant. Les règles se durcissent (RGPD), la concurrence est plus féroce, et les acheteurs sont mieux informés. Une nouvelle ère devait naître.",
+    deckCTA: "Lire notre ABM Deck",
+    points: [
+      {
+        icon: "target",
+        title: "Hyper-Ciblé",
+        description: "Concentrez vos efforts sur les comptes à forte valeur qui comptent le plus"
+      },
+      {
+        icon: "users",
+        title: "Alignement Sales & Marketing",
+        description: "Comblez le fossé entre les équipes avec une approche unifiée de génération de revenus"
+      },
+      {
+        icon: "trending-up",
+        title: "ROI Supérieur",
+        description: "L'ABM génère un ROI 97% supérieur aux autres stratégies marketing selon ITSMA"
+      },
+      {
+        icon: "zap",
+        title: "Engagement Personnalisé",
+        description: "Créez des messages sur-mesure qui résonnent avec les décideurs spécifiques"
+      }
+    ]
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-gradient-to-b from-slate-50 to-white">
+  <div class="container-custom">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <!-- Left: Content -->
+      <div class="animate-on-scroll">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+          <Icon name="help-circle" size={16} />
+          <span>{t.badge}</span>
+        </div>
+
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+          {t.headline}
+        </h2>
+
+        <p class="text-xl text-slate-700 mb-4 leading-relaxed">
+          {t.intro}
+        </p>
+
+        <p class="text-lg text-slate-600 mb-8">
+          {t.paragraph}
+        </p>
+
+        <a
+          href={`/${lang}/blog/abm-deck`}
+          class="inline-flex items-center gap-2 text-indigo-600 font-semibold hover:text-indigo-700 transition-colors group"
+        >
+          <span>{t.deckCTA}</span>
+          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Right: Points Grid -->
+      <div class="grid sm:grid-cols-2 gap-6">
+        {t.points.map((point, index) => (
+          <div
+            class="abm-point p-6 bg-white rounded-2xl border border-slate-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 animate-on-scroll"
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mb-4">
+              <Icon name={point.icon} size={24} class="text-white" />
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">{point.title}</h3>
+            <p class="text-slate-600 text-sm leading-relaxed">{point.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .abm-point {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
