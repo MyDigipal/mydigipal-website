@@ -1,0 +1,209 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Client Success",
+    headline: "Don't Take Our Word For It",
+    subtitle: "Hear from B2B leaders who have transformed their marketing with our ABM approach.",
+    testimonials: [
+      {
+        quote: "We were looking to improve our digital marketing efforts, but had a gap in the marketing team and over 12 internal tools to handle all digital marketing aspects. MyDigipal was able to overcome significant challenges, clearing the backlog of digital support in the regions, and successfully executed an ABM revamp across LinkedIn. Very Impressive.",
+        author: "Brett Rieser",
+        role: "Digital Marketing Director EMEA",
+        company: "Genesys",
+        image: "/images/testimonials/brett-rieser.webp",
+        logo: "/images/clients/genesys.svg",
+        metric: "ABM Revamp",
+        metricLabel: "LinkedIn"
+      },
+      {
+        quote: "From the ground up, MyDigipal's strategic acumen was invaluable. They didn't just consult; they immersed themselves in our mission, helping to orchestrate a digital symphony that resonated across the B2B landscape. Their contributions led to a suite of high-value leads, a significant uptick in conversions, and a dashboard that gave us a 360-degree view of our multi-channel performance.",
+        author: "Surbhi Rathore",
+        role: "CEO & Co-founder",
+        company: "Symbl.ai",
+        image: "/images/testimonials/surbhi-rathore.webp",
+        logo: "/images/clients/symbl.svg",
+        metric: "360°",
+        metricLabel: "Performance View"
+      },
+      {
+        quote: "We approached this agency to improve our marketing efforts and sales pipeline. The ABM programs MyDigipal put in place helped Quantum Metrics identify and focus on the most valuable target accounts. We had refreshingly better lead quality and higher conversion rates. We were able to accelerate the deal closing process by 30%!",
+        author: "Kelly Wright",
+        role: "Director of Marketing Global",
+        company: "Quantum Metrics",
+        image: "/images/testimonials/kelly-wright.webp",
+        logo: "/images/clients/quantum-metrics.svg",
+        metric: "30%",
+        metricLabel: "Faster Deals"
+      }
+    ],
+    caseStudiesCta: "View All Case Studies"
+  },
+  fr: {
+    badge: "Succès Clients",
+    headline: "Ne Nous Croyez Pas Sur Parole",
+    subtitle: "Écoutez les leaders B2B qui ont transformé leur marketing avec notre approche ABM.",
+    testimonials: [
+      {
+        quote: "Nous cherchions à améliorer nos efforts de marketing digital, mais nous avions un gap dans l'équipe marketing et plus de 12 outils internes pour gérer tous les aspects du marketing digital. MyDigipal a su surmonter des défis significatifs, éliminant le backlog de support digital dans les régions, et a exécuté avec succès une refonte ABM sur LinkedIn. Très impressionnant.",
+        author: "Brett Rieser",
+        role: "Directeur Marketing Digital EMEA",
+        company: "Genesys",
+        image: "/images/testimonials/brett-rieser.webp",
+        logo: "/images/clients/genesys.svg",
+        metric: "Refonte ABM",
+        metricLabel: "LinkedIn"
+      },
+      {
+        quote: "Dès le départ, l'acuité stratégique de MyDigipal était inestimable. Ils n'ont pas seulement conseillé ; ils se sont immergés dans notre mission, aidant à orchestrer une symphonie digitale qui a résonné dans le paysage B2B. Leurs contributions ont mené à une suite de leads à haute valeur, une hausse significative des conversions, et un dashboard nous donnant une vue à 360° de notre performance multi-canal.",
+        author: "Surbhi Rathore",
+        role: "CEO & Co-fondatrice",
+        company: "Symbl.ai",
+        image: "/images/testimonials/surbhi-rathore.webp",
+        logo: "/images/clients/symbl.svg",
+        metric: "360°",
+        metricLabel: "Vue Performance"
+      },
+      {
+        quote: "Nous avons contacté cette agence pour améliorer nos efforts marketing et notre pipeline commercial. Les programmes ABM mis en place par MyDigipal ont aidé Quantum Metrics à identifier et se concentrer sur les comptes cibles les plus précieux. Nous avons eu une qualité de leads rafraîchissante et des taux de conversion plus élevés. Nous avons pu accélérer le processus de closing de 30% !",
+        author: "Kelly Wright",
+        role: "Directrice Marketing Global",
+        company: "Quantum Metrics",
+        image: "/images/testimonials/kelly-wright.webp",
+        logo: "/images/clients/quantum-metrics.svg",
+        metric: "30%",
+        metricLabel: "Deals Plus Rapides"
+      }
+    ],
+    caseStudiesCta: "Voir Toutes les Études de Cas"
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-white">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+        <Icon name="star" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Testimonials Grid -->
+    <div class="grid lg:grid-cols-3 gap-8 mb-12">
+      {t.testimonials.map((testimonial, index) => (
+        <div
+          class="testimonial-card group relative bg-white rounded-2xl border border-slate-200 hover:border-indigo-200 transition-all duration-500 overflow-hidden animate-on-scroll hover:shadow-xl"
+          style={`animation-delay: ${index * 150}ms`}
+        >
+          <!-- Metric Badge -->
+          <div class="absolute top-4 right-4 text-right">
+            <div class="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
+              {testimonial.metric}
+            </div>
+            <div class="text-xs text-slate-500">{testimonial.metricLabel}</div>
+          </div>
+
+          <div class="p-8">
+            <!-- Company Logo -->
+            <div class="h-8 mb-6">
+              <img
+                src={testimonial.logo}
+                alt={testimonial.company}
+                class="h-full w-auto object-contain opacity-60 group-hover:opacity-100 transition-opacity"
+              />
+            </div>
+
+            <!-- Quote -->
+            <div class="relative mb-6">
+              <svg class="absolute -top-2 -left-2 w-8 h-8 text-indigo-100" fill="currentColor" viewBox="0 0 32 32">
+                <path d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H8c0-1.1.9-2 2-2V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-6c0-1.1.9-2 2-2V8z"/>
+              </svg>
+              <p class="text-slate-600 text-sm leading-relaxed line-clamp-6 relative z-10">
+                {testimonial.quote}
+              </p>
+            </div>
+
+            <!-- Author -->
+            <div class="flex items-center gap-4 pt-6 border-t border-slate-100">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center overflow-hidden">
+                {testimonial.image ? (
+                  <img
+                    src={testimonial.image}
+                    alt={testimonial.author}
+                    class="w-full h-full object-cover"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                  />
+                  <span class="hidden w-full h-full items-center justify-center text-indigo-600 font-bold text-lg">
+                    {testimonial.author.charAt(0)}
+                  </span>
+                ) : (
+                  <span class="text-indigo-600 font-bold text-lg">
+                    {testimonial.author.charAt(0)}
+                  </span>
+                )}
+              </div>
+              <div>
+                <div class="font-semibold text-slate-900">{testimonial.author}</div>
+                <div class="text-sm text-slate-500">{testimonial.role}</div>
+                <div class="text-sm text-indigo-600 font-medium">{testimonial.company}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center animate-on-scroll">
+      <a
+        href={`/${lang}/case-studies`}
+        class="inline-flex items-center gap-3 px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-indigo-100 hover:text-indigo-700 transition-all duration-300 group"
+      >
+        <span>{t.caseStudiesCta}</span>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .testimonial-card {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .line-clamp-6 {
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

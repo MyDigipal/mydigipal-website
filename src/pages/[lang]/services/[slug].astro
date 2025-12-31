@@ -52,6 +52,17 @@ import WhyAISolutions from '@/components/sections/WhyAISolutions.astro';
 import AIUseCases from '@/components/sections/AIUseCases.astro';
 import AIProcess from '@/components/sections/AIProcess.astro';
 
+// B2B ABM specific sections
+import WhyABM from '@/components/sections/b2b/WhyABM.astro';
+import ABMApproach from '@/components/sections/b2b/ABMApproach.astro';
+import ABMServices from '@/components/sections/b2b/ABMServices.astro';
+import ABMWorkModes from '@/components/sections/b2b/ABMWorkModes.astro';
+import B2BFunnel from '@/components/sections/b2b/B2BFunnel.astro';
+import ABMTrainingPackages from '@/components/sections/b2b/ABMTrainingPackages.astro';
+import ABMCalculatorCTA from '@/components/sections/b2b/ABMCalculatorCTA.astro';
+import ABMTestimonials from '@/components/sections/b2b/ABMTestimonials.astro';
+import ABMFAQ from '@/components/sections/b2b/ABMFAQ.astro';
+
 // Generic FAQ component
 import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
 
@@ -111,6 +122,8 @@ const isAITrainingService = slug === 'ai-training';
 const isEmailingService = slug === 'emailing';
 // Check if this is the AI Solutions service page
 const isAISolutionsService = slug === 'ai-solutions';
+// Check if this is the B2B ABM service page
+const isB2BABMService = slug === 'b2b-abm';
 ---
 
 <PageLayout
@@ -246,13 +259,45 @@ const isAISolutionsService = slug === 'ai-solutions';
     </>
   )}
 
+  <!-- B2B ABM Service: Comprehensive Sections -->
+  {isB2BABMService && (
+    <>
+      <!-- What is ABM - Educational Section -->
+      <WhyABM lang={lang} />
+
+      <!-- Crawl, Walk, Run Methodology -->
+      <ABMApproach lang={lang} />
+
+      <!-- À La Carte Services Grid -->
+      <ABMServices lang={lang} />
+
+      <!-- Consulting vs Execution Work Modes -->
+      <ABMWorkModes lang={lang} />
+
+      <!-- B2B Funnel Stages -->
+      <B2BFunnel lang={lang} />
+
+      <!-- Calculator CTA -->
+      <ABMCalculatorCTA lang={lang} />
+
+      <!-- ABM Training Packages -->
+      <ABMTrainingPackages lang={lang} />
+
+      <!-- B2B Testimonials -->
+      <ABMTestimonials lang={lang} />
+
+      <!-- ABM FAQ -->
+      <ABMFAQ lang={lang} />
+    </>
+  )}
+
   <!-- Google Ads Case Studies -->
   {isGoogleAdsService && (
     <CaseStudyCarousel lang={lang} caseStudyIds={['dmd', 'quantum', 'genesys']} color={color} />
   )}
 
-  <!-- Testimonial Spotlight (skip for AI Training which has its own testimonials section) -->
-  {testimonial && !isAITrainingService && (
+  <!-- Testimonial Spotlight (skip for AI Training and B2B ABM which have their own testimonials) -->
+  {testimonial && !isAITrainingService && !isB2BABMService && (
     <TestimonialSpotlight
       quote={testimonial.quote}
       author={testimonial.author}
@@ -263,13 +308,15 @@ const isAISolutionsService = slug === 'ai-solutions';
     />
   )}
 
-  <!-- Trusted By - Client Logos (skip for AI Training which has its own client logos section) -->
-  {!isAITrainingService && (
+  <!-- Trusted By - Client Logos (skip for AI Training and B2B ABM which have their own) -->
+  {!isAITrainingService && !isB2BABMService && (
     <TrustedBy lang={lang} variant="compact" />
   )}
 
-  <!-- Final CTA -->
-  <FinalCTA lang={lang} color={color} />
+  <!-- Final CTA (skip for B2B ABM which has its own) -->
+  {!isB2BABMService && (
+    <FinalCTA lang={lang} color={color} />
+  )}
 
   <!-- FAQ Section -->
   {isSEOService && (

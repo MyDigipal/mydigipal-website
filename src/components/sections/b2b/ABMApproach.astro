@@ -1,0 +1,185 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Our Methodology",
+    headline: "The Crawl, Walk, Run Approach",
+    subtitle: "Account-based marketing can be intimidating to put in place. Whether you want to get started with a 1-to-1, 1-to-few or 1-to-many strategy, we recommend this proven approach.",
+    phases: [
+      {
+        name: "Crawl",
+        icon: "baby",
+        color: "from-blue-500 to-cyan-500",
+        description: "When you're getting started with ABM, you need to clear the fundamentals.",
+        details: [
+          "Marketing ops structure",
+          "Relevant content for your audience",
+          "Good user experience",
+          "Define your ICP & personas",
+          "Tech stack audit"
+        ]
+      },
+      {
+        name: "Walk",
+        icon: "footprints",
+        color: "from-indigo-500 to-purple-500",
+        description: "Start with a single initiative across multiple channels, testing your systems.",
+        details: [
+          "Launch pilot campaigns",
+          "Test across 2-3 channels",
+          "Measure baseline performance",
+          "Personalize your approach",
+          "Build best practices database"
+        ]
+      },
+      {
+        name: "Run",
+        icon: "rocket",
+        color: "from-purple-500 to-pink-500",
+        description: "Rinse & repeat. Scale your budget as ROI keeps increasing.",
+        details: [
+          "Scale successful campaigns",
+          "Expand to more accounts",
+          "Automate repetitive tasks",
+          "Measure business outcomes",
+          "Pipeline, revenue, deal velocity"
+        ]
+      }
+    ]
+  },
+  fr: {
+    badge: "Notre Méthodologie",
+    headline: "L'Approche Crawl, Walk, Run",
+    subtitle: "L'Account-Based Marketing peut sembler intimidant à mettre en place. Que vous souhaitiez commencer avec une stratégie 1-to-1, 1-to-few ou 1-to-many, nous recommandons cette approche éprouvée.",
+    phases: [
+      {
+        name: "Crawl",
+        icon: "baby",
+        color: "from-blue-500 to-cyan-500",
+        description: "Quand vous débutez en ABM, vous devez maîtriser les fondamentaux.",
+        details: [
+          "Structure marketing ops",
+          "Contenu pertinent pour votre audience",
+          "Bonne expérience utilisateur",
+          "Définir votre ICP & personas",
+          "Audit de votre stack tech"
+        ]
+      },
+      {
+        name: "Walk",
+        icon: "footprints",
+        color: "from-indigo-500 to-purple-500",
+        description: "Démarrez avec une initiative unique sur plusieurs canaux, testez vos systèmes.",
+        details: [
+          "Lancer des campagnes pilotes",
+          "Tester sur 2-3 canaux",
+          "Mesurer la performance de base",
+          "Personnaliser votre approche",
+          "Construire une base de bonnes pratiques"
+        ]
+      },
+      {
+        name: "Run",
+        icon: "rocket",
+        color: "from-purple-500 to-pink-500",
+        description: "Rincer & répéter. Scalez votre budget à mesure que le ROI augmente.",
+        details: [
+          "Scaler les campagnes réussies",
+          "Étendre à plus de comptes",
+          "Automatiser les tâches répétitives",
+          "Mesurer les résultats business",
+          "Pipeline, revenus, vélocité des deals"
+        ]
+      }
+    ]
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-white">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+        <Icon name="map" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Phases Timeline -->
+    <div class="relative">
+      <!-- Connection Line -->
+      <div class="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 -translate-y-1/2 z-0 rounded-full"></div>
+
+      <div class="grid lg:grid-cols-3 gap-8 relative z-10">
+        {t.phases.map((phase, index) => (
+          <div
+            class="phase-card bg-white p-8 rounded-2xl border-2 border-slate-200 hover:border-indigo-300 transition-all duration-500 animate-on-scroll shadow-lg hover:shadow-xl"
+            style={`animation-delay: ${index * 150}ms`}
+          >
+            <!-- Phase Number & Icon -->
+            <div class="flex items-center gap-4 mb-6">
+              <div class={`w-16 h-16 rounded-2xl bg-gradient-to-br ${phase.color} flex items-center justify-center shadow-lg`}>
+                <span class="text-3xl font-bold text-white">{index + 1}</span>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold text-slate-900">{phase.name}</h3>
+                <div class="text-sm text-slate-500 uppercase tracking-wide">Phase {index + 1}</div>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <p class="text-slate-600 mb-6 leading-relaxed">
+              {phase.description}
+            </p>
+
+            <!-- Details List -->
+            <ul class="space-y-3">
+              {phase.details.map(detail => (
+                <li class="flex items-start gap-3 text-sm text-slate-700">
+                  <span class={`w-5 h-5 rounded-full bg-gradient-to-br ${phase.color} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                  {detail}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .phase-card {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
