@@ -2,7 +2,6 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
@@ -14,15 +13,7 @@ export default defineConfig({
     }),
     react(),
     mdx(),
-    sitemap({
-      i18n: {
-        defaultLocale: 'en',
-        locales: {
-          en: 'en',
-          fr: 'fr',
-        },
-      },
-    }),
+    // Custom sitemap at /sitemap.xml (see src/pages/sitemap.xml.ts)
   ],
 
   i18n: {
