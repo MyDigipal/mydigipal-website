@@ -29,10 +29,15 @@ export const GET: APIRoute = async () => {
         lastmod: today,
         changefreq,
         priority,
-        alternates: languages.map((l) => ({
-          lang: l,
-          href: `${site}/${l}${path}`,
-        })),
+        alternates: [
+          // x-default for search engines (points to English version)
+          { lang: 'x-default', href: `${site}/en${path}` },
+          // All language versions
+          ...languages.map((l) => ({
+            lang: l,
+            href: `${site}/${l}${path}`,
+          })),
+        ],
       });
     }
   };
@@ -55,6 +60,10 @@ export const GET: APIRoute = async () => {
 
   // Case studies index
   addBilingualPage('/case-studies', 0.8, 'weekly');
+
+  // Legal pages
+  addBilingualPage('/privacy-policy', 0.3, 'yearly');
+  addBilingualPage('/terms-of-service', 0.3, 'yearly');
 
   // ==================
   // SERVICES (from content collection)
