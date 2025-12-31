@@ -6,8 +6,8 @@
     "accountId": "6071789744",
     "containerId": "104717258",
     "containerVersionId": "0",
-    "name": "MyDigipal - Complete Tracking Setup v2",
-    "description": "Cookie consent, GA4, Meta Pixel, Google Ads conversions with Consent Mode V2",
+    "name": "MyDigipal - GA4 + Meta Pixel Setup",
+    "description": "GA4 events and Meta Pixel with Consent Mode V2 - Import GA4 events to Google Ads separately",
     "container": {
       "path": "accounts/6071789744/containers/104717258",
       "accountId": "6071789744",
@@ -45,56 +45,6 @@
         "type": "c",
         "parameter": [{"type": "TEMPLATE", "key": "value", "value": "848469840083737"}],
         "fingerprint": "1735660802000",
-        "formatValue": {}
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "variableId": "102",
-        "name": "CONST - Google Ads Conversion ID",
-        "type": "c",
-        "parameter": [{"type": "TEMPLATE", "key": "value", "value": "AW-XXXXXXXXXX"}],
-        "fingerprint": "1735660803000",
-        "formatValue": {}
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "variableId": "103",
-        "name": "CONST - GAds Label Calculator",
-        "type": "c",
-        "parameter": [{"type": "TEMPLATE", "key": "value", "value": "REPLACE_CALCULATOR_LABEL"}],
-        "fingerprint": "1735660804000",
-        "formatValue": {}
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "variableId": "104",
-        "name": "CONST - GAds Label Contact",
-        "type": "c",
-        "parameter": [{"type": "TEMPLATE", "key": "value", "value": "REPLACE_CONTACT_LABEL"}],
-        "fingerprint": "1735660805000",
-        "formatValue": {}
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "variableId": "105",
-        "name": "CONST - GAds Label Phone",
-        "type": "c",
-        "parameter": [{"type": "TEMPLATE", "key": "value", "value": "REPLACE_PHONE_LABEL"}],
-        "fingerprint": "1735660806000",
-        "formatValue": {}
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "variableId": "106",
-        "name": "CONST - GAds Label Email",
-        "type": "c",
-        "parameter": [{"type": "TEMPLATE", "key": "value", "value": "REPLACE_EMAIL_LABEL"}],
-        "fingerprint": "1735660807000",
         "formatValue": {}
       },
       {
@@ -190,14 +140,6 @@
         "name": "All Pages",
         "type": "PAGEVIEW",
         "fingerprint": "1735660820000"
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "triggerId": "201",
-        "name": "Consent Initialization",
-        "type": "INIT_CONSENT",
-        "fingerprint": "1735660821000"
       },
       {
         "accountId": "6071789744",
@@ -488,88 +430,6 @@
           {"type": "BOOLEAN", "key": "supportDocumentWrite", "value": "false"}
         ],
         "fingerprint": "1735660864000",
-        "firingTriggerId": ["213"],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"},
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {"type": "LIST", "list": [{"type": "TEMPLATE", "value": "ad_storage"}]}
-        }
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "tagId": "500",
-        "name": "Google Ads - Conversion - Calculator Lead",
-        "type": "awct",
-        "parameter": [
-          {"type": "TEMPLATE", "key": "conversionId", "value": "{{CONST - Google Ads Conversion ID}}"},
-          {"type": "TEMPLATE", "key": "conversionLabel", "value": "{{CONST - GAds Label Calculator}}"},
-          {"type": "TEMPLATE", "key": "conversionValue", "value": "{{DLV - calculator_total}}"},
-          {"type": "TEMPLATE", "key": "currencyCode", "value": "EUR"},
-          {"type": "BOOLEAN", "key": "enableNewCustomerReporting", "value": "false"}
-        ],
-        "fingerprint": "1735660870000",
-        "firingTriggerId": ["210"],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"},
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {"type": "LIST", "list": [{"type": "TEMPLATE", "value": "ad_storage"}]}
-        }
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "tagId": "501",
-        "name": "Google Ads - Conversion - Contact Lead",
-        "type": "awct",
-        "parameter": [
-          {"type": "TEMPLATE", "key": "conversionId", "value": "{{CONST - Google Ads Conversion ID}}"},
-          {"type": "TEMPLATE", "key": "conversionLabel", "value": "{{CONST - GAds Label Contact}}"},
-          {"type": "BOOLEAN", "key": "enableNewCustomerReporting", "value": "false"}
-        ],
-        "fingerprint": "1735660871000",
-        "firingTriggerId": ["211"],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"},
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {"type": "LIST", "list": [{"type": "TEMPLATE", "value": "ad_storage"}]}
-        }
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "tagId": "502",
-        "name": "Google Ads - Conversion - Phone Click",
-        "type": "awct",
-        "parameter": [
-          {"type": "TEMPLATE", "key": "conversionId", "value": "{{CONST - Google Ads Conversion ID}}"},
-          {"type": "TEMPLATE", "key": "conversionLabel", "value": "{{CONST - GAds Label Phone}}"},
-          {"type": "BOOLEAN", "key": "enableNewCustomerReporting", "value": "false"}
-        ],
-        "fingerprint": "1735660872000",
-        "firingTriggerId": ["212"],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"},
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {"type": "LIST", "list": [{"type": "TEMPLATE", "value": "ad_storage"}]}
-        }
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "tagId": "503",
-        "name": "Google Ads - Conversion - Email Click",
-        "type": "awct",
-        "parameter": [
-          {"type": "TEMPLATE", "key": "conversionId", "value": "{{CONST - Google Ads Conversion ID}}"},
-          {"type": "TEMPLATE", "key": "conversionLabel", "value": "{{CONST - GAds Label Email}}"},
-          {"type": "BOOLEAN", "key": "enableNewCustomerReporting", "value": "false"}
-        ],
-        "fingerprint": "1735660873000",
         "firingTriggerId": ["213"],
         "tagFiringOption": "ONCE_PER_EVENT",
         "monitoringMetadata": {"type": "MAP"},
