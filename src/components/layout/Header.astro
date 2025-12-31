@@ -202,14 +202,21 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
 <!-- Spacer for fixed header -->
 <div class="h-18"></div>
 
-<script>
-  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-  const mobileMenu = document.getElementById('mobile-menu');
-  const menuIcon = document.getElementById('menu-icon');
-  const closeIcon = document.getElementById('close-icon');
+<script is:inline>
+  function initMobileMenu() {
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    const closeIcon = document.getElementById('close-icon');
 
-  if (mobileMenuBtn && mobileMenu && menuIcon && closeIcon) {
-    mobileMenuBtn.addEventListener('click', () => {
+    if (!mobileMenuBtn || !mobileMenu || !menuIcon || !closeIcon) return;
+
+    // Remove any existing listeners by cloning the button
+    const newBtn = mobileMenuBtn.cloneNode(true);
+    mobileMenuBtn.parentNode.replaceChild(newBtn, mobileMenuBtn);
+
+    newBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const isOpen = !mobileMenu.classList.contains('hidden');
 
       if (isOpen) {
@@ -222,15 +229,21 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
         closeIcon.classList.remove('hidden');
       }
     });
+
+    // Close mobile menu on outside click
+    document.addEventListener('click', (e) => {
+      const header = document.getElementById('header');
+      if (header && mobileMenu && !header.contains(e.target)) {
+        mobileMenu.classList.add('hidden');
+        menuIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      }
+    });
   }
 
-  // Close mobile menu on outside click
-  document.addEventListener('click', (e) => {
-    const header = document.getElementById('header');
-    if (header && mobileMenu && !header.contains(e.target as Node)) {
-      mobileMenu.classList.add('hidden');
-      menuIcon?.classList.remove('hidden');
-      closeIcon?.classList.add('hidden');
-    }
-  });
+  // Run on initial load
+  initMobileMenu();
+
+  // Re-run after View Transitions navigation
+  document.addEventListener('astro:page-load', initMobileMenu);
 </script>
