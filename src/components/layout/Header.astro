@@ -140,36 +140,57 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
   </nav>
 
   <!-- Mobile Navigation -->
-  <div class="lg:hidden hidden" id="mobile-menu">
+  <div class="lg:hidden hidden max-h-[calc(100vh-4.5rem)] overflow-y-auto" id="mobile-menu">
     <div class="container-custom py-4 border-t border-slate-100 bg-white">
       <div class="space-y-1">
-        {navigation.map((item) => (
-          <div>
-            <a
-              href={item.href}
-              class={`
-                flex items-center justify-between px-4 py-3 text-base font-medium rounded-lg transition-colors
-                ${currentPath.startsWith(item.href) ? 'text-primary-500 bg-primary-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}
-              `}
-            >
-              {item.label}
-              {item.children && <Icon name="chevron-right" size={20} />}
-            </a>
-
-            {item.children && (
-              <div class="ml-4 mt-1 space-y-1">
-                {item.children.map((child) => (
-                  <a
-                    href={child.href}
-                    class={`
-                      block px-4 py-2.5 text-sm rounded-lg transition-colors
-                      ${currentPath === child.href ? 'text-primary-500 bg-primary-50' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}
-                    `}
+        {navigation.map((item, index) => (
+          <div class="mobile-nav-item">
+            {item.children ? (
+              <>
+                <div class="flex items-center gap-1">
+                  <button
+                    type="button"
+                    class="mobile-submenu-toggle flex-1 flex items-center justify-between px-4 py-3 text-base font-medium rounded-lg transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-left"
+                    data-submenu={`mobile-submenu-${index}`}
                   >
-                    {child.label}
+                    <span>{item.label}</span>
+                    <Icon name="chevron-down" size={18} class="submenu-chevron transition-transform duration-200" />
+                  </button>
+                  <a
+                    href={item.href}
+                    class="flex-shrink-0 p-3 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                    title={lang === 'fr' ? 'Voir tout' : 'View all'}
+                  >
+                    <Icon name="arrow-right" size={18} />
                   </a>
-                ))}
-              </div>
+                </div>
+                <div
+                  id={`mobile-submenu-${index}`}
+                  class="mobile-submenu hidden ml-4 mt-1 space-y-1 pl-4 border-l-2 border-slate-100"
+                >
+                  {item.children.map((child) => (
+                    <a
+                      href={child.href}
+                      class={`
+                        block px-4 py-2.5 text-sm rounded-lg transition-colors
+                        ${currentPath === child.href ? 'text-primary-500 bg-primary-50' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}
+                      `}
+                    >
+                      {child.label}
+                    </a>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <a
+                href={item.href}
+                class={`
+                  flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors
+                  ${currentPath.startsWith(item.href) ? 'text-primary-500 bg-primary-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}
+                `}
+              >
+                {item.label}
+              </a>
             )}
           </div>
         ))}
@@ -225,10 +246,41 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
         menu.classList.add('hidden');
         menuIcon.classList.remove('hidden');
         closeIcon.classList.add('hidden');
+        // Close all submenus when closing main menu
+        document.querySelectorAll('.mobile-submenu').forEach(function(sub) {
+          sub.classList.add('hidden');
+        });
+        document.querySelectorAll('.submenu-chevron').forEach(function(chev) {
+          chev.style.transform = '';
+        });
       } else {
         menu.classList.remove('hidden');
         menuIcon.classList.add('hidden');
         closeIcon.classList.remove('hidden');
+      }
+    }
+
+    function handleSubmenuToggle(e) {
+      const toggleBtn = e.target.closest('.mobile-submenu-toggle');
+      if (!toggleBtn) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const submenuId = toggleBtn.getAttribute('data-submenu');
+      const submenu = document.getElementById(submenuId);
+      const chevron = toggleBtn.querySelector('.submenu-chevron');
+
+      if (!submenu) return;
+
+      const isOpen = !submenu.classList.contains('hidden');
+
+      if (isOpen) {
+        submenu.classList.add('hidden');
+        if (chevron) chevron.style.transform = '';
+      } else {
+        submenu.classList.remove('hidden');
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
       }
     }
 
@@ -245,12 +297,20 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
         menu.classList.add('hidden');
         if (menuIcon) menuIcon.classList.remove('hidden');
         if (closeIcon) closeIcon.classList.add('hidden');
+        // Close all submenus
+        document.querySelectorAll('.mobile-submenu').forEach(function(sub) {
+          sub.classList.add('hidden');
+        });
+        document.querySelectorAll('.submenu-chevron').forEach(function(chev) {
+          chev.style.transform = '';
+        });
       }
     }
 
     // Use event delegation on document - works with View Transitions
     document.addEventListener('click', function(e) {
       handleMobileMenu(e);
+      handleSubmenuToggle(e);
     }, true); // Use capture phase
 
     document.addEventListener('click', handleOutsideClick);
@@ -258,6 +318,7 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
     // Also handle touch events for mobile
     document.addEventListener('touchend', function(e) {
       handleMobileMenu(e);
+      handleSubmenuToggle(e);
     }, true);
   })();
 </script>

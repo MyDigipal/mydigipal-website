@@ -1,0 +1,179 @@
+{
+  "name": "MyDigipal Contact Form",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mydigipal-contact",
+        "options": {}
+      },
+      "id": "webhook-contact-001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [300, 500],
+      "webhookId": "mydigipal-contact-form"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process contact form data\nconst data = $input.first().json.body;\nconst timestamp = new Date().toLocaleString('fr-FR', { \n  day: '2-digit', \n  month: '2-digit', \n  year: 'numeric', \n  hour: '2-digit', \n  minute: '2-digit' \n});\n\n// Detect language from source URL\nconst source = data.source || '';\nconst lang = source.includes('/fr/') ? 'fr' : 'en';\n\n// Translation helper\nconst tr = (fr, en) => lang === 'fr' ? fr : en;\n\n// Format services list\nconst services = data.services || [];\nconst servicesText = services.length > 0 ? services.join(', ') : tr('Non spécifié', 'Not specified');\nconst servicesHtml = services.length > 0 \n  ? services.map(s => `<span style=\"display: inline-block; background: #EEF2FF; color: #4F46E5; padding: 4px 12px; border-radius: 20px; font-size: 13px; margin: 2px;\">${s}</span>`).join(' ')\n  : `<span style=\"color: #6B7280; font-style: italic;\">${tr('Non spécifié', 'Not specified')}</span>`;\n\n// Format message with line breaks\nconst messageHtml = (data.message || '').replace(/\\n/g, '<br>');\n\nreturn {\n  json: {\n    ...data,\n    timestamp,\n    lang,\n    langFlag: lang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR',\n    servicesText,\n    servicesHtml,\n    messageHtml,\n    tr: { fr: lang === 'fr', en: lang === 'en' }\n  }\n};"
+      },
+      "id": "process-data-001",
+      "name": "Process Data",
+      "type": "n8n-nodes-base.code",
+      "position": [500, 500],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "sendTo": "paul@mydigipal.com",
+        "subject": "=🔔 Nouveau contact: {{ $json.name }} {{ $json.company ? '(' + $json.company + ')' : '' }}",
+        "message": "=<div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto;\">\n\n<!-- Header -->\n<div style=\"background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%); padding: 25px 30px; border-radius: 12px 12px 0 0;\">\n<img src=\"https://mydigipal-website.onrender.com/images/Logos/MyDigipal%20Logo_Full%20Main.png\" alt=\"MyDigipal\" style=\"max-height: 35px; margin-bottom: 15px;\" />\n<h2 style=\"color: white; margin: 0; font-size: 22px;\">📬 Nouveau message depuis le formulaire de contact</h2>\n<p style=\"color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;\">{{ $json.timestamp }} | Langue: {{ $json.langFlag }}</p>\n</div>\n\n<!-- Main Content -->\n<div style=\"background: #fff; padding: 30px; border: 1px solid #E5E7EB; border-top: none; border-radius: 0 0 12px 12px;\">\n\n<!-- Contact Info -->\n<div style=\"background: #F8FAFC; padding: 20px; border-radius: 10px; margin-bottom: 25px;\">\n<h3 style=\"color: #3b82f6; margin: 0 0 15px 0; font-size: 16px;\">👤 Informations de contact</h3>\n<table style=\"width: 100%; border-collapse: collapse;\">\n<tr>\n<td style=\"padding: 10px 15px; background: white; border-radius: 6px 0 0 0; width: 120px; font-weight: 600; color: #64748B; font-size: 13px;\">Nom</td>\n<td style=\"padding: 10px 15px; background: white; border-radius: 0 6px 0 0; color: #1F2937; font-size: 14px; font-weight: 600;\">{{ $json.name }}</td>\n</tr>\n<tr>\n<td style=\"padding: 10px 15px; background: white; font-weight: 600; color: #64748B; font-size: 13px;\">Email</td>\n<td style=\"padding: 10px 15px; background: white;\"><a href=\"mailto:{{ $json.email }}\" style=\"color: #3b82f6; text-decoration: none; font-size: 14px;\">{{ $json.email }}</a></td>\n</tr>\n<tr>\n<td style=\"padding: 10px 15px; background: white; border-radius: 0 0 0 6px; font-weight: 600; color: #64748B; font-size: 13px;\">Entreprise</td>\n<td style=\"padding: 10px 15px; background: white; border-radius: 0 0 6px 0; color: #1F2937; font-size: 14px;\">{{ $json.company || '-' }}</td>\n</tr>\n</table>\n</div>\n\n<!-- Services -->\n<div style=\"margin-bottom: 25px;\">\n<h3 style=\"color: #1F2937; margin: 0 0 12px 0; font-size: 16px;\">🎯 Services demandés</h3>\n<div style=\"padding: 15px; background: #F9FAFB; border-radius: 8px;\">\n{{ $json.servicesHtml }}\n</div>\n</div>\n\n<!-- Message -->\n<div style=\"margin-bottom: 25px;\">\n<h3 style=\"color: #1F2937; margin: 0 0 12px 0; font-size: 16px;\">💬 Message</h3>\n<div style=\"padding: 20px; background: #F9FAFB; border-radius: 8px; border-left: 4px solid #3b82f6;\">\n<p style=\"color: #374151; margin: 0; line-height: 1.7; font-size: 14px;\">{{ $json.messageHtml }}</p>\n</div>\n</div>\n\n<!-- Source -->\n<div style=\"padding: 12px 15px; background: #FEF3C7; border-radius: 8px; margin-bottom: 20px;\">\n<p style=\"color: #92400E; margin: 0; font-size: 13px;\">📍 Source: <a href=\"{{ $json.source }}\" style=\"color: #92400E;\">{{ $json.source }}</a></p>\n</div>\n\n<!-- CTA -->\n<div style=\"text-align: center; padding-top: 20px; border-top: 1px solid #E5E7EB;\">\n<a href=\"mailto:{{ $json.email }}?subject=Re: Votre demande - MyDigipal\" style=\"display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; padding: 14px 35px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 15px;\">📧 Répondre à {{ $json.name }}</a>\n</div>\n\n</div>\n</div>",
+        "options": {}
+      },
+      "id": "email-paul-001",
+      "name": "Email to Paul",
+      "type": "n8n-nodes-base.gmail",
+      "position": [720, 400],
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GcKRQn96MQn4VdEL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ $json.tr.fr ? 'Merci pour votre message - MyDigipal' : 'Thank you for your message - MyDigipal' }}",
+        "message": "=<div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; background: #ffffff;\">\n\n<!-- Header -->\n<div style=\"background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%); padding: 40px 30px; border-radius: 16px 16px 0 0; text-align: center;\">\n<img src=\"https://mydigipal-website.onrender.com/images/Logos/MyDigipal%20Logo_Full%20Main.png\" alt=\"MyDigipal\" style=\"max-height: 50px; margin-bottom: 20px;\" />\n<h2 style=\"color: white; margin: 0; font-size: 24px; font-weight: 600;\">{{ $json.tr.fr ? 'Merci ' + $json.name + ' !' : 'Thank you, ' + $json.name + '!' }}</h2>\n<p style=\"color: rgba(255,255,255,0.9); margin: 12px 0 0 0; font-size: 16px;\">{{ $json.tr.fr ? 'Nous avons bien reçu votre message' : 'We have received your message' }}</p>\n</div>\n\n<!-- Main Content -->\n<div style=\"padding: 35px 30px; border: 1px solid #E5E7EB; border-top: none;\">\n\n<!-- Confirmation Box -->\n<div style=\"background: #F0F9FF; padding: 20px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #3b82f6;\">\n<p style=\"color: #1e40af; line-height: 1.7; font-size: 15px; margin: 0;\">{{ $json.tr.fr ? 'Merci de nous avoir contactés ! Notre équipe va examiner votre demande et vous répondre dans les <strong>24 à 48 heures</strong>.' : 'Thank you for reaching out! Our team will review your request and get back to you within <strong>24 to 48 hours</strong>.' }}</p>\n</div>\n\n<!-- Recap Section -->\n<div style=\"margin-bottom: 25px;\">\n<h3 style=\"color: #1F2937; margin: 0 0 16px 0; font-size: 18px;\">📋 {{ $json.tr.fr ? 'Récapitulatif de votre demande' : 'Summary of your request' }}</h3>\n\n<table style=\"width: 100%; border-collapse: collapse; background: #F9FAFB; border-radius: 8px; overflow: hidden;\">\n<tr>\n<td style=\"padding: 12px 16px; border-bottom: 1px solid #E5E7EB; font-weight: 600; color: #64748B; width: 140px;\">{{ $json.tr.fr ? 'Nom' : 'Name' }}</td>\n<td style=\"padding: 12px 16px; border-bottom: 1px solid #E5E7EB; color: #1F2937;\">{{ $json.name }}</td>\n</tr>\n<tr>\n<td style=\"padding: 12px 16px; border-bottom: 1px solid #E5E7EB; font-weight: 600; color: #64748B;\">Email</td>\n<td style=\"padding: 12px 16px; border-bottom: 1px solid #E5E7EB; color: #1F2937;\">{{ $json.email }}</td>\n</tr>\n{{ $json.company ? '<tr><td style=\"padding: 12px 16px; border-bottom: 1px solid #E5E7EB; font-weight: 600; color: #64748B;\">' + ($json.tr.fr ? 'Entreprise' : 'Company') + '</td><td style=\"padding: 12px 16px; border-bottom: 1px solid #E5E7EB; color: #1F2937;\">' + $json.company + '</td></tr>' : '' }}\n<tr>\n<td style=\"padding: 12px 16px; border-bottom: 1px solid #E5E7EB; font-weight: 600; color: #64748B;\">{{ $json.tr.fr ? 'Services' : 'Services' }}</td>\n<td style=\"padding: 12px 16px; border-bottom: 1px solid #E5E7EB; color: #1F2937;\">{{ $json.servicesText }}</td>\n</tr>\n<tr>\n<td style=\"padding: 12px 16px; font-weight: 600; color: #64748B; vertical-align: top;\">Message</td>\n<td style=\"padding: 12px 16px; color: #1F2937; line-height: 1.6;\">{{ $json.messageHtml }}</td>\n</tr>\n</table>\n</div>\n\n<!-- What's Next -->\n<div style=\"background: #ECFDF5; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #A7F3D0;\">\n<h4 style=\"color: #065F46; margin: 0 0 12px 0; font-size: 15px;\">{{ $json.tr.fr ? '✨ Et maintenant ?' : '✨ What\\'s next?' }}</h4>\n<ul style=\"color: #047857; margin: 0; padding-left: 18px; line-height: 1.9; font-size: 14px;\">\n<li>{{ $json.tr.fr ? 'Notre équipe analyse votre demande' : 'Our team is reviewing your request' }}</li>\n<li>{{ $json.tr.fr ? 'Nous vous recontactons sous 24-48h' : 'We\\'ll get back to you within 24-48 hours' }}</li>\n<li>{{ $json.tr.fr ? 'Préparez vos questions, on adore discuter stratégie !' : 'Prepare your questions - we love discussing strategy!' }}</li>\n</ul>\n</div>\n\n<!-- Question Box -->\n<div style=\"background: #FEF3C7; padding: 18px 20px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #F59E0B;\">\n<p style=\"color: #92400E; margin: 0; font-size: 14px;\">{{ $json.tr.fr ? '💬 <strong>Une question urgente ?</strong> Répondez simplement à cet email !' : '💬 <strong>Urgent question?</strong> Simply reply to this email!' }}</p>\n</div>\n\n<!-- Signature -->\n<div style=\"margin-top: 30px; padding-top: 25px; border-top: 1px solid #E5E7EB;\">\n<p style=\"color: #374151; margin: 0; font-size: 15px;\">{{ $json.tr.fr ? 'À très vite,' : 'Looking forward to speaking with you,' }}</p>\n<p style=\"margin: 12px 0 0 0;\"><strong style=\"color: #1F2937; font-size: 16px;\">Paul ANDRE</strong></p>\n<p style=\"color: #6B7280; margin: 2px 0; font-size: 14px;\">Founder - MyDigipal</p>\n<p style=\"margin: 10px 0 0 0;\"><a href=\"mailto:paul@mydigipal.com\" style=\"color: #3b82f6; text-decoration: none; font-size: 14px;\">paul@mydigipal.com</a></p>\n</div>\n\n</div>\n\n<!-- Footer -->\n<div style=\"background: #F9FAFB; padding: 20px 30px; border-radius: 0 0 16px 16px; border: 1px solid #E5E7EB; border-top: none; text-align: center;\">\n<p style=\"color: #9CA3AF; margin: 0; font-size: 12px;\">© 2025 MyDigipal - Digital Marketing Agency</p>\n<p style=\"margin: 8px 0 0 0;\"><a href=\"https://www.mydigipal.com\" style=\"color: #6B7280; text-decoration: none; font-size: 12px;\">www.mydigipal.com</a></p>\n</div>\n\n</div>",
+        "options": {
+          "replyTo": "paul@mydigipal.com"
+        }
+      },
+      "id": "email-prospect-001",
+      "name": "Email to Prospect",
+      "type": "n8n-nodes-base.gmail",
+      "position": [720, 600],
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GcKRQn96MQn4VdEL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1K4kbK_Y2JIZ-wvhRTVF2iyaFoDnjEbitXdyS7z3NyQA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Contact Form"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $json.timestamp }}",
+            "Nom": "={{ $json.name }}",
+            "Email": "={{ $json.email }}",
+            "Entreprise": "={{ $json.company || '' }}",
+            "Services": "={{ $json.servicesText }}",
+            "Message": "={{ $json.message }}",
+            "Langue": "={{ $json.lang }}",
+            "Source": "={{ $json.source }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {"id": "Timestamp", "displayName": "Timestamp", "required": false, "defaultMatch": false, "canBeUsedToMatch": true, "display": true, "type": "string"},
+            {"id": "Nom", "displayName": "Nom", "required": false, "defaultMatch": false, "canBeUsedToMatch": true, "display": true, "type": "string"},
+            {"id": "Email", "displayName": "Email", "required": false, "defaultMatch": false, "canBeUsedToMatch": true, "display": true, "type": "string"},
+            {"id": "Entreprise", "displayName": "Entreprise", "required": false, "defaultMatch": false, "canBeUsedToMatch": true, "display": true, "type": "string"},
+            {"id": "Services", "displayName": "Services", "required": false, "defaultMatch": false, "canBeUsedToMatch": true, "display": true, "type": "string"},
+            {"id": "Message", "displayName": "Message", "required": false, "defaultMatch": false, "canBeUsedToMatch": true, "display": true, "type": "string"},
+            {"id": "Langue", "displayName": "Langue", "required": false, "defaultMatch": false, "canBeUsedToMatch": true, "display": true, "type": "string"},
+            {"id": "Source", "displayName": "Source", "required": false, "defaultMatch": false, "canBeUsedToMatch": true, "display": true, "type": "string"}
+          ]
+        },
+        "options": {}
+      },
+      "id": "google-sheets-001",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [940, 500],
+      "typeVersion": 4.4,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "respond-webhook-001",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1140, 500],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Data": {
+      "main": [
+        [
+          {
+            "node": "Email to Paul",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email to Prospect",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "27e5ae242e5e368272e0dce999a9b80d042f58fe5b66d36f2c66f7002433a89c"
+  }
+}
