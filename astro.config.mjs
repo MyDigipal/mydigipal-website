@@ -101,21 +101,13 @@ export default defineConfig({
     '/blog/open-source-ai-agents': '/en/blog/open-source-ai-agents',
     '/blog/revolutionizing-b2b-marketing-with-abm': '/en/blog/revolutionizing-b2b-with-abm',
     '/blog/successful-linkedin-strategy': '/en/blog/successful-linkedin-strategy',
-    // French blog old URLs -> redirect to English (no FR content)
-    '/fr/blog/abm-deck': '/en/blog/abm-deck',
-    '/fr/blog/beware-of-scammers': '/en/blog/beware-of-scammers',
-    '/fr/blog/facebook-dynamic-ads-for-automotive-dealers': '/en/blog/facebook-dynamic-ads-automotive',
-    '/fr/blog/google-consent-mode-v2': '/en/blog/google-consent-mode-v2',
-    '/fr/blog/how-people-really-use-chatgpt': '/en/blog/how-to-rank-on-chatgpt',
-    '/fr/blog/how-to-rank-on-chatgpt': '/en/blog/how-to-rank-on-chatgpt',
-    '/fr/blog/how-to-train-teams-on-ai': '/en/blog/how-to-train-teams-on-ai',
-    '/fr/blog/intent-data-in-b2b-marketing': '/en/blog/intent-data-b2b-marketing',
-    '/fr/blog/marketing-automation-tools': '/en/blog/marketing-automation-tools',
-    '/fr/blog/mydigipal-cx-ninjas-guide-to-partner-marketing': '/en/blog/partner-marketing-guide',
-    '/fr/blog/mydigipal-podcast-1-whats-wrong-with-your-abm': '/en/blog/podcast-abm',
-    '/fr/blog/open-source-ai-agents': '/en/blog/open-source-ai-agents',
-    '/fr/blog/revolutionizing-b2b-marketing-with-abm': '/en/blog/revolutionizing-b2b-with-abm',
-    '/fr/blog/successful-linkedin-strategy': '/en/blog/successful-linkedin-strategy',
+    // French blog old URLs -> redirect to new French slugs
+    '/fr/blog/facebook-dynamic-ads-for-automotive-dealers': '/fr/blog/facebook-dynamic-ads-automotive',
+    '/fr/blog/how-people-really-use-chatgpt': '/fr/blog/how-to-rank-on-chatgpt',
+    '/fr/blog/intent-data-in-b2b-marketing': '/fr/blog/intent-data-b2b-marketing',
+    '/fr/blog/mydigipal-cx-ninjas-guide-to-partner-marketing': '/fr/blog/partner-marketing-guide',
+    '/fr/blog/mydigipal-podcast-1-whats-wrong-with-your-abm': '/fr/blog/podcast-abm',
+    '/fr/blog/revolutionizing-b2b-marketing-with-abm': '/fr/blog/revolutionizing-b2b-with-abm',
 
     // Case Studies
     '/case-studies': '/en/case-studies',

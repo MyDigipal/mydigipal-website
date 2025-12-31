@@ -9,8 +9,7 @@ export async function getStaticPaths() {
   const paths: { params: { lang: string; slug: string }; props: { post: any } }[] = [];
 
   posts.forEach((post) => {
-    // Only generate pages for the language the post is in
-    // Currently all blog posts are in English
+    // Generate pages for each language that has content
     const postLang = post.id.startsWith('fr/') ? 'fr' : 'en';
     const slug = post.slug.replace(/^(en|fr)\//, '');
 
@@ -27,17 +26,17 @@ const { lang } = Astro.params as { lang: Language };
 const { post } = Astro.props;
 const { Content } = await post.render();
 
-// Get related posts (same category, exclude current, English only since no FR content)
+// Get related posts (same category, exclude current, same language)
 const allPosts = await getCollection('blog');
 const relatedPosts = allPosts
-  .filter((p) => p.id.startsWith('en/') && p.data.category === post.data.category && p.slug !== post.slug && !p.data.draft)
+  .filter((p) => p.id.startsWith(`${lang}/`) && p.data.category === post.data.category && p.slug !== post.slug && !p.data.draft)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
-// Helper to get blog URL (always English since no FR content)
+// Helper to get blog URL for current language
 const getRelatedPostUrl = (relatedPost: typeof relatedPosts[0]) => {
   const slug = relatedPost.slug.replace(/^(en|fr)\//, '');
-  return `/en/blog/${slug}`;
+  return `/${lang}/blog/${slug}`;
 };
 
 const translations = {

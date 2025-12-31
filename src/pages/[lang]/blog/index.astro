@@ -12,16 +12,16 @@ export async function getStaticPaths() {
 
 const { lang } = Astro.params as { lang: Language };
 
-// Get blog posts - currently only English content exists
+// Get blog posts filtered by current language
 const allPosts = await getCollection('blog');
 const posts = allPosts
-  .filter((post) => post.id.startsWith('en/') && !post.data.draft)
+  .filter((post) => post.id.startsWith(`${lang}/`) && !post.data.draft)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
-// Helper to get the correct blog URL (always English since no FR content)
+// Helper to get the blog URL for current language
 const getBlogUrl = (post: typeof posts[0]) => {
   const slug = post.slug.replace(/^(en|fr)\//, '');
-  return `/en/blog/${slug}`;
+  return `/${lang}/blog/${slug}`;
 };
 
 // Categories and industries for filters
