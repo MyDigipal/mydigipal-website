@@ -1,7 +1,6 @@
 ---
 import { type Language } from '@/i18n/config';
 import { t } from '@/i18n/utils';
-import Button from '@/components/ui/Button.astro';
 import Icon from '@/components/ui/Icon.astro';
 
 interface Props {
@@ -17,126 +16,147 @@ const footerLinks = {
     { label: 'SEO', href: `/${lang}/services/seo` },
     { label: 'Google Ads', href: `/${lang}/services/google-ads` },
     { label: 'Paid Social', href: `/${lang}/services/paid-social` },
-    { label: t(lang, 'services.contentCreation.name'), href: `/${lang}/services/content-creation` },
-    { label: t(lang, 'services.marketingAutomation.name'), href: `/${lang}/services/marketing-automation` },
+    { label: 'Emailing', href: `/${lang}/services/emailing` },
+    { label: 'B2B / ABM', href: `/${lang}/services/b2b-abm` },
   ],
-  b2bMarketing: [
-    { label: 'ABM', href: `/${lang}/services/abm` },
-    { label: 'Campaign Management', href: `/${lang}/services/campaign-management` },
-    { label: 'Marketing Strategy', href: `/${lang}/services/marketing-strategy` },
+  ai: [
+    { label: lang === 'fr' ? 'Formation IA' : 'AI Training', href: `/${lang}/services/ai-training` },
+    { label: lang === 'fr' ? 'Solutions IA' : 'AI Solutions', href: `/${lang}/services/ai-solutions` },
+    { label: lang === 'fr' ? 'Calculateur Budget' : 'Budget Calculator', href: `/${lang}/calculator` },
+  ],
+  automotive: [
+    { label: 'Google Ads', href: `/${lang}/automotive/google-ads` },
+    { label: 'Paid Social', href: `/${lang}/automotive/paid-social` },
+    { label: 'Facebook Dynamic Ads', href: `/${lang}/automotive/facebook-dynamic-ads` },
   ],
   company: [
-    { label: t(lang, 'nav.ourTeam'), href: `/${lang}/our-team` },
     { label: t(lang, 'nav.caseStudies'), href: `/${lang}/case-studies` },
     { label: t(lang, 'nav.blog'), href: `/${lang}/blog` },
     { label: t(lang, 'nav.contact'), href: `/${lang}/contact` },
-  ],
-  legal: [
-    { label: t(lang, 'footer.privacyPolicy'), href: `/${lang}/privacy-policy` },
-    { label: t(lang, 'footer.termsOfService'), href: `/${lang}/terms-of-service` },
   ],
 };
 
 const socialLinks = [
   { icon: 'linkedin', href: 'https://www.linkedin.com/company/mydigipal', label: 'LinkedIn' },
-  { icon: 'twitter', href: 'https://twitter.com/mydigipal', label: 'Twitter' },
 ];
 ---
 
 <footer class="bg-slate-900 text-white">
   <!-- Main Footer -->
-  <div class="">
-    <div class="container-custom py-12 lg:py-16">
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-12">
-        <!-- Brand -->
-        <div class="col-span-2 md:col-span-3 lg:col-span-2">
-          <a href={`/${lang}`} class="flex items-center mb-4">
-            <img
-              src="/images/Logos/03_Full white.png"
-              alt="MyDigipal"
-              class="h-10 w-auto"
-            />
-          </a>
-          <p class="text-primary-400 font-medium mb-3">
-            {t(lang, 'site.tagline')}
-          </p>
-          <p class="text-slate-400 text-sm leading-relaxed mb-6 max-w-sm">
-            {t(lang, 'footer.description')}
-          </p>
+  <div class="container-custom py-12 lg:py-16">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-12">
+      <!-- Brand -->
+      <div class="col-span-2 md:col-span-3 lg:col-span-2">
+        <a href={`/${lang}`} class="flex items-center mb-4">
+          <img
+            src="/images/Logos/03_Full white.png"
+            alt="MyDigipal"
+            class="h-10 w-auto"
+          />
+        </a>
+        <p class="text-primary-400 font-medium mb-3">
+          {t(lang, 'site.tagline')}
+        </p>
+        <p class="text-slate-400 text-sm leading-relaxed mb-6 max-w-sm">
+          {lang === 'fr'
+            ? 'Agence de marketing digital basée à Paris et Montréal, spécialisée en B2B, ABM et Automobile.'
+            : 'Digital marketing agency based in Paris and Montreal, specialized in B2B, ABM and Automotive.'
+          }
+        </p>
 
-          <!-- Social links -->
-          <div class="flex gap-3">
-            {socialLinks.map((social) => (
-              <a
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="w-10 h-10 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
-                aria-label={social.label}
-              >
-                <Icon name={social.icon} size={20} class="text-slate-400" />
-              </a>
-            ))}
-          </div>
+        <!-- Social links -->
+        <div class="flex gap-3">
+          {socialLinks.map((social) => (
+            <a
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-10 h-10 rounded-lg bg-slate-800 hover:bg-indigo-600 flex items-center justify-center transition-colors"
+              aria-label={social.label}
+            >
+              <Icon name={social.icon} size={20} class="text-slate-400 hover:text-white" />
+            </a>
+          ))}
         </div>
+      </div>
 
-        <!-- Services -->
-        <div>
-          <h4 class="font-semibold text-white mb-4">{t(lang, 'footer.services')}</h4>
-          <ul class="space-y-3">
-            {footerLinks.services.map((link) => (
-              <li>
-                <a href={link.href} class="text-slate-400 hover:text-white text-sm transition-colors">
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <!-- B2B Marketing -->
-        <div>
-          <h4 class="font-semibold text-white mb-4">{t(lang, 'footer.b2bMarketing')}</h4>
-          <ul class="space-y-3">
-            {footerLinks.b2bMarketing.map((link) => (
-              <li>
-                <a href={link.href} class="text-slate-400 hover:text-white text-sm transition-colors">
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <!-- Company -->
-        <div>
-          <h4 class="font-semibold text-white mb-4">{t(lang, 'footer.company')}</h4>
-          <ul class="space-y-3">
-            {footerLinks.company.map((link) => (
-              <li>
-                <a href={link.href} class="text-slate-400 hover:text-white text-sm transition-colors">
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <!-- Contact -->
-        <div>
-          <h4 class="font-semibold text-white mb-4">{t(lang, 'nav.contact')}</h4>
-          <ul class="space-y-3">
+      <!-- Services -->
+      <div>
+        <h4 class="font-semibold text-white mb-4">{t(lang, 'footer.services')}</h4>
+        <ul class="space-y-3">
+          {footerLinks.services.map((link) => (
             <li>
-              <a href="mailto:hello@mydigipal.com" class="flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors">
-                <Icon name="mail" size={16} />
-                hello@mydigipal.com
+              <a href={link.href} class="text-slate-400 hover:text-white text-sm transition-colors">
+                {link.label}
               </a>
             </li>
-            <li class="text-slate-400 text-sm">
-              London, UK
+          ))}
+        </ul>
+      </div>
+
+      <!-- AI & Tools -->
+      <div>
+        <h4 class="font-semibold text-white mb-4">{lang === 'fr' ? 'IA & Outils' : 'AI & Tools'}</h4>
+        <ul class="space-y-3">
+          {footerLinks.ai.map((link) => (
+            <li>
+              <a href={link.href} class="text-slate-400 hover:text-white text-sm transition-colors">
+                {link.label}
+              </a>
             </li>
-          </ul>
-        </div>
+          ))}
+        </ul>
+
+        <h4 class="font-semibold text-white mb-4 mt-6">{lang === 'fr' ? 'Automobile' : 'Automotive'}</h4>
+        <ul class="space-y-3">
+          {footerLinks.automotive.map((link) => (
+            <li>
+              <a href={link.href} class="text-slate-400 hover:text-white text-sm transition-colors">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Company -->
+      <div>
+        <h4 class="font-semibold text-white mb-4">{t(lang, 'footer.company')}</h4>
+        <ul class="space-y-3">
+          {footerLinks.company.map((link) => (
+            <li>
+              <a href={link.href} class="text-slate-400 hover:text-white text-sm transition-colors">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h4 class="font-semibold text-white mb-4">{t(lang, 'nav.contact')}</h4>
+        <ul class="space-y-3">
+          <li>
+            <a href="mailto:hello@mydigipal.com" class="flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors">
+              <Icon name="mail" size={16} />
+              hello@mydigipal.com
+            </a>
+          </li>
+          <li class="flex items-start gap-2 text-slate-400 text-sm">
+            <Icon name="map-pin" size={16} class="mt-0.5 flex-shrink-0" />
+            <span>Paris, France<br/>Montréal, Canada</span>
+          </li>
+        </ul>
+
+        <!-- CTA Button -->
+        <a
+          href={`/${lang}/calculator`}
+          class="inline-flex items-center gap-2 mt-6 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          <Icon name="calculator" size={16} />
+          {lang === 'fr' ? 'Devis Gratuit' : 'Free Quote'}
+        </a>
       </div>
     </div>
   </div>
@@ -148,12 +168,12 @@ const socialLinks = [
         <p class="text-slate-500 text-sm">
           &copy; {currentYear} MyDigipal. {t(lang, 'footer.allRightsReserved')}
         </p>
-        <div class="flex gap-6">
-          {footerLinks.legal.map((link) => (
-            <a href={link.href} class="text-slate-500 hover:text-slate-300 text-sm transition-colors">
-              {link.label}
-            </a>
-          ))}
+        <div class="flex items-center gap-4 text-slate-500 text-sm">
+          <a href={`/${lang}/sitemap.xml`} class="hover:text-slate-300 transition-colors">
+            Sitemap
+          </a>
+          <span>•</span>
+          <span>{lang === 'fr' ? 'Fait avec' : 'Made with'} ❤️ {lang === 'fr' ? 'à Paris & Montréal' : 'in Paris & Montreal'}</span>
         </div>
       </div>
     </div>
