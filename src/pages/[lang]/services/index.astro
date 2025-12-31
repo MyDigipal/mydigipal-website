@@ -1,0 +1,393 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { type Language, languages } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import Button from '@/components/ui/Button.astro';
+import TrustedBy from '@/components/sections/TrustedBy.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+const content = {
+  en: {
+    seo: {
+      title: "Digital Marketing Services | Google Ads, SEO, Paid Social | MyDigipal",
+      description: "Full-service digital marketing agency offering Google Ads, Paid Social, SEO, Email Marketing, and B2B Account-Based Marketing. Data-driven strategies for measurable growth."
+    },
+    hero: {
+      badge: "Our Services",
+      headline: "Data-Driven Digital Marketing",
+      subheadline: "Accelerate Your Growth",
+      description: "From paid advertising to organic strategies, we provide comprehensive digital marketing solutions that drive measurable results. Choose the services that fit your goals."
+    },
+    intro: {
+      title: "Why Choose MyDigipal?",
+      description: "We're not just another agency. We combine deep expertise with a data-first approach to deliver campaigns that actually move the needle.",
+      points: [
+        { icon: "target", title: "Results-Focused", description: "Every campaign is designed with your KPIs in mind. We optimize for what matters to your business." },
+        { icon: "trending-up", title: "Data-Driven", description: "Decisions backed by analytics, not guesswork. Real-time reporting and continuous optimization." },
+        { icon: "users", title: "Dedicated Team", description: "A team of specialists assigned to your account. Direct communication, no account managers in between." },
+        { icon: "zap", title: "Agile Execution", description: "Quick to adapt, fast to implement. We move at the speed your business needs." }
+      ]
+    },
+    services: [
+      {
+        icon: "search",
+        name: "Google Ads",
+        description: "Dominate search results with targeted PPC campaigns. From Search to Display, YouTube to Performance Max, we manage it all.",
+        href: "/en/services/google-ads",
+        features: ["Search Campaigns", "Display Ads", "YouTube Ads", "Performance Max"],
+        color: "from-blue-500 to-cyan-500"
+      },
+      {
+        icon: "users",
+        name: "Paid Social",
+        description: "Reach your audience where they spend their time. LinkedIn, Meta, TikTok - we craft campaigns that convert.",
+        href: "/en/services/paid-social",
+        features: ["LinkedIn Ads", "Meta Ads", "TikTok Ads", "Retargeting"],
+        color: "from-pink-500 to-rose-500"
+      },
+      {
+        icon: "trending-up",
+        name: "SEO",
+        description: "Build sustainable organic traffic. Technical optimization, content strategy, and link building for long-term growth.",
+        href: "/en/services/seo",
+        features: ["Technical SEO", "Content Strategy", "Link Building", "Local SEO"],
+        color: "from-green-500 to-emerald-500"
+      },
+      {
+        icon: "mail",
+        name: "Email Marketing",
+        description: "Nurture leads and drive conversions with personalized email campaigns. Automation, segmentation, and AI-powered personalization.",
+        href: "/en/services/emailing",
+        features: ["Automation Flows", "Segmentation", "A/B Testing", "Newsletter Design"],
+        color: "from-amber-500 to-orange-500"
+      },
+      {
+        icon: "target",
+        name: "B2B / ABM",
+        description: "Account-Based Marketing for precision B2B growth. Target high-value accounts with personalized multi-channel campaigns.",
+        href: "/en/services/b2b-abm",
+        features: ["Account Targeting", "Sales Alignment", "Multi-Channel", "Intent Data"],
+        color: "from-indigo-500 to-purple-600"
+      }
+    ],
+    cta: "Learn More",
+    testimonials: {
+      title: "What Our Clients Say",
+      items: [
+        {
+          quote: "MyDigipal transformed our digital presence. Their data-driven approach delivered results we didn't think were possible.",
+          author: "Marketing Director",
+          company: "B2B SaaS Company"
+        },
+        {
+          quote: "The team's expertise in Google Ads helped us reduce our cost per lead by 40% while increasing volume.",
+          author: "Growth Manager",
+          company: "E-commerce Brand"
+        }
+      ]
+    }
+  },
+  fr: {
+    seo: {
+      title: "Services Marketing Digital | Google Ads, SEO, Paid Social | MyDigipal",
+      description: "Agence de marketing digital full-service : Google Ads, Paid Social, SEO, Email Marketing et ABM B2B. Stratégies data-driven pour une croissance mesurable."
+    },
+    hero: {
+      badge: "Nos Services",
+      headline: "Marketing Digital Data-Driven",
+      subheadline: "Accélérez Votre Croissance",
+      description: "De la publicité payante aux stratégies organiques, nous fournissons des solutions de marketing digital complètes qui génèrent des résultats mesurables. Choisissez les services adaptés à vos objectifs."
+    },
+    intro: {
+      title: "Pourquoi Choisir MyDigipal ?",
+      description: "Nous ne sommes pas une agence comme les autres. Nous combinons une expertise approfondie avec une approche data-first pour délivrer des campagnes qui font vraiment la différence.",
+      points: [
+        { icon: "target", title: "Orienté Résultats", description: "Chaque campagne est conçue avec vos KPIs en tête. On optimise pour ce qui compte pour votre business." },
+        { icon: "trending-up", title: "Data-Driven", description: "Des décisions basées sur l'analytics, pas sur l'intuition. Reporting temps réel et optimisation continue." },
+        { icon: "users", title: "Équipe Dédiée", description: "Une équipe de spécialistes assignée à votre compte. Communication directe, sans intermédiaires." },
+        { icon: "zap", title: "Exécution Agile", description: "Rapides à s'adapter, rapides à implémenter. On avance au rythme de votre business." }
+      ]
+    },
+    services: [
+      {
+        icon: "search",
+        name: "Google Ads",
+        description: "Dominez les résultats de recherche avec des campagnes PPC ciblées. Du Search au Display, YouTube au Performance Max, on gère tout.",
+        href: "/fr/services/google-ads",
+        features: ["Campagnes Search", "Display Ads", "YouTube Ads", "Performance Max"],
+        color: "from-blue-500 to-cyan-500"
+      },
+      {
+        icon: "users",
+        name: "Paid Social",
+        description: "Atteignez votre audience là où elle passe son temps. LinkedIn, Meta, TikTok - on crée des campagnes qui convertissent.",
+        href: "/fr/services/paid-social",
+        features: ["LinkedIn Ads", "Meta Ads", "TikTok Ads", "Retargeting"],
+        color: "from-pink-500 to-rose-500"
+      },
+      {
+        icon: "trending-up",
+        name: "SEO",
+        description: "Construisez un trafic organique durable. Optimisation technique, stratégie de contenu et netlinking pour une croissance long terme.",
+        href: "/fr/services/seo",
+        features: ["SEO Technique", "Stratégie Contenu", "Netlinking", "SEO Local"],
+        color: "from-green-500 to-emerald-500"
+      },
+      {
+        icon: "mail",
+        name: "Email Marketing",
+        description: "Nurturez vos leads et boostez vos conversions avec des campagnes email personnalisées. Automation, segmentation et personnalisation IA.",
+        href: "/fr/services/emailing",
+        features: ["Automation", "Segmentation", "A/B Testing", "Design Newsletter"],
+        color: "from-amber-500 to-orange-500"
+      },
+      {
+        icon: "target",
+        name: "B2B / ABM",
+        description: "Account-Based Marketing pour une croissance B2B de précision. Ciblez des comptes à forte valeur avec des campagnes multi-canal personnalisées.",
+        href: "/fr/services/b2b-abm",
+        features: ["Ciblage Comptes", "Alignement Sales", "Multi-Canal", "Intent Data"],
+        color: "from-indigo-500 to-purple-600"
+      }
+    ],
+    cta: "En Savoir Plus",
+    testimonials: {
+      title: "Ce Que Disent Nos Clients",
+      items: [
+        {
+          quote: "MyDigipal a transformé notre présence digitale. Leur approche data-driven a délivré des résultats qu'on pensait impossibles.",
+          author: "Directeur Marketing",
+          company: "Entreprise SaaS B2B"
+        },
+        {
+          quote: "L'expertise de l'équipe en Google Ads nous a permis de réduire notre coût par lead de 40% tout en augmentant le volume.",
+          author: "Growth Manager",
+          company: "Marque E-commerce"
+        }
+      ]
+    }
+  }
+};
+
+const c = content[lang] || content.en;
+---
+
+<PageLayout lang={lang} title={c.seo.title} description={c.seo.description}>
+  <!-- Hero Section -->
+  <section class="relative py-24 lg:py-32 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0); background-size: 40px 40px;"></div>
+    </div>
+
+    <!-- Gradient Orbs -->
+    <div class="absolute top-20 left-10 w-72 h-72 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+    <div class="absolute bottom-20 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style="animation-delay: 1s;"></div>
+
+    <div class="container-custom relative z-10">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-indigo-300 font-medium mb-6 animate-fade-in">
+          <Icon name="layers" size={16} />
+          <span>{c.hero.badge}</span>
+        </div>
+
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 animate-fade-in" style="animation-delay: 0.1s;">
+          {c.hero.headline}
+        </h1>
+
+        <p class="text-2xl md:text-3xl text-indigo-300 font-medium mb-6 animate-fade-in" style="animation-delay: 0.2s;">
+          {c.hero.subheadline}
+        </p>
+
+        <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-10 animate-fade-in" style="animation-delay: 0.3s;">
+          {c.hero.description}
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style="animation-delay: 0.4s;">
+          <Button href={`/${lang}/calculator`} variant="primary" size="lg">
+            {lang === 'fr' ? 'Obtenir un Devis' : 'Get a Quote'}
+          </Button>
+          <Button href={`/${lang}/contact`} variant="outline" size="lg" class="border-white/30 text-white hover:bg-white/10">
+            {lang === 'fr' ? 'Nous Contacter' : 'Contact Us'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us Section -->
+  <section class="py-24 bg-gradient-to-b from-slate-50 to-white">
+    <div class="container-custom">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <!-- Left: Content -->
+        <div class="animate-on-scroll">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+            <Icon name="award" size={16} />
+            <span>{lang === 'fr' ? 'Notre Différence' : 'Our Difference'}</span>
+          </div>
+
+          <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+            {c.intro.title}
+          </h2>
+
+          <p class="text-xl text-slate-600 leading-relaxed">
+            {c.intro.description}
+          </p>
+        </div>
+
+        <!-- Right: Points Grid -->
+        <div class="grid sm:grid-cols-2 gap-6">
+          {c.intro.points.map((point, index) => (
+            <div
+              class="point-card p-6 bg-white rounded-2xl border border-slate-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 animate-on-scroll"
+              style={`animation-delay: ${index * 100}ms`}
+            >
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mb-4">
+                <Icon name={point.icon} size={24} class="text-white" />
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 mb-2">{point.title}</h3>
+              <p class="text-slate-600 text-sm leading-relaxed">{point.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Grid -->
+  <section class="py-24 bg-white">
+    <div class="container-custom">
+      <div class="text-center mb-16 animate-on-scroll">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+          <Icon name="grid" size={16} />
+          <span>{lang === 'fr' ? 'Nos Expertises' : 'Our Expertise'}</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          {lang === 'fr' ? 'Choisissez Vos Services' : 'Choose Your Services'}
+        </h2>
+        <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+          {lang === 'fr'
+            ? 'Chaque service peut être activé individuellement ou combiné pour une stratégie complète.'
+            : 'Each service can be activated individually or combined for a comprehensive strategy.'
+          }
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {c.services.map((service, index) => (
+          <a
+            href={service.href}
+            class="service-card group relative p-8 bg-white rounded-3xl border-2 border-slate-200 hover:border-indigo-300 transition-all duration-500 animate-on-scroll overflow-hidden"
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            <!-- Background Gradient -->
+            <div class={`absolute top-0 right-0 w-48 h-48 bg-gradient-to-br ${service.color} opacity-5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:opacity-10 transition-opacity`}></div>
+
+            <div class="relative z-10">
+              <!-- Icon -->
+              <div class={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                <Icon name={service.icon} size={32} class="text-white" />
+              </div>
+
+              <!-- Content -->
+              <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">{service.name}</h3>
+              <p class="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
+
+              <!-- Features -->
+              <div class="flex flex-wrap gap-2 mb-6">
+                {service.features.map(feature => (
+                  <span class="px-3 py-1 text-xs bg-slate-100 text-slate-600 rounded-full">
+                    {feature}
+                  </span>
+                ))}
+              </div>
+
+              <!-- CTA -->
+              <div class="flex items-center gap-2 text-indigo-600 font-semibold group-hover:gap-3 transition-all">
+                <span>{c.cta}</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="py-24 bg-gradient-to-b from-indigo-50 to-white">
+    <div class="container-custom">
+      <div class="text-center mb-16 animate-on-scroll">
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          {c.testimonials.title}
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        {c.testimonials.items.map((testimonial, index) => (
+          <div
+            class="p-8 bg-white rounded-2xl shadow-lg border border-slate-100 animate-on-scroll"
+            style={`animation-delay: ${index * 150}ms`}
+          >
+            <div class="flex gap-1 mb-4">
+              {[1,2,3,4,5].map(() => (
+                <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+            <p class="text-lg text-slate-700 mb-6 italic">"{testimonial.quote}"</p>
+            <div>
+              <p class="font-semibold text-slate-900">{testimonial.author}</p>
+              <p class="text-slate-500 text-sm">{testimonial.company}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Trusted By -->
+  <TrustedBy lang={lang} variant="compact" />
+
+  <!-- Final CTA -->
+  <FinalCTA lang={lang} color="primary" />
+</PageLayout>
+
+<style>
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .point-card, .service-card {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
