@@ -203,47 +203,73 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
 <div class="h-18"></div>
 
 <script is:inline>
-  function initMobileMenu() {
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const menuIcon = document.getElementById('menu-icon');
-    const closeIcon = document.getElementById('close-icon');
+  (function() {
+    // Track if already initialized
+    let initialized = false;
+    let outsideClickHandler = null;
 
-    if (!mobileMenuBtn || !mobileMenu || !menuIcon || !closeIcon) return;
+    function initMobileMenu() {
+      const btn = document.getElementById('mobile-menu-btn');
+      const menu = document.getElementById('mobile-menu');
 
-    // Remove any existing listeners by cloning the button
-    const newBtn = mobileMenuBtn.cloneNode(true);
-    mobileMenuBtn.parentNode.replaceChild(newBtn, mobileMenuBtn);
+      if (!btn || !menu) return;
 
-    newBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = !mobileMenu.classList.contains('hidden');
+      // Get icons from inside the button
+      const menuIcon = btn.querySelector('#menu-icon');
+      const closeIcon = btn.querySelector('#close-icon');
 
-      if (isOpen) {
-        mobileMenu.classList.add('hidden');
-        menuIcon.classList.remove('hidden');
-        closeIcon.classList.add('hidden');
-      } else {
-        mobileMenu.classList.remove('hidden');
-        menuIcon.classList.add('hidden');
-        closeIcon.classList.remove('hidden');
+      if (!menuIcon || !closeIcon) return;
+
+      // Remove previous outside click handler if exists
+      if (outsideClickHandler) {
+        document.removeEventListener('click', outsideClickHandler);
       }
-    });
 
-    // Close mobile menu on outside click
-    document.addEventListener('click', (e) => {
-      const header = document.getElementById('header');
-      if (header && mobileMenu && !header.contains(e.target)) {
-        mobileMenu.classList.add('hidden');
-        menuIcon.classList.remove('hidden');
-        closeIcon.classList.add('hidden');
+      // Toggle function
+      function toggleMenu(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const isOpen = !menu.classList.contains('hidden');
+
+        if (isOpen) {
+          menu.classList.add('hidden');
+          menuIcon.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+        } else {
+          menu.classList.remove('hidden');
+          menuIcon.classList.add('hidden');
+          closeIcon.classList.remove('hidden');
+        }
       }
-    });
-  }
 
-  // Run on initial load
-  initMobileMenu();
+      // Close on outside click
+      outsideClickHandler = function(e) {
+        const header = document.getElementById('header');
+        if (header && !header.contains(e.target) && !menu.classList.contains('hidden')) {
+          menu.classList.add('hidden');
+          menuIcon.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+        }
+      };
 
-  // Re-run after View Transitions navigation
-  document.addEventListener('astro:page-load', initMobileMenu);
+      // Use onclick to ensure it works (replaces any existing handler)
+      btn.onclick = toggleMenu;
+
+      // Add outside click handler
+      document.addEventListener('click', outsideClickHandler);
+
+      initialized = true;
+    }
+
+    // Initialize on DOMContentLoaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMobileMenu);
+    } else {
+      initMobileMenu();
+    }
+
+    // Re-initialize after Astro page transitions
+    document.addEventListener('astro:page-load', initMobileMenu);
+  })();
 </script>

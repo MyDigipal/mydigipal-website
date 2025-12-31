@@ -1,0 +1,527 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { type Language, languages } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import Button from '@/components/ui/Button.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+const content = {
+  en: {
+    seo: {
+      title: "Automotive Digital Marketing | Car Dealership Ads | MyDigipal",
+      description: "Specialized digital marketing for car dealerships. Google Ads, Facebook Dynamic Ads, and Paid Social campaigns that drive showroom visits and vehicle sales."
+    },
+    hero: {
+      badge: "Automotive Marketing",
+      headline: "Drive More Sales to Your Dealership",
+      subheadline: "Digital Marketing Built for Automotive",
+      description: "We specialize in automotive digital marketing. From Google Ads to Facebook Dynamic Ads, we help car dealerships reach buyers at every stage of their journey."
+    },
+    intro: {
+      title: "Why Automotive Needs Specialized Marketing",
+      description: "Selling cars is different. The buyer journey is longer, the competition is fierce, and local presence matters. That's why we've built expertise specifically for the automotive industry.",
+      points: [
+        { icon: "map-pin", title: "Local Focus", description: "Target buyers in your dealership's geographic area with precision." },
+        { icon: "car", title: "Inventory Integration", description: "Sync your vehicle inventory with dynamic ad campaigns." },
+        { icon: "trending-up", title: "Full Funnel", description: "From awareness to showroom visit, we cover every touchpoint." },
+        { icon: "bar-chart", title: "Measurable ROI", description: "Track every click, visit, and sale with complete transparency." }
+      ]
+    },
+    stats: [
+      { value: "150K€", label: "Monthly Budget Managed" },
+      { value: "188K", label: "Clicks Generated" },
+      { value: "10.6K", label: "Leads Generated" },
+      { value: "50+", label: "Dealerships Served" }
+    ],
+    services: [
+      {
+        icon: "search",
+        name: "Google Ads",
+        tagline: "Dominate Search Results",
+        description: "Be there when car buyers are searching. Search, Display, YouTube, and Vehicle Listing Ads tailored for automotive dealerships.",
+        href: "/en/automotive/google-ads",
+        features: ["Search Campaigns", "Display Retargeting", "YouTube Ads", "Vehicle Listing Ads"],
+        highlights: [
+          "Brand & model-specific campaigns",
+          "New and used car targeting",
+          "Event promotion (open days, sales)",
+          "Budget allocation by objectives"
+        ],
+        color: "from-blue-500 to-cyan-500",
+        stat: { value: "10%", label: "Conversion Rate (vs 2.5% industry avg)" }
+      },
+      {
+        icon: "users",
+        name: "Paid Social",
+        tagline: "Reach Buyers Where They Scroll",
+        description: "Engage potential car buyers on Facebook, Instagram, and TikTok with visually compelling campaigns that drive showroom visits.",
+        href: "/en/automotive/paid-social",
+        features: ["Facebook Ads", "Instagram Ads", "Carousel Campaigns", "Lead Gen Forms"],
+        highlights: [
+          "Lifestyle & interest targeting",
+          "Video showcases",
+          "Test drive bookings",
+          "Remarketing to website visitors"
+        ],
+        color: "from-pink-500 to-rose-500",
+        stat: { value: "3x", label: "Higher Engagement vs Static Ads" }
+      },
+      {
+        icon: "refresh-cw",
+        name: "Facebook Dynamic Ads",
+        tagline: "Your Inventory, Automatically",
+        description: "Connect your vehicle inventory directly to Facebook. Show the right car to the right buyer at the right time, automatically.",
+        href: "/en/automotive/facebook-dynamic-ads",
+        features: ["Catalog Integration", "Dynamic Retargeting", "Cross-Sell", "Automatic Updates"],
+        highlights: [
+          "Real-time inventory sync",
+          "Price & availability updates",
+          "Model-specific targeting",
+          "Automated creative generation"
+        ],
+        color: "from-indigo-500 to-purple-600",
+        stat: { value: "40%", label: "Lower Cost per Lead" }
+      }
+    ],
+    cta: "Learn More",
+    clients: {
+      title: "Trusted by Dealerships",
+      logos: [
+        { name: "Ford", logo: "/images/Client logo/ford.png" },
+        { name: "Theobald", logo: "/images/Client logo/theobald.png" },
+        { name: "DMD", logo: "/images/Client logo/DMD.png" },
+        { name: "Vulcain", logo: "/images/Client logo/logo-VULCAIN.jpg" }
+      ]
+    },
+    testimonials: {
+      title: "What Dealerships Say",
+      items: [
+        {
+          quote: "MyDigipal's Google Ads campaigns generate more qualified leads than any other channel we've tried. The ROI speaks for itself.",
+          author: "Sales Director",
+          company: "Multi-Brand Dealership Group"
+        },
+        {
+          quote: "The Facebook Dynamic Ads are incredible. Our entire inventory is automatically promoted to the right audiences. We've seen a 40% increase in online inquiries.",
+          author: "Marketing Manager",
+          company: "Premium Car Dealership"
+        }
+      ]
+    },
+    process: {
+      title: "Our Approach",
+      steps: [
+        { number: "01", title: "Audit", description: "We analyze your current digital presence, competitors, and market opportunities." },
+        { number: "02", title: "Strategy", description: "Custom campaign strategy aligned with your sales objectives and inventory." },
+        { number: "03", title: "Launch", description: "Rapid deployment of campaigns with automotive-specific best practices." },
+        { number: "04", title: "Optimize", description: "Continuous optimization based on performance data and market trends." }
+      ]
+    }
+  },
+  fr: {
+    seo: {
+      title: "Marketing Digital Automobile | Publicité Concessionnaires | MyDigipal",
+      description: "Marketing digital spécialisé pour concessionnaires automobiles. Google Ads, Facebook Dynamic Ads et Paid Social pour générer des visites en showroom et des ventes."
+    },
+    hero: {
+      badge: "Marketing Automobile",
+      headline: "Boostez les Ventes de Votre Concession",
+      subheadline: "Marketing Digital Conçu pour l'Automobile",
+      description: "On est spécialisés en marketing digital automobile. De Google Ads aux Facebook Dynamic Ads, on aide les concessionnaires à atteindre les acheteurs à chaque étape de leur parcours."
+    },
+    intro: {
+      title: "Pourquoi l'Automobile Nécessite un Marketing Spécialisé",
+      description: "Vendre des voitures, c'est différent. Le parcours d'achat est plus long, la concurrence est féroce, et la présence locale compte. C'est pourquoi on a développé une expertise spécifique pour l'industrie automobile.",
+      points: [
+        { icon: "map-pin", title: "Focus Local", description: "Ciblez les acheteurs dans la zone géographique de votre concession avec précision." },
+        { icon: "car", title: "Intégration Stock", description: "Synchronisez votre inventaire de véhicules avec des campagnes publicitaires dynamiques." },
+        { icon: "trending-up", title: "Full Funnel", description: "De la notoriété à la visite en showroom, on couvre chaque point de contact." },
+        { icon: "bar-chart", title: "ROI Mesurable", description: "Suivez chaque clic, visite et vente avec une transparence totale." }
+      ]
+    },
+    stats: [
+      { value: "150K€", label: "Budget Mensuel Géré" },
+      { value: "188K", label: "Clics Générés" },
+      { value: "10.6K", label: "Leads Générés" },
+      { value: "50+", label: "Concessions Accompagnées" }
+    ],
+    services: [
+      {
+        icon: "search",
+        name: "Google Ads",
+        tagline: "Dominez les Résultats de Recherche",
+        description: "Soyez présent quand les acheteurs de voitures recherchent. Search, Display, YouTube et Vehicle Listing Ads adaptés aux concessionnaires automobiles.",
+        href: "/fr/automotive/google-ads",
+        features: ["Campagnes Search", "Retargeting Display", "YouTube Ads", "Vehicle Listing Ads"],
+        highlights: [
+          "Campagnes par marque & modèle",
+          "Ciblage voitures neuves et occasion",
+          "Promotion événements (portes ouvertes, soldes)",
+          "Allocation budget par objectifs"
+        ],
+        color: "from-blue-500 to-cyan-500",
+        stat: { value: "10%", label: "Taux de Conversion (vs 2.5% moyenne)" }
+      },
+      {
+        icon: "users",
+        name: "Paid Social",
+        tagline: "Atteignez les Acheteurs où Ils Scrollent",
+        description: "Engagez les acheteurs potentiels sur Facebook, Instagram et TikTok avec des campagnes visuellement percutantes qui génèrent des visites en showroom.",
+        href: "/fr/automotive/paid-social",
+        features: ["Facebook Ads", "Instagram Ads", "Campagnes Carousel", "Formulaires Lead Gen"],
+        highlights: [
+          "Ciblage lifestyle & intérêts",
+          "Vidéos de présentation",
+          "Réservation essais",
+          "Remarketing visiteurs site"
+        ],
+        color: "from-pink-500 to-rose-500",
+        stat: { value: "3x", label: "Plus d'Engagement vs Pubs Statiques" }
+      },
+      {
+        icon: "refresh-cw",
+        name: "Facebook Dynamic Ads",
+        tagline: "Votre Stock, Automatiquement",
+        description: "Connectez votre inventaire de véhicules directement à Facebook. Montrez la bonne voiture au bon acheteur au bon moment, automatiquement.",
+        href: "/fr/automotive/facebook-dynamic-ads",
+        features: ["Intégration Catalogue", "Retargeting Dynamique", "Cross-Sell", "Mises à Jour Auto"],
+        highlights: [
+          "Sync stock temps réel",
+          "Mises à jour prix & dispo",
+          "Ciblage par modèle",
+          "Génération créa automatique"
+        ],
+        color: "from-indigo-500 to-purple-600",
+        stat: { value: "40%", label: "Coût par Lead Réduit" }
+      }
+    ],
+    cta: "En Savoir Plus",
+    clients: {
+      title: "Ils Nous Font Confiance",
+      logos: [
+        { name: "Ford", logo: "/images/Client logo/ford.png" },
+        { name: "Theobald", logo: "/images/Client logo/theobald.png" },
+        { name: "DMD", logo: "/images/Client logo/DMD.png" },
+        { name: "Vulcain", logo: "/images/Client logo/logo-VULCAIN.jpg" }
+      ]
+    },
+    testimonials: {
+      title: "Ce Que Disent les Concessions",
+      items: [
+        {
+          quote: "Les campagnes Google Ads de MyDigipal génèrent plus de leads qualifiés que n'importe quel autre canal qu'on a testé. Le ROI parle de lui-même.",
+          author: "Directeur Commercial",
+          company: "Groupe de Concessions Multi-Marques"
+        },
+        {
+          quote: "Les Facebook Dynamic Ads sont incroyables. Tout notre stock est automatiquement promu aux bonnes audiences. On a vu une augmentation de 40% des demandes en ligne.",
+          author: "Responsable Marketing",
+          company: "Concession Premium"
+        }
+      ]
+    },
+    process: {
+      title: "Notre Approche",
+      steps: [
+        { number: "01", title: "Audit", description: "On analyse votre présence digitale actuelle, vos concurrents et les opportunités marché." },
+        { number: "02", title: "Stratégie", description: "Stratégie de campagne sur-mesure alignée avec vos objectifs de vente et votre stock." },
+        { number: "03", title: "Lancement", description: "Déploiement rapide des campagnes avec les best practices automobiles." },
+        { number: "04", title: "Optimisation", description: "Optimisation continue basée sur les données de performance et les tendances marché." }
+      ]
+    }
+  }
+};
+
+const c = content[lang] || content.en;
+---
+
+<PageLayout lang={lang} title={c.seo.title} description={c.seo.description}>
+  <!-- Hero Section -->
+  <section class="relative py-24 lg:py-32 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute inset-0" style="background-image: url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\");"></div>
+    </div>
+
+    <!-- Gradient Orbs -->
+    <div class="absolute top-20 right-1/4 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+    <div class="absolute bottom-20 left-1/4 w-96 h-96 bg-cyan-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+
+    <div class="container-custom relative z-10">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-cyan-300 font-medium mb-6 animate-fade-in">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+          </svg>
+          <span>{c.hero.badge}</span>
+        </div>
+
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 animate-fade-in" style="animation-delay: 0.1s;">
+          {c.hero.headline}
+        </h1>
+
+        <p class="text-2xl md:text-3xl text-cyan-300 font-medium mb-6 animate-fade-in" style="animation-delay: 0.2s;">
+          {c.hero.subheadline}
+        </p>
+
+        <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-10 animate-fade-in" style="animation-delay: 0.3s;">
+          {c.hero.description}
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style="animation-delay: 0.4s;">
+          <Button href={`/${lang}/calculator`} variant="primary" size="lg" class="bg-cyan-600 hover:bg-cyan-700">
+            {lang === 'fr' ? 'Obtenir un Devis' : 'Get a Quote'}
+          </Button>
+          <Button href={`/${lang}/contact`} variant="outline" size="lg" class="border-white/30 text-white hover:bg-white/10">
+            {lang === 'fr' ? 'Nous Contacter' : 'Contact Us'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-16 bg-slate-900">
+    <div class="container-custom">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        {c.stats.map((stat, index) => (
+          <div class="text-center animate-on-scroll" style={`animation-delay: ${index * 100}ms`}>
+            <div class="text-3xl md:text-4xl font-bold text-cyan-400 mb-2">{stat.value}</div>
+            <div class="text-slate-400 text-sm">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Specialized Section -->
+  <section class="py-24 bg-gradient-to-b from-slate-50 to-white">
+    <div class="container-custom">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <!-- Left: Content -->
+        <div class="animate-on-scroll">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 font-medium mb-6">
+            <Icon name="award" size={16} />
+            <span>{lang === 'fr' ? 'Expertise Automobile' : 'Automotive Expertise'}</span>
+          </div>
+
+          <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+            {c.intro.title}
+          </h2>
+
+          <p class="text-xl text-slate-600 leading-relaxed">
+            {c.intro.description}
+          </p>
+        </div>
+
+        <!-- Right: Points Grid -->
+        <div class="grid sm:grid-cols-2 gap-6">
+          {c.intro.points.map((point, index) => (
+            <div
+              class="point-card p-6 bg-white rounded-2xl border border-slate-200 hover:border-cyan-200 hover:shadow-lg transition-all duration-300 animate-on-scroll"
+              style={`animation-delay: ${index * 100}ms`}
+            >
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mb-4">
+                <Icon name={point.icon} size={24} class="text-white" />
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 mb-2">{point.title}</h3>
+              <p class="text-slate-600 text-sm leading-relaxed">{point.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Grid -->
+  <section class="py-24 bg-white">
+    <div class="container-custom">
+      <div class="text-center mb-16 animate-on-scroll">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 font-medium mb-6">
+          <Icon name="layers" size={16} />
+          <span>{lang === 'fr' ? 'Nos Services Automobile' : 'Our Automotive Services'}</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          {lang === 'fr' ? 'Solutions Marketing pour Concessions' : 'Marketing Solutions for Dealerships'}
+        </h2>
+      </div>
+
+      <div class="space-y-8">
+        {c.services.map((service, index) => (
+          <a
+            href={service.href}
+            class="service-card group block p-8 md:p-10 bg-white rounded-3xl border-2 border-slate-200 hover:border-cyan-300 transition-all duration-500 animate-on-scroll overflow-hidden"
+            style={`animation-delay: ${index * 150}ms`}
+          >
+            <div class="grid lg:grid-cols-3 gap-8 items-center">
+              <!-- Left: Content -->
+              <div class="lg:col-span-2">
+                <div class="flex items-center gap-4 mb-4">
+                  <div class={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon name={service.icon} size={28} class="text-white" />
+                  </div>
+                  <div>
+                    <h3 class="text-2xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">{service.name}</h3>
+                    <p class={`text-sm font-medium bg-gradient-to-r ${service.color} bg-clip-text text-transparent`}>{service.tagline}</p>
+                  </div>
+                </div>
+
+                <p class="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
+
+                <!-- Features -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                  {service.features.map(feature => (
+                    <span class="px-3 py-1 text-sm bg-slate-100 text-slate-600 rounded-full">
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+
+                <!-- CTA -->
+                <div class="flex items-center gap-2 text-cyan-600 font-semibold group-hover:gap-3 transition-all">
+                  <span>{c.cta}</span>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Right: Highlights + Stat -->
+              <div class="space-y-6">
+                <!-- Stat Badge -->
+                <div class={`p-4 rounded-2xl bg-gradient-to-br ${service.color} text-white text-center`}>
+                  <div class="text-3xl font-bold">{service.stat.value}</div>
+                  <div class="text-sm opacity-90">{service.stat.label}</div>
+                </div>
+
+                <!-- Highlights -->
+                <div class="bg-slate-50 rounded-2xl p-4">
+                  <ul class="space-y-2">
+                    {service.highlights.slice(0, 3).map(highlight => (
+                      <li class="flex items-start gap-2 text-sm">
+                        <svg class="w-4 h-4 text-cyan-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-slate-600">{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Client Logos -->
+  <section class="py-16 bg-slate-50">
+    <div class="container-custom">
+      <h3 class="text-center text-slate-500 font-medium mb-8">{c.clients.title}</h3>
+      <div class="flex flex-wrap justify-center items-center gap-12">
+        {c.clients.logos.map((client) => (
+          <div class="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all">
+            <img src={client.logo} alt={client.name} class="h-12 w-auto object-contain" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Process Section -->
+  <section class="py-24 bg-white">
+    <div class="container-custom">
+      <div class="text-center mb-16 animate-on-scroll">
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          {c.process.title}
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-8">
+        {c.process.steps.map((step, index) => (
+          <div class="text-center animate-on-scroll" style={`animation-delay: ${index * 100}ms`}>
+            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mx-auto mb-4">
+              <span class="text-xl font-bold text-white">{step.number}</span>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">{step.title}</h3>
+            <p class="text-slate-600 text-sm">{step.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="py-24 bg-gradient-to-b from-cyan-50 to-white">
+    <div class="container-custom">
+      <div class="text-center mb-16 animate-on-scroll">
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          {c.testimonials.title}
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        {c.testimonials.items.map((testimonial, index) => (
+          <div
+            class="p-8 bg-white rounded-2xl shadow-lg border border-slate-100 animate-on-scroll"
+            style={`animation-delay: ${index * 150}ms`}
+          >
+            <div class="flex gap-1 mb-4">
+              {[1,2,3,4,5].map(() => (
+                <svg class="w-5 h-5 text-cyan-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+            <p class="text-lg text-slate-700 mb-6 italic">"{testimonial.quote}"</p>
+            <div>
+              <p class="font-semibold text-slate-900">{testimonial.author}</p>
+              <p class="text-slate-500 text-sm">{testimonial.company}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <FinalCTA lang={lang} color="primary" />
+</PageLayout>
+
+<style>
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .point-card, .service-card {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
