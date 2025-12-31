@@ -1,0 +1,110 @@
+---
+import type { Language } from '@/i18n/config';
+
+interface Benchmark {
+  logo: string;
+  logoAlt: string;
+  value: string;
+  label: string;
+  comparison?: string;
+}
+
+interface Props {
+  lang: Language;
+  benchmarks: Benchmark[];
+  color?: 'automotive' | 'ads' | 'social' | 'primary';
+}
+
+const { lang, benchmarks, color = 'automotive' } = Astro.props;
+
+const colorConfig = {
+  automotive: {
+    gradient: 'from-sky-500 to-blue-600',
+    valueBg: 'bg-sky-500',
+    cardGlow: 'hover:shadow-sky-200/50',
+  },
+  ads: {
+    gradient: 'from-amber-500 to-orange-600',
+    valueBg: 'bg-amber-500',
+    cardGlow: 'hover:shadow-amber-200/50',
+  },
+  social: {
+    gradient: 'from-violet-500 to-purple-600',
+    valueBg: 'bg-violet-500',
+    cardGlow: 'hover:shadow-violet-200/50',
+  },
+  primary: {
+    gradient: 'from-blue-500 to-indigo-600',
+    valueBg: 'bg-blue-500',
+    cardGlow: 'hover:shadow-blue-200/50',
+  },
+};
+
+const colors = colorConfig[color];
+
+const content = {
+  en: {
+    badge: 'Industry Benchmarks',
+    title: 'Outperforming the Competition',
+    subtitle: 'Real results from our automotive clients compared to industry averages.',
+  },
+  fr: {
+    badge: 'Benchmarks Industrie',
+    title: 'Surpasser la Concurrence',
+    subtitle: 'Résultats réels de nos clients automobiles comparés aux moyennes du secteur.',
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="section bg-white">
+  <div class="container-custom">
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <span class="badge-primary mb-4">{t.badge}</span>
+      <h2 class="heading-2 mb-4">{t.title}</h2>
+      <p class="body-large text-slate-600">{t.subtitle}</p>
+    </div>
+
+    <!-- Benchmarks Grid -->
+    <div class="grid md:grid-cols-3 gap-8">
+      {benchmarks.map((benchmark, index) => (
+        <div
+          class={`group relative p-8 rounded-2xl bg-white border border-slate-200 shadow-soft hover:shadow-xl ${colors.cardGlow} transition-all duration-300 animate-on-scroll overflow-hidden`}
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <!-- Background Gradient on Hover -->
+          <div class={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
+
+          <div class="relative z-10">
+            <!-- Client Logo -->
+            <div class="h-12 mb-6 flex items-center">
+              <img
+                src={benchmark.logo}
+                alt={benchmark.logoAlt}
+                class="h-full w-auto max-w-[150px] object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                loading="lazy"
+              />
+            </div>
+
+            <!-- Value -->
+            <div class="mb-3">
+              <span class={`inline-block text-4xl lg:text-5xl font-bold bg-gradient-to-r ${colors.gradient} bg-clip-text text-transparent`}>
+                {benchmark.value}
+              </span>
+            </div>
+
+            <!-- Label -->
+            <h3 class="heading-5 mb-2">{benchmark.label}</h3>
+
+            <!-- Comparison -->
+            {benchmark.comparison && (
+              <p class="text-sm text-slate-500">{benchmark.comparison}</p>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -191,10 +191,123 @@ const pagesCollection = defineCollection({
   }),
 });
 
+// Automotive pages schema
+const automotiveCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    shortDescription: z.string().optional(),
+    color: z.enum(['automotive', 'ads', 'social', 'primary']).default('automotive'),
+    order: z.number().default(0),
+
+    // Hero section
+    hero: z.object({
+      badge: z.string().optional(),
+      headline: z.string(),
+      subheadline: z.string().optional(),
+      image: z.string().optional(),
+    }).optional(),
+
+    // Metrics/stats
+    metrics: z.array(z.object({
+      value: z.string(),
+      label: z.string(),
+    })).optional(),
+
+    // Benchmarks
+    benchmarks: z.array(z.object({
+      logo: z.string(),
+      logoAlt: z.string(),
+      value: z.string(),
+      label: z.string(),
+      comparison: z.string().optional(),
+    })).optional(),
+
+    // Use cases (New Cars, Used Cars, Events)
+    useCases: z.array(z.object({
+      id: z.string(),
+      title: z.string(),
+      description: z.string(),
+      image: z.string().optional(),
+      features: z.array(z.string()).optional(),
+    })).optional(),
+
+    // Team members
+    team: z.array(z.object({
+      name: z.string(),
+      role: z.string(),
+      image: z.string(),
+      responsibilities: z.array(z.object({
+        category: z.string(),
+        items: z.array(z.string()),
+      })),
+    })).optional(),
+
+    // Client logos
+    clients: z.array(z.object({
+      name: z.string(),
+      logo: z.string(),
+    })).optional(),
+
+    // FAQ
+    faq: z.array(z.object({
+      question: z.string(),
+      answer: z.string(),
+    })).optional(),
+
+    // Related case study
+    caseStudy: z.string().optional(),
+
+    // SEO
+    seo: z.object({
+      title: z.string().optional(),
+      description: z.string().optional(),
+      image: z.string().optional(),
+    }).optional(),
+
+    // Calculator service ID
+    calculatorServiceId: z.string().optional(),
+
+    // Testimonial
+    testimonial: z.object({
+      quote: z.string(),
+      author: z.string(),
+      role: z.string(),
+      company: z.string(),
+      image: z.string().optional(),
+      companyLogo: z.string().optional(),
+    }).optional(),
+
+    // Why Section
+    whySection: z.object({
+      title: z.string(),
+      description: z.string(),
+      benefits: z.array(z.object({
+        icon: z.string(),
+        title: z.string(),
+        description: z.string(),
+      })),
+    }).optional(),
+
+    // Services/Features
+    services: z.object({
+      title: z.string(),
+      subtitle: z.string().optional(),
+      items: z.array(z.object({
+        icon: z.string(),
+        title: z.string(),
+        description: z.string(),
+      })),
+    }).optional(),
+  }),
+});
+
 export const collections = {
   services: servicesCollection,
   'case-studies': caseStudiesCollection,
   blog: blogCollection,
   training: trainingCollection,
   pages: pagesCollection,
+  automotive: automotiveCollection,
 };

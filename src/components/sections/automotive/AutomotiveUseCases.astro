@@ -1,0 +1,122 @@
+---
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface UseCase {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+  features?: string[];
+}
+
+interface Props {
+  lang: Language;
+  useCases: UseCase[];
+  color?: 'automotive' | 'ads' | 'social' | 'primary';
+}
+
+const { lang, useCases, color = 'automotive' } = Astro.props;
+
+const colorConfig = {
+  automotive: {
+    gradient: 'from-sky-500 to-blue-600',
+    accent: 'text-sky-500',
+    checkBg: 'bg-sky-100',
+    checkColor: 'text-sky-600',
+  },
+  ads: {
+    gradient: 'from-amber-500 to-orange-600',
+    accent: 'text-amber-500',
+    checkBg: 'bg-amber-100',
+    checkColor: 'text-amber-600',
+  },
+  social: {
+    gradient: 'from-violet-500 to-purple-600',
+    accent: 'text-violet-500',
+    checkBg: 'bg-violet-100',
+    checkColor: 'text-violet-600',
+  },
+  primary: {
+    gradient: 'from-blue-500 to-indigo-600',
+    accent: 'text-blue-500',
+    checkBg: 'bg-blue-100',
+    checkColor: 'text-blue-600',
+  },
+};
+
+const colors = colorConfig[color];
+
+const content = {
+  en: {
+    badge: 'Use Cases',
+    title: 'Tailored Strategies for Every Segment',
+    subtitle: 'Whether you\'re promoting new models, moving used inventory, or driving event registrations.',
+  },
+  fr: {
+    badge: 'Cas d\'Usage',
+    title: 'Stratégies Adaptées à Chaque Segment',
+    subtitle: 'Que vous promouviez des modèles neufs, écouliez des véhicules d\'occasion ou génériez des inscriptions événementielles.',
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="section bg-slate-50">
+  <div class="container-custom">
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <span class="badge-primary mb-4">{t.badge}</span>
+      <h2 class="heading-2 mb-4">{t.title}</h2>
+      <p class="body-large text-slate-600">{t.subtitle}</p>
+    </div>
+
+    <!-- Use Cases -->
+    <div class="space-y-16">
+      {useCases.map((useCase, index) => (
+        <div
+          class={`flex flex-col ${index % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-12 items-center animate-on-scroll`}
+          style={`animation-delay: ${index * 150}ms`}
+        >
+          <!-- Image -->
+          {useCase.image && (
+            <div class="lg:w-1/2">
+              <div class="relative">
+                <div class={`absolute inset-0 bg-gradient-to-br ${colors.gradient} rounded-2xl transform ${index % 2 === 1 ? '-rotate-3' : 'rotate-3'} opacity-20`}></div>
+                <img
+                  src={useCase.image}
+                  alt={useCase.title}
+                  class="relative rounded-2xl shadow-lg w-full object-cover aspect-[4/3]"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          )}
+
+          <!-- Content -->
+          <div class={`lg:w-1/2 ${!useCase.image ? 'lg:w-full' : ''}`}>
+            <span class={`text-sm font-semibold ${colors.accent} uppercase tracking-wider mb-2 block`}>
+              {useCase.id}
+            </span>
+            <h3 class="heading-3 mb-4">{useCase.title}</h3>
+            <p class="text-slate-600 mb-6 leading-relaxed">{useCase.description}</p>
+
+            {useCase.features && useCase.features.length > 0 && (
+              <ul class="space-y-3">
+                {useCase.features.map((feature) => (
+                  <li class="flex items-start gap-3">
+                    <div class={`flex-shrink-0 w-6 h-6 rounded-full ${colors.checkBg} flex items-center justify-center mt-0.5`}>
+                      <Icon name="check" size={14} class={colors.checkColor} />
+                    </div>
+                    <span class="text-slate-700">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
