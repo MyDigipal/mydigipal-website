@@ -1,0 +1,155 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { type Language, languages } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+import { getCollection } from 'astro:content';
+
+// Components
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+
+// Sections
+import HeroService from '@/components/sections/HeroService.astro';
+import MetricsCounter from '@/components/sections/MetricsCounter.astro';
+import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+
+// Automotive specific sections
+import AutomotiveBenchmarks from '@/components/sections/automotive/AutomotiveBenchmarks.astro';
+import AutomotiveUseCases from '@/components/sections/automotive/AutomotiveUseCases.astro';
+import AutomotiveTeam from '@/components/sections/automotive/AutomotiveTeam.astro';
+import AutomotiveClients from '@/components/sections/automotive/AutomotiveClients.astro';
+import AutomotiveFAQ from '@/components/sections/automotive/AutomotiveFAQ.astro';
+import AutomotiveWhySection from '@/components/sections/automotive/AutomotiveWhySection.astro';
+import AutomotiveServices from '@/components/sections/automotive/AutomotiveServices.astro';
+import AutomotiveMidCTA from '@/components/sections/automotive/AutomotiveMidCTA.astro';
+
+export async function getStaticPaths() {
+  const paths = [];
+
+  for (const lang of Object.keys(languages)) {
+    try {
+      const pages = await getCollection('automotive', ({ id }) => {
+        return id.startsWith(`${lang}/`);
+      });
+
+      for (const page of pages) {
+        const slug = page.id.replace(`${lang}/`, '').replace('.mdx', '');
+        paths.push({
+          params: { lang, slug },
+          props: { page },
+        });
+      }
+    } catch (e) {
+      // Collection might be empty
+    }
+  }
+
+  return paths;
+}
+
+const { lang, slug } = Astro.params as { lang: Language; slug: string };
+const { page } = Astro.props;
+
+const {
+  title,
+  description,
+  color = 'automotive',
+  hero,
+  metrics,
+  benchmarks,
+  useCases,
+  team,
+  clients,
+  faq,
+  testimonial,
+  calculatorServiceId,
+  seo,
+  whySection,
+  services,
+} = page.data;
+
+---
+
+<PageLayout
+  lang={lang}
+  title={seo?.title || title}
+  description={seo?.description || description}
+>
+  <!-- Hero Section -->
+  <HeroService
+    lang={lang}
+    badge={hero?.badge}
+    headline={hero?.headline || title}
+    subheadline={hero?.subheadline}
+    description={description}
+    color={color}
+  />
+
+  <!-- Metrics Counter -->
+  {metrics && metrics.length > 0 && (
+    <MetricsCounter metrics={metrics} color={color} />
+  )}
+
+  <!-- Why Section (for all automotive pages) -->
+  {whySection && (
+    <AutomotiveWhySection lang={lang} data={whySection} color={color} />
+  )}
+
+  <!-- Services/Features Section -->
+  {services && (
+    <AutomotiveServices lang={lang} data={services} color={color} />
+  )}
+
+  <!-- Mid-page CTA (after services) -->
+  <AutomotiveMidCTA lang={lang} color={color} />
+
+  <!-- Benchmarks Section -->
+  {benchmarks && benchmarks.length > 0 && (
+    <AutomotiveBenchmarks lang={lang} benchmarks={benchmarks} color={color} />
+  )}
+
+  <!-- Use Cases Section -->
+  {useCases && useCases.length > 0 && (
+    <AutomotiveUseCases lang={lang} useCases={useCases} color={color} />
+  )}
+
+  <!-- Team Section -->
+  {team && team.length > 0 && (
+    <AutomotiveTeam lang={lang} team={team} />
+  )}
+
+  <!-- Client Logos -->
+  {clients && clients.length > 0 && (
+    <AutomotiveClients lang={lang} clients={clients} />
+  )}
+
+  <!-- Testimonial -->
+  {testimonial && (
+    <TestimonialSpotlight
+      quote={testimonial.quote}
+      author={testimonial.author}
+      role={testimonial.role}
+      company={testimonial.company}
+      image={testimonial.image}
+      companyLogo={testimonial.companyLogo}
+    />
+  )}
+
+  <!-- Final CTA -->
+  <FinalCTA lang={lang} color={color} />
+
+  <!-- FAQ Section -->
+  {faq && faq.length > 0 && (
+    <AutomotiveFAQ lang={lang} faq={faq} color={color} />
+  )}
+</PageLayout>
+
+<style>
+  /* Page-specific animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+</style>

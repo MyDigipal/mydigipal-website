@@ -1,0 +1,75 @@
+---
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  data: {
+    title: string;
+    description: string;
+    benefits: Array<{
+      icon: string;
+      title: string;
+      description: string;
+    }>;
+  };
+  color?: 'automotive' | 'ads' | 'social' | 'primary';
+}
+
+const { lang, data, color = 'automotive' } = Astro.props;
+
+const colorConfig = {
+  automotive: {
+    gradient: 'from-sky-500 to-blue-600',
+    iconBg: 'bg-sky-100',
+    iconColor: 'text-sky-600',
+    accent: 'text-sky-500',
+  },
+  ads: {
+    gradient: 'from-amber-500 to-orange-600',
+    iconBg: 'bg-amber-100',
+    iconColor: 'text-amber-600',
+    accent: 'text-amber-500',
+  },
+  social: {
+    gradient: 'from-violet-500 to-purple-600',
+    iconBg: 'bg-violet-100',
+    iconColor: 'text-violet-600',
+    accent: 'text-violet-500',
+  },
+  primary: {
+    gradient: 'from-blue-500 to-indigo-600',
+    iconBg: 'bg-blue-100',
+    iconColor: 'text-blue-600',
+    accent: 'text-blue-500',
+  },
+};
+
+const colors = colorConfig[color];
+---
+
+<section class="section bg-white">
+  <div class="container-custom">
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <h2 class="heading-2 mb-4">{data.title}</h2>
+      <p class="body-large text-slate-600">{data.description}</p>
+    </div>
+
+    <!-- Benefits Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {data.benefits.map((benefit, index) => (
+        <div
+          class="group p-6 rounded-2xl bg-white border border-slate-100 shadow-soft hover:shadow-lg hover:border-sky-200 transition-all duration-300 animate-on-scroll"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <div class={`w-14 h-14 rounded-xl ${colors.iconBg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+            <Icon name={benefit.icon} size={28} class={colors.iconColor} />
+          </div>
+          <h3 class="heading-5 mb-2">{benefit.title}</h3>
+          <p class="text-slate-600 text-sm">{benefit.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

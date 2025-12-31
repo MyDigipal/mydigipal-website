@@ -1,0 +1,93 @@
+---
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface TeamMember {
+  name: string;
+  role: string;
+  image: string;
+  responsibilities: Array<{
+    category: string;
+    items: string[];
+  }>;
+}
+
+interface Props {
+  lang: Language;
+  team: TeamMember[];
+}
+
+const { lang, team } = Astro.props;
+
+const content = {
+  en: {
+    badge: 'Our Team',
+    title: 'The People Behind Your Success',
+    subtitle: 'Meet the dedicated automotive marketing specialists who will drive your campaigns.',
+  },
+  fr: {
+    badge: 'Notre Équipe',
+    title: 'Les Personnes Derrière Votre Succès',
+    subtitle: 'Découvrez les spécialistes marketing automobile dédiés qui piloteront vos campagnes.',
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="section bg-white">
+  <div class="container-custom">
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <span class="badge-primary mb-4">{t.badge}</span>
+      <h2 class="heading-2 mb-4">{t.title}</h2>
+      <p class="body-large text-slate-600">{t.subtitle}</p>
+    </div>
+
+    <!-- Team Grid -->
+    <div class="grid md:grid-cols-3 gap-8">
+      {team.map((member, index) => (
+        <div
+          class="group relative animate-on-scroll"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-soft overflow-hidden hover:shadow-lg transition-all duration-300">
+            <!-- Photo -->
+            <div class="relative h-64 overflow-hidden">
+              <img
+                src={member.image}
+                alt={member.name}
+                class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <h3 class="text-xl font-bold text-white">{member.name}</h3>
+                <p class="text-sky-300 font-medium">{member.role}</p>
+              </div>
+            </div>
+
+            <!-- Responsibilities -->
+            <div class="p-6">
+              {member.responsibilities.map((resp) => (
+                <div class="mb-4 last:mb-0">
+                  <h4 class="text-sm font-semibold text-slate-900 mb-2 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                    {resp.category}
+                  </h4>
+                  <ul class="space-y-1 pl-4">
+                    {resp.items.map((item) => (
+                      <li class="text-sm text-slate-600 relative before:content-['–'] before:absolute before:-left-3 before:text-slate-400">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

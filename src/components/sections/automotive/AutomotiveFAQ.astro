@@ -1,0 +1,94 @@
+---
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  lang: Language;
+  faq: FAQItem[];
+  color?: 'automotive' | 'ads' | 'social' | 'primary';
+}
+
+const { lang, faq, color = 'automotive' } = Astro.props;
+
+const colorConfig = {
+  automotive: {
+    iconBg: 'bg-sky-100',
+    iconColor: 'text-sky-600',
+    accent: 'group-open:text-sky-600',
+  },
+  ads: {
+    iconBg: 'bg-amber-100',
+    iconColor: 'text-amber-600',
+    accent: 'group-open:text-amber-600',
+  },
+  social: {
+    iconBg: 'bg-violet-100',
+    iconColor: 'text-violet-600',
+    accent: 'group-open:text-violet-600',
+  },
+  primary: {
+    iconBg: 'bg-blue-100',
+    iconColor: 'text-blue-600',
+    accent: 'group-open:text-blue-600',
+  },
+};
+
+const colors = colorConfig[color];
+
+const content = {
+  en: {
+    badge: 'FAQ',
+    title: 'Frequently Asked Questions',
+    subtitle: 'Everything you need to know about our automotive advertising services.',
+  },
+  fr: {
+    badge: 'FAQ',
+    title: 'Questions Fréquentes',
+    subtitle: 'Tout ce que vous devez savoir sur nos services de publicité automobile.',
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="section bg-white">
+  <div class="container-custom">
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <span class="badge-primary mb-4">{t.badge}</span>
+      <h2 class="heading-2 mb-4">{t.title}</h2>
+      <p class="body-large text-slate-600">{t.subtitle}</p>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="max-w-3xl mx-auto space-y-4">
+      {faq.map((item, index) => (
+        <details
+          class="group bg-white rounded-xl border border-slate-200 shadow-soft hover:shadow-md transition-all duration-300 animate-on-scroll"
+          style={`animation-delay: ${index * 50}ms`}
+        >
+          <summary class={`flex items-center justify-between gap-4 p-6 cursor-pointer list-none font-semibold ${colors.accent} transition-colors`}>
+            <span class="text-left">{item.question}</span>
+            <span class={`flex-shrink-0 w-8 h-8 rounded-full ${colors.iconBg} flex items-center justify-center transition-transform group-open:rotate-180`}>
+              <Icon name="chevron-down" size={18} class={colors.iconColor} />
+            </span>
+          </summary>
+          <div class="px-6 pb-6 pt-0">
+            <p class="text-slate-600 leading-relaxed">{item.answer}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+</style>

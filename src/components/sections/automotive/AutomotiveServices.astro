@@ -1,0 +1,73 @@
+---
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  data: {
+    title: string;
+    subtitle?: string;
+    items: Array<{
+      icon: string;
+      title: string;
+      description: string;
+    }>;
+  };
+  color?: 'automotive' | 'ads' | 'social' | 'primary';
+}
+
+const { lang, data, color = 'automotive' } = Astro.props;
+
+const colorConfig = {
+  automotive: {
+    gradient: 'from-sky-500 to-blue-600',
+    cardBorder: 'hover:border-sky-300',
+    iconBg: 'bg-gradient-to-br from-sky-500 to-blue-600',
+  },
+  ads: {
+    gradient: 'from-amber-500 to-orange-600',
+    cardBorder: 'hover:border-amber-300',
+    iconBg: 'bg-gradient-to-br from-amber-500 to-orange-600',
+  },
+  social: {
+    gradient: 'from-violet-500 to-purple-600',
+    cardBorder: 'hover:border-violet-300',
+    iconBg: 'bg-gradient-to-br from-violet-500 to-purple-600',
+  },
+  primary: {
+    gradient: 'from-blue-500 to-indigo-600',
+    cardBorder: 'hover:border-blue-300',
+    iconBg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+  },
+};
+
+const colors = colorConfig[color];
+---
+
+<section class="section bg-slate-50">
+  <div class="container-custom">
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <h2 class="heading-2 mb-4">{data.title}</h2>
+      {data.subtitle && (
+        <p class="body-large text-slate-600">{data.subtitle}</p>
+      )}
+    </div>
+
+    <!-- Services Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {data.items.map((item, index) => (
+        <div
+          class={`group p-6 rounded-2xl bg-white border border-slate-200 shadow-soft ${colors.cardBorder} hover:shadow-lg transition-all duration-300 animate-on-scroll`}
+          style={`animation-delay: ${index * 75}ms`}
+        >
+          <div class={`w-12 h-12 rounded-xl ${colors.iconBg} flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform`}>
+            <Icon name={item.icon} size={24} />
+          </div>
+          <h3 class="heading-5 mb-2">{item.title}</h3>
+          <p class="text-slate-600 text-sm leading-relaxed">{item.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
