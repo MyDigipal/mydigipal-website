@@ -61,6 +61,9 @@ export const GET: APIRoute = async () => {
   // Case studies index
   addBilingualPage('/case-studies', 0.8, 'weekly');
 
+  // Services index
+  addBilingualPage('/services', 0.9, 'weekly');
+
   // Legal pages
   addBilingualPage('/privacy-policy', 0.3, 'yearly');
   addBilingualPage('/terms-of-service', 0.3, 'yearly');
