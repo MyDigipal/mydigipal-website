@@ -86,6 +86,55 @@ const canonical = canonicalURL || Astro.url.href;
     <link rel="apple-touch-icon" href="/images/Logos/Favicon logo_256px.png" />
     <meta name="theme-color" content="#4F46E5" />
 
+    <!-- Structured Data: Organization + WebSite (Global) -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://mydigipal.com/#organization",
+          "name": "MyDigipal",
+          "url": "https://mydigipal.com",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://mydigipal.com/images/Logos/Logo_Main_Horizontal.png",
+            "width": 512,
+            "height": 512
+          },
+          "description": lang === 'fr'
+            ? "Agence de marketing digital B2B spécialisée en ABM, Paid Media, SEO et solutions IA"
+            : "B2B Digital Marketing Agency specialized in ABM, Paid Media, SEO and AI Solutions",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "128 Rue de la Boétie",
+            "addressLocality": "Paris",
+            "postalCode": "75008",
+            "addressCountry": "FR"
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+33-1-86-65-54-40",
+            "contactType": "sales",
+            "availableLanguage": ["English", "French"]
+          },
+          "sameAs": [
+            "https://www.linkedin.com/company/mydigipal",
+            "https://twitter.com/mydigipal"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://mydigipal.com/#website",
+          "url": "https://mydigipal.com",
+          "name": "MyDigipal",
+          "publisher": {
+            "@id": "https://mydigipal.com/#organization"
+          },
+          "inLanguage": ["en", "fr"]
+        }
+      ]
+    })} />
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -4,6 +4,10 @@ import { type Language, languages } from '@/i18n/config';
 import { t } from '@/i18n/utils';
 import { getCollection } from 'astro:content';
 
+// SEO Schemas
+import ServiceSchema from '@/components/seo/ServiceSchema.astro';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
+
 // Components
 import Badge from '@/components/ui/Badge.astro';
 import Button from '@/components/ui/Button.astro';
@@ -124,6 +128,14 @@ const isEmailingService = slug === 'emailing';
 const isAISolutionsService = slug === 'ai-solutions';
 // Check if this is the B2B ABM service page
 const isB2BABMService = slug === 'b2b-abm';
+
+// SEO Schema data
+const serviceUrl = `https://mydigipal.com/${lang}/services/${slug}`;
+const breadcrumbItems = [
+  { name: lang === 'fr' ? 'Accueil' : 'Home', url: `/${lang}` },
+  { name: 'Services', url: `/${lang}/services` },
+  { name: title, url: `/${lang}/services/${slug}` }
+];
 ---
 
 <PageLayout
@@ -131,6 +143,15 @@ const isB2BABMService = slug === 'b2b-abm';
   title={seo?.title || title}
   description={seo?.description || description}
 >
+  <!-- Structured Data -->
+  <ServiceSchema
+    name={title}
+    description={description}
+    url={serviceUrl}
+    lang={lang}
+  />
+  <BreadcrumbSchema items={breadcrumbItems} />
+
   <!-- Hero Section - Immersive with Parallax -->
   <HeroService
     lang={lang}

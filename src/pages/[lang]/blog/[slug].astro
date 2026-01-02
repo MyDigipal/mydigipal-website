@@ -3,6 +3,8 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
 import { getCollection } from 'astro:content';
 import Icon from '@/components/ui/Icon.astro';
+import ArticleSchema from '@/components/seo/ArticleSchema.astro';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -60,6 +62,15 @@ const translations = {
 
 const t = translations[lang] || translations.en;
 
+// SEO Schema data
+const postSlug = post.slug.replace(/^(en|fr)\//, '');
+const postUrl = `https://mydigipal.com/${lang}/blog/${postSlug}`;
+const breadcrumbItems = [
+  { name: lang === 'fr' ? 'Accueil' : 'Home', url: `/${lang}` },
+  { name: 'Blog', url: `/${lang}/blog` },
+  { name: post.data.title, url: `/${lang}/blog/${postSlug}` }
+];
+
 const categoryLabels: Record<string, Record<string, string>> = {
   en: {
     'abm': 'ABM',
@@ -87,6 +98,19 @@ const categoryLabels: Record<string, Record<string, string>> = {
   title={post.data.seo?.title || post.data.title}
   description={post.data.seo?.description || post.data.description}
 >
+  <!-- Structured Data -->
+  <ArticleSchema
+    title={post.data.title}
+    description={post.data.description}
+    author={post.data.author}
+    datePublished={post.data.date}
+    dateModified={post.data.updatedDate || post.data.date}
+    image={post.data.image}
+    url={postUrl}
+    lang={lang}
+  />
+  <BreadcrumbSchema items={breadcrumbItems} />
+
   <!-- Hero Section -->
   <section class="relative bg-slate-950 text-white pt-32 pb-24 overflow-hidden">
     <!-- Background Effects -->

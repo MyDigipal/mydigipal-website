@@ -1,0 +1,69 @@
+---
+/**
+ * ArticleSchema Component
+ * Generates JSON-LD structured data for blog articles
+ *
+ * Usage:
+ * <ArticleSchema
+ *   title="Article Title"
+ *   description="Article description"
+ *   author="Author Name"
+ *   datePublished={new Date()}
+ *   dateModified={new Date()}
+ *   image="/images/article.jpg"
+ *   url="https://mydigipal.com/en/blog/article-slug"
+ *   lang="en"
+ * />
+ */
+
+interface Props {
+  title: string;
+  description: string;
+  author: string;
+  datePublished: Date;
+  dateModified?: Date;
+  image?: string;
+  url: string;
+  lang?: 'en' | 'fr';
+}
+
+const {
+  title,
+  description,
+  author,
+  datePublished,
+  dateModified,
+  image,
+  url,
+  lang = 'en'
+} = Astro.props;
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "description": description,
+  "author": {
+    "@type": "Person",
+    "name": author
+  },
+  "publisher": {
+    "@id": "https://mydigipal.com/#organization"
+  },
+  "datePublished": datePublished.toISOString(),
+  "dateModified": (dateModified || datePublished).toISOString(),
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": url
+  },
+  "inLanguage": lang,
+  ...(image && {
+    "image": {
+      "@type": "ImageObject",
+      "url": image.startsWith('http') ? image : `https://mydigipal.com${image}`
+    }
+  })
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
