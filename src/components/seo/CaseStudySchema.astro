@@ -1,0 +1,77 @@
+---
+/**
+ * CaseStudySchema Component
+ * Generates JSON-LD structured data for case study pages
+ *
+ * Usage:
+ * <CaseStudySchema
+ *   client="Client Name"
+ *   title="Case Study Title"
+ *   description="Case study description"
+ *   url="https://mydigipal.com/en/case-studies/slug"
+ *   image="/images/case-study.jpg"
+ *   datePublished={new Date()}
+ *   services={["SEO", "Paid Ads"]}
+ *   lang="en"
+ * />
+ */
+
+interface Props {
+  client: string;
+  title: string;
+  description: string;
+  url: string;
+  image?: string;
+  datePublished?: Date;
+  services?: string[];
+  lang?: 'en' | 'fr';
+}
+
+const {
+  client,
+  title,
+  description,
+  url,
+  image,
+  datePublished,
+  services = [],
+  lang = 'en'
+} = Astro.props;
+
+// Use Article type with CreativeWork as case studies are content pieces
+const caseStudySchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": `${client}: ${title}`,
+  "description": description,
+  "author": {
+    "@id": "https://mydigipal.com/#organization"
+  },
+  "publisher": {
+    "@id": "https://mydigipal.com/#organization"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": url
+  },
+  "about": {
+    "@type": "Organization",
+    "name": client
+  },
+  "articleSection": lang === 'fr' ? "Études de cas" : "Case Studies",
+  "inLanguage": lang,
+  "keywords": services.join(", "),
+  ...(datePublished && {
+    "datePublished": datePublished.toISOString(),
+    "dateModified": datePublished.toISOString()
+  }),
+  ...(image && {
+    "image": {
+      "@type": "ImageObject",
+      "url": image.startsWith('http') ? image : `https://mydigipal.com${image}`
+    }
+  })
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(caseStudySchema)} />

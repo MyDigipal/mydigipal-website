@@ -86,7 +86,7 @@ const canonical = canonicalURL || Astro.url.href;
     <link rel="apple-touch-icon" href="/images/Logos/Favicon logo_256px.png" />
     <meta name="theme-color" content="#4F46E5" />
 
-    <!-- Structured Data: Organization + WebSite (Global) -->
+    <!-- Structured Data: Organization + WebSite + LocalBusiness (Global) -->
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@graph": [
@@ -131,6 +131,41 @@ const canonical = canonicalURL || Astro.url.href;
             "@id": "https://mydigipal.com/#organization"
           },
           "inLanguage": ["en", "fr"]
+        },
+        {
+          "@type": "LocalBusiness",
+          "@id": "https://mydigipal.com/#localbusiness",
+          "name": "MyDigipal",
+          "image": "https://mydigipal.com/images/Logos/Logo_Main_Horizontal.png",
+          "url": "https://mydigipal.com",
+          "telephone": "+33-1-86-65-54-40",
+          "email": "hello@mydigipal.com",
+          "priceRange": "€€€",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "128 Rue de la Boétie",
+            "addressLocality": "Paris",
+            "addressRegion": "Île-de-France",
+            "postalCode": "75008",
+            "addressCountry": "FR"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 48.8738,
+            "longitude": 2.3078
+          },
+          "openingHoursSpecification": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+              "opens": "09:00",
+              "closes": "18:00"
+            }
+          ],
+          "sameAs": [
+            "https://www.linkedin.com/company/mydigipal",
+            "https://twitter.com/mydigipal"
+          ]
         }
       ]
     })} />

@@ -1,5 +1,6 @@
 ---
 import { type Language } from '@/i18n/config';
+import FAQSchema from '@/components/seo/FAQSchema.astro';
 
 interface Props {
   lang: Language;
@@ -485,7 +486,11 @@ const faqContent = {
 };
 
 const t = faqContent[service]?.[lang] || faqContent['seo'][lang];
+const faqs = t.faqs;
 ---
+
+<!-- FAQ Structured Data -->
+<FAQSchema faqs={faqs} />
 
 <section class="py-24 bg-white relative overflow-hidden">
   <!-- Background decoration -->

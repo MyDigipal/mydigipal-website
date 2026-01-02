@@ -1,6 +1,7 @@
 ---
 import { type Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
+import FAQSchema from '@/components/seo/FAQSchema.astro';
 
 interface Props {
   lang: Language;
@@ -75,6 +76,9 @@ const translations = {
 
 const t = translations[lang] || translations.en;
 ---
+
+<!-- FAQ Structured Data -->
+<FAQSchema faqs={t.faqs} />
 
 <section class="py-24 bg-gradient-to-b from-slate-50 to-white">
   <div class="container-custom">
