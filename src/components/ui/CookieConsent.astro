@@ -198,16 +198,35 @@ const text = translations[lang] || translations.en;
     document.cookie = `${CONSENT_COOKIE}=${encodeURIComponent(JSON.stringify(consent))}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
   }
 
-  // Update Google Consent Mode
+  // Update Google Consent Mode - properly communicate with GTM
   function updateConsentMode(consent) {
-    if (typeof gtag === 'function') {
-      gtag('consent', 'update', {
+    window.dataLayer = window.dataLayer || [];
+
+    // Use the global gtag function defined in BaseLayout
+    // This ensures consent updates are properly processed by GTM
+    if (typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', {
+        'analytics_storage': consent.analytics ? 'granted' : 'denied',
+        'ad_storage': consent.marketing ? 'granted' : 'denied',
+        'ad_user_data': consent.marketing ? 'granted' : 'denied',
+        'ad_personalization': consent.marketing ? 'granted' : 'denied',
+      });
+    } else {
+      // Fallback: push directly to dataLayer in gtag format
+      window.dataLayer.push('consent', 'update', {
         'analytics_storage': consent.analytics ? 'granted' : 'denied',
         'ad_storage': consent.marketing ? 'granted' : 'denied',
         'ad_user_data': consent.marketing ? 'granted' : 'denied',
         'ad_personalization': consent.marketing ? 'granted' : 'denied',
       });
     }
+
+    // Also push a custom event for any GTM triggers that need it
+    window.dataLayer.push({
+      'event': 'consent_update',
+      'consent_analytics': consent.analytics ? 'granted' : 'denied',
+      'consent_marketing': consent.marketing ? 'granted' : 'denied'
+    });
 
     // Dispatch event for other scripts
     window.dispatchEvent(new CustomEvent('consentUpdated', { detail: consent }));

@@ -99,12 +99,12 @@ const canonical = canonicalURL || Astro.url.href;
 
     <!-- Google Consent Mode V2 - MUST be before GTM -->
     <script is:inline define:vars={{ GA4_ID }}>
-      // Initialize dataLayer
+      // Initialize dataLayer and gtag function globally
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      window.gtag = function(){window.dataLayer.push(arguments);};
 
       // Set default consent to denied (GDPR compliant)
-      gtag('consent', 'default', {
+      window.gtag('consent', 'default', {
         'analytics_storage': 'denied',
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
@@ -115,10 +115,10 @@ const canonical = canonicalURL || Astro.url.href;
       });
 
       // Enable URL passthrough for better conversion modeling
-      gtag('set', 'url_passthrough', true);
+      window.gtag('set', 'url_passthrough', true);
 
       // Enable ads data redaction when consent denied
-      gtag('set', 'ads_data_redaction', true);
+      window.gtag('set', 'ads_data_redaction', true);
     </script>
 
     <!-- Google Tag Manager -->
