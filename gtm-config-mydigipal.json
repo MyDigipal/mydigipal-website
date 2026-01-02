@@ -1,13 +1,13 @@
 {
   "exportFormatVersion": 2,
-  "exportTime": "2025-12-31 18:00:00",
+  "exportTime": "2025-01-02 14:00:00",
   "containerVersion": {
     "path": "accounts/6071789744/containers/104717258/versions/0",
     "accountId": "6071789744",
     "containerId": "104717258",
     "containerVersionId": "0",
-    "name": "MyDigipal - GA4 + Meta Pixel Setup",
-    "description": "GA4 events and Meta Pixel with Consent Mode V2 - Import GA4 events to Google Ads separately",
+    "name": "MyDigipal - GA4 + Meta Pixel with Consent",
+    "description": "GA4 and Meta Pixel with consent management via GTM triggers",
     "container": {
       "path": "accounts/6071789744/containers/104717258",
       "accountId": "6071789744",
@@ -15,7 +15,7 @@
       "name": "MyDigipal Website",
       "publicId": "GTM-P4TSQ9Q",
       "usageContext": ["WEB"],
-      "fingerprint": "1735660800000"
+      "fingerprint": "1735826400000"
     },
     "builtInVariable": [
       {"accountId": "6071789744", "containerId": "104717258", "type": "PAGE_URL", "name": "Page URL"},
@@ -34,7 +34,7 @@
         "name": "CONST - GA4 Measurement ID",
         "type": "c",
         "parameter": [{"type": "TEMPLATE", "key": "value", "value": "G-039QHRCWY1"}],
-        "fingerprint": "1735660801000",
+        "fingerprint": "1735826401000",
         "formatValue": {}
       },
       {
@@ -44,55 +44,33 @@
         "name": "CONST - Meta Pixel ID",
         "type": "c",
         "parameter": [{"type": "TEMPLATE", "key": "value", "value": "848469840083737"}],
-        "fingerprint": "1735660802000",
+        "fingerprint": "1735826402000",
+        "formatValue": {}
+      },
+      {
+        "accountId": "6071789744",
+        "containerId": "104717258",
+        "variableId": "102",
+        "name": "JS - Analytics Consent Granted",
+        "type": "jsm",
+        "parameter": [{"type": "TEMPLATE", "key": "javascript", "value": "function() {\n  try {\n    var cookie = document.cookie.split('; ').find(function(c) { \n      return c.startsWith('mydigipal_consent='); \n    });\n    if (cookie) {\n      var consent = JSON.parse(decodeURIComponent(cookie.split('=')[1]));\n      return consent.analytics === true;\n    }\n  } catch(e) {}\n  return false;\n}"}],
+        "fingerprint": "1735826403000",
+        "formatValue": {}
+      },
+      {
+        "accountId": "6071789744",
+        "containerId": "104717258",
+        "variableId": "103",
+        "name": "JS - Marketing Consent Granted",
+        "type": "jsm",
+        "parameter": [{"type": "TEMPLATE", "key": "javascript", "value": "function() {\n  try {\n    var cookie = document.cookie.split('; ').find(function(c) { \n      return c.startsWith('mydigipal_consent='); \n    });\n    if (cookie) {\n      var consent = JSON.parse(decodeURIComponent(cookie.split('=')[1]));\n      return consent.marketing === true;\n    }\n  } catch(e) {}\n  return false;\n}"}],
+        "fingerprint": "1735826404000",
         "formatValue": {}
       },
       {
         "accountId": "6071789744",
         "containerId": "104717258",
         "variableId": "110",
-        "name": "DLV - event",
-        "type": "v",
-        "parameter": [
-          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
-          {"type": "BOOLEAN", "key": "setDefaultValue", "value": "false"},
-          {"type": "TEMPLATE", "key": "name", "value": "event"}
-        ],
-        "fingerprint": "1735660810000",
-        "formatValue": {}
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "variableId": "111",
-        "name": "DLV - form_name",
-        "type": "v",
-        "parameter": [
-          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
-          {"type": "BOOLEAN", "key": "setDefaultValue", "value": "false"},
-          {"type": "TEMPLATE", "key": "name", "value": "form_name"}
-        ],
-        "fingerprint": "1735660811000",
-        "formatValue": {}
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "variableId": "112",
-        "name": "DLV - form_location",
-        "type": "v",
-        "parameter": [
-          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
-          {"type": "BOOLEAN", "key": "setDefaultValue", "value": "false"},
-          {"type": "TEMPLATE", "key": "name", "value": "form_location"}
-        ],
-        "fingerprint": "1735660812000",
-        "formatValue": {}
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "variableId": "113",
         "name": "DLV - calculator_total",
         "type": "v",
         "parameter": [
@@ -100,13 +78,27 @@
           {"type": "BOOLEAN", "key": "setDefaultValue", "value": "false"},
           {"type": "TEMPLATE", "key": "name", "value": "calculator_total"}
         ],
-        "fingerprint": "1735660813000",
+        "fingerprint": "1735826410000",
         "formatValue": {}
       },
       {
         "accountId": "6071789744",
         "containerId": "104717258",
-        "variableId": "114",
+        "variableId": "111",
+        "name": "DLV - form_location",
+        "type": "v",
+        "parameter": [
+          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
+          {"type": "BOOLEAN", "key": "setDefaultValue", "value": "false"},
+          {"type": "TEMPLATE", "key": "name", "value": "form_location"}
+        ],
+        "fingerprint": "1735826411000",
+        "formatValue": {}
+      },
+      {
+        "accountId": "6071789744",
+        "containerId": "104717258",
+        "variableId": "112",
         "name": "DLV - click_url",
         "type": "v",
         "parameter": [
@@ -114,21 +106,7 @@
           {"type": "BOOLEAN", "key": "setDefaultValue", "value": "false"},
           {"type": "TEMPLATE", "key": "name", "value": "click_url"}
         ],
-        "fingerprint": "1735660814000",
-        "formatValue": {}
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "variableId": "115",
-        "name": "DLV - click_text",
-        "type": "v",
-        "parameter": [
-          {"type": "INTEGER", "key": "dataLayerVersion", "value": "2"},
-          {"type": "BOOLEAN", "key": "setDefaultValue", "value": "false"},
-          {"type": "TEMPLATE", "key": "name", "value": "click_text"}
-        ],
-        "fingerprint": "1735660815000",
+        "fingerprint": "1735826412000",
         "formatValue": {}
       }
     ],
@@ -137,9 +115,87 @@
         "accountId": "6071789744",
         "containerId": "104717258",
         "triggerId": "200",
-        "name": "All Pages",
+        "name": "All Pages - Analytics Consent",
         "type": "PAGEVIEW",
-        "fingerprint": "1735660820000"
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{JS - Analytics Consent Granted}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "true"}
+            ]
+          }
+        ],
+        "fingerprint": "1735826420000"
+      },
+      {
+        "accountId": "6071789744",
+        "containerId": "104717258",
+        "triggerId": "201",
+        "name": "All Pages - Marketing Consent",
+        "type": "PAGEVIEW",
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{JS - Marketing Consent Granted}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "true"}
+            ]
+          }
+        ],
+        "fingerprint": "1735826421000"
+      },
+      {
+        "accountId": "6071789744",
+        "containerId": "104717258",
+        "triggerId": "202",
+        "name": "CE - Consent Update Analytics",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "consent_update"}
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{JS - Analytics Consent Granted}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "true"}
+            ]
+          }
+        ],
+        "fingerprint": "1735826422000"
+      },
+      {
+        "accountId": "6071789744",
+        "containerId": "104717258",
+        "triggerId": "203",
+        "name": "CE - Consent Update Marketing",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "consent_update"}
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{JS - Marketing Consent Granted}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "true"}
+            ]
+          }
+        ],
+        "fingerprint": "1735826423000"
       },
       {
         "accountId": "6071789744",
@@ -156,7 +212,7 @@
             ]
           }
         ],
-        "fingerprint": "1735660830000"
+        "fingerprint": "1735826430000"
       },
       {
         "accountId": "6071789744",
@@ -173,7 +229,7 @@
             ]
           }
         ],
-        "fingerprint": "1735660831000"
+        "fingerprint": "1735826431000"
       },
       {
         "accountId": "6071789744",
@@ -190,7 +246,7 @@
             ]
           }
         ],
-        "fingerprint": "1735660832000"
+        "fingerprint": "1735826432000"
       },
       {
         "accountId": "6071789744",
@@ -207,24 +263,7 @@
             ]
           }
         ],
-        "fingerprint": "1735660833000"
-      },
-      {
-        "accountId": "6071789744",
-        "containerId": "104717258",
-        "triggerId": "214",
-        "name": "CE - Consent Update",
-        "type": "CUSTOM_EVENT",
-        "customEventFilter": [
-          {
-            "type": "EQUALS",
-            "parameter": [
-              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
-              {"type": "TEMPLATE", "key": "arg1", "value": "consent_update"}
-            ]
-          }
-        ],
-        "fingerprint": "1735660834000"
+        "fingerprint": "1735826433000"
       }
     ],
     "tag": [
@@ -239,8 +278,8 @@
           {"type": "BOOLEAN", "key": "enableSendToServerContainer", "value": "false"},
           {"type": "TEMPLATE", "key": "measurementId", "value": "{{CONST - GA4 Measurement ID}}"}
         ],
-        "fingerprint": "1735660840000",
-        "firingTriggerId": ["200", "214"],
+        "fingerprint": "1735826440000",
+        "firingTriggerId": ["200", "202"],
         "tagFiringOption": "ONCE_PER_LOAD",
         "monitoringMetadata": {"type": "MAP"}
       },
@@ -268,10 +307,11 @@
             ]}
           ]}
         ],
-        "fingerprint": "1735660850000",
+        "fingerprint": "1735826450000",
         "firingTriggerId": ["210"],
         "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"}      },
+        "monitoringMetadata": {"type": "MAP"}
+      },
       {
         "accountId": "6071789744",
         "containerId": "104717258",
@@ -292,10 +332,11 @@
             ]}
           ]}
         ],
-        "fingerprint": "1735660851000",
+        "fingerprint": "1735826451000",
         "firingTriggerId": ["211"],
         "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"}      },
+        "monitoringMetadata": {"type": "MAP"}
+      },
       {
         "accountId": "6071789744",
         "containerId": "104717258",
@@ -312,10 +353,11 @@
             ]}
           ]}
         ],
-        "fingerprint": "1735660852000",
+        "fingerprint": "1735826452000",
         "firingTriggerId": ["212"],
         "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"}      },
+        "monitoringMetadata": {"type": "MAP"}
+      },
       {
         "accountId": "6071789744",
         "containerId": "104717258",
@@ -332,10 +374,11 @@
             ]}
           ]}
         ],
-        "fingerprint": "1735660853000",
+        "fingerprint": "1735826453000",
         "firingTriggerId": ["213"],
         "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"}      },
+        "monitoringMetadata": {"type": "MAP"}
+      },
       {
         "accountId": "6071789744",
         "containerId": "104717258",
@@ -346,10 +389,11 @@
           {"type": "TEMPLATE", "key": "html", "value": "<script>\n!function(f,b,e,v,n,t,s)\n{if(f.fbq)return;n=f.fbq=function(){n.callMethod?\nn.callMethod.apply(n,arguments):n.queue.push(arguments)};\nif(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';\nn.queue=[];t=b.createElement(e);t.async=!0;\nt.src=v;s=b.getElementsByTagName(e)[0];\ns.parentNode.insertBefore(t,s)}(window, document,'script',\n'https://connect.facebook.net/en_US/fbevents.js');\n\nfbq('init', '{{CONST - Meta Pixel ID}}');\nfbq('set','agent','tmgoogletagmanager', '{{CONST - Meta Pixel ID}}');\nfbq('track', 'PageView');\n</script>\n<noscript><img height=\"1\" width=\"1\" style=\"display:none\"\nsrc=\"https://www.facebook.com/tr?id={{CONST - Meta Pixel ID}}&ev=PageView&noscript=1\"/></noscript>"},
           {"type": "BOOLEAN", "key": "supportDocumentWrite", "value": "false"}
         ],
-        "fingerprint": "1735660860000",
-        "firingTriggerId": ["200", "214"],
+        "fingerprint": "1735826460000",
+        "firingTriggerId": ["201", "203"],
         "tagFiringOption": "ONCE_PER_LOAD",
-        "monitoringMetadata": {"type": "MAP"}      },
+        "monitoringMetadata": {"type": "MAP"}
+      },
       {
         "accountId": "6071789744",
         "containerId": "104717258",
@@ -360,10 +404,11 @@
           {"type": "TEMPLATE", "key": "html", "value": "<script>\nif (typeof fbq === 'function') {\n  fbq('track', 'Lead', {\n    content_name: 'Calculator Form',\n    value: {{DLV - calculator_total}},\n    currency: 'EUR'\n  });\n}\n</script>"},
           {"type": "BOOLEAN", "key": "supportDocumentWrite", "value": "false"}
         ],
-        "fingerprint": "1735660861000",
+        "fingerprint": "1735826461000",
         "firingTriggerId": ["210"],
         "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"}      },
+        "monitoringMetadata": {"type": "MAP"}
+      },
       {
         "accountId": "6071789744",
         "containerId": "104717258",
@@ -374,10 +419,11 @@
           {"type": "TEMPLATE", "key": "html", "value": "<script>\nif (typeof fbq === 'function') {\n  fbq('track', 'Lead', {\n    content_name: 'Contact Form'\n  });\n}\n</script>"},
           {"type": "BOOLEAN", "key": "supportDocumentWrite", "value": "false"}
         ],
-        "fingerprint": "1735660862000",
+        "fingerprint": "1735826462000",
         "firingTriggerId": ["211"],
         "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"}      },
+        "monitoringMetadata": {"type": "MAP"}
+      },
       {
         "accountId": "6071789744",
         "containerId": "104717258",
@@ -388,10 +434,11 @@
           {"type": "TEMPLATE", "key": "html", "value": "<script>\nif (typeof fbq === 'function') {\n  fbq('track', 'Contact', {\n    content_name: 'Phone Click'\n  });\n}\n</script>"},
           {"type": "BOOLEAN", "key": "supportDocumentWrite", "value": "false"}
         ],
-        "fingerprint": "1735660863000",
+        "fingerprint": "1735826463000",
         "firingTriggerId": ["212"],
         "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"}      },
+        "monitoringMetadata": {"type": "MAP"}
+      },
       {
         "accountId": "6071789744",
         "containerId": "104717258",
@@ -402,11 +449,12 @@
           {"type": "TEMPLATE", "key": "html", "value": "<script>\nif (typeof fbq === 'function') {\n  fbq('track', 'Contact', {\n    content_name: 'Email Click'\n  });\n}\n</script>"},
           {"type": "BOOLEAN", "key": "supportDocumentWrite", "value": "false"}
         ],
-        "fingerprint": "1735660864000",
+        "fingerprint": "1735826464000",
         "firingTriggerId": ["213"],
         "tagFiringOption": "ONCE_PER_EVENT",
-        "monitoringMetadata": {"type": "MAP"}      }
+        "monitoringMetadata": {"type": "MAP"}
+      }
     ],
-    "fingerprint": "1735660800001"
+    "fingerprint": "1735826400001"
   }
 }
