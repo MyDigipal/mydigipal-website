@@ -1,0 +1,75 @@
+---
+/**
+ * ServiceSchema Component
+ * Generates JSON-LD structured data for service pages
+ *
+ * Usage:
+ * <ServiceSchema
+ *   name="SEO Services"
+ *   description="Professional SEO services..."
+ *   url="https://mydigipal.com/en/services/seo"
+ *   image="/images/services/seo.jpg"
+ *   lang="en"
+ * />
+ */
+
+interface Props {
+  name: string;
+  description: string;
+  url: string;
+  image?: string;
+  lang?: 'en' | 'fr';
+  serviceType?: string;
+}
+
+const {
+  name,
+  description,
+  url,
+  image,
+  lang = 'en',
+  serviceType = 'ProfessionalService'
+} = Astro.props;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": serviceType,
+  "name": name,
+  "description": description,
+  "url": url,
+  "provider": {
+    "@id": "https://mydigipal.com/#organization"
+  },
+  "areaServed": {
+    "@type": "GeoCircle",
+    "geoMidpoint": {
+      "@type": "GeoCoordinates",
+      "latitude": 48.8566,
+      "longitude": 2.3522
+    },
+    "geoRadius": "50000"
+  },
+  "availableChannel": {
+    "@type": "ServiceChannel",
+    "serviceLocation": {
+      "@type": "Place",
+      "name": "MyDigipal Paris Office",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "128 Rue de la Boétie",
+        "addressLocality": "Paris",
+        "postalCode": "75008",
+        "addressCountry": "FR"
+      }
+    },
+    "servicePhone": "+33-1-86-65-54-40",
+    "availableLanguage": ["English", "French"]
+  },
+  ...(image && {
+    "image": image.startsWith('http') ? image : `https://mydigipal.com${image}`
+  })
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
