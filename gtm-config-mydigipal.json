@@ -208,6 +208,23 @@
           }
         ],
         "fingerprint": "1735660833000"
+      },
+      {
+        "accountId": "6071789744",
+        "containerId": "104717258",
+        "triggerId": "214",
+        "name": "CE - Consent Update",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {"type": "TEMPLATE", "key": "arg0", "value": "{{_event}}"},
+              {"type": "TEMPLATE", "key": "arg1", "value": "consent_update"}
+            ]
+          }
+        ],
+        "fingerprint": "1735660834000"
       }
     ],
     "tag": [
@@ -223,8 +240,8 @@
           {"type": "TEMPLATE", "key": "measurementId", "value": "{{CONST - GA4 Measurement ID}}"}
         ],
         "fingerprint": "1735660840000",
-        "firingTriggerId": ["200"],
-        "tagFiringOption": "ONCE_PER_EVENT",
+        "firingTriggerId": ["200", "214"],
+        "tagFiringOption": "ONCE_PER_PAGE",
         "monitoringMetadata": {"type": "MAP"},
         "consentSettings": {
           "consentStatus": "NEEDED",
@@ -354,8 +371,8 @@
           {"type": "BOOLEAN", "key": "supportDocumentWrite", "value": "false"}
         ],
         "fingerprint": "1735660860000",
-        "firingTriggerId": ["200"],
-        "tagFiringOption": "ONCE_PER_EVENT",
+        "firingTriggerId": ["200", "214"],
+        "tagFiringOption": "ONCE_PER_PAGE",
         "monitoringMetadata": {"type": "MAP"},
         "consentSettings": {
           "consentStatus": "NEEDED",
