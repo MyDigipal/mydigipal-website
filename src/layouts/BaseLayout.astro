@@ -187,9 +187,23 @@ const canonical = canonicalURL || Astro.url.href;
       window.dataLayer = window.dataLayer || [];
       window.gtag = function(){window.dataLayer.push(arguments);};
 
-      // Set default consent to denied (GDPR compliant)
+      // Check if user has explicitly refused cookies
+      var hasRefused = false;
+      try {
+        var consentCookie = document.cookie.split('; ').find(function(c) {
+          return c.startsWith('mydigipal_consent=');
+        });
+        if (consentCookie) {
+          var consent = JSON.parse(decodeURIComponent(consentCookie.split('=')[1]));
+          hasRefused = consent.refused === true;
+        }
+      } catch(e) {}
+
+      // HYBRID APPROACH:
+      // - Analytics: granted by default (legitimate interest), denied if refused
+      // - Ads/Marketing: denied by default, only granted with explicit consent
       window.gtag('consent', 'default', {
-        'analytics_storage': 'denied',
+        'analytics_storage': hasRefused ? 'denied' : 'granted',
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied',

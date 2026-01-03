@@ -53,7 +53,7 @@
         "variableId": "102",
         "name": "JS - Analytics Consent Granted",
         "type": "jsm",
-        "parameter": [{"type": "TEMPLATE", "key": "javascript", "value": "function() {\n  try {\n    var cookie = document.cookie.split('; ').find(function(c) { \n      return c.startsWith('mydigipal_consent='); \n    });\n    if (cookie) {\n      var consent = JSON.parse(decodeURIComponent(cookie.split('=')[1]));\n      return consent.analytics === true;\n    }\n  } catch(e) {}\n  return false;\n}"}],
+        "parameter": [{"type": "TEMPLATE", "key": "javascript", "value": "function() {\n  try {\n    var cookie = document.cookie.split('; ').find(function(c) { \n      return c.startsWith('mydigipal_consent='); \n    });\n    if (cookie) {\n      var consent = JSON.parse(decodeURIComponent(cookie.split('=')[1]));\n      // Return false only if explicitly refused\n      if (consent.refused === true) return false;\n      // If analytics explicitly set, use that value\n      if (typeof consent.analytics !== 'undefined') return consent.analytics === true;\n    }\n    // HYBRID: Default to granted (legitimate interest)\n    return true;\n  } catch(e) {}\n  return true;\n}"}],
         "fingerprint": "1735826403000",
         "formatValue": {}
       },
