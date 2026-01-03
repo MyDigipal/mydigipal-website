@@ -1,0 +1,87 @@
+---
+/**
+ * YouTube Embed Component
+ * Usage: <YouTube id="dQw4w9WgXcQ" title="Video title" />
+ *
+ * Supports:
+ * - Full URL: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+ * - Short URL: https://youtu.be/dQw4w9WgXcQ
+ * - Just the ID: dQw4w9WgXcQ
+ */
+
+interface Props {
+  id: string;
+  title?: string;
+  aspectRatio?: '16/9' | '4/3' | '1/1';
+  autoplay?: boolean;
+  start?: number;
+  class?: string;
+}
+
+const {
+  id: rawId,
+  title = 'YouTube video',
+  aspectRatio = '16/9',
+  autoplay = false,
+  start,
+  class: className = ''
+} = Astro.props;
+
+// Extract video ID from various URL formats
+function extractVideoId(input: string): string {
+  // Already just an ID
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) {
+    return input;
+  }
+
+  // Full YouTube URL
+  const urlMatch = input.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+  if (urlMatch) {
+    return urlMatch[1];
+  }
+
+  return input;
+}
+
+const videoId = extractVideoId(rawId);
+
+// Build embed URL with params
+let embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}`;
+const params = new URLSearchParams();
+params.set('rel', '0'); // Don't show related videos from other channels
+if (autoplay) params.set('autoplay', '1');
+if (start) params.set('start', String(start));
+
+if (params.toString()) {
+  embedUrl += `?${params.toString()}`;
+}
+
+// Aspect ratio class
+const aspectClasses: Record<string, string> = {
+  '16/9': 'aspect-video',
+  '4/3': 'aspect-[4/3]',
+  '1/1': 'aspect-square',
+};
+---
+
+<div class={`youtube-embed relative w-full ${aspectClasses[aspectRatio]} rounded-2xl overflow-hidden shadow-lg bg-slate-900 ${className}`}>
+  <iframe
+    src={embedUrl}
+    title={title}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+    loading="lazy"
+    class="absolute inset-0 w-full h-full border-0"
+  ></iframe>
+</div>
+
+<style>
+  .youtube-embed {
+    container-type: inline-size;
+  }
+
+  /* Add subtle hover effect */
+  .youtube-embed:hover {
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+</style>
