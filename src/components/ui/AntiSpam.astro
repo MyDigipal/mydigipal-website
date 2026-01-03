@@ -1,0 +1,107 @@
+---
+/**
+ * AntiSpam Component
+ * Provides multi-layer spam protection:
+ * 1. Math challenge - User must solve a simple math problem
+ * 2. Honeypot - Hidden field that bots fill but humans don't see
+ * 3. Time check - Form must be open for at least 3 seconds
+ */
+
+interface Props {
+  lang?: 'en' | 'fr';
+  formId: string;
+}
+
+const { lang = 'en', formId } = Astro.props;
+
+// Generate random math challenge
+const num1 = Math.floor(Math.random() * 10) + 1;
+const num2 = Math.floor(Math.random() * 10) + 1;
+const isAddition = Math.random() > 0.5;
+const operator = isAddition ? '+' : '-';
+const answer = isAddition ? num1 + num2 : num1 - num2;
+
+// Ensure subtraction doesn't result in negative (swap if needed)
+const finalNum1 = isAddition ? num1 : Math.max(num1, num2);
+const finalNum2 = isAddition ? num2 : Math.min(num1, num2);
+const finalAnswer = isAddition ? num1 + num2 : Math.abs(num1 - num2);
+
+const translations = {
+  en: {
+    label: 'Security check',
+    placeholder: 'Your answer',
+    hint: 'Please solve this simple math problem',
+    error: 'Incorrect answer. Please try again.',
+  },
+  fr: {
+    label: 'Vérification de sécurité',
+    placeholder: 'Votre réponse',
+    hint: 'Veuillez résoudre ce calcul simple',
+    error: 'Réponse incorrecte. Veuillez réessayer.',
+  },
+};
+
+const t = translations[lang];
+---
+
+<div class="antispam-wrapper" data-form-id={formId}>
+  <!-- Math Challenge -->
+  <div class="mt-4">
+    <label for={`antispam-${formId}`} class="block text-sm font-medium text-slate-700 mb-2">
+      {t.label}: <span class="font-mono bg-slate-100 px-2 py-1 rounded text-primary-600">{finalNum1} {operator} {finalNum2} = ?</span>
+    </label>
+    <input
+      type="number"
+      id={`antispam-${formId}`}
+      name="antispam_answer"
+      required
+      placeholder={t.placeholder}
+      class="w-full max-w-[150px] px-4 py-3 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+      autocomplete="off"
+    />
+    <p class="text-xs text-slate-500 mt-1">{t.hint}</p>
+    <p id={`antispam-error-${formId}`} class="hidden text-sm text-red-600 mt-1">{t.error}</p>
+
+    <!-- Store the expected answer (encoded) -->
+    <input type="hidden" name="antispam_expected" value={btoa(String(finalAnswer))} />
+  </div>
+
+  <!-- Honeypot field - hidden from humans, visible to bots -->
+  <div class="absolute -left-[9999px] opacity-0 h-0 overflow-hidden" aria-hidden="true" tabindex="-1">
+    <label for={`website-${formId}`}>
+      Leave this field empty
+    </label>
+    <input
+      type="text"
+      id={`website-${formId}`}
+      name="website_url"
+      tabindex="-1"
+      autocomplete="off"
+    />
+  </div>
+
+  <!-- Timestamp for time-based check -->
+  <input type="hidden" name="antispam_timestamp" id={`antispam-ts-${formId}`} />
+</div>
+
+<script define:vars={{ formId }}>
+  // Set timestamp when component loads
+  document.addEventListener('DOMContentLoaded', () => {
+    const tsField = document.getElementById(`antispam-ts-${formId}`);
+    if (tsField) {
+      tsField.value = Date.now().toString();
+    }
+  });
+</script>
+
+<style>
+  /* Ensure honeypot is truly hidden */
+  .antispam-wrapper [name="website_url"] {
+    position: absolute !important;
+    left: -9999px !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    pointer-events: none !important;
+  }
+</style>

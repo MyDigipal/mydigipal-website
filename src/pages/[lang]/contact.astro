@@ -1,6 +1,7 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
 import Icon from '@/components/ui/Icon.astro';
+import AntiSpam from '@/components/ui/AntiSpam.astro';
 import { languages, type Language } from '@/i18n/config';
 
 export function getStaticPaths() {
@@ -273,6 +274,9 @@ const seo = {
               ></textarea>
             </div>
 
+            <!-- Anti-Spam Protection -->
+            <AntiSpam lang={lang} formId="contact" />
+
             <!-- Submit Button -->
             <button
               type="submit"
@@ -422,7 +426,7 @@ const seo = {
   </section>
 </PageLayout>
 
-<script define:vars={{ webhookUrl: 'https://n8n.mydigipal.com/webhook/mydigipal-contact' }}>
+<script define:vars={{ webhookUrl: 'https://n8n.mydigipal.com/webhook/mydigipal-contact', pageLang: lang }}>
   const form = document.getElementById('contact-form');
   const submitBtn = document.getElementById('submit-btn');
   const btnText = document.getElementById('btn-text');
@@ -431,18 +435,92 @@ const seo = {
   const successMsg = document.getElementById('form-success');
   const errorMsg = document.getElementById('form-error');
 
+  // Anti-spam validation
+  function validateAntiSpam(formData) {
+    const messages = {
+      en: {
+        math: 'Incorrect answer to the security question. Please try again.',
+        honeypot: 'Form submission blocked.',
+        timing: 'Please take a moment to fill out the form properly.',
+      },
+      fr: {
+        math: 'Réponse incorrecte à la question de sécurité. Veuillez réessayer.',
+        honeypot: 'Soumission du formulaire bloquée.',
+        timing: 'Veuillez prendre le temps de remplir le formulaire correctement.',
+      },
+    };
+    const lang = pageLang || 'en';
+    const t = messages[lang];
+
+    // Check honeypot
+    const honeypot = formData.get('website_url');
+    if (honeypot && String(honeypot).trim() !== '') {
+      return { valid: false, error: t.honeypot };
+    }
+
+    // Check timing (minimum 3 seconds)
+    const timestamp = formData.get('antispam_timestamp');
+    if (timestamp) {
+      const elapsed = (Date.now() - parseInt(timestamp, 10)) / 1000;
+      if (elapsed < 3) {
+        return { valid: false, error: t.timing };
+      }
+    }
+
+    // Check math answer
+    const answer = formData.get('antispam_answer');
+    const expected = formData.get('antispam_expected');
+    if (!answer || !expected) {
+      return { valid: false, error: t.math };
+    }
+
+    try {
+      const expectedVal = parseInt(atob(expected), 10);
+      const providedVal = parseInt(answer, 10);
+      if (providedVal !== expectedVal) {
+        return { valid: false, error: t.math };
+      }
+    } catch (e) {
+      return { valid: false, error: t.math };
+    }
+
+    return { valid: true };
+  }
+
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const formData = new FormData(form);
+
+    // Validate anti-spam first
+    const spamCheck = validateAntiSpam(formData);
+    if (!spamCheck.valid) {
+      const errorEl = document.getElementById('antispam-error-contact');
+      if (errorEl) {
+        errorEl.textContent = spamCheck.error;
+        errorEl.classList.remove('hidden');
+      }
+      const inputEl = document.getElementById('antispam-contact');
+      if (inputEl) {
+        inputEl.classList.add('border-red-500');
+        inputEl.focus();
+      }
+      return;
+    }
+
+    // Clear anti-spam error if valid
+    const errorEl = document.getElementById('antispam-error-contact');
+    if (errorEl) errorEl.classList.add('hidden');
+    const inputEl = document.getElementById('antispam-contact');
+    if (inputEl) inputEl.classList.remove('border-red-500');
+
     // Show loading state
-    btnText.textContent = 'Sending...';
+    btnText.textContent = pageLang === 'fr' ? 'Envoi en cours...' : 'Sending...';
     btnIcon?.classList.add('hidden');
     btnSpinner?.classList.remove('hidden');
     submitBtn.disabled = true;
     successMsg?.classList.add('hidden');
     errorMsg?.classList.add('hidden');
-
-    const formData = new FormData(form);
 
     // Collect all checked services
     const services = [];
@@ -461,7 +539,6 @@ const seo = {
     };
 
     try {
-      // Replace with your N8N webhook URL
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
@@ -489,7 +566,7 @@ const seo = {
       errorMsg?.classList.remove('hidden');
     } finally {
       // Reset button state
-      btnText.textContent = 'Send Message';
+      btnText.textContent = pageLang === 'fr' ? 'Envoyer le Message' : 'Send Message';
       btnIcon?.classList.remove('hidden');
       btnSpinner?.classList.add('hidden');
       submitBtn.disabled = false;
