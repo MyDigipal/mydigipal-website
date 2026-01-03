@@ -262,14 +262,16 @@ const text = translations[lang] || translations.en;
 
   // Handle consent
   function handleConsent(type) {
-    let consent = { version: CONSENT_VERSION, timestamp: Date.now() };
+    let consent = { version: CONSENT_VERSION, timestamp: Date.now(), refused: false };
 
     if (type === 'accept') {
       consent.analytics = true;
       consent.marketing = true;
     } else if (type === 'reject') {
+      // User explicitly refused - this disables ALL tracking
       consent.analytics = false;
       consent.marketing = false;
+      consent.refused = true; // Flag to prevent tracking on next page load
     } else if (type === 'save') {
       const analyticsCheckbox = document.getElementById('cookie-analytics');
       const marketingCheckbox = document.getElementById('cookie-marketing');
