@@ -154,6 +154,25 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  // Anti-spam protection
+  const [mathAnswer, setMathAnswer] = useState('');
+  const [antiSpamError, setAntiSpamError] = useState('');
+  const [formLoadTime] = useState(() => Date.now());
+  const [honeypot, setHoneypot] = useState('');
+
+  // Generate random math challenge
+  const mathChallenge = useMemo(() => {
+    const n1 = Math.floor(Math.random() * 10) + 1;
+    const n2 = Math.floor(Math.random() * 10) + 1;
+    const isAdd = Math.random() > 0.5;
+    return {
+      num1: isAdd ? n1 : Math.max(n1, n2),
+      num2: isAdd ? n2 : Math.min(n1, n2),
+      operator: isAdd ? '+' : '-',
+      answer: isAdd ? n1 + n2 : Math.abs(n1 - n2)
+    };
+  }, []);
+
   // Tracking state
   const [trackingSelections, setTrackingSelections] = useState<Record<string, boolean>>({});
   const [trackingAudit, setTrackingAudit] = useState(false);
@@ -669,6 +688,32 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     e.preventDefault();
     if (isSubmitting) return;
 
+    // Anti-spam validation
+    setAntiSpamError('');
+
+    // Check honeypot
+    if (honeypot.trim() !== '') {
+      console.warn('AntiSpam: Honeypot triggered');
+      return; // Silently fail for bots
+    }
+
+    // Check timing (minimum 3 seconds)
+    const elapsed = (Date.now() - formLoadTime) / 1000;
+    if (elapsed < 3) {
+      setAntiSpamError(lang === 'fr'
+        ? 'Veuillez prendre le temps de remplir le formulaire.'
+        : 'Please take a moment to fill out the form.');
+      return;
+    }
+
+    // Check math answer
+    if (parseInt(mathAnswer, 10) !== mathChallenge.answer) {
+      setAntiSpamError(lang === 'fr'
+        ? 'Réponse incorrecte à la vérification de sécurité.'
+        : 'Incorrect answer to security check.');
+      return;
+    }
+
     // Show tracking popup only if:
     // - User has actual marketing selections (not just "I'm not sure")
     // - User hasn't selected any tracking service
@@ -679,7 +724,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     }
 
     await doSubmit();
-  }, [isSubmitting, hasActualMarketingSelections, hasTrackingSelected, trackingPopupDismissed, doSubmit]);
+  }, [isSubmitting, hasActualMarketingSelections, hasTrackingSelected, trackingPopupDismissed, doSubmit, honeypot, formLoadTime, mathAnswer, mathChallenge.answer, lang]);
 
   // Domain selection step
   if (step === 'domains') {
@@ -1664,9 +1709,43 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   required
                   className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                 />
+
+                {/* Anti-spam: Math challenge */}
+                <div>
+                  <label className="block text-sm text-slate-300 mb-2">
+                    {lang === 'fr' ? 'Vérification de sécurité' : 'Security check'}:{' '}
+                    <span className="font-mono bg-white/10 px-2 py-1 rounded text-blue-300">
+                      {mathChallenge.num1} {mathChallenge.operator} {mathChallenge.num2} = ?
+                    </span>
+                  </label>
+                  <input
+                    type="number"
+                    placeholder={lang === 'fr' ? 'Votre réponse' : 'Your answer'}
+                    value={mathAnswer}
+                    onChange={(e) => { setMathAnswer(e.target.value); setAntiSpamError(''); }}
+                    required
+                    className="w-32 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  />
+                  {antiSpamError && (
+                    <p className="mt-2 text-red-400 text-sm">{antiSpamError}</p>
+                  )}
+                </div>
+
+                {/* Anti-spam: Honeypot (hidden) */}
+                <div className="absolute -left-[9999px] opacity-0 h-0 overflow-hidden" aria-hidden="true">
+                  <input
+                    type="text"
+                    name="website_url"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+
                 <button
                   type="submit"
-                  disabled={isSubmitting || !contact.name || !contact.email || !contact.company}
+                  disabled={isSubmitting || !contact.name || !contact.email || !contact.company || !mathAnswer}
                   className="w-full py-4 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? t.sending : t.send}

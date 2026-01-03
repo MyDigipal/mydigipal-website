@@ -28,12 +28,34 @@ const { lang } = Astro.params as { lang: Language };
 const { post } = Astro.props;
 const { Content } = await post.render();
 
-// Get related posts (same category, exclude current, same language)
+// Get related posts (prioritize: same category + shared tags, then same category, then shared tags)
 const allPosts = await getCollection('blog');
-const relatedPosts = allPosts
-  .filter((p) => p.id.startsWith(`${lang}/`) && p.data.category === post.data.category && p.slug !== post.slug && !p.data.draft)
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 3);
+const currentTags = new Set(post.data.tags || []);
+
+// Score posts by relevance
+const scoredPosts = allPosts
+  .filter((p) => p.id.startsWith(`${lang}/`) && p.slug !== post.slug && !p.data.draft)
+  .map((p) => {
+    let score = 0;
+    // Same category = +10 points
+    if (p.data.category === post.data.category) score += 10;
+    // Shared tags = +2 points each
+    const sharedTags = (p.data.tags || []).filter((tag: string) => currentTags.has(tag)).length;
+    score += sharedTags * 2;
+    // Same industry = +3 points
+    if (p.data.industry === post.data.industry && post.data.industry !== 'general') score += 3;
+    return { post: p, score };
+  })
+  .filter((item) => item.score > 0) // Only include if at least somewhat related
+  .sort((a, b) => {
+    // Sort by score first, then by date
+    if (b.score !== a.score) return b.score - a.score;
+    return b.post.data.date.getTime() - a.post.data.date.getTime();
+  })
+  .slice(0, 3)
+  .map((item) => item.post);
+
+const relatedPosts = scoredPosts;
 
 // Helper to get blog URL for current language
 const getRelatedPostUrl = (relatedPost: typeof relatedPosts[0]) => {

@@ -1,0 +1,100 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Button from '@/components/ui/Button.astro';
+import { t } from '@/i18n/utils';
+import type { Language } from '@/i18n/config';
+
+// Detect language from URL path or default to English
+const path = Astro.url.pathname;
+const langMatch = path.match(/^\/(en|fr)/);
+const lang: Language = (langMatch?.[1] as Language) || 'en';
+
+const pageTitle = t(lang, 'error404.metaTitle');
+const pageDescription = t(lang, 'error404.metaDescription');
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  lang={lang}
+  noindex={true}
+>
+  <Header lang={lang} />
+
+  <main class="flex-1 flex items-center justify-center px-4 py-16 sm:py-24">
+    <div class="text-center max-w-2xl mx-auto">
+      <!-- 404 Visual -->
+      <div class="mb-8">
+        <span class="text-[120px] sm:text-[180px] font-bold text-primary-100 leading-none select-none">
+          404
+        </span>
+      </div>
+
+      <!-- Content -->
+      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+        {t(lang, 'error404.heading')}
+      </h1>
+
+      <p class="text-lg text-slate-600 mb-8 max-w-md mx-auto">
+        {t(lang, 'error404.description')}
+      </p>
+
+      <!-- CTAs -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href={`/${lang}`} variant="primary" size="lg">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          {t(lang, 'error404.backHome')}
+        </Button>
+
+        <Button href={`/${lang}/contact`} variant="outline" size="lg">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          {t(lang, 'error404.contact')}
+        </Button>
+      </div>
+
+      <!-- Popular Links -->
+      <div class="mt-12 pt-8 border-t border-slate-200">
+        <p class="text-sm text-slate-500 mb-4">
+          {lang === 'fr' ? 'Ou explorez nos pages populaires :' : 'Or explore our popular pages:'}
+        </p>
+        <div class="flex flex-wrap justify-center gap-3">
+          <a
+            href={`/${lang}/services`}
+            class="text-sm text-primary-600 hover:text-primary-700 hover:underline"
+          >
+            {t(lang, 'nav.services')}
+          </a>
+          <span class="text-slate-300">•</span>
+          <a
+            href={`/${lang}/case-studies`}
+            class="text-sm text-primary-600 hover:text-primary-700 hover:underline"
+          >
+            {t(lang, 'nav.caseStudies')}
+          </a>
+          <span class="text-slate-300">•</span>
+          <a
+            href={`/${lang}/blog`}
+            class="text-sm text-primary-600 hover:text-primary-700 hover:underline"
+          >
+            {t(lang, 'nav.blog')}
+          </a>
+          <span class="text-slate-300">•</span>
+          <a
+            href={`/${lang}/calculator`}
+            class="text-sm text-primary-600 hover:text-primary-700 hover:underline"
+          >
+            {t(lang, 'nav.calculator')}
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer lang={lang} />
+</BaseLayout>
