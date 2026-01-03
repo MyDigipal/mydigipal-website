@@ -25,6 +25,11 @@ import AutomotiveWhySection from '@/components/sections/automotive/AutomotiveWhy
 import AutomotiveServices from '@/components/sections/automotive/AutomotiveServices.astro';
 import AutomotiveMidCTA from '@/components/sections/automotive/AutomotiveMidCTA.astro';
 
+// Dynamic Ads specific sections (visual components)
+import DynamicAdsFlow from '@/components/sections/automotive/DynamicAdsFlow.astro';
+import DynamicAdsChannels from '@/components/sections/automotive/DynamicAdsChannels.astro';
+import DynamicAdsROI from '@/components/sections/automotive/DynamicAdsROI.astro';
+
 export async function getStaticPaths() {
   const paths = [];
 
@@ -68,6 +73,7 @@ const {
   seo,
   whySection,
   services,
+  isDynamicAds,
 } = page.data;
 
 ---
@@ -90,6 +96,21 @@ const {
   <!-- Metrics Counter -->
   {metrics && metrics.length > 0 && (
     <MetricsCounter metrics={metrics} color={color} />
+  )}
+
+  <!-- Dynamic Ads Flow Diagram (only for Dynamic Ads page) -->
+  {isDynamicAds && (
+    <DynamicAdsFlow lang={lang} color={color} />
+  )}
+
+  <!-- Dynamic Ads Channels (only for Dynamic Ads page) -->
+  {isDynamicAds && (
+    <DynamicAdsChannels lang={lang} color={color} />
+  )}
+
+  <!-- Dynamic Ads ROI Comparison (only for Dynamic Ads page) -->
+  {isDynamicAds && (
+    <DynamicAdsROI lang={lang} color={color} />
   )}
 
   <!-- Why Section (for all automotive pages) -->

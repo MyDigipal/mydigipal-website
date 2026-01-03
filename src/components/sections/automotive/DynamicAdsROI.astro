@@ -1,0 +1,169 @@
+---
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  color?: 'automotive' | 'ads' | 'social' | 'primary';
+}
+
+const { lang, color = 'automotive' } = Astro.props;
+
+const translations = {
+  en: {
+    title: 'The ROI of Dynamic Ads',
+    subtitle: 'Why leading dealerships are switching to automated inventory advertising',
+    comparison: {
+      title: 'Traditional Ads vs Dynamic Ads',
+      traditional: {
+        label: 'Traditional Advertising',
+        items: [
+          { label: 'Cost per Lead', value: '€25-80', negative: true },
+          { label: 'Setup Time', value: '10+ hours/week', negative: true },
+          { label: 'Personalization', value: 'Manual', negative: true },
+          { label: 'Inventory Updates', value: 'Manual', negative: true },
+          { label: 'Multi-Platform', value: 'Separate campaigns', negative: true }
+        ]
+      },
+      dynamic: {
+        label: 'Dynamic Ads',
+        items: [
+          { label: 'Cost per Lead', value: '€3-10', positive: true },
+          { label: 'Setup Time', value: '< 1 hour/week', positive: true },
+          { label: 'Personalization', value: 'Automatic', positive: true },
+          { label: 'Inventory Updates', value: 'Real-time', positive: true },
+          { label: 'Multi-Platform', value: 'One catalog', positive: true }
+        ]
+      }
+    },
+    stats: [
+      { value: '85%', label: 'Lower Cost per Lead', icon: 'trending-down' },
+      { value: '7x', label: 'More Leads Generated', icon: 'users' },
+      { value: '10h', label: 'Saved Weekly', icon: 'clock' },
+      { value: '3x', label: 'Higher Conversion Rate', icon: 'target' }
+    ],
+    cta: 'Calculate Your ROI'
+  },
+  fr: {
+    title: 'Le ROI des Dynamic Ads',
+    subtitle: 'Pourquoi les concessionnaires leaders passent à la publicité inventaire automatisée',
+    comparison: {
+      title: 'Publicité Traditionnelle vs Dynamic Ads',
+      traditional: {
+        label: 'Publicité Traditionnelle',
+        items: [
+          { label: 'Coût par Lead', value: '€25-80', negative: true },
+          { label: 'Temps de Setup', value: '10+ heures/sem', negative: true },
+          { label: 'Personnalisation', value: 'Manuelle', negative: true },
+          { label: 'Mises à jour Inventaire', value: 'Manuelles', negative: true },
+          { label: 'Multi-Plateforme', value: 'Campagnes séparées', negative: true }
+        ]
+      },
+      dynamic: {
+        label: 'Dynamic Ads',
+        items: [
+          { label: 'Coût par Lead', value: '€3-10', positive: true },
+          { label: 'Temps de Setup', value: '< 1 heure/sem', positive: true },
+          { label: 'Personnalisation', value: 'Automatique', positive: true },
+          { label: 'Mises à jour Inventaire', value: 'Temps réel', positive: true },
+          { label: 'Multi-Plateforme', value: 'Un seul catalogue', positive: true }
+        ]
+      }
+    },
+    stats: [
+      { value: '85%', label: 'Coût par Lead Réduit', icon: 'trending-down' },
+      { value: '7x', label: 'Plus de Leads Générés', icon: 'users' },
+      { value: '10h', label: 'Économisées par Semaine', icon: 'clock' },
+      { value: '3x', label: 'Taux de Conversion Supérieur', icon: 'target' }
+    ],
+    cta: 'Calculer Votre ROI'
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="section bg-white overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <h2 class="heading-2 mb-4">{t.title}</h2>
+      <p class="body-large text-slate-600">{t.subtitle}</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+      {t.stats.map((stat, index) => (
+        <div
+          class="relative group p-6 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white text-center animate-on-scroll hover:scale-105 transition-transform"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Icon name={stat.icon} size={24} />
+          </div>
+          <div class="text-3xl md:text-4xl font-bold mb-1">{stat.value}</div>
+          <div class="text-sm text-sky-100">{stat.label}</div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="max-w-4xl mx-auto animate-on-scroll">
+      <h3 class="heading-4 text-center mb-8">{t.comparison.title}</h3>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Traditional -->
+        <div class="rounded-2xl border-2 border-slate-200 bg-slate-50 overflow-hidden">
+          <div class="bg-slate-200 p-4 text-center">
+            <span class="font-bold text-slate-700">{t.comparison.traditional.label}</span>
+          </div>
+          <div class="p-6 space-y-4">
+            {t.comparison.traditional.items.map((item) => (
+              <div class="flex justify-between items-center pb-3 border-b border-slate-200 last:border-0">
+                <span class="text-slate-600">{item.label}</span>
+                <span class="font-semibold text-red-500 flex items-center gap-1">
+                  <Icon name="x" size={16} class="text-red-400" />
+                  {item.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Dynamic -->
+        <div class="rounded-2xl border-2 border-sky-500 bg-sky-50 overflow-hidden relative">
+          <!-- Recommended Badge -->
+          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 px-4 py-1 bg-sky-500 text-white text-xs font-bold rounded-full">
+            {lang === 'fr' ? 'RECOMMANDÉ' : 'RECOMMENDED'}
+          </div>
+
+          <div class="bg-gradient-to-r from-sky-500 to-blue-600 p-4 text-center mt-2">
+            <span class="font-bold text-white">{t.comparison.dynamic.label}</span>
+          </div>
+          <div class="p-6 space-y-4">
+            {t.comparison.dynamic.items.map((item) => (
+              <div class="flex justify-between items-center pb-3 border-b border-sky-200 last:border-0">
+                <span class="text-slate-700">{item.label}</span>
+                <span class="font-semibold text-emerald-600 flex items-center gap-1">
+                  <Icon name="check" size={16} class="text-emerald-500" />
+                  {item.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center mt-12 animate-on-scroll">
+      <a
+        href={`/${lang}/calculator`}
+        class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold text-lg shadow-xl shadow-sky-500/30 hover:shadow-2xl hover:scale-105 transition-all duration-300"
+      >
+        <Icon name="calculator" size={24} />
+        {t.cta}
+      </a>
+    </div>
+  </div>
+</section>
