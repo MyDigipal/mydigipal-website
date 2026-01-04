@@ -116,14 +116,14 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
         {t(lang, 'nav.quote')}
       </Button>
 
-      <!-- Language switcher -->
+      <!-- Language switcher - Flag only -->
       <a
         href={alternateUrl}
-        class="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+        class="hidden sm:flex items-center justify-center w-10 h-10 text-xl hover:bg-slate-50 rounded-lg transition-colors"
         title={languages[alternateLang].name}
+        aria-label={`Switch to ${languages[alternateLang].name}`}
       >
-        <span>{languages[alternateLang].flag}</span>
-        <span class="hidden md:inline">{languages[alternateLang].code.toUpperCase()}</span>
+        {languages[alternateLang].flag}
       </a>
 
       <!-- Mobile menu button -->
@@ -210,10 +210,11 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
         </div>
         <a
           href={alternateUrl}
-          class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+          class="flex items-center justify-center w-12 h-12 text-2xl hover:bg-slate-50 rounded-lg transition-colors"
+          title={languages[alternateLang].name}
+          aria-label={`Switch to ${languages[alternateLang].name}`}
         >
-          <span>{languages[alternateLang].flag}</span>
-          <span>{languages[alternateLang].name}</span>
+          {languages[alternateLang].flag}
         </a>
       </div>
     </div>

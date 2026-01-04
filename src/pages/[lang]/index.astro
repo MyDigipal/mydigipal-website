@@ -127,7 +127,7 @@ const content = {
         title: "Automotive",
         description: "Digital marketing for car dealers and OEMs. Dynamic ads, local SEO, and lead generation that fills your showroom.",
         features: ["Facebook Dynamic Ads", "Google Vehicle Ads", "Local SEO", "Lead Generation"],
-        link: `/${lang}/automotive/google-ads`,
+        link: `/${lang}/automotive`,
         cta: "Explore Automotive",
         color: "from-slate-700 to-slate-900",
       },
@@ -143,12 +143,13 @@ const content = {
       badge: "What Our Clients Say",
       headline: "Trusted by Marketing Leaders",
       subtitle: "Don't just take our word for it. Here's what our clients have to say.",
+      cta: "View All Case Studies",
     },
     finalCta: {
       headline: "Ready to Grow Your Business?",
       description: "Let's discuss how we can help you achieve your marketing goals.",
       cta1: "Start a Project",
-      cta2: "Book a Call",
+      cta2: "Interactive Quote",
     },
   },
   fr: {
@@ -260,7 +261,7 @@ const content = {
         title: "Automobile",
         description: "Marketing digital pour concessionnaires et constructeurs. Ads dynamiques, SEO local, et génération de leads qui remplit votre showroom.",
         features: ["Facebook Dynamic Ads", "Google Vehicle Ads", "SEO Local", "Génération de Leads"],
-        link: `/${lang}/automotive/google-ads`,
+        link: `/${lang}/automotive`,
         cta: "Explorer Automobile",
         color: "from-slate-700 to-slate-900",
       },
@@ -276,12 +277,13 @@ const content = {
       badge: "Ce que Disent Nos Clients",
       headline: "La Confiance des Leaders Marketing",
       subtitle: "Ne nous croyez pas sur parole. Voici ce que nos clients en disent.",
+      cta: "Voir Toutes les Études de Cas",
     },
     finalCta: {
       headline: "Prêt à Développer Votre Business ?",
       description: "Discutons de comment nous pouvons vous aider à atteindre vos objectifs marketing.",
       cta1: "Démarrer un Projet",
-      cta2: "Réserver un Appel",
+      cta2: "Devis Interactif",
     },
   },
 };
@@ -419,6 +421,47 @@ const colorMap: Record<string, { bg: string; text: string; gradient: string }> =
             <div class="text-sm text-slate-600 mt-2 font-medium">{stat.label}</div>
           </div>
         ))}
+      </div>
+
+      <!-- Team Photos -->
+      <div class="mb-16 animate-on-scroll">
+        <div class="flex flex-wrap justify-center gap-4 md:gap-6">
+          {[
+            { name: 'Paul André', image: '/images/team/Team_Paul_Andre.webp', role: 'Founder & CEO' },
+            { name: 'Alexandre Echement', image: '/images/team/Team_Alexandre_Echement.avif', role: 'Performance Lead' },
+            { name: 'Jordan Langlois', image: '/images/team/Team_Jordan_Langlois.avif', role: 'Digital Strategist' },
+            { name: 'Alizée Varloud', image: '/images/team/Team_Alizee_Varloud.avif', role: 'Project Manager' },
+            { name: 'Juliette Joire', image: '/images/team/Team_Juliette_Joire.avif', role: 'Content Specialist' },
+            { name: 'Sophie Roe', image: '/images/team/Team_Sophie_Roe.avif', role: 'SEO Specialist' },
+            { name: 'Callum Dunbar', image: '/images/team/Team_Callum_Dunbar.avif', role: 'PPC Specialist' },
+            { name: 'Heather Mann', image: '/images/team/Team_Heather_Mann.avif', role: 'Social Media' },
+            { name: 'Victoria Doherty', image: '/images/team/Team_Victoria_Doherty.avif', role: 'Account Manager' },
+            { name: 'Amna Khan', image: '/images/team/Team_Amna_Khan.avif', role: 'Digital Marketer' },
+            { name: 'Diksha Mishra', image: '/images/team/Team_Diksha_Mishra.avif', role: 'Marketing Analyst' },
+            { name: 'Chirag Solanki', image: '/images/team/Team_Chirag_Solanki.avif', role: 'Tech Lead' },
+            { name: 'Shuai Yang', image: '/images/team/Team_Shuai_Yang.avif', role: 'Developer' },
+            { name: 'Bruce Eidsvik', image: '/images/team/Team_Bruce_Eidsvik.avif', role: 'Consultant' },
+          ].map((member, index) => (
+            <div
+              class="group relative"
+              style={`animation-delay: ${index * 50}ms`}
+            >
+              <div class="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-3 border-white shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                <div class="bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                  {member.name}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <!-- Values -->
@@ -690,6 +733,17 @@ const colorMap: Record<string, { bg: string; text: string; gradient: string }> =
           </div>
         ))}
       </div>
+
+      <!-- CTA Button -->
+      <div class="mt-12 text-center animate-on-scroll">
+        <a
+          href={`/${lang}/case-studies`}
+          class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:shadow-xl hover:shadow-indigo-500/25 hover:scale-105 transition-all duration-300"
+        >
+          <Icon name="folder-open" size={20} />
+          <span>{c.testimonials.cta}</span>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -714,10 +768,10 @@ const colorMap: Record<string, { bg: string; text: string; gradient: string }> =
             <span>{c.finalCta.cta1}</span>
           </a>
           <a
-            href={`/${lang}/contact`}
+            href={`/${lang}/calculator`}
             class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-700 font-semibold rounded-xl border-2 border-slate-200 hover:border-indigo-300 hover:text-indigo-600 transition-all duration-300"
           >
-            <Icon name="calendar" size={20} />
+            <Icon name="calculator" size={20} />
             <span>{c.finalCta.cta2}</span>
           </a>
         </div>
