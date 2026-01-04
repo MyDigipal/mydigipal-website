@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GGP Auto - Bilan Performance Décembre 2025</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #211F54;
+            --accent-blue: #0B6CD9;
+            --accent-green: #11845B;
+            --accent-orange: #D5691B;
+            --accent-red: #DC2626;
+            --accent-purple: #7C3AED;
+            --bg-light: #EFF0F6;
+            --bg-card: #FFFFFF;
+            --text-dark: #1A1A2E;
+            --text-muted: #6B7280;
+            --meta-blue: #0668E1;
+            --google-blue: #4285F4;
+            --google-green: #34A853;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 48px; position: relative; }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+            border-radius: 2px;
+        }
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .header h1 { font-size: 2.8rem; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+        .header-subtitle { font-size: 1.1rem; color: var(--text-muted); }
+        .header-date { font-size: 1rem; color: var(--accent-blue); font-weight: 600; margin-top: 8px; }
+
+        section { margin-bottom: 48px; }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .section-icon.meta { background: rgba(6, 104, 225, 0.1); }
+        .section-icon.google { background: rgba(66, 133, 244, 0.1); }
+        .section-icon.insight { background: rgba(213, 105, 27, 0.1); }
+        .section-icon.new { background: rgba(124, 58, 237, 0.1); }
+        .section-icon.conversion { background: rgba(17, 132, 91, 0.1); }
+
+        .platform-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        @media (max-width: 768px) { .platform-grid { grid-template-columns: 1fr; } }
+
+        .platform-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--bg-light);
+        }
+
+        .platform-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .platform-logo.meta { background: linear-gradient(135deg, #0668E1, #00B2FF); color: white; }
+        .platform-logo.google { background: white; border: 2px solid var(--bg-light); }
+        .platform-logo.google span { background: linear-gradient(135deg, var(--google-blue), var(--google-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .platform-name { font-weight: 700; font-size: 1.2rem; color: var(--primary); }
+        .platform-budget { font-size: 0.9rem; color: var(--text-muted); }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .metrics-grid.four-cols { grid-template-columns: repeat(4, 1fr); }
+
+        .metric-item { text-align: center; padding: 16px 8px; background: var(--bg-light); border-radius: 12px; }
+        .metric-value { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+        .metric-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+        .metric-change { display: inline-flex; align-items: center; gap: 4px; font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-top: 4px; }
+        .metric-change.positive { background: rgba(17, 132, 91, 0.1); color: var(--accent-green); }
+        .metric-change.negative { background: rgba(220, 38, 38, 0.1); color: var(--accent-red); }
+        .metric-change.neutral { background: rgba(107, 114, 128, 0.1); color: var(--text-muted); }
+
+        .new-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, var(--accent-purple), #9333EA);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .vehicle-ads-card {
+            background: linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%);
+            border: 2px solid var(--accent-purple);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        .vehicle-ads-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .vehicle-ads-icon { width: 56px; height: 56px; background: var(--accent-purple); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
+        .vehicle-ads-title { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+        .vehicle-ads-subtitle { color: var(--accent-purple); font-weight: 600; font-size: 0.9rem; }
+        .vehicle-ads-stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+        @media (max-width: 768px) { .vehicle-ads-stats { grid-template-columns: repeat(2, 1fr); } }
+        .va-stat { background: white; padding: 20px; border-radius: 12px; text-align: center; }
+        .va-stat-value { font-size: 1.6rem; font-weight: 800; color: var(--accent-purple); }
+        .va-stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+
+        .campaign-table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 0.85rem; }
+        .campaign-table th { text-align: left; padding: 12px; background: var(--bg-light); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600; }
+        .campaign-table th:first-child { border-radius: 8px 0 0 8px; }
+        .campaign-table th:last-child { border-radius: 0 8px 8px 0; }
+        .campaign-table td { padding: 14px 12px; border-bottom: 1px solid var(--bg-light); font-size: 0.8rem; }
+        .campaign-table tr:last-child td { border-bottom: none; }
+        .campaign-name { font-weight: 600; color: var(--primary); }
+        .campaign-badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.6rem; font-weight: 600; margin-left: 6px; }
+        .campaign-badge.top { background: rgba(17, 132, 91, 0.1); color: var(--accent-green); }
+        .campaign-badge.new { background: rgba(124, 58, 237, 0.15); color: var(--accent-purple); }
+        .campaign-badge.test { background: rgba(11, 108, 217, 0.1); color: var(--accent-blue); }
+
+        .insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; }
+        .insight-card { background: var(--bg-card); border-radius: 16px; padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-left: 4px solid var(--accent-orange); }
+        .insight-card.highlight { border-left-color: var(--accent-purple); background: linear-gradient(135deg, #FAFBFF 0%, #F5F3FF 100%); }
+        .insight-card h3 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .insight-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
+        .highlight-text { background: rgba(213, 105, 27, 0.1); padding: 2px 8px; border-radius: 4px; font-weight: 600; color: var(--accent-orange); }
+        .highlight-purple { background: rgba(124, 58, 237, 0.1); padding: 2px 8px; border-radius: 4px; font-weight: 600; color: var(--accent-purple); }
+        .data-point { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-light); padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; color: var(--primary); margin: 4px 2px; }
+
+        .evolution-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .evolution-table th { text-align: left; padding: 12px 16px; background: var(--bg-light); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600; }
+        .evolution-table th:first-child { border-radius: 8px 0 0 8px; }
+        .evolution-table th:last-child { border-radius: 0 8px 8px 0; text-align: center; }
+        .evolution-table td { padding: 14px 16px; border-bottom: 1px solid var(--bg-light); font-size: 0.9rem; }
+        .evolution-table td:last-child { text-align: center; }
+        .evolution-table tr:last-child td { border-bottom: none; }
+        .evolution-positive { color: var(--accent-green); font-weight: 600; }
+        .evolution-negative { color: var(--accent-red); font-weight: 600; }
+
+        .conversion-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .conversion-table th { text-align: left; padding: 12px 16px; background: var(--bg-light); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600; }
+        .conversion-table th:first-child { border-radius: 8px 0 0 8px; }
+        .conversion-table th:last-child { border-radius: 0 8px 8px 0; }
+        .conversion-table td { padding: 14px 16px; border-bottom: 1px solid var(--bg-light); }
+        .conversion-table tr:last-child td { border-bottom: none; }
+        .conversion-type { display: flex; align-items: center; gap: 12px; }
+        .conversion-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+        .delta-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+        .delta-badge.positive { background: rgba(17, 132, 91, 0.1); color: var(--accent-green); }
+        .delta-badge.negative { background: rgba(220, 38, 38, 0.1); color: var(--accent-red); }
+
+        .key-takeaway { background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-left: 4px solid var(--accent-orange); border-radius: 0 12px 12px 0; padding: 20px 24px; margin-top: 24px; }
+        .key-takeaway h4 { font-size: 0.9rem; font-weight: 700; color: var(--accent-orange); margin-bottom: 8px; }
+        .key-takeaway p { font-size: 0.85rem; color: #92400E; line-height: 1.6; }
+        .key-takeaway.info { background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-left-color: var(--accent-blue); }
+        .key-takeaway.info h4 { color: var(--accent-blue); }
+        .key-takeaway.info p { color: #1E40AF; }
+        .key-takeaway.warning { background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); border-left-color: var(--accent-red); }
+        .key-takeaway.warning h4 { color: var(--accent-red); }
+        .key-takeaway.warning p { color: #991B1B; }
+
+        .summary-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; padding: 32px; background: linear-gradient(135deg, var(--primary) 0%, #3a3875 100%); border-radius: 20px; }
+        @media (max-width: 768px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+        .summary-item { text-align: center; color: white; }
+        .summary-item .emoji { font-size: 2rem; margin-bottom: 8px; }
+        .summary-item .value { font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
+        .summary-item .label { font-size: 0.75rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .source-ref { margin-top: 16px; padding: 12px 16px; background: var(--bg-light); border-radius: 8px; font-size: 0.8rem; color: var(--text-muted); }
+        .source-ref a { color: var(--accent-blue); text-decoration: none; }
+        .source-ref a:hover { text-decoration: underline; }
+
+        .ekonsilio-box { background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border: 2px solid var(--accent-green); border-radius: 16px; padding: 24px; margin-top: 24px; }
+        .ekonsilio-box h4 { color: var(--accent-green); font-size: 1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .ekonsilio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; }
+        .ekonsilio-stat { background: white; padding: 16px; border-radius: 10px; text-align: center; }
+        .ekonsilio-stat .value { font-size: 1.4rem; font-weight: 700; color: var(--accent-green); }
+        .ekonsilio-stat .label { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+
+        .conversion-detail-box { background: var(--bg-light); border-radius: 12px; padding: 20px; margin-top: 24px; }
+        .conversion-detail-box h4 { font-size: 0.9rem; font-weight: 600; color: var(--primary); margin-bottom: 16px; }
+        .conversion-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; }
+        .conversion-detail-item { background: white; padding: 14px; border-radius: 8px; text-align: center; }
+        .conversion-detail-item .icon { font-size: 1.2rem; margin-bottom: 6px; }
+        .conversion-detail-item .value { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+        .conversion-detail-item .label { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
+
+        .footer { text-align: center; padding: 48px 24px; margin-top: 48px; }
+        .footer-logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-badge">📊 Rapport Mensuel</div>
+            <h1>Bilan Performance</h1>
+            <p class="header-subtitle">GGP Auto — Campagnes digitales</p>
+            <p class="header-date">Décembre 2025</p>
+        </header>
+
+        <!-- Vue d'ensemble -->
+        <section>
+            <h2><span class="section-icon insight">📈</span> Vue d'ensemble</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="emoji">👁️</div>
+                    <div class="value">2.3M</div>
+                    <div class="label">Impressions totales</div>
+                </div>
+                <div class="summary-item">
+                    <div class="emoji">👆</div>
+                    <div class="value">83.4K</div>
+                    <div class="label">Clics générés</div>
+                </div>
+                <div class="summary-item">
+                    <div class="emoji">💰</div>
+                    <div class="value">18.3K€</div>
+                    <div class="label">Budget investi</div>
+                </div>
+                <div class="summary-item">
+                    <div class="emoji">🔄</div>
+                    <div class="value">9 207</div>
+                    <div class="label">All Conversions</div>
+                </div>
+                <div class="summary-item">
+                    <div class="emoji">💬</div>
+                    <div class="value">99</div>
+                    <div class="label">Chats eKonsilio</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vehicle Ads -->
+        <section>
+            <h2><span class="section-icon new">🚗</span> Nouveauté : Vehicle Ads <span class="new-badge">NEW</span></h2>
+            <div class="vehicle-ads-card">
+                <div class="vehicle-ads-header">
+                    <div class="vehicle-ads-icon">🚙</div>
+                    <div>
+                        <div class="vehicle-ads-title">Vehicle Ads - Campagne générique</div>
+                        <div class="vehicle-ads-subtitle">Lancée en décembre 2025 • Format Shopping automobile</div>
+                    </div>
+                </div>
+                <div class="vehicle-ads-stats">
+                    <div class="va-stat">
+                        <div class="va-stat-value">514K</div>
+                        <div class="va-stat-label">Impressions</div>
+                    </div>
+                    <div class="va-stat">
+                        <div class="va-stat-value">5 025</div>
+                        <div class="va-stat-label">Clics</div>
+                    </div>
+                    <div class="va-stat">
+                        <div class="va-stat-value">537</div>
+                        <div class="va-stat-label">All Conv.</div>
+                    </div>
+                    <div class="va-stat">
+                        <div class="va-stat-value">11</div>
+                        <div class="va-stat-label">Leads</div>
+                    </div>
+                    <div class="va-stat">
+                        <div class="va-stat-value">11</div>
+                        <div class="va-stat-label">Chats eKonsilio</div>
+                    </div>
+                    <div class="va-stat">
+                        <div class="va-stat-value">890€</div>
+                        <div class="va-stat-label">Investissement</div>
+                    </div>
+                </div>
+                <div class="key-takeaway">
+                    <h4>💡 Point clé</h4>
+                    <p>Les Vehicle Ads génèrent <strong>500 000 impressions pour 1 000 € dépensés</strong>, contre seulement 6 000 impressions pour une campagne Search classique. Ce ratio de 83:1 explique l'impact sur les métriques globales du compte.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Détail des conversions par type -->
+        <section>
+            <h2><span class="section-icon conversion">📊</span> Détail des conversions par type</h2>
+            <div class="platform-card">
+                <table class="conversion-table">
+                    <thead>
+                        <tr>
+                            <th>Type de conversion</th>
+                            <th style="text-align: center;">Novembre</th>
+                            <th style="text-align: center;">Décembre</th>
+                            <th style="text-align: center;">Delta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><div class="conversion-type"><div class="conversion-icon" style="background: rgba(124, 58, 237, 0.1);">🏪</div>Store Visits</div></td>
+                            <td style="text-align: center; font-weight: 600;">9 612</td>
+                            <td style="text-align: center; font-weight: 600;">5 764</td>
+                            <td style="text-align: center;"><span class="delta-badge negative">-40%</span></td>
+                        </tr>
+                        <tr>
+                            <td><div class="conversion-type"><div class="conversion-icon" style="background: rgba(11, 108, 217, 0.1);">📞</div>Appels à partir d'annonces</div></td>
+                            <td style="text-align: center; font-weight: 600;">3 213</td>
+                            <td style="text-align: center; font-weight: 600;">3 183</td>
+                            <td style="text-align: center;"><span class="delta-badge negative">-1%</span></td>
+                        </tr>
+                        <tr>
+                            <td><div class="conversion-type"><div class="conversion-icon" style="background: rgba(17, 132, 91, 0.1);">💬</div>Chat</div></td>
+                            <td style="text-align: center; font-weight: 600;">305</td>
+                            <td style="text-align: center; font-weight: 600;">154</td>
+                            <td style="text-align: center;"><span class="delta-badge negative">-49%</span></td>
+                        </tr>
+                        <tr>
+                            <td><div class="conversion-type"><div class="conversion-icon" style="background: rgba(213, 105, 27, 0.1);">📝</div>Lead</div></td>
+                            <td style="text-align: center; font-weight: 600;">75</td>
+                            <td style="text-align: center; font-weight: 600;">43</td>
+                            <td style="text-align: center;"><span class="delta-badge negative">-42%</span></td>
+                        </tr>
+                        <tr>
+                            <td><div class="conversion-type"><div class="conversion-icon" style="background: rgba(107, 114, 128, 0.1);">📧</div>Contact (Mail/Tel)</div></td>
+                            <td style="text-align: center; font-weight: 600;">57</td>
+                            <td style="text-align: center; font-weight: 600;">50</td>
+                            <td style="text-align: center;"><span class="delta-badge negative">-12%</span></td>
+                        </tr>
+                        <tr>
+                            <td><div class="conversion-type"><div class="conversion-icon" style="background: rgba(66, 133, 244, 0.1);">⚙️</div>Configurateur</div></td>
+                            <td style="text-align: center; font-weight: 600;">19</td>
+                            <td style="text-align: center; font-weight: 600;">13</td>
+                            <td style="text-align: center;"><span class="delta-badge negative">-32%</span></td>
+                        </tr>
+                        <tr style="background: var(--bg-light); font-weight: 700;">
+                            <td><strong>TOTAL</strong></td>
+                            <td style="text-align: center;"><strong>13 280</strong></td>
+                            <td style="text-align: center;"><strong>9 207</strong></td>
+                            <td style="text-align: center;"><span class="delta-badge negative">-31%</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="key-takeaway warning" style="margin-top: 24px;">
+                    <h4>⚠️ Contexte de la baisse observée</h4>
+                    <p>On constate en parallèle une <strong>augmentation du coût par clic de 31%</strong>. Cette hausse entraîne mécaniquement une baisse équivalente du nombre de conversions (-31%).</p>
+                    <p style="margin-top: 12px;">Ce phénomène est <strong>directement lié à la période de décembre</strong>, durant laquelle la pression publicitaire est naturellement beaucoup plus forte sur le marché. La multiplication des offres de fin d'année sature les enchères Google Ads et fait grimper les CPC.</p>
+                </div>
+                <div class="source-ref">
+                    📚 Source : <a href="https://www.wordstream.com/blog/ws/2022/11/29/holiday-google-ads-benchmarks" target="_blank">WordStream - Holiday Google Ads Benchmarks</a> • Les CPC augmentent en moyenne de 20 à 40% pendant les périodes de fêtes.
+                </div>
+            </div>
+        </section>
+
+        <!-- Évolution Novembre → Décembre -->
+        <section>
+            <h2><span class="section-icon insight">📈</span> Évolution Novembre → Décembre</h2>
+            <div class="platform-card">
+                <table class="evolution-table">
+                    <thead>
+                        <tr>
+                            <th>Indicateur</th>
+                            <th>Novembre</th>
+                            <th>Décembre</th>
+                            <th>Évolution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Impressions Google</strong></td>
+                            <td>180 295</td>
+                            <td>678 228</td>
+                            <td class="evolution-positive">+276%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CTR Global Google</strong></td>
+                            <td>16.34%</td>
+                            <td>4.19%</td>
+                            <td class="evolution-negative">-74%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CTR Search (hors VA)</strong></td>
+                            <td>16.34%</td>
+                            <td>14.24%</td>
+                            <td class="evolution-negative">-13%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CPC Search</strong></td>
+                            <td>0.36€</td>
+                            <td>0.47€</td>
+                            <td class="evolution-negative">+31%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>All Conversions</strong></td>
+                            <td>13 280</td>
+                            <td>9 207</td>
+                            <td class="evolution-negative">-31%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Leads</strong></td>
+                            <td>75</td>
+                            <td>43</td>
+                            <td class="evolution-negative">-42%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Coût / Conversion</strong></td>
+                            <td>0.80€</td>
+                            <td>1.29€</td>
+                            <td class="evolution-negative">+61%</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="key-takeaway info" style="margin-top: 24px;">
+                    <h4>📊 Comprendre la baisse du CTR global</h4>
+                    <p>La baisse globale du CTR (de 16% à 4%) est <strong>principalement due à l'introduction des Vehicle Ads</strong>. Ces campagnes ont généré plus de <strong>500 000 impressions</strong>, ce qui fait mathématiquement chuter le CTR moyen de manière significative.</p>
+                    <p style="margin-top: 12px;">En se concentrant uniquement sur les <strong>campagnes Search</strong>, le CTR passe de 16% à 14%, ce qui correspond à une fluctuation attendue (-13%), particulièrement en période de fin d'année.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Plateformes -->
+        <section>
+            <h2><span class="section-icon google">📱</span> Performance par plateforme</h2>
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-logo google"><span>G</span></div>
+                        <div>
+                            <div class="platform-name">Google Ads</div>
+                            <div class="platform-budget">Budget : 11 843 €</div>
+                        </div>
+                    </div>
+                    <div class="metrics-grid four-cols">
+                        <div class="metric-item">
+                            <div class="metric-value">678K</div>
+                            <div class="metric-label">Impressions</div>
+                            <div class="metric-change positive">+276%</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">28.4K</div>
+                            <div class="metric-label">Clics</div>
+                            <div class="metric-change negative">-4%</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">9 207</div>
+                            <div class="metric-label">All Conv.</div>
+                            <div class="metric-change negative">-31%</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">62</div>
+                            <div class="metric-label">Chats eKonsilio</div>
+                            <div class="metric-change positive">qualifiés</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-logo meta">M</div>
+                        <div>
+                            <div class="platform-name">Meta Ads</div>
+                            <div class="platform-budget">Budget : 6 429 €</div>
+                        </div>
+                    </div>
+                    <div class="metrics-grid four-cols">
+                        <div class="metric-item">
+                            <div class="metric-value">1.6M</div>
+                            <div class="metric-label">Impressions</div>
+                            <div class="metric-change positive">+46%</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">55K</div>
+                            <div class="metric-label">Clics</div>
+                            <div class="metric-change negative">-17%</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">983K</div>
+                            <div class="metric-label">Reach</div>
+                            <div class="metric-change positive">+61%</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">37</div>
+                            <div class="metric-label">Chats eKonsilio</div>
+                            <div class="metric-change positive">qualifiés</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Détail Google Ads -->
+        <section>
+            <h2><span class="section-icon google">🔍</span> Détail campagnes Google Ads - Décembre</h2>
+            <div class="platform-card">
+                <table class="campaign-table">
+                    <thead>
+                        <tr>
+                            <th>Campagne</th>
+                            <th>Impr.</th>
+                            <th>Clics</th>
+                            <th>CTR</th>
+                            <th>Coût</th>
+                            <th>All Conv.</th>
+                            <th>Leads</th>
+                            <th>Chats</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: rgba(124, 58, 237, 0.05);">
+                            <td><span class="campaign-name">Vehicle Ads</span><span class="campaign-badge new">NEW</span></td>
+                            <td>513 868</td>
+                            <td>5 025</td>
+                            <td>0.98%</td>
+                            <td>890€</td>
+                            <td>537</td>
+                            <td>11</td>
+                            <td>11</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">Occasion - Renault</span><span class="campaign-badge top">Top</span></td>
+                            <td>53 149</td>
+                            <td>9 807</td>
+                            <td>18.5%</td>
+                            <td>2 941€</td>
+                            <td>5 370</td>
+                            <td>18</td>
+                            <td>13</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">Occasion - Dacia</span></td>
+                            <td>17 295</td>
+                            <td>2 774</td>
+                            <td>16.0%</td>
+                            <td>1 260€</td>
+                            <td>816</td>
+                            <td>1</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">Électrique/Hybride Nord</span></td>
+                            <td>8 957</td>
+                            <td>1 288</td>
+                            <td>14.4%</td>
+                            <td>1 064€</td>
+                            <td>137</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">Générique Nord</span></td>
+                            <td>20 312</td>
+                            <td>2 094</td>
+                            <td>10.3%</td>
+                            <td>1 000€</td>
+                            <td>632</td>
+                            <td>4</td>
+                            <td>4</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">Générique Sud</span></td>
+                            <td>12 450</td>
+                            <td>1 520</td>
+                            <td>12.2%</td>
+                            <td>680€</td>
+                            <td>420</td>
+                            <td>2</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">Occasion - Ford</span><span class="campaign-badge top">CTR max</span></td>
+                            <td>10 350</td>
+                            <td>2 383</td>
+                            <td>23.0%</td>
+                            <td>932€</td>
+                            <td>1 119</td>
+                            <td>2</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">APV Pare-brise</span></td>
+                            <td>12 234</td>
+                            <td>600</td>
+                            <td>4.9%</td>
+                            <td>825€</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">Occasion - Hyundai</span></td>
+                            <td>8 449</td>
+                            <td>1 223</td>
+                            <td>14.5%</td>
+                            <td>594€</td>
+                            <td>292</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">Occasion - Land Rover</span></td>
+                            <td>5 230</td>
+                            <td>890</td>
+                            <td>17.0%</td>
+                            <td>450€</td>
+                            <td>185</td>
+                            <td>1</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">GMB / Sitelinks</span><span class="campaign-badge test">Local</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>2</td>
+                            <td>3</td>
+                        </tr>
+                        <tr style="background: rgba(213, 105, 27, 0.05);">
+                            <td><span class="campaign-name">(Sans UTM - Google)</span><span class="campaign-badge" style="background: rgba(213, 105, 27, 0.1); color: var(--accent-orange);">UTM?</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>19</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="ekonsilio-box">
+                    <h4>💬 Enrichissement eKonsilio - Chats qualifiés Google Ads</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">Total de <strong>62 chats</strong> générés via Google Ads en décembre 2025, dont 19 sans UTM précis (gclid détecté).</p>
+                    <div class="ekonsilio-grid">
+                        <div class="ekonsilio-stat"><div class="value">13</div><div class="label">Renault</div></div>
+                        <div class="ekonsilio-stat"><div class="value">11</div><div class="label">Vehicle Ads</div></div>
+                        <div class="ekonsilio-stat"><div class="value">7</div><div class="label">Générique N+S</div></div>
+                        <div class="ekonsilio-stat"><div class="value">3</div><div class="label">Dacia</div></div>
+                        <div class="ekonsilio-stat"><div class="value">3</div><div class="label">Ford</div></div>
+                        <div class="ekonsilio-stat"><div class="value">19</div><div class="label">Sans UTM</div></div>
+                    </div>
+                </div>
+
+                <div class="conversion-detail-box">
+                    <h4>📊 Détail des conversions Google Ads - Décembre 2025</h4>
+                    <div class="conversion-detail-grid">
+                        <div class="conversion-detail-item"><div class="icon">🏪</div><div class="value">5 764</div><div class="label">Store Visits</div></div>
+                        <div class="conversion-detail-item"><div class="icon">📞</div><div class="value">3 183</div><div class="label">Appels annonces</div></div>
+                        <div class="conversion-detail-item"><div class="icon">💬</div><div class="value">154</div><div class="label">Chats (tracking)</div></div>
+                        <div class="conversion-detail-item"><div class="icon">📝</div><div class="value">43</div><div class="label">Leads formulaire</div></div>
+                        <div class="conversion-detail-item"><div class="icon">📧</div><div class="value">50</div><div class="label">Contact Mail/Tel</div></div>
+                        <div class="conversion-detail-item"><div class="icon">⚙️</div><div class="value">13</div><div class="label">Configurateur</div></div>
+                        <div class="conversion-detail-item" style="background: linear-gradient(135deg, #ECFDF5, #D1FAE5);"><div class="icon">✅</div><div class="value">9 207</div><div class="label">TOTAL</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Détail Meta Ads -->
+        <section>
+            <h2><span class="section-icon meta">📱</span> Détail campagnes Meta Ads - Décembre</h2>
+            <div class="platform-card">
+                <table class="campaign-table">
+                    <thead>
+                        <tr>
+                            <th>Campagne</th>
+                            <th>Impr.</th>
+                            <th>Clics</th>
+                            <th>CTR</th>
+                            <th>Coût</th>
+                            <th>Meta Leads</th>
+                            <th>Web Leads</th>
+                            <th>Chats</th>
+                            <th>Custom Conv.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="campaign-name">FDA - Custom Sets</span><span class="campaign-badge top">Top</span></td>
+                            <td>629 802</td>
+                            <td>17 160</td>
+                            <td>2.7%</td>
+                            <td>3 154€</td>
+                            <td>-</td>
+                            <td>~45</td>
+                            <td>21</td>
+                            <td>~120</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">FDA - Générique</span></td>
+                            <td>287 016</td>
+                            <td>7 343</td>
+                            <td>2.6%</td>
+                            <td>1 462€</td>
+                            <td>-</td>
+                            <td>~25</td>
+                            <td>6</td>
+                            <td>~65</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">LGF - VU VN</span><span class="campaign-badge test">Lead Gen</span></td>
+                            <td>162 167</td>
+                            <td>2 119</td>
+                            <td>1.3%</td>
+                            <td>695€</td>
+                            <td>~35</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">FDA - VU VO</span></td>
+                            <td>326 574</td>
+                            <td>9 172</td>
+                            <td>2.8%</td>
+                            <td>529€</td>
+                            <td>-</td>
+                            <td>~15</td>
+                            <td>3</td>
+                            <td>~40</td>
+                        </tr>
+                        <tr>
+                            <td><span class="campaign-name">Remarketing</span><span class="campaign-badge top">Best CTR</span></td>
+                            <td>179 730</td>
+                            <td>18 865</td>
+                            <td>10.5%</td>
+                            <td>523€</td>
+                            <td>-</td>
+                            <td>~20</td>
+                            <td>6</td>
+                            <td>~85</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="ekonsilio-box">
+                    <h4>💬 Enrichissement eKonsilio - Chats qualifiés Meta Ads</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">Total de <strong>37 chats</strong> générés via Meta Ads en décembre 2025.</p>
+                    <div class="ekonsilio-grid">
+                        <div class="ekonsilio-stat"><div class="value">21</div><div class="label">FDA Custom Sets</div></div>
+                        <div class="ekonsilio-stat"><div class="value">6</div><div class="label">FDA Générique</div></div>
+                        <div class="ekonsilio-stat"><div class="value">6</div><div class="label">Remarketing</div></div>
+                        <div class="ekonsilio-stat"><div class="value">3</div><div class="label">FDA VU VO</div></div>
+                        <div class="ekonsilio-stat"><div class="value">1</div><div class="label">Autres</div></div>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 16px;"><strong>Top Ad Sets :</strong> Renault Nord (6), Remarketing (6), Familiale Nord (5), Petits Prix Nord (4)</p>
+                </div>
+
+                <div class="conversion-detail-box">
+                    <h4>📊 Détail des conversions Meta Ads - Décembre 2025</h4>
+                    <div class="conversion-detail-grid">
+                        <div class="conversion-detail-item"><div class="icon">📝</div><div class="value">~35</div><div class="label">Meta Leads (LGF)</div></div>
+                        <div class="conversion-detail-item"><div class="icon">🌐</div><div class="value">~105</div><div class="label">Website Leads</div></div>
+                        <div class="conversion-detail-item"><div class="icon">💬</div><div class="value">37</div><div class="label">Chats eKonsilio</div></div>
+                        <div class="conversion-detail-item"><div class="icon">⚙️</div><div class="value">~45</div><div class="label">Configurateur</div></div>
+                        <div class="conversion-detail-item"><div class="icon">📧</div><div class="value">~80</div><div class="label">Clic Email</div></div>
+                        <div class="conversion-detail-item"><div class="icon">📞</div><div class="value">~120</div><div class="label">Clic Téléphone</div></div>
+                        <div class="conversion-detail-item"><div class="icon">🗺️</div><div class="value">~65</div><div class="label">Itinéraires</div></div>
+                        <div class="conversion-detail-item" style="background: linear-gradient(135deg, #DBEAFE, #BFDBFE);"><div class="icon">✅</div><div class="value">~310</div><div class="label">Custom Conv.</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analyses -->
+        <section>
+            <h2><span class="section-icon insight">💡</span> Analyses & Éclairages</h2>
+            <div class="insight-grid">
+                <div class="insight-card highlight">
+                    <h3>🚗 Impact Vehicle Ads sur le CTR global</h3>
+                    <p>La baisse globale du CTR (de 16% à 4%) s'explique <strong>principalement par l'introduction des Vehicle Ads</strong>. Le CTR moyen d'une campagne Vehicle Ads se situe autour de <span class="highlight-purple">1%</span>, ce qui est normal pour ce format à très haute visibilité.</p>
+                </div>
+
+                <div class="insight-card highlight">
+                    <h3>📊 Analyse par type de campagne</h3>
+                    <p>En isolant uniquement les campagnes Search (hors Vehicle Ads), le CTR passe de <span class="data-point">16.34% en Nov</span> à <span class="data-point">14.24% en Déc</span>, soit une baisse de <span class="highlight-text">-13%</span> classique en fin d'année.</p>
+                </div>
+
+                <div class="insight-card" style="border-left-color: var(--accent-red);">
+                    <h3>⚠️ Hausse du CPC = Baisse des conversions</h3>
+                    <p>La hausse du CPC de <span class="highlight-text">+31%</span> correspond exactement à la baisse globale de <span class="highlight-text">-31%</span> du nombre de conversions. Il s'agit d'un <strong>effet mécanique direct</strong> de la saisonnalité sur les enchères.</p>
+                </div>
+
+                <div class="insight-card">
+                    <h3>🎯 Renault toujours champion</h3>
+                    <p>La campagne Occasion Renault maintient un CTR exceptionnel de <span class="highlight-text">18.45%</span> et reste le principal contributeur avec <span class="data-point">5 370 conv.</span>, <span class="data-point">18 leads</span> et <span class="data-point">13 chats</span>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Synthèse -->
+        <section>
+            <h2><span class="section-icon insight">📋</span> Synthèse</h2>
+            <div class="platform-card">
+                <div class="key-takeaway" style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border-left-color: var(--accent-green);">
+                    <h4 style="color: var(--accent-green);">✅ Ce qu'il faut retenir</h4>
+                    <p>
+                        <strong>1.</strong> La baisse du CTR global est un effet mécanique de l'introduction des Vehicle Ads (CTR ~1% pour 500K impressions), pas une dégradation des performances.<br><br>
+                        <strong>2.</strong> En isolant les campagnes Search, le CTR passe de 16% à 14% : une baisse de 13% classique en période de fin d'année.<br><br>
+                        <span style="background: rgba(220, 38, 38, 0.1); padding: 8px 12px; border-radius: 6px; display: inline-block; margin: 4px 0;">
+                            <strong>3. ⚠️ Saisonnalité :</strong> La hausse du CPC (+31%) correspond exactement à la baisse des conversions (-31%). Effet mécanique direct de la pression publicitaire de décembre.
+                        </span><br><br>
+                        <strong>4.</strong> Les leads passent de 75 à 43 (-42%) : effet combiné de la hausse des coûts et de la saisonnalité automobile.<br><br>
+                        <strong>5.</strong> Les Vehicle Ads ont généré 537 conversions, 11 leads et <strong>11 chats eKonsilio</strong> pour seulement 890€.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-logo">MyDigipal</div>
+            <div style="color: var(--text-muted);">Votre partenaire digital automobile</div>
+            <div style="margin-top: 8px; color: var(--accent-blue);">paul@mydigipal.com</div>
+        </footer>
+    </div>
+</body>
+</html>
