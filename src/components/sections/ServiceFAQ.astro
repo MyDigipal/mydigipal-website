@@ -4,8 +4,8 @@ import FAQSchema from '@/components/seo/FAQSchema.astro';
 
 interface Props {
   lang: Language;
-  service: 'seo' | 'google-ads' | 'paid-social' | 'abm' | 'ai-training' | 'emailing' | 'ai-solutions';
-  color?: 'seo' | 'ads' | 'social' | 'abm' | 'training' | 'emailing' | 'ai' | 'primary';
+  service: 'seo' | 'google-ads' | 'paid-social' | 'abm' | 'ai-training' | 'emailing' | 'ai-solutions' | 'tracking-reporting';
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'training' | 'emailing' | 'ai' | 'tracking' | 'primary';
 }
 
 const { lang, service, color = 'primary' } = Astro.props;
@@ -66,6 +66,14 @@ const colorConfig = {
     border: 'border-indigo-500/30',
     hover: 'hover:border-indigo-500/50',
     glow: 'shadow-indigo-500/20',
+  },
+  tracking: {
+    gradient: 'from-teal-500 to-cyan-600',
+    text: 'text-teal-500',
+    bg: 'bg-teal-500',
+    border: 'border-teal-500/30',
+    hover: 'hover:border-teal-500/50',
+    glow: 'shadow-teal-500/20',
   },
   primary: {
     gradient: 'from-blue-500 to-indigo-600',
@@ -479,6 +487,68 @@ const faqContent = {
         {
           question: 'Comment gérez-vous la sécurité et la confidentialité des données ?',
           answer: 'La sécurité est intégrée dès le premier jour. Nous implémentons des pratiques de sécurité entreprise, pouvons travailler avec des déploiements on-premise ou cloud privé, et assurons la conformité RGPD et autres régulations. Vos données ne sont jamais utilisées pour entraîner des modèles tiers.',
+        },
+      ],
+    },
+  },
+  'tracking-reporting': {
+    en: {
+      title: 'Frequently Asked Questions',
+      subtitle: 'Everything you need to know about Tracking & Reporting',
+      faqs: [
+        {
+          question: 'Why is proper tracking important for my marketing?',
+          answer: 'Without accurate tracking, you\'re making decisions based on incomplete or incorrect data. Proper tracking ensures every conversion, click, and user action is captured, giving you the full picture of what\'s working and what needs improvement. This directly impacts your ROI by helping you allocate budget to the best-performing channels.',
+        },
+        {
+          question: 'What\'s the difference between GA4 and Universal Analytics?',
+          answer: 'GA4 is Google\'s latest analytics platform, replacing Universal Analytics. It uses an event-based model instead of sessions, offers better cross-device tracking, machine learning insights, and is designed for a privacy-first web. If you haven\'t migrated yet, you\'re missing valuable data.',
+        },
+        {
+          question: 'Do I really need Google Tag Manager?',
+          answer: 'Yes! GTM lets you manage all your tracking tags without touching website code. It makes adding pixels, tracking events, and troubleshooting much easier. It also improves site performance by loading tags efficiently and gives you version control for all changes.',
+        },
+        {
+          question: 'How do you handle cookie consent and GDPR compliance?',
+          answer: 'We implement proper consent management platforms (like Cookiebot, OneTrust, or Axeptio) that block tracking until users consent. We also configure Google Consent Mode v2 to maintain measurement capabilities while respecting user choices. All setups are GDPR and ePrivacy compliant.',
+        },
+        {
+          question: 'What kind of dashboards can you build?',
+          answer: 'We build custom dashboards tailored to your needs - from simple Looker Studio reports showing key metrics to enterprise Tableau/Power BI solutions with advanced visualizations and drill-down capabilities. We can also implement AI-powered analytics with anomaly detection and natural language queries.',
+        },
+        {
+          question: 'How long does a tracking setup typically take?',
+          answer: 'A basic GTM and GA4 setup can be done in 1-2 weeks. More complex implementations with CRM integration, cross-domain tracking, and custom events typically take 3-4 weeks. Dashboard creation is usually 1-2 weeks depending on complexity. We always start with an audit to assess your current setup.',
+        },
+      ],
+    },
+    fr: {
+      title: 'Questions Fréquentes',
+      subtitle: 'Tout ce que vous devez savoir sur le Tracking & Reporting',
+      faqs: [
+        {
+          question: 'Pourquoi un tracking correct est-il important pour mon marketing ?',
+          answer: 'Sans tracking précis, vous prenez des décisions basées sur des données incomplètes ou incorrectes. Un tracking approprié garantit que chaque conversion, clic et action utilisateur est capturé, vous donnant une vue complète de ce qui fonctionne et ce qui doit être amélioré. Cela impacte directement votre ROI en vous aidant à allouer le budget aux canaux les plus performants.',
+        },
+        {
+          question: 'Quelle est la différence entre GA4 et Universal Analytics ?',
+          answer: 'GA4 est la dernière plateforme analytics de Google, remplaçant Universal Analytics. Il utilise un modèle basé sur les événements au lieu des sessions, offre un meilleur tracking cross-device, des insights machine learning, et est conçu pour un web privacy-first. Si vous n\'avez pas encore migré, vous manquez des données précieuses.',
+        },
+        {
+          question: 'Ai-je vraiment besoin de Google Tag Manager ?',
+          answer: 'Oui ! GTM vous permet de gérer tous vos tags de tracking sans toucher au code du site. Il rend l\'ajout de pixels, le tracking d\'événements et le debugging beaucoup plus faciles. Il améliore aussi les performances du site en chargeant les tags efficacement et vous donne un contrôle de version pour tous les changements.',
+        },
+        {
+          question: 'Comment gérez-vous le consentement cookies et la conformité RGPD ?',
+          answer: 'Nous implémentons des plateformes de gestion du consentement appropriées (comme Cookiebot, OneTrust ou Axeptio) qui bloquent le tracking jusqu\'au consentement utilisateur. Nous configurons aussi Google Consent Mode v2 pour maintenir les capacités de mesure tout en respectant les choix utilisateurs. Toutes les configurations sont conformes RGPD et ePrivacy.',
+        },
+        {
+          question: 'Quels types de dashboards pouvez-vous créer ?',
+          answer: 'Nous créons des dashboards personnalisés adaptés à vos besoins - des rapports Looker Studio simples montrant les métriques clés aux solutions Tableau/Power BI entreprise avec visualisations avancées et drill-down. Nous pouvons aussi implémenter des analytics IA avec détection d\'anomalies et requêtes en langage naturel.',
+        },
+        {
+          question: 'Combien de temps prend un setup tracking typiquement ?',
+          answer: 'Un setup GTM et GA4 basique peut être fait en 1-2 semaines. Les implémentations plus complexes avec intégration CRM, tracking cross-domain et événements custom prennent généralement 3-4 semaines. La création de dashboards prend habituellement 1-2 semaines selon la complexité. Nous commençons toujours par un audit pour évaluer votre configuration actuelle.',
         },
       ],
     },
