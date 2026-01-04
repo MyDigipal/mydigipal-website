@@ -1,7 +1,7 @@
 ---
 /**
  * TrustedBy - Animated client logo showcase
- * Infinite scrolling carousel with hover effects
+ * Infinite scrolling carousel with drag functionality
  */
 import type { Language } from '@/i18n/config';
 
@@ -60,8 +60,8 @@ const clients = [
   { name: 'DMD', logo: '/images/Client logo/DMD.png', industry: 'Automotive' },
 ];
 
-// Duplicate for seamless loop
-const duplicatedClients = [...clients, ...clients];
+// Triple for seamless infinite loop
+const tripleClients = [...clients, ...clients, ...clients];
 ---
 
 <section class={`trusted-by overflow-hidden ${variant === 'compact' ? 'py-12' : 'section'} bg-slate-50`}>
@@ -105,26 +105,24 @@ const duplicatedClients = [...clients, ...clients];
     )}
   </div>
 
-  {/* Infinite Scrolling Carousel */}
-  <div class="logo-carousel relative">
+  {/* Infinite Scrolling Carousel with Drag */}
+  <div class="logo-carousel relative cursor-grab active:cursor-grabbing select-none">
     {/* Gradient masks */}
-    <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none"></div>
-    <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none"></div>
 
     {/* First row - scrolls left */}
-    <div class="logo-track scroll-left flex gap-8 py-4">
-      {duplicatedClients.map((client) => (
-        <div class="logo-item group flex-shrink-0">
-          <div class="w-40 h-20 bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-4 transition-all duration-300 group-hover:shadow-lg group-hover:scale-110 group-hover:border-primary-500/30">
+    <div class="logo-track scroll-left flex gap-6 py-4" data-speed="20">
+      {tripleClients.map((client) => (
+        <div class="logo-item flex-shrink-0">
+          <div class="w-36 h-16 bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-3 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary-500/30">
             <img
               src={client.logo}
               alt={client.name}
-              class="max-w-full max-h-full object-contain filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+              class="max-w-full max-h-full object-contain transition-transform duration-300"
               loading="lazy"
+              draggable="false"
             />
-          </div>
-          <div class="text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <span class="text-xs text-slate-500">{client.name}</span>
           </div>
         </div>
       ))}
@@ -132,19 +130,17 @@ const duplicatedClients = [...clients, ...clients];
 
     {/* Second row - scrolls right (only for default variant) */}
     {variant === 'default' && (
-      <div class="logo-track scroll-right flex gap-8 py-4 mt-4">
-        {[...duplicatedClients].reverse().map((client) => (
-          <div class="logo-item group flex-shrink-0">
-            <div class="w-40 h-20 bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-4 transition-all duration-300 group-hover:shadow-lg group-hover:scale-110 group-hover:border-primary-500/30">
+      <div class="logo-track scroll-right flex gap-6 py-4 mt-2" data-speed="25">
+        {[...tripleClients].reverse().map((client) => (
+          <div class="logo-item flex-shrink-0">
+            <div class="w-36 h-16 bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-3 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary-500/30">
               <img
                 src={client.logo}
                 alt={client.name}
-                class="max-w-full max-h-full object-contain filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                class="max-w-full max-h-full object-contain transition-transform duration-300"
                 loading="lazy"
+                draggable="false"
               />
-            </div>
-            <div class="text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <span class="text-xs text-slate-500">{client.name}</span>
             </div>
           </div>
         ))}
@@ -169,18 +165,19 @@ const duplicatedClients = [...clients, ...clients];
 </section>
 
 <style>
-  /* Infinite scroll animation */
+  /* Infinite scroll animation - faster */
   .logo-track {
     animation-timing-function: linear;
     animation-iteration-count: infinite;
+    will-change: transform;
   }
 
   .scroll-left {
-    animation: scroll-left 40s linear infinite;
+    animation: scroll-left 20s linear infinite;
   }
 
   .scroll-right {
-    animation: scroll-right 45s linear infinite;
+    animation: scroll-right 25s linear infinite;
   }
 
   @keyframes scroll-left {
@@ -188,20 +185,21 @@ const duplicatedClients = [...clients, ...clients];
       transform: translateX(0);
     }
     100% {
-      transform: translateX(-50%);
+      transform: translateX(-33.333%);
     }
   }
 
   @keyframes scroll-right {
     0% {
-      transform: translateX(-50%);
+      transform: translateX(-33.333%);
     }
     100% {
       transform: translateX(0);
     }
   }
 
-  /* Pause on hover */
+  /* Pause on hover/drag */
+  .logo-carousel.is-dragging .logo-track,
   .logo-carousel:hover .logo-track {
     animation-play-state: paused;
   }
@@ -215,39 +213,120 @@ const duplicatedClients = [...clients, ...clients];
     z-index: 10;
   }
 
-  /* Smooth transition for grayscale */
-  .logo-item img {
-    will-change: filter, opacity;
-  }
-
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .scroll-left {
-      animation-duration: 25s;
+      animation-duration: 15s;
     }
     .scroll-right {
-      animation-duration: 30s;
+      animation-duration: 18s;
     }
     .logo-item > div {
       width: 120px;
-      height: 60px;
+      height: 50px;
     }
   }
 </style>
 
 <script>
-  // Pause animation when not in viewport for performance
-  const carousel = document.querySelector('.logo-carousel');
-  if (carousel) {
+  // Drag to scroll functionality + pause on interaction
+  document.addEventListener('DOMContentLoaded', () => {
+    const carousel = document.querySelector('.logo-carousel') as HTMLElement;
+    if (!carousel) return;
+
+    const tracks = carousel.querySelectorAll('.logo-track') as NodeListOf<HTMLElement>;
+
+    let isDragging = false;
+    let startX = 0;
+    let dragOffset = 0;
+    let currentTrack: HTMLElement | null = null;
+    let animationOffsets: Map<HTMLElement, number> = new Map();
+
+    // Initialize offsets
+    tracks.forEach(track => {
+      animationOffsets.set(track, 0);
+    });
+
+    const getComputedTranslateX = (element: HTMLElement): number => {
+      const style = window.getComputedStyle(element);
+      const matrix = new DOMMatrixReadOnly(style.transform);
+      return matrix.m41;
+    };
+
+    const handleDragStart = (e: MouseEvent | TouchEvent) => {
+      isDragging = true;
+      carousel.classList.add('is-dragging');
+
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      startX = clientX;
+
+      // Find which track is being dragged
+      const target = e.target as HTMLElement;
+      currentTrack = target.closest('.logo-track') as HTMLElement;
+
+      if (currentTrack) {
+        // Capture current position
+        const currentTranslate = getComputedTranslateX(currentTrack);
+        animationOffsets.set(currentTrack, currentTranslate);
+        currentTrack.style.transform = `translateX(${currentTranslate}px)`;
+      }
+    };
+
+    const handleDragMove = (e: MouseEvent | TouchEvent) => {
+      if (!isDragging || !currentTrack) return;
+
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const diff = clientX - startX;
+
+      const baseOffset = animationOffsets.get(currentTrack) || 0;
+      const newOffset = baseOffset + diff;
+
+      currentTrack.style.transform = `translateX(${newOffset}px)`;
+      dragOffset = diff;
+    };
+
+    const handleDragEnd = () => {
+      if (!isDragging) return;
+
+      isDragging = false;
+      carousel.classList.remove('is-dragging');
+
+      if (currentTrack) {
+        // Update the stored offset
+        const currentTranslate = getComputedTranslateX(currentTrack);
+        animationOffsets.set(currentTrack, currentTranslate);
+
+        // Remove inline style to let CSS animation resume from current position
+        // We need to adjust the animation to continue from where we left off
+        currentTrack.style.transform = '';
+      }
+
+      currentTrack = null;
+      dragOffset = 0;
+    };
+
+    // Mouse events
+    carousel.addEventListener('mousedown', handleDragStart);
+    document.addEventListener('mousemove', handleDragMove);
+    document.addEventListener('mouseup', handleDragEnd);
+
+    // Touch events
+    carousel.addEventListener('touchstart', handleDragStart, { passive: true });
+    document.addEventListener('touchmove', handleDragMove, { passive: true });
+    document.addEventListener('touchend', handleDragEnd);
+
+    // Prevent default drag behavior on images
+    carousel.addEventListener('dragstart', (e) => e.preventDefault());
+
+    // Pause animation when not in viewport for performance
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const tracks = entry.target.querySelectorAll('.logo-track');
           tracks.forEach((track) => {
             if (entry.isIntersecting) {
-              (track as HTMLElement).style.animationPlayState = 'running';
+              track.style.animationPlayState = 'running';
             } else {
-              (track as HTMLElement).style.animationPlayState = 'paused';
+              track.style.animationPlayState = 'paused';
             }
           });
         });
@@ -255,5 +334,5 @@ const duplicatedClients = [...clients, ...clients];
       { threshold: 0.1 }
     );
     observer.observe(carousel);
-  }
+  });
 </script>
