@@ -1,7 +1,7 @@
 ---
 /**
- * TrustedBy - Animated client logo showcase
- * Infinite scrolling carousel with drag functionality
+ * TrustedBy - Client logo showcase with category filtering
+ * Infinite scrolling carousel organized by industry
  */
 import type { Language } from '@/i18n/config';
 
@@ -21,6 +21,12 @@ const content = {
     count: '50+',
     countLabel: 'Happy Clients',
     cta: 'Join them →',
+    categories: {
+      all: 'All Clients',
+      b2b: 'B2B Tech & SaaS',
+      automotive: 'Automotive',
+      other: 'Other Industries',
+    },
   },
   fr: {
     badge: 'Partenaires de Confiance',
@@ -29,39 +35,69 @@ const content = {
     count: '50+',
     countLabel: 'Clients Satisfaits',
     cta: 'Rejoignez-les →',
+    categories: {
+      all: 'Tous les Clients',
+      b2b: 'B2B Tech & SaaS',
+      automotive: 'Automobile',
+      other: 'Autres Industries',
+    },
   },
 };
 
 const t = content[lang] || content.en;
 
-// Client logos - categories from MyDigipal Client list.csv
-const clients = [
-  { name: 'Genesys', logo: '/images/Client logo/genesys-vector-logo.png', industry: 'B2B' },
-  { name: 'Quantum Metrics', logo: '/images/Client logo/quantum.png', industry: 'B2C' },
-  { name: 'Theobald', logo: '/images/Client logo/theobald.png', industry: 'Automotive' },
-  { name: 'OpenText', logo: '/images/Client logo/opentext-logo.png', industry: 'B2B' },
-  { name: 'Edenred', logo: '/images/Client logo/Edenred_Logo_(depuis_2017).png', industry: 'B2B' },
-  { name: 'Ford', logo: '/images/Client logo/ford.png', industry: 'Automotive' },
-  { name: 'Vulcain', logo: '/images/Client logo/logo-VULCAIN.jpg', industry: 'B2C' },
-  { name: 'Omilia', logo: '/images/Client logo/omilia.png', industry: 'B2C' },
-  { name: 'Veesion', logo: '/images/Client logo/veesion.png', industry: 'B2B' },
-  { name: 'Ubiquiti', logo: '/images/Client logo/ubiquiti.png', industry: 'B2B' },
-  { name: 'Flighty', logo: '/images/Client logo/Flighty.png', industry: 'B2C' },
-  { name: 'NuHerbs', logo: '/images/Client logo/nuherbs.webp', industry: 'B2B' },
-  { name: 'FastSensor', logo: '/images/Client logo/fastsensor.png', industry: 'B2B' },
-  { name: 'Frontline', logo: '/images/Client logo/frontline.png', industry: 'B2B' },
-  { name: 'Altitude', logo: '/images/Client logo/Altitude.png', industry: 'B2B' },
-  { name: 'Solita', logo: '/images/Client logo/Solita.png', industry: 'B2B' },
-  { name: 'Unbound', logo: '/images/Client logo/Unbound.png', industry: 'B2C' },
-  { name: 'On Train', logo: '/images/Client logo/on train.png', industry: 'B2B' },
-  { name: 'CBCM', logo: '/images/Client logo/CBCM.png', industry: 'B2C' },
-  { name: 'Goola', logo: '/images/Client logo/goola.png', industry: 'B2C' },
-  { name: 'Pubstack', logo: '/images/Client logo/Pubstack.webp', industry: 'B2C' },
-  { name: 'DMD', logo: '/images/Client logo/DMD.png', industry: 'Automotive' },
-];
+// Client logos organized by category
+const clients = {
+  b2b: [
+    { name: 'Genesys', logo: '/images/Client logo/genesys-vector-logo.png', size: 'normal' },
+    { name: 'Quantum Metrics', logo: '/images/Client logo/quantum.png', size: 'normal' },
+    { name: 'OpenText', logo: '/images/Client logo/opentext-logo.png', size: 'normal' },
+    { name: 'Edenred', logo: '/images/Client logo/Edenred_Logo_(depuis_2017).png', size: 'normal' },
+    { name: 'Veesion', logo: '/images/Client logo/veesion.png', size: 'large' },
+    { name: 'Omilia', logo: '/images/Client logo/omilia.png', size: 'normal' },
+    { name: 'NuHerbs', logo: '/images/Client logo/nuherbs.jpg', size: 'large' },
+    { name: 'FastSensor', logo: '/images/Client logo/fastsensor.png', size: 'normal' },
+    { name: 'Frontline', logo: '/images/Client logo/frontline.png', size: 'normal' },
+    { name: 'On Train', logo: '/images/Client logo/on train.png', size: 'normal' },
+    { name: 'Pubstack', logo: '/images/Client logo/Pubstack.webp', size: 'normal' },
+    { name: 'Solita', logo: '/images/Client logo/Solita.png', size: 'normal' },
+    { name: 'Altitude', logo: '/images/Client logo/Altitude.png', size: 'normal' },
+    { name: 'MotorK', logo: '/images/Client logo/Motork.png', size: 'normal' },
+    { name: 'Pur Lux', logo: '/images/Client logo/Pur lux.png', size: 'normal' },
+  ],
+  automotive: [
+    { name: 'Ford', logo: '/images/Client logo/ford.png', size: 'normal' },
+    { name: 'Theobald Group', logo: '/images/Client logo/Theobald.png', size: 'normal' },
+    { name: 'Vulcain Group', logo: '/images/Client logo/Vulcain.png', size: 'large' },
+    { name: 'DMD Group', logo: '/images/Client logo/DMD.png', size: 'normal' },
+    { name: 'Groupe Lancien', logo: '/images/Client logo/Iroise Auto.png', size: 'normal' },
+    { name: 'GGP Auto', logo: '/images/Client logo/GGP Auto.png', size: 'normal' },
+    { name: 'EDA 42', logo: '/images/Client logo/EDA 42.png', size: 'normal' },
+    { name: 'Auto Village', logo: '/images/Client logo/Auto village.png', size: 'normal' },
+    { name: 'Groupe Dugat', logo: '/images/Client logo/Dugat.jpg', size: 'normal' },
+    { name: 'Lotus Silverstone', logo: '/images/Client logo/lotus silverstone.png', size: 'normal' },
+    { name: 'TGPC', logo: '/images/Client logo/tgpc_logo.png', size: 'normal' },
+  ],
+  other: [
+    { name: 'Flighty', logo: '/images/Client logo/Flighty.png', size: 'normal' },
+    { name: 'CBCM', logo: '/images/Client logo/CBCM.png', size: 'normal' },
+    { name: 'Goola', logo: '/images/Client logo/goola.png', size: 'normal' },
+    { name: 'Unbound', logo: '/images/Client logo/Unbound.png', size: 'normal' },
+    { name: 'Fred Jeandin', logo: '/images/Client logo/fred jeandin.png', size: 'normal' },
+    { name: 'Infolawyers', logo: '/images/Client logo/infolawyers-logo350.png', size: 'normal' },
+    { name: 'Property Investor News', logo: '/images/Client logo/Property Investor News.png', size: 'normal' },
+    { name: 'Partenair', logo: '/images/Client logo/partenair-logo-1473345534.jpg', size: 'normal' },
+  ],
+};
+
+// All clients combined
+const allClients = [...clients.b2b, ...clients.automotive, ...clients.other];
 
 // Triple for seamless infinite loop
-const tripleClients = [...clients, ...clients, ...clients];
+const tripleAllClients = [...allClients, ...allClients, ...allClients];
+const tripleB2B = [...clients.b2b, ...clients.b2b, ...clients.b2b];
+const tripleAutomotive = [...clients.automotive, ...clients.automotive, ...clients.automotive];
+const tripleOther = [...clients.other, ...clients.other, ...clients.other];
 ---
 
 <section class={`trusted-by overflow-hidden ${variant === 'compact' ? 'py-12' : 'section'} bg-slate-50`}>
@@ -103,47 +139,133 @@ const tripleClients = [...clients, ...clients, ...clients];
         </div>
       </div>
     )}
+
+    {/* Category Filter Tabs - Only for default variant */}
+    {variant === 'default' && (
+      <div class="flex flex-wrap justify-center gap-2 mb-8 animate-on-scroll">
+        <button
+          class="category-tab active px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-indigo-500 text-white"
+          data-category="all"
+        >
+          {t.categories.all}
+        </button>
+        <button
+          class="category-tab px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-white text-slate-600 border border-slate-200 hover:border-indigo-300 hover:text-indigo-600"
+          data-category="b2b"
+        >
+          {t.categories.b2b}
+        </button>
+        <button
+          class="category-tab px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-white text-slate-600 border border-slate-200 hover:border-indigo-300 hover:text-indigo-600"
+          data-category="automotive"
+        >
+          {t.categories.automotive}
+        </button>
+        <button
+          class="category-tab px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-white text-slate-600 border border-slate-200 hover:border-indigo-300 hover:text-indigo-600"
+          data-category="other"
+        >
+          {t.categories.other}
+        </button>
+      </div>
+    )}
   </div>
 
-  {/* Infinite Scrolling Carousel with Drag */}
-  <div class="logo-carousel relative cursor-grab active:cursor-grabbing select-none">
+  {/* Infinite Scrolling Carousel */}
+  <div class="logo-carousel relative">
     {/* Gradient masks */}
     <div class="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none"></div>
     <div class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none"></div>
 
-    {/* First row - scrolls left */}
-    <div class="logo-track scroll-left flex gap-6 py-4" data-speed="20">
-      {tripleClients.map((client) => (
-        <div class="logo-item flex-shrink-0">
-          <div class="w-36 h-16 bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-3 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary-500/30">
-            <img
-              src={client.logo}
-              alt={client.name}
-              class="max-w-full max-h-full object-contain transition-transform duration-300"
-              loading="lazy"
-              draggable="false"
-            />
-          </div>
-        </div>
-      ))}
-    </div>
-
-    {/* Second row - scrolls right (only for default variant) */}
-    {variant === 'default' && (
-      <div class="logo-track scroll-right flex gap-6 py-4 mt-2" data-speed="25">
-        {[...tripleClients].reverse().map((client) => (
+    {/* All clients track */}
+    <div class="logo-track-wrapper" data-category="all">
+      <div class="logo-track scroll-left flex gap-6 py-4">
+        {tripleAllClients.map((client) => (
           <div class="logo-item flex-shrink-0">
-            <div class="w-36 h-16 bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-3 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary-500/30">
+            <div class={`${client.size === 'large' ? 'w-44 h-20' : 'w-36 h-16'} bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-3 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary-500/30`}>
               <img
                 src={client.logo}
                 alt={client.name}
                 class="max-w-full max-h-full object-contain transition-transform duration-300"
                 loading="lazy"
-                draggable="false"
               />
             </div>
           </div>
         ))}
+      </div>
+    </div>
+
+    {/* B2B track */}
+    <div class="logo-track-wrapper hidden" data-category="b2b">
+      <div class="logo-track scroll-left flex gap-6 py-4">
+        {tripleB2B.map((client) => (
+          <div class="logo-item flex-shrink-0">
+            <div class={`${client.size === 'large' ? 'w-44 h-20' : 'w-36 h-16'} bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-3 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary-500/30`}>
+              <img
+                src={client.logo}
+                alt={client.name}
+                class="max-w-full max-h-full object-contain transition-transform duration-300"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Automotive track */}
+    <div class="logo-track-wrapper hidden" data-category="automotive">
+      <div class="logo-track scroll-left flex gap-6 py-4">
+        {tripleAutomotive.map((client) => (
+          <div class="logo-item flex-shrink-0">
+            <div class={`${client.size === 'large' ? 'w-44 h-20' : 'w-36 h-16'} bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-3 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary-500/30`}>
+              <img
+                src={client.logo}
+                alt={client.name}
+                class="max-w-full max-h-full object-contain transition-transform duration-300"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Other track */}
+    <div class="logo-track-wrapper hidden" data-category="other">
+      <div class="logo-track scroll-left flex gap-6 py-4">
+        {tripleOther.map((client) => (
+          <div class="logo-item flex-shrink-0">
+            <div class={`${client.size === 'large' ? 'w-44 h-20' : 'w-36 h-16'} bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-3 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary-500/30`}>
+              <img
+                src={client.logo}
+                alt={client.name}
+                class="max-w-full max-h-full object-contain transition-transform duration-300"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Second row - scrolls right (only for default variant) */}
+    {variant === 'default' && (
+      <div class="logo-track-wrapper-reverse" data-category="all">
+        <div class="logo-track scroll-right flex gap-6 py-4 mt-2">
+          {[...tripleAllClients].reverse().map((client) => (
+            <div class="logo-item flex-shrink-0">
+              <div class={`${client.size === 'large' ? 'w-44 h-20' : 'w-36 h-16'} bg-white rounded-xl shadow-soft border border-slate-100 flex items-center justify-center p-3 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary-500/30`}>
+                <img
+                  src={client.logo}
+                  alt={client.name}
+                  class="max-w-full max-h-full object-contain transition-transform duration-300"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     )}
   </div>
@@ -173,11 +295,11 @@ const tripleClients = [...clients, ...clients, ...clients];
   }
 
   .scroll-left {
-    animation: scroll-left 20s linear infinite;
+    animation: scroll-left 25s linear infinite;
   }
 
   .scroll-right {
-    animation: scroll-right 25s linear infinite;
+    animation: scroll-right 30s linear infinite;
   }
 
   @keyframes scroll-left {
@@ -198,8 +320,7 @@ const tripleClients = [...clients, ...clients, ...clients];
     }
   }
 
-  /* Pause on hover/drag */
-  .logo-carousel.is-dragging .logo-track,
+  /* Pause on hover */
   .logo-carousel:hover .logo-track {
     animation-play-state: paused;
   }
@@ -213,126 +334,83 @@ const tripleClients = [...clients, ...clients, ...clients];
     z-index: 10;
   }
 
+  /* Category tab styles */
+  .category-tab.active {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+  }
+
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .scroll-left {
-      animation-duration: 15s;
-    }
-    .scroll-right {
       animation-duration: 18s;
     }
+    .scroll-right {
+      animation-duration: 22s;
+    }
     .logo-item > div {
-      width: 120px;
-      height: 50px;
+      width: 120px !important;
+      height: 50px !important;
     }
   }
 </style>
 
 <script>
-  // Drag to scroll functionality + pause on interaction
+  // Category filter functionality
   document.addEventListener('DOMContentLoaded', () => {
-    const carousel = document.querySelector('.logo-carousel') as HTMLElement;
-    if (!carousel) return;
+    const tabs = document.querySelectorAll('.category-tab');
+    const trackWrappers = document.querySelectorAll('.logo-track-wrapper');
+    const reverseWrapper = document.querySelector('.logo-track-wrapper-reverse');
 
-    const tracks = carousel.querySelectorAll('.logo-track') as NodeListOf<HTMLElement>;
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const category = tab.getAttribute('data-category');
 
-    let isDragging = false;
-    let startX = 0;
-    let dragOffset = 0;
-    let currentTrack: HTMLElement | null = null;
-    let animationOffsets: Map<HTMLElement, number> = new Map();
+        // Update active tab
+        tabs.forEach(t => {
+          t.classList.remove('active');
+          t.classList.add('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+        });
+        tab.classList.add('active');
+        tab.classList.remove('bg-white', 'text-slate-600', 'border', 'border-slate-200');
 
-    // Initialize offsets
-    tracks.forEach(track => {
-      animationOffsets.set(track, 0);
+        // Show/hide track wrappers
+        trackWrappers.forEach(wrapper => {
+          const wrapperCategory = wrapper.getAttribute('data-category');
+          if (wrapperCategory === category) {
+            wrapper.classList.remove('hidden');
+          } else {
+            wrapper.classList.add('hidden');
+          }
+        });
+
+        // Show/hide reverse track (only for "all" category)
+        if (reverseWrapper) {
+          if (category === 'all') {
+            reverseWrapper.classList.remove('hidden');
+          } else {
+            reverseWrapper.classList.add('hidden');
+          }
+        }
+      });
     });
 
-    const getComputedTranslateX = (element: HTMLElement): number => {
-      const style = window.getComputedStyle(element);
-      const matrix = new DOMMatrixReadOnly(style.transform);
-      return matrix.m41;
-    };
-
-    const handleDragStart = (e: MouseEvent | TouchEvent) => {
-      isDragging = true;
-      carousel.classList.add('is-dragging');
-
-      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-      startX = clientX;
-
-      // Find which track is being dragged
-      const target = e.target as HTMLElement;
-      currentTrack = target.closest('.logo-track') as HTMLElement;
-
-      if (currentTrack) {
-        // Capture current position
-        const currentTranslate = getComputedTranslateX(currentTrack);
-        animationOffsets.set(currentTrack, currentTranslate);
-        currentTrack.style.transform = `translateX(${currentTranslate}px)`;
-      }
-    };
-
-    const handleDragMove = (e: MouseEvent | TouchEvent) => {
-      if (!isDragging || !currentTrack) return;
-
-      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-      const diff = clientX - startX;
-
-      const baseOffset = animationOffsets.get(currentTrack) || 0;
-      const newOffset = baseOffset + diff;
-
-      currentTrack.style.transform = `translateX(${newOffset}px)`;
-      dragOffset = diff;
-    };
-
-    const handleDragEnd = () => {
-      if (!isDragging) return;
-
-      isDragging = false;
-      carousel.classList.remove('is-dragging');
-
-      if (currentTrack) {
-        // Update the stored offset
-        const currentTranslate = getComputedTranslateX(currentTrack);
-        animationOffsets.set(currentTrack, currentTranslate);
-
-        // Remove inline style to let CSS animation resume from current position
-        // We need to adjust the animation to continue from where we left off
-        currentTrack.style.transform = '';
-      }
-
-      currentTrack = null;
-      dragOffset = 0;
-    };
-
-    // Mouse events
-    carousel.addEventListener('mousedown', handleDragStart);
-    document.addEventListener('mousemove', handleDragMove);
-    document.addEventListener('mouseup', handleDragEnd);
-
-    // Touch events
-    carousel.addEventListener('touchstart', handleDragStart, { passive: true });
-    document.addEventListener('touchmove', handleDragMove, { passive: true });
-    document.addEventListener('touchend', handleDragEnd);
-
-    // Prevent default drag behavior on images
-    carousel.addEventListener('dragstart', (e) => e.preventDefault());
-
     // Pause animation when not in viewport for performance
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          tracks.forEach((track) => {
-            if (entry.isIntersecting) {
-              track.style.animationPlayState = 'running';
-            } else {
-              track.style.animationPlayState = 'paused';
-            }
+    const carousel = document.querySelector('.logo-carousel');
+    if (carousel) {
+      const tracks = carousel.querySelectorAll('.logo-track');
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            tracks.forEach((track) => {
+              (track as HTMLElement).style.animationPlayState = entry.isIntersecting ? 'running' : 'paused';
+            });
           });
-        });
-      },
-      { threshold: 0.1 }
-    );
-    observer.observe(carousel);
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(carousel);
+    }
   });
 </script>
