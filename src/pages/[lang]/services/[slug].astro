@@ -51,6 +51,14 @@ import WhyEmailing from '@/components/sections/WhyEmailing.astro';
 import EmailingServices from '@/components/sections/EmailingServices.astro';
 import EmailingAIPersonalization from '@/components/sections/EmailingAIPersonalization.astro';
 
+// Tracking & Reporting specific sections
+import WhyTracking from '@/components/sections/WhyTracking.astro';
+import TrackingServices from '@/components/sections/TrackingServices.astro';
+import TrackingTools from '@/components/sections/TrackingTools.astro';
+import CookieCompliance from '@/components/sections/CookieCompliance.astro';
+import ReportingTiers from '@/components/sections/ReportingTiers.astro';
+import AIReportPreview from '@/components/sections/AIReportPreview.astro';
+
 // AI Solutions specific sections
 import WhyAISolutions from '@/components/sections/WhyAISolutions.astro';
 import AIUseCases from '@/components/sections/AIUseCases.astro';
@@ -128,6 +136,8 @@ const isEmailingService = slug === 'emailing';
 const isAISolutionsService = slug === 'ai-solutions';
 // Check if this is the B2B ABM service page
 const isB2BABMService = slug === 'b2b-abm';
+// Check if this is the Tracking & Reporting service page
+const isTrackingService = slug === 'tracking-reporting';
 
 // SEO Schema data
 const serviceUrl = `https://mydigipal.com/${lang}/services/${slug}`;
@@ -229,6 +239,9 @@ const breadcrumbItems = [
       <!-- Department Use Cases -->
       <TrainingUseCases lang={lang} />
 
+      <!-- Training Testimonials with Photos (moved up) -->
+      <TrainingTestimonials lang={lang} />
+
       <!-- Benefits for Managers/Directors -->
       <TrainingBenefitsManagers lang={lang} />
 
@@ -246,9 +259,6 @@ const breadcrumbItems = [
 
       <!-- Training Packages -->
       <AITrainingModules lang={lang} />
-
-      <!-- Training Testimonials with Photos -->
-      <TrainingTestimonials lang={lang} />
     </>
   )}
 
@@ -312,6 +322,29 @@ const breadcrumbItems = [
     </>
   )}
 
+  <!-- Tracking & Reporting Service: Comprehensive Sections -->
+  {isTrackingService && (
+    <>
+      <!-- Why Tracking - Educational Section -->
+      <WhyTracking lang={lang} />
+
+      <!-- Tracking Services Grid -->
+      <TrackingServices lang={lang} />
+
+      <!-- Tools & Integrations (CMS, Analytics, CRM) -->
+      <TrackingTools lang={lang} />
+
+      <!-- Cookie & Privacy Compliance -->
+      <CookieCompliance lang={lang} />
+
+      <!-- Reporting Tiers (Looker Studio, Tableau, AI) -->
+      <ReportingTiers lang={lang} />
+
+      <!-- AI Report Preview with Chat -->
+      <AIReportPreview lang={lang} />
+    </>
+  )}
+
   <!-- Google Ads Case Studies -->
   {isGoogleAdsService && (
     <CaseStudyCarousel lang={lang} caseStudyIds={['dmd', 'quantum', 'genesys']} color={color} />
@@ -357,6 +390,9 @@ const breadcrumbItems = [
   )}
   {isAISolutionsService && (
     <ServiceFAQ lang={lang} service="ai-solutions" color="ai" />
+  )}
+  {isTrackingService && (
+    <ServiceFAQ lang={lang} service="tracking-reporting" color="tracking" />
   )}
 </PageLayout>
 

@@ -1,0 +1,272 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Reporting Solutions",
+    headline: "Dashboards That Drive Decisions",
+    subtitle: "From simple overviews to AI-powered insights, we build the reporting solution that fits your needs.",
+    tiers: [
+      {
+        name: "Essential",
+        tool: "Looker Studio",
+        logo: "https://cdn.simpleicons.org/looker/4285F4",
+        price: "Starting at €500/mo",
+        description: "Real-time marketing dashboards with automated data refresh. Perfect for teams needing clear, actionable visibility.",
+        features: [
+          "Real-time data sync",
+          "Multi-channel overview",
+          "KPI tracking",
+          "Automated refresh",
+          "Share with stakeholders",
+          "Mobile-friendly"
+        ],
+        color: "teal",
+        highlighted: false
+      },
+      {
+        name: "Professional",
+        tool: "Tableau / Power BI",
+        logo: "https://cdn.simpleicons.org/tableau/E97627",
+        price: "Starting at €1,500/mo",
+        description: "Enterprise-grade analytics with advanced visualizations and drill-down capabilities for data-driven organizations.",
+        features: [
+          "Everything in Essential",
+          "Advanced visualizations",
+          "Custom calculations",
+          "Role-based access",
+          "Data blending",
+          "Embedded analytics"
+        ],
+        color: "indigo",
+        highlighted: true
+      },
+      {
+        name: "AI Analytics",
+        tool: "Custom AI Solution",
+        logo: "",
+        icon: "cpu",
+        price: "Custom pricing",
+        description: "AI-powered anomaly detection, predictive insights, and natural language reporting for forward-thinking teams.",
+        features: [
+          "Everything in Professional",
+          "Anomaly detection",
+          "Predictive insights",
+          "Natural language queries",
+          "Automated recommendations",
+          "ChatGPT integration"
+        ],
+        color: "purple",
+        highlighted: false
+      }
+    ],
+    cta: "Get a Quote"
+  },
+  fr: {
+    badge: "Solutions Reporting",
+    headline: "Des Dashboards Qui Guident Vos Décisions",
+    subtitle: "Des vues simples aux insights IA, nous construisons la solution de reporting qui correspond à vos besoins.",
+    tiers: [
+      {
+        name: "Essentiel",
+        tool: "Looker Studio",
+        logo: "https://cdn.simpleicons.org/looker/4285F4",
+        price: "À partir de 500€/mois",
+        description: "Dashboards marketing temps réel avec refresh automatique. Parfait pour les équipes cherchant une visibilité claire.",
+        features: [
+          "Sync données temps réel",
+          "Vue multi-canal",
+          "Suivi KPIs",
+          "Refresh automatique",
+          "Partage stakeholders",
+          "Mobile-friendly"
+        ],
+        color: "teal",
+        highlighted: false
+      },
+      {
+        name: "Professionnel",
+        tool: "Tableau / Power BI",
+        logo: "https://cdn.simpleicons.org/tableau/E97627",
+        price: "À partir de 1 500€/mois",
+        description: "Analytics enterprise avec visualisations avancées et drill-down pour organisations data-driven.",
+        features: [
+          "Tout l'Essentiel",
+          "Visualisations avancées",
+          "Calculs personnalisés",
+          "Accès par rôle",
+          "Data blending",
+          "Analytics embarquées"
+        ],
+        color: "indigo",
+        highlighted: true
+      },
+      {
+        name: "AI Analytics",
+        tool: "Solution IA Custom",
+        logo: "",
+        icon: "cpu",
+        price: "Prix sur devis",
+        description: "Détection d'anomalies IA, insights prédictifs et reporting en langage naturel pour équipes visionnaires.",
+        features: [
+          "Tout le Professionnel",
+          "Détection d'anomalies",
+          "Insights prédictifs",
+          "Requêtes langage naturel",
+          "Recommandations auto",
+          "Intégration ChatGPT"
+        ],
+        color: "purple",
+        highlighted: false
+      }
+    ],
+    cta: "Demander un Devis"
+  }
+};
+
+const t = translations[lang] || translations.en;
+
+const colorMap = {
+  teal: {
+    gradient: 'from-teal-500 to-cyan-600',
+    bg: 'bg-teal-500',
+    light: 'bg-teal-50 text-teal-600',
+    border: 'border-teal-300',
+    shadow: 'shadow-teal-500/10'
+  },
+  indigo: {
+    gradient: 'from-indigo-500 to-purple-600',
+    bg: 'bg-indigo-500',
+    light: 'bg-indigo-50 text-indigo-600',
+    border: 'border-indigo-300',
+    shadow: 'shadow-indigo-500/10'
+  },
+  purple: {
+    gradient: 'from-purple-500 to-pink-600',
+    bg: 'bg-purple-500',
+    light: 'bg-purple-50 text-purple-600',
+    border: 'border-purple-300',
+    shadow: 'shadow-purple-500/10'
+  }
+};
+---
+
+<section class="py-24 bg-gradient-to-b from-white to-slate-50">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-100 text-teal-700 font-medium mb-6">
+        <Icon name="pie-chart" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Tiers Grid -->
+    <div class="grid md:grid-cols-3 gap-8">
+      {t.tiers.map((tier, index) => {
+        const colors = colorMap[tier.color as keyof typeof colorMap];
+        return (
+          <div
+            class={`
+              tier-card relative p-8 rounded-2xl border-2 transition-all duration-500 animate-on-scroll
+              ${tier.highlighted
+                ? `bg-gradient-to-b from-${tier.color}-50 to-white ${colors.border} shadow-xl ${colors.shadow}`
+                : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-lg'}
+            `}
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            {tier.highlighted && (
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span class={`px-4 py-1 bg-gradient-to-r ${colors.gradient} text-white text-sm font-medium rounded-full`}>
+                  {lang === 'fr' ? 'Recommandé' : 'Recommended'}
+                </span>
+              </div>
+            )}
+
+            <!-- Tool Logo/Icon -->
+            <div class="flex items-center gap-4 mb-6">
+              {tier.logo ? (
+                <div class="w-12 h-12 flex items-center justify-center">
+                  <img src={tier.logo} alt={tier.tool} class="w-10 h-10 object-contain" />
+                </div>
+              ) : (
+                <div class={`w-12 h-12 rounded-xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center`}>
+                  <Icon name={tier.icon || 'bar-chart'} size={24} class="text-white" />
+                </div>
+              )}
+              <div>
+                <h3 class="text-xl font-bold text-slate-900">{tier.name}</h3>
+                <p class="text-sm text-slate-500">{tier.tool}</p>
+              </div>
+            </div>
+
+            <!-- Price -->
+            <div class={`text-2xl font-bold bg-gradient-to-r ${colors.gradient} bg-clip-text text-transparent mb-4`}>
+              {tier.price}
+            </div>
+
+            <!-- Description -->
+            <p class="text-slate-600 text-sm leading-relaxed mb-6">
+              {tier.description}
+            </p>
+
+            <!-- Features -->
+            <ul class="space-y-3 mb-8">
+              {tier.features.map(feature => (
+                <li class="flex items-start gap-2 text-sm text-slate-600">
+                  <span class={`w-5 h-5 rounded-full ${colors.light} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+
+            <!-- CTA -->
+            <a
+              href={`/${lang}/contact`}
+              class={`
+                block text-center py-3 px-6 rounded-xl font-semibold transition-all duration-300
+                ${tier.highlighted
+                  ? `bg-gradient-to-r ${colors.gradient} text-white hover:shadow-lg`
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}
+              `}
+            >
+              {t.cta}
+            </a>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<style>
+  .tier-card {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
