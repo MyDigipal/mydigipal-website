@@ -128,80 +128,9 @@ export const paidSocialServices: ServiceItem[] = [
     ]
   },
   {
-    id: 'social-management',
-    title: 'C. Gestion Mensuelle',
-    titleEn: 'C. Monthly Management',
-    description: 'Optimisation continue de vos campagnes pour maximiser votre retour sur investissement.',
-    descriptionEn: 'Continuous optimization of your campaigns to maximize your return on investment.',
-    icon: '📈',
-    hasBudgetFee: true,
-    detailedInfo: {
-      title: 'Gestion Mensuelle - C\'est quoi exactement ?',
-      content: {
-        intro: 'Un accompagnement mensuel pour optimiser vos campagnes sociales et maximiser le ROI.',
-        sections: [
-          {
-            title: 'Ce que nous faisons chaque mois',
-            items: [
-              'Optimisation des enchères et budgets',
-              'Refresh des créatives',
-              'Gestion des audiences (exclusions, lookalikes)',
-              'Tests A/B continus',
-              'Analyse des performances par placement',
-              'Veille sur les nouvelles fonctionnalités'
-            ]
-          },
-          {
-            title: 'Reporting inclus',
-            items: [
-              'Dashboard temps réel',
-              'Rapport mensuel par plateforme',
-              'Analyse des tendances',
-              'Recommandations créatives'
-            ]
-          }
-        ],
-        conclusion: 'Note : Frais de gestion = 15% de votre budget publicitaire (minimum 300€/mois).'
-      }
-    },
-    levels: [
-      {
-        name: 'Essentiel',
-        nameEn: 'Essential',
-        price: 0,
-        features: ['Optimisations hebdomadaires', 'Gestion des budgets', 'Rapport mensuel'],
-        featuresEn: ['Weekly optimizations', 'Budget management', 'Monthly report'],
-        recommended: 'Budgets < 3000€/mois',
-        recommendedEn: 'Budgets < €3000/mo',
-        budgetBased: true
-      },
-      {
-        name: 'Avancé',
-        nameEn: 'Advanced',
-        price: 200,
-        features: ['Optimisations bi-hebdomadaires', 'Tests créatives', 'Rapport détaillé', '1 call/mois'],
-        featuresEn: ['Bi-weekly optimizations', 'Creative tests', 'Detailed report', '1 call/month'],
-        recommended: 'Budgets 3000-10000€/mois',
-        recommendedEn: 'Budgets €3000-10000/mo',
-        popular: true,
-        budgetBased: true
-      },
-      {
-        name: 'Premium',
-        nameEn: 'Premium',
-        price: 400,
-        features: ['Optimisations continues', 'Stratégie créative', 'Reporting personnalisé', '2 calls/mois', 'Support prioritaire'],
-        featuresEn: ['Continuous optimizations', 'Creative strategy', 'Custom reporting', '2 calls/month', 'Priority support'],
-        recommended: 'Budgets > 10000€/mois',
-        recommendedEn: 'Budgets > €10000/mo',
-        budgetBased: true
-      }
-    ]
-  },
-  {
     id: 'social-creatives',
-    title: 'D. Création de Visuels',
-    titleEn: 'D. Visual Creation',
+    title: 'C. Création de Visuels',
+    titleEn: 'C. Visual Creation',
     description: 'Production de visuels et vidéos publicitaires optimisés pour les réseaux sociaux.',
     descriptionEn: 'Production of visuals and ad videos optimized for social media.',
     icon: '🎨',
