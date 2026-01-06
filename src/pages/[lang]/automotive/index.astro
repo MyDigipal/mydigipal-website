@@ -111,14 +111,18 @@ const content = {
       title: "What Dealerships Say",
       items: [
         {
-          quote: "MyDigipal's Google Ads campaigns generate more qualified leads than any other channel we've tried. The ROI speaks for itself.",
-          author: "Sales Director",
-          company: "Multi-Brand Dealership Group"
+          quote: "MyDigipal's automotive expertise is unmatched. They understand our industry, our challenges, and deliver campaigns that actually bring customers to our showroom.",
+          author: "Jennifer G.",
+          role: "Marketing Director",
+          company: "Groupe Theobald",
+          image: "/images/Client logo/Jennifer G.jpeg"
         },
         {
-          quote: "The Dynamic Ads are incredible. Our entire inventory is automatically promoted to the right audiences. We've seen a 40% increase in online inquiries.",
-          author: "Marketing Manager",
-          company: "Premium Car Dealership"
+          quote: "What sets MyDigipal apart is the proximity and personalized follow-up. They're always available, proactive with optimizations, and truly invested in our success.",
+          author: "Vanina F.",
+          role: "Digital Manager",
+          company: "BYmyCAR",
+          image: "/images/Client logo/Vanina F.jpeg"
         }
       ]
     },
@@ -226,17 +230,21 @@ const content = {
       ]
     },
     testimonials: {
-      title: "Ce Que Disent les Concessions",
+      title: "Ce que disent les concessions",
       items: [
         {
-          quote: "Les campagnes Google Ads de MyDigipal génèrent plus de leads qualifiés que n'importe quel autre canal qu'on a testé. Le ROI parle de lui-même.",
-          author: "Directeur Commercial",
-          company: "Groupe de Concessions Multi-Marques"
+          quote: "L'expertise automobile de MyDigipal est inégalée. Ils comprennent notre industrie, nos défis, et délivrent des campagnes qui amènent vraiment des clients en showroom.",
+          author: "Jennifer G.",
+          role: "Directrice Marketing",
+          company: "Groupe Theobald",
+          image: "/images/Client logo/Jennifer G.jpeg"
         },
         {
-          quote: "Les Dynamic Ads sont incroyables. Tout notre stock est automatiquement promu aux bonnes audiences. On a vu une augmentation de 40% des demandes en ligne.",
-          author: "Responsable Marketing",
-          company: "Concession Premium"
+          quote: "Ce qui distingue MyDigipal, c'est la proximité et le suivi personnalisé. Ils sont toujours disponibles, proactifs sur les optimisations, et vraiment investis dans notre succès.",
+          author: "Vanina F.",
+          role: "Responsable Digital",
+          company: "BYmyCAR",
+          image: "/images/Client logo/Vanina F.jpeg"
         }
       ]
     },
@@ -496,9 +504,20 @@ const c = content[lang] || content.en;
               ))}
             </div>
             <p class="text-lg text-slate-700 mb-6 italic">"{testimonial.quote}"</p>
-            <div>
-              <p class="font-semibold text-slate-900">{testimonial.author}</p>
-              <p class="text-slate-500 text-sm">{testimonial.company}</p>
+            <div class="flex items-center gap-4">
+              {testimonial.image && (
+                <img
+                  src={testimonial.image}
+                  alt={testimonial.author}
+                  class="w-14 h-14 rounded-full object-cover ring-2 ring-cyan-100"
+                  loading="lazy"
+                />
+              )}
+              <div>
+                <p class="font-semibold text-slate-900">{testimonial.author}</p>
+                {testimonial.role && <p class="text-slate-600 text-sm">{testimonial.role}</p>}
+                <p class="text-cyan-600 text-sm font-medium">{testimonial.company}</p>
+              </div>
             </div>
           </div>
         ))}
