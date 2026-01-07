@@ -1,0 +1,163 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "The Content Challenge",
+    headline: "Why AI content matters in 2025",
+    subtitle: "Generic AI content floods the internet. Quality human content takes too long. The solution? A hybrid approach that combines the best of both.",
+    stats: [
+      { value: "86%", label: "of SEO professionals now use AI tools", source: "Ahrefs 2025" },
+      { value: "45%", label: "average traffic increase with AI-driven SEO", source: "SeoProfy" },
+      { value: "2.4x", label: "more engagement with AI + human edited content", source: "DemandSage" },
+    ],
+    problems: {
+      title: "The problem with generic AI",
+      items: [
+        { icon: "alert-triangle", text: "Sounds robotic and impersonal" },
+        { icon: "alert-triangle", text: "Keyword stuffing (5%+ density)" },
+        { icon: "alert-triangle", text: "Thin 500-word articles" },
+        { icon: "alert-triangle", text: "No brand voice consistency" },
+        { icon: "alert-triangle", text: "Detected and penalized by Google" },
+      ]
+    },
+    solution: {
+      title: "Our AI content approach",
+      items: [
+        { icon: "check", text: "Trained on YOUR brand voice" },
+        { icon: "check", text: "Natural keyword density (1-2%)" },
+        { icon: "check", text: "Comprehensive 1500+ word guides" },
+        { icon: "check", text: "Human review before publishing" },
+        { icon: "check", text: "Continuously optimized for performance" },
+      ]
+    }
+  },
+  fr: {
+    badge: "Le Défi du Contenu",
+    headline: "Pourquoi le contenu IA compte en 2025",
+    subtitle: "Le contenu IA générique inonde internet. Le contenu humain de qualité prend trop de temps. La solution ? Une approche hybride qui combine le meilleur des deux.",
+    stats: [
+      { value: "86%", label: "des professionnels SEO utilisent des outils IA", source: "Ahrefs 2025" },
+      { value: "45%", label: "augmentation moyenne du trafic avec SEO IA", source: "SeoProfy" },
+      { value: "2.4x", label: "plus d'engagement avec contenu IA + humain", source: "DemandSage" },
+    ],
+    problems: {
+      title: "Le problème avec l'IA générique",
+      items: [
+        { icon: "alert-triangle", text: "Sonne robotique et impersonnel" },
+        { icon: "alert-triangle", text: "Bourrage de mots-clés (5%+ densité)" },
+        { icon: "alert-triangle", text: "Articles légers de 500 mots" },
+        { icon: "alert-triangle", text: "Pas de cohérence de voix de marque" },
+        { icon: "alert-triangle", text: "Détecté et pénalisé par Google" },
+      ]
+    },
+    solution: {
+      title: "Notre approche contenu IA",
+      items: [
+        { icon: "check", text: "Entraîné sur VOTRE voix de marque" },
+        { icon: "check", text: "Densité de mots-clés naturelle (1-2%)" },
+        { icon: "check", text: "Guides complets de 1500+ mots" },
+        { icon: "check", text: "Revue humaine avant publication" },
+        { icon: "check", text: "Optimisé en continu pour la performance" },
+      ]
+    }
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-white">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 font-medium mb-6">
+        <Icon name="zap" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="grid md:grid-cols-3 gap-8 mb-20">
+      {t.stats.map((stat, index) => (
+        <div
+          class="text-center p-8 bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl border border-violet-100 animate-on-scroll"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <div class="text-5xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            {stat.value}
+          </div>
+          <div class="text-slate-700 font-medium mb-2">{stat.label}</div>
+          <div class="text-sm text-slate-500">{stat.source}</div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Problem vs Solution -->
+    <div class="grid md:grid-cols-2 gap-8">
+      <!-- Problem -->
+      <div class="bg-red-50 border border-red-200 rounded-2xl p-8 animate-on-scroll">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-12 h-12 rounded-xl bg-red-500 flex items-center justify-center">
+            <Icon name="x" size={24} class="text-white" />
+          </div>
+          <h3 class="text-2xl font-bold text-slate-900">{t.problems.title}</h3>
+        </div>
+        <ul class="space-y-4">
+          {t.problems.items.map((item) => (
+            <li class="flex items-start gap-3">
+              <Icon name={item.icon} size={20} class="text-red-500 flex-shrink-0 mt-1" />
+              <span class="text-slate-700">{item.text}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Solution -->
+      <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-8 animate-on-scroll" style="animation-delay: 150ms">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+            <Icon name="check" size={24} class="text-white" />
+          </div>
+          <h3 class="text-2xl font-bold text-slate-900">{t.solution.title}</h3>
+        </div>
+        <ul class="space-y-4">
+          {t.solution.items.map((item) => (
+            <li class="flex items-start gap-3">
+              <Icon name={item.icon} size={20} class="text-emerald-500 flex-shrink-0 mt-1" />
+              <span class="text-slate-700">{item.text}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .animate-on-scroll {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

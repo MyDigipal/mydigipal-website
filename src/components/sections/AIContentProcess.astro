@@ -1,0 +1,408 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Our Process",
+    headline: "How AI content creation works",
+    subtitle: "A proven 4-step workflow that delivers quality content at scale. Hover over each step to learn more.",
+    steps: [
+      {
+        number: "01",
+        title: "Brand Voice Training",
+        shortDesc: "We learn your tone & style",
+        icon: "sparkles",
+        color: "from-blue-500 to-cyan-500",
+        popup: {
+          title: "Brand Voice Training",
+          description: "Before creating any content, we deeply analyze your existing materials to understand what makes YOUR brand unique.",
+          details: [
+            "Analysis of 10+ existing content pieces",
+            "Brand guidelines integration",
+            "Tone, vocabulary & style extraction",
+            "Custom AI model fine-tuning",
+            "Voice consistency validation"
+          ],
+          visual: "brand-voice"
+        }
+      },
+      {
+        number: "02",
+        title: "Data-Driven Strategy",
+        shortDesc: "SEO data feeds the AI",
+        icon: "bar-chart",
+        color: "from-indigo-500 to-purple-500",
+        popup: {
+          title: "Data-Driven Strategy",
+          description: "Real SEO data from Ahrefs and your Search Console directly informs content decisions. No guessing.",
+          details: [
+            "Ahrefs keyword research integration",
+            "Search Console performance analysis",
+            "Competitor content gap analysis",
+            "Search intent mapping",
+            "Topic cluster planning"
+          ],
+          visual: "data-strategy"
+        }
+      },
+      {
+        number: "03",
+        title: "AI Generation",
+        shortDesc: "Claude/GPT creates drafts",
+        icon: "cpu",
+        color: "from-purple-500 to-pink-500",
+        popup: {
+          title: "AI Content Generation",
+          description: "Our AI generates comprehensive content using your brand voice and SEO best practices.",
+          details: [
+            "1500+ word comprehensive articles",
+            "SEO-optimized H1-H6 structure",
+            "Meta title & description included",
+            "Internal linking suggestions",
+            "FAQ sections for featured snippets"
+          ],
+          visual: "ai-generation"
+        }
+      },
+      {
+        number: "04",
+        title: "Human Review",
+        shortDesc: "Quality check & publish",
+        icon: "user-check",
+        color: "from-pink-500 to-rose-500",
+        popup: {
+          title: "Human Review & Publishing",
+          description: "Every piece goes through human review before publication. Quality is non-negotiable.",
+          details: [
+            "Expert editor review",
+            "Fact-checking & accuracy",
+            "Brand voice validation",
+            "Final SEO optimization",
+            "Direct CMS publishing option"
+          ],
+          visual: "human-review"
+        }
+      }
+    ]
+  },
+  fr: {
+    badge: "Notre Process",
+    headline: "Comment fonctionne la création de contenu IA",
+    subtitle: "Un workflow éprouvé en 4 étapes qui livre du contenu de qualité à grande échelle. Survolez chaque étape pour en savoir plus.",
+    steps: [
+      {
+        number: "01",
+        title: "Entraînement Voix de Marque",
+        shortDesc: "On apprend votre ton & style",
+        icon: "sparkles",
+        color: "from-blue-500 to-cyan-500",
+        popup: {
+          title: "Entraînement Voix de Marque",
+          description: "Avant de créer du contenu, nous analysons en profondeur vos matériaux existants pour comprendre ce qui rend VOTRE marque unique.",
+          details: [
+            "Analyse de 10+ contenus existants",
+            "Intégration des guidelines de marque",
+            "Extraction du ton, vocabulaire & style",
+            "Fine-tuning du modèle IA personnalisé",
+            "Validation de la cohérence de voix"
+          ],
+          visual: "brand-voice"
+        }
+      },
+      {
+        number: "02",
+        title: "Stratégie Data-Driven",
+        shortDesc: "Les données SEO alimentent l'IA",
+        icon: "bar-chart",
+        color: "from-indigo-500 to-purple-500",
+        popup: {
+          title: "Stratégie Data-Driven",
+          description: "Les vraies données SEO d'Ahrefs et de votre Search Console informent directement les décisions de contenu. Pas de suppositions.",
+          details: [
+            "Intégration recherche mots-clés Ahrefs",
+            "Analyse performance Search Console",
+            "Analyse des gaps concurrentiels",
+            "Mapping des intentions de recherche",
+            "Planification des clusters thématiques"
+          ],
+          visual: "data-strategy"
+        }
+      },
+      {
+        number: "03",
+        title: "Génération IA",
+        shortDesc: "Claude/GPT crée les brouillons",
+        icon: "cpu",
+        color: "from-purple-500 to-pink-500",
+        popup: {
+          title: "Génération de Contenu IA",
+          description: "Notre IA génère du contenu complet en utilisant votre voix de marque et les meilleures pratiques SEO.",
+          details: [
+            "Articles complets de 1500+ mots",
+            "Structure H1-H6 optimisée SEO",
+            "Meta title & description inclus",
+            "Suggestions de maillage interne",
+            "Sections FAQ pour featured snippets"
+          ],
+          visual: "ai-generation"
+        }
+      },
+      {
+        number: "04",
+        title: "Revue Humaine",
+        shortDesc: "Contrôle qualité & publication",
+        icon: "user-check",
+        color: "from-pink-500 to-rose-500",
+        popup: {
+          title: "Revue Humaine & Publication",
+          description: "Chaque contenu passe par une revue humaine avant publication. La qualité est non négociable.",
+          details: [
+            "Revue par éditeur expert",
+            "Vérification des faits & précision",
+            "Validation de la voix de marque",
+            "Optimisation SEO finale",
+            "Option publication directe CMS"
+          ],
+          visual: "human-review"
+        }
+      }
+    ]
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-slate-950 overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/20 text-violet-300 font-medium mb-6">
+        <Icon name="settings" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Process Steps -->
+    <div class="relative">
+      <!-- Connection Line (Desktop) -->
+      <div class="hidden lg:block absolute top-24 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 z-0"></div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+        {t.steps.map((step, index) => (
+          <div
+            class="process-step-card group relative"
+            data-step={index}
+          >
+            <!-- Step Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-slate-700 transition-all duration-300 cursor-pointer h-full">
+              <!-- Number Circle -->
+              <div class={`w-16 h-16 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center text-2xl font-bold text-white mb-6 mx-auto lg:mx-0 group-hover:scale-110 transition-transform duration-300`}>
+                {step.number}
+              </div>
+
+              <!-- Content -->
+              <div class="text-center lg:text-left">
+                <h3 class="text-xl font-bold text-white mb-2">{step.title}</h3>
+                <p class="text-slate-400">{step.shortDesc}</p>
+              </div>
+
+              <!-- Hover indicator -->
+              <div class="mt-4 flex items-center justify-center lg:justify-start gap-2 text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Icon name="info" size={16} />
+                <span class="text-sm">{lang === 'fr' ? 'Cliquez pour détails' : 'Click for details'}</span>
+              </div>
+            </div>
+
+            <!-- Popup Modal (hidden by default, shown on click) -->
+            <div class="popup-modal fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+              <div class="popup-content bg-slate-900 border border-slate-700 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
+                <!-- Popup Header -->
+                <div class={`p-8 bg-gradient-to-br ${step.color} rounded-t-3xl`}>
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                      <div class="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center">
+                        <Icon name={step.icon} size={28} class="text-white" />
+                      </div>
+                      <div>
+                        <div class="text-white/70 text-sm font-medium">{lang === 'fr' ? 'Étape' : 'Step'} {step.number}</div>
+                        <h4 class="text-2xl font-bold text-white">{step.popup.title}</h4>
+                      </div>
+                    </div>
+                    <button class="popup-close w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+                      <Icon name="x" size={20} class="text-white" />
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Popup Body -->
+                <div class="p-8">
+                  <p class="text-lg text-slate-300 mb-6">
+                    {step.popup.description}
+                  </p>
+
+                  <!-- Visual Representation -->
+                  <div class={`mb-8 p-6 rounded-2xl bg-gradient-to-br ${step.color} bg-opacity-10 border border-slate-800`}>
+                    {step.popup.visual === 'brand-voice' && (
+                      <div class="flex flex-wrap gap-3">
+                        <span class="px-4 py-2 bg-white/10 rounded-full text-white text-sm">Professional tone</span>
+                        <span class="px-4 py-2 bg-white/10 rounded-full text-white text-sm">Technical vocabulary</span>
+                        <span class="px-4 py-2 bg-white/10 rounded-full text-white text-sm">Clear & concise</span>
+                        <span class="px-4 py-2 bg-white/10 rounded-full text-white text-sm">Action-oriented</span>
+                        <span class="px-4 py-2 bg-white/10 rounded-full text-white text-sm">Your brand DNA</span>
+                      </div>
+                    )}
+                    {step.popup.visual === 'data-strategy' && (
+                      <div class="grid grid-cols-3 gap-4 text-center">
+                        <div class="p-4 bg-white/10 rounded-xl">
+                          <div class="text-2xl font-bold text-white">2,400</div>
+                          <div class="text-sm text-slate-400">Keywords</div>
+                        </div>
+                        <div class="p-4 bg-white/10 rounded-xl">
+                          <div class="text-2xl font-bold text-white">85</div>
+                          <div class="text-sm text-slate-400">Content Gaps</div>
+                        </div>
+                        <div class="p-4 bg-white/10 rounded-xl">
+                          <div class="text-2xl font-bold text-white">12</div>
+                          <div class="text-sm text-slate-400">Topic Clusters</div>
+                        </div>
+                      </div>
+                    )}
+                    {step.popup.visual === 'ai-generation' && (
+                      <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                          <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                          <div class="flex-1 h-3 bg-white/20 rounded-full"></div>
+                          <span class="text-xs text-slate-400">H1 Title</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                          <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                          <div class="flex-1 h-2 bg-white/15 rounded-full"></div>
+                          <span class="text-xs text-slate-400">H2 Sections</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                          <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                          <div class="flex-1 h-8 bg-white/10 rounded"></div>
+                          <span class="text-xs text-slate-400">Content</span>
+                        </div>
+                      </div>
+                    )}
+                    {step.popup.visual === 'human-review' && (
+                      <div class="flex items-center justify-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                          <Icon name="cpu" size={20} class="text-white" />
+                        </div>
+                        <Icon name="arrow-right" size={24} class="text-white/50" />
+                        <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                          <Icon name="user" size={20} class="text-white" />
+                        </div>
+                        <Icon name="arrow-right" size={24} class="text-white/50" />
+                        <div class="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center">
+                          <Icon name="check" size={20} class="text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <!-- Details List -->
+                  <h5 class="text-lg font-semibold text-white mb-4">{lang === 'fr' ? 'Ce qui est inclus' : 'What\'s included'}</h5>
+                  <ul class="space-y-3">
+                    {step.popup.details.map((detail) => (
+                      <li class="flex items-start gap-3">
+                        <div class={`w-6 h-6 rounded-full bg-gradient-to-br ${step.color} flex items-center justify-center flex-shrink-0`}>
+                          <Icon name="check" size={14} class="text-white" />
+                        </div>
+                        <span class="text-slate-300">{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .popup-modal.active {
+    display: flex;
+  }
+
+  .popup-modal.active .popup-content {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .process-step-card {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .process-step-card:nth-child(1) { animation-delay: 0ms; }
+  .process-step-card:nth-child(2) { animation-delay: 100ms; }
+  .process-step-card:nth-child(3) { animation-delay: 200ms; }
+  .process-step-card:nth-child(4) { animation-delay: 300ms; }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  // Popup functionality
+  document.querySelectorAll('.process-step-card').forEach((card) => {
+    const popup = card.querySelector('.popup-modal');
+    const closeBtn = card.querySelector('.popup-close');
+
+    // Open popup on card click
+    card.querySelector('.bg-slate-900')?.addEventListener('click', () => {
+      popup?.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+
+    // Close popup
+    closeBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      popup?.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+
+    // Close on backdrop click
+    popup?.addEventListener('click', (e) => {
+      if (e.target === popup) {
+        popup.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+
+  // Close on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.popup-modal.active').forEach((popup) => {
+        popup.classList.remove('active');
+      });
+      document.body.style.overflow = '';
+    }
+  });
+</script>

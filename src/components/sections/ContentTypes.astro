@@ -1,0 +1,171 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Content Types",
+    headline: "What we can create for you",
+    subtitle: "From blog articles to product descriptions, our AI content system adapts to any format while maintaining your brand voice.",
+    types: [
+      {
+        icon: "file-text",
+        title: "Blog Articles",
+        description: "SEO-optimized articles of 1500+ words with proper structure, internal links, and FAQ sections.",
+        specs: "1500-3000 words",
+        color: "from-blue-500 to-cyan-500"
+      },
+      {
+        icon: "layout",
+        title: "Landing Pages",
+        description: "High-converting landing page copy with compelling headlines, benefits, and CTAs.",
+        specs: "Full page copy",
+        color: "from-indigo-500 to-purple-500"
+      },
+      {
+        icon: "shopping-bag",
+        title: "Product Descriptions",
+        description: "Unique, SEO-friendly product descriptions that highlight benefits and drive conversions.",
+        specs: "150-500 words",
+        color: "from-purple-500 to-pink-500"
+      },
+      {
+        icon: "book-open",
+        title: "Case Studies",
+        description: "Compelling customer success stories with problem-solution-results structure.",
+        specs: "1000-2000 words",
+        color: "from-pink-500 to-rose-500"
+      },
+      {
+        icon: "mail",
+        title: "Email Sequences",
+        description: "Nurturing email campaigns that guide leads through your funnel.",
+        specs: "5-10 emails",
+        color: "from-amber-500 to-orange-500"
+      },
+      {
+        icon: "share-2",
+        title: "Social Posts",
+        description: "Platform-optimized social media content for LinkedIn, Twitter, and more.",
+        specs: "Batch of 20+",
+        color: "from-emerald-500 to-teal-500"
+      }
+    ]
+  },
+  fr: {
+    badge: "Types de Contenu",
+    headline: "Ce que nous pouvons créer pour vous",
+    subtitle: "Des articles de blog aux descriptions produit, notre système de contenu IA s'adapte à tout format tout en maintenant votre voix de marque.",
+    types: [
+      {
+        icon: "file-text",
+        title: "Articles de Blog",
+        description: "Articles optimisés SEO de 1500+ mots avec structure appropriée, liens internes et sections FAQ.",
+        specs: "1500-3000 mots",
+        color: "from-blue-500 to-cyan-500"
+      },
+      {
+        icon: "layout",
+        title: "Landing Pages",
+        description: "Copie de landing page à haute conversion avec titres accrocheurs, bénéfices et CTAs.",
+        specs: "Page complète",
+        color: "from-indigo-500 to-purple-500"
+      },
+      {
+        icon: "shopping-bag",
+        title: "Descriptions Produit",
+        description: "Descriptions produit uniques et SEO-friendly qui mettent en avant les bénéfices.",
+        specs: "150-500 mots",
+        color: "from-purple-500 to-pink-500"
+      },
+      {
+        icon: "book-open",
+        title: "Études de Cas",
+        description: "Histoires de succès clients convaincantes avec structure problème-solution-résultats.",
+        specs: "1000-2000 mots",
+        color: "from-pink-500 to-rose-500"
+      },
+      {
+        icon: "mail",
+        title: "Séquences Email",
+        description: "Campagnes email de nurturing qui guident les leads à travers votre funnel.",
+        specs: "5-10 emails",
+        color: "from-amber-500 to-orange-500"
+      },
+      {
+        icon: "share-2",
+        title: "Posts Social",
+        description: "Contenu réseaux sociaux optimisé par plateforme pour LinkedIn, Twitter, etc.",
+        specs: "Lot de 20+",
+        color: "from-emerald-500 to-teal-500"
+      }
+    ]
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-white">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 font-medium mb-6">
+        <Icon name="layers" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Content Types Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {t.types.map((type, index) => (
+        <div
+          class="content-type-card group bg-white border border-slate-200 rounded-2xl p-6 hover:border-violet-300 hover:shadow-lg transition-all duration-300 animate-on-scroll"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <!-- Icon -->
+          <div class={`w-14 h-14 rounded-xl bg-gradient-to-br ${type.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+            <Icon name={type.icon} size={24} class="text-white" />
+          </div>
+
+          <!-- Content -->
+          <h3 class="text-xl font-bold text-slate-900 mb-2">{type.title}</h3>
+          <p class="text-slate-600 mb-4">{type.description}</p>
+
+          <!-- Specs Badge -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full text-sm text-slate-600">
+            <Icon name="file" size={14} />
+            {type.specs}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .animate-on-scroll {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

@@ -64,6 +64,12 @@ import WhyAISolutions from '@/components/sections/WhyAISolutions.astro';
 import AIUseCases from '@/components/sections/AIUseCases.astro';
 import AIProcess from '@/components/sections/AIProcess.astro';
 
+// AI Content specific sections
+import WhyAIContent from '@/components/sections/WhyAIContent.astro';
+import AIContentProcess from '@/components/sections/AIContentProcess.astro';
+import ContentTypes from '@/components/sections/ContentTypes.astro';
+import AIContentDelivery from '@/components/sections/AIContentDelivery.astro';
+
 // B2B ABM specific sections
 import WhyABM from '@/components/sections/b2b/WhyABM.astro';
 import ABMApproach from '@/components/sections/b2b/ABMApproach.astro';
@@ -138,6 +144,8 @@ const isAISolutionsService = slug === 'ai-solutions';
 const isB2BABMService = slug === 'b2b-abm';
 // Check if this is the Tracking & Reporting service page
 const isTrackingService = slug === 'tracking-reporting';
+// Check if this is the AI Content service page
+const isAIContentService = slug === 'ai-content';
 
 // SEO Schema data
 const serviceUrl = `https://mydigipal.com/${lang}/services/${slug}`;
@@ -345,6 +353,23 @@ const breadcrumbItems = [
     </>
   )}
 
+  <!-- AI Content Service: Comprehensive Sections -->
+  {isAIContentService && (
+    <>
+      <!-- Why AI Content - Educational Section -->
+      <WhyAIContent lang={lang} />
+
+      <!-- 4-Step Process with Visual Popups -->
+      <AIContentProcess lang={lang} />
+
+      <!-- Content Types Grid -->
+      <ContentTypes lang={lang} />
+
+      <!-- Deliverables & Delivery Options -->
+      <AIContentDelivery lang={lang} />
+    </>
+  )}
+
   <!-- Google Ads Case Studies -->
   {isGoogleAdsService && (
     <CaseStudyCarousel lang={lang} caseStudyIds={['dmd', 'quantum', 'genesys']} color={color} />
@@ -393,6 +418,9 @@ const breadcrumbItems = [
   )}
   {isTrackingService && (
     <ServiceFAQ lang={lang} service="tracking-reporting" color="tracking" />
+  )}
+  {isAIContentService && (
+    <ServiceFAQ lang={lang} service="ai-content" color="content" />
   )}
 </PageLayout>
 
