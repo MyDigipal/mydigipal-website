@@ -4,8 +4,8 @@ import FAQSchema from '@/components/seo/FAQSchema.astro';
 
 interface Props {
   lang: Language;
-  service: 'seo' | 'google-ads' | 'paid-social' | 'abm' | 'ai-training' | 'emailing' | 'ai-solutions' | 'tracking-reporting';
-  color?: 'seo' | 'ads' | 'social' | 'abm' | 'training' | 'emailing' | 'ai' | 'tracking' | 'primary';
+  service: 'seo' | 'google-ads' | 'paid-social' | 'abm' | 'ai-training' | 'emailing' | 'ai-solutions' | 'tracking-reporting' | 'ai-content';
+  color?: 'seo' | 'ads' | 'social' | 'abm' | 'training' | 'emailing' | 'ai' | 'tracking' | 'content' | 'primary';
 }
 
 const { lang, service, color = 'primary' } = Astro.props;
@@ -74,6 +74,14 @@ const colorConfig = {
     border: 'border-teal-500/30',
     hover: 'hover:border-teal-500/50',
     glow: 'shadow-teal-500/20',
+  },
+  content: {
+    gradient: 'from-violet-500 to-purple-600',
+    text: 'text-violet-500',
+    bg: 'bg-violet-500',
+    border: 'border-violet-500/30',
+    hover: 'hover:border-violet-500/50',
+    glow: 'shadow-violet-500/20',
   },
   primary: {
     gradient: 'from-blue-500 to-indigo-600',
@@ -549,6 +557,68 @@ const faqContent = {
         {
           question: 'Combien de temps prend un setup tracking typiquement ?',
           answer: 'Un setup GTM et GA4 basique peut être fait en 1-2 semaines. Les implémentations plus complexes avec intégration CRM, tracking cross-domain et événements custom prennent généralement 3-4 semaines. La création de dashboards prend habituellement 1-2 semaines selon la complexité. Nous commençons toujours par un audit pour évaluer votre configuration actuelle.',
+        },
+      ],
+    },
+  },
+  'ai-content': {
+    en: {
+      title: 'Frequently Asked Questions',
+      subtitle: 'Everything you need to know about AI Content Creation',
+      faqs: [
+        {
+          question: 'How is your AI content different from generic ChatGPT output?',
+          answer: 'Our AI is trained specifically on YOUR brand voice, using your existing content, guidelines, and style preferences. We combine this with real SEO data from Ahrefs and Search Console, plus human review before publishing. The result is content that sounds authentically like your brand while being perfectly optimized for search.',
+        },
+        {
+          question: 'Will Google penalize AI-generated content?',
+          answer: 'Google doesn\'t penalize AI content - it penalizes low-quality content. Our approach combines AI efficiency with human expertise, creating comprehensive 1500+ word articles with natural keyword density (1-2%), proper structure, and genuine value. This quality-first approach actually outperforms most human-written content in rankings.',
+        },
+        {
+          question: 'How long does it take to produce an article?',
+          answer: 'Our AI system can generate a complete first draft in under 30 minutes. With human review and optimization, you can expect 2-4 publication-ready articles per week. Compare this to traditional content creation which takes 4-8 hours per article.',
+        },
+        {
+          question: 'What types of content can you create?',
+          answer: 'We create blog articles, landing pages, product descriptions, case studies, email sequences, and social media posts. Each format follows its own best practices and is optimized for its specific purpose - whether that\'s SEO ranking, conversion, or engagement.',
+        },
+        {
+          question: 'How do you learn our brand voice?',
+          answer: 'We start by analyzing 10+ pieces of your existing content to extract your tone, vocabulary, and style. We also integrate your brand guidelines and conduct interviews to understand your unique positioning. This creates a custom AI profile that ensures consistency across all content.',
+        },
+        {
+          question: 'Can you publish directly to our website?',
+          answer: 'Yes! We integrate with WordPress, Webflow, Shopify, HubSpot, and most CMS platforms via API. We can publish directly as drafts for your review, or fully automatically according to your editorial calendar. For social content, we also integrate with LinkedIn, Twitter, and scheduling tools.',
+        },
+      ],
+    },
+    fr: {
+      title: 'Questions Fréquentes',
+      subtitle: 'Tout ce que vous devez savoir sur la Création de Contenu IA',
+      faqs: [
+        {
+          question: 'En quoi votre contenu IA diffère du résultat ChatGPT générique ?',
+          answer: 'Notre IA est entraînée spécifiquement sur VOTRE voix de marque, utilisant votre contenu existant, guidelines et préférences de style. Nous combinons cela avec des données SEO réelles d\'Ahrefs et Search Console, plus une revue humaine avant publication. Le résultat est du contenu qui sonne authentiquement comme votre marque tout en étant parfaitement optimisé pour la recherche.',
+        },
+        {
+          question: 'Google pénalise-t-il le contenu généré par IA ?',
+          answer: 'Google ne pénalise pas le contenu IA - il pénalise le contenu de mauvaise qualité. Notre approche combine l\'efficacité de l\'IA avec l\'expertise humaine, créant des articles complets de 1500+ mots avec une densité de mots-clés naturelle (1-2%), une structure appropriée et une vraie valeur. Cette approche qualité-first surpasse en fait la plupart du contenu écrit par des humains dans les classements.',
+        },
+        {
+          question: 'Combien de temps pour produire un article ?',
+          answer: 'Notre système IA peut générer un premier brouillon complet en moins de 30 minutes. Avec la revue humaine et l\'optimisation, vous pouvez attendre 2-4 articles prêts à publier par semaine. Comparez avec la création traditionnelle qui prend 4-8 heures par article.',
+        },
+        {
+          question: 'Quels types de contenu pouvez-vous créer ?',
+          answer: 'Nous créons des articles de blog, landing pages, descriptions produit, études de cas, séquences email et posts réseaux sociaux. Chaque format suit ses propres meilleures pratiques et est optimisé pour son objectif spécifique - que ce soit le ranking SEO, la conversion ou l\'engagement.',
+        },
+        {
+          question: 'Comment apprenez-vous notre voix de marque ?',
+          answer: 'Nous commençons par analyser 10+ contenus existants pour extraire votre ton, vocabulaire et style. Nous intégrons aussi vos guidelines de marque et menons des interviews pour comprendre votre positionnement unique. Cela crée un profil IA personnalisé qui assure la cohérence sur tous les contenus.',
+        },
+        {
+          question: 'Pouvez-vous publier directement sur notre site ?',
+          answer: 'Oui ! Nous nous intégrons avec WordPress, Webflow, Shopify, HubSpot et la plupart des CMS via API. Nous pouvons publier directement en brouillon pour votre revue, ou de façon entièrement automatique selon votre calendrier éditorial. Pour le contenu social, nous intégrons aussi LinkedIn, Twitter et les outils de planification.',
         },
       ],
     },

@@ -1,0 +1,193 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Deliverables",
+    headline: "What's included with every piece",
+    subtitle: "Complete content packages ready for publishing, delivered your way.",
+    deliverables: [
+      { label: "Meta Title", detail: "max 60 characters", icon: "tag" },
+      { label: "Meta Description", detail: "max 155 characters", icon: "file-text" },
+      { label: "H1 + 4-7 H2", detail: "optimized structure", icon: "list" },
+      { label: "Primary Keyword", detail: "+ ~5 secondary", icon: "target" },
+      { label: "Internal Links", detail: "8-12 strategic links", icon: "link" },
+      { label: "FAQ Section", detail: "for featured snippets", icon: "help-circle" },
+    ],
+    deliveryOptions: {
+      title: "Choose your delivery method",
+      subtitle: "We adapt to your workflow, not the other way around.",
+      options: [
+        {
+          icon: "file-text",
+          title: "Your Format",
+          description: "We deliver content in any format you need: Google Docs, Word, Notion, or plain text. Ready for your team to review and publish.",
+          color: "blue"
+        },
+        {
+          icon: "upload-cloud",
+          title: "CMS Integration",
+          description: "We publish directly to your website via integration with WordPress, Webflow, Shopify, or any CMS with API access.",
+          color: "emerald"
+        },
+        {
+          icon: "share-2",
+          title: "Social Publishing",
+          description: "For social content, we can schedule and publish directly to your LinkedIn, Twitter, or other social platforms.",
+          color: "purple"
+        }
+      ]
+    },
+    platforms: {
+      title: "Supported platforms",
+      items: ["WordPress", "Webflow", "Shopify", "HubSpot", "Notion", "LinkedIn", "Twitter", "Custom CMS"]
+    }
+  },
+  fr: {
+    badge: "Livrables",
+    headline: "Ce qui est inclus avec chaque contenu",
+    subtitle: "Des packages de contenu complets prêts à publier, livrés comme vous le souhaitez.",
+    deliverables: [
+      { label: "Meta Title", detail: "max 60 caractères", icon: "tag" },
+      { label: "Meta Description", detail: "max 155 caractères", icon: "file-text" },
+      { label: "H1 + 4-7 H2", detail: "structure optimisée", icon: "list" },
+      { label: "Mot-clé Principal", detail: "+ ~5 secondaires", icon: "target" },
+      { label: "Liens Internes", detail: "8-12 liens stratégiques", icon: "link" },
+      { label: "Section FAQ", detail: "pour featured snippets", icon: "help-circle" },
+    ],
+    deliveryOptions: {
+      title: "Choisissez votre mode de livraison",
+      subtitle: "Nous nous adaptons à votre workflow, pas l'inverse.",
+      options: [
+        {
+          icon: "file-text",
+          title: "Votre Format",
+          description: "Nous livrons le contenu dans le format de votre choix : Google Docs, Word, Notion, ou texte brut. Prêt pour votre équipe.",
+          color: "blue"
+        },
+        {
+          icon: "upload-cloud",
+          title: "Intégration CMS",
+          description: "Nous publions directement sur votre site via intégration WordPress, Webflow, Shopify, ou tout CMS avec accès API.",
+          color: "emerald"
+        },
+        {
+          icon: "share-2",
+          title: "Publication Social",
+          description: "Pour le contenu social, nous pouvons planifier et publier directement sur LinkedIn, Twitter, ou autres plateformes.",
+          color: "purple"
+        }
+      ]
+    },
+    platforms: {
+      title: "Plateformes supportées",
+      items: ["WordPress", "Webflow", "Shopify", "HubSpot", "Notion", "LinkedIn", "Twitter", "CMS Custom"]
+    }
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-gradient-to-br from-violet-900 via-purple-900 to-slate-900 text-white overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-violet-200 font-medium mb-6">
+        <Icon name="package" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-violet-200 max-w-3xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Deliverables Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
+      {t.deliverables.map((item, index) => (
+        <div
+          class="deliverable-card bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5 hover:bg-white/10 hover:border-white/20 transition-all duration-300 animate-on-scroll"
+          style={`animation-delay: ${index * 50}ms`}
+        >
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-violet-500/30 flex items-center justify-center">
+              <Icon name={item.icon} size={20} class="text-violet-300" />
+            </div>
+            <div>
+              <div class="font-semibold text-white">{item.label}</div>
+              <div class="text-sm text-violet-300">{item.detail}</div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Delivery Options -->
+    <div class="mb-16">
+      <div class="text-center mb-12">
+        <h3 class="text-3xl font-bold text-white mb-4">{t.deliveryOptions.title}</h3>
+        <p class="text-violet-200">{t.deliveryOptions.subtitle}</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        {t.deliveryOptions.options.map((option, index) => (
+          <div
+            class={`delivery-option bg-slate-900/50 border rounded-2xl p-8 text-center hover:-translate-y-2 transition-all duration-300 animate-on-scroll ${
+              option.color === 'blue' ? 'border-blue-500/30 hover:border-blue-500/50' :
+              option.color === 'emerald' ? 'border-emerald-500/30 hover:border-emerald-500/50' :
+              'border-purple-500/30 hover:border-purple-500/50'
+            }`}
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            <div class={`w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center ${
+              option.color === 'blue' ? 'bg-blue-500/20 text-blue-400' :
+              option.color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400' :
+              'bg-purple-500/20 text-purple-400'
+            }`}>
+              <Icon name={option.icon} size={32} />
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">{option.title}</h4>
+            <p class="text-slate-400">{option.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Supported Platforms -->
+    <div class="text-center animate-on-scroll">
+      <h4 class="text-lg font-medium text-violet-300 mb-6">{t.platforms.title}</h4>
+      <div class="flex flex-wrap justify-center gap-3">
+        {t.platforms.items.map((platform) => (
+          <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-white hover:bg-white/10 transition-colors">
+            {platform}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .animate-on-scroll {
+    animation: fade-up 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  @keyframes fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
