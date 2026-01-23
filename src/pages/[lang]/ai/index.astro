@@ -14,6 +14,49 @@ export function getStaticPaths() {
 
 const { lang } = Astro.params as { lang: Language };
 
+const blogArticles = {
+  en: [
+    {
+      title: "How to Train Your Team on AI",
+      description: "Scalable methods and use cases for building AI capability.",
+      image: "/images/Blog Thumbnails/EN - how-to-train-teams-on-ai.png",
+      href: "/en/blog/how-to-train-teams-on-ai"
+    },
+    {
+      title: "Building AI Agents with n8n",
+      description: "The complete 2026 guide to autonomous AI workflow automation.",
+      image: "/images/Blog Thumbnails/EN - agents-ia-n8n-automatisation.png",
+      href: "/en/blog/ai-agents-n8n-automation"
+    },
+    {
+      title: "Claude Code: Developer Productivity",
+      description: "Master Anthropic's agentic CLI tool for 3-10x faster coding.",
+      image: "/images/Blog Thumbnails/EN - claude-code-developer-productivity.png",
+      href: "/en/blog/claude-code-developer-productivity"
+    }
+  ],
+  fr: [
+    {
+      title: "Former votre équipe à l'IA",
+      description: "Méthodes scalables et cas d'usage pour développer les compétences IA.",
+      image: "/images/Blog Thumbnails/EN - how-to-train-teams-on-ai.png",
+      href: "/fr/blog/how-to-train-teams-on-ai"
+    },
+    {
+      title: "Créer des Agents IA avec n8n",
+      description: "Le guide complet 2026 pour l'automatisation de workflows autonomes.",
+      image: "/images/Blog Thumbnails/EN - agents-ia-n8n-automatisation.png",
+      href: "/fr/blog/ai-agents-n8n-automation"
+    },
+    {
+      title: "Claude Code : Productivité Développeur",
+      description: "Maîtrisez l'outil CLI d'Anthropic pour coder 3-10x plus vite.",
+      image: "/images/Blog Thumbnails/EN - claude-code-developer-productivity.png",
+      href: "/fr/blog/claude-code-developer-productivity"
+    }
+  ]
+};
+
 const content = {
   en: {
     seo: {
@@ -35,6 +78,11 @@ const content = {
         { value: "50+", label: "Teams Trained" },
         { value: "100+", label: "AI Projects" }
       ]
+    },
+    servicesSection: {
+      badge: "Our AI Expertise",
+      title: "How Can We Help?",
+      subtitle: "Click on any service to explore it in detail"
     },
     services: [
       {
@@ -93,18 +141,27 @@ const content = {
         { icon: "bar-chart", name: "Analytics", description: "Data visualization, trend prediction, reporting" }
       ]
     },
+    blogSection: {
+      badge: "Learn More",
+      title: "Our AI Resources",
+      subtitle: "Deep-dive articles to master AI in your organization"
+    },
     testimonials: {
       title: "AI Success Stories",
       items: [
         {
-          quote: "The AI training transformed how our marketing team works. We've cut content production time by 70% while improving quality.",
-          author: "Head of Marketing",
-          company: "Tech Startup"
+          quote: "MyDigipal helped us improve our email conversion rate by 51% through a well-crafted strategy, ultra-precise targeting, and quality content. Their personalized approach transformed our emailing from generic blasts to highly targeted campaigns that actually convert.",
+          author: "Selva S.",
+          role: "Marketing Manager",
+          company: "Servion",
+          image: "/images/Client logo/Selva S.jpeg"
         },
         {
-          quote: "MyDigipal built us an AI assistant that handles 60% of our customer inquiries automatically. Game changer.",
-          author: "Operations Director",
-          company: "E-commerce Company"
+          quote: "MyDigipal's Google Ads expertise completely transformed our lead generation. They restructured our campaigns, optimized our bidding strategy, and within 3 months we saw a 225% increase in qualified traffic while reducing our cost per lead by 30%.",
+          author: "Kelly W.",
+          role: "Marketing Director",
+          company: "Quantum Metrics",
+          image: "/images/Client logo/Kelly W.jpeg"
         }
       ]
     }
@@ -129,6 +186,11 @@ const content = {
         { value: "50+", label: "Équipes Formées" },
         { value: "100+", label: "Projets IA" }
       ]
+    },
+    servicesSection: {
+      badge: "Nos Expertises IA",
+      title: "Comment Pouvons-Nous Vous Aider ?",
+      subtitle: "Cliquez sur un service pour en découvrir les détails"
     },
     services: [
       {
@@ -187,18 +249,27 @@ const content = {
         { icon: "bar-chart", name: "Analytics", description: "Visualisation data, prédiction tendances, reporting" }
       ]
     },
+    blogSection: {
+      badge: "En Savoir Plus",
+      title: "Nos Ressources IA",
+      subtitle: "Des articles approfondis pour maîtriser l'IA dans votre organisation"
+    },
     testimonials: {
       title: "Success Stories IA",
       items: [
         {
-          quote: "La formation IA a transformé le fonctionnement de notre équipe marketing. On a réduit le temps de production de contenu de 70% tout en améliorant la qualité.",
-          author: "Head of Marketing",
-          company: "Startup Tech"
+          quote: "MyDigipal nous a aidé à améliorer notre taux de conversion email de 51% grâce à une stratégie bien élaborée, un ciblage ultra-précis et du contenu de qualité. Leur approche personnalisée a transformé nos emailings génériques en campagnes ciblées qui convertissent vraiment.",
+          author: "Selva S.",
+          role: "Marketing Manager",
+          company: "Servion",
+          image: "/images/Client logo/Selva S.jpeg"
         },
         {
-          quote: "MyDigipal nous a construit un assistant IA qui gère 60% de nos demandes clients automatiquement. Un game changer.",
-          author: "Directeur Opérations",
-          company: "Entreprise E-commerce"
+          quote: "L'expertise Google Ads de MyDigipal a complètement transformé notre génération de leads. Ils ont restructuré nos campagnes, optimisé notre stratégie d'enchères, et en 3 mois nous avons vu une augmentation de 225% du trafic qualifié tout en réduisant notre coût par lead de 30%.",
+          author: "Kelly W.",
+          role: "Marketing Director",
+          company: "Quantum Metrics",
+          image: "/images/Client logo/Kelly W.jpeg"
         }
       ]
     }
@@ -206,6 +277,7 @@ const content = {
 };
 
 const c = content[lang] || content.en;
+const articles = blogArticles[lang] || blogArticles.en;
 ---
 
 <PageLayout lang={lang} title={c.seo.title} description={c.seo.description}>
@@ -294,18 +366,24 @@ const c = content[lang] || content.en;
       <div class="text-center mb-16 animate-on-scroll">
         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 font-medium mb-6">
           <Icon name="layers" size={16} />
-          <span>{lang === 'fr' ? 'Nos Expertises IA' : 'Our AI Expertise'}</span>
+          <span>{c.servicesSection.badge}</span>
         </div>
         <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          {lang === 'fr' ? 'Comment Pouvons-Nous Vous Aider ?' : 'How Can We Help?'}
+          {c.servicesSection.title}
         </h2>
+        <p class="text-lg text-slate-500 flex items-center justify-center gap-2">
+          <svg class="w-5 h-5 text-violet-500 animate-bounce-subtle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+          </svg>
+          {c.servicesSection.subtitle}
+        </p>
       </div>
 
       <div class="space-y-8">
         {c.services.map((service, index) => (
           <a
             href={service.href}
-            class="service-card group block p-8 md:p-10 bg-white rounded-3xl border-2 border-slate-200 hover:border-violet-300 transition-all duration-500 animate-on-scroll overflow-hidden"
+            class="service-card group block p-8 md:p-10 bg-white rounded-3xl border-2 border-slate-200 hover:border-violet-300 hover:shadow-xl transition-all duration-500 animate-on-scroll overflow-hidden cursor-pointer"
             style={`animation-delay: ${index * 150}ms`}
           >
             <div class="grid lg:grid-cols-2 gap-8 items-center">
@@ -332,8 +410,8 @@ const c = content[lang] || content.en;
                   ))}
                 </div>
 
-                <!-- CTA -->
-                <div class="flex items-center gap-2 text-violet-600 font-semibold group-hover:gap-3 transition-all">
+                <!-- CTA with shine effect -->
+                <div class={`cta-button inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r ${service.color} text-white font-semibold group-hover:gap-3 transition-all shadow-lg`}>
                   <span>{c.cta}</span>
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -342,7 +420,7 @@ const c = content[lang] || content.en;
               </div>
 
               <!-- Right: Highlights -->
-              <div class="bg-slate-50 rounded-2xl p-6">
+              <div class="bg-slate-50 rounded-2xl p-6 group-hover:bg-violet-50/50 transition-colors">
                 <h4 class="font-semibold text-slate-900 mb-4">{lang === 'fr' ? 'Points Clés' : 'Key Highlights'}</h4>
                 <ul class="space-y-3">
                   {service.highlights.map(highlight => (
@@ -390,8 +468,64 @@ const c = content[lang] || content.en;
     </div>
   </section>
 
-  <!-- Testimonials -->
+  <!-- Blog Articles Section -->
   <section class="py-24 bg-white">
+    <div class="container-custom">
+      <div class="text-center mb-16 animate-on-scroll">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 font-medium mb-6">
+          <Icon name="book" size={16} />
+          <span>{c.blogSection.badge}</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          {c.blogSection.title}
+        </h2>
+        <p class="text-lg text-slate-500">
+          {c.blogSection.subtitle}
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        {articles.map((article, index) => (
+          <a
+            href={article.href}
+            class="group block bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-violet-300 hover:shadow-xl transition-all duration-300 animate-on-scroll"
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            <div class="aspect-video overflow-hidden">
+              <img
+                src={article.image}
+                alt={article.title}
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div class="p-6">
+              <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-violet-600 transition-colors">
+                {article.title}
+              </h3>
+              <p class="text-slate-600 text-sm mb-4">
+                {article.description}
+              </p>
+              <div class="flex items-center gap-2 text-violet-600 font-medium text-sm group-hover:gap-3 transition-all">
+                <span>{lang === 'fr' ? 'Lire l\'article' : 'Read article'}</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="text-center mt-12">
+        <Button href={`/${lang}/blog?category=ai`} variant="outline" size="lg">
+          {lang === 'fr' ? 'Voir tous les articles IA' : 'View all AI articles'}
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="py-24 bg-gradient-to-b from-slate-50 to-white">
     <div class="container-custom">
       <div class="text-center mb-16 animate-on-scroll">
         <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
@@ -399,10 +533,10 @@ const c = content[lang] || content.en;
         </h2>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+      <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {c.testimonials.items.map((testimonial, index) => (
           <div
-            class="p-8 bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl border border-violet-100 animate-on-scroll"
+            class="p-8 bg-white rounded-2xl border border-slate-200 shadow-lg animate-on-scroll"
             style={`animation-delay: ${index * 150}ms`}
           >
             <div class="flex gap-1 mb-4">
@@ -412,10 +546,18 @@ const c = content[lang] || content.en;
                 </svg>
               ))}
             </div>
-            <p class="text-lg text-slate-700 mb-6 italic">"{testimonial.quote}"</p>
-            <div>
-              <p class="font-semibold text-slate-900">{testimonial.author}</p>
-              <p class="text-slate-500 text-sm">{testimonial.company}</p>
+            <p class="text-lg text-slate-700 mb-6 italic leading-relaxed">"{testimonial.quote}"</p>
+            <div class="flex items-center gap-4">
+              <img
+                src={testimonial.image}
+                alt={testimonial.author}
+                class="w-14 h-14 rounded-full object-cover border-2 border-violet-100"
+              />
+              <div>
+                <p class="font-semibold text-slate-900">{testimonial.author}</p>
+                <p class="text-violet-600 text-sm font-medium">{testimonial.role}</p>
+                <p class="text-slate-500 text-sm">{testimonial.company}</p>
+              </div>
             </div>
           </div>
         ))}
@@ -453,6 +595,15 @@ const c = content[lang] || content.en;
     50% { transform: translateY(-20px) rotate(5deg); }
   }
 
+  .animate-bounce-subtle {
+    animation: bounce-subtle 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
   .service-card {
     animation: fade-up 0.6s ease forwards;
     opacity: 0;
@@ -464,5 +615,37 @@ const c = content[lang] || content.en;
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  /* CTA Button Shine Effect */
+  .cta-button {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    animation: shine 3s ease-in-out infinite;
+  }
+
+  @keyframes shine {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+  }
+
+  .service-card:hover .cta-button::before {
+    animation: shine 1.5s ease-in-out infinite;
   }
 </style>
