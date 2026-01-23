@@ -147,6 +147,73 @@ const isTrackingService = slug === 'tracking-reporting';
 // Check if this is the AI Content service page
 const isAIContentService = slug === 'ai-content';
 
+// Check if this is any AI service page (for blog section)
+const isAIService = isAITrainingService || isAISolutionsService || isAIContentService;
+
+// Blog articles data for AI service pages
+const blogArticles = {
+  en: [
+    {
+      title: "How to Train Your Team on AI",
+      description: "Scalable methods and use cases for building AI capability.",
+      image: "/images/Blog Thumbnails/EN - how-to-train-teams-on-ai.png",
+      href: "/en/blog/how-to-train-teams-on-ai"
+    },
+    {
+      title: "Building AI Agents with n8n",
+      description: "The complete 2026 guide to autonomous AI workflow automation.",
+      image: "/images/Blog Thumbnails/EN - agents-ia-n8n-automatisation.png",
+      href: "/en/blog/ai-agents-n8n-automation"
+    },
+    {
+      title: "Claude Code: Developer Productivity",
+      description: "Master Anthropic's agentic CLI tool for 3-10x faster coding.",
+      image: "/images/Blog Thumbnails/EN - claude-code-developer-productivity.png",
+      href: "/en/blog/claude-code-developer-productivity"
+    }
+  ],
+  fr: [
+    {
+      title: "Former votre équipe à l'IA",
+      description: "Méthodes scalables et cas d'usage pour développer les compétences IA.",
+      image: "/images/Blog Thumbnails/EN - how-to-train-teams-on-ai.png",
+      href: "/fr/blog/how-to-train-teams-on-ai"
+    },
+    {
+      title: "Créer des Agents IA avec n8n",
+      description: "Le guide complet 2026 pour l'automatisation de workflows autonomes.",
+      image: "/images/Blog Thumbnails/EN - agents-ia-n8n-automatisation.png",
+      href: "/fr/blog/ai-agents-n8n-automation"
+    },
+    {
+      title: "Claude Code : Productivité Développeur",
+      description: "Maîtrisez l'outil CLI d'Anthropic pour coder 3-10x plus vite.",
+      image: "/images/Blog Thumbnails/EN - claude-code-developer-productivity.png",
+      href: "/fr/blog/claude-code-developer-productivity"
+    }
+  ]
+};
+
+const blogSectionContent = {
+  en: {
+    badge: "Learn More",
+    title: "Our AI Resources",
+    subtitle: "Deep-dive articles to master AI in your organization",
+    readMore: "Read article",
+    viewAll: "View all AI articles"
+  },
+  fr: {
+    badge: "En Savoir Plus",
+    title: "Nos Ressources IA",
+    subtitle: "Des articles approfondis pour maîtriser l'IA dans votre organisation",
+    readMore: "Lire l'article",
+    viewAll: "Voir tous les articles IA"
+  }
+};
+
+const articles = blogArticles[lang] || blogArticles.en;
+const blogContent = blogSectionContent[lang] || blogSectionContent.en;
+
 // SEO Schema data
 const serviceUrl = `https://mydigipal.com/${lang}/services/${slug}`;
 const breadcrumbItems = [
@@ -390,6 +457,64 @@ const breadcrumbItems = [
   <!-- Trusted By - Client Logos (skip for AI Training and B2B ABM which have their own) -->
   {!isAITrainingService && !isB2BABMService && (
     <TrustedBy lang={lang} variant="compact" />
+  )}
+
+  <!-- AI Blog Articles Section (for AI service pages only) -->
+  {isAIService && (
+    <section class="py-24 bg-white">
+      <div class="container-custom">
+        <div class="text-center mb-16 animate-on-scroll">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 font-medium mb-6">
+            <Icon name="book" size={16} />
+            <span>{blogContent.badge}</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+            {blogContent.title}
+          </h2>
+          <p class="text-lg text-slate-500">
+            {blogContent.subtitle}
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          {articles.map((article, index) => (
+            <a
+              href={article.href}
+              class="group block bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-violet-300 hover:shadow-xl transition-all duration-300 animate-on-scroll"
+              style={`animation-delay: ${index * 100}ms`}
+            >
+              <div class="aspect-video overflow-hidden">
+                <img
+                  src={article.image}
+                  alt={article.title}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div class="p-6">
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-violet-600 transition-colors">
+                  {article.title}
+                </h3>
+                <p class="text-slate-600 text-sm mb-4">
+                  {article.description}
+                </p>
+                <div class="flex items-center gap-2 text-violet-600 font-medium text-sm group-hover:gap-3 transition-all">
+                  <span>{blogContent.readMore}</span>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <div class="text-center mt-12">
+          <Button href={`/${lang}/blog?category=ai`} variant="outline" size="lg">
+            {blogContent.viewAll}
+          </Button>
+        </div>
+      </div>
+    </section>
   )}
 
   <!-- Final CTA (skip for B2B ABM which has its own) -->
