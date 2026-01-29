@@ -100,7 +100,11 @@ const breadcrumbItems = [
       <img
         src={caseStudy.data.image}
         alt={caseStudy.data.client}
+        width="1920"
+        height="1080"
         class="w-full h-full object-cover opacity-20"
+        loading="eager"
+        fetchpriority="high"
       />
       <div class="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/90 to-slate-950"></div>
     </div>
@@ -128,7 +132,7 @@ const breadcrumbItems = [
           <div class="flex items-center gap-4 mb-6">
             {caseStudy.data.logo && (
               <div class="p-3 bg-white rounded-xl shadow-lg">
-                <img src={caseStudy.data.logo} alt={caseStudy.data.client} class="h-10 w-auto object-contain" />
+                <img src={caseStudy.data.logo} alt={caseStudy.data.client} width="120" height="40" class="h-10 w-auto object-contain" loading="lazy" />
               </div>
             )}
             <span class={`px-4 py-1.5 rounded-full text-sm font-bold ${caseStudy.data.category === 'automotive' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'}`}>
@@ -243,7 +247,10 @@ const breadcrumbItems = [
               <img
                 src={caseStudy.data.testimonial.image}
                 alt={caseStudy.data.testimonial.author}
+                width="56"
+                height="56"
                 class="w-14 h-14 rounded-full object-cover border-2 border-white/30"
+                loading="lazy"
               />
             ) : (
               <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center text-xl font-bold">
@@ -311,6 +318,8 @@ const breadcrumbItems = [
                 <img
                   src={study.data.image}
                   alt={study.data.client}
+                  width="400"
+                  height="250"
                   class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
                 />

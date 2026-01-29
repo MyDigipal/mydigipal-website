@@ -1,0 +1,112 @@
+---
+/**
+ * Breadcrumbs Component
+ * Displays visual breadcrumb navigation with integrated JSON-LD schema
+ *
+ * Usage:
+ * <Breadcrumbs items={[
+ *   { name: "Home", url: "/en" },
+ *   { name: "Services", url: "/en/services" },
+ *   { name: "SEO", url: "/en/services/seo" }
+ * ]} />
+ */
+
+import Icon from './Icon.astro';
+import BreadcrumbSchema from '../seo/BreadcrumbSchema.astro';
+
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+  class?: string;
+}
+
+const { items, class: className = '' } = Astro.props;
+
+// Don't render if only one item (home page)
+const shouldRender = items.length > 1;
+---
+
+{shouldRender && (
+  <>
+    {/* JSON-LD Schema */}
+    <BreadcrumbSchema items={items} />
+
+    {/* Visual Breadcrumbs */}
+    <nav
+      aria-label="Breadcrumb"
+      class={`breadcrumbs ${className}`}
+    >
+      <ol class="flex flex-wrap items-center gap-1 text-sm">
+        {items.map((item, index) => {
+          const isLast = index === items.length - 1;
+          const isFirst = index === 0;
+
+          return (
+            <li class="flex items-center">
+              {!isFirst && (
+                <Icon
+                  name="chevron-right"
+                  size={14}
+                  class="mx-2 text-slate-400 flex-shrink-0"
+                />
+              )}
+
+              {isLast ? (
+                <span
+                  class="text-slate-600 font-medium truncate max-w-[200px]"
+                  aria-current="page"
+                >
+                  {item.name}
+                </span>
+              ) : (
+                <a
+                  href={item.url}
+                  class="text-slate-500 hover:text-blue-600 transition-colors truncate max-w-[150px]"
+                >
+                  {isFirst ? (
+                    <span class="flex items-center gap-1">
+                      <Icon name="home" size={14} class="flex-shrink-0" />
+                      <span class="hidden sm:inline">{item.name}</span>
+                    </span>
+                  ) : (
+                    item.name
+                  )}
+                </a>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  </>
+)}
+
+<style>
+  .breadcrumbs {
+    @apply py-3;
+  }
+
+  .breadcrumbs ol {
+    @apply list-none m-0 p-0;
+  }
+
+  .breadcrumbs li {
+    @apply whitespace-nowrap;
+  }
+
+  /* Responsive: hide middle items on very small screens */
+  @media (max-width: 480px) {
+    .breadcrumbs li:not(:first-child):not(:last-child) {
+      @apply hidden;
+    }
+
+    .breadcrumbs li:last-child::before {
+      content: '...';
+      @apply mx-2 text-slate-400;
+    }
+  }
+</style>
