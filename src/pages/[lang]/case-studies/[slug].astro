@@ -10,13 +10,29 @@ export async function getStaticPaths() {
   const caseStudies = await getCollection('case-studies');
   const paths: { params: { lang: string; slug: string }; props: { caseStudy: any } }[] = [];
 
+  // Group case studies by slug (without language prefix)
+  const studiesBySlug = new Map<string, Map<string, any>>();
+
   caseStudies.forEach((study) => {
-    const slug = study.slug.replace(/^(en|fr)\//, '');
+    const [studyLang, ...slugParts] = study.slug.split('/');
+    const slug = slugParts.join('/');
+
+    if (!studiesBySlug.has(slug)) {
+      studiesBySlug.set(slug, new Map());
+    }
+    studiesBySlug.get(slug)!.set(studyLang, study);
+  });
+
+  // Create paths for each language that has a file
+  studiesBySlug.forEach((studiesByLang, slug) => {
     Object.keys(languages).forEach((lang) => {
-      paths.push({
-        params: { lang, slug },
-        props: { caseStudy: study },
-      });
+      const study = studiesByLang.get(lang);
+      if (study) {
+        paths.push({
+          params: { lang, slug },
+          props: { caseStudy: study },
+        });
+      }
     });
   });
 
@@ -27,10 +43,13 @@ const { lang } = Astro.params as { lang: Language };
 const { caseStudy } = Astro.props;
 const { Content } = await caseStudy.render();
 
-// Get related case studies (same category, exclude current)
+// Get related case studies (same category, same language, exclude current)
 const allCaseStudies = await getCollection('case-studies');
 const relatedStudies = allCaseStudies
-  .filter((s) => s.data.category === caseStudy.data.category && s.slug !== caseStudy.slug)
+  .filter((s) => {
+    const studyLang = s.slug.split('/')[0];
+    return studyLang === lang && s.data.category === caseStudy.data.category && s.slug !== caseStudy.slug;
+  })
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
@@ -308,7 +327,7 @@ const breadcrumbItems = [
         <div class="grid md:grid-cols-3 gap-8">
           {relatedStudies.map((study) => (
             <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100">
-              <a href={`/${lang}/case-studies/${study.slug.replace('en/', '')}`} class="block relative aspect-[16/10] overflow-hidden">
+              <a href={`/${lang}/case-studies/${study.slug.replace(/^(en|fr)\//, '')}`} class="block relative aspect-[16/10] overflow-hidden">
                 <img
                   src={study.data.image}
                   alt={study.data.client}
@@ -323,7 +342,7 @@ const breadcrumbItems = [
               <div class="p-6">
                 <p class="text-slate-600 text-sm mb-4 line-clamp-2">{study.data.title}</p>
                 <a
-                  href={`/${lang}/case-studies/${study.slug.replace('en/', '')}`}
+                  href={`/${lang}/case-studies/${study.slug.replace(/^(en|fr)\//, '')}`}
                   class="inline-flex items-center gap-2 text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
                 >
                   {t.viewStudy}

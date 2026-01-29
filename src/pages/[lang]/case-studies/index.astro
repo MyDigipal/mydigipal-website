@@ -12,9 +12,10 @@ export async function getStaticPaths() {
 
 const { lang } = Astro.params as { lang: Language };
 
-// Get all case studies
+// Get case studies for current language only
 const allCaseStudies = await getCollection('case-studies');
 const caseStudies = allCaseStudies
+  .filter((s) => s.slug.startsWith(lang + '/'))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 const translations = {
@@ -122,7 +123,7 @@ const t = translations[lang] || translations.en;
             data-category={study.data.category}
           >
             <!-- Image with Overlay -->
-            <a href={`/${lang}/case-studies/${study.slug.replace('en/', '')}`} class="block relative aspect-[16/10] overflow-hidden">
+            <a href={`/${lang}/case-studies/${study.slug.replace(/^(en|fr)\//, '')}`} class="block relative aspect-[16/10] overflow-hidden">
               <img
                 src={study.data.image}
                 alt={study.data.client}
@@ -175,7 +176,7 @@ const t = translations[lang] || translations.en;
 
               <!-- CTA -->
               <a
-                href={`/${lang}/case-studies/${study.slug.replace('en/', '')}`}
+                href={`/${lang}/case-studies/${study.slug.replace(/^(en|fr)\//, '')}`}
                 class="inline-flex items-center gap-2 text-blue-600 font-medium hover:text-blue-700 transition-colors group/link"
               >
                 {t.viewCaseStudy}
