@@ -119,6 +119,13 @@ const categoryLabels: Record<string, Record<string, string>> = {
   lang={lang}
   title={post.data.seo?.title || post.data.title}
   description={post.data.seo?.description || post.data.description}
+  image={post.data.image}
+  ogType="article"
+  articlePublishedTime={post.data.date}
+  articleModifiedTime={post.data.updatedDate || post.data.date}
+  articleAuthor={post.data.author}
+  articleSection={categoryLabels[lang]?.[post.data.category] || post.data.category}
+  articleTags={post.data.tags || []}
 >
   <!-- Structured Data -->
   <ArticleSchema

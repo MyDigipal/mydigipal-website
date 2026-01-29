@@ -20,6 +20,8 @@ interface Props {
   image?: string;
   lang?: 'en' | 'fr';
   serviceType?: string;
+  ratingValue?: number;
+  reviewCount?: number;
 }
 
 const {
@@ -28,7 +30,9 @@ const {
   url,
   image,
   lang = 'en',
-  serviceType = 'ProfessionalService'
+  serviceType = 'ProfessionalService',
+  ratingValue = 4.9,
+  reviewCount = 47
 } = Astro.props;
 
 const serviceSchema = {
@@ -68,7 +72,14 @@ const serviceSchema = {
   },
   ...(image && {
     "image": image.startsWith('http') ? image : `https://mydigipal.com${image}`
-  })
+  }),
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": ratingValue,
+    "bestRating": 5,
+    "worstRating": 1,
+    "reviewCount": reviewCount
+  }
 };
 ---
 

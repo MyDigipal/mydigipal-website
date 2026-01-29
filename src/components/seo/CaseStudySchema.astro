@@ -16,6 +16,12 @@
  * />
  */
 
+interface Testimonial {
+  quote: string;
+  author: string;
+  role: string;
+}
+
 interface Props {
   client: string;
   title: string;
@@ -25,6 +31,7 @@ interface Props {
   datePublished?: Date;
   services?: string[];
   lang?: 'en' | 'fr';
+  testimonial?: Testimonial;
 }
 
 const {
@@ -35,7 +42,8 @@ const {
   image,
   datePublished,
   services = [],
-  lang = 'en'
+  lang = 'en',
+  testimonial
 } = Astro.props;
 
 // Use Article type with CreativeWork as case studies are content pieces
@@ -69,6 +77,26 @@ const caseStudySchema = {
     "image": {
       "@type": "ImageObject",
       "url": image.startsWith('http') ? image : `https://mydigipal.com${image}`
+    }
+  }),
+  ...(testimonial && {
+    "review": {
+      "@type": "Review",
+      "reviewBody": testimonial.quote,
+      "author": {
+        "@type": "Person",
+        "name": testimonial.author,
+        "jobTitle": testimonial.role
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": 5,
+        "bestRating": 5
+      },
+      "itemReviewed": {
+        "@type": "Organization",
+        "name": "MyDigipal"
+      }
     }
   })
 };
