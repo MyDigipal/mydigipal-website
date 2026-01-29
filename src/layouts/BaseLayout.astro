@@ -200,6 +200,11 @@ const canonical = canonicalURL || Astro.url.href;
       ]
     })} />
 
+    <!-- DNS Prefetch for external resources -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link rel="dns-prefetch" href="https://connect.facebook.net" />
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -249,13 +254,31 @@ const canonical = canonicalURL || Astro.url.href;
       window.gtag('set', 'ads_data_redaction', true);
     </script>
 
-    <!-- Google Tag Manager -->
+    <!-- Google Tag Manager - Deferred loading for better LCP -->
     <script is:inline define:vars={{ GTM_ID }}>
-      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer',GTM_ID);
+      (function(w,d,l,i){
+        w[l]=w[l]||[];
+        w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+        function loadGTM(){
+          if(w.gtmLoaded)return;
+          w.gtmLoaded=true;
+          var f=d.getElementsByTagName('script')[0],
+          j=d.createElement('script');
+          j.async=true;
+          j.src='https://www.googletagmanager.com/gtm.js?id='+i;
+          f.parentNode.insertBefore(j,f);
+        }
+        // Load GTM after page is interactive or on first interaction
+        if('requestIdleCallback' in w){
+          w.requestIdleCallback(loadGTM,{timeout:3000});
+        }else{
+          w.setTimeout(loadGTM,2000);
+        }
+        // Also load on any user interaction
+        ['scroll','click','touchstart','keydown'].forEach(function(e){
+          w.addEventListener(e,loadGTM,{once:true,passive:true});
+        });
+      })(window,document,'dataLayer',GTM_ID);
     </script>
 
     <!-- Additional head content -->
