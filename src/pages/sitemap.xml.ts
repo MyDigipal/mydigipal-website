@@ -64,6 +64,12 @@ export const GET: APIRoute = async () => {
   // Services index
   addBilingualPage('/services', 0.9, 'weekly');
 
+  // AI Services hub
+  addBilingualPage('/ai', 0.9, 'weekly');
+
+  // Automotive hub
+  addBilingualPage('/automotive', 0.9, 'weekly');
+
   // Legal pages
   addBilingualPage('/privacy-policy', 0.3, 'yearly');
   addBilingualPage('/terms-of-service', 0.3, 'yearly');
