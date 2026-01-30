@@ -11,8 +11,9 @@
  * IndexNow notifies: Bing, Yandex, Seznam, Naver
  */
 
-const https = require('https');
-const http = require('http');
+import https from 'https';
+import http from 'http';
+import fs from 'fs';
 
 // Configuration
 const CONFIG = {
@@ -169,7 +170,6 @@ async function main() {
     console.log('📌 Single URL mode');
   } else if (fileIndex !== -1 && args[fileIndex + 1]) {
     // File mode
-    const fs = require('fs');
     const filePath = args[fileIndex + 1];
     console.log(`📄 Reading URLs from: ${filePath}`);
     const content = fs.readFileSync(filePath, 'utf-8');

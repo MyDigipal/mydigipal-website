@@ -28,10 +28,14 @@
  *   - For bulk submissions, use sitemap ping instead
  */
 
-const https = require('https');
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import https from 'https';
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Configuration
 const CONFIG = {
@@ -98,8 +102,16 @@ For now, use list mode without --api flag to get URLs for manual submission.
 
   const credentials = JSON.parse(fs.readFileSync(CONFIG.credentialsPath, 'utf-8'));
 
-  // Create JWT
-  const jwt = require('jsonwebtoken'); // Note: requires 'jsonwebtoken' package
+  // Create JWT - requires 'jsonwebtoken' package: npm install jsonwebtoken
+  let jwt;
+  try {
+    jwt = (await import('jsonwebtoken')).default;
+  } catch (e) {
+    throw new Error(`
+❌ Package 'jsonwebtoken' not found.
+   Run: npm install jsonwebtoken
+`);
+  }
   const now = Math.floor(Date.now() / 1000);
 
   const token = jwt.sign(
