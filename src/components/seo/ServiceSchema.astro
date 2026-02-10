@@ -10,7 +10,11 @@
  *   url="https://mydigipal.com/en/services/seo"
  *   image="/images/services/seo.jpg"
  *   lang="en"
+ *   serviceType="SearchEngineOptimization"
  * />
+ *
+ * Note: aggregateRating is only included when ratingValue > 0 and reviewCount > 0.
+ * Only pass these values if based on verified, real customer reviews.
  */
 
 interface Props {
@@ -31,9 +35,11 @@ const {
   image,
   lang = 'en',
   serviceType = 'ProfessionalService',
-  ratingValue = 4.9,
-  reviewCount = 47
+  ratingValue = 0,
+  reviewCount = 0
 } = Astro.props;
+
+const hasVerifiedRating = ratingValue > 0 && reviewCount > 0;
 
 const serviceSchema = {
   "@context": "https://schema.org",
@@ -77,13 +83,15 @@ const serviceSchema = {
   ...(image && {
     "image": image.startsWith('http') ? image : `https://mydigipal.com${image}`
   }),
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": ratingValue,
-    "bestRating": 5,
-    "worstRating": 1,
-    "reviewCount": reviewCount
-  }
+  ...(hasVerifiedRating && {
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": ratingValue,
+      "bestRating": 5,
+      "worstRating": 1,
+      "reviewCount": reviewCount
+    }
+  })
 };
 ---
 
