@@ -1,0 +1,125 @@
+---
+/**
+ * SEOPageSchema.astro
+ * Additional JSON-LD schemas for the SEO service page:
+ * - HowTo: describes the SEO process steps
+ * - WebPage with SpeakableSpecification: enables voice/AI assistants to cite key sections
+ *
+ * Sprint 2 item 2.10 — Schema markup enrichment for LLMO
+ */
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+  url: string;
+}
+
+const { lang, url } = Astro.props;
+
+const isEN = lang === 'en';
+
+// HowTo schema — describes the SEO optimization process
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: isEN
+    ? 'How to Optimize Your Website for SEO and AI Search'
+    : 'Comment optimiser votre site web pour le SEO et la recherche IA',
+  description: isEN
+    ? 'A 4-step process used by MyDigipal to improve organic visibility on Google, ChatGPT, Perplexity, and other AI search engines.'
+    : 'Un processus en 4 étapes utilisé par MyDigipal pour améliorer la visibilité organique sur Google, ChatGPT, Perplexity et les autres moteurs de recherche IA.',
+  totalTime: 'P3M',
+  estimatedCost: {
+    '@type': 'MonetaryAmount',
+    currency: 'EUR',
+    value: '1500',
+  },
+  step: [
+    {
+      '@type': 'HowToStep',
+      position: 1,
+      name: isEN ? 'Discovery & Audit' : 'Découverte & Audit',
+      text: isEN
+        ? 'Analyze current SEO performance with Ahrefs and Search Console. Audit Core Web Vitals, URL structure, meta tags, internal linking, and competitor landscape. Identify quick wins and long-term opportunities.'
+        : 'Analyser les performances SEO actuelles avec Ahrefs et Search Console. Auditer les Core Web Vitals, la structure des URLs, les balises meta, le maillage interne et le paysage concurrentiel. Identifier les quick wins et opportunités long terme.',
+      url: `${url}#audit`,
+    },
+    {
+      '@type': 'HowToStep',
+      position: 2,
+      name: isEN ? 'Strategy Development' : 'Développement de la Stratégie',
+      text: isEN
+        ? 'Create a customized SEO roadmap with AI-powered keyword clustering, content calendar, and LLMO optimization plan. Align strategy with business goals and target audience across Google and AI search platforms.'
+        : 'Créer une feuille de route SEO personnalisée avec clustering de mots-clés IA, calendrier éditorial et plan d\'optimisation LLMO. Aligner la stratégie avec les objectifs business et l\'audience cible sur Google et les plateformes de recherche IA.',
+      url: `${url}#strategy`,
+    },
+    {
+      '@type': 'HowToStep',
+      position: 3,
+      name: isEN ? 'Implementation' : 'Implémentation',
+      text: isEN
+        ? 'Execute technical SEO fixes, publish AI-generated content trained on your brand voice (2-4 articles/week), build quality backlinks, and implement Schema.org structured data for LLMO readiness.'
+        : 'Exécuter les corrections SEO techniques, publier du contenu IA entraîné sur votre voix de marque (2-4 articles/semaine), construire des backlinks de qualité et implémenter les données structurées Schema.org pour le LLMO.',
+      url: `${url}#implementation`,
+    },
+    {
+      '@type': 'HowToStep',
+      position: 4,
+      name: isEN ? 'Monitor & Optimize' : 'Suivi & Optimisation',
+      text: isEN
+        ? 'Continuous monitoring with real-time dashboards, monthly performance reports, AI mention tracking via Ahrefs Brand Radar, and ongoing optimization to adapt to algorithm changes.'
+        : 'Monitoring continu avec dashboards en temps réel, rapports de performance mensuels, suivi des mentions IA via Ahrefs Brand Radar et optimisation continue pour s\'adapter aux changements d\'algorithme.',
+      url: `${url}#monitoring`,
+    },
+  ],
+};
+
+// WebPage schema with SpeakableSpecification for AI/voice assistants
+const webPageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': url,
+  url: url,
+  name: isEN
+    ? 'SEO Agency — AI-Powered SEO & LLMO Services | MyDigipal'
+    : 'Agence SEO — Services SEO & Référencement Naturel IA | MyDigipal',
+  description: isEN
+    ? 'Boost your organic traffic with MyDigipal\'s AI-enhanced SEO services. +200% average traffic increase across 50+ clients. Technical audits, AI content, and LLMO optimization.'
+    : 'Boostez votre trafic organique avec les services SEO IA de MyDigipal. +200% de trafic en moyenne sur 50+ clients. Audits techniques, contenu IA et optimisation LLMO.',
+  isPartOf: {
+    '@type': 'WebSite',
+    url: 'https://mydigipal.com',
+    name: 'MyDigipal',
+  },
+  about: [
+    {
+      '@type': 'Thing',
+      name: 'Search Engine Optimization',
+      sameAs: 'https://en.wikipedia.org/wiki/Search_engine_optimization',
+    },
+    {
+      '@type': 'Thing',
+      name: 'Large Language Model Optimization',
+      description: isEN
+        ? 'LLMO is the practice of optimizing digital content to be cited and recommended by AI-powered search tools like ChatGPT, Perplexity, Google Gemini, and Microsoft Copilot.'
+        : 'Le LLMO est la pratique d\'optimiser le contenu digital pour être cité et recommandé par les outils de recherche IA comme ChatGPT, Perplexity, Google Gemini et Microsoft Copilot.',
+    },
+  ],
+  speakable: {
+    '@type': 'SpeakableSpecification',
+    cssSelector: [
+      '#llmo',
+      '#seo-stats',
+      '.faq-content',
+    ],
+  },
+  provider: {
+    '@type': 'Organization',
+    name: 'MyDigipal',
+    url: 'https://mydigipal.com',
+  },
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(webPageSchema)} />
