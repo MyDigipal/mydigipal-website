@@ -1,0 +1,201 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import Button from '@/components/ui/Button.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const content = {
+  en: {
+    badge: 'NEW — LLMO',
+    title: 'AI Search Optimization',
+    subtitle: 'Be visible where your competitors aren\'t — on ChatGPT, Perplexity, Gemini & Copilot',
+    definition: 'LLMO (Large Language Model Optimization) is the practice of optimizing your content to be cited by AI assistants. Unlike traditional SEO which targets search engine crawlers, LLMO targets the language models that power AI-driven search.',
+    comparisonTitle: 'SEO vs LLMO — What\'s the difference?',
+    seoLabel: 'Traditional SEO',
+    llmoLabel: 'LLMO',
+    comparison: [
+      { seo: 'Targets Google crawlers', llmo: 'Targets AI language models' },
+      { seo: 'Optimizes for keywords', llmo: 'Optimizes for citability' },
+      { seo: 'Focuses on backlinks', llmo: 'Focuses on structured data' },
+      { seo: 'Results in SERP rankings', llmo: 'Results in AI citations' },
+      { seo: 'Measures clicks & traffic', llmo: 'Measures mentions & references' },
+    ],
+    services: [
+      {
+        icon: 'search',
+        title: 'LLMO Audit',
+        description: 'We analyze how AI assistants currently perceive and cite your brand. Benchmark your citability score against competitors.',
+      },
+      {
+        icon: 'code',
+        title: 'Schema Markup',
+        description: 'Advanced Schema.org implementation — FAQPage, HowTo, SpeakableSpecification — so AI models understand your content structure.',
+      },
+      {
+        icon: 'file-text',
+        title: 'Citable Content',
+        description: 'Content formatted for AI extraction: clear definitions, factual data, structured comparisons, and authoritative statements.',
+      },
+      {
+        icon: 'globe',
+        title: 'Multi-Source Presence',
+        description: 'Ensure your brand appears across Wikipedia, industry directories, and knowledge bases that LLMs use as training sources.',
+      },
+    ],
+    cta: 'Check your LLMO visibility',
+    ctaHref: '/en/contact',
+    stat1Value: '40%',
+    stat1Label: 'of searches will involve AI by 2026',
+    stat2Value: '0%',
+    stat2Label: 'of your competitors optimize for LLMO',
+  },
+  fr: {
+    badge: 'NOUVEAU — LLMO',
+    title: 'Optimisation Recherche IA',
+    subtitle: 'Soyez visible là où vos concurrents ne sont pas — sur ChatGPT, Perplexity, Gemini & Copilot',
+    definition: 'Le LLMO (Large Language Model Optimization) est la pratique d\'optimiser votre contenu pour être cité par les assistants IA. Contrairement au SEO traditionnel qui cible les crawlers, le LLMO cible les modèles de langage qui alimentent la recherche IA.',
+    comparisonTitle: 'SEO vs LLMO — Quelle différence ?',
+    seoLabel: 'SEO Traditionnel',
+    llmoLabel: 'LLMO',
+    comparison: [
+      { seo: 'Cible les crawlers Google', llmo: 'Cible les modèles de langage IA' },
+      { seo: 'Optimise pour les mots-clés', llmo: 'Optimise pour la citabilité' },
+      { seo: 'Focus sur les backlinks', llmo: 'Focus sur les données structurées' },
+      { seo: 'Résultat : classement SERP', llmo: 'Résultat : citations IA' },
+      { seo: 'Mesure clics & trafic', llmo: 'Mesure mentions & références' },
+    ],
+    services: [
+      {
+        icon: 'search',
+        title: 'Audit LLMO',
+        description: 'Nous analysons comment les assistants IA perçoivent et citent votre marque. Benchmark de votre score de citabilité face aux concurrents.',
+      },
+      {
+        icon: 'code',
+        title: 'Balisage Schema',
+        description: 'Implémentation avancée Schema.org — FAQPage, HowTo, SpeakableSpecification — pour que les modèles IA comprennent la structure de votre contenu.',
+      },
+      {
+        icon: 'file-text',
+        title: 'Contenu Citable',
+        description: 'Contenu formaté pour l\'extraction IA : définitions claires, données factuelles, comparaisons structurées et affirmations autoritaires.',
+      },
+      {
+        icon: 'globe',
+        title: 'Présence Multi-Sources',
+        description: 'Assurez la présence de votre marque sur Wikipedia, annuaires sectoriels et bases de connaissances utilisées par les LLMs comme sources d\'entraînement.',
+      },
+    ],
+    cta: 'Vérifier ma visibilité LLMO',
+    ctaHref: '/fr/contact',
+    stat1Value: '40%',
+    stat1Label: 'des recherches impliqueront l\'IA d\'ici 2026',
+    stat2Value: '0%',
+    stat2Label: 'de vos concurrents optimisent pour le LLMO',
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="py-28 bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 text-white relative overflow-hidden" id="llmo">
+  <!-- Background effects -->
+  <div class="absolute inset-0">
+    <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-20 right-10 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <!-- Badge + Title -->
+    <div class="text-center max-w-4xl mx-auto mb-16">
+      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 mb-6">
+        <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+        {t.badge}
+      </span>
+      <h2 class="text-4xl lg:text-5xl font-extrabold mb-6">
+        {t.title}
+      </h2>
+      <p class="text-xl text-blue-200/80 mb-8">
+        {t.subtitle}
+      </p>
+      <!-- Definition block - optimized for LLM citation -->
+      <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-left max-w-3xl mx-auto">
+        <p class="text-blue-100 leading-relaxed">
+          {t.definition}
+        </p>
+      </div>
+    </div>
+
+    <!-- Stats banner -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-8 mb-16">
+      <div class="text-center">
+        <div class="text-5xl font-extrabold text-blue-400 mb-1">{t.stat1Value}</div>
+        <div class="text-sm text-blue-300/70">{t.stat1Label}</div>
+      </div>
+      <div class="hidden sm:block w-px h-16 bg-blue-500/30"></div>
+      <div class="text-center">
+        <div class="text-5xl font-extrabold text-blue-400 mb-1">{t.stat2Value}</div>
+        <div class="text-sm text-blue-300/70">{t.stat2Label}</div>
+      </div>
+    </div>
+
+    <!-- SEO vs LLMO Comparison -->
+    <div class="max-w-4xl mx-auto mb-20">
+      <h3 class="text-2xl font-bold text-center mb-8">{t.comparisonTitle}</h3>
+      <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden">
+        <!-- Header -->
+        <div class="grid grid-cols-2 gap-0">
+          <div class="p-4 text-center bg-emerald-500/20 border-b border-r border-white/10">
+            <span class="font-bold text-emerald-300">{t.seoLabel}</span>
+          </div>
+          <div class="p-4 text-center bg-blue-500/20 border-b border-white/10">
+            <span class="font-bold text-blue-300">{t.llmoLabel}</span>
+          </div>
+        </div>
+        <!-- Rows -->
+        {t.comparison.map((row, i) => (
+          <div class={`grid grid-cols-2 gap-0 ${i < t.comparison.length - 1 ? 'border-b border-white/5' : ''}`}>
+            <div class="p-4 text-sm text-slate-300 border-r border-white/5">
+              {row.seo}
+            </div>
+            <div class="p-4 text-sm text-blue-200 font-medium">
+              {row.llmo}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- LLMO Services Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+      {t.services.map((service, index) => (
+        <div
+          class="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-blue-500/30 transition-all duration-300"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 mb-4 group-hover:bg-blue-500/30 transition-colors">
+            <Icon name={service.icon} size={24} />
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">
+            {service.title}
+          </h3>
+          <p class="text-sm text-blue-200/70 leading-relaxed">
+            {service.description}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center">
+      <Button href={t.ctaHref} variant="primary" size="lg" class="bg-blue-600 hover:bg-blue-500 border-blue-500">
+        {t.cta}
+      </Button>
+    </div>
+  </div>
+</section>
