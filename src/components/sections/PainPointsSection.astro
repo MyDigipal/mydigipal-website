@@ -1,6 +1,7 @@
 ---
 import { type Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
+import VideoEmbed from '@/components/ui/VideoEmbed.astro';
 
 interface Props {
   lang: Language;
@@ -167,6 +168,20 @@ const colorMap: Record<string, { bg: string; border: string; text: string; glow:
           </div>
         );
       })}
+    </div>
+
+    <!-- Video: SEO vs LLMO -->
+    <div class="max-w-4xl mx-auto mb-12 animate-on-scroll">
+      <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-lg">
+        <VideoEmbed
+          src="/videos/seo/SEOvsLLMO.mp4"
+          title={lang === 'fr' ? 'SEO vs LLMO — Deux moteurs, une stratégie' : 'SEO vs LLMO — Two engines, one strategy'}
+          description={lang === 'fr' ? 'Voir la comparaison SEO vs LLMO' : 'See SEO vs LLMO comparison'}
+          schemaName="SEO vs LLMO Comparison by MyDigipal"
+          schemaDescription="Understanding the difference between traditional SEO and Large Language Model Optimization"
+          schemaUploadDate="2026-02-10"
+        />
+      </div>
     </div>
 
     <!-- Transition CTA -->
