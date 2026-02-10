@@ -131,6 +131,9 @@ const {
   seo
 } = service.data;
 
+// OG Image: use seo.image > hero.image > default
+const ogImage = seo?.image || hero?.image || undefined;
+
 // Check if this is the SEO service page
 const isSEOService = slug === 'seo';
 // Check if this is the Google Ads service page
@@ -230,6 +233,7 @@ const breadcrumbItems = [
   lang={lang}
   title={seo?.title || title}
   description={seo?.description || description}
+  image={ogImage}
 >
   <!-- Structured Data -->
   <ServiceSchema
