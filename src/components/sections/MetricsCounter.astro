@@ -42,7 +42,7 @@ const gradient = colorConfig[color];
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
       {metrics.map((metric, index) => (
         <div
-          class="metric-card group text-center p-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-default"
+          class="metric-card group text-center p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 hover:backdrop-blur-lg hover:scale-105 hover:shadow-2xl hover:shadow-black/10 transition-all duration-300 cursor-default"
           style={`animation-delay: ${index * 100}ms`}
         >
           <!-- Value with counter animation -->
@@ -54,7 +54,7 @@ const gradient = colorConfig[color];
               {metric.value}
             </span>
             <!-- Glow effect on hover -->
-            <div class="absolute inset-0 bg-white/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="absolute inset-0 bg-white/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           </div>
 
           <!-- Progress bar -->
@@ -90,7 +90,7 @@ const gradient = colorConfig[color];
   }
 
   .metric-bar {
-    animation: grow-bar 1.5s ease forwards;
+    animation: grow-bar 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   @keyframes grow-bar {
@@ -105,7 +105,7 @@ const gradient = colorConfig[color];
 </style>
 
 <script>
-  // Animate counters when in view
+  // Animate counters when in view with dramatic easing
   const observerOptions = {
     threshold: 0.5,
     rootMargin: '0px'
@@ -118,9 +118,10 @@ const gradient = colorConfig[color];
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Easing function
-      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-      const current = Math.floor(start + (end - start) * easeOutQuart);
+      // Dramatic easing: cubic-bezier(0.16, 1, 0.3, 1)
+      const t = progress;
+      const easeDramatic = 1 - Math.pow(1 - t, 4);
+      const current = Math.floor(start + (end - start) * easeDramatic);
 
       element.textContent = prefix + current + suffix;
 
