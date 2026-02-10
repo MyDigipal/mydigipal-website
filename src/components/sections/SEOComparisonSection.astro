@@ -1,6 +1,7 @@
 ---
 import { type Language } from '@/i18n/config';
 import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
 
 interface Props {
   lang: Language;
@@ -18,43 +19,43 @@ const content = {
         category: 'Approach',
         traditional: 'Manual keyword research & link building',
         mydigipal: 'AI-powered analysis + human strategy',
-        icon: '🎯',
+        iconName: 'target',
       },
       {
         category: 'Content Production',
         traditional: '2-4 articles/month, 2-3 week turnaround',
         mydigipal: '8-16 articles/month, 24h turnaround',
-        icon: '✍️',
+        iconName: 'file-text',
       },
       {
         category: 'AI Search (LLMO)',
         traditional: 'Not offered — most agencies ignore it',
         mydigipal: 'Full LLMO optimization for ChatGPT, Perplexity & Gemini',
-        icon: '🤖',
+        iconName: 'cpu',
       },
       {
         category: 'Schema Markup',
         traditional: 'Basic or none',
         mydigipal: 'Advanced: FAQPage, HowTo, Speakable, VideoObject',
-        icon: '🏗️',
+        iconName: 'code',
       },
       {
         category: 'Reporting',
         traditional: 'Monthly PDF report',
         mydigipal: 'Real-time dashboard + AI-generated insights',
-        icon: '📊',
+        iconName: 'bar-chart',
       },
       {
         category: 'Contract',
         traditional: '12-month minimum engagement',
         mydigipal: 'No lock-in — month-to-month flexibility',
-        icon: '📝',
+        iconName: 'shield',
       },
       {
         category: 'Time to Results',
         traditional: '6-12 months for visible impact',
         mydigipal: '3-6 months with early wins in 30 days',
-        icon: '⚡',
+        iconName: 'zap',
       },
     ],
     traditionalLabel: 'Traditional Agency',
@@ -71,43 +72,43 @@ const content = {
         category: 'Approche',
         traditional: 'Recherche de mots-clés manuelle & netlinking',
         mydigipal: 'Analyse IA + stratégie humaine',
-        icon: '🎯',
+        iconName: 'target',
       },
       {
         category: 'Production de Contenu',
         traditional: '2-4 articles/mois, délai de 2-3 semaines',
         mydigipal: '8-16 articles/mois, livraison en 24h',
-        icon: '✍️',
+        iconName: 'file-text',
       },
       {
         category: 'Recherche IA (LLMO)',
         traditional: 'Non proposé — ignoré par la plupart des agences',
         mydigipal: 'Optimisation LLMO complète pour ChatGPT, Perplexity & Gemini',
-        icon: '🤖',
+        iconName: 'cpu',
       },
       {
         category: 'Balisage Schema',
         traditional: 'Basique ou inexistant',
         mydigipal: 'Avancé : FAQPage, HowTo, Speakable, VideoObject',
-        icon: '🏗️',
+        iconName: 'code',
       },
       {
         category: 'Reporting',
         traditional: 'Rapport PDF mensuel',
         mydigipal: 'Dashboard temps réel + analyses générées par IA',
-        icon: '📊',
+        iconName: 'bar-chart',
       },
       {
         category: 'Contrat',
         traditional: 'Engagement minimum de 12 mois',
         mydigipal: 'Sans engagement — flexibilité au mois',
-        icon: '📝',
+        iconName: 'shield',
       },
       {
         category: 'Délai de Résultats',
         traditional: '6-12 mois pour un impact visible',
         mydigipal: '3-6 mois avec des premiers gains en 30 jours',
-        icon: '⚡',
+        iconName: 'zap',
       },
     ],
     traditionalLabel: 'Agence Traditionnelle',
@@ -134,7 +135,7 @@ const t = content[lang];
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         {t.badge}
       </span>
-      <h2 class="text-4xl lg:text-5xl font-extrabold mb-6">
+      <h2 class="text-4xl lg:text-5xl font-bold mb-6">
         {t.title}
       </h2>
       <p class="text-xl text-slate-400 leading-relaxed">
@@ -172,7 +173,9 @@ const t = content[lang];
           >
             <!-- Category -->
             <div class="p-4 md:p-5 border-r border-white/5 flex items-center gap-2">
-              <span class="text-lg hidden md:inline">{row.icon}</span>
+              <span class="hidden md:inline text-slate-400">
+                <Icon name={row.iconName} size={20} />
+              </span>
               <span class="text-sm font-semibold text-white">{row.category}</span>
             </div>
             <!-- Traditional -->
