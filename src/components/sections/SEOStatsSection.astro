@@ -1,0 +1,70 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const content = {
+  en: {
+    badge: 'SEO by the Numbers',
+    title: 'The data speaks for itself',
+    stats: [
+      { value: '748%', label: 'Average SEO ROI over 3 years', source: 'Terakeet' },
+      { value: '68.7%', label: 'Clicks go to top 3 organic results', source: 'Backlinko' },
+      { value: '53%', label: 'Of all website traffic comes from organic search', source: 'BrightEdge' },
+      { value: '1,000+', label: 'Other keywords a #1 page also ranks for', source: 'Ahrefs' },
+      { value: '-68%', label: 'Content production time with AI-enhanced SEO', source: 'MyDigipal' },
+      { value: '75%', label: 'Of users never scroll past page 1', source: 'HubSpot' },
+    ],
+  },
+  fr: {
+    badge: 'Le SEO en chiffres',
+    title: 'Les données parlent d\'elles-mêmes',
+    stats: [
+      { value: '748%', label: 'ROI moyen du SEO sur 3 ans', source: 'Terakeet' },
+      { value: '68,7%', label: 'Des clics vont aux 3 premiers résultats organiques', source: 'Backlinko' },
+      { value: '53%', label: 'Du trafic web provient de la recherche organique', source: 'BrightEdge' },
+      { value: '1 000+', label: 'Autres mots-clés pour lesquels une page #1 se positionne', source: 'Ahrefs' },
+      { value: '-68%', label: 'De temps de production de contenu avec le SEO IA', source: 'MyDigipal' },
+      { value: '75%', label: 'Des utilisateurs ne dépassent jamais la page 1', source: 'HubSpot' },
+    ],
+  },
+};
+
+const t = content[lang];
+---
+
+<section class="py-20 bg-slate-50">
+  <div class="container-custom">
+    <div class="text-center mb-12">
+      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-emerald-50 text-emerald-600 mb-4">
+        {t.badge}
+      </span>
+      <h2 class="text-3xl lg:text-4xl font-bold text-slate-900">
+        {t.title}
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      {t.stats.map((stat, index) => (
+        <div
+          class="bg-white rounded-2xl border border-slate-200 p-6 text-center hover:shadow-lg hover:border-emerald-200 transition-all duration-300 animate-on-scroll"
+          style={`animation-delay: ${index * 80}ms`}
+        >
+          <div class="text-4xl font-extrabold text-emerald-600 mb-2">
+            {stat.value}
+          </div>
+          <p class="text-slate-700 text-sm font-medium mb-2">
+            {stat.label}
+          </p>
+          <p class="text-xs text-slate-400">
+            Source: {stat.source}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
