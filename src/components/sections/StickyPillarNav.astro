@@ -1,0 +1,195 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const pillars = {
+  en: [
+    { id: 'audit-strategy', label: 'Audit & Strategy', icon: '🔍', phase: '1' },
+    { id: 'technical-seo', label: 'Technical SEO', icon: '⚙️', phase: '2' },
+    { id: 'llmo', label: 'LLMO', icon: '🤖', phase: '3' },
+    { id: 'ai-content', label: 'AI Content', icon: '✍️', phase: '4' },
+  ],
+  fr: [
+    { id: 'audit-strategy', label: 'Audit & Stratégie', icon: '🔍', phase: '1' },
+    { id: 'technical-seo', label: 'SEO Technique', icon: '⚙️', phase: '2' },
+    { id: 'llmo', label: 'LLMO', icon: '🤖', phase: '3' },
+    { id: 'ai-content', label: 'Contenu IA', icon: '✍️', phase: '4' },
+  ],
+};
+
+const items = pillars[lang] || pillars.en;
+---
+
+<nav
+  id="pillar-nav"
+  class="pillar-nav sticky top-20 z-40 py-3 transition-all duration-300 opacity-0 -translate-y-4 pointer-events-none"
+  aria-label={lang === 'fr' ? 'Navigation par pilier' : 'Pillar navigation'}
+>
+  <div class="container-custom">
+    <div class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+      {items.map((item, index) => (
+        <a
+          href={`#${item.id}`}
+          class="pillar-btn group relative flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:shadow-md"
+          data-target={item.id}
+        >
+          <span class="pillar-phase hidden sm:inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-500 transition-all duration-300">
+            {item.phase}
+          </span>
+          <span class="text-xs sm:text-sm">{item.label}</span>
+          <span class="pillar-indicator absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 rounded-full transition-all duration-300"></span>
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>
+
+<style>
+  .pillar-nav.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .pillar-btn.active {
+    color: #0f172a;
+    border-color: transparent;
+    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Pillar-specific active colors */
+  .pillar-btn.active[data-target="audit-strategy"] {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.12), rgba(13, 148, 136, 0.08));
+    border-color: rgba(5, 150, 105, 0.3);
+  }
+  .pillar-btn.active[data-target="audit-strategy"] .pillar-phase {
+    background: #059669;
+    color: white;
+  }
+  .pillar-btn.active[data-target="audit-strategy"] .pillar-indicator {
+    width: 60%;
+    background: #059669;
+  }
+
+  .pillar-btn.active[data-target="technical-seo"] {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.12), rgba(13, 148, 136, 0.08));
+    border-color: rgba(5, 150, 105, 0.3);
+  }
+  .pillar-btn.active[data-target="technical-seo"] .pillar-phase {
+    background: #059669;
+    color: white;
+  }
+  .pillar-btn.active[data-target="technical-seo"] .pillar-indicator {
+    width: 60%;
+    background: #059669;
+  }
+
+  .pillar-btn.active[data-target="llmo"] {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(59, 130, 246, 0.08));
+    border-color: rgba(37, 99, 235, 0.3);
+  }
+  .pillar-btn.active[data-target="llmo"] .pillar-phase {
+    background: #2563EB;
+    color: white;
+  }
+  .pillar-btn.active[data-target="llmo"] .pillar-indicator {
+    width: 60%;
+    background: #2563EB;
+  }
+
+  .pillar-btn.active[data-target="ai-content"] {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(139, 92, 246, 0.08));
+    border-color: rgba(124, 58, 237, 0.3);
+  }
+  .pillar-btn.active[data-target="ai-content"] .pillar-phase {
+    background: #7C3AED;
+    color: white;
+  }
+  .pillar-btn.active[data-target="ai-content"] .pillar-indicator {
+    width: 60%;
+    background: #7C3AED;
+  }
+</style>
+
+<script>
+  const nav = document.getElementById('pillar-nav');
+  const buttons = document.querySelectorAll('.pillar-btn') as NodeListOf<HTMLAnchorElement>;
+  const sectionIds = ['audit-strategy', 'technical-seo', 'llmo', 'ai-content'];
+  const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+
+  if (nav && sections.length > 0) {
+    // Show/hide nav based on scroll position
+    const firstSection = sections[0];
+    const lastSection = sections[sections.length - 1];
+
+    function updateNav() {
+      if (!firstSection || !lastSection) return;
+
+      const scrollY = window.scrollY;
+      const navTrigger = firstSection.offsetTop - 200;
+      const navEnd = lastSection.offsetTop + lastSection.offsetHeight + 100;
+
+      // Show/hide
+      if (scrollY >= navTrigger && scrollY <= navEnd) {
+        nav!.classList.add('visible');
+      } else {
+        nav!.classList.remove('visible');
+      }
+
+      // Determine active section
+      let activeId = '';
+      const offset = 160; // Account for sticky nav + pillar nav height
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section && scrollY >= section.offsetTop - offset) {
+          activeId = section.id;
+          break;
+        }
+      }
+
+      // Update active states
+      buttons.forEach(btn => {
+        if (btn.dataset.target === activeId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    // Smooth scroll on click
+    buttons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = btn.dataset.target;
+        const target = document.getElementById(targetId || '');
+        if (target) {
+          const offset = 120;
+          const y = target.offsetTop - offset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // Throttled scroll listener
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateNav();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Initial check
+    updateNav();
+  }
+</script>
