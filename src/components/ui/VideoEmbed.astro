@@ -1,0 +1,153 @@
+---
+interface Props {
+  src: string;
+  title: string;
+  description?: string;
+  poster?: string;
+  aspectRatio?: '16/9' | '4/3' | '1/1';
+  class?: string;
+  schemaName?: string;
+  schemaDescription?: string;
+  schemaUploadDate?: string;
+  schemaThumbnail?: string;
+}
+
+const {
+  src,
+  title,
+  description,
+  poster,
+  aspectRatio = '16/9',
+  class: className = '',
+  schemaName,
+  schemaDescription,
+  schemaUploadDate = '2025-06-01',
+  schemaThumbnail,
+} = Astro.props;
+
+const aspectMap: Record<string, string> = {
+  '16/9': 'aspect-video',
+  '4/3': 'aspect-[4/3]',
+  '1/1': 'aspect-square',
+};
+
+const aspectClass = aspectMap[aspectRatio] || 'aspect-video';
+---
+
+<div class={`video-embed-wrapper group relative rounded-2xl overflow-hidden ${aspectClass} ${className}`}>
+  <video
+    class="video-lazy w-full h-full object-cover"
+    data-src={src}
+    poster={poster}
+    muted
+    loop
+    playsinline
+    preload="none"
+    aria-label={title}
+  >
+    <source data-src={src} type="video/mp4" />
+  </video>
+
+  <!-- Play overlay (shown before video loads) -->
+  <div class="video-overlay absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity duration-500 cursor-pointer">
+    <div class="flex flex-col items-center gap-3">
+      <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+        <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </div>
+      {description && (
+        <span class="text-white/80 text-sm font-medium">{description}</span>
+      )}
+    </div>
+  </div>
+</div>
+
+<!-- Schema VideoObject -->
+{schemaName && (
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": schemaName,
+    "description": schemaDescription || schemaName,
+    "uploadDate": schemaUploadDate,
+    "thumbnailUrl": schemaThumbnail || poster || '',
+    "contentUrl": `https://mydigipal.com${src}`,
+    "encodingFormat": "video/mp4",
+    "publisher": {
+      "@type": "Organization",
+      "name": "MyDigipal",
+      "url": "https://mydigipal.com"
+    }
+  })} />
+)}
+
+<style>
+  .video-embed-wrapper video {
+    transition: opacity 0.5s ease;
+  }
+
+  .video-embed-wrapper .video-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  // Lazy load videos when they enter the viewport
+  const videoWrappers = document.querySelectorAll('.video-embed-wrapper');
+
+  const videoObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const wrapper = entry.target as HTMLElement;
+          const video = wrapper.querySelector('video') as HTMLVideoElement;
+          const source = video?.querySelector('source');
+          const overlay = wrapper.querySelector('.video-overlay');
+
+          if (video && source) {
+            const src = source.dataset.src || video.dataset.src;
+            if (src && !video.src) {
+              source.src = src;
+              video.src = src;
+              video.load();
+            }
+          }
+
+          // Click to play/pause
+          const handleClick = () => {
+            if (video) {
+              if (video.paused) {
+                video.play().then(() => {
+                  overlay?.classList.add('hidden');
+                }).catch(() => {
+                  // Autoplay blocked, keep overlay visible
+                });
+              } else {
+                video.pause();
+                overlay?.classList.remove('hidden');
+              }
+            }
+          };
+
+          wrapper.addEventListener('click', handleClick);
+
+          // Auto-play when visible
+          video?.play().then(() => {
+            overlay?.classList.add('hidden');
+          }).catch(() => {
+            // Autoplay blocked, user will need to click
+          });
+
+          videoObserver.unobserve(wrapper);
+        }
+      });
+    },
+    { threshold: 0.3, rootMargin: '200px' }
+  );
+
+  videoWrappers.forEach((wrapper) => {
+    videoObserver.observe(wrapper);
+  });
+</script>
