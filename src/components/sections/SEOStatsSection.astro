@@ -37,9 +37,9 @@ const content = {
 const t = content[lang];
 ---
 
-<section class="py-20 bg-slate-50">
+<section class="py-20 bg-slate-50" id="seo-stats">
   <div class="container-custom">
-    <div class="text-center mb-12">
+    <div class="text-center mb-12 animate-on-scroll">
       <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-emerald-50 text-emerald-600 mb-4">
         {t.badge}
       </span>
@@ -48,11 +48,11 @@ const t = content[lang];
       </h2>
     </div>
 
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto stagger-children">
       {t.stats.map((stat, index) => (
         <div
-          class="bg-white rounded-2xl border border-slate-200 p-6 text-center hover:shadow-lg hover:border-emerald-200 transition-all duration-300 animate-on-scroll"
-          style={`animation-delay: ${index * 80}ms`}
+          class="bg-white rounded-2xl border border-slate-200 p-6 text-center hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1 transition-all duration-300 animate-on-scroll"
+          style={`animation-delay: ${index * 100}ms`}
         >
           <div class="text-4xl font-extrabold text-emerald-600 mb-2">
             {stat.value}
