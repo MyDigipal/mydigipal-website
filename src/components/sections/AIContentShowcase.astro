@@ -1,6 +1,7 @@
 ---
 import { type Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
+import VideoEmbed from '@/components/ui/VideoEmbed.astro';
 
 interface Props {
   lang: Language;
@@ -334,6 +335,20 @@ const t = content[lang];
           <div class="text-slate-400">{metric.description}</div>
         </div>
       ))}
+    </div>
+
+    <!-- Video: Brief to Article -->
+    <div class="max-w-4xl mx-auto mb-24 animate-on-scroll">
+      <div class="rounded-2xl overflow-hidden border border-slate-700 shadow-lg shadow-emerald-500/5">
+        <VideoEmbed
+          src="/videos/seo/SEOBriefToArticle.mp4"
+          title={lang === 'fr' ? 'Du Brief à l'Article — Le processus de création IA' : 'From Brief to Article — See the AI content process'}
+          description={lang === 'fr' ? 'Voir le processus de création IA' : 'See the AI creation process'}
+          schemaName="AI Content Pipeline: From Brief to Article by MyDigipal"
+          schemaDescription="See how a single SEO brief becomes a fully optimized article with MyDigipal AI content production"
+          schemaUploadDate="2026-02-10"
+        />
+      </div>
     </div>
 
     <!-- Features Grid -->
