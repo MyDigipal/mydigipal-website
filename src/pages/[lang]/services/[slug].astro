@@ -20,6 +20,8 @@ import WhyChooseUs from '@/components/sections/WhyChooseUs.astro';
 import AuditStrategySection from '@/components/sections/AuditStrategySection.astro';
 import TechnicalSEOSection from '@/components/sections/TechnicalSEOSection.astro';
 import AIContentShowcase from '@/components/sections/AIContentShowcase.astro';
+import LLMOSection from '@/components/sections/LLMOSection.astro';
+import SEOStatsSection from '@/components/sections/SEOStatsSection.astro';
 import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import FAQSection from '@/components/sections/FAQSection.astro';
@@ -257,16 +259,24 @@ const breadcrumbItems = [
     <WhyChooseUs lang={lang} color={color} />
   )}
 
-  <!-- SEO Service: 3 Interactive Sections -->
+  <!-- SEO Stats Section - Citable data for LLMO -->
+  {isSEOService && (
+    <SEOStatsSection lang={lang} />
+  )}
+
+  <!-- SEO Service: Interactive Sections -->
   {isSEOService && (
     <>
-      <!-- Phase 1: Audit & Strategy (Accordion) -->
+      <!-- Pillar 1: Audit & Strategy (Accordion) -->
       <AuditStrategySection lang={lang} color={color} />
 
-      <!-- Phase 2: Technical SEO (Flip Cards) -->
+      <!-- Pillar 2: Technical SEO (Flip Cards) -->
       <TechnicalSEOSection lang={lang} color={color} />
 
-      <!-- Phase 3: AI Content Production (Immersive Showcase with CTA) -->
+      <!-- Pillar 3: LLMO - AI Search Optimization -->
+      <LLMOSection lang={lang} />
+
+      <!-- Pillar 4: AI Content Production (Immersive Showcase with CTA) -->
       <AIContentShowcase lang={lang} color={color} />
     </>
   )}
