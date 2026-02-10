@@ -7,6 +7,7 @@ import { getCollection } from 'astro:content';
 // SEO Schemas
 import ServiceSchema from '@/components/seo/ServiceSchema.astro';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
+import SEOPageSchema from '@/components/seo/SEOPageSchema.astro';
 
 // Components
 import Badge from '@/components/ui/Badge.astro';
@@ -239,6 +240,11 @@ const breadcrumbItems = [
   />
   <BreadcrumbSchema items={breadcrumbItems} />
 
+  <!-- SEO Page: HowTo + WebPage/Speakable schemas -->
+  {isSEOService && (
+    <SEOPageSchema lang={lang} url={serviceUrl} />
+  )}
+
   <!-- Hero Section - Immersive with Parallax -->
   <HeroService
     lang={lang}
@@ -284,13 +290,8 @@ const breadcrumbItems = [
   <!-- Google Ads Service: Interactive Sections -->
   {isGoogleAdsService && (
     <>
-      <!-- Why Google Ads - Educational Section -->
       <WhyGoogleAds lang={lang} color={color} />
-
-      <!-- Google Ads Channels - Visual Showcase -->
       <GoogleAdsChannels lang={lang} color={color} />
-
-      <!-- Process Timeline -->
       <GoogleAdsProcess lang={lang} color={color} />
     </>
   )}
@@ -298,19 +299,10 @@ const breadcrumbItems = [
   <!-- Paid Social Service: Interactive Sections -->
   {isPaidSocialService && (
     <>
-      <!-- Why Paid Social - Educational Section -->
       <WhyPaidSocial lang={lang} color={color} />
-
-      <!-- Paid Social Channels - Visual Showcase -->
       <PaidSocialChannels lang={lang} color={color} />
-
-      <!-- Full-Service Offerings -->
       <PaidSocialServices lang={lang} color={color} />
-
-      <!-- Process Timeline -->
       <PaidSocialProcess lang={lang} color={color} />
-
-      <!-- Case Studies Carousel -->
       <CaseStudyCarousel lang={lang} caseStudyIds={['symbl-ai', 'gwi', 'genesys']} color={color} />
     </>
   )}
@@ -318,31 +310,14 @@ const breadcrumbItems = [
   <!-- AI Training Service: Interactive Sections -->
   {isAITrainingService && (
     <>
-      <!-- Why AI Training - Educational Section -->
       <WhyAITraining lang={lang} />
-
-      <!-- Department Use Cases -->
       <TrainingUseCases lang={lang} />
-
-      <!-- Training Testimonials with Photos (moved up) -->
       <TrainingTestimonials lang={lang} />
-
-      <!-- Benefits for Managers/Directors -->
       <TrainingBenefitsManagers lang={lang} />
-
-      <!-- Benefits for Employees -->
       <TrainingBenefitsEmployees lang={lang} />
-
-      <!-- Training Client Logos -->
       <TrainingClients lang={lang} />
-
-      <!-- Full Day Agenda with CRAFT Method -->
       <TrainingAgenda lang={lang} />
-
-      <!-- Training Process - How We Create Your Training -->
       <TrainingProcess lang={lang} />
-
-      <!-- Training Packages -->
       <AITrainingModules lang={lang} />
     </>
   )}
@@ -350,13 +325,8 @@ const breadcrumbItems = [
   <!-- Emailing Service: Interactive Sections -->
   {isEmailingService && (
     <>
-      <!-- Why Email Marketing - Stats & Renaissance -->
       <WhyEmailing lang={lang} />
-
-      <!-- Full-Service Offerings -->
       <EmailingServices lang={lang} />
-
-      <!-- AI Personalization Process -->
       <EmailingAIPersonalization lang={lang} />
     </>
   )}
@@ -364,13 +334,8 @@ const breadcrumbItems = [
   <!-- AI Solutions Service: Interactive Sections -->
   {isAISolutionsService && (
     <>
-      <!-- Why AI Development - Educational Section -->
       <WhyAISolutions lang={lang} />
-
-      <!-- Use Cases -->
       <AIUseCases lang={lang} />
-
-      <!-- Process & Approach -->
       <AIProcess lang={lang} />
     </>
   )}
@@ -378,31 +343,14 @@ const breadcrumbItems = [
   <!-- B2B ABM Service: Comprehensive Sections -->
   {isB2BABMService && (
     <>
-      <!-- What is ABM - Educational Section -->
       <WhyABM lang={lang} />
-
-      <!-- Crawl, Walk, Run Methodology -->
       <ABMApproach lang={lang} />
-
-      <!-- À La Carte Services Grid -->
       <ABMServices lang={lang} />
-
-      <!-- Consulting vs Execution Work Modes -->
       <ABMWorkModes lang={lang} />
-
-      <!-- B2B Funnel Stages -->
       <B2BFunnel lang={lang} />
-
-      <!-- Calculator CTA -->
       <ABMCalculatorCTA lang={lang} />
-
-      <!-- ABM Training Packages -->
       <ABMTrainingPackages lang={lang} />
-
-      <!-- B2B Testimonials -->
       <ABMTestimonials lang={lang} />
-
-      <!-- ABM FAQ -->
       <ABMFAQ lang={lang} />
     </>
   )}
@@ -410,22 +358,11 @@ const breadcrumbItems = [
   <!-- Tracking & Reporting Service: Comprehensive Sections -->
   {isTrackingService && (
     <>
-      <!-- Why Tracking - Educational Section -->
       <WhyTracking lang={lang} />
-
-      <!-- Tracking Services Grid -->
       <TrackingServices lang={lang} />
-
-      <!-- Tools & Integrations (CMS, Analytics, CRM) -->
       <TrackingTools lang={lang} />
-
-      <!-- Cookie & Privacy Compliance -->
       <CookieCompliance lang={lang} />
-
-      <!-- Reporting Tiers (Looker Studio, Tableau, AI) -->
       <ReportingTiers lang={lang} />
-
-      <!-- AI Report Preview with Chat -->
       <AIReportPreview lang={lang} />
     </>
   )}
@@ -433,16 +370,9 @@ const breadcrumbItems = [
   <!-- AI Content Service: Comprehensive Sections -->
   {isAIContentService && (
     <>
-      <!-- Why AI Content - Educational Section -->
       <WhyAIContent lang={lang} />
-
-      <!-- 4-Step Process with Visual Popups -->
       <AIContentProcess lang={lang} />
-
-      <!-- Content Types Grid -->
       <ContentTypes lang={lang} />
-
-      <!-- Deliverables & Delivery Options -->
       <AIContentDelivery lang={lang} />
     </>
   )}
@@ -560,7 +490,6 @@ const breadcrumbItems = [
 </PageLayout>
 
 <style>
-  /* Page-specific animations */
   @keyframes float {
     0%, 100% { transform: translateY(0) rotate(0deg); }
     50% { transform: translateY(-20px) rotate(5deg); }
