@@ -1,0 +1,173 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const content = {
+  en: {
+    badge: 'The Problem',
+    title: 'Is Your Content Actually Visible?',
+    subtitle: 'Most businesses invest in SEO — but still miss 40% of search traffic shifting to AI platforms.',
+    painPoints: [
+      {
+        icon: '🔍',
+        color: 'red',
+        title: 'Invisible on AI Search',
+        description: 'ChatGPT, Perplexity and Gemini recommend your competitors — not you. Your content exists, but AI assistants can\'t cite it.',
+        stat: '0%',
+        statLabel: 'of businesses optimize for AI search',
+      },
+      {
+        icon: '📉',
+        color: 'amber',
+        title: 'Traditional SEO Isn\'t Enough',
+        description: 'Ranking #1 on Google is great — but when 40% of users ask ChatGPT instead, your rankings miss a growing audience.',
+        stat: '40%',
+        statLabel: 'of searches involve AI by 2026',
+      },
+      {
+        icon: '🏃',
+        color: 'orange',
+        title: 'Competitors Are Moving Fast',
+        description: 'While you focus on keywords and backlinks, early adopters are already optimizing for AI citations and structured data.',
+        stat: '3x',
+        statLabel: 'faster content velocity needed',
+      },
+      {
+        icon: '🧩',
+        color: 'slate',
+        title: 'Content That Can\'t Be Extracted',
+        description: 'Your website lacks structured data, clear definitions, and citable formats. AI models skip content they can\'t parse.',
+        stat: '73%',
+        statLabel: 'of websites lack proper Schema markup',
+      },
+    ],
+    cta: 'There\'s a better way →',
+  },
+  fr: {
+    badge: 'Le Problème',
+    title: 'Votre Contenu Est-il Vraiment Visible ?',
+    subtitle: 'La plupart des entreprises investissent en SEO — mais passent à côté de 40% du trafic qui migre vers les plateformes IA.',
+    painPoints: [
+      {
+        icon: '🔍',
+        color: 'red',
+        title: 'Invisible sur la Recherche IA',
+        description: 'ChatGPT, Perplexity et Gemini recommandent vos concurrents — pas vous. Votre contenu existe, mais les assistants IA ne le citent pas.',
+        stat: '0%',
+        statLabel: 'des entreprises optimisent pour la recherche IA',
+      },
+      {
+        icon: '📉',
+        color: 'amber',
+        title: 'Le SEO Traditionnel Ne Suffit Plus',
+        description: 'Être #1 sur Google, c\'est bien — mais quand 40% des utilisateurs demandent à ChatGPT, vos classements ratent une audience croissante.',
+        stat: '40%',
+        statLabel: 'des recherches impliqueront l\'IA d\'ici 2026',
+      },
+      {
+        icon: '🏃',
+        color: 'orange',
+        title: 'Vos Concurrents Avancent Vite',
+        description: 'Pendant que vous misez sur les mots-clés et les backlinks, les précurseurs optimisent déjà pour les citations IA et les données structurées.',
+        stat: '3x',
+        statLabel: 'de vélocité de contenu nécessaire',
+      },
+      {
+        icon: '🧩',
+        color: 'slate',
+        title: 'Un Contenu Non Extractible',
+        description: 'Votre site manque de données structurées, de définitions claires et de formats citables. Les modèles IA ignorent le contenu qu\'ils ne peuvent pas analyser.',
+        stat: '73%',
+        statLabel: 'des sites manquent de balisage Schema',
+      },
+    ],
+    cta: 'Il y a une meilleure approche →',
+  },
+};
+
+const t = content[lang];
+
+const colorMap: Record<string, { bg: string; border: string; text: string; glow: string }> = {
+  red: { bg: 'bg-red-500/10', border: 'border-red-500/20', text: 'text-red-400', glow: 'shadow-red-500/5' },
+  amber: { bg: 'bg-amber-500/10', border: 'border-amber-500/20', text: 'text-amber-400', glow: 'shadow-amber-500/5' },
+  orange: { bg: 'bg-orange-500/10', border: 'border-orange-500/20', text: 'text-orange-400', glow: 'shadow-orange-500/5' },
+  slate: { bg: 'bg-slate-500/10', border: 'border-slate-500/20', text: 'text-slate-400', glow: 'shadow-slate-500/5' },
+};
+---
+
+<section class="py-24 bg-gradient-to-b from-slate-50 via-white to-slate-50 relative overflow-hidden">
+  <!-- Subtle background pattern -->
+  <div class="absolute inset-0 opacity-30">
+    <div class="absolute top-0 left-1/4 w-64 h-64 bg-red-100 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-amber-100 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-red-50 text-red-600 border border-red-200 mb-6">
+        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+        {t.badge}
+      </span>
+      <h2 class="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-6">
+        {t.title}
+      </h2>
+      <p class="text-xl text-slate-500 leading-relaxed">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Pain Points Grid -->
+    <div class="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12 stagger-children">
+      {t.painPoints.map((point, index) => {
+        const colors = colorMap[point.color] || colorMap.slate;
+        return (
+          <div
+            class={`group relative ${colors.bg} border ${colors.border} rounded-2xl p-8 hover:shadow-xl hover:${colors.glow} hover:-translate-y-1 transition-all duration-300 animate-on-scroll`}
+            style={`animation-delay: ${index * 120}ms`}
+          >
+            <!-- Icon + Title row -->
+            <div class="flex items-start gap-4 mb-4">
+              <div class="text-3xl flex-shrink-0 mt-1 group-hover:scale-110 transition-transform duration-300">
+                {point.icon}
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">
+                  {point.title}
+                </h3>
+                <p class="text-slate-600 leading-relaxed">
+                  {point.description}
+                </p>
+              </div>
+            </div>
+
+            <!-- Stat pill -->
+            <div class="flex items-center gap-3 mt-4 pt-4 border-t border-slate-200/50">
+              <span class={`text-2xl font-extrabold ${colors.text}`}>
+                {point.stat}
+              </span>
+              <span class="text-sm text-slate-500">
+                {point.statLabel}
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    <!-- Transition CTA -->
+    <div class="text-center animate-on-scroll">
+      <a href="#llmo" class="inline-flex items-center gap-2 text-lg font-semibold text-emerald-600 hover:text-emerald-500 transition-colors group">
+        {t.cta}
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
