@@ -112,7 +112,7 @@ const t = content[lang];
 
   <div class="container-custom relative z-10">
     <!-- Badge + Title -->
-    <div class="text-center max-w-4xl mx-auto mb-16">
+    <div class="text-center max-w-4xl mx-auto mb-16 animate-on-scroll">
       <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 mb-6">
         <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
         {t.badge}
@@ -132,7 +132,7 @@ const t = content[lang];
     </div>
 
     <!-- Stats banner -->
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-8 mb-16">
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-8 mb-16 animate-on-scroll">
       <div class="text-center">
         <div class="text-5xl font-extrabold text-blue-400 mb-1">{t.stat1Value}</div>
         <div class="text-sm text-blue-300/70">{t.stat1Label}</div>
@@ -145,7 +145,7 @@ const t = content[lang];
     </div>
 
     <!-- SEO vs LLMO Comparison -->
-    <div class="max-w-4xl mx-auto mb-20">
+    <div class="max-w-4xl mx-auto mb-20 animate-on-scroll">
       <h3 class="text-2xl font-bold text-center mb-8">{t.comparisonTitle}</h3>
       <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden">
         <!-- Header -->
@@ -172,13 +172,13 @@ const t = content[lang];
     </div>
 
     <!-- LLMO Services Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 stagger-children">
       {t.services.map((service, index) => (
         <div
-          class="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-blue-500/30 transition-all duration-300"
-          style={`animation-delay: ${index * 100}ms`}
+          class="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 animate-on-scroll"
+          style={`animation-delay: ${index * 150}ms`}
         >
-          <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 mb-4 group-hover:bg-blue-500/30 transition-colors">
+          <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 mb-4 group-hover:bg-blue-500/30 group-hover:scale-110 transition-all duration-300">
             <Icon name={service.icon} size={24} />
           </div>
           <h3 class="text-lg font-bold text-white mb-2">
@@ -192,7 +192,7 @@ const t = content[lang];
     </div>
 
     <!-- CTA -->
-    <div class="text-center">
+    <div class="text-center animate-on-scroll">
       <Button href={t.ctaHref} variant="primary" size="lg" class="bg-blue-600 hover:bg-blue-500 border-blue-500">
         {t.cta}
       </Button>
