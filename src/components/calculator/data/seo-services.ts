@@ -1,321 +1,228 @@
 import type { ServiceItem } from '../types';
 
+// REFONTE : 5 sous-services → 3 packages simplifiés
+// Avant : Audit, Corrections Techniques, Stratégie SEO, Contenu IA, Suivi & Collaboration
+// Après : Starter, Growth, Premium (packages tout-en-un)
+// Chaque package inclut un audit initial one-off + un accompagnement mensuel
+
 export const seoServices: ServiceItem[] = [
   {
     id: 'seo-audit',
-    title: 'A. Audit SEO',
-    titleEn: 'A. SEO Audit',
-    description: 'Analyse complète de votre site, votre marché et vos concurrents pour identifier les opportunités.',
-    descriptionEn: 'Complete analysis of your site, market and competitors to identify opportunities.',
+    title: 'A. Audit SEO Initial',
+    titleEn: 'A. Initial SEO Audit',
+    description: 'Analyse complète de votre site, marché et concurrents. Le point de départ indispensable.',
+    descriptionEn: 'Complete analysis of your site, market and competitors. The essential starting point.',
     icon: '🔍',
     isOneOff: true,
     detailedInfo: {
       title: 'Audit SEO - C\'est quoi exactement ?',
       content: {
-        intro: 'Notre audit SEO comprend une analyse technique complète de votre site et une étude des mots-clés de votre secteur.',
+        intro: 'Un diagnostic complet de votre présence en ligne et de vos opportunités de croissance organique.',
         sections: [
           {
             title: 'Ce que nous analysons',
             items: [
-              'Vitesse de chargement (Core Web Vitals)',
-              'Structure des URLs et architecture du site',
-              'Métadonnées (titres, descriptions, balises H1-H6)',
-              'Maillage interne entre les pages',
-              'Compatibilité mobile et responsive design',
+              'Performance technique (Core Web Vitals, vitesse, mobile)',
+              'Architecture du site et structure des URLs',
+              'Métadonnées (titres, descriptions, H1-H6)',
+              'Maillage interne et navigation',
+              'Indexation, sitemap.xml, robots.txt',
               'Erreurs 404, redirections, liens cassés',
-              'Indexation et fichier sitemap.xml'
+              'Étude de vos concurrents directs',
+              'Recherche de mots-clés à fort potentiel'
             ]
           },
           {
-            title: 'Version Avancée - En plus',
+            title: 'Version Premium - En plus',
             items: [
-              'Étude approfondie de vos concurrents',
-              'Analyse d\'un plus grand volume de mots-clés',
-              'Plan d\'action priorisé des corrections techniques',
-              'Roadmap des actions à mener sur les prochains mois'
+              'Analyse approfondie de 100+ mots-clés',
+              'Audit de backlinks et profil de liens',
+              'Roadmap d\'actions priorisée sur 6 mois',
+              'Benchmark concurrentiel détaillé'
             ]
           }
         ],
-        conclusion: 'Livrable : Rapport d\'audit complet avec recommandations actionnables.'
+        conclusion: 'Livrable : Rapport d\'audit complet avec recommandations actionnables et plan d\'action.'
       }
     },
     levels: [
       {
-        name: 'Basic',
-        nameEn: 'Basic',
-        price: 300,
-        features: ['Audit technique complet', '15-20 mots-clés analysés', 'Recommandations générales'],
-        featuresEn: ['Complete technical audit', '15-20 keywords analyzed', 'General recommendations'],
+        name: 'Essentiel',
+        nameEn: 'Essential',
+        price: 400,
+        features: [
+          'Audit technique complet',
+          '20-30 mots-clés analysés',
+          'Liste des erreurs détectées',
+          'Recommandations générales'
+        ],
+        featuresEn: [
+          'Complete technical audit',
+          '20-30 keywords analyzed',
+          'List of detected errors',
+          'General recommendations'
+        ],
         recommended: 'Sites récents ou petits budgets',
         recommendedEn: 'New sites or small budgets'
       },
       {
         name: 'Avancé',
         nameEn: 'Advanced',
-        price: 400,
-        features: ['Audit approfondi', 'Étude des concurrents', '40+ mots-clés analysés', 'Plan d\'action technique priorisé'],
-        featuresEn: ['In-depth audit', 'Competitor study', '40+ keywords analyzed', 'Prioritized technical action plan'],
-        recommended: 'Pour une vision stratégique complète',
-        recommendedEn: 'For a complete strategic view',
-        popular: true
-      }
-    ]
-  },
-  {
-    id: 'seo-corrections',
-    title: 'B. Corrections Techniques',
-    titleEn: 'B. Technical Fixes',
-    description: 'Identification et correction des freins techniques qui empêchent votre bon référencement.',
-    descriptionEn: 'Identification and correction of technical issues hindering your SEO performance.',
-    icon: '🔧',
-    detailedInfo: {
-      title: 'Corrections Techniques - C\'est quoi exactement ?',
-      content: {
-        intro: 'Un site techniquement sain est la fondation d\'un bon référencement. Nous utilisons des outils professionnels (Ahrefs, Screaming Frog) pour détecter tous les problèmes.',
-        sections: [
-          {
-            title: 'Types d\'erreurs détectées',
-            items: [
-              'Erreurs 404 et liens cassés',
-              'Problèmes de redirections (chaînes, boucles)',
-              'Contenu dupliqué',
-              'Problèmes de canonicals',
-              'Erreurs de balisage Schema.org',
-              'Problèmes d\'indexation (noindex accidentels)',
-              'Vitesse de chargement lente'
-            ]
-          }
+        price: 700,
+        features: [
+          'Audit technique + concurrentiel',
+          '50+ mots-clés analysés',
+          'Corrections techniques incluses',
+          'Plan d\'action priorisé sur 3 mois'
         ],
-        conclusion: 'Livrable : Rapport technique avec priorisation High/Medium/Low.'
-      }
-    },
-    levels: [
-      {
-        name: 'Essentiel',
-        nameEn: 'Essential',
-        price: 100,
-        features: ['Liste des erreurs détectées', 'Export brut des problèmes'],
-        featuresEn: ['List of detected errors', 'Raw issues export'],
-        recommended: 'Vous avez un webmaster en interne',
-        recommendedEn: 'You have an in-house webmaster'
-      },
-      {
-        name: 'Avancé',
-        nameEn: 'Advanced',
-        price: 250,
-        features: ['Détection des erreurs', 'Explications détaillées', 'Recommandations actionnables'],
-        featuresEn: ['Error detection', 'Detailed explanations', 'Actionable recommendations'],
-        recommended: 'Comprendre et prioriser',
-        recommendedEn: 'Understand and prioritize',
+        featuresEn: [
+          'Technical + competitive audit',
+          '50+ keywords analyzed',
+          'Technical fixes included',
+          'Prioritized 3-month action plan'
+        ],
+        recommended: 'Vision stratégique complète',
+        recommendedEn: 'Complete strategic view',
         popular: true
       },
       {
         name: 'Premium',
         nameEn: 'Premium',
-        price: 500,
-        priceNote: '400-600€*',
-        priceNoteEn: '€400-600*',
-        features: ['Détection complète', 'Implémentation par MyDigipal', 'Suivi des corrections'],
-        featuresEn: ['Complete detection', 'Implementation by MyDigipal', 'Fix tracking'],
-        recommended: 'On s\'en occupe pour vous',
-        recommendedEn: 'We handle it for you'
-      }
-    ]
-  },
-  {
-    id: 'seo-strategy',
-    title: 'C. Stratégie SEO Central',
-    titleEn: 'C. Core SEO Strategy',
-    description: 'Pilotage stratégique continu : identification des opportunités, optimisation des pages et veille concurrentielle.',
-    descriptionEn: 'Ongoing strategic management: opportunity identification, page optimization and competitive monitoring.',
-    icon: '🎯',
-    detailedInfo: {
-      title: 'Stratégie SEO Central - C\'est quoi exactement ?',
-      content: {
-        intro: 'Un accompagnement stratégique continu pour piloter votre SEO de manière proactive.',
-        sections: [
-          {
-            title: 'Recherche de mots-clés en continu',
-            items: [
-              'Identification des nouvelles opportunités',
-              'Suivi des positions et performances',
-              'Analyse des volumes de recherche',
-              'Détection des quick wins'
-            ]
-          },
-          {
-            title: 'Optimisation des pages existantes',
-            items: [
-              'Audit régulier des pages centrales',
-              'Recommandations de contenu',
-              'Optimisation des balises et structure',
-              'Amélioration du maillage interne'
-            ]
-          }
+        price: 1200,
+        features: [
+          'Audit exhaustif technique + sémantique',
+          '100+ mots-clés + analyse backlinks',
+          'Corrections techniques implémentées',
+          'Roadmap 6 mois + benchmark concurrentiel',
+          'Présentation et workshop stratégique'
         ],
-        conclusion: 'Un pilotage stratégique qui vous donne une longueur d\'avance.'
-      }
-    },
-    levels: [
-      {
-        name: 'Essentiel',
-        nameEn: 'Essential',
-        price: 200,
-        features: ['5-10 pages suivies', 'Recherche mots-clés mensuelle', 'Recommandations d\'optimisation'],
-        featuresEn: ['5-10 pages tracked', 'Monthly keyword research', 'Optimization recommendations'],
-        recommended: 'Petits sites ou démarrage',
-        recommendedEn: 'Small sites or getting started'
-      },
-      {
-        name: 'Avancé',
-        nameEn: 'Advanced',
-        price: 400,
-        features: ['15-25 pages suivies', 'Recherche bi-mensuelle', 'Analyse concurrence trimestrielle', 'Plan d\'action priorisé'],
-        featuresEn: ['15-25 pages tracked', 'Bi-monthly research', 'Quarterly competitor analysis', 'Prioritized action plan'],
-        recommended: 'Sites en croissance',
-        recommendedEn: 'Growing sites',
-        popular: true
-      },
-      {
-        name: 'Premium',
-        nameEn: 'Premium',
-        price: 600,
-        features: ['40+ pages suivies', 'Veille mots-clés continue', 'Analyse concurrence mensuelle', 'Accompagnement dédié'],
-        featuresEn: ['40+ pages tracked', 'Continuous keyword monitoring', 'Monthly competitor analysis', 'Dedicated support'],
-        recommended: 'Sites ambitieux',
-        recommendedEn: 'Ambitious sites'
+        featuresEn: [
+          'Exhaustive technical + semantic audit',
+          '100+ keywords + backlink analysis',
+          'Technical fixes implemented',
+          '6-month roadmap + competitive benchmark',
+          'Presentation and strategic workshop'
+        ],
+        recommended: 'Sites ambitieux, marchés compétitifs',
+        recommendedEn: 'Ambitious sites, competitive markets'
       }
     ]
   },
   {
-    id: 'seo-content',
-    title: 'D. Contenu IA Optimisé',
-    titleEn: 'D. AI-Optimized Content',
-    description: 'Articles SEO optimisés produits avec notre système IA pour publier régulièrement du contenu de qualité.',
-    descriptionEn: 'SEO-optimized articles produced with our AI system to regularly publish quality content.',
-    icon: '✍️',
+    id: 'seo-monthly',
+    title: 'B. Accompagnement SEO Mensuel',
+    titleEn: 'B. Monthly SEO Management',
+    description: 'Stratégie continue, création de contenu optimisé et suivi des performances pour une croissance organique durable.',
+    descriptionEn: 'Ongoing strategy, optimized content creation and performance tracking for sustainable organic growth.',
+    icon: '📈',
     hasAddon: true,
     detailedInfo: {
-      title: 'Contenu IA Optimisé - C\'est quoi exactement ?',
+      title: 'Accompagnement SEO Mensuel - C\'est quoi exactement ?',
       content: {
-        intro: 'La régularité est cruciale : 2 articles/semaine = +68% de trafic organique après 6 mois.',
+        intro: 'Un accompagnement complet pour faire croître votre trafic organique mois après mois.',
         sections: [
           {
-            title: 'Notre process de création',
+            title: 'Stratégie et pilotage',
             items: [
-              'Identification des thématiques via Ahrefs',
-              'Analyse des volumes et difficulté',
-              'Structuration optimale (H1, H2, FAQ)',
-              'Rédaction IA personnalisée à votre ton',
-              'Relecture et validation humaine'
+              'Recherche continue de mots-clés et opportunités',
+              'Suivi des positions et performances',
+              'Optimisation des pages existantes',
+              'Amélioration du maillage interne',
+              'Veille concurrentielle'
             ]
           },
           {
-            title: 'Option Publication CMS (+100€/mois)',
+            title: 'Création de contenu IA optimisé',
             items: [
-              'Push automatique dans WordPress/Webflow',
-              'Articles en brouillon ou publiés directement',
-              'Gain de temps considérable'
+              'Articles SEO produits avec notre système IA propriétaire',
+              'Structuration optimale (H1, H2, FAQ, Schema)',
+              'Rédaction IA personnalisée à votre ton de marque',
+              'Relecture et validation humaine',
+              'Optimisation LLMO (ChatGPT, Perplexity, Gemini)'
+            ]
+          },
+          {
+            title: 'Suivi et collaboration',
+            items: [
+              'Reporting régulier avec KPIs clés',
+              'Meetings pour discuter des résultats et priorités',
+              'Support email pour vos questions SEO'
             ]
           }
         ],
-        conclusion: 'Technologies : API Ahrefs, Claude Sonnet 4 / GPT-5, N8N automation'
+        conclusion: 'Résultat moyen : +68% de trafic organique après 6 mois de publication régulière.'
       }
     },
     levels: [
       {
-        name: '2 articles',
-        nameEn: '2 articles',
-        price: 350,
-        features: ['2 articles/mois', 'Optimisés SEO', 'Livrés en document'],
-        featuresEn: ['2 articles/month', 'SEO optimized', 'Delivered as document'],
-        recommended: 'Démarrage ou budget limité',
-        recommendedEn: 'Getting started or limited budget'
+        name: 'Starter',
+        nameEn: 'Starter',
+        price: 500,
+        features: [
+          '2 articles SEO/mois',
+          'Recherche de mots-clés mensuelle',
+          '5-10 pages suivies',
+          'Corrections techniques continues',
+          'Reporting email mensuel'
+        ],
+        featuresEn: [
+          '2 SEO articles/month',
+          'Monthly keyword research',
+          '5-10 pages tracked',
+          'Continuous technical fixes',
+          'Monthly email reporting'
+        ],
+        recommended: 'Démarrage ou budget maîtrisé',
+        recommendedEn: 'Getting started or controlled budget'
       },
       {
-        name: '4 articles',
-        nameEn: '4 articles',
-        price: 600,
-        features: ['4 articles/mois', 'Optimisés SEO', 'Recherche mots-clés incluse'],
-        featuresEn: ['4 articles/month', 'SEO optimized', 'Keyword research included'],
+        name: 'Growth',
+        nameEn: 'Growth',
+        price: 1000,
+        features: [
+          '4 articles SEO/mois',
+          'Stratégie mots-clés bi-mensuelle',
+          '15-25 pages suivies',
+          'Optimisation pages existantes',
+          'Analyse concurrence trimestrielle',
+          'Meeting bi-mensuel + reporting'
+        ],
+        featuresEn: [
+          '4 SEO articles/month',
+          'Bi-monthly keyword strategy',
+          '15-25 pages tracked',
+          'Existing page optimization',
+          'Quarterly competitor analysis',
+          'Bi-monthly meeting + reporting'
+        ],
         recommended: 'Croissance régulière',
         recommendedEn: 'Regular growth',
         popular: true
       },
       {
-        name: '8 articles',
-        nameEn: '8 articles',
-        price: 750,
-        features: ['8 articles/mois', 'Optimisés SEO', 'Stratégie éditoriale complète'],
-        featuresEn: ['8 articles/month', 'SEO optimized', 'Complete editorial strategy'],
-        recommended: 'Dominer votre secteur',
-        recommendedEn: 'Dominate your industry'
-      }
-    ]
-  },
-  {
-    id: 'seo-followup',
-    title: 'E. Suivi & Collaboration',
-    titleEn: 'E. Follow-up & Collaboration',
-    description: 'Accompagnement adapté à vos besoins, du simple reporting au suivi rapproché avec réunions.',
-    descriptionEn: 'Support tailored to your needs, from simple reporting to close follow-up with meetings.',
-    icon: '🤝',
-    detailedInfo: {
-      title: 'Suivi & Collaboration - C\'est quoi exactement ?',
-      content: {
-        intro: 'Un accompagnement SEO efficace nécessite un suivi régulier et une communication claire.',
-        sections: [
-          {
-            title: 'Ce que comprend le reporting',
-            items: [
-              'Évolution du trafic organique',
-              'Positions des mots-clés cibles',
-              'Nouveaux backlinks acquis',
-              'Erreurs techniques détectées',
-              'Actions réalisées et recommandations'
-            ]
-          },
-          {
-            title: 'Format des meetings',
-            items: [
-              'Présentation des résultats',
-              'Discussion des priorités',
-              'Questions/réponses',
-              'Définition des prochaines actions'
-            ]
-          }
-        ],
-        conclusion: 'Transparence totale sur les actions et résultats.'
-      }
-    },
-    levels: [
-      {
-        name: 'Essentiel',
-        nameEn: 'Essential',
-        price: 100,
-        features: ['Reporting email mensuel', 'Métriques clés'],
-        featuresEn: ['Monthly email reporting', 'Key metrics'],
-        recommended: 'Autonome, peu de questions',
-        recommendedEn: 'Autonomous, few questions'
-      },
-      {
-        name: 'Avancé',
-        nameEn: 'Advanced',
-        price: 200,
-        features: ['1 meeting tous les 2 mois', 'Récap + brief mensuel', 'Support email'],
-        featuresEn: ['1 meeting every 2 months', 'Monthly recap + brief', 'Email support'],
-        recommended: 'Échanges réguliers',
-        recommendedEn: 'Regular exchanges',
-        popular: true
-      },
-      {
         name: 'Premium',
         nameEn: 'Premium',
-        price: 300,
-        features: ['1 meeting/mois', 'Disponibilité email réactive', 'Accompagnement stratégique'],
-        featuresEn: ['1 meeting/month', 'Responsive email availability', 'Strategic support'],
-        recommended: 'Collaboration intensive',
-        recommendedEn: 'Intensive collaboration'
+        price: 1800,
+        features: [
+          '8 articles SEO/mois',
+          'Veille mots-clés continue',
+          '40+ pages suivies',
+          'Netlinking ciblé (5-10 backlinks/mois)',
+          'Analyse concurrence mensuelle',
+          'Meeting mensuel + support réactif',
+          'Accompagnement stratégique dédié'
+        ],
+        featuresEn: [
+          '8 SEO articles/month',
+          'Continuous keyword monitoring',
+          '40+ pages tracked',
+          'Targeted link building (5-10 backlinks/month)',
+          'Monthly competitor analysis',
+          'Monthly meeting + responsive support',
+          'Dedicated strategic guidance'
+        ],
+        recommended: 'Dominer votre secteur',
+        recommendedEn: 'Dominate your industry'
       }
     ]
   }

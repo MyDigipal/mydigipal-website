@@ -126,7 +126,30 @@ export const translations = {
 
     // To discuss section
     toDiscuss: 'To discuss',
-    needsDiscussion: 'Needs discussion'
+    needsDiscussion: 'Needs discussion',
+
+    // AI Solutions packages
+    aiSolutionsPackages: 'Choose a package or request a custom quote',
+    aiSolutionsCustom: 'Need something different?',
+    aiSolutionsCustomDesc: 'Fill out the form below for a custom AI solution quote.',
+    showCustomForm: 'Request custom quote',
+    hideCustomForm: 'Hide form',
+
+    // AI Content
+    aiContentTitle: 'AI Content Creation',
+    aiContentDesc: 'AI-powered content at scale, trained on your brand voice',
+
+    // Currency
+    currency: 'Currency',
+
+    // Social channels
+    socialChannelsTitle: 'Select your channels',
+    socialChannelsDesc: 'Choose the platforms where you want to run campaigns',
+    socialNeedHelp: 'Not sure which channels?',
+    socialNeedHelpDesc: 'Let us help you choose the right channels for your business',
+
+    // Level isOneOff indicator
+    oneOffSetup: 'One-time setup'
   },
   fr: {
     // Page title
@@ -255,7 +278,30 @@ export const translations = {
 
     // To discuss section
     toDiscuss: 'À discuter',
-    needsDiscussion: 'Besoin d\'en discuter'
+    needsDiscussion: 'Besoin d\'en discuter',
+
+    // AI Solutions packages
+    aiSolutionsPackages: 'Choisissez un package ou demandez un devis sur-mesure',
+    aiSolutionsCustom: 'Besoin de quelque chose de différent ?',
+    aiSolutionsCustomDesc: 'Remplissez le formulaire ci-dessous pour un devis solution IA sur-mesure.',
+    showCustomForm: 'Demander un devis sur-mesure',
+    hideCustomForm: 'Masquer le formulaire',
+
+    // AI Content
+    aiContentTitle: 'Création de Contenu IA',
+    aiContentDesc: 'Contenu à l\'échelle propulsé par l\'IA, formé sur votre voix de marque',
+
+    // Currency
+    currency: 'Devise',
+
+    // Social channels
+    socialChannelsTitle: 'Sélectionnez vos canaux',
+    socialChannelsDesc: 'Choisissez les plateformes sur lesquelles vous voulez lancer des campagnes',
+    socialNeedHelp: 'Pas sûr des canaux ?',
+    socialNeedHelpDesc: 'Laissez-nous vous aider à choisir les bons canaux pour votre business',
+
+    // Level isOneOff indicator
+    oneOffSetup: 'Setup unique'
   }
 } as const;
 

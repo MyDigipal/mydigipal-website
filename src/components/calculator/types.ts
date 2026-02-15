@@ -1,6 +1,16 @@
 // Calculator Types
 
-export type ServiceDomain = 'seo' | 'google-ads' | 'paid-social' | 'ai-training' | 'emailing' | 'ai-solutions' | 'tracking-reporting';
+export type ServiceDomain = 'seo' | 'google-ads' | 'paid-social' | 'ai-training' | 'emailing' | 'ai-solutions' | 'ai-content' | 'tracking-reporting';
+
+// Currency support
+export type Currency = 'EUR' | 'USD' | 'GBP';
+
+export interface CurrencyConfig {
+  symbol: string;
+  code: Currency;
+  rate: number; // Conversion rate from EUR
+  label: string;
+}
 
 export interface ServiceLevel {
   name: string;

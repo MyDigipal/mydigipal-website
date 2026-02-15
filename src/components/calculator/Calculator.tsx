@@ -1,11 +1,14 @@
 /** @jsxImportSource react */
 import { useState, useMemo, useCallback } from 'react';
-import type { ServiceDomain, AITrainingSelection, AISolutionsAnswers, ContactInfo } from './types';
+import type { ServiceDomain, AITrainingSelection, AISolutionsAnswers, ContactInfo, Currency } from './types';
 import {
   domainConfigs,
   BUDGET_CONFIG,
   DURATION_CONFIG,
   MANAGEMENT_FEE_CONFIG,
+  CURRENCY_CONFIGS,
+  convertPrice,
+  formatPrice,
   calculateManagementFee,
   getManagementFeeDescription,
   aiTrainingPricing,
@@ -13,6 +16,8 @@ import {
   fullDayAdditionalFeatures,
   aiSolutionsQuestions,
   aiSolutionsUseCases,
+  aiSolutionsServices,
+  socialChannels,
   trackingAuditOption,
   trackingServices,
   trackingPopupContent,
@@ -69,7 +74,8 @@ const getDomainColors = (colorClass: string) => {
     emerald: { border: 'border-emerald-300', bg: 'bg-emerald-500', bgLight: 'bg-emerald-50', text: 'text-emerald-700', button: 'bg-emerald-100 text-emerald-700', buttonHover: 'hover:bg-emerald-200' },
     amber: { border: 'border-amber-300', bg: 'bg-amber-500', bgLight: 'bg-amber-50', text: 'text-amber-700', button: 'bg-amber-100 text-amber-700', buttonHover: 'hover:bg-amber-200' },
     violet: { border: 'border-violet-300', bg: 'bg-violet-500', bgLight: 'bg-violet-50', text: 'text-violet-700', button: 'bg-violet-100 text-violet-700', buttonHover: 'hover:bg-violet-200' },
-    cyan: { border: 'border-cyan-300', bg: 'bg-cyan-500', bgLight: 'bg-cyan-50', text: 'text-cyan-700', button: 'bg-cyan-100 text-cyan-700', buttonHover: 'hover:bg-cyan-200' }
+    cyan: { border: 'border-cyan-300', bg: 'bg-cyan-500', bgLight: 'bg-cyan-50', text: 'text-cyan-700', button: 'bg-cyan-100 text-cyan-700', buttonHover: 'hover:bg-cyan-200' },
+    pink: { border: 'border-pink-300', bg: 'bg-pink-500', bgLight: 'bg-pink-50', text: 'text-pink-700', button: 'bg-pink-100 text-pink-700', buttonHover: 'hover:bg-pink-200' }
   };
   return colors[colorClass] || colors.blue;
 };
@@ -148,6 +154,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     budget: '',
     additionalInfo: ''
   });
+  const [showAiCustomForm, setShowAiCustomForm] = useState(false);
+
+  // Currency state
+  const [currency, setCurrency] = useState<Currency>('EUR');
 
   // Contact form
   const [contact, setContact] = useState<ContactInfo>({ name: '', email: '', company: '', phone: '' });
@@ -189,6 +199,11 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
   // AI Training session count (for 5+ sessions)
   const [sessionCount, setSessionCount] = useState(5);
+
+  // Currency helpers
+  const cp = useCallback((priceEUR: number) => convertPrice(priceEUR, currency), [currency]);
+  const fp = useCallback((priceEUR: number) => formatPrice(priceEUR, currency), [currency]);
+  const currencySymbol = CURRENCY_CONFIGS[currency].symbol;
 
   // Toggle domain selection
   const toggleDomain = useCallback((domain: ServiceDomain) => {
@@ -296,8 +311,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       // Skip dismissed domains or "not sure" domains
       if (dismissedDomains[domain] || notSureAbout[domain]) return;
 
-      // Skip AI Training and AI Solutions (special handling)
-      if (domain === 'ai-training' || domain === 'ai-solutions') return;
+      // Skip AI Training (special handling)
+      if (domain === 'ai-training') return;
 
       // Add management fees for ads domains (tiered structure) - only if user has activated budget
       if (config.hasBudgetSlider && config.hasTieredManagementFee && budgetActivated[domain as 'google-ads' | 'paid-social']) {
@@ -415,7 +430,6 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   // Check if any service is selected (excluding dismissed/notSure domains)
   const hasActualSelections = useMemo(() => {
     if (selectedDomains.includes('ai-training') && !dismissedDomains['ai-training'] && !notSureAbout['ai-training']) return true;
-    if (selectedDomains.includes('ai-solutions') && !dismissedDomains['ai-solutions'] && !notSureAbout['ai-solutions']) return true;
     // Check if any non-dismissed domain has selections
     const hasOtherSelections = Object.entries(selections).some(([serviceId, level]) => {
       if (level === null) return false;
@@ -511,16 +525,15 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         return;
       }
 
-      // AI Solutions special handling
-      if (domainId === 'ai-solutions') {
+      // AI Solutions - now has packages, plus optional custom form
+      if (domainId === 'ai-solutions' && showAiCustomForm) {
+        // Add custom quote info if form is filled
         deptData.services.push({
-          name: lang === 'fr' ? 'Solution IA sur-mesure' : 'Custom AI Solution',
+          name: lang === 'fr' ? 'Solution IA sur-mesure (devis)' : 'Custom AI Solution (quote)',
           level: lang === 'fr' ? 'Sur devis' : 'Custom quote',
           price: 0,
           isOneOff: false
         });
-        departmentBreakdown.push(deptData);
-        return;
       }
 
       // Standard services
@@ -630,9 +643,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       trackingNotSure,
       cmsAddon,
       departmentBreakdown,
+      currency,
       metadata: {
         timestamp: new Date().toISOString(),
-        source: 'marketing-calculator-v4',
+        source: 'marketing-calculator-v5',
         lang
       }
     };
@@ -681,7 +695,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     } finally {
       setIsSubmitting(false);
     }
-  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, trackingNotSure, cmsAddon, lang, isSubmitting, notSureAbout, dismissedDomains, disabledServices, budgetActivated, aiTrainingActivated, sessionCount, trackingDismissed]);
+  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, trackingNotSure, cmsAddon, lang, isSubmitting, notSureAbout, dismissedDomains, disabledServices, budgetActivated, aiTrainingActivated, sessionCount, trackingDismissed, showAiCustomForm, currency]);
 
   // Submit handler with popup check
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
@@ -735,6 +749,26 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           <p className="text-lg text-slate-600">{t.selectDomainsDesc}</p>
         </div>
 
+        {/* Currency selector on domain page */}
+        <div className="flex justify-center mb-8">
+          <div className="flex items-center gap-2 bg-slate-100 rounded-xl p-1">
+            <span className="text-sm text-slate-500 px-2">{t.currency}:</span>
+            {(['EUR', 'USD', 'GBP'] as Currency[]).map(c => (
+              <button
+                key={c}
+                onClick={() => setCurrency(c)}
+                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
+                  currency === c
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                {CURRENCY_CONFIGS[c].symbol} {c}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {Object.values(domainConfigs).map(domain => {
             const isSelected = selectedDomains.includes(domain.id);
@@ -745,7 +779,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               emerald: 'border-emerald-500 bg-emerald-50',
               amber: 'border-amber-500 bg-amber-50',
               violet: 'border-violet-500 bg-violet-50',
-              cyan: 'border-cyan-500 bg-cyan-50'
+              cyan: 'border-cyan-500 bg-cyan-50',
+              pink: 'border-pink-500 bg-pink-50'
             };
 
             return (
@@ -774,7 +809,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 </p>
                 {domain.id === 'ai-solutions' && (
                   <span className="inline-block mt-3 px-2 py-1 bg-violet-100 text-violet-700 text-xs font-medium rounded">
-                    {t.customQuote}
+                    {lang === 'fr' ? 'Packages + sur-mesure' : 'Packages + custom'}
                   </span>
                 )}
               </button>
@@ -815,7 +850,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   {pricing.hasCustomQuote ? (
                     <span className="text-amber-600 text-base">{lang === 'fr' ? 'Sur devis' : 'Custom'}</span>
                   ) : (
-                    <>{Math.round(pricing.totalMonthlyWithoutBudget).toLocaleString()}€</>
+                    <>{fp(Math.round(pricing.totalMonthlyWithoutBudget))}</>
                   )}
                 </p>
               </div>
@@ -824,17 +859,35 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 <div className="text-center border-l border-slate-200 pl-6">
                   <p className="text-[10px] text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'One-off' : 'One-time'}</p>
                   <p className="text-xl font-bold text-emerald-600">
-                    {Math.round(pricing.oneOffTotal).toLocaleString()}€
+                    {fp(Math.round(pricing.oneOffTotal))}
                   </p>
                 </div>
               )}
             </div>
-            <button
-              onClick={() => setShowSummaryPopup(true)}
-              className="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-sm"
-            >
-              {t.viewSummary}
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Currency selector */}
+              <div className="flex items-center bg-slate-100 rounded-lg p-0.5">
+                {(['EUR', 'USD', 'GBP'] as Currency[]).map(c => (
+                  <button
+                    key={c}
+                    onClick={() => setCurrency(c)}
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                      currency === c
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    {CURRENCY_CONFIGS[c].symbol} {c}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setShowSummaryPopup(true)}
+                className="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-sm"
+              >
+                {t.viewSummary}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1032,8 +1085,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                 const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
                                 const multiplier = aiTraining.sessions === '5+' ? sessionCount : 1;
                                 const travel = aiTraining.inPerson ? 500 : 0;
-                                return ((base * multiplier) + travel).toLocaleString();
-                              })()}€
+                                return fp((base * multiplier) + travel);
+                              })()}
                             </span>
                           </div>
                         </div>
@@ -1045,26 +1098,27 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             );
           }
 
-          // Special handling for AI Solutions
+          // Special handling for AI Solutions - now with packages + custom quote form
           if (domainId === 'ai-solutions') {
             const isDismissed = dismissedDomains[domainId];
+            const isNotSure = notSureAbout[domainId];
             const colors = getDomainColors(domain.colorClass);
             return (
               <div
                 key={domainId}
                 className={`rounded-2xl border-2 ${colors.border} overflow-hidden transition-all duration-300 ${
-                  isDismissed ? 'max-h-24 opacity-60 bg-white' : `max-h-[2000px] ${colors.bgLight}`
+                  isDismissed ? 'max-h-24 opacity-60 bg-white' : `max-h-[8000px] ${colors.bgLight}`
                 }`}
               >
                 <div className="p-8">
-                  <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
                       <span className="text-4xl">{domain.icon}</span>
                       <div>
                         <h2 className="text-2xl font-bold text-slate-900">
                           {lang === 'fr' ? domain.nameFr : domain.name}
                         </h2>
-                        <p className="text-slate-600">{t.aiSolutionsDesc}</p>
+                        <p className="text-slate-600">{lang === 'fr' ? domain.descriptionFr : domain.description}</p>
                       </div>
                     </div>
                     <button
@@ -1081,51 +1135,150 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
                   {!isDismissed && (
                     <>
-                      <div className="grid md:grid-cols-2 gap-8 mb-8">
-                        {(lang === 'fr' ? aiSolutionsUseCases.fr : aiSolutionsUseCases.en).map((useCase, idx) => (
-                          <div key={idx} className="flex gap-4 p-4 bg-white rounded-xl border border-violet-200">
-                            <span className="text-2xl">{useCase.icon}</span>
-                            <div>
-                              <h4 className="font-semibold text-slate-900">{useCase.title}</h4>
-                              <p className="text-sm text-slate-600">{useCase.description}</p>
-                            </div>
+                      {/* Not sure option */}
+                      <button
+                        onClick={() => toggleNotSure(domainId)}
+                        className={`w-full p-4 mb-6 rounded-xl border-2 text-left transition-all ${
+                          isNotSure
+                            ? `${colors.border} ${colors.bgLight} border-solid`
+                            : 'border-dashed border-slate-300 hover:border-slate-400 bg-white'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xl">🔍</span>
+                          <div className="flex-1">
+                            <span className="font-semibold text-slate-900">
+                              {t.notSureAbout} {lang === 'fr' ? domain.nameFr : domain.name} - {t.letsChat}
+                            </span>
                           </div>
-                        ))}
-                      </div>
+                          {isNotSure && (
+                            <span className={`w-6 h-6 rounded-full ${colors.bg} text-white flex items-center justify-center`}>
+                              <CheckIcon />
+                            </span>
+                          )}
+                        </div>
+                      </button>
 
-                      <div className="space-y-6">
-                        {aiSolutionsQuestions.map(question => (
-                          <div key={question.id}>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              {lang === 'fr' ? question.labelFr : question.label}
-                              {question.required && <span className="text-red-500 ml-1">*</span>}
-                            </label>
-                            {question.type === 'select' ? (
-                              <select
-                                value={aiSolutions[question.id as keyof AISolutionsAnswers]}
-                                onChange={(e) => setAiSolutions(prev => ({ ...prev, [question.id]: e.target.value }))}
-                                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                                required={question.required}
-                              >
-                                <option value="">-- {lang === 'fr' ? 'Sélectionner' : 'Select'} --</option>
-                                {question.options?.map(opt => (
-                                  <option key={opt.value} value={opt.value}>
-                                    {lang === 'fr' ? opt.labelFr : opt.label}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <textarea
-                                value={aiSolutions[question.id as keyof AISolutionsAnswers]}
-                                onChange={(e) => setAiSolutions(prev => ({ ...prev, [question.id]: e.target.value }))}
-                                placeholder={lang === 'fr' ? question.placeholderFr : question.placeholder}
-                                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 resize-none"
-                                rows={3}
-                                required={question.required}
-                              />
-                            )}
-                          </div>
-                        ))}
+                      <div className={`transition-all duration-300 ${isNotSure ? 'opacity-40 pointer-events-none' : ''}`}>
+                        {/* Service packages - reuse standard rendering */}
+                        <div className="space-y-6">
+                          {domain.services.map(service => {
+                            const selectedLevel = selections[service.id];
+                            return (
+                              <div key={service.id} className="p-6 rounded-xl bg-white border border-slate-200">
+                                <div className="flex items-start mb-4">
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-2xl">{service.icon}</span>
+                                    <div>
+                                      <div className="flex items-center gap-1">
+                                        <h3 className="font-bold text-slate-900">{lang === 'fr' ? service.title : (service.titleEn || service.title)}</h3>
+                                        {service.detailedInfo && (
+                                          <Tooltip content={service.detailedInfo.content.intro} whyImportant={service.detailedInfo.content.conclusion} lang={lang} />
+                                        )}
+                                      </div>
+                                      <p className="text-sm text-slate-600">{lang === 'fr' ? service.description : (service.descriptionEn || service.description)}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  {service.levels.map((level, idx) => (
+                                    <button
+                                      key={idx}
+                                      onClick={() => toggleServiceLevel(service.id, idx)}
+                                      className={`p-4 rounded-xl border-2 text-left transition-all relative ${
+                                        selectedLevel === idx
+                                          ? `${colors.border} ${colors.bgLight}`
+                                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                                      }`}
+                                    >
+                                      {level.popular && (
+                                        <span className={`absolute -top-2 right-2 px-2 py-0.5 ${colors.bg} text-white text-xs font-medium rounded`}>
+                                          {t.popular}
+                                        </span>
+                                      )}
+                                      <div className="flex items-baseline gap-1 mb-2">
+                                        {level.priceNote && (
+                                          <span className="text-xs text-slate-500">{lang === 'fr' ? level.priceNote : (level.priceNoteEn || level.priceNote)}</span>
+                                        )}
+                                        <span className="text-xl font-bold text-slate-900">{fp(level.price)}</span>
+                                        {service.isOneOff || level.isOneOff ? (
+                                          <span className="text-xs text-slate-500">{t.oneOff}</span>
+                                        ) : (
+                                          <span className="text-xs text-slate-500">{t.perMonth}</span>
+                                        )}
+                                      </div>
+                                      <div className="font-medium text-slate-900 mb-2">{lang === 'fr' ? level.name : (level.nameEn || level.name)}</div>
+                                      <ul className="space-y-1">
+                                        {(lang === 'fr' ? level.features : (level.featuresEn || level.features)).slice(0, 3).map((feature, i) => (
+                                          <li key={i} className="text-xs text-slate-600 flex items-start gap-1">
+                                            <span className={`${colors.text} mt-0.5`}>•</span>
+                                            {feature}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Custom quote toggle */}
+                        <div className="mt-8 p-6 bg-white rounded-xl border border-violet-200">
+                          <button
+                            onClick={() => setShowAiCustomForm(!showAiCustomForm)}
+                            className="w-full flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl">🧠</span>
+                              <div className="text-left">
+                                <h4 className="font-semibold text-slate-900">{t.aiSolutionsCustom}</h4>
+                                <p className="text-sm text-slate-500">{t.aiSolutionsCustomDesc}</p>
+                              </div>
+                            </div>
+                            <span className={`px-4 py-2 rounded-full text-sm font-medium ${colors.button} ${colors.buttonHover} transition-all`}>
+                              {showAiCustomForm ? t.hideCustomForm : t.showCustomForm}
+                            </span>
+                          </button>
+
+                          {showAiCustomForm && (
+                            <div className="mt-6 space-y-4 border-t border-slate-200 pt-6">
+                              {aiSolutionsQuestions.map(question => (
+                                <div key={question.id}>
+                                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    {lang === 'fr' ? question.labelFr : question.label}
+                                    {question.required && <span className="text-red-500 ml-1">*</span>}
+                                  </label>
+                                  {question.type === 'select' ? (
+                                    <select
+                                      value={aiSolutions[question.id as keyof AISolutionsAnswers]}
+                                      onChange={(e) => setAiSolutions(prev => ({ ...prev, [question.id]: e.target.value }))}
+                                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                                      required={question.required}
+                                    >
+                                      <option value="">-- {lang === 'fr' ? 'Sélectionner' : 'Select'} --</option>
+                                      {question.options?.map(opt => (
+                                        <option key={opt.value} value={opt.value}>
+                                          {lang === 'fr' ? opt.labelFr : opt.label}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  ) : (
+                                    <textarea
+                                      value={aiSolutions[question.id as keyof AISolutionsAnswers]}
+                                      onChange={(e) => setAiSolutions(prev => ({ ...prev, [question.id]: e.target.value }))}
+                                      placeholder={lang === 'fr' ? question.placeholderFr : question.placeholder}
+                                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 resize-none"
+                                      rows={3}
+                                      required={question.required}
+                                    />
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </>
                   )}
@@ -1217,11 +1370,11 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                               style={{ accentColor: domain.color }}
                             />
                             <div className="flex justify-between mt-2">
-                              <span className="text-sm text-slate-500">{BUDGET_CONFIG.min}€</span>
+                              <span className="text-sm text-slate-500">{fp(BUDGET_CONFIG.min)}</span>
                               <span className="text-xl font-bold text-slate-900">
-                                {budget.toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}
+                                {fp(budget)}{lang === 'fr' ? '/mois' : '/mo'}
                               </span>
-                              <span className="text-sm text-slate-500">{BUDGET_CONFIG.max.toLocaleString()}€</span>
+                              <span className="text-sm text-slate-500">{fp(BUDGET_CONFIG.max)}</span>
                             </div>
                             {/* Tiered management fee display */}
                             <div className={`mt-4 p-4 ${colors.bgLight} rounded-lg border ${colors.border}`}>
@@ -1231,7 +1384,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                   {feeResult.isCustomQuote ? (
                                     <span className="text-amber-600">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
                                   ) : (
-                                    <>{Math.round(feeResult.fee).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</>
+                                    <>{fp(Math.round(feeResult.fee))}{lang === 'fr' ? '/mois' : '/mo'}</>
                                   )}
                                 </span>
                               </div>
@@ -1244,7 +1397,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                 <div className={`flex-1 h-1.5 rounded-full ${budget >= 12500 ? 'bg-amber-500' : 'bg-slate-200'}`} title={lang === 'fr' ? '> 12500€: Sur devis' : '> 12500€: Custom'} />
                               </div>
                               <div className="mt-1 flex justify-between text-[10px] text-slate-400">
-                                <span>500€</span>
+                                <span>{fp(500)}</span>
                                 <span>20%</span>
                                 <span>15%</span>
                                 <span>{lang === 'fr' ? 'Devis' : 'Quote'}</span>
@@ -1300,8 +1453,11 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                       </span>
                                     )}
                                     <div className="flex items-baseline gap-1 mb-2">
-                                      <span className="text-xl font-bold text-slate-900">{level.price}€</span>
-                                      {service.isOneOff ? (
+                                      {level.priceNote && (
+                                        <span className="text-xs text-slate-500">{lang === 'fr' ? level.priceNote : (level.priceNoteEn || level.priceNote)}</span>
+                                      )}
+                                      <span className="text-xl font-bold text-slate-900">{fp(level.price)}</span>
+                                      {service.isOneOff || level.isOneOff ? (
                                         <span className="text-xs text-slate-500">{t.oneOff}</span>
                                       ) : (
                                         <span className="text-xs text-slate-500">{t.perMonth}</span>
@@ -1421,7 +1577,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                             {lang === 'fr' ? trackingAuditOption.descriptionFr : trackingAuditOption.description}
                           </p>
                         </div>
-                        <span className="font-bold text-slate-900">{trackingAuditOption.price}€</span>
+                        <span className="font-bold text-slate-900">{fp(trackingAuditOption.price)}</span>
                         {trackingAudit && (
                           <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center">
                             <CheckIcon />
@@ -1452,7 +1608,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                 lang={lang}
                               />
                             </div>
-                            <span className="font-bold text-slate-900">{service.price}€</span>
+                            <span className="font-bold text-slate-900">{fp(service.price)}</span>
                           </div>
                           <p className="text-sm text-slate-600">{lang === 'fr' ? service.descriptionFr : service.description}</p>
                           {service.priceNote && (
@@ -1536,12 +1692,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                       {pricing.hasCustomQuote ? (
                         <span className="text-amber-400">{lang === 'fr' ? 'Sur devis' : 'Custom quote'}</span>
                       ) : (
-                        <>{(pricing.monthlyTotal + pricing.managementFeesTotal).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</>
+                        <>{fp(Math.round(pricing.monthlyTotal + pricing.managementFeesTotal))}{lang === 'fr' ? '/mois' : '/mo'}</>
                       )}
                     </span>
                   </div>
                   {/* Management fee breakdown by domain */}
-                  {selectedDomains.filter(d => !dismissedDomains[d] && !notSureAbout[d] && d !== 'ai-training' && d !== 'ai-solutions').map(domainId => {
+                  {selectedDomains.filter(d => !dismissedDomains[d] && !notSureAbout[d] && d !== 'ai-training').map(domainId => {
                     const domain = domainConfigs[domainId];
                     let domainMonthly = 0;
                     domain.services.forEach(service => {
@@ -1565,7 +1721,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                     return (
                       <div key={domainId} className="flex justify-between text-sm">
                         <span className="text-slate-400 ml-4">↳ {domain.icon} {lang === 'fr' ? domain.nameFr : domain.name}</span>
-                        <span className="text-slate-300">{Math.round(domainMonthly).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
+                        <span className="text-slate-300">{fp(Math.round(domainMonthly))}{lang === 'fr' ? '/mois' : '/mo'}</span>
                       </div>
                     );
                   })}
@@ -1575,7 +1731,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               {pricing.discount > 0 && (
                 <div className="flex justify-between text-green-400">
                   <span>{t.discount} ({pricing.discountPercentage}%)</span>
-                  <span>-{Math.round(pricing.discount).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
+                  <span>-{fp(Math.round(pricing.discount))}{lang === 'fr' ? '/mois' : '/mo'}</span>
                 </div>
               )}
               {/* One-off services */}
@@ -1583,10 +1739,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 <>
                   <div className="flex justify-between">
                     <span className="text-slate-300">{t.oneOffServices}</span>
-                    <span className="font-semibold">{pricing.oneOffTotal.toLocaleString()}€</span>
+                    <span className="font-semibold">{fp(pricing.oneOffTotal)}</span>
                   </div>
                   {/* One-off breakdown by domain */}
-                  {selectedDomains.filter(d => !dismissedDomains[d] && !notSureAbout[d] && d !== 'ai-solutions').map(domainId => {
+                  {selectedDomains.filter(d => !dismissedDomains[d] && !notSureAbout[d]).map(domainId => {
                     const domain = domainConfigs[domainId];
                     let domainOneOff = 0;
 
@@ -1610,7 +1766,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                     return (
                       <div key={domainId} className="flex justify-between text-sm">
                         <span className="text-slate-400 ml-4">↳ {domain.icon} {lang === 'fr' ? domain.nameFr : domain.name}</span>
-                        <span className="text-slate-300">{Math.round(domainOneOff).toLocaleString()}€</span>
+                        <span className="text-slate-300">{fp(Math.round(domainOneOff))}</span>
                       </div>
                     );
                   })}
@@ -1620,7 +1776,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               {pricing.trackingTotal > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-400 ml-4">↳ {t.trackingTitle}</span>
-                  <span className="text-slate-300">{pricing.trackingTotal.toLocaleString()}€</span>
+                  <span className="text-slate-300">{fp(pricing.trackingTotal)}</span>
                 </div>
               )}
 
@@ -1631,7 +1787,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   {pricing.adBudgetTotal > 0 && (
                     <div className="flex justify-between text-amber-300">
                       <span>{t.adBudgetTotal} <span className="text-xs text-slate-400">({lang === 'fr' ? 'non inclus dans les frais' : 'not included in fees'})</span></span>
-                      <span className="font-semibold">{pricing.adBudgetTotal.toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
+                      <span className="font-semibold">{fp(pricing.adBudgetTotal)}{lang === 'fr' ? '/mois' : '/mo'}</span>
                     </div>
                   )}
                 </div>
@@ -1643,20 +1799,20 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   {/* Total without budget */}
                   <div className="flex justify-between text-lg">
                     <span>{lang === 'fr' ? 'Total services' : 'Services total'} ({duration} {t.months})</span>
-                    <span className="font-bold">{Math.round(pricing.grandTotalWithoutBudget).toLocaleString()}€</span>
+                    <span className="font-bold">{fp(Math.round(pricing.grandTotalWithoutBudget))}</span>
                   </div>
                   {/* Total with budget (if applicable) */}
                   {pricing.adBudgetTotal > 0 && (
                     <div className="flex justify-between mt-2 text-sm text-slate-400">
                       <span>{lang === 'fr' ? 'Avec budget média' : 'With media budget'}</span>
-                      <span>{Math.round(pricing.grandTotalWithBudget).toLocaleString()}€</span>
+                      <span>{fp(Math.round(pricing.grandTotalWithBudget))}</span>
                     </div>
                   )}
                   {/* Effective monthly */}
                   <div className="flex justify-between mt-4">
                     <span className="text-slate-300">{t.effectiveMonthly} <span className="text-xs">({lang === 'fr' ? 'hors budget média' : 'excl. media budget'})</span></span>
                     <span className="text-2xl font-bold text-blue-400">
-                      {Math.round(pricing.grandTotalWithoutBudget / duration).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}
+                      {fp(Math.round(pricing.grandTotalWithoutBudget / duration))}{lang === 'fr' ? '/mois' : '/mo'}
                     </span>
                   </div>
                 </div>
@@ -1869,8 +2025,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               {selectedDomains.map(domainId => {
                 const domain = domainConfigs[domainId];
                 const colors = getDomainColors(domain.colorClass);
-                // Skip AI Solutions, tracking-reporting, dismissed domains, and "not sure" domains
-                if (domainId === 'ai-solutions' || domainId === 'tracking-reporting') return null;
+                // Skip tracking-reporting (shown separately), dismissed domains, and "not sure" domains
+                if (domainId === 'tracking-reporting') return null;
                 if (dismissedDomains[domainId] || notSureAbout[domainId]) return null;
 
                 // Calculate domain total
@@ -1926,14 +2082,14 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         return (
                           <div key={service.id} className="flex justify-between text-slate-600">
                             <span>{lang === 'fr' ? service.title : (service.titleEn || service.title)} - {lang === 'fr' ? level.name : (level.nameEn || level.name)}</span>
-                            <span>{level.price}€{service.isOneOff ? '' : (lang === 'fr' ? '/mois' : '/mo')}</span>
+                            <span>{fp(level.price)}{service.isOneOff ? '' : (lang === 'fr' ? '/mois' : '/mo')}</span>
                           </div>
                         );
                       })}
                       {domainManagementFee > 0 && (
                         <div className="flex justify-between text-slate-600">
                           <span>{t.managementFee}</span>
-                          <span>{Math.round(domainManagementFee).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
+                          <span>{fp(Math.round(domainManagementFee))}{lang === 'fr' ? '/mois' : '/mo'}</span>
                         </div>
                       )}
                       {domainId === 'ai-training' && selectedDomains.includes('ai-training') && (
@@ -1944,23 +2100,23 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                               const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
                               const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
                               const multiplier = aiTraining.sessions === '5+' ? sessionCount : 1;
-                              return (base * multiplier).toLocaleString();
-                            })()}€
+                              return fp(base * multiplier);
+                            })()}
                           </span>
                         </div>
                       )}
                       {domainId === 'ai-training' && aiTraining.inPerson && (
                         <div className="flex justify-between text-slate-600">
                           <span>{t.travelCost}</span>
-                          <span>500€</span>
+                          <span>{fp(500)}</span>
                         </div>
                       )}
                       {/* Department subtotal */}
                       <div className={`flex justify-between pt-2 mt-2 border-t border-slate-200 font-semibold ${colors.text}`}>
                         <span>{t.departmentTotal}</span>
                         <div className="text-right">
-                          {totalMonthly > 0 && <div>{Math.round(totalMonthly).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</div>}
-                          {totalOneOff > 0 && <div>{Math.round(totalOneOff).toLocaleString()}€ {lang === 'fr' ? 'unique' : 'one-off'}</div>}
+                          {totalMonthly > 0 && <div>{fp(Math.round(totalMonthly))}{lang === 'fr' ? '/mois' : '/mo'}</div>}
+                          {totalOneOff > 0 && <div>{fp(Math.round(totalOneOff))} {lang === 'fr' ? 'unique' : 'one-off'}</div>}
                         </div>
                       </div>
                     </div>
@@ -1979,13 +2135,13 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                     {trackingAudit && (
                       <div className="flex justify-between text-slate-600">
                         <span>{lang === 'fr' ? trackingAuditOption.titleFr : trackingAuditOption.title}</span>
-                        <span>{trackingAuditOption.price}€</span>
+                        <span>{fp(trackingAuditOption.price)}</span>
                       </div>
                     )}
                     {trackingServices.filter(s => trackingSelections[s.id]).map(service => (
                       <div key={service.id} className="flex justify-between text-slate-600">
                         <span>{lang === 'fr' ? service.titleFr : service.title}</span>
-                        <span>{service.price}€</span>
+                        <span>{fp(service.price)}</span>
                       </div>
                     ))}
                   </div>
@@ -1998,25 +2154,25 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   {pricing.monthlyTotal + pricing.managementFeesTotal > 0 && (
                     <div className="flex justify-between">
                       <span className="text-slate-300">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</span>
-                      <span className="font-semibold">{Math.round(pricing.monthlyAfterDiscount).toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
+                      <span className="font-semibold">{fp(Math.round(pricing.monthlyAfterDiscount))}{lang === 'fr' ? '/mois' : '/mo'}</span>
                     </div>
                   )}
                   {pricing.oneOffTotal > 0 && (
                     <div className="flex justify-between">
                       <span className="text-slate-300">{lang === 'fr' ? 'One-off' : 'One-time'}</span>
-                      <span className="font-semibold">{pricing.oneOffTotal.toLocaleString()}€</span>
+                      <span className="font-semibold">{fp(pricing.oneOffTotal)}</span>
                     </div>
                   )}
                   {pricing.adBudgetTotal > 0 && (
                     <div className="flex justify-between text-amber-300">
                       <span>{t.adBudgetTotal}</span>
-                      <span className="font-semibold">{pricing.adBudgetTotal.toLocaleString()}€{lang === 'fr' ? '/mois' : '/mo'}</span>
+                      <span className="font-semibold">{fp(pricing.adBudgetTotal)}{lang === 'fr' ? '/mois' : '/mo'}</span>
                     </div>
                   )}
                   <div className="border-t border-slate-700 pt-3 mt-3">
                     <div className="flex justify-between text-xl">
                       <span>Total ({duration} {t.months})</span>
-                      <span className="font-bold">{Math.round(pricing.grandTotalWithoutBudget).toLocaleString()}€</span>
+                      <span className="font-bold">{fp(Math.round(pricing.grandTotalWithoutBudget))}</span>
                     </div>
                   </div>
                 </div>

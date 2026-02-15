@@ -1,10 +1,11 @@
-import type { DomainConfig, ServiceDomain } from '../types';
+import type { DomainConfig, ServiceDomain, CurrencyConfig, Currency } from '../types';
 import { seoServices } from './seo-services';
 import { googleAdsServices } from './google-ads-services';
-import { paidSocialServices } from './paid-social-services';
+import { paidSocialServices, socialChannels } from './paid-social-services';
 import { emailingServices } from './emailing-services';
 import { aiTrainingConfig, aiTrainingPricing, halfDayFeatures, fullDayAdditionalFeatures } from './ai-training-services';
-import { aiSolutionsConfig, aiSolutionsQuestions, aiSolutionsUseCases } from './ai-solutions-questions';
+import { aiSolutionsConfig, aiSolutionsQuestions, aiSolutionsUseCases, aiSolutionsServices } from './ai-solutions-questions';
+import { aiContentServices } from './ai-content-services';
 import {
   trackingReportingConfig,
   trackingAuditOption,
@@ -79,11 +80,22 @@ export const domainConfigs: Record<ServiceDomain, DomainConfig> = {
     name: 'AI Solutions',
     nameFr: 'Solutions IA',
     icon: '🤖',
-    description: 'Custom AI solutions (quote-based)',
-    descriptionFr: 'Solutions IA sur-mesure (sur devis)',
+    description: 'AI chatbots, workflow automation and custom solutions',
+    descriptionFr: 'Chatbots IA, automatisation de workflows et solutions sur-mesure',
     color: '#8b5cf6',
     colorClass: 'violet',
-    services: [] // Special handling - quote-based
+    services: aiSolutionsServices
+  },
+  'ai-content': {
+    id: 'ai-content',
+    name: 'AI Content',
+    nameFr: 'Contenu IA',
+    icon: '✍️',
+    description: 'AI-powered SEO blog articles, social content and landing pages',
+    descriptionFr: 'Articles de blog SEO, contenu social et landing pages propulsés par l\'IA',
+    color: '#ec4899',
+    colorClass: 'pink',
+    services: aiContentServices
   },
   'tracking-reporting': {
     id: 'tracking-reporting',
@@ -162,8 +174,15 @@ export {
 export {
   aiSolutionsConfig,
   aiSolutionsQuestions,
-  aiSolutionsUseCases
+  aiSolutionsUseCases,
+  aiSolutionsServices
 };
+
+// Re-export AI Content services
+export { aiContentServices };
+
+// Re-export Paid Social channels
+export { socialChannels };
 
 // Re-export Tracking & Reporting configs
 export {
@@ -213,4 +232,26 @@ export function getSelectableDomains(): DomainConfig[] {
 // Helper: Get domain by ID
 export function getDomainById(id: ServiceDomain): DomainConfig | undefined {
   return domainConfigs[id];
+}
+
+// Currency configurations
+export const CURRENCY_CONFIGS: Record<Currency, CurrencyConfig> = {
+  EUR: { symbol: '€', code: 'EUR', rate: 1, label: 'EUR (€)' },
+  USD: { symbol: '$', code: 'USD', rate: 1.08, label: 'USD ($)' },
+  GBP: { symbol: '£', code: 'GBP', rate: 0.86, label: 'GBP (£)' }
+};
+
+// Helper: Convert price from EUR to target currency
+export function convertPrice(priceEUR: number, currency: Currency): number {
+  return Math.round(priceEUR * CURRENCY_CONFIGS[currency].rate);
+}
+
+// Helper: Format price with currency symbol
+export function formatPrice(priceEUR: number, currency: Currency): string {
+  const converted = convertPrice(priceEUR, currency);
+  const config = CURRENCY_CONFIGS[currency];
+  if (currency === 'EUR') {
+    return `${converted.toLocaleString()}€`;
+  }
+  return `${config.symbol}${converted.toLocaleString()}`;
 }
