@@ -817,20 +817,40 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           })}
         </div>
 
+        {/* Sticky bottom CTA bar - always visible when domains are selected */}
         {selectedDomains.length > 0 && (
-          <div className="mt-12 text-center">
-            <p className="text-slate-600 mb-4">
-              {selectedDomains.length} {t.selected}
-            </p>
-            <button
-              onClick={() => setStep('configure')}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
-            >
-              {t.continue}
-              <ChevronRight />
-            </button>
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] py-4 px-4 animate-slide-up">
+            <div className="max-w-5xl mx-auto flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-1">
+                  {selectedDomains.slice(0, 4).map(d => (
+                    <span key={d} className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-sm">
+                      {domainConfigs[d].icon}
+                    </span>
+                  ))}
+                  {selectedDomains.length > 4 && (
+                    <span className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-medium text-slate-600">
+                      +{selectedDomains.length - 4}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-slate-600">
+                  <span className="font-semibold text-slate-900">{selectedDomains.length}</span> {selectedDomains.length === 1 ? (lang === 'fr' ? 'service sélectionné' : 'service selected') : t.selected}
+                </p>
+              </div>
+              <button
+                onClick={() => setStep('configure')}
+                className="inline-flex items-center gap-2 px-8 py-3.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all hover:shadow-lg hover:shadow-blue-600/25 active:scale-[0.98]"
+              >
+                {t.continue}
+                <ChevronRight />
+              </button>
+            </div>
           </div>
         )}
+
+        {/* Spacer to prevent content from being hidden behind sticky bar */}
+        {selectedDomains.length > 0 && <div className="h-24" />}
       </div>
     );
   }

@@ -241,9 +241,25 @@ export const CURRENCY_CONFIGS: Record<Currency, CurrencyConfig> = {
   GBP: { symbol: '£', code: 'GBP', rate: 0.86, label: 'GBP (£)' }
 };
 
+// Helper: Round to "clean" price points for non-EUR currencies
+// Under 100: round to nearest 10 (e.g. $50, £40)
+// 100-999: round to nearest 50 (e.g. $450, £350)
+// 1000+: round to nearest 100 (e.g. $1100, £1300)
+function roundToCleanPrice(value: number): number {
+  if (value < 100) {
+    return Math.round(value / 10) * 10;
+  }
+  if (value < 1000) {
+    return Math.round(value / 50) * 50;
+  }
+  return Math.round(value / 100) * 100;
+}
+
 // Helper: Convert price from EUR to target currency
 export function convertPrice(priceEUR: number, currency: Currency): number {
-  return Math.round(priceEUR * CURRENCY_CONFIGS[currency].rate);
+  if (currency === 'EUR') return priceEUR;
+  const raw = priceEUR * CURRENCY_CONFIGS[currency].rate;
+  return roundToCleanPrice(raw);
 }
 
 // Helper: Format price with currency symbol
