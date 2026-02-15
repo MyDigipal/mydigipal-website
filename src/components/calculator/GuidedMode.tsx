@@ -568,7 +568,7 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
                   const actions = domainActions[d];
                   const benchmark = getBenchmarks(answers.industry, d);
                   return (
-                    <div key={d} className="bg-white/[0.07] rounded-xl p-4 border border-white/10">
+                    <div key={d} className="bg-white/[0.07] rounded-xl p-3 sm:p-4 border border-white/10">
                       <div className="flex items-center gap-2.5 mb-2">
                         <span className="text-lg">{domain.icon}</span>
                         <h4 className="font-semibold text-sm">{lang === 'fr' ? domain.nameFr : domain.name}</h4>
@@ -583,11 +583,12 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
                       </ul>
                       {/* Benchmarks per channel */}
                       {benchmark && (
-                        <div className="mt-2 pt-2 border-t border-white/10 flex flex-wrap gap-x-4 gap-y-1">
+                        <div className="mt-2 pt-2 border-t border-white/10 grid grid-cols-3 gap-1 sm:flex sm:flex-wrap sm:gap-x-4 sm:gap-y-1">
                           {benchmark.metrics.map((m, i) => (
-                            <span key={i} className="text-[10px] text-blue-300/80">
-                              <span className="text-blue-400/60">{lang === 'fr' ? m.label.fr : m.label.en}:</span> {m.value}
-                            </span>
+                            <div key={i} className="text-center sm:text-left">
+                              <p className="text-[10px] font-semibold text-blue-200/90">{m.value}</p>
+                              <p className="text-[8px] sm:text-[9px] text-blue-400/60 leading-tight">{lang === 'fr' ? m.label.fr : m.label.en}</p>
+                            </div>
                           ))}
                         </div>
                       )}
@@ -616,19 +617,19 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
                 const insight = industryInsights[answers.industry];
                 if (!insight) return null;
                 return (
-                  <div className="mx-4 sm:mx-6 bg-emerald-500/15 backdrop-blur-sm rounded-xl p-4 mb-5 border border-emerald-400/30">
-                    <h4 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-3">
+                  <div className="mx-4 sm:mx-6 bg-emerald-500/15 backdrop-blur-sm rounded-xl p-3 sm:p-4 mb-5 border border-emerald-400/30">
+                    <h4 className="text-[11px] sm:text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-3">
                       {lang === 'fr' ? insight.headline.fr : insight.headline.en}
                     </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-2">
                       {insight.stats.map((s, i) => (
                         <div key={i} className="text-center">
-                          <p className="text-lg font-bold text-emerald-300">{s.value}</p>
-                          <p className="text-[10px] text-emerald-200/70">{lang === 'fr' ? s.label.fr : s.label.en}</p>
+                          <p className="text-sm sm:text-lg font-bold text-emerald-300">{s.value}</p>
+                          <p className="text-[9px] sm:text-[10px] text-emerald-200/70 leading-tight">{lang === 'fr' ? s.label.fr : s.label.en}</p>
                         </div>
                       ))}
                     </div>
-                    <p className="text-[10px] text-emerald-300/50 text-center">
+                    <p className="text-[9px] sm:text-[10px] text-emerald-300/50 text-center">
                       {t.guidedInsightsSource}: {lang === 'fr' ? insight.source.fr : insight.source.en}
                     </p>
                   </div>
@@ -670,14 +671,15 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
                                 {lang === 'fr' ? phase.timeline.fr : phase.timeline.en}
                               </span>
                             </div>
-                            <div className="flex flex-wrap gap-1">
+                            <div className="flex flex-wrap gap-1.5 items-center">
                               {phase.domains.map(d => (
-                                <span key={d} className="text-xs" title={lang === 'fr' ? domainConfigs[d].nameFr : domainConfigs[d].name}>
-                                  {domainConfigs[d].icon}
+                                <span key={d} className="inline-flex items-center gap-0.5 text-[10px] bg-white/5 px-1.5 py-0.5 rounded">
+                                  <span>{domainConfigs[d].icon}</span>
+                                  <span className="hidden sm:inline text-blue-200/70">{(lang === 'fr' ? domainConfigs[d].nameFr : domainConfigs[d].name).split(' ')[0]}</span>
                                 </span>
                               ))}
-                              <span className="text-[10px] text-blue-300/60 ml-1">
-                                {lang === 'fr' ? phase.levelLabel.fr : phase.levelLabel.en}
+                              <span className="text-[10px] text-blue-300/60 ml-0.5">
+                                - {lang === 'fr' ? phase.levelLabel.fr : phase.levelLabel.en}
                               </span>
                             </div>
                           </div>

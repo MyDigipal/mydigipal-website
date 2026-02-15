@@ -1489,7 +1489,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
                         const feeDescription = getManagementFeeDescription(budget, lang);
                         return (
-                          <div className="mb-8 p-6 bg-white rounded-xl border border-slate-200">
+                          <div className="mb-8 p-4 sm:p-6 bg-white rounded-xl border border-slate-200">
                             <label className="block text-sm font-medium text-slate-700 mb-4">{t.adBudget}</label>
                             <input
                               type="range"
@@ -1544,15 +1544,15 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
                       {/* Social channels selection for paid-social */}
                       {domainId === 'paid-social' && (
-                        <div className="mb-8 p-6 bg-white rounded-xl border border-slate-200">
-                          <div className="flex items-center justify-between mb-1">
+                        <div className="mb-8 p-4 sm:p-6 bg-white rounded-xl border border-slate-200">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
                             <label className="block text-sm font-medium text-slate-700">{t.socialChannelsTitle}</label>
                             {guidedRec?.recommendedChannels && (
-                              <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{t.socialChannelsRecommended}</span>
+                              <span className="text-[10px] sm:text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full w-fit">{t.socialChannelsRecommended}</span>
                             )}
                           </div>
                           <p className="text-xs text-slate-500 mb-4">{t.socialChannelsDesc}</p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                             {socialChannels.map(channel => {
                               const isSelected = selectedSocialChannels.includes(channel.id);
                               return (
@@ -1565,24 +1565,24 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                         : [...prev, channel.id]
                                     );
                                   }}
-                                  className={`flex items-start gap-3 p-3 rounded-xl border-2 text-left transition-all active:scale-[0.98] ${
+                                  className={`flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all active:scale-[0.98] ${
                                     isSelected
                                       ? `${colors.border} ${colors.bgLight} border-solid`
                                       : 'border-slate-200 bg-white hover:border-slate-300'
                                   }`}
                                 >
-                                  <span className="text-xl mt-0.5">{channel.icon}</span>
+                                  <span className="text-xl flex-shrink-0">{channel.icon}</span>
                                   <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                      <span className="font-semibold text-sm text-slate-900">{lang === 'fr' ? channel.nameFr : channel.name}</span>
+                                    <div className="flex items-center justify-between gap-2">
+                                      <span className="font-semibold text-sm text-slate-900 truncate">{lang === 'fr' ? channel.nameFr : channel.name}</span>
                                       {isSelected && (
                                         <span className={`w-5 h-5 rounded-full ${colors.bg} text-white flex items-center justify-center flex-shrink-0`}>
                                           <CheckIcon />
                                         </span>
                                       )}
                                     </div>
-                                    <p className="text-xs text-slate-500 mt-0.5">{lang === 'fr' ? channel.descriptionFr : channel.description}</p>
-                                    <p className="text-[10px] text-slate-400 mt-1">
+                                    <p className="text-xs text-slate-500 mt-0.5 hidden sm:block">{lang === 'fr' ? channel.descriptionFr : channel.description}</p>
+                                    <p className="text-[10px] text-slate-400 mt-0.5">
                                       Min: {fp(channel.minBudget)} - {lang === 'fr' ? 'Reco' : 'Rec'}: {fp(channel.recommendedBudget)}
                                     </p>
                                   </div>
@@ -1601,7 +1601,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                           return (
                             <div
                               key={service.id}
-                              className="p-6 rounded-xl bg-white border border-slate-200"
+                              className="p-4 sm:p-6 rounded-xl bg-white border border-slate-200"
                             >
                               <div className="flex items-start mb-4">
                                 <div className="flex items-center gap-3">
