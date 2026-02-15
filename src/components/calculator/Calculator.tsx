@@ -696,7 +696,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           'event': 'calculator_form_submit',
           'form_name': 'calculator',
           'form_location': window.location.pathname,
-          'calculator_total': pricing.grandTotal
+          'calculator_total': pricing.grandTotal,
+          'used_guided_mode': !!guidedRec,
+          'selected_domains': selectedDomains.join(','),
+          'currency': currency
         });
       }
     } catch (error) {
@@ -711,7 +714,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     } finally {
       setIsSubmitting(false);
     }
-  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, trackingNotSure, cmsAddon, lang, isSubmitting, notSureAbout, dismissedDomains, disabledServices, budgetActivated, aiTrainingActivated, sessionCount, trackingDismissed, showAiCustomForm, currency]);
+  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, trackingNotSure, cmsAddon, lang, isSubmitting, notSureAbout, dismissedDomains, disabledServices, budgetActivated, aiTrainingActivated, sessionCount, trackingDismissed, showAiCustomForm, currency, guidedRec]);
 
   // Submit handler with popup check
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
@@ -760,15 +763,18 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const handleGuidedComplete = useCallback((rec: GuidedRecommendation) => {
     setGuidedRec(rec);
     setSelectedDomains(rec.selectedDomains);
-    // Set selections: for each domain, set the first service to the recommended level
+    // Set selections: for each domain, set ALL services to the recommended level
     const newSelections: Record<string, number | null> = {};
     rec.selectedDomains.forEach(domainId => {
       const domain = domainConfigs[domainId];
-      if (domain.services.length > 0) {
-        const levelIndex = rec.selections[domainId] ?? null;
-        if (levelIndex !== null) {
-          newSelections[`${domainId}-${domain.services[0].id}`] = levelIndex;
-        }
+      const levelIndex = rec.selections[domainId] ?? null;
+      if (levelIndex !== null && domain.services.length > 0) {
+        domain.services.forEach(service => {
+          // Clamp level to max available for this service
+          const maxLevel = service.levels.length - 1;
+          const safeLevel = Math.min(levelIndex, maxLevel);
+          newSelections[`${domainId}-${service.id}`] = safeLevel;
+        });
       }
     });
     setSelections(newSelections);
@@ -778,6 +784,13 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     }
     if (rec.adBudgets['paid-social'] > 500) {
       setBudgetActivated(prev => ({ ...prev, 'paid-social': true }));
+    }
+    // Pre-check tracking services when recommended
+    if (rec.trackingPreselections) {
+      setTrackingSelections(rec.trackingPreselections);
+    }
+    if (rec.trackingAudit) {
+      setTrackingAudit(true);
     }
     setStep('configure');
   }, []);
@@ -809,7 +822,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         {/* Mode choice - Guided vs Manual */}
         <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto mb-10">
           <button
-            onClick={() => setStep('guided')}
+            onClick={() => {
+              if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                (window as any).dataLayer.push({ event: 'calculator_mode_selected', mode: 'guided' });
+              }
+              setStep('guided');
+            }}
             className="flex-1 group relative px-6 py-4 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl hover:shadow-lg hover:shadow-blue-600/25 transition-all active:scale-[0.98]"
           >
             <span className="text-2xl block mb-2">💡</span>
@@ -817,7 +835,11 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             <span className="text-sm text-blue-200 block mt-1">{t.guidedSubtitle}</span>
           </button>
           <button
-            onClick={() => {}}
+            onClick={() => {
+              if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                (window as any).dataLayer.push({ event: 'calculator_mode_selected', mode: 'manual' });
+              }
+            }}
             className="flex-1 group px-6 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-2xl hover:border-slate-300 hover:shadow-md transition-all active:scale-[0.98]"
           >
             <span className="text-2xl block mb-2">🎯</span>
@@ -992,7 +1014,14 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       {/* Back button header */}
       <div className="mb-8">
         <button
-          onClick={() => setStep('domains')}
+          onClick={() => {
+            if (guidedRec) {
+              // Return to guided mode if user came from there
+              setStep('guided');
+            } else {
+              setStep('domains');
+            }
+          }}
           className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft />

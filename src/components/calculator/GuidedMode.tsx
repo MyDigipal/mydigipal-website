@@ -112,6 +112,13 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
     scrollToBottom();
   }, [scrollToBottom]);
 
+  // GTM dataLayer helper
+  const pushDataLayer = useCallback((event: string, data?: Record<string, unknown>) => {
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      (window as any).dataLayer.push({ event, ...data });
+    }
+  }, []);
+
   // Initialize first question
   useEffect(() => {
     const q = guidedQuestions[0];
@@ -125,10 +132,12 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
       content: greeting
     }]);
 
+    pushDataLayer('guided_mode_start', { language: lang });
+
     setTimeout(() => {
       addBotMessage(q.question[lang] + (q.subtitle ? `\n${q.subtitle[lang]}` : ''));
     }, 800);
-  }, [lang, addBotMessage]);
+  }, [lang, addBotMessage, pushDataLayer]);
 
   // Process answer and advance to next question
   const processAnswer = useCallback((answerText: string, answerValue: string | string[] | number) => {
@@ -153,6 +162,13 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
 
     setAnswers(updatedAnswers);
 
+    // GTM: track each question answer
+    pushDataLayer('guided_question_answered', {
+      question_id: q.id,
+      question_step: currentStep + 1,
+      answer_value: typeof answerValue === 'object' ? (answerValue as string[]).join(',') : String(answerValue)
+    });
+
     const nextStep = currentStep + 1;
     if (nextStep < guidedQuestions.length) {
       setCurrentStep(nextStep);
@@ -174,11 +190,16 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
         setTimeout(() => {
           const rec = generateRecommendation(updatedAnswers);
           setRecommendation(rec);
+          pushDataLayer('guided_recommendation_shown', {
+            recommended_domains: rec.selectedDomains.join(','),
+            estimated_monthly: rec.estimatedMonthly,
+            domains_count: rec.selectedDomains.length
+          });
           scrollToBottom();
         }, 1000);
       }, 400);
     }
-  }, [currentStep, answers, lang, addBotMessage, addUserMessage, scrollToBottom]);
+  }, [currentStep, answers, lang, addBotMessage, addUserMessage, scrollToBottom, pushDataLayer]);
 
   // Handle single selection
   const handleSingleSelect = useCallback((optionId: string, label: string) => {
@@ -381,10 +402,10 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
 
         {/* Options area */}
         {showOptions && !recommendation && currentQuestion && (
-          <div className="ml-12 animate-fade-in">
+          <div className="sm:ml-12 animate-fade-in">
             {/* Single choice */}
             {currentQuestion.type === 'single' && currentQuestion.options && (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {currentQuestion.options.map(opt => (
                   <button
                     key={opt.id}
@@ -401,7 +422,7 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
             {/* Multi choice */}
             {currentQuestion.type === 'multi' && currentQuestion.options && (
               <div>
-                <div className="grid grid-cols-2 gap-2 mb-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
                   {currentQuestion.options.map(opt => {
                     const isSelected = multiSelections.includes(opt.id);
                     return (
@@ -497,7 +518,7 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
           <div className="animate-fade-in mt-6" ref={recCardRef}>
             <div className="bg-gradient-to-br from-slate-900 to-blue-900 rounded-2xl overflow-hidden text-white shadow-xl">
               {/* Header */}
-              <div className="p-6 pb-4">
+              <div className="p-4 sm:p-6 pb-4">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-2xl">✨</span>
                   <h3 className="text-lg font-bold">{t.guidedMyRecommendation}</h3>
@@ -506,7 +527,7 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
               </div>
 
               {/* Domain breakdown - what we'd do in each */}
-              <div className="px-6 space-y-3 mb-5">
+              <div className="px-4 sm:px-6 space-y-3 mb-5">
                 {recommendation.selectedDomains.map(d => {
                   const domain = domainConfigs[d];
                   const actions = domainActions[d];
@@ -530,7 +551,7 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
               </div>
 
               {/* Why this combination */}
-              <div className="px-6 mb-5">
+              <div className="px-4 sm:px-6 mb-5">
                 <h4 className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">
                   {lang === 'fr' ? 'Pourquoi cette combinaison' : 'Why this combination'}
                 </h4>
@@ -545,7 +566,7 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
               </div>
 
               {/* Estimated monthly */}
-              <div className="mx-6 bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-5 border border-white/10">
+              <div className="mx-4 sm:mx-6 bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-5 border border-white/10">
                 <p className="text-sm text-blue-300 mb-1">{t.guidedEstimate}</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold">
@@ -559,15 +580,24 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
               </div>
 
               {/* CTAs */}
-              <div className="px-6 pb-6 flex flex-col gap-3">
+              <div className="px-4 sm:px-6 pb-6 flex flex-col gap-3">
                 <button
-                  onClick={() => onComplete(recommendation)}
+                  onClick={() => {
+                    pushDataLayer('guided_recommendation_accepted', {
+                      recommended_domains: recommendation.selectedDomains.join(','),
+                      estimated_monthly: recommendation.estimatedMonthly
+                    });
+                    onComplete(recommendation);
+                  }}
                   className="w-full py-3.5 bg-white text-slate-900 font-bold rounded-xl hover:bg-blue-50 transition-colors active:scale-[0.98] text-center"
                 >
                   {t.guidedCustomize}
                 </button>
                 <button
-                  onClick={handleDownloadPDF}
+                  onClick={() => {
+                    pushDataLayer('guided_pdf_download');
+                    handleDownloadPDF();
+                  }}
                   className="w-full py-3 bg-white/10 text-white font-medium rounded-xl hover:bg-white/20 transition-colors active:scale-[0.98] border border-white/20 text-center flex items-center justify-center gap-2"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -153,6 +153,8 @@ export interface GuidedRecommendation {
   adBudgets: { 'google-ads': number; 'paid-social': number };
   reasoning: string[];
   estimatedMonthly: number;
+  trackingPreselections?: Record<string, boolean>;
+  trackingAudit?: boolean;
 }
 
 export interface GuidedMessage {

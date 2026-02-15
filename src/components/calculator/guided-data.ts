@@ -394,12 +394,42 @@ export function generateRecommendation(answers: GuidedAnswers): GuidedRecommenda
   // 7. Build reasoning with channel-specific value props
   const reasoning = buildReasoning(answers, selectedDomains, scores);
 
+  // 8. Pre-select tracking services when tracking-reporting is recommended
+  let trackingPreselections: Record<string, boolean> | undefined;
+  let trackingAuditFlag: boolean | undefined;
+  if (selectedDomains.includes('tracking-reporting')) {
+    trackingPreselections = {};
+    if (efforts.includes('tracking-ok')) {
+      // Already have tracking: recommend audit to check setup quality
+      trackingAuditFlag = true;
+    } else if (efforts.includes('running-ads')) {
+      // Running ads without tracking: need GA4 + conversion + cookies
+      trackingPreselections['ga4-setup'] = true;
+      trackingPreselections['conversion-tracking'] = true;
+      trackingPreselections['cookie-consent'] = true;
+      trackingAuditFlag = true;
+    } else if (efforts.includes('nothing')) {
+      // Starting from zero: full tracking setup
+      trackingPreselections['ga4-setup'] = true;
+      trackingPreselections['conversion-tracking'] = true;
+      trackingPreselections['cookie-consent'] = true;
+      trackingPreselections['reporting-dashboard'] = true;
+    } else {
+      // Default: GA4 + conversion tracking + cookies (foundation)
+      trackingPreselections['ga4-setup'] = true;
+      trackingPreselections['conversion-tracking'] = true;
+      trackingPreselections['cookie-consent'] = true;
+    }
+  }
+
   return {
     selectedDomains,
     selections,
     adBudgets,
     reasoning,
-    estimatedMonthly
+    estimatedMonthly,
+    trackingPreselections,
+    trackingAudit: trackingAuditFlag
   };
 }
 
