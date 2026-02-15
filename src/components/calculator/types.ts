@@ -138,6 +138,34 @@ export interface PricingSummary {
   effectiveMonthlyPrice: number;
 }
 
+// Guided Mode types
+export interface GuidedAnswers {
+  industry: string;
+  goals: string[];
+  monthlyBudget: number;
+  currentEfforts: string[];
+  freeTextContext: string;
+}
+
+export interface GuidedRecommendation {
+  selectedDomains: ServiceDomain[];
+  selections: Record<string, number | null>;
+  adBudgets: { 'google-ads': number; 'paid-social': number };
+  reasoning: string[];
+  estimatedMonthly: number;
+}
+
+export interface GuidedMessage {
+  id: string;
+  sender: 'bot' | 'user';
+  content: string;
+  type: 'text' | 'options' | 'multi-options' | 'slider' | 'textarea' | 'recommendation';
+  options?: { id: string; label: string; icon?: string }[];
+  maxSelections?: number;
+  sliderConfig?: { min: number; max: number; step: number };
+  recommendation?: GuidedRecommendation;
+}
+
 // Translations
 export interface Translations {
   // Domain selection

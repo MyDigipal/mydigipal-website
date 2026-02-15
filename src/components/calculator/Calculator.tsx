@@ -1,6 +1,7 @@
 /** @jsxImportSource react */
 import { useState, useMemo, useCallback } from 'react';
-import type { ServiceDomain, AITrainingSelection, AISolutionsAnswers, ContactInfo, Currency } from './types';
+import type { ServiceDomain, AITrainingSelection, AISolutionsAnswers, ContactInfo, Currency, GuidedRecommendation } from './types';
+import GuidedMode from './GuidedMode';
 import {
   domainConfigs,
   BUDGET_CONFIG,
@@ -117,7 +118,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const t = translations[lang];
 
   // State
-  const [step, setStep] = useState<'domains' | 'configure' | 'summary'>('domains');
+  const [step, setStep] = useState<'domains' | 'guided' | 'configure' | 'summary'>('domains');
   const [selectedDomains, setSelectedDomains] = useState<ServiceDomain[]>(
     preselectedDomain ? [preselectedDomain] : []
   );
@@ -740,6 +741,46 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     await doSubmit();
   }, [isSubmitting, hasActualMarketingSelections, hasTrackingSelected, trackingPopupDismissed, doSubmit, honeypot, formLoadTime, mathAnswer, mathChallenge.answer, lang]);
 
+  // Handle guided mode completion
+  const handleGuidedComplete = useCallback((rec: GuidedRecommendation) => {
+    setSelectedDomains(rec.selectedDomains);
+    // Set selections: for each domain, set the first service to the recommended level
+    const newSelections: Record<string, number | null> = {};
+    rec.selectedDomains.forEach(domainId => {
+      const domain = domainConfigs[domainId];
+      if (domain.services.length > 0) {
+        const levelIndex = rec.selections[domainId] ?? null;
+        if (levelIndex !== null) {
+          newSelections[`${domainId}-${domain.services[0].id}`] = levelIndex;
+        }
+      }
+    });
+    setSelections(newSelections);
+    setAdBudgets(rec.adBudgets);
+    if (rec.adBudgets['google-ads'] > 500) {
+      setBudgetActivated(prev => ({ ...prev, 'google-ads': true }));
+    }
+    if (rec.adBudgets['paid-social'] > 500) {
+      setBudgetActivated(prev => ({ ...prev, 'paid-social': true }));
+    }
+    setStep('configure');
+  }, []);
+
+  // Guided mode step
+  if (step === 'guided') {
+    return (
+      <div className="min-h-[600px]">
+        <GuidedMode
+          lang={lang}
+          currency={currency}
+          onComplete={handleGuidedComplete}
+          onSkip={() => setStep('domains')}
+          t={t}
+        />
+      </div>
+    );
+  }
+
   // Domain selection step
   if (step === 'domains') {
     return (
@@ -747,6 +788,26 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-slate-900 mb-4">{t.selectDomains}</h2>
           <p className="text-lg text-slate-600">{t.selectDomainsDesc}</p>
+        </div>
+
+        {/* Mode choice - Guided vs Manual */}
+        <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto mb-10">
+          <button
+            onClick={() => setStep('guided')}
+            className="flex-1 group relative px-6 py-4 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl hover:shadow-lg hover:shadow-blue-600/25 transition-all active:scale-[0.98]"
+          >
+            <span className="text-2xl block mb-2">💡</span>
+            <span className="font-bold block">{t.guidedHelpMe}</span>
+            <span className="text-sm text-blue-200 block mt-1">{t.guidedSubtitle}</span>
+          </button>
+          <button
+            onClick={() => {}}
+            className="flex-1 group px-6 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-2xl hover:border-slate-300 hover:shadow-md transition-all active:scale-[0.98]"
+          >
+            <span className="text-2xl block mb-2">🎯</span>
+            <span className="font-bold block">{t.guidedKnowWhat}</span>
+            <span className="text-sm text-slate-500 block mt-1">{lang === 'fr' ? 'Sélectionnez directement ci-dessous' : 'Select directly below'}</span>
+          </button>
         </div>
 
         {/* Currency selector on domain page */}

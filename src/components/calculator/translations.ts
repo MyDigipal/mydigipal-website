@@ -149,7 +149,33 @@ export const translations = {
     socialNeedHelpDesc: 'Let us help you choose the right channels for your business',
 
     // Level isOneOff indicator
-    oneOffSetup: 'One-time setup'
+    oneOffSetup: 'One-time setup',
+
+    // Guided mode
+    guidedTitle: 'Not sure where to start?',
+    guidedSubtitle: 'Answer 5 quick questions and we\'ll recommend the right services for you.',
+    guidedHelpMe: 'Help me choose',
+    guidedKnowWhat: 'I know what I need',
+    guidedSkip: 'Skip this question',
+    guidedMyRecommendation: 'Here\'s our recommendation',
+    guidedCustomize: 'Customize this plan',
+    guidedChooseMyself: 'Choose myself instead',
+    guidedEstimate: 'Estimated monthly',
+    guidedContinue: 'Continue',
+    guidedSkipQuestion: 'Skip',
+    guidedBased: 'Based on your answers',
+    guidedServicesIncluded: 'services included',
+    guidedReasonIndustry: 'For {industry}, we recommend {domains} as your core channels.',
+    guidedReasonGoals: 'Your goals of {goals} are best served by this combination.',
+    guidedReasonTracking: 'We added Tracking & Reporting to measure ROI across all channels.',
+    guidedReasonTrackingAdsNoTracking: 'You\'re running ads without tracking - we strongly recommend setting up GA4, conversion pixels, and cookie consent to measure your ROAS.',
+    guidedReasonTrackingFoundation: 'Starting from scratch, tracking is your foundation - GTM, pixels, and dashboards let you optimize from day one.',
+    guidedReasonBudgetStarter: 'We\'ve focused on high-impact starter packages to maximize your budget.',
+    guidedReasonBudgetPremium: 'Your budget allows for premium packages with full multi-channel coverage.',
+    guidedInsightGoogleAds: 'Google Ads captures people actively searching for your services - highest conversion intent of all channels.',
+    guidedInsightPaidSocial: 'Paid Social (Meta, LinkedIn, TikTok) gives you the best reach per euro for brand awareness campaigns.',
+    guidedInsightSeo: 'SEO builds sustainable organic traffic that compounds over time - your best long-term investment.',
+    guidedInsightEmailing: 'Email marketing is the most cost-effective channel for customer retention and lifecycle engagement.'
   },
   fr: {
     // Page title
@@ -301,7 +327,33 @@ export const translations = {
     socialNeedHelpDesc: 'Laissez-nous vous aider à choisir les bons canaux pour votre business',
 
     // Level isOneOff indicator
-    oneOffSetup: 'Setup unique'
+    oneOffSetup: 'Setup unique',
+
+    // Guided mode
+    guidedTitle: 'Pas sûr par où commencer ?',
+    guidedSubtitle: 'Répondez à 5 questions et nous vous recommanderons les bons services.',
+    guidedHelpMe: 'Aidez-moi à choisir',
+    guidedKnowWhat: 'Je sais ce qu\'il me faut',
+    guidedSkip: 'Passer cette question',
+    guidedMyRecommendation: 'Voici notre recommandation',
+    guidedCustomize: 'Personnaliser ce plan',
+    guidedChooseMyself: 'Choisir moi-même',
+    guidedEstimate: 'Estimation mensuelle',
+    guidedContinue: 'Continuer',
+    guidedSkipQuestion: 'Passer',
+    guidedBased: 'Basé sur vos réponses',
+    guidedServicesIncluded: 'services inclus',
+    guidedReasonIndustry: 'Pour le secteur {industry}, nous recommandons {domains} comme canaux principaux.',
+    guidedReasonGoals: 'Vos objectifs de {goals} sont mieux servis par cette combinaison.',
+    guidedReasonTracking: 'Nous avons ajouté Tracking & Reporting pour mesurer le ROI sur tous les canaux.',
+    guidedReasonTrackingAdsNoTracking: 'Vous faites de la pub sans tracking - nous recommandons fortement GA4, les pixels de conversion et le consentement cookies pour mesurer votre ROAS.',
+    guidedReasonTrackingFoundation: 'En partant de zéro, le tracking est votre fondation - GTM, pixels et dashboards permettent d\'optimiser dès le premier jour.',
+    guidedReasonBudgetStarter: 'Nous avons ciblé des packages starter à fort impact pour maximiser votre budget.',
+    guidedReasonBudgetPremium: 'Votre budget permet des packages premium avec une couverture multicanal complète.',
+    guidedInsightGoogleAds: 'Google Ads capture les personnes qui recherchent activement vos services - le meilleur taux de conversion de tous les canaux.',
+    guidedInsightPaidSocial: 'Le Paid Social (Meta, LinkedIn, TikTok) offre la meilleure portée par euro pour vos campagnes de notoriété.',
+    guidedInsightSeo: 'Le SEO construit un trafic organique durable qui se cumule dans le temps - votre meilleur investissement long terme.',
+    guidedInsightEmailing: 'L\'email marketing est le canal le plus rentable pour la fidélisation client et l\'engagement tout au long du cycle de vie.'
   }
 } as const;
 
