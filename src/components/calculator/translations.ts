@@ -175,7 +175,21 @@ export const translations = {
     guidedInsightGoogleAds: 'Google Ads captures people actively searching for your services - highest conversion intent of all channels.',
     guidedInsightPaidSocial: 'Paid Social (Meta, LinkedIn, TikTok) gives you the best reach per euro for brand awareness campaigns.',
     guidedInsightSeo: 'SEO builds sustainable organic traffic that compounds over time - your best long-term investment.',
-    guidedInsightEmailing: 'Email marketing is the most cost-effective channel for customer retention and lifecycle engagement.'
+    guidedInsightEmailing: 'Email marketing is the most cost-effective channel for customer retention and lifecycle engagement.',
+
+    // Guided mode - Evolution path
+    guidedEvolutionTitle: 'Your growth path',
+    guidedEvolutionPhase: 'Phase',
+
+    // Guided mode - Benchmarks
+    guidedBenchmarksTitle: 'Expected benchmarks',
+    guidedBenchmarksSource: 'Industry averages - actual results may vary',
+
+    // Guided mode - Industry insights
+    guidedInsightsSource: 'Source',
+
+    // Social channels in configure step
+    socialChannelsRecommended: 'Recommended for your industry'
   },
   fr: {
     // Page title
@@ -353,7 +367,21 @@ export const translations = {
     guidedInsightGoogleAds: 'Google Ads capture les personnes qui recherchent activement vos services - le meilleur taux de conversion de tous les canaux.',
     guidedInsightPaidSocial: 'Le Paid Social (Meta, LinkedIn, TikTok) offre la meilleure portée par euro pour vos campagnes de notoriété.',
     guidedInsightSeo: 'Le SEO construit un trafic organique durable qui se cumule dans le temps - votre meilleur investissement long terme.',
-    guidedInsightEmailing: 'L\'email marketing est le canal le plus rentable pour la fidélisation client et l\'engagement tout au long du cycle de vie.'
+    guidedInsightEmailing: 'L\'email marketing est le canal le plus rentable pour la fidélisation client et l\'engagement tout au long du cycle de vie.',
+
+    // Guided mode - Evolution path
+    guidedEvolutionTitle: 'Votre chemin de croissance',
+    guidedEvolutionPhase: 'Phase',
+
+    // Guided mode - Benchmarks
+    guidedBenchmarksTitle: 'Benchmarks attendus',
+    guidedBenchmarksSource: 'Moyennes sectorielles - les résultats réels peuvent varier',
+
+    // Guided mode - Industry insights
+    guidedInsightsSource: 'Source',
+
+    // Social channels in configure step
+    socialChannelsRecommended: 'Recommandé pour votre secteur'
   }
 } as const;
 

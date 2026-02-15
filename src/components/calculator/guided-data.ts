@@ -422,6 +422,11 @@ export function generateRecommendation(answers: GuidedAnswers): GuidedRecommenda
     }
   }
 
+  // 9. Recommend social channels based on industry
+  const recommendedChannels = selectedDomains.includes('paid-social')
+    ? (industryChannels[answers.industry] || industryChannels['other'])
+    : undefined;
+
   return {
     selectedDomains,
     selections,
@@ -429,7 +434,8 @@ export function generateRecommendation(answers: GuidedAnswers): GuidedRecommenda
     reasoning,
     estimatedMonthly,
     trackingPreselections,
-    trackingAudit: trackingAuditFlag
+    trackingAudit: trackingAuditFlag,
+    recommendedChannels
   };
 }
 
@@ -524,6 +530,312 @@ function buildReasoning(
 
   return reasons;
 }
+
+// ---- Industry → recommended social channels ----
+// Based on ControlAI proposal: channel selection depends on where the audience is
+// B2B → LinkedIn + Meta (remarketing), E-commerce → Meta + TikTok, etc.
+
+export const industryChannels: Record<string, string[]> = {
+  'b2b-saas': ['linkedin', 'meta'],
+  'ecommerce': ['meta', 'tiktok'],
+  'automotive': ['meta', 'google-display'],
+  'local': ['meta'],
+  'startup': ['meta', 'linkedin', 'tiktok'],
+  'other': ['meta', 'linkedin']
+};
+
+// ---- Evolution path (Foundation → Growth → Acceleration) ----
+// Based on ControlAI proposal: start with fewer channels, master them, then expand
+// 3 phases with bilingual labels and timelines
+
+export interface EvolutionPhase {
+  label: { en: string; fr: string };
+  timeline: { en: string; fr: string };
+  domains: ServiceDomain[];
+  levelLabel: { en: string; fr: string };
+}
+
+export function buildEvolutionPath(
+  selectedDomains: ServiceDomain[],
+  levelIndex: number,
+  _industry: string
+): EvolutionPhase[] {
+  const levelLabels = [
+    { en: 'Starter', fr: 'Starter' },
+    { en: 'Growth', fr: 'Croissance' },
+    { en: 'Premium', fr: 'Premium' }
+  ];
+
+  // Phase 1: top 2-3 domains at current level
+  const phase1Domains = selectedDomains.slice(0, Math.min(3, selectedDomains.length));
+  // Phase 2: all domains, upgrade one level
+  const phase2Level = Math.min(levelIndex + 1, 2);
+  // Phase 3: all domains at Premium
+  return [
+    {
+      label: { en: 'Foundation', fr: 'Fondation' },
+      timeline: { en: 'Months 1-3', fr: 'Mois 1-3' },
+      domains: phase1Domains,
+      levelLabel: levelLabels[levelIndex] || levelLabels[0]
+    },
+    {
+      label: { en: 'Growth', fr: 'Croissance' },
+      timeline: { en: 'Months 4-6', fr: 'Mois 4-6' },
+      domains: [...selectedDomains],
+      levelLabel: levelLabels[phase2Level] || levelLabels[1]
+    },
+    {
+      label: { en: 'Acceleration', fr: 'Accélération' },
+      timeline: { en: 'Months 7+', fr: 'Mois 7+' },
+      domains: [...selectedDomains],
+      levelLabel: levelLabels[2]
+    }
+  ];
+}
+
+// ---- Channel benchmarks by industry ----
+// Data from ControlAI proposal + industry averages
+// 3 metrics per domain per industry
+
+export interface ChannelBenchmark {
+  metrics: { label: { en: string; fr: string }; value: string }[];
+}
+
+const channelBenchmarks: Record<string, Record<string, ChannelBenchmark>> = {
+  'b2b-saas': {
+    'seo': { metrics: [
+      { label: { en: 'Avg. CPC (organic equiv.)', fr: 'CPC moyen (équiv. organique)' }, value: '€3-8' },
+      { label: { en: 'Conv. rate', fr: 'Taux de conv.' }, value: '2-5%' },
+      { label: { en: 'Time to results', fr: 'Délai résultats' }, value: '3-6 mo' }
+    ]},
+    'google-ads': { metrics: [
+      { label: { en: 'Avg. CPC', fr: 'CPC moyen' }, value: '€2-5' },
+      { label: { en: 'ROAS', fr: 'ROAS' }, value: '3-6x' },
+      { label: { en: 'Conv. rate', fr: 'Taux de conv.' }, value: '2-5%' }
+    ]},
+    'paid-social': { metrics: [
+      { label: { en: 'CPM (LinkedIn)', fr: 'CPM (LinkedIn)' }, value: '€25-45' },
+      { label: { en: 'Cost per lead', fr: 'Coût par lead' }, value: '€30-80' },
+      { label: { en: 'CTR', fr: 'CTR' }, value: '0.4-0.9%' }
+    ]},
+    'emailing': { metrics: [
+      { label: { en: 'Open rate', fr: 'Taux d\'ouverture' }, value: '20-30%' },
+      { label: { en: 'Click rate', fr: 'Taux de clic' }, value: '2-5%' },
+      { label: { en: 'Revenue share', fr: 'Part du CA' }, value: '15-25%' }
+    ]},
+    'ai-content': { metrics: [
+      { label: { en: 'Content/month', fr: 'Contenus/mois' }, value: '8-20' },
+      { label: { en: 'Cost reduction', fr: 'Réduction coût' }, value: '40-60%' },
+      { label: { en: 'Time saved', fr: 'Temps gagné' }, value: '50-70%' }
+    ]}
+  },
+  'ecommerce': {
+    'seo': { metrics: [
+      { label: { en: 'Organic traffic share', fr: 'Part trafic organique' }, value: '30-50%' },
+      { label: { en: 'Conv. rate', fr: 'Taux de conv.' }, value: '1-3%' },
+      { label: { en: 'Time to results', fr: 'Délai résultats' }, value: '3-6 mo' }
+    ]},
+    'google-ads': { metrics: [
+      { label: { en: 'ROAS (Shopping)', fr: 'ROAS (Shopping)' }, value: '4-10x' },
+      { label: { en: 'Avg. CPC', fr: 'CPC moyen' }, value: '€0.5-2' },
+      { label: { en: 'Conv. rate', fr: 'Taux de conv.' }, value: '2-4%' }
+    ]},
+    'paid-social': { metrics: [
+      { label: { en: 'CPM (Meta)', fr: 'CPM (Meta)' }, value: '€5-15' },
+      { label: { en: 'ROAS', fr: 'ROAS' }, value: '3-8x' },
+      { label: { en: 'Cart recovery', fr: 'Récup. paniers' }, value: '8-15%' }
+    ]},
+    'emailing': { metrics: [
+      { label: { en: 'Revenue share', fr: 'Part du CA' }, value: '15-30%' },
+      { label: { en: 'Cart recovery', fr: 'Récup. paniers' }, value: '8-15%' },
+      { label: { en: 'LTV increase', fr: 'Augmentation LTV' }, value: '+20-40%' }
+    ]},
+    'ai-content': { metrics: [
+      { label: { en: 'Product descs/month', fr: 'Fiches produit/mois' }, value: '50-200' },
+      { label: { en: 'Cost reduction', fr: 'Réduction coût' }, value: '50-70%' },
+      { label: { en: 'SEO boost', fr: 'Boost SEO' }, value: '+30-60%' }
+    ]}
+  },
+  'automotive': {
+    'seo': { metrics: [
+      { label: { en: 'Local pack visibility', fr: 'Visibilité locale' }, value: '+40-80%' },
+      { label: { en: 'Conv. rate', fr: 'Taux de conv.' }, value: '1-3%' },
+      { label: { en: 'Time to results', fr: 'Délai résultats' }, value: '3-6 mo' }
+    ]},
+    'google-ads': { metrics: [
+      { label: { en: 'Avg. CPC', fr: 'CPC moyen' }, value: '€1-4' },
+      { label: { en: 'Cost per lead', fr: 'Coût par lead' }, value: '€15-40' },
+      { label: { en: 'Conv. rate', fr: 'Taux de conv.' }, value: '3-6%' }
+    ]},
+    'paid-social': { metrics: [
+      { label: { en: 'CPM (Meta)', fr: 'CPM (Meta)' }, value: '€6-15' },
+      { label: { en: 'Cost per lead', fr: 'Coût par lead' }, value: '€10-30' },
+      { label: { en: 'CTR', fr: 'CTR' }, value: '0.8-1.5%' }
+    ]},
+    'emailing': { metrics: [
+      { label: { en: 'Open rate', fr: 'Taux d\'ouverture' }, value: '25-35%' },
+      { label: { en: 'Click rate', fr: 'Taux de clic' }, value: '3-6%' },
+      { label: { en: 'Follow-up conv.', fr: 'Conv. relance' }, value: '5-12%' }
+    ]},
+    'ai-content': { metrics: [
+      { label: { en: 'Content/month', fr: 'Contenus/mois' }, value: '10-30' },
+      { label: { en: 'Cost reduction', fr: 'Réduction coût' }, value: '40-60%' },
+      { label: { en: 'Time saved', fr: 'Temps gagné' }, value: '50-70%' }
+    ]}
+  },
+  'local': {
+    'seo': { metrics: [
+      { label: { en: 'Google Maps visibility', fr: 'Visibilité Maps' }, value: '+50-100%' },
+      { label: { en: 'Local pack ranking', fr: 'Classement local' }, value: 'Top 3' },
+      { label: { en: 'Review growth', fr: 'Croissance avis' }, value: '+30-60%' }
+    ]},
+    'google-ads': { metrics: [
+      { label: { en: 'Avg. CPC', fr: 'CPC moyen' }, value: '€1-3' },
+      { label: { en: 'Cost per lead', fr: 'Coût par lead' }, value: '€8-25' },
+      { label: { en: 'Conv. rate', fr: 'Taux de conv.' }, value: '4-8%' }
+    ]},
+    'paid-social': { metrics: [
+      { label: { en: 'CPM (Meta)', fr: 'CPM (Meta)' }, value: '€4-10' },
+      { label: { en: 'Local reach', fr: 'Portée locale' }, value: '70-90%' },
+      { label: { en: 'Store visits', fr: 'Visites magasin' }, value: '+20-40%' }
+    ]},
+    'emailing': { metrics: [
+      { label: { en: 'Open rate', fr: 'Taux d\'ouverture' }, value: '30-45%' },
+      { label: { en: 'Repeat visits', fr: 'Visites récurrentes' }, value: '+15-30%' },
+      { label: { en: 'Revenue share', fr: 'Part du CA' }, value: '10-20%' }
+    ]},
+    'ai-content': { metrics: [
+      { label: { en: 'Content/month', fr: 'Contenus/mois' }, value: '4-10' },
+      { label: { en: 'Local SEO boost', fr: 'Boost SEO local' }, value: '+20-40%' },
+      { label: { en: 'Time saved', fr: 'Temps gagné' }, value: '40-60%' }
+    ]}
+  },
+  'startup': {
+    'seo': { metrics: [
+      { label: { en: 'Organic growth', fr: 'Croissance organique' }, value: '+60-150%' },
+      { label: { en: 'Conv. rate', fr: 'Taux de conv.' }, value: '1-4%' },
+      { label: { en: 'Time to results', fr: 'Délai résultats' }, value: '3-6 mo' }
+    ]},
+    'google-ads': { metrics: [
+      { label: { en: 'Avg. CPC', fr: 'CPC moyen' }, value: '€1-5' },
+      { label: { en: 'Cost per signup', fr: 'Coût par signup' }, value: '€10-50' },
+      { label: { en: 'Conv. rate', fr: 'Taux de conv.' }, value: '2-5%' }
+    ]},
+    'paid-social': { metrics: [
+      { label: { en: 'CPM (Meta)', fr: 'CPM (Meta)' }, value: '€5-12' },
+      { label: { en: 'Cost per install', fr: 'Coût par install' }, value: '€1-5' },
+      { label: { en: 'Viral coefficient', fr: 'Coefficient viral' }, value: '0.3-0.8' }
+    ]},
+    'emailing': { metrics: [
+      { label: { en: 'Activation rate', fr: 'Taux d\'activation' }, value: '+15-30%' },
+      { label: { en: 'Churn reduction', fr: 'Réduction churn' }, value: '-10-25%' },
+      { label: { en: 'Revenue share', fr: 'Part du CA' }, value: '10-25%' }
+    ]},
+    'ai-content': { metrics: [
+      { label: { en: 'Content/month', fr: 'Contenus/mois' }, value: '10-25' },
+      { label: { en: 'Cost reduction', fr: 'Réduction coût' }, value: '50-70%' },
+      { label: { en: 'Time to market', fr: 'Time to market' }, value: '-40-60%' }
+    ]}
+  }
+};
+
+const defaultBenchmarks: Record<string, ChannelBenchmark> = {
+  'seo': { metrics: [
+    { label: { en: 'Organic traffic growth', fr: 'Croissance trafic organique' }, value: '+40-100%' },
+    { label: { en: 'Conv. rate', fr: 'Taux de conv.' }, value: '1-4%' },
+    { label: { en: 'Time to results', fr: 'Délai résultats' }, value: '3-6 mo' }
+  ]},
+  'google-ads': { metrics: [
+    { label: { en: 'Avg. CPC', fr: 'CPC moyen' }, value: '€1-5' },
+    { label: { en: 'ROAS', fr: 'ROAS' }, value: '3-6x' },
+    { label: { en: 'Conv. rate', fr: 'Taux de conv.' }, value: '2-5%' }
+  ]},
+  'paid-social': { metrics: [
+    { label: { en: 'CPM', fr: 'CPM' }, value: '€5-25' },
+    { label: { en: 'CTR', fr: 'CTR' }, value: '0.5-1.5%' },
+    { label: { en: 'Cost per lead', fr: 'Coût par lead' }, value: '€10-50' }
+  ]},
+  'emailing': { metrics: [
+    { label: { en: 'Open rate', fr: 'Taux d\'ouverture' }, value: '20-35%' },
+    { label: { en: 'Click rate', fr: 'Taux de clic' }, value: '2-5%' },
+    { label: { en: 'Revenue share', fr: 'Part du CA' }, value: '10-25%' }
+  ]},
+  'ai-content': { metrics: [
+    { label: { en: 'Content/month', fr: 'Contenus/mois' }, value: '8-20' },
+    { label: { en: 'Cost reduction', fr: 'Réduction coût' }, value: '40-60%' },
+    { label: { en: 'Time saved', fr: 'Temps gagné' }, value: '50-70%' }
+  ]}
+};
+
+export function getBenchmarks(industry: string, domain: string): ChannelBenchmark | null {
+  return channelBenchmarks[industry]?.[domain] || defaultBenchmarks[domain] || null;
+}
+
+// ---- Industry insights (typical results) ----
+// Credibility data from ControlAI proposal + industry averages
+
+export interface IndustryInsight {
+  headline: { en: string; fr: string };
+  stats: { label: { en: string; fr: string }; value: string }[];
+  source: { en: string; fr: string };
+}
+
+export const industryInsights: Record<string, IndustryInsight> = {
+  'b2b-saas': {
+    headline: { en: 'Typical B2B/SaaS results with multi-channel strategy', fr: 'Résultats typiques B2B/SaaS avec stratégie multicanal' },
+    stats: [
+      { label: { en: 'Cost per lead reduction', fr: 'Réduction coût par lead' }, value: '-30 to -50%' },
+      { label: { en: 'Organic traffic growth', fr: 'Croissance trafic organique' }, value: '+60 to +120%' },
+      { label: { en: 'Sales pipeline increase', fr: 'Augmentation du pipeline' }, value: '+40 to +80%' }
+    ],
+    source: { en: 'Based on 6-12 month B2B engagements', fr: 'Basé sur des missions B2B de 6-12 mois' }
+  },
+  'ecommerce': {
+    headline: { en: 'Typical E-commerce results with multi-channel strategy', fr: 'Résultats typiques E-commerce avec stratégie multicanal' },
+    stats: [
+      { label: { en: 'ROAS improvement', fr: 'Amélioration du ROAS' }, value: '+50 to +150%' },
+      { label: { en: 'Cart recovery rate', fr: 'Taux de récup. paniers' }, value: '8-15%' },
+      { label: { en: 'Email revenue share', fr: 'Part du CA par email' }, value: '15-30%' }
+    ],
+    source: { en: 'Based on 6-12 month e-commerce engagements', fr: 'Basé sur des missions e-commerce de 6-12 mois' }
+  },
+  'automotive': {
+    headline: { en: 'Typical Automotive results with digital strategy', fr: 'Résultats typiques Automobile avec stratégie digitale' },
+    stats: [
+      { label: { en: 'Cost per lead reduction', fr: 'Réduction coût par lead' }, value: '-25 to -45%' },
+      { label: { en: 'Showroom visit increase', fr: 'Augmentation visites showroom' }, value: '+30 to +60%' },
+      { label: { en: 'Online lead growth', fr: 'Croissance leads en ligne' }, value: '+40 to +90%' }
+    ],
+    source: { en: 'Based on automotive dealership campaigns', fr: 'Basé sur des campagnes concessionnaires' }
+  },
+  'local': {
+    headline: { en: 'Typical local business results with digital strategy', fr: 'Résultats typiques commerce local avec stratégie digitale' },
+    stats: [
+      { label: { en: 'Google Maps visibility', fr: 'Visibilité Google Maps' }, value: '+50 to +100%' },
+      { label: { en: 'Store visit increase', fr: 'Augmentation visites magasin' }, value: '+20 to +40%' },
+      { label: { en: 'Review growth', fr: 'Croissance des avis' }, value: '+30 to +60%' }
+    ],
+    source: { en: 'Based on local business campaigns', fr: 'Basé sur des campagnes commerce local' }
+  },
+  'startup': {
+    headline: { en: 'Typical Startup results with growth strategy', fr: 'Résultats typiques Startup avec stratégie de croissance' },
+    stats: [
+      { label: { en: 'User acquisition cost', fr: 'Coût d\'acquisition' }, value: '-30 to -50%' },
+      { label: { en: 'Monthly growth rate', fr: 'Taux de croissance mensuel' }, value: '+15 to +30%' },
+      { label: { en: 'Time to market', fr: 'Time to market' }, value: '-40 to -60%' }
+    ],
+    source: { en: 'Based on startup growth campaigns', fr: 'Basé sur des campagnes de croissance startup' }
+  },
+  'other': {
+    headline: { en: 'Typical results with multi-channel strategy', fr: 'Résultats typiques avec stratégie multicanal' },
+    stats: [
+      { label: { en: 'Lead generation increase', fr: 'Augmentation génération leads' }, value: '+30 to +70%' },
+      { label: { en: 'Brand visibility', fr: 'Visibilité de marque' }, value: '+40 to +80%' },
+      { label: { en: 'Cost efficiency', fr: 'Efficacité des coûts' }, value: '+20 to +40%' }
+    ],
+    source: { en: 'Based on multi-industry averages', fr: 'Basé sur des moyennes multi-sectorielles' }
+  }
+};
 
 // ---- High-level actions per domain ----
 // Used in recommendation card (GuidedMode) and in summary/webhook (Calculator)

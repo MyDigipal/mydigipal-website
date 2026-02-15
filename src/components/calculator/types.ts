@@ -155,6 +155,7 @@ export interface GuidedRecommendation {
   estimatedMonthly: number;
   trackingPreselections?: Record<string, boolean>;
   trackingAudit?: boolean;
+  recommendedChannels?: string[];
 }
 
 export interface GuidedMessage {

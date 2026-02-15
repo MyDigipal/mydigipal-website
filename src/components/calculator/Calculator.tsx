@@ -140,6 +140,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
   // Guided mode recommendation (stored for webhook/summary/PDF)
   const [guidedRec, setGuidedRec] = useState<GuidedRecommendation | null>(null);
+  // Social channels selection for paid-social
+  const [selectedSocialChannels, setSelectedSocialChannels] = useState<string[]>([]);
 
   // AI Training state - null format means nothing selected yet
   const [aiTraining, setAiTraining] = useState<AITrainingSelection>({
@@ -637,6 +639,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         Object.entries(selections).filter(([_, v]) => v !== null)
       ),
       adBudgets: selectedDomains.includes('google-ads') || selectedDomains.includes('paid-social') ? adBudgets : null,
+      selectedSocialChannels: selectedDomains.includes('paid-social') ? selectedSocialChannels : null,
       aiTraining: selectedDomains.includes('ai-training') ? aiTraining : null,
       aiSolutions: selectedDomains.includes('ai-solutions') ? aiSolutions : null,
       pricing,
@@ -714,7 +717,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     } finally {
       setIsSubmitting(false);
     }
-  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, trackingNotSure, cmsAddon, lang, isSubmitting, notSureAbout, dismissedDomains, disabledServices, budgetActivated, aiTrainingActivated, sessionCount, trackingDismissed, showAiCustomForm, currency, guidedRec]);
+  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, trackingNotSure, cmsAddon, lang, isSubmitting, notSureAbout, dismissedDomains, disabledServices, budgetActivated, aiTrainingActivated, sessionCount, trackingDismissed, showAiCustomForm, currency, guidedRec, selectedSocialChannels]);
 
   // Submit handler with popup check
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
@@ -764,6 +767,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     setGuidedRec(rec);
     setSelectedDomains(rec.selectedDomains);
     // Set selections: for each domain, set ALL services to the recommended level
+    // Key must be service.id only (e.g. 'seo-audit'), NOT domain-prefixed
     const newSelections: Record<string, number | null> = {};
     rec.selectedDomains.forEach(domainId => {
       const domain = domainConfigs[domainId];
@@ -773,16 +777,17 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           // Clamp level to max available for this service
           const maxLevel = service.levels.length - 1;
           const safeLevel = Math.min(levelIndex, maxLevel);
-          newSelections[`${domainId}-${service.id}`] = safeLevel;
+          newSelections[service.id] = safeLevel;
         });
       }
     });
     setSelections(newSelections);
     setAdBudgets(rec.adBudgets);
-    if (rec.adBudgets['google-ads'] > 500) {
+    // Activate budgets for all recommended ad domains (even at min value)
+    if (rec.selectedDomains.includes('google-ads')) {
       setBudgetActivated(prev => ({ ...prev, 'google-ads': true }));
     }
-    if (rec.adBudgets['paid-social'] > 500) {
+    if (rec.selectedDomains.includes('paid-social')) {
       setBudgetActivated(prev => ({ ...prev, 'paid-social': true }));
     }
     // Pre-check tracking services when recommended
@@ -791,6 +796,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     }
     if (rec.trackingAudit) {
       setTrackingAudit(true);
+    }
+    // Pre-select recommended social channels
+    if (rec.recommendedChannels) {
+      setSelectedSocialChannels(rec.recommendedChannels);
     }
     setStep('configure');
   }, []);
@@ -1533,6 +1542,57 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         );
                       })()}
 
+                      {/* Social channels selection for paid-social */}
+                      {domainId === 'paid-social' && (
+                        <div className="mb-8 p-6 bg-white rounded-xl border border-slate-200">
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="block text-sm font-medium text-slate-700">{t.socialChannelsTitle}</label>
+                            {guidedRec?.recommendedChannels && (
+                              <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{t.socialChannelsRecommended}</span>
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-500 mb-4">{t.socialChannelsDesc}</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {socialChannels.map(channel => {
+                              const isSelected = selectedSocialChannels.includes(channel.id);
+                              return (
+                                <button
+                                  key={channel.id}
+                                  onClick={() => {
+                                    setSelectedSocialChannels(prev =>
+                                      prev.includes(channel.id)
+                                        ? prev.filter(c => c !== channel.id)
+                                        : [...prev, channel.id]
+                                    );
+                                  }}
+                                  className={`flex items-start gap-3 p-3 rounded-xl border-2 text-left transition-all active:scale-[0.98] ${
+                                    isSelected
+                                      ? `${colors.border} ${colors.bgLight} border-solid`
+                                      : 'border-slate-200 bg-white hover:border-slate-300'
+                                  }`}
+                                >
+                                  <span className="text-xl mt-0.5">{channel.icon}</span>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-semibold text-sm text-slate-900">{lang === 'fr' ? channel.nameFr : channel.name}</span>
+                                      {isSelected && (
+                                        <span className={`w-5 h-5 rounded-full ${colors.bg} text-white flex items-center justify-center flex-shrink-0`}>
+                                          <CheckIcon />
+                                        </span>
+                                      )}
+                                    </div>
+                                    <p className="text-xs text-slate-500 mt-0.5">{lang === 'fr' ? channel.descriptionFr : channel.description}</p>
+                                    <p className="text-[10px] text-slate-400 mt-1">
+                                      Min: {fp(channel.minBudget)} - {lang === 'fr' ? 'Reco' : 'Rec'}: {fp(channel.recommendedBudget)}
+                                    </p>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Services */}
                       <div className="space-y-6">
                         {domain.services.map(service => {
@@ -1845,9 +1905,23 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                     }
                     if (domainMonthly === 0) return null;
                     return (
-                      <div key={domainId} className="flex justify-between text-sm">
-                        <span className="text-slate-400 ml-4">↳ {domain.icon} {lang === 'fr' ? domain.nameFr : domain.name}</span>
-                        <span className="text-slate-300">{fp(Math.round(domainMonthly))}{lang === 'fr' ? '/mois' : '/mo'}</span>
+                      <div key={domainId}>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-400 ml-4">↳ {domain.icon} {lang === 'fr' ? domain.nameFr : domain.name}</span>
+                          <span className="text-slate-300">{fp(Math.round(domainMonthly))}{lang === 'fr' ? '/mois' : '/mo'}</span>
+                        </div>
+                        {domainId === 'paid-social' && selectedSocialChannels.length > 0 && (
+                          <div className="ml-8 mt-1 flex flex-wrap gap-1">
+                            {selectedSocialChannels.map(chId => {
+                              const ch = socialChannels.find(c => c.id === chId);
+                              return ch ? (
+                                <span key={chId} className="text-[10px] text-slate-400">
+                                  {ch.icon} {lang === 'fr' ? ch.nameFr : ch.name}
+                                </span>
+                              ) : null;
+                            })}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -2237,6 +2311,19 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                           </div>
                         );
                       })}
+                      {/* Social channels for paid-social */}
+                      {domainId === 'paid-social' && selectedSocialChannels.length > 0 && (
+                        <div className="flex flex-wrap gap-1 py-1">
+                          {selectedSocialChannels.map(chId => {
+                            const ch = socialChannels.find(c => c.id === chId);
+                            return ch ? (
+                              <span key={chId} className="text-xs bg-white/80 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">
+                                {ch.icon} {lang === 'fr' ? ch.nameFr : ch.name}
+                              </span>
+                            ) : null;
+                          })}
+                        </div>
+                      )}
                       {domainManagementFee > 0 && (
                         <div className="flex justify-between text-slate-600">
                           <span>{t.managementFee}</span>

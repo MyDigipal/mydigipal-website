@@ -1,7 +1,7 @@
 /** @jsxImportSource react */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { ServiceDomain, GuidedAnswers, GuidedRecommendation } from './types';
-import { guidedQuestions, generateRecommendation, getBudgetLabel, guidedDomainActions } from './guided-data';
+import { guidedQuestions, generateRecommendation, getBudgetLabel, guidedDomainActions, buildEvolutionPath, getBenchmarks, industryInsights } from './guided-data';
 import { domainConfigs, formatPrice } from './data';
 import type { Currency } from './types';
 
@@ -312,15 +312,48 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
       const name = lang === 'fr' ? domain.nameFr : domain.name;
       const items = (lang === 'fr' ? actions.fr : actions.en)
         .map(a => `<li style="margin-bottom:4px;color:#475569;">${a}</li>`).join('');
+      const benchmark = getBenchmarks(answers.industry, d);
+      const benchmarkHtml = benchmark ? `
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0;display:flex;gap:16px;flex-wrap:wrap;">
+          ${benchmark.metrics.map(m => `<span style="font-size:11px;color:#64748b;"><span style="color:#94a3b8;">${lang === 'fr' ? m.label.fr : m.label.en}:</span> ${m.value}</span>`).join('')}
+        </div>` : '';
       return `
         <div style="margin-bottom:20px;padding:16px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;">
           <h3 style="margin:0 0 8px;font-size:15px;color:#1e293b;">${domain.icon} ${name}</h3>
           <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;">${items}</ul>
+          ${benchmarkHtml}
         </div>`;
     }).join('');
 
     const reasons = formatReasoning(recommendation.reasoning)
       .map(r => `<li style="margin-bottom:6px;color:#475569;">${r}</li>`).join('');
+
+    // Industry insights for PDF
+    const insight = industryInsights[answers.industry];
+    const insightHtml = insight ? `
+      <div style="margin:24px 0;padding:16px;background:#ecfdf5;border-radius:12px;border:1px solid #a7f3d0;">
+        <h3 style="margin:0 0 12px;font-size:14px;color:#065f46;">${lang === 'fr' ? insight.headline.fr : insight.headline.en}</h3>
+        <div style="display:flex;gap:20px;justify-content:center;margin-bottom:8px;">
+          ${insight.stats.map(s => `<div style="text-align:center;"><p style="margin:0;font-size:18px;font-weight:bold;color:#059669;">${s.value}</p><p style="margin:2px 0 0;font-size:11px;color:#6b7280;">${lang === 'fr' ? s.label.fr : s.label.en}</p></div>`).join('')}
+        </div>
+        <p style="margin:0;font-size:10px;color:#9ca3af;text-align:center;">${lang === 'fr' ? insight.source.fr : insight.source.en}</p>
+      </div>` : '';
+
+    // Evolution path for PDF
+    const levelIndex = recommendation.selections[recommendation.selectedDomains[0]] ?? 0;
+    const phases = buildEvolutionPath(recommendation.selectedDomains, levelIndex, answers.industry);
+    const evolutionHtml = `
+      <div style="margin:24px 0;">
+        <h2 style="font-size:16px;color:#1e293b;margin-bottom:12px;">${lang === 'fr' ? 'Chemin de croissance' : 'Growth path'}</h2>
+        ${phases.map((phase, i) => `
+          <div style="display:flex;gap:12px;margin-bottom:12px;">
+            <div style="width:24px;height:24px;border-radius:50%;background:${i === 0 ? '#3b82f6' : i === 1 ? '#93c5fd' : '#dbeafe'};color:${i < 2 ? 'white' : '#3b82f6'};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;flex-shrink:0;">${i + 1}</div>
+            <div>
+              <p style="margin:0;font-size:13px;font-weight:600;color:#1e293b;">${lang === 'fr' ? phase.label.fr : phase.label.en} <span style="font-size:11px;color:#94a3b8;font-weight:normal;">${lang === 'fr' ? phase.timeline.fr : phase.timeline.en}</span></p>
+              <p style="margin:2px 0 0;font-size:12px;color:#64748b;">${phase.domains.map(d => domainConfigs[d].icon).join(' ')} - ${lang === 'fr' ? phase.levelLabel.fr : phase.levelLabel.en}</p>
+            </div>
+          </div>`).join('')}
+      </div>`;
 
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
       <title>MyDigipal - ${lang === 'fr' ? 'Recommandation Marketing' : 'Marketing Recommendation'}</title>
@@ -343,6 +376,8 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
       </div>
       <h2 style="font-size:16px;color:#1e293b;margin-bottom:10px;">${lang === 'fr' ? 'Pourquoi cette combinaison' : 'Why this combination'}</h2>
       <ul style="padding-left:20px;font-size:13px;line-height:1.7;">${reasons}</ul>
+      ${insightHtml}
+      ${evolutionHtml}
       <div style="margin-top:30px;padding-top:20px;border-top:1px solid #e2e8f0;text-align:center;">
         <p style="font-size:12px;color:#94a3b8;">${lang === 'fr' ? 'Cette recommandation est un point de départ. Contactez-nous pour affiner votre stratégie.' : 'This recommendation is a starting point. Contact us to refine your strategy.'}</p>
         <p style="font-size:12px;color:#94a3b8;">mydigipal.com - paul@mydigipal.com</p>
@@ -531,6 +566,7 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
                 {recommendation.selectedDomains.map(d => {
                   const domain = domainConfigs[d];
                   const actions = domainActions[d];
+                  const benchmark = getBenchmarks(answers.industry, d);
                   return (
                     <div key={d} className="bg-white/[0.07] rounded-xl p-4 border border-white/10">
                       <div className="flex items-center gap-2.5 mb-2">
@@ -545,6 +581,16 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
                           </li>
                         ))}
                       </ul>
+                      {/* Benchmarks per channel */}
+                      {benchmark && (
+                        <div className="mt-2 pt-2 border-t border-white/10 flex flex-wrap gap-x-4 gap-y-1">
+                          {benchmark.metrics.map((m, i) => (
+                            <span key={i} className="text-[10px] text-blue-300/80">
+                              <span className="text-blue-400/60">{lang === 'fr' ? m.label.fr : m.label.en}:</span> {m.value}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -564,6 +610,83 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
                   ))}
                 </ul>
               </div>
+
+              {/* Industry insights */}
+              {(() => {
+                const insight = industryInsights[answers.industry];
+                if (!insight) return null;
+                return (
+                  <div className="mx-4 sm:mx-6 bg-emerald-500/15 backdrop-blur-sm rounded-xl p-4 mb-5 border border-emerald-400/30">
+                    <h4 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-3">
+                      {lang === 'fr' ? insight.headline.fr : insight.headline.en}
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
+                      {insight.stats.map((s, i) => (
+                        <div key={i} className="text-center">
+                          <p className="text-lg font-bold text-emerald-300">{s.value}</p>
+                          <p className="text-[10px] text-emerald-200/70">{lang === 'fr' ? s.label.fr : s.label.en}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-emerald-300/50 text-center">
+                      {t.guidedInsightsSource}: {lang === 'fr' ? insight.source.fr : insight.source.en}
+                    </p>
+                  </div>
+                );
+              })()}
+
+              {/* Evolution path */}
+              {(() => {
+                const levelIndex = recommendation.selections[recommendation.selectedDomains[0]] ?? 0;
+                const phases = buildEvolutionPath(recommendation.selectedDomains, levelIndex, answers.industry);
+                return (
+                  <div className="px-4 sm:px-6 mb-5">
+                    <h4 className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-3">
+                      {t.guidedEvolutionTitle}
+                    </h4>
+                    <div className="relative">
+                      {phases.map((phase, i) => (
+                        <div key={i} className="flex gap-3 mb-3 last:mb-0">
+                          {/* Timeline indicator */}
+                          <div className="flex flex-col items-center">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                              i === 0 ? 'bg-blue-500 text-white' :
+                              i === 1 ? 'bg-blue-400/60 text-white' :
+                              'bg-blue-300/40 text-blue-200'
+                            }`}>
+                              {i + 1}
+                            </div>
+                            {i < phases.length - 1 && (
+                              <div className="w-0.5 h-full min-h-[16px] bg-white/10 my-1" />
+                            )}
+                          </div>
+                          {/* Phase content */}
+                          <div className="flex-1 pb-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-xs font-semibold text-white">
+                                {lang === 'fr' ? phase.label.fr : phase.label.en}
+                              </span>
+                              <span className="text-[10px] text-blue-300/70 bg-white/5 px-1.5 py-0.5 rounded">
+                                {lang === 'fr' ? phase.timeline.fr : phase.timeline.en}
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {phase.domains.map(d => (
+                                <span key={d} className="text-xs" title={lang === 'fr' ? domainConfigs[d].nameFr : domainConfigs[d].name}>
+                                  {domainConfigs[d].icon}
+                                </span>
+                              ))}
+                              <span className="text-[10px] text-blue-300/60 ml-1">
+                                {lang === 'fr' ? phase.levelLabel.fr : phase.levelLabel.en}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Estimated monthly */}
               <div className="mx-4 sm:mx-6 bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-5 border border-white/10">
