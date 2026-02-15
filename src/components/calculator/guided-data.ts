@@ -240,8 +240,8 @@ const goalBoosts: Record<string, Partial<Record<ServiceDomain, number>>> = {
 // Impact ≈ €8,000+/mo → Premium packages (index 2)
 
 function budgetToLevelIndex(budget: number): number {
-  if (budget <= 2000) return 0;  // Starter/Essential
-  if (budget <= 5000) return 1;  // Growth/Advanced
+  if (budget <= 2500) return 0;  // Starter/Essential
+  if (budget <= 6000) return 1;  // Growth/Advanced
   return 2;                       // Premium/Impact
 }
 
@@ -500,8 +500,8 @@ function buildReasoning(
 
 export function getBudgetLabel(value: number, lang: 'en' | 'fr'): string {
   if (value <= 1000) return lang === 'fr' ? 'Démarrage' : 'Getting started';
-  if (value <= 2000) return lang === 'fr' ? 'Essentiel' : 'Essentials';
-  if (value <= 4000) return lang === 'fr' ? 'Croissance' : 'Growth';
-  if (value <= 7000) return lang === 'fr' ? 'Accélération' : 'Acceleration';
+  if (value <= 2500) return lang === 'fr' ? 'Essentiel' : 'Essentials';
+  if (value <= 5000) return lang === 'fr' ? 'Croissance' : 'Growth';
+  if (value <= 10000) return lang === 'fr' ? 'Accélération' : 'Acceleration';
   return lang === 'fr' ? 'Impact' : 'Impact';
 }

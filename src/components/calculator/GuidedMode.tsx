@@ -46,6 +46,42 @@ const TypingIndicator = () => (
   </div>
 );
 
+// High-level actions per domain - shown in recommendation card
+const domainActions: Record<string, { en: string[]; fr: string[] }> = {
+  'seo': {
+    en: ['Technical SEO audit and optimization', 'Keyword strategy and content roadmap', 'On-page optimization and internal linking', 'Monthly performance reporting and adjustments'],
+    fr: ['Audit SEO technique et optimisation', 'Stratégie de mots-clés et feuille de route contenu', 'Optimisation on-page et maillage interne', 'Reporting mensuel de performance et ajustements']
+  },
+  'google-ads': {
+    en: ['Campaign structure and keyword research', 'Ad copywriting and A/B testing', 'Bid strategy optimization and budget management', 'Conversion tracking setup and ROAS reporting'],
+    fr: ['Structure de campagnes et recherche de mots-clés', 'Rédaction d\'annonces et A/B testing', 'Optimisation des enchères et gestion du budget', 'Tracking des conversions et reporting ROAS']
+  },
+  'paid-social': {
+    en: ['Audience targeting across Meta, LinkedIn, TikTok', 'Creative strategy and ad production', 'Remarketing and lookalike audiences', 'Campaign optimization and budget allocation'],
+    fr: ['Ciblage d\'audiences sur Meta, LinkedIn, TikTok', 'Stratégie créative et production d\'annonces', 'Remarketing et audiences similaires', 'Optimisation des campagnes et allocation du budget']
+  },
+  'emailing': {
+    en: ['Email automation sequences (welcome, nurture, upsell)', 'Newsletter design and content strategy', 'List segmentation and personalization', 'A/B testing and deliverability optimization'],
+    fr: ['Séquences d\'emails automatisées (bienvenue, nurturing, upsell)', 'Design de newsletter et stratégie de contenu', 'Segmentation de liste et personnalisation', 'A/B testing et optimisation de la délivrabilité']
+  },
+  'ai-content': {
+    en: ['AI-powered blog articles trained on your brand voice', 'Social media content calendar and production', 'Landing page copy and conversion optimization', 'Content performance analysis and iteration'],
+    fr: ['Articles de blog IA formés sur votre voix de marque', 'Calendrier de contenu social et production', 'Copywriting de landing pages et optimisation de conversion', 'Analyse de performance du contenu et itération']
+  },
+  'ai-solutions': {
+    en: ['Custom AI chatbot for lead qualification or support', 'Workflow automation (CRM, emails, reporting)', 'AI-powered data analysis and insights', 'Integration with your existing tools'],
+    fr: ['Chatbot IA sur-mesure pour qualification ou support', 'Automatisation de workflows (CRM, emails, reporting)', 'Analyse de données et insights propulsés par l\'IA', 'Intégration avec vos outils existants']
+  },
+  'ai-training': {
+    en: ['Hands-on AI workshops for your team', 'Prompt engineering and tool mastery', 'Custom use cases for your industry', 'Follow-up resources and support'],
+    fr: ['Ateliers IA pratiques pour votre équipe', 'Maîtrise du prompt engineering et des outils', 'Cas d\'usage personnalisés pour votre secteur', 'Ressources de suivi et support']
+  },
+  'tracking-reporting': {
+    en: ['Google Tag Manager and GA4 setup', 'Conversion pixels across all ad platforms', 'Cookie consent banner (GDPR compliant)', 'Centralized reporting dashboard'],
+    fr: ['Configuration Google Tag Manager et GA4', 'Pixels de conversion sur toutes les plateformes', 'Bannière de consentement cookies (conforme RGPD)', 'Dashboard de reporting centralisé']
+  }
+};
+
 export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: GuidedModeProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<GuidedAnswers>({
@@ -64,11 +100,23 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
   const [textValue, setTextValue] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const recCardRef = useRef<HTMLDivElement>(null);
+
+  // Non-linear budget scale: small steps at the start, larger at the end
+  // 500-3000 by 500, 3000-7000 by 1000, 7000-20000 by 2000 (but we don't need sliderConfig anymore)
+  const budgetSteps = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 7000, 8000, 10000, 12000, 15000, 20000];
+  const [sliderIndex, setSliderIndex] = useState(3); // default = 2000€
 
   const scrollToBottom = useCallback(() => {
+    // Only scroll DOWN, never up - prevents the jarring jump
     setTimeout(() => {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, 100);
+      if (!chatEndRef.current) return;
+      const rect = chatEndRef.current.getBoundingClientRect();
+      // Only scroll if the bottom element is below the viewport
+      if (rect.top > window.innerHeight - 100) {
+        chatEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 150);
   }, []);
 
   // Add bot message with typing delay
@@ -143,7 +191,8 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
       setCurrentStep(nextStep);
       const nextQ = guidedQuestions[nextStep];
       if (nextQ.type === 'slider') {
-        setSliderValue(nextQ.sliderConfig?.min ? Math.round((nextQ.sliderConfig.max + nextQ.sliderConfig.min) / 2 / nextQ.sliderConfig.step) * nextQ.sliderConfig.step : 2000);
+        // Default to index 3 (2000€) on the non-linear scale
+        setSliderIndex(3);
       }
       setTimeout(() => {
         addBotMessage(nextQ.question[lang] + (nextQ.subtitle ? `\n${nextQ.subtitle[lang]}` : ''));
@@ -180,10 +229,11 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
     processAnswer(labels.join(', '), multiSelections);
   }, [currentStep, multiSelections, lang, processAnswer]);
 
-  // Handle slider confirm
+  // Handle slider confirm - uses non-linear budget scale
   const handleSliderConfirm = useCallback(() => {
-    processAnswer(formatPrice(sliderValue, currency), sliderValue);
-  }, [sliderValue, currency, processAnswer]);
+    const actualBudget = budgetSteps[sliderIndex] ?? 2000;
+    processAnswer(formatPrice(actualBudget, currency), actualBudget);
+  }, [sliderIndex, budgetSteps, currency, processAnswer]);
 
   // Handle textarea confirm
   const handleTextConfirm = useCallback(() => {
@@ -263,6 +313,61 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
       return '';
     }).filter(Boolean);
   }, [lang, t]);
+
+  // PDF download - generates a clean HTML document and triggers browser print-to-PDF
+  const handleDownloadPDF = useCallback(() => {
+    if (!recommendation) return;
+
+    const recDomains = recommendation.selectedDomains.map(d => {
+      const domain = domainConfigs[d];
+      const actions = domainActions[d];
+      const name = lang === 'fr' ? domain.nameFr : domain.name;
+      const items = (lang === 'fr' ? actions.fr : actions.en)
+        .map(a => `<li style="margin-bottom:4px;color:#475569;">${a}</li>`).join('');
+      return `
+        <div style="margin-bottom:20px;padding:16px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;">
+          <h3 style="margin:0 0 8px;font-size:15px;color:#1e293b;">${domain.icon} ${name}</h3>
+          <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.6;">${items}</ul>
+        </div>`;
+    }).join('');
+
+    const reasons = formatReasoning(recommendation.reasoning)
+      .map(r => `<li style="margin-bottom:6px;color:#475569;">${r}</li>`).join('');
+
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+      <title>MyDigipal - ${lang === 'fr' ? 'Recommandation Marketing' : 'Marketing Recommendation'}</title>
+      <style>
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:700px;margin:0 auto;padding:40px 30px;color:#1e293b;}
+        @media print{body{padding:20px;}}
+      </style></head><body>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:30px;padding-bottom:20px;border-bottom:2px solid #e2e8f0;">
+        <div>
+          <h1 style="margin:0;font-size:22px;color:#1e293b;">MyDigipal</h1>
+          <p style="margin:4px 0 0;font-size:13px;color:#64748b;">${lang === 'fr' ? 'Recommandation marketing personnalisée' : 'Personalized marketing recommendation'}</p>
+        </div>
+      </div>
+      <h2 style="font-size:18px;color:#1e293b;margin-bottom:16px;">${lang === 'fr' ? 'Services recommandés' : 'Recommended services'}</h2>
+      ${recDomains}
+      <div style="margin:24px 0;padding:16px;background:linear-gradient(135deg,#1e293b,#1e3a5f);border-radius:12px;color:white;">
+        <p style="margin:0 0 4px;font-size:13px;opacity:0.8;">${t.guidedEstimate}</p>
+        <p style="margin:0;font-size:28px;font-weight:bold;">${formatPrice(recommendation.estimatedMonthly, currency)}<span style="font-size:14px;opacity:0.7;"> /${lang === 'fr' ? 'mois' : 'mo'}</span></p>
+        <p style="margin:4px 0 0;font-size:12px;opacity:0.6;">${recommendation.selectedDomains.length} ${t.guidedServicesIncluded}</p>
+      </div>
+      <h2 style="font-size:16px;color:#1e293b;margin-bottom:10px;">${lang === 'fr' ? 'Pourquoi cette combinaison' : 'Why this combination'}</h2>
+      <ul style="padding-left:20px;font-size:13px;line-height:1.7;">${reasons}</ul>
+      <div style="margin-top:30px;padding-top:20px;border-top:1px solid #e2e8f0;text-align:center;">
+        <p style="font-size:12px;color:#94a3b8;">${lang === 'fr' ? 'Cette recommandation est un point de départ. Contactez-nous pour affiner votre stratégie.' : 'This recommendation is a starting point. Contact us to refine your strategy.'}</p>
+        <p style="font-size:12px;color:#94a3b8;">mydigipal.com - paul@mydigipal.com</p>
+      </div>
+      </body></html>`;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(html);
+      printWindow.document.close();
+      setTimeout(() => printWindow.print(), 300);
+    }
+  }, [recommendation, lang, currency, t, formatReasoning]);
 
   const currentQuestion = currentStep < guidedQuestions.length ? guidedQuestions[currentStep] : null;
 
@@ -364,30 +469,30 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
               </div>
             )}
 
-            {/* Slider */}
-            {currentQuestion.type === 'slider' && currentQuestion.sliderConfig && (
+            {/* Slider - non-linear budget scale */}
+            {currentQuestion.type === 'slider' && (
               <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
                 <div className="text-center mb-4">
                   <span className="text-3xl font-bold text-slate-900">
-                    {formatPrice(sliderValue, currency)}
+                    {formatPrice(budgetSteps[sliderIndex] ?? 2000, currency)}
                   </span>
                   <span className="text-slate-500 text-sm ml-1">{lang === 'fr' ? '/mois' : '/mo'}</span>
                   <p className="text-sm text-blue-600 font-medium mt-1">
-                    {getBudgetLabel(sliderValue, lang)}
+                    {getBudgetLabel(budgetSteps[sliderIndex] ?? 2000, lang)}
                   </p>
                 </div>
                 <input
                   type="range"
-                  min={currentQuestion.sliderConfig.min}
-                  max={currentQuestion.sliderConfig.max}
-                  step={currentQuestion.sliderConfig.step}
-                  value={sliderValue}
-                  onChange={(e) => setSliderValue(Number(e.target.value))}
+                  min={0}
+                  max={budgetSteps.length - 1}
+                  step={1}
+                  value={sliderIndex}
+                  onChange={(e) => setSliderIndex(Number(e.target.value))}
                   className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600"
                 />
                 <div className="flex justify-between text-xs text-slate-400 mt-2">
-                  <span>{formatPrice(currentQuestion.sliderConfig.min, currency)}</span>
-                  <span>{formatPrice(currentQuestion.sliderConfig.max, currency)}</span>
+                  <span>{formatPrice(budgetSteps[0], currency)}</span>
+                  <span>{formatPrice(budgetSteps[budgetSteps.length - 1], currency)}</span>
                 </div>
                 <button
                   onClick={handleSliderConfirm}
@@ -422,43 +527,58 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
 
         {/* Recommendation card */}
         {recommendation && (
-          <div className="animate-fade-in mt-6">
-            <div className="bg-gradient-to-br from-slate-900 to-blue-900 rounded-2xl p-6 text-white shadow-xl">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">✨</span>
-                <h3 className="text-lg font-bold">{t.guidedMyRecommendation}</h3>
+          <div className="animate-fade-in mt-6" ref={recCardRef}>
+            <div className="bg-gradient-to-br from-slate-900 to-blue-900 rounded-2xl overflow-hidden text-white shadow-xl">
+              {/* Header */}
+              <div className="p-6 pb-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl">✨</span>
+                  <h3 className="text-lg font-bold">{t.guidedMyRecommendation}</h3>
+                </div>
+                <p className="text-sm text-blue-300">{t.guidedBased}</p>
               </div>
 
-              <p className="text-sm text-blue-200 mb-4">{t.guidedBased}</p>
-
-              {/* Domain pills */}
-              <div className="flex flex-wrap gap-2 mb-5">
+              {/* Domain breakdown - what we'd do in each */}
+              <div className="px-6 space-y-3 mb-5">
                 {recommendation.selectedDomains.map(d => {
                   const domain = domainConfigs[d];
+                  const actions = domainActions[d];
                   return (
-                    <span
-                      key={d}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium border border-white/20"
-                    >
-                      <span>{domain.icon}</span>
-                      <span>{lang === 'fr' ? domain.nameFr : domain.name}</span>
-                    </span>
+                    <div key={d} className="bg-white/[0.07] rounded-xl p-4 border border-white/10">
+                      <div className="flex items-center gap-2.5 mb-2">
+                        <span className="text-lg">{domain.icon}</span>
+                        <h4 className="font-semibold text-sm">{lang === 'fr' ? domain.nameFr : domain.name}</h4>
+                      </div>
+                      <ul className="space-y-1">
+                        {(lang === 'fr' ? actions.fr : actions.en).map((action, i) => (
+                          <li key={i} className="flex items-start gap-2 text-xs text-blue-200">
+                            <span className="text-blue-400 mt-0.5 flex-shrink-0">-</span>
+                            <span>{action}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   );
                 })}
               </div>
 
-              {/* Reasoning */}
-              <ul className="space-y-2 mb-5 text-sm text-blue-100">
-                {formatReasoning(recommendation.reasoning).map((r, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-blue-400 mt-0.5">→</span>
-                    <span>{r}</span>
-                  </li>
-                ))}
-              </ul>
+              {/* Why this combination */}
+              <div className="px-6 mb-5">
+                <h4 className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">
+                  {lang === 'fr' ? 'Pourquoi cette combinaison' : 'Why this combination'}
+                </h4>
+                <ul className="space-y-1.5 text-sm text-blue-100">
+                  {formatReasoning(recommendation.reasoning).map((r, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-blue-400 mt-0.5">→</span>
+                      <span>{r}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
               {/* Estimated monthly */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-5 border border-white/10">
+              <div className="mx-6 bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-5 border border-white/10">
                 <p className="text-sm text-blue-300 mb-1">{t.guidedEstimate}</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold">
@@ -472,18 +592,23 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
               </div>
 
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="px-6 pb-6 flex flex-col gap-3">
                 <button
                   onClick={() => onComplete(recommendation)}
-                  className="flex-1 py-3.5 bg-white text-slate-900 font-bold rounded-xl hover:bg-blue-50 transition-colors active:scale-[0.98] text-center"
+                  className="w-full py-3.5 bg-white text-slate-900 font-bold rounded-xl hover:bg-blue-50 transition-colors active:scale-[0.98] text-center"
                 >
                   {t.guidedCustomize}
                 </button>
                 <button
-                  onClick={onSkip}
-                  className="flex-1 py-3.5 bg-white/10 text-white font-medium rounded-xl hover:bg-white/20 transition-colors active:scale-[0.98] border border-white/20 text-center"
+                  onClick={handleDownloadPDF}
+                  className="w-full py-3 bg-white/10 text-white font-medium rounded-xl hover:bg-white/20 transition-colors active:scale-[0.98] border border-white/20 text-center flex items-center justify-center gap-2"
                 >
-                  {t.guidedChooseMyself}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                    <polyline points="7,10 12,15 17,10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  {lang === 'fr' ? 'Télécharger en PDF' : 'Download as PDF'}
                 </button>
               </div>
             </div>
