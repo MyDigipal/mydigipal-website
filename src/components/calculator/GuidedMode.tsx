@@ -1,7 +1,7 @@
 /** @jsxImportSource react */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { ServiceDomain, GuidedAnswers, GuidedRecommendation } from './types';
-import { guidedQuestions, generateRecommendation, getBudgetLabel } from './guided-data';
+import { guidedQuestions, generateRecommendation, getBudgetLabel, guidedDomainActions } from './guided-data';
 import { domainConfigs, formatPrice } from './data';
 import type { Currency } from './types';
 
@@ -46,41 +46,8 @@ const TypingIndicator = () => (
   </div>
 );
 
-// High-level actions per domain - shown in recommendation card
-const domainActions: Record<string, { en: string[]; fr: string[] }> = {
-  'seo': {
-    en: ['Technical SEO audit and optimization', 'Keyword strategy and content roadmap', 'On-page optimization and internal linking', 'Monthly performance reporting and adjustments'],
-    fr: ['Audit SEO technique et optimisation', 'Stratégie de mots-clés et feuille de route contenu', 'Optimisation on-page et maillage interne', 'Reporting mensuel de performance et ajustements']
-  },
-  'google-ads': {
-    en: ['Campaign structure and keyword research', 'Ad copywriting and A/B testing', 'Bid strategy optimization and budget management', 'Conversion tracking setup and ROAS reporting'],
-    fr: ['Structure de campagnes et recherche de mots-clés', 'Rédaction d\'annonces et A/B testing', 'Optimisation des enchères et gestion du budget', 'Tracking des conversions et reporting ROAS']
-  },
-  'paid-social': {
-    en: ['Audience targeting across Meta, LinkedIn, TikTok', 'Creative strategy and ad production', 'Remarketing and lookalike audiences', 'Campaign optimization and budget allocation'],
-    fr: ['Ciblage d\'audiences sur Meta, LinkedIn, TikTok', 'Stratégie créative et production d\'annonces', 'Remarketing et audiences similaires', 'Optimisation des campagnes et allocation du budget']
-  },
-  'emailing': {
-    en: ['Email automation sequences (welcome, nurture, upsell)', 'Newsletter design and content strategy', 'List segmentation and personalization', 'A/B testing and deliverability optimization'],
-    fr: ['Séquences d\'emails automatisées (bienvenue, nurturing, upsell)', 'Design de newsletter et stratégie de contenu', 'Segmentation de liste et personnalisation', 'A/B testing et optimisation de la délivrabilité']
-  },
-  'ai-content': {
-    en: ['AI-powered blog articles trained on your brand voice', 'Social media content calendar and production', 'Landing page copy and conversion optimization', 'Content performance analysis and iteration'],
-    fr: ['Articles de blog IA formés sur votre voix de marque', 'Calendrier de contenu social et production', 'Copywriting de landing pages et optimisation de conversion', 'Analyse de performance du contenu et itération']
-  },
-  'ai-solutions': {
-    en: ['Custom AI chatbot for lead qualification or support', 'Workflow automation (CRM, emails, reporting)', 'AI-powered data analysis and insights', 'Integration with your existing tools'],
-    fr: ['Chatbot IA sur-mesure pour qualification ou support', 'Automatisation de workflows (CRM, emails, reporting)', 'Analyse de données et insights propulsés par l\'IA', 'Intégration avec vos outils existants']
-  },
-  'ai-training': {
-    en: ['Hands-on AI workshops for your team', 'Prompt engineering and tool mastery', 'Custom use cases for your industry', 'Follow-up resources and support'],
-    fr: ['Ateliers IA pratiques pour votre équipe', 'Maîtrise du prompt engineering et des outils', 'Cas d\'usage personnalisés pour votre secteur', 'Ressources de suivi et support']
-  },
-  'tracking-reporting': {
-    en: ['Google Tag Manager and GA4 setup', 'Conversion pixels across all ad platforms', 'Cookie consent banner (GDPR compliant)', 'Centralized reporting dashboard'],
-    fr: ['Configuration Google Tag Manager et GA4', 'Pixels de conversion sur toutes les plateformes', 'Bannière de consentement cookies (conforme RGPD)', 'Dashboard de reporting centralisé']
-  }
-};
+// Use shared domain actions from guided-data
+const domainActions = guidedDomainActions;
 
 export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: GuidedModeProps) {
   const [currentStep, setCurrentStep] = useState(0);

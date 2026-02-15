@@ -2,6 +2,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import type { ServiceDomain, AITrainingSelection, AISolutionsAnswers, ContactInfo, Currency, GuidedRecommendation } from './types';
 import GuidedMode from './GuidedMode';
+import { guidedDomainActions } from './guided-data';
 import {
   domainConfigs,
   BUDGET_CONFIG,
@@ -136,6 +137,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const [duration, setDuration] = useState<4 | 6 | 12>(4);
   const [cmsAddon, setCmsAddon] = useState(false);
   const [showSummaryPopup, setShowSummaryPopup] = useState(false);
+
+  // Guided mode recommendation (stored for webhook/summary/PDF)
+  const [guidedRec, setGuidedRec] = useState<GuidedRecommendation | null>(null);
 
   // AI Training state - null format means nothing selected yet
   const [aiTraining, setAiTraining] = useState<AITrainingSelection>({
@@ -645,9 +649,20 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       cmsAddon,
       departmentBreakdown,
       currency,
+      guidedRecommendation: guidedRec ? {
+        selectedDomains: guidedRec.selectedDomains,
+        reasoning: guidedRec.reasoning,
+        estimatedMonthly: guidedRec.estimatedMonthly,
+        domainActions: guidedRec.selectedDomains.map(d => ({
+          domain: d,
+          domainName: lang === 'fr' ? domainConfigs[d].nameFr : domainConfigs[d].name,
+          actions: lang === 'fr' ? guidedDomainActions[d]?.fr : guidedDomainActions[d]?.en
+        }))
+      } : null,
       metadata: {
         timestamp: new Date().toISOString(),
         source: 'marketing-calculator-v5',
+        usedGuidedMode: !!guidedRec,
         lang
       }
     };
@@ -743,6 +758,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
   // Handle guided mode completion
   const handleGuidedComplete = useCallback((rec: GuidedRecommendation) => {
+    setGuidedRec(rec);
     setSelectedDomains(rec.selectedDomains);
     // Set selections: for each domain, set the first service to the recommended level
     const newSelections: Record<string, number | null> = {};
@@ -2098,6 +2114,31 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         <span className="text-amber-500">{t.needsDiscussion}</span>
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* Guided recommendation summary */}
+              {guidedRec && (
+                <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-4 border border-blue-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-lg">✨</span>
+                    <h4 className="font-bold text-slate-900 text-sm">
+                      {lang === 'fr' ? 'Recommandation personnalisée' : 'Personalized recommendation'}
+                    </h4>
+                  </div>
+                  <div className="space-y-2">
+                    {guidedRec.selectedDomains.map(d => {
+                      const domain = domainConfigs[d];
+                      const actions = guidedDomainActions[d];
+                      if (!actions) return null;
+                      return (
+                        <div key={d} className="text-xs">
+                          <span className="font-semibold text-slate-700">{domain.icon} {lang === 'fr' ? domain.nameFr : domain.name}</span>
+                          <span className="text-slate-500"> - {(lang === 'fr' ? actions.fr : actions.en).slice(0, 2).join(', ')}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
