@@ -1,0 +1,133 @@
+---
+import { type Language } from '@/i18n/config';
+import VideoEmbed from '@/components/ui/VideoEmbed.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const content = {
+  en: {
+    badge: 'See It in Action',
+    title: 'AI Email Marketing, Visualized',
+    subtitle: 'Watch how AI transforms every step of our email marketing process',
+    videos: [
+      {
+        src: '/videos/emailing/EmailPersonalizationPipeline.mp4',
+        title: 'AI Personalization Pipeline',
+        description: 'From LinkedIn profile to personalized email',
+        color: 'rose',
+        schemaName: 'MyDigipal AI Email Personalization Pipeline',
+        schemaDescription: 'How MyDigipal uses AI to analyze LinkedIn profiles and generate hyper-personalized email content at scale.',
+      },
+      {
+        src: '/videos/emailing/SmartAutomationWorkflow.mp4',
+        title: 'Smart Automation Workflow',
+        description: 'Cross-channel email + ads orchestration',
+        color: 'rose',
+        schemaName: 'MyDigipal Smart Email Automation Workflow',
+        schemaDescription: 'Cross-channel automation orchestrating email sequences with retargeting ads and social follow-ups powered by AI.',
+      },
+      {
+        src: '/videos/emailing/AIPerformanceDashboard.mp4',
+        title: 'AI Performance Dashboard',
+        description: 'Real-time optimization & predictive analytics',
+        color: 'pink',
+        schemaName: 'MyDigipal AI Email Performance Dashboard',
+        schemaDescription: 'Real-time AI-powered email performance dashboard with predictive analytics and automated optimization suggestions.',
+      },
+    ],
+  },
+  fr: {
+    badge: 'Voyez par vous-m\u00eame',
+    title: 'L\'Email Marketing IA, Visualis\u00e9',
+    subtitle: 'D\u00e9couvrez comment l\'IA transforme chaque \u00e9tape de notre process email marketing',
+    videos: [
+      {
+        src: '/videos/emailing/EmailPersonalizationPipeline.mp4',
+        title: 'Pipeline de Personnalisation IA',
+        description: 'Du profil LinkedIn \u00e0 l\'email personnalis\u00e9',
+        color: 'rose',
+        schemaName: 'Pipeline de personnalisation email IA MyDigipal',
+        schemaDescription: 'Comment MyDigipal utilise l\'IA pour analyser les profils LinkedIn et g\u00e9n\u00e9rer du contenu email hyper-personnalis\u00e9 \u00e0 grande \u00e9chelle.',
+      },
+      {
+        src: '/videos/emailing/SmartAutomationWorkflow.mp4',
+        title: 'Workflow d\'Automation Intelligent',
+        description: 'Orchestration cross-canal email + ads',
+        color: 'rose',
+        schemaName: 'Workflow d\'automation email intelligent MyDigipal',
+        schemaDescription: 'Automation cross-canal orchestrant les s\u00e9quences email avec le retargeting ads et les follow-ups sociaux pilot\u00e9s par l\'IA.',
+      },
+      {
+        src: '/videos/emailing/AIPerformanceDashboard.mp4',
+        title: 'Dashboard Performance IA',
+        description: 'Optimisation temps r\u00e9el & analytics pr\u00e9dictifs',
+        color: 'pink',
+        schemaName: 'Dashboard de performance email IA MyDigipal',
+        schemaDescription: 'Dashboard de performance email en temps r\u00e9el avec analytics pr\u00e9dictifs et suggestions d\'optimisation automatis\u00e9es.',
+      },
+    ],
+  },
+};
+
+const t = content[lang] || content.en;
+
+const colorMap: Record<string, { border: string; bg: string; text: string }> = {
+  rose: { border: 'border-rose-500/30', bg: 'bg-rose-500/10', text: 'text-rose-400' },
+  pink: { border: 'border-pink-500/30', bg: 'bg-pink-500/10', text: 'text-pink-400' },
+};
+---
+
+<section class="py-24 bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-white/10 text-rose-400 backdrop-blur-sm border border-white/10 mb-6">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        {t.badge}
+      </span>
+      <h2 class="text-4xl lg:text-5xl font-bold text-white mb-4">
+        {t.title}
+      </h2>
+      <p class="text-lg text-slate-400">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Video Grid: 3 columns -->
+    <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto stagger-children">
+      {t.videos.map((video, index) => {
+        const colors = colorMap[video.color] || colorMap.rose;
+        return (
+          <div
+            class={`animate-on-scroll rounded-2xl overflow-hidden border ${colors.border} bg-slate-900/50 backdrop-blur-sm hover:border-opacity-60 transition-all duration-300 hover:-translate-y-1`}
+            style={`animation-delay: ${index * 120}ms`}
+          >
+            <VideoEmbed
+              src={video.src}
+              title={video.title}
+              description={video.description}
+              schemaName={video.schemaName}
+              schemaDescription={video.schemaDescription}
+              schemaUploadDate="2026-03-01"
+            />
+            <div class="p-5">
+              <h3 class="text-lg font-bold text-white mb-1">
+                {video.title}
+              </h3>
+              <p class="text-sm text-slate-400">
+                {video.description}
+              </p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>

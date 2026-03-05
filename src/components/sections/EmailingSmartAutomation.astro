@@ -1,0 +1,181 @@
+---
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "AI-Powered Automation",
+    headline: "Cross-Channel Intelligent Automation",
+    subtitle: "AI orchestrates your email campaigns with ads and social for maximum impact at every touchpoint",
+    features: [
+      {
+        icon: "clock",
+        title: "AI Send Time Optimization",
+        description: "AI analyzes engagement patterns to send each email at the optimal moment for each individual recipient.",
+        stat: "32%",
+        statLabel: "higher open rates"
+      },
+      {
+        icon: "refresh",
+        title: "Cross-Channel Orchestration",
+        description: "Email sequences automatically trigger retargeting ads on Google & Meta, creating a cohesive multi-channel experience.",
+        stat: "3x",
+        statLabel: "more touchpoints"
+      },
+      {
+        icon: "brain",
+        title: "Predictive Engagement Scoring",
+        description: "AI predicts which prospects are most likely to convert and adjusts sequence intensity accordingly.",
+        stat: "2.4x",
+        statLabel: "conversion lift"
+      },
+      {
+        icon: "zap",
+        title: "Dynamic Content Adaptation",
+        description: "Email content adapts in real-time based on recipient behavior, previous interactions and engagement signals.",
+        stat: "89%",
+        statLabel: "relevance score"
+      }
+    ],
+    cta: "Discover our AI solutions",
+    ctaLink: "/en/services/ai-solutions"
+  },
+  fr: {
+    badge: "Automation Intelligente",
+    headline: "Automation Cross-Canal par l'IA",
+    subtitle: "L'IA orchestre vos campagnes email avec les ads et le social pour un impact maximal \u00e0 chaque point de contact",
+    features: [
+      {
+        icon: "clock",
+        title: "Optimisation IA de l'Heure d'Envoi",
+        description: "L'IA analyse les patterns d'engagement pour envoyer chaque email au moment optimal pour chaque destinataire.",
+        stat: "32%",
+        statLabel: "taux d'ouverture en plus"
+      },
+      {
+        icon: "refresh",
+        title: "Orchestration Cross-Canal",
+        description: "Les s\u00e9quences email d\u00e9clenchent automatiquement du retargeting ads sur Google & Meta, cr\u00e9ant une exp\u00e9rience multi-canal coh\u00e9rente.",
+        stat: "3x",
+        statLabel: "plus de points de contact"
+      },
+      {
+        icon: "brain",
+        title: "Scoring Pr\u00e9dictif d'Engagement",
+        description: "L'IA pr\u00e9dit quels prospects sont les plus susceptibles de convertir et ajuste l'intensit\u00e9 de la s\u00e9quence en cons\u00e9quence.",
+        stat: "2,4x",
+        statLabel: "am\u00e9lioration conversions"
+      },
+      {
+        icon: "zap",
+        title: "Adaptation Dynamique du Contenu",
+        description: "Le contenu email s'adapte en temps r\u00e9el selon le comportement du destinataire, ses interactions pr\u00e9c\u00e9dentes et ses signaux d'engagement.",
+        stat: "89%",
+        statLabel: "score de pertinence"
+      }
+    ],
+    cta: "D\u00e9couvrir nos solutions IA",
+    ctaLink: "/fr/services/ai-solutions"
+  }
+};
+
+const t = translations[lang] || translations.en;
+
+const icons: Record<string, string> = {
+  clock: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+  refresh: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>`,
+  brain: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>`,
+  zap: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`
+};
+---
+
+<section class="py-24 bg-gradient-to-br from-slate-950 via-rose-950/20 to-slate-950 overflow-hidden relative">
+  <!-- Background Effects -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-40 -right-32 w-96 h-96 bg-rose-500/8 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-20 -left-32 w-80 h-80 bg-pink-500/8 rounded-full blur-[100px]"></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-300 font-medium mb-6">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
+        {t.headline}
+      </h2>
+      <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+        {t.subtitle}
+      </p>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
+      {t.features.map((feature, index) => (
+        <div
+          class="automation-card group relative bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-rose-500/30 transition-all duration-500"
+          style={`animation-delay: ${index * 120}ms`}
+        >
+          <div class="flex items-start gap-5">
+            <!-- Icon -->
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+              <Fragment set:html={icons[feature.icon]} />
+            </div>
+
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-white mb-2">{feature.title}</h3>
+              <p class="text-slate-400 text-sm leading-relaxed mb-4">{feature.description}</p>
+
+              <!-- Stat -->
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-bold bg-gradient-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent">
+                  {feature.stat}
+                </span>
+                <span class="text-sm text-slate-500">{feature.statLabel}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-rose-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        </div>
+      ))}
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center">
+      <a
+        href={t.ctaLink}
+        class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold rounded-xl hover:from-rose-600 hover:to-pink-700 transition-all duration-300 hover:-translate-y-0.5 shadow-lg shadow-rose-500/25"
+      >
+        <span>{t.cta}</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .automation-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
