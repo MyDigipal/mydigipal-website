@@ -1,43 +1,81 @@
-# Instructions projet
+# MyDigipal Website - Site Astro + Calculateur React
 
-## Langue française - OBLIGATOIRE
-Toujours utiliser les accents français corrects dans TOUS les documents générés (HTML, MD, CSV, texte, etc.).
-Accents obligatoires : é è ê ë à â ù û ô î ï ç (système, problème, dépense, détecté, déploiement, sécurité, générée, créé, résultat, concrètement, contrôle, où, ça, reçu, déjà, voilà).
-Ne JAMAIS écrire de français sans accents.
+## 1. Vue d'ensemble
 
-## SEO - Règles obligatoires pour la création de contenu
+| Clé | Valeur |
+|-----|--------|
+| Stack | Astro 5 (static build, ~14s) + React islands |
+| Calculateur | `/en/calculator` et `/fr/calculator` (React island) |
+| Webhook | `https://n8n.mydigipal.com/webhook/calculateur-marketing` |
+| Build | `npm run build` |
+| Déploiement | TOUJOURS commit + push après un build réussi, sans demander |
+
+## 2. SEO - Règles obligatoires
 
 ### Balises title
 - La balise `<title>` est construite automatiquement : `{titre frontmatter} | MyDigipal` (13 caractères pour le suffixe)
-- Le titre frontmatter (ou `seo.title`) doit faire **≤47 caractères** pour un total ≤60 caractères
-- Ne JAMAIS inclure "| MyDigipal" dans le titre frontmatter (il est ajouté par BaseLayout.astro)
+- Le titre total doit faire entre **50 et 60 caractères** (donc `seo.title` entre 37 et 47 caractères)
+- Ne JAMAIS inclure "| MyDigipal" dans le titre frontmatter (ajouté par BaseLayout.astro)
 - Si le titre d'affichage doit être plus long, utiliser le champ `seo.title` pour le titre court SEO
 
 ### Meta descriptions
-- La meta description doit faire **120-155 caractères** (ni trop courte, ni trop longue)
-- Utiliser le champ `seo.description` dans le frontmatter si la description d'affichage est trop longue
-- Inclure les mots-clés principaux et un appel à l'action
+- **145-160 caractères**, inclure mots-clés principaux et appel à l'action
+- Utiliser `seo.description` si la description d'affichage est trop longue
 
 ### Frontmatter blog - Champs SEO optionnels
 ```yaml
 seo:
-  title: "Titre court SEO ≤47 car."      # Override pour la balise <title>
-  description: "Description 120-155 car."  # Override pour la meta description
-  image: "/images/og-image.png"            # Override pour l'image OG
+  title: "Titre court SEO 37-47 car."
+  description: "Description 145-160 car."
+  image: "/images/og-image.png"
 ```
 
 ### Liens internes
 - Toujours pointer vers l'URL finale, jamais vers une URL qui redirige
-- Exemple : utiliser `https://app.mydigipal.com/login` et non `https://app.mydigipal.com/` (qui fait un 307)
-- Vérifier que les liens internes n'ont pas de trailing slash (configuration Astro : `trailingSlash: 'never'`)
+- Pas de trailing slash (config Astro : `trailingSlash: 'never'`)
+- Image blog : 1200x630px
 
-### Open Graph et Twitter Cards
-- Gérés automatiquement par BaseLayout.astro si `title`, `description` et `image` sont définis dans le frontmatter
-- Toujours fournir une image de dimensions 1200x630px pour les articles de blog
+## 3. Architecture du calculateur (v5)
 
-### Vérifications avant publication
-- [ ] Titre total (avec " | MyDigipal") ≤ 60 caractères
-- [ ] Meta description entre 120 et 155 caractères
-- [ ] Tous les accents français corrects
-- [ ] Image de blog fournie (1200x630)
-- [ ] Liens internes pointent vers les URLs finales (pas de redirections)
+### Fichiers principaux
+- **Composant** : `src/components/calculator/Calculator.tsx` (~2200 lignes)
+- **Data** : 8 fichiers dans `data/` (seo, google-ads, paid-social, emailing, ai-training, ai-solutions, ai-content, tracking-reporting)
+- **Config centrale** : `data/index.ts` - domainConfigs, BUDGET_CONFIG, DURATION_CONFIG, MANAGEMENT_FEE_CONFIG, CURRENCY_CONFIGS
+- **Types** : `types.ts` - ServiceDomain (8 domaines incluant 'ai-content'), Currency ('EUR' | 'USD' | 'GBP')
+- **Traductions** : `translations.ts` - clés EN/FR, fonction `t()`
+- **Docs** : `docs/calculator/CALCULATOR-AUDIT.md`
+
+### Patterns importants
+- Prix affichés via `fp()` (formatPrice) pour support multi-devises
+- Les prix restent en EUR dans le code, conversion côté affichage seulement
+- AI Solutions a des packages concrets + formulaire custom (showAiCustomForm)
+- Paid Social a `socialChannels` export pour la sélection de canaux
+
+## 4. Mode guide conversationnel (v1)
+
+### Fichiers
+- `GuidedMode.tsx` (chat UI), `guided-data.ts` (questions + scoring)
+- Intégration : step `'guided'` dans Calculator.tsx, avant la sélection manuelle
+
+### Logique
+- 5 questions : industrie, objectifs (multi), budget (slider), efforts actuels (multi), contexte libre
+- Scoring : pertinence industrie (0-1) + boost objectifs (+0.2 à +0.5) - seuil inclusion > 0.6
+- Contrainte budget : max 3 domaines si <=1500 EUR, max 5 si <=3000 EUR
+- Mapping budget vers niveaux : <=1500 EUR = Starter, 1500-4000 EUR = Growth, >4000 EUR = Premium
+
+### Référence business : Propale ControlAI
+- 7+1 canaux : Meta, Reddit, Google, LinkedIn, YouTube, TikTok, Display, Community Management
+- 3 packs : Essentials (£4-5.3K/mois), Growth (£9.6-12.8K/mois), Impact (£15.5-20.1K/mois)
+- Évolution : Mois 1-2 Essentials, Mois 3-4 Growth, Mois 5-6 Impact
+
+## 5. Bugs corrigés (à retenir)
+- `handleGuidedComplete` : les clés de sélection doivent être `service.id` seul, PAS `${domainId}-${service.id}`
+- `budgetActivated` : activer pour tout domaine ads recommandé (pas seulement si budget > 500)
+
+## 6. Améliorations futures (mode guide)
+1. Ajouter les canaux sociaux spécifiques (Reddit, TikTok, LinkedIn) dans les recommandations
+2. Intégrer la notion de "chemin d'évolution" (starter vers growth vers impact)
+3. Ajouter community management comme option
+4. Enrichir le reasoning avec des benchmarks réels (CPM, CPC, CTR)
+5. Ajouter des cas d'usage par industrie
+6. Proposer Google Ad Grants pour les organisations éligibles
