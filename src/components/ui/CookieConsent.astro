@@ -1,5 +1,4 @@
 ---
-import { t } from '@/i18n/utils';
 import type { Language } from '@/i18n/config';
 
 interface Props {
@@ -8,167 +7,139 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 
-const translations = {
-  en: {
-    title: 'We value your privacy',
-    description: 'We use cookies to enhance your browsing experience, analyze site traffic, and personalize content. You can choose which cookies to accept.',
-    acceptAll: 'Accept all',
-    rejectAll: 'Reject all',
-    customize: 'Customize',
-    save: 'Save preferences',
-    necessary: 'Necessary',
-    necessaryDesc: 'Essential for the website to function properly. Cannot be disabled.',
-    analytics: 'Analytics',
-    analyticsDesc: 'Help us understand how visitors interact with our website.',
-    marketing: 'Marketing',
-    marketingDesc: 'Used to deliver personalized ads and measure ad effectiveness.',
-    privacyPolicy: 'Privacy Policy',
-  },
-  fr: {
-    title: 'Nous respectons votre vie privée',
-    description: 'Nous utilisons des cookies pour améliorer votre expérience de navigation, analyser le trafic et personnaliser le contenu. Vous pouvez choisir quels cookies accepter.',
-    acceptAll: 'Tout accepter',
-    rejectAll: 'Tout refuser',
-    customize: 'Personnaliser',
-    save: 'Enregistrer',
-    necessary: 'Nécessaires',
-    necessaryDesc: 'Essentiels au bon fonctionnement du site. Ne peuvent pas être désactivés.',
-    analytics: 'Analytiques',
-    analyticsDesc: 'Nous aident à comprendre comment les visiteurs interagissent avec notre site.',
-    marketing: 'Marketing',
-    marketingDesc: 'Utilisés pour diffuser des publicités personnalisées et mesurer leur efficacité.',
-    privacyPolicy: 'Politique de confidentialité',
-  },
+const text = lang === 'fr' ? {
+  notice: 'Ce site utilise des cookies pour analyser le trafic.',
+  ok: 'OK',
+  refuse: 'Refuser',
+  customize: 'Personnaliser',
+  save: 'Enregistrer',
+  necessary: 'Essentiels',
+  necessaryDesc: 'Requis pour le fonctionnement du site.',
+  analytics: 'Analytiques',
+  analyticsDesc: 'Comprendre comment les visiteurs utilisent le site.',
+  marketing: 'Marketing',
+  marketingDesc: 'Mesurer la performance des campagnes publicitaires.',
+  privacyPolicy: 'Politique de confidentialit\u00e9',
+} : {
+  notice: 'This site uses cookies to analyze traffic.',
+  ok: 'OK',
+  refuse: 'Refuse',
+  customize: 'Customize',
+  save: 'Save',
+  necessary: 'Essential',
+  necessaryDesc: 'Required for the website to function.',
+  analytics: 'Analytics',
+  analyticsDesc: 'Understand how visitors use the site.',
+  marketing: 'Marketing',
+  marketingDesc: 'Measure advertising campaign performance.',
+  privacyPolicy: 'Privacy Policy',
 };
-
-const text = translations[lang] || translations.en;
 ---
 
-<!-- Cookie Consent Banner -->
+<!-- Cookie Consent - Slim Bar -->
 <div
   id="cookie-consent-banner"
-  class="fixed bottom-0 left-0 right-0 z-50 p-4 transform translate-y-full transition-transform duration-300 ease-smooth"
+  class="fixed bottom-0 left-0 right-0 z-50 transform translate-y-full transition-transform duration-300 ease-out"
   role="dialog"
   aria-modal="true"
-  aria-labelledby="cookie-consent-title"
+  aria-label={lang === 'fr' ? 'Consentement cookies' : 'Cookie consent'}
 >
-  <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-strong border border-slate-200 overflow-hidden">
-    <!-- Main Banner -->
-    <div id="cookie-main-view" class="p-6">
-      <div class="flex flex-col md:flex-row md:items-start gap-4">
-        <div class="flex-1">
-          <h2 id="cookie-consent-title" class="text-lg font-semibold text-slate-900 mb-2">
-            {text.title}
-          </h2>
-          <p class="text-sm text-slate-600 leading-relaxed">
-            {text.description}
-          </p>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-2 sm:items-center shrink-0">
-          <button
-            type="button"
-            id="cookie-customize-btn"
-            class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors duration-200"
-          >
-            {text.customize}
-          </button>
-          <button
-            type="button"
-            id="cookie-reject-btn"
-            class="px-4 py-2 text-sm font-medium text-slate-900 bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 rounded-lg transition-all duration-200"
-          >
-            {text.rejectAll}
-          </button>
-          <button
-            type="button"
-            id="cookie-accept-btn"
-            class="px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg shadow-sm hover:shadow-medium transition-all duration-200"
-          >
-            {text.acceptAll}
-          </button>
-        </div>
+  <!-- Main slim bar -->
+  <div id="cookie-main-view" class="bg-slate-900/95 backdrop-blur-sm border-t border-slate-700/50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p class="text-slate-300 text-sm text-center sm:text-left">
+        {text.notice}
+        <button
+          type="button"
+          id="cookie-customize-btn"
+          class="text-primary-400 hover:text-primary-300 underline underline-offset-2 text-sm bg-transparent border-none cursor-pointer font-inherit ml-1"
+        >
+          {text.customize}
+        </button>
+      </p>
+      <div class="flex items-center gap-2 shrink-0">
+        <button
+          type="button"
+          id="cookie-reject-btn"
+          class="px-4 py-1.5 text-sm font-medium text-slate-400 hover:text-white border border-slate-600 hover:border-slate-500 rounded-lg transition-colors duration-200 bg-transparent cursor-pointer"
+        >
+          {text.refuse}
+        </button>
+        <button
+          type="button"
+          id="cookie-accept-btn"
+          class="px-5 py-1.5 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors duration-200 cursor-pointer border-none"
+        >
+          {text.ok}
+        </button>
       </div>
     </div>
+  </div>
 
-    <!-- Customize View (hidden by default) -->
-    <div id="cookie-customize-view" class="hidden">
-      <div class="p-6 border-t border-slate-200">
-        <h3 class="text-lg font-semibold text-slate-900 mb-4">{text.customize}</h3>
-
-        <div class="space-y-4">
-          <!-- Necessary Cookies -->
-          <div class="flex items-start justify-between gap-4 p-4 bg-slate-50 rounded-xl">
-            <div class="flex-1">
-              <div class="flex items-center gap-2">
-                <span class="font-medium text-slate-900">{text.necessary}</span>
-                <span class="px-2 py-0.5 text-xs font-medium bg-slate-200 text-slate-600 rounded-full">
-                  {lang === 'fr' ? 'Toujours actif' : 'Always active'}
-                </span>
-              </div>
-              <p class="text-sm text-slate-500 mt-1">{text.necessaryDesc}</p>
-            </div>
-            <div class="shrink-0">
-              <div class="w-11 h-6 bg-primary-500 rounded-full relative cursor-not-allowed opacity-70">
-                <div class="absolute right-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm"></div>
-              </div>
-            </div>
+  <!-- Customize panel (hidden by default) -->
+  <div id="cookie-customize-view" class="hidden bg-white border-t border-slate-200 shadow-lg">
+    <div class="max-w-2xl mx-auto px-4 py-5">
+      <div class="space-y-3">
+        <!-- Necessary -->
+        <div class="flex items-center justify-between gap-4 py-2">
+          <div>
+            <span class="font-medium text-slate-900 text-sm">{text.necessary}</span>
+            <span class="ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-slate-200 text-slate-500 rounded">
+              {lang === 'fr' ? 'Toujours actif' : 'Always on'}
+            </span>
+            <p class="text-xs text-slate-500 mt-0.5">{text.necessaryDesc}</p>
           </div>
-
-          <!-- Analytics Cookies -->
-          <div class="flex items-start justify-between gap-4 p-4 bg-slate-50 rounded-xl">
-            <div class="flex-1">
-              <span class="font-medium text-slate-900">{text.analytics}</span>
-              <p class="text-sm text-slate-500 mt-1">{text.analyticsDesc}</p>
-            </div>
-            <div class="shrink-0">
-              <label class="relative inline-flex cursor-pointer">
-                <input type="checkbox" id="cookie-analytics" class="sr-only peer" checked>
-                <div class="w-11 h-6 bg-slate-300 peer-focus:ring-2 peer-focus:ring-primary-500/20 rounded-full peer peer-checked:bg-primary-500 transition-colors duration-200">
-                  <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 peer-checked:translate-x-5"></div>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <!-- Marketing Cookies -->
-          <div class="flex items-start justify-between gap-4 p-4 bg-slate-50 rounded-xl">
-            <div class="flex-1">
-              <span class="font-medium text-slate-900">{text.marketing}</span>
-              <p class="text-sm text-slate-500 mt-1">{text.marketingDesc}</p>
-            </div>
-            <div class="shrink-0">
-              <label class="relative inline-flex cursor-pointer">
-                <input type="checkbox" id="cookie-marketing" class="sr-only peer" checked>
-                <div class="w-11 h-6 bg-slate-300 peer-focus:ring-2 peer-focus:ring-primary-500/20 rounded-full peer peer-checked:bg-primary-500 transition-colors duration-200">
-                  <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 peer-checked:translate-x-5"></div>
-                </div>
-              </label>
-            </div>
+          <div class="w-10 h-5 bg-primary-500 rounded-full relative opacity-60 cursor-not-allowed shrink-0">
+            <div class="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm"></div>
           </div>
         </div>
-
-        <div class="flex items-center justify-between mt-6 pt-4 border-t border-slate-200">
-          <a
-            href={`/${lang}/privacy-policy`}
-            class="text-sm text-primary-500 hover:text-primary-600 hover:underline transition-colors duration-200"
-          >
-            {text.privacyPolicy}
-          </a>
-          <button
-            type="button"
-            id="cookie-save-btn"
-            class="px-6 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg shadow-sm hover:shadow-medium transition-all duration-200"
-          >
-            {text.save}
-          </button>
+        <!-- Analytics -->
+        <div class="flex items-center justify-between gap-4 py-2 border-t border-slate-100">
+          <div>
+            <span class="font-medium text-slate-900 text-sm">{text.analytics}</span>
+            <p class="text-xs text-slate-500 mt-0.5">{text.analyticsDesc}</p>
+          </div>
+          <label class="relative inline-flex cursor-pointer shrink-0">
+            <input type="checkbox" id="cookie-analytics" class="sr-only peer" checked>
+            <div class="w-10 h-5 bg-slate-300 rounded-full peer peer-checked:bg-primary-500 transition-colors duration-200">
+              <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200 peer-checked:translate-x-5"></div>
+            </div>
+          </label>
         </div>
+        <!-- Marketing -->
+        <div class="flex items-center justify-between gap-4 py-2 border-t border-slate-100">
+          <div>
+            <span class="font-medium text-slate-900 text-sm">{text.marketing}</span>
+            <p class="text-xs text-slate-500 mt-0.5">{text.marketingDesc}</p>
+          </div>
+          <label class="relative inline-flex cursor-pointer shrink-0">
+            <input type="checkbox" id="cookie-marketing" class="sr-only peer">
+            <div class="w-10 h-5 bg-slate-300 rounded-full peer peer-checked:bg-primary-500 transition-colors duration-200">
+              <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200 peer-checked:translate-x-5"></div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-200">
+        <a
+          href={`/${lang}/privacy-policy`}
+          class="text-xs text-primary-500 hover:underline"
+        >
+          {text.privacyPolicy}
+        </a>
+        <button
+          type="button"
+          id="cookie-save-btn"
+          class="px-5 py-1.5 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors duration-200 cursor-pointer border-none"
+        >
+          {text.save}
+        </button>
       </div>
     </div>
   </div>
 </div>
 
 <style>
-  /* Toggle switch animation fix */
   .peer:checked ~ div > div {
     transform: translateX(1.25rem);
   }
@@ -176,34 +147,25 @@ const text = translations[lang] || translations.en;
 
 <script is:inline>
 (function() {
-  // Cookie consent management
-  const CONSENT_COOKIE = 'mydigipal_consent';
-  const CONSENT_VERSION = '1';
+  var CONSENT_COOKIE = 'mydigipal_consent';
+  var CONSENT_VERSION = '1';
 
-  // Get saved consent
   function getConsent() {
     try {
-      const cookie = document.cookie.split('; ').find(row => row.startsWith(CONSENT_COOKIE + '='));
-      if (cookie) {
-        return JSON.parse(decodeURIComponent(cookie.split('=')[1]));
-      }
+      var cookie = document.cookie.split('; ').find(function(row) { return row.startsWith(CONSENT_COOKIE + '='); });
+      if (cookie) return JSON.parse(decodeURIComponent(cookie.split('=')[1]));
     } catch (e) {}
     return null;
   }
 
-  // Save consent
   function saveConsent(consent) {
-    const expires = new Date();
+    var expires = new Date();
     expires.setFullYear(expires.getFullYear() + 1);
-    document.cookie = `${CONSENT_COOKIE}=${encodeURIComponent(JSON.stringify(consent))}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+    document.cookie = CONSENT_COOKIE + '=' + encodeURIComponent(JSON.stringify(consent)) + '; expires=' + expires.toUTCString() + '; path=/; SameSite=Lax';
   }
 
-  // Update Google Consent Mode - properly communicate with GTM
   function updateConsentMode(consent) {
     window.dataLayer = window.dataLayer || [];
-
-    // Use the global gtag function defined in BaseLayout
-    // This ensures consent updates are properly processed by GTM
     if (typeof window.gtag === 'function') {
       window.gtag('consent', 'update', {
         'analytics_storage': consent.analytics ? 'granted' : 'denied',
@@ -212,7 +174,6 @@ const text = translations[lang] || translations.en;
         'ad_personalization': consent.marketing ? 'granted' : 'denied',
       });
     } else {
-      // Fallback: push directly to dataLayer in gtag format
       window.dataLayer.push('consent', 'update', {
         'analytics_storage': consent.analytics ? 'granted' : 'denied',
         'ad_storage': consent.marketing ? 'granted' : 'denied',
@@ -220,36 +181,24 @@ const text = translations[lang] || translations.en;
         'ad_personalization': consent.marketing ? 'granted' : 'denied',
       });
     }
-
-    // Also push a custom event for any GTM triggers that need it
     window.dataLayer.push({
       'event': 'consent_update',
       'consent_analytics': consent.analytics ? 'granted' : 'denied',
       'consent_marketing': consent.marketing ? 'granted' : 'denied'
     });
-
-    // Dispatch event for other scripts
     window.dispatchEvent(new CustomEvent('consentUpdated', { detail: consent }));
   }
 
-  // Show/hide banner
   function showBanner() {
-    const banner = document.getElementById('cookie-consent-banner');
-    if (banner) {
-      banner.classList.remove('translate-y-full');
-      banner.classList.add('translate-y-0');
-    }
+    var banner = document.getElementById('cookie-consent-banner');
+    if (banner) { banner.classList.remove('translate-y-full'); banner.classList.add('translate-y-0'); }
   }
 
   function hideBanner() {
-    const banner = document.getElementById('cookie-consent-banner');
-    if (banner) {
-      banner.classList.remove('translate-y-0');
-      banner.classList.add('translate-y-full');
-    }
+    var banner = document.getElementById('cookie-consent-banner');
+    if (banner) { banner.classList.remove('translate-y-0'); banner.classList.add('translate-y-full'); }
   }
 
-  // Toggle views
   function showCustomize() {
     document.getElementById('cookie-main-view').classList.add('hidden');
     document.getElementById('cookie-customize-view').classList.remove('hidden');
@@ -260,60 +209,54 @@ const text = translations[lang] || translations.en;
     document.getElementById('cookie-customize-view').classList.add('hidden');
   }
 
-  // Handle consent
   function handleConsent(type) {
-    let consent = { version: CONSENT_VERSION, timestamp: Date.now(), refused: false };
-
+    var consent = { version: CONSENT_VERSION, timestamp: Date.now(), refused: false };
     if (type === 'accept') {
       consent.analytics = true;
       consent.marketing = true;
     } else if (type === 'reject') {
-      // User explicitly refused - this disables ALL tracking
       consent.analytics = false;
       consent.marketing = false;
-      consent.refused = true; // Flag to prevent tracking on next page load
+      consent.refused = true;
     } else if (type === 'save') {
-      const analyticsCheckbox = document.getElementById('cookie-analytics');
-      const marketingCheckbox = document.getElementById('cookie-marketing');
-      consent.analytics = analyticsCheckbox ? analyticsCheckbox.checked : false;
-      consent.marketing = marketingCheckbox ? marketingCheckbox.checked : false;
+      var analyticsEl = document.getElementById('cookie-analytics');
+      var marketingEl = document.getElementById('cookie-marketing');
+      consent.analytics = analyticsEl ? analyticsEl.checked : false;
+      consent.marketing = marketingEl ? marketingEl.checked : false;
     }
-
     saveConsent(consent);
     updateConsentMode(consent);
     hideBanner();
   }
 
-  // Initialize
   function init() {
-    const banner = document.getElementById('cookie-consent-banner');
+    var banner = document.getElementById('cookie-consent-banner');
     if (!banner) return;
 
-    const consent = getConsent();
-
+    var consent = getConsent();
     if (!consent || consent.version !== CONSENT_VERSION) {
-      // Show banner after a short delay for better UX
-      setTimeout(showBanner, 1000);
+      setTimeout(showBanner, 1500);
     } else {
-      // Apply saved consent
       updateConsentMode(consent);
     }
 
-    // Event listeners
-    document.getElementById('cookie-accept-btn')?.addEventListener('click', () => handleConsent('accept'));
-    document.getElementById('cookie-reject-btn')?.addEventListener('click', () => handleConsent('reject'));
-    document.getElementById('cookie-save-btn')?.addEventListener('click', () => handleConsent('save'));
-    document.getElementById('cookie-customize-btn')?.addEventListener('click', showCustomize);
+    var acceptBtn = document.getElementById('cookie-accept-btn');
+    var rejectBtn = document.getElementById('cookie-reject-btn');
+    var saveBtn = document.getElementById('cookie-save-btn');
+    var customizeBtn = document.getElementById('cookie-customize-btn');
+
+    if (acceptBtn) acceptBtn.addEventListener('click', function() { handleConsent('accept'); });
+    if (rejectBtn) rejectBtn.addEventListener('click', function() { handleConsent('reject'); });
+    if (saveBtn) saveBtn.addEventListener('click', function() { handleConsent('save'); });
+    if (customizeBtn) customizeBtn.addEventListener('click', showCustomize);
   }
 
-  // Run on DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
 
-  // Expose for external use (e.g., footer link to reopen)
   window.openCookieSettings = function() {
     showMain();
     showBanner();

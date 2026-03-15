@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audit Tracking Multi-Canal - MyDigipal - 15 mars 2026 | MyDigipal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#1a1a2e;--primary-light:#2a2a4e;--primary-rgb:26,26,46;
+  --accent:#2E86AB;--accent-light:#E8F4F8;--accent-rgb:46,134,171;
+  --gold:#C8A951;--gold-light:#FBF7EC;--gold-rgb:200,169,81;
+  --green:#1B8A5A;--green-light:#E6F5EE;--green-dark:#15704A;
+  --red:#C0392B;--red-light:#FDECEB;
+  --orange:#D97706;--orange-light:#FEF3E2;
+  --blue:#3182CE;--blue-light:#EBF4FF;
+  --purple:#7C3AED;--purple-light:#F3E8FF;
+  --bg:#F4F6F9;--white:#FFFFFF;--text:#2D3748;--text-light:#64748B;--border:#E2E8F0;
+  --gray-50:#F7FAFC;--gray-100:#EDF2F7;--gray-200:#E2E8F0;--gray-300:#CBD5E0;
+  --gray-400:#A0AEC0;--gray-500:#718096;--gray-600:#4A5568;--gray-700:#2D3748;--gray-800:#1A202C;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);--shadow-lg:0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.05);
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:14px;-webkit-font-smoothing:antialiased}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(var(--primary-rgb),.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 16px rgba(0,0,0,.2)}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;padding:0 24px;overflow-x:auto;scrollbar-width:none}
+.nav-inner::-webkit-scrollbar{display:none}
+.nav-brand{font-weight:800;font-size:13px;color:var(--gold);white-space:nowrap;padding:14px 18px 14px 0;border-right:1px solid rgba(255,255,255,.12);margin-right:10px;letter-spacing:.3px}
+.nav a{color:rgba(255,255,255,.55);text-decoration:none;font-size:11.5px;font-weight:500;padding:14px 10px;white-space:nowrap;transition:all .25s;border-bottom:2px solid transparent}
+.nav a:hover{color:rgba(255,255,255,.85)}
+.nav a.active{color:#fff;border-bottom-color:var(--gold)}
+.container{max-width:1200px;margin:56px auto 0;padding:24px 20px}
+.header{background:linear-gradient(135deg,#1a1a2e 0%,#2a2a4e 40%,#1a1a2e 100%);color:#fff;border-radius:var(--radius);padding:40px 44px;margin-bottom:24px;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-60%;right:-5%;width:400px;height:400px;background:radial-gradient(circle,rgba(var(--gold-rgb),.1) 0%,transparent 70%);border-radius:50%}
+.header::after{content:'';position:absolute;bottom:-40%;left:10%;width:300px;height:300px;background:radial-gradient(circle,rgba(var(--accent-rgb),.06) 0%,transparent 70%);border-radius:50%}
+.header h1{font-size:26px;font-weight:800;letter-spacing:-.5px;position:relative}
+.header .subtitle{font-size:14px;color:var(--gold);margin-top:4px;font-weight:500;position:relative}
+.header .meta{font-size:12px;color:rgba(255,255,255,.5);margin-top:14px;display:flex;gap:20px;flex-wrap:wrap;position:relative}
+.header .badges{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px;position:relative}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;display:inline-block}
+.badge-gold{background:rgba(var(--gold-rgb),.12);border:1px solid rgba(var(--gold-rgb),.25);color:var(--gold);padding:4px 14px}
+.exec-summary{background:var(--white);border-radius:var(--radius);padding:28px 32px;margin-bottom:20px;box-shadow:var(--shadow)}
+.exec-summary h2{font-size:17px;font-weight:700;color:var(--primary);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:10px}
+.score-grid{display:grid;grid-template-columns:240px 1fr;gap:28px;align-items:start;margin-bottom:24px}
+.gauge-card{background:var(--bg);border-radius:var(--radius);padding:28px;text-align:center}
+.gauge-wrapper{position:relative;width:180px;height:110px;margin:0 auto 12px}
+.gauge-bg{fill:none;stroke:var(--gray-200);stroke-width:12;stroke-linecap:round}
+.gauge-fill{fill:none;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset 1.5s ease-out}
+.gauge-score{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:48px;font-weight:800;color:var(--primary);line-height:1}
+.gauge-label{font-size:13px;color:var(--gray-500);margin-top:4px}
+.gauge-status{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-top:8px}
+.gauge-status.critical{background:var(--red-light);color:var(--red)}
+.gauge-status.poor{background:#FEE2E2;color:#B91C1C}
+.gauge-status.fair{background:var(--orange-light);color:var(--orange)}
+.gauge-status.good{background:var(--green-light);color:var(--green)}
+.gauge-status.excellent{background:var(--green-light);color:var(--green-dark)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat-card{background:var(--bg);border-radius:var(--radius-sm);padding:20px;border-left:4px solid var(--gray-300);transition:transform .15s}
+.stat-card:hover{transform:translateY(-1px)}
+.stat-card.tags{border-left-color:var(--accent)}
+.stat-card.issues{border-left-color:var(--red)}
+.stat-card.conversions{border-left-color:var(--green)}
+.stat-card.missing{border-left-color:var(--orange)}
+.stat-number{font-size:28px;font-weight:800;color:var(--primary);line-height:1}
+.stat-label{font-size:12px;color:var(--gray-500);margin-top:4px}
+.editable-box{width:100%;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;font-family:inherit;min-height:80px;resize:vertical;background:#fff;transition:border-color .2s,box-shadow .2s;line-height:1.6}
+.editable-box:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(var(--gold-rgb),.12)}
+.editable-box::placeholder{color:#aaa}
+.field-label{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-light);padding:10px 12px;text-align:left;border-bottom:2px solid var(--border);background:var(--gray-50)}
+td{padding:10px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:var(--gray-50)}
+tr:hover td{background:rgba(var(--accent-rgb),.04)}
+.editable-cell{border:1px solid transparent;border-radius:4px;padding:4px 6px;min-height:20px;transition:border-color .2s}
+.editable-cell:hover{border-color:var(--border)}
+.editable-cell:focus{outline:none;border-color:var(--gold);background:#fff}
+.code{font-family:'Consolas','Monaco','Courier New',monospace;font-size:12px;color:var(--accent);background:var(--accent-light);padding:1px 6px;border-radius:3px}
+.status{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.status-active{background:var(--green-light);color:var(--green)}
+.status-missing{background:var(--red-light);color:var(--red)}
+.status-issue{background:var(--orange-light);color:var(--orange)}
+.status-inactive{background:var(--blue-light);color:var(--blue)}
+.status-ok{background:var(--green-light);color:var(--green)}
+.status-ko{background:var(--red-light);color:var(--red)}
+.status-partial{background:var(--orange-light);color:var(--orange)}
+.status-na{background:var(--gray-100);color:var(--gray-500)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}
+.dot-green{background:var(--green)}
+.dot-red{background:var(--red)}
+.dot-orange{background:var(--orange)}
+.dot-blue{background:var(--blue)}
+.priority{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
+.priority-critical{background:#FDE8E8;color:#C53030}
+.priority-high{background:#FEEBC8;color:#C05621}
+.priority-medium{background:#FEFCBF;color:#975A16}
+.priority-low{background:#E2E8F0;color:#4A5568}
+.callout{padding:12px 16px;border-radius:8px;font-size:13px;margin:12px 0;line-height:1.6}
+.callout-info{background:var(--accent-light);border-left:3px solid var(--accent)}
+.callout-warn{background:var(--orange-light);border-left:3px solid var(--orange)}
+.callout-good{background:var(--green-light);border-left:3px solid var(--green)}
+.callout-error{background:var(--red-light);border-left:3px solid var(--red)}
+.consent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+.consent-card{background:var(--bg);border-radius:var(--radius-sm);padding:16px;text-align:center;border:2px solid var(--border);transition:border-color .2s}
+.consent-card.granted{border-color:var(--green)}
+.consent-card.denied{border-color:var(--red)}
+.consent-card .param-name{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;word-break:break-all}
+.consent-card .param-state{font-size:16px;font-weight:800}
+.consent-card.granted .param-state{color:var(--green)}
+.consent-card.denied .param-state{color:var(--red)}
+.section{background:var(--white);border-radius:var(--radius);margin-bottom:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.section-header{display:flex;align-items:center;padding:20px 28px;cursor:pointer;user-select:none;gap:12px;border-bottom:1px solid transparent;transition:background .2s}
+.section-header:hover{background:var(--gray-50)}
+.section.open .section-header{border-bottom-color:var(--border)}
+.section-header h2{font-size:16px;font-weight:700;color:var(--primary);flex:1;display:flex;align-items:center;gap:10px;margin:0;padding:0;border:none}
+.sec-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--primary);font-size:12px;font-weight:800;flex-shrink:0}
+.section-chevron{color:var(--gray-400);transition:transform .3s;font-size:18px;flex-shrink:0}
+.section.open .section-chevron{transform:rotate(180deg)}
+.section-body{display:none;padding:24px 28px}
+.section.open .section-body{display:block}
+.section h3{font-size:14px;font-weight:600;color:var(--primary);margin:18px 0 10px}
+.section h3:first-child{margin-top:0}
+.section h4{font-size:12px;font-weight:700;color:var(--accent);margin:14px 0 8px;text-transform:uppercase;letter-spacing:.3px}
+.checklist{list-style:none;padding:0}
+.checklist li{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-bottom:1px solid var(--gray-100);font-size:13px}
+.checklist li:last-child{border-bottom:none}
+.checklist li:hover{background:var(--gray-50)}
+.checklist input[type="checkbox"]{width:18px;height:18px;margin-top:2px;accent-color:var(--gold);flex-shrink:0;cursor:pointer}
+.checklist .task-text{flex:1}
+.checklist .task-phase{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.phase-1{background:var(--red-light);color:var(--red)}
+.phase-2{background:var(--orange-light);color:var(--orange)}
+.phase-3{background:var(--blue-light);color:var(--blue)}
+.phase-4{background:var(--green-light);color:var(--green)}
+.rec-card{background:var(--bg);border-radius:var(--radius-sm);padding:18px;margin-bottom:12px;border-left:4px solid var(--gray-300);transition:box-shadow .2s}
+.rec-card:hover{box-shadow:var(--shadow-md)}
+.rec-card.critical{border-left-color:var(--red)}
+.rec-card.high{border-left-color:var(--orange)}
+.rec-card.medium{border-left-color:var(--gold)}
+.rec-card.low{border-left-color:var(--gray-400)}
+.rec-card h4{font-size:14px;font-weight:600;color:var(--primary);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.rec-detail{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px;font-size:12px}
+.rec-detail dt{font-weight:600;color:var(--text-light);text-transform:uppercase;font-size:10px;letter-spacing:.3px;margin-bottom:2px}
+.rec-detail dd{color:var(--text);margin:0}
+.roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:16px 0}
+.roadmap-phase{background:var(--bg);border-radius:var(--radius-sm);padding:16px;border-top:3px solid var(--gray-300)}
+.roadmap-phase.p1{border-top-color:var(--red)}
+.roadmap-phase.p2{border-top-color:var(--orange)}
+.roadmap-phase.p3{border-top-color:var(--blue)}
+.roadmap-phase.p4{border-top-color:var(--green)}
+.roadmap-phase h4{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--primary)}
+.roadmap-phase ul{list-style:none;padding:0;font-size:12px;color:var(--text-light)}
+.roadmap-phase li{padding:4px 0;border-bottom:1px solid var(--gray-200)}
+.roadmap-phase li:last-child{border-bottom:none}
+.footer{background:var(--primary);color:var(--gray-400);padding:32px 0;margin-top:40px;font-size:12px;text-align:center;border-radius:var(--radius) var(--radius) 0 0}
+.footer a{color:var(--gold);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+.save-fab{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:8px;padding:12px 22px;border:none;border-radius:12px;background:var(--gold);color:var(--primary);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.18);transition:all .2s;letter-spacing:.2px}
+.save-fab:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(0,0,0,.25);background:#b8993f}
+.save-fab:active{transform:translateY(0)}
+.save-fab svg{width:18px;height:18px}
+.save-fab.saving{background:var(--accent);color:#fff}
+.save-fab.saved{background:var(--green);color:#fff}
+.save-fab.dirty{animation:pulse-save 2s infinite}
+@keyframes pulse-save{0%,100%{box-shadow:0 4px 20px rgba(0,0,0,.18)}50%{box-shadow:0 4px 20px rgba(var(--gold-rgb),.5)}}
+@media print{
+  .save-fab{display:none!important}
+  .nav{display:none}
+  .container{margin-top:0;padding:10px}
+  .section{break-inside:avoid;box-shadow:none;border:1px solid var(--border)}
+  .section.open .section-body{display:block}
+  .header{padding:20px 24px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;font-size:12px}
+}
+@media(max-width:768px){
+  .score-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .consent-grid{grid-template-columns:1fr}
+  .roadmap{grid-template-columns:repeat(2,1fr)}
+  .rec-detail{grid-template-columns:1fr}
+  .header{padding:24px 20px}
+  .header h1{font-size:22px}
+  .section-body{padding:16px 20px}
+  .section-header{padding:16px 20px}
+  .container{padding:12px}
+  .nav a{padding:12px 8px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<!-- SAVE BUTTON -->
+<button class="save-fab" id="save-btn" onclick="saveDocument()" title="Sauvegarder (Ctrl+S)">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+  <span id="save-label">Save</span>
+</button>
+
+<!-- NAVIGATION -->
+<div class="nav">
+<div class="nav-inner">
+  <div class="nav-brand">MyDigipal</div>
+  <a href="#summary" class="active">Synth&egrave;se</a>
+  <a href="#tags">Tags</a>
+  <a href="#datalayer">Data Layer</a>
+  <a href="#conversions">Conversions</a>
+  <a href="#consent">Consent Mode</a>
+  <a href="#forms">Formulaires</a>
+  <a href="#rgpd">RGPD</a>
+  <a href="#recommendations">Recommandations</a>
+  <a href="#checklist">Checklist</a>
+</div>
+</div>
+
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Audit Tracking Multi-Canal</h1>
+  <div class="subtitle">mydigipal.com - Analyse compl&egrave;te du tracking &amp; conformit&eacute; RGPD</div>
+  <div class="meta">
+    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 15 mars 2026</span>
+    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Paul Andre</span>
+    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> GTM-P4TSQ9Q</span>
+    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Compte GTM : 4662593420</span>
+  </div>
+  <div class="badges">
+    <span class="badge badge-gold">GA4 : G-039QHRCWY1</span>
+    <span class="badge badge-gold">Meta Pixel : 848469840083737</span>
+    <span class="badge badge-gold">Hotjar : 1979187</span>
+    <span class="badge badge-gold">Astro 5 + React Islands</span>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- EXECUTIVE SUMMARY                                                    -->
+<!-- ================================================================== -->
+<div class="exec-summary" id="summary">
+  <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Synth&egrave;se ex&eacute;cutive</h2>
+
+  <div class="score-grid">
+    <div class="gauge-card">
+      <div class="gauge-wrapper">
+        <svg viewBox="0 0 180 110" width="180" height="110">
+          <path class="gauge-bg" d="M15 95 A 75 75 0 0 1 165 95" />
+          <path class="gauge-fill" id="gaugeArc" d="M15 95 A 75 75 0 0 1 165 95"
+                stroke="var(--orange)"
+                stroke-dasharray="251"
+                stroke-dashoffset="251" />
+        </svg>
+        <div class="gauge-score">62</div>
+      </div>
+      <div class="gauge-label">Score Global</div>
+      <div class="gauge-status fair">Acceptable</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card tags">
+        <div class="stat-number">11</div>
+        <div class="stat-label">Tags GTM d&eacute;tect&eacute;s</div>
+      </div>
+      <div class="stat-card issues">
+        <div class="stat-number">11</div>
+        <div class="stat-label">Probl&egrave;mes identifi&eacute;s</div>
+      </div>
+      <div class="stat-card conversions">
+        <div class="stat-number">4</div>
+        <div class="stat-label">Conversions track&eacute;es</div>
+      </div>
+      <div class="stat-card missing">
+        <div class="stat-number">5</div>
+        <div class="stat-label">&Eacute;l&eacute;ments manquants</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>R&eacute;sum&eacute; :</strong> Le tracking est fonctionnel pour les conversions cl&eacute;s (calculateur et formulaire de contact), mais pr&eacute;sente des failles de conformit&eacute; RGPD (pas de lien pour g&eacute;rer les cookies, privacy policy incompl&egrave;te) et des lacunes techniques (consent settings non configur&eacute;s sur les tags, devise hardcod&eacute;e, donn&eacute;es dataLayer non exploit&eacute;es dans GTM). Les probl&egrave;mes les plus critiques concernent la conformit&eacute; RGPD et la robustesse de la gestion du consentement.
+  </div>
+
+  <label class="field-label">Notes additionnelles</label>
+  <textarea class="editable-box" placeholder="Ajouter des notes..."></textarea>
+</div>
+
+<!-- ================================================================== -->
+<!-- SECTION 1 : INVENTAIRE DES TAGS                                      -->
+<!-- ================================================================== -->
+<div class="section open" id="tags">
+  <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
+    <h2><span class="sec-num">1</span> Inventaire des tags GTM</h2>
+    <span class="section-chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+
+    <h3>Tags d&eacute;tect&eacute;s dans le conteneur GTM-P4TSQ9Q</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Tag</th>
+          <th>Type</th>
+          <th>ID / D&eacute;tail</th>
+          <th>D&eacute;clencheur(s)</th>
+          <th>Consent Setting</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>GA4 - Configuration</strong></td>
+          <td>Google Tag</td>
+          <td><span class="code">G-039QHRCWY1</span></td>
+          <td>All Pages - Analytics Consent + CE - Consent Update Analytics</td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Non configur&eacute;</span></td>
+          <td><span class="status status-active"><span class="dot dot-green"></span>Actif</span></td>
+        </tr>
+        <tr>
+          <td><strong>GA4 - Event - Calculator Lead</strong></td>
+          <td>GA4 Event</td>
+          <td>Event: <span class="code">Calculator</span></td>
+          <td>CE - Calculator Form Submit</td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Non configur&eacute;</span></td>
+          <td><span class="status status-active"><span class="dot dot-green"></span>Actif</span></td>
+        </tr>
+        <tr>
+          <td><strong>GA4 - Event - Contact Lead</strong></td>
+          <td>GA4 Event</td>
+          <td>Event: <span class="code">Contact</span></td>
+          <td>CE - Contact Form Submit</td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Non configur&eacute;</span></td>
+          <td><span class="status status-active"><span class="dot dot-green"></span>Actif</span></td>
+        </tr>
+        <tr>
+          <td><strong>GA4 - Event - Phone Click</strong></td>
+          <td>GA4 Event</td>
+          <td>Event: <span class="code">phone_click</span></td>
+          <td>CE - Phone Click</td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Non configur&eacute;</span></td>
+          <td><span class="status status-active"><span class="dot dot-green"></span>Actif</span></td>
+        </tr>
+        <tr>
+          <td><strong>GA4 - Event - Email Click</strong></td>
+          <td>GA4 Event</td>
+          <td>Event: <span class="code">email_click</span></td>
+          <td>CE - Email Click</td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Non configur&eacute;</span></td>
+          <td><span class="status status-active"><span class="dot dot-green"></span>Actif</span></td>
+        </tr>
+        <tr>
+          <td><strong>Meta Pixel - Base Code</strong></td>
+          <td>HTML custom</td>
+          <td><span class="code">848469840083737</span></td>
+          <td>All Pages - Marketing Consent + CE - Consent Update Marketing</td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Non configur&eacute;</span></td>
+          <td><span class="status status-active"><span class="dot dot-green"></span>Actif</span></td>
+        </tr>
+        <tr>
+          <td><strong>Meta Pixel - Lead (Calculator)</strong></td>
+          <td>HTML custom</td>
+          <td>fbq('track', 'Lead')</td>
+          <td>CE - Calculator Form Submit</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Pas de filtre consentement</span></td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Probl&egrave;me</span></td>
+        </tr>
+        <tr>
+          <td><strong>Meta Pixel - Lead (Contact)</strong></td>
+          <td>HTML custom</td>
+          <td>fbq('track', 'Lead')</td>
+          <td>CE - Contact Form Submit</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Pas de filtre consentement</span></td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Probl&egrave;me</span></td>
+        </tr>
+        <tr>
+          <td><strong>Meta Pixel - Contact (Phone)</strong></td>
+          <td>HTML custom</td>
+          <td>fbq('track', 'Contact')</td>
+          <td>CE - Phone Click</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Pas de filtre consentement</span></td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Probl&egrave;me</span></td>
+        </tr>
+        <tr>
+          <td><strong>Meta Pixel - Contact (Email)</strong></td>
+          <td>HTML custom</td>
+          <td>fbq('track', 'Contact')</td>
+          <td>CE - Email Click</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Pas de filtre consentement</span></td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Probl&egrave;me</span></td>
+        </tr>
+        <tr>
+          <td><strong>Hotjar</strong></td>
+          <td>Hotjar Tag</td>
+          <td>Site ID: <span class="code">1979187</span></td>
+          <td>All Pages - Analytics Consent</td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Non configur&eacute;</span></td>
+          <td><span class="status status-active"><span class="dot dot-green"></span>Actif</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-error" style="margin-top:16px">
+      <strong>Probl&egrave;me critique :</strong> Aucun tag n'a de <code>consentSettings</code> configur&eacute; dans GTM. Le consentement est g&eacute;r&eacute; uniquement via les triggers. Si un nouveau tag est ajout&eacute; sans le bon trigger, il se d&eacute;clenchera sans v&eacute;rification de consentement.
+    </div>
+
+    <div class="callout callout-error">
+      <strong>Probl&egrave;me critique :</strong> Les 4 tags Meta Pixel events (Lead Calculator, Lead Contact, Contact Phone, Contact Email) n'ont aucun filtre de consentement marketing sur leurs triggers. Ils s'appuient uniquement sur le fait que <code>fbq</code> n'existe pas si le base code n'a pas charg&eacute;. Ce m&eacute;canisme est fragile.
+    </div>
+
+    <h3>Tags manquants</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Tag attendu</th>
+          <th>Raison</th>
+          <th>Priorit&eacute;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Google Ads - Conversion Tag</td>
+          <td>Aucun suivi de conversions Google Ads. N&eacute;cessaire si des campagnes Search/Display tournent.</td>
+          <td><span class="priority priority-high">Haute</span></td>
+        </tr>
+        <tr>
+          <td>Google Ads - Conversion Linker</td>
+          <td>Requis pour le suivi cross-domaine et l'attribution Google Ads.</td>
+          <td><span class="priority priority-high">Haute</span></td>
+        </tr>
+        <tr>
+          <td>LinkedIn Insight Tag</td>
+          <td>Mentionn&eacute; dans la privacy policy mais absent de GTM.</td>
+          <td><span class="priority priority-medium">Moyenne</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <label class="field-label" style="margin-top:16px">Notes</label>
+    <textarea class="editable-box" placeholder="Notes sur les tags..."></textarea>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- SECTION 2 : DATA LAYER                                               -->
+<!-- ================================================================== -->
+<div class="section open" id="datalayer">
+  <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
+    <h2><span class="sec-num">2</span> Audit Data Layer</h2>
+    <span class="section-chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+
+    <h3>&Eacute;v&eacute;nements pouss&eacute;s dans le Data Layer (c&ocirc;t&eacute; code)</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>&Eacute;v&eacute;nement</th>
+          <th>Source (fichier)</th>
+          <th>Param&egrave;tres envoy&eacute;s</th>
+          <th>Trigger GTM</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="code">calculator_form_submit</span></td>
+          <td>Calculator.tsx :698</td>
+          <td>form_name, form_location, calculator_total, used_guided_mode, selected_domains, currency</td>
+          <td>CE - Calculator Form Submit (83)</td>
+          <td><span class="status status-partial"><span class="dot dot-orange"></span>Partiel</span></td>
+        </tr>
+        <tr>
+          <td><span class="code">contact_form_submit</span></td>
+          <td>contact.astro :556</td>
+          <td>form_name, form_location</td>
+          <td>CE - Contact Form Submit (88)</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+        </tr>
+        <tr>
+          <td><span class="code">phone_click</span></td>
+          <td>BaseLayout.astro :347</td>
+          <td>click_url, click_text</td>
+          <td>CE - Phone Click (92)</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+        </tr>
+        <tr>
+          <td><span class="code">email_click</span></td>
+          <td>BaseLayout.astro :352</td>
+          <td>click_url, click_text</td>
+          <td>CE - Email Click (84)</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+        </tr>
+        <tr>
+          <td><span class="code">consent_update</span></td>
+          <td>CookieConsent.astro :225</td>
+          <td>consent_analytics, consent_marketing</td>
+          <td>CE - Consent Update Analytics/Marketing (116/119)</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+        </tr>
+        <tr>
+          <td><span class="code">calculator_mode_selected</span></td>
+          <td>Calculator.tsx :836/849</td>
+          <td>mode ("guided" / "manual")</td>
+          <td><span class="status status-missing"><span class="dot dot-red"></span>Aucun trigger</span></td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Non capt&eacute;</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Variables Data Layer dans GTM</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Variable GTM</th>
+          <th>Cl&eacute; Data Layer</th>
+          <th>Utilis&eacute;e par</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>DLV - calculator_total</td>
+          <td><span class="code">calculator_total</span></td>
+          <td>GA4 Calculator Lead, Meta Lead (Calculator)</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+        </tr>
+        <tr>
+          <td>DLV - form_location</td>
+          <td><span class="code">form_location</span></td>
+          <td>GA4 Contact Lead</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+        </tr>
+        <tr>
+          <td>DLV - click_url</td>
+          <td><span class="code">click_url</span></td>
+          <td>GA4 Phone Click, GA4 Email Click</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warn">
+      <strong>Donn&eacute;es perdues :</strong> Le calculateur pousse <code>used_guided_mode</code>, <code>selected_domains</code> et <code>currency</code> dans le dataLayer, mais aucune variable DLV correspondante n'existe dans GTM. Ces donn&eacute;es ne sont pas transmises &agrave; GA4 ni &agrave; Meta.
+    </div>
+
+    <div class="callout callout-warn">
+      <strong>Devise hardcod&eacute;e :</strong> Le tag GA4 Calculator Lead envoie <code>currency: 'EUR'</code> en dur au lieu d'utiliser la variable <code>currency</code> du dataLayer. Les leads en USD/GBP sont mal attribu&eacute;s.
+    </div>
+
+    <label class="field-label" style="margin-top:16px">Notes</label>
+    <textarea class="editable-box" placeholder="Notes sur le data layer..."></textarea>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- SECTION 3 : CONVERSIONS                                              -->
+<!-- ================================================================== -->
+<div class="section open" id="conversions">
+  <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
+    <h2><span class="sec-num">3</span> Suivi des conversions</h2>
+    <span class="section-chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+
+    <h3>Conversions track&eacute;es</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Conversion</th>
+          <th>GA4</th>
+          <th>Meta Pixel</th>
+          <th>Google Ads</th>
+          <th>LinkedIn</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Soumission calculateur</strong></td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>Calculator</span></td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>Lead</span></td>
+          <td><span class="status status-missing"><span class="dot dot-red"></span>Absent</span></td>
+          <td><span class="status status-missing"><span class="dot dot-red"></span>Absent</span></td>
+        </tr>
+        <tr>
+          <td><strong>Soumission contact</strong></td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>Contact</span></td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>Lead</span></td>
+          <td><span class="status status-missing"><span class="dot dot-red"></span>Absent</span></td>
+          <td><span class="status status-missing"><span class="dot dot-red"></span>Absent</span></td>
+        </tr>
+        <tr>
+          <td><strong>Clic t&eacute;l&eacute;phone</strong></td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>phone_click</span></td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>Contact</span></td>
+          <td><span class="status status-missing"><span class="dot dot-red"></span>Absent</span></td>
+          <td><span class="status status-missing"><span class="dot dot-red"></span>Absent</span></td>
+        </tr>
+        <tr>
+          <td><strong>Clic email</strong></td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>email_click</span></td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>Contact</span></td>
+          <td><span class="status status-missing"><span class="dot dot-red"></span>Absent</span></td>
+          <td><span class="status status-missing"><span class="dot dot-red"></span>Absent</span></td>
+        </tr>
+        <tr>
+          <td><strong>Pageview</strong></td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>Auto</span></td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>PageView</span></td>
+          <td><span class="status status-na">N/A</span></td>
+          <td><span class="status status-missing"><span class="dot dot-red"></span>Absent</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-good">
+      <strong>Points positifs :</strong> Les 4 conversions cl&eacute;s (calculateur, contact, t&eacute;l&eacute;phone, email) sont correctement track&eacute;es en GA4 et Meta Pixel. Les &eacute;v&eacute;nements se d&eacute;clenchent uniquement apr&egrave;s la soumission r&eacute;ussie (pas sur tentative).
+    </div>
+
+    <div class="callout callout-info">
+      <strong>Calculateur :</strong> Envoie correctement <code>calculator_total</code> comme valeur et le flag <code>used_guided_mode</code> dans le dataLayer. Le Meta Pixel transmet aussi la valeur. Points d'am&eacute;lioration : exploiter <code>selected_domains</code> et la devise r&eacute;elle.
+    </div>
+
+    <h3>Conversions manquantes ou recommand&eacute;es</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Conversion</th>
+          <th>Description</th>
+          <th>Priorit&eacute;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Scroll depth</td>
+          <td>Tracking du scroll &agrave; 25%, 50%, 75%, 90% - utile pour mesurer l'engagement sur les pages de service et articles de blog</td>
+          <td><span class="priority priority-low">Basse</span></td>
+        </tr>
+        <tr>
+          <td>CTA clicks</td>
+          <td>Tracking des clics sur les boutons CTA principaux ("Book a Meeting", "Get a Quote")</td>
+          <td><span class="priority priority-medium">Moyenne</span></td>
+        </tr>
+        <tr>
+          <td>Temps pass&eacute; sur page</td>
+          <td>S&eacute;jours > 60s sur les pages service (signal d'int&eacute;r&ecirc;t qualifi&eacute;)</td>
+          <td><span class="priority priority-low">Basse</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <label class="field-label" style="margin-top:16px">Notes</label>
+    <textarea class="editable-box" placeholder="Notes sur les conversions..."></textarea>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- SECTION 4 : CONSENT MODE                                             -->
+<!-- ================================================================== -->
+<div class="section open" id="consent">
+  <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
+    <h2><span class="sec-num">4</span> Google Consent Mode V2</h2>
+    <span class="section-chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+
+    <h3>Configuration par d&eacute;faut (avant interaction utilisateur)</h3>
+
+    <div class="consent-grid">
+      <div class="consent-card granted">
+        <div class="param-name">analytics_storage</div>
+        <div class="param-state">GRANTED</div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:4px">Approche hybride (int&eacute;r&ecirc;t l&eacute;gitime)</div>
+      </div>
+      <div class="consent-card denied">
+        <div class="param-name">ad_storage</div>
+        <div class="param-state">DENIED</div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:4px">Consentement explicite requis</div>
+      </div>
+      <div class="consent-card denied">
+        <div class="param-name">ad_user_data</div>
+        <div class="param-state">DENIED</div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:4px">Consentement explicite requis</div>
+      </div>
+      <div class="consent-card denied">
+        <div class="param-name">ad_personalization</div>
+        <div class="param-state">DENIED</div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:4px">Consentement explicite requis</div>
+      </div>
+      <div class="consent-card granted">
+        <div class="param-name">functionality_storage</div>
+        <div class="param-state">GRANTED</div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:4px">Cookies fonctionnels</div>
+      </div>
+      <div class="consent-card granted">
+        <div class="param-name">security_storage</div>
+        <div class="param-state">GRANTED</div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:4px">Cookies de s&eacute;curit&eacute;</div>
+      </div>
+    </div>
+
+    <h3>Fonctionnalit&eacute;s avanc&eacute;es</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Fonctionnalit&eacute;</th>
+          <th>Statut</th>
+          <th>D&eacute;tail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>URL Passthrough</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>Activ&eacute;</span></td>
+          <td><code>gtag('set', 'url_passthrough', true)</code> - Meilleure mod&eacute;lisation des conversions</td>
+        </tr>
+        <tr>
+          <td>Ads Data Redaction</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>Activ&eacute;</span></td>
+          <td><code>gtag('set', 'ads_data_redaction', true)</code> - Masquage donn&eacute;es ads si refus</td>
+        </tr>
+        <tr>
+          <td>wait_for_update</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>500ms</span></td>
+          <td>Attente de 500ms pour le consentement avant d&eacute;clenchement</td>
+        </tr>
+        <tr>
+          <td>Consent Mode au niveau tag</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Non configur&eacute;</span></td>
+          <td>Tous les tags ont <code>consentStatus: "notSet"</code> - le consentement passe uniquement par les triggers</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Banner de consentement</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Crit&egrave;re</th>
+          <th>Statut</th>
+          <th>D&eacute;tail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Composant</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>CookieConsent.astro - Custom (pas de CMP tiers)</td>
+        </tr>
+        <tr>
+          <td>Bilingue (FR/EN)</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Traductions compl&egrave;tes</td>
+        </tr>
+        <tr>
+          <td>Bouton "Tout accepter"</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Fonctionnel</td>
+        </tr>
+        <tr>
+          <td>Bouton "Tout refuser"</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Fonctionnel - pose le flag <code>refused: true</code></td>
+        </tr>
+        <tr>
+          <td>Personnalisation granulaire</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>N&eacute;cessaires (toujours actif), Analytiques, Marketing</td>
+        </tr>
+        <tr>
+          <td>Lien privacy policy</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Lien vers /{lang}/privacy-policy dans la vue personnalis&eacute;e</td>
+        </tr>
+        <tr>
+          <td>Cookie lifespan</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>1 an</span></td>
+          <td>Cookie <code>mydigipal_consent</code> avec version</td>
+        </tr>
+        <tr>
+          <td>Marketing checkbox par d&eacute;faut</td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Coch&eacute; par d&eacute;faut</span></td>
+          <td>Le RGPD exige un opt-in explicite pour le marketing - la checkbox ne devrait PAS &ecirc;tre coch&eacute;e par d&eacute;faut</td>
+        </tr>
+        <tr>
+          <td>Lien "G&eacute;rer les cookies" dans le footer</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Absent</span></td>
+          <td><code>window.openCookieSettings()</code> est expos&eacute; mais aucun lien dans le footer ne l'appelle. L'utilisateur ne peut pas modifier ses pr&eacute;f&eacute;rences apr&egrave;s la premi&egrave;re visite.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-error">
+      <strong>Non-conformit&eacute; RGPD :</strong> L'absence de lien pour g&eacute;rer les pr&eacute;f&eacute;rences de cookies dans le footer est une violation du RGPD. Le r&egrave;glement exige que l'utilisateur puisse modifier son consentement &agrave; tout moment, de mani&egrave;re aussi simple qu'il l'a donn&eacute;.
+    </div>
+
+    <div class="callout callout-warn">
+      <strong>Approche hybride :</strong> L'analytics_storage est <code>granted</code> par d&eacute;faut sous "int&eacute;r&ecirc;t l&eacute;gitime". Cette approche est d&eacute;fendue par certaines interpr&eacute;tations (notamment UK ICO), mais contest&eacute;e par d'autres DPA europ&eacute;ennes (CNIL France, BfDI Allemagne). MyDigipal &eacute;tant une entreprise UK, c'est acceptable post-Brexit, mais &agrave; surveiller si le public cible inclut l'UE.
+    </div>
+
+    <label class="field-label" style="margin-top:16px">Notes</label>
+    <textarea class="editable-box" placeholder="Notes sur le consent mode..."></textarea>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- SECTION 5 : FORMULAIRES                                              -->
+<!-- ================================================================== -->
+<div class="section open" id="forms">
+  <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
+    <h2><span class="sec-num">5</span> Tracking des formulaires</h2>
+    <span class="section-chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+
+    <h3>Formulaire de contact (/en/contact, /fr/contact)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Crit&egrave;re</th>
+          <th>Statut</th>
+          <th>D&eacute;tail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>&Eacute;v&eacute;nement dataLayer</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td><code>contact_form_submit</code> avec form_name et form_location</td>
+        </tr>
+        <tr>
+          <td>D&eacute;clenchement</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Fire uniquement apr&egrave;s soumission r&eacute;ussie (response.ok)</td>
+        </tr>
+        <tr>
+          <td>Tag GA4</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>"GA4 - Event - Contact Lead" - event name "Contact"</td>
+        </tr>
+        <tr>
+          <td>Tag Meta Pixel</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>"Meta Pixel - Lead (Contact)" - fbq('track', 'Lead')</td>
+        </tr>
+        <tr>
+          <td>Anti-spam</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Honeypot + timing (3s min) + math CAPTCHA</td>
+        </tr>
+        <tr>
+          <td>UTM tracking</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>UTM params stock&eacute;s en sessionStorage et envoy&eacute;s avec la soumission</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Calculateur (/en/calculator, /fr/calculator)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Crit&egrave;re</th>
+          <th>Statut</th>
+          <th>D&eacute;tail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>&Eacute;v&eacute;nement dataLayer</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td><code>calculator_form_submit</code> avec 6 param&egrave;tres</td>
+        </tr>
+        <tr>
+          <td>D&eacute;clenchement</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Fire uniquement apr&egrave;s webhook success</td>
+        </tr>
+        <tr>
+          <td>Tag GA4</td>
+          <td><span class="status status-partial"><span class="dot dot-orange"></span>Partiel</span></td>
+          <td>"GA4 - Event - Calculator Lead" - envoie form_name, value (calculator_total) mais currency hardcod&eacute; &agrave; EUR, manque selected_domains, used_guided_mode</td>
+        </tr>
+        <tr>
+          <td>Tag Meta Pixel</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>"Meta Pixel - Lead (Calculator)" - fbq('track', 'Lead') avec value et currency</td>
+        </tr>
+        <tr>
+          <td>Anti-spam</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Honeypot + timing + math CAPTCHA</td>
+        </tr>
+        <tr>
+          <td>&Eacute;v&eacute;nement mode selection</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Non capt&eacute;</span></td>
+          <td><code>calculator_mode_selected</code> pouss&eacute; dans le dataLayer mais aucun trigger/tag dans GTM</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Clics t&eacute;l&eacute;phone et email</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Crit&egrave;re</th>
+          <th>Statut</th>
+          <th>D&eacute;tail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>D&eacute;tection automatique</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Listener global sur <code>a[href^="tel:"]</code> et <code>a[href^="mailto:"]</code></td>
+        </tr>
+        <tr>
+          <td>Donn&eacute;es envoy&eacute;es</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>click_url + click_text pour chaque clic</td>
+        </tr>
+        <tr>
+          <td>Tags GA4</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>phone_click et email_click avec phone_number/email_address</td>
+        </tr>
+        <tr>
+          <td>Tags Meta Pixel</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>fbq('track', 'Contact') pour les deux</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-good">
+      <strong>Verdict formulaires :</strong> Les deux formulaires principaux (contact et calculateur) sont correctement track&eacute;s. Le tracking se d&eacute;clenche uniquement apr&egrave;s une soumission r&eacute;ussie, ce qui est la bonne pratique. Les anti-spam sont en place. Les am&eacute;liorations portent sur l'exploitation compl&egrave;te des donn&eacute;es du calculateur dans GTM.
+    </div>
+
+    <label class="field-label" style="margin-top:16px">Notes</label>
+    <textarea class="editable-box" placeholder="Notes sur les formulaires..."></textarea>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- SECTION 6 : RGPD & PRIVACY                                          -->
+<!-- ================================================================== -->
+<div class="section open" id="rgpd">
+  <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
+    <h2><span class="sec-num">6</span> Conformit&eacute; RGPD &amp; Privacy</h2>
+    <span class="section-chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+
+    <h3>Privacy Policy (/en/privacy-policy, /fr/privacy-policy)</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Crit&egrave;re</th>
+          <th>Statut</th>
+          <th>D&eacute;tail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Page existante</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Bilingue EN/FR</td>
+        </tr>
+        <tr>
+          <td>Derni&egrave;re mise &agrave; jour</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>D&eacute;cembre 2024</span></td>
+          <td>15 mois sans mise &agrave; jour. Doit &ecirc;tre actualis&eacute;e pour refl&eacute;ter l'&eacute;tat actuel.</td>
+        </tr>
+        <tr>
+          <td>Mention Google Analytics</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Mentionn&eacute;</td>
+        </tr>
+        <tr>
+          <td>Mention Google Tag Manager</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>Mentionn&eacute;</td>
+        </tr>
+        <tr>
+          <td>Mention Meta Pixel / Facebook</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Absent</span></td>
+          <td>Le Meta Pixel (848469840083737) est actif via GTM mais NON mentionn&eacute; dans la privacy policy</td>
+        </tr>
+        <tr>
+          <td>Mention Hotjar</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Absent</span></td>
+          <td>Hotjar (site 1979187) est actif via GTM mais NON mentionn&eacute; - collecte des session recordings</td>
+        </tr>
+        <tr>
+          <td>Mention LinkedIn</td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Incoh&eacute;rent</span></td>
+          <td>Mentionn&eacute; dans la privacy policy mais aucun Insight Tag dans GTM</td>
+        </tr>
+        <tr>
+          <td>Droits RGPD (acc&egrave;s, rectification, etc.)</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>6 droits document&eacute;s avec contact</td>
+        </tr>
+        <tr>
+          <td>Dur&eacute;es de conservation</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+          <td>3 ans formulaires, jusqu'&agrave; d&eacute;sinscription marketing, 26 mois analytics</td>
+        </tr>
+        <tr>
+          <td>Base l&eacute;gale pr&eacute;cis&eacute;e</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Absent</span></td>
+          <td>La base l&eacute;gale (consentement, int&eacute;r&ecirc;t l&eacute;gitime, ex&eacute;cution contractuelle) n'est pas pr&eacute;cis&eacute;e pour chaque traitement</td>
+        </tr>
+        <tr>
+          <td>DPO / Contact RGPD</td>
+          <td><span class="status status-partial"><span class="dot dot-orange"></span>Partiel</span></td>
+          <td>Contact via formulaire et email paul@mydigipal.com, mais pas de DPO d&eacute;sign&eacute;</td>
+        </tr>
+        <tr>
+          <td>Transferts internationaux</td>
+          <td><span class="status status-partial"><span class="dot dot-orange"></span>G&eacute;n&eacute;rique</span></td>
+          <td>Mentionne USA et Canada sans pr&eacute;ciser les garanties (clauses contractuelles types, etc.)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Checklist RGPD globale</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Exigence RGPD</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Banner de consentement avant tracking marketing</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+        </tr>
+        <tr>
+          <td>Possibilit&eacute; de refuser tous les cookies</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+        </tr>
+        <tr>
+          <td>Granularit&eacute; du consentement (par cat&eacute;gorie)</td>
+          <td><span class="status status-ok"><span class="dot dot-green"></span>OK</span></td>
+        </tr>
+        <tr>
+          <td>Possibilit&eacute; de modifier le consentement &agrave; tout moment</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Non accessible</span></td>
+        </tr>
+        <tr>
+          <td>Privacy policy accessible et compl&egrave;te</td>
+          <td><span class="status status-partial"><span class="dot dot-orange"></span>Incompl&egrave;te</span></td>
+        </tr>
+        <tr>
+          <td>Liste de tous les services tiers avec leurs finalit&eacute;s</td>
+          <td><span class="status status-ko"><span class="dot dot-red"></span>Incompl&egrave;te</span></td>
+        </tr>
+        <tr>
+          <td>Opt-in explicite pour le marketing</td>
+          <td><span class="status status-issue"><span class="dot dot-orange"></span>Checkbox pr&eacute;coch&eacute;e</span></td>
+        </tr>
+        <tr>
+          <td>Registre des traitements</td>
+          <td><span class="status status-na">Non v&eacute;rifi&eacute;</span></td>
+        </tr>
+        <tr>
+          <td>DPA avec sous-traitants (Google, Meta)</td>
+          <td><span class="status status-na">Non v&eacute;rifi&eacute;</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-error">
+      <strong>Actions RGPD prioritaires :</strong>
+      <ol style="margin:8px 0 0 16px;font-size:13px">
+        <li>Ajouter un lien "G&eacute;rer les cookies" dans le footer appelant <code>window.openCookieSettings()</code></li>
+        <li>D&eacute;cocher la checkbox marketing par d&eacute;faut dans le banner</li>
+        <li>Mettre &agrave; jour la privacy policy : ajouter Meta Pixel et Hotjar, retirer LinkedIn ou ajouter le tag</li>
+        <li>Pr&eacute;ciser la base l&eacute;gale pour chaque traitement</li>
+      </ol>
+    </div>
+
+    <label class="field-label" style="margin-top:16px">Notes</label>
+    <textarea class="editable-box" placeholder="Notes sur la conformit&eacute; RGPD..."></textarea>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- SECTION 7 : RECOMMANDATIONS                                          -->
+<!-- ================================================================== -->
+<div class="section open" id="recommendations">
+  <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
+    <h2><span class="sec-num">7</span> Recommandations</h2>
+    <span class="section-chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+
+    <!-- CRITICAL -->
+    <div class="rec-card critical">
+      <h4><span class="priority priority-critical">Critique</span> Ajouter un lien "G&eacute;rer les cookies" dans le footer</h4>
+      <p style="font-size:13px;color:var(--text-light)">Le RGPD exige que l'utilisateur puisse modifier son consentement &agrave; tout moment, de mani&egrave;re aussi simple que lors du choix initial. La fonction <code>window.openCookieSettings()</code> existe d&eacute;j&agrave; - il suffit d'ajouter un lien dans le footer.</p>
+      <div class="rec-detail">
+        <div><dt>Effort</dt><dd>15 min</dd></div>
+        <div><dt>Impact</dt><dd>Conformit&eacute; l&eacute;gale</dd></div>
+        <div><dt>Responsable</dt><dd>MyDigipal</dd></div>
+      </div>
+    </div>
+
+    <div class="rec-card critical">
+      <h4><span class="priority priority-critical">Critique</span> Configurer les consentSettings sur tous les tags GTM</h4>
+      <p style="font-size:13px;color:var(--text-light)">Actuellement, aucun tag n'utilise les <code>consentSettings</code> natifs de GTM. Les tags GA4 devraient exiger <code>analytics_storage: granted</code>, les tags Meta Pixel devraient exiger <code>ad_storage: granted</code>. Cela ajoute une couche de s&eacute;curit&eacute; en plus des triggers.</p>
+      <div class="rec-detail">
+        <div><dt>Effort</dt><dd>30 min</dd></div>
+        <div><dt>Impact</dt><dd>S&eacute;curit&eacute; + conformit&eacute;</dd></div>
+        <div><dt>Responsable</dt><dd>MyDigipal</dd></div>
+      </div>
+    </div>
+
+    <div class="rec-card critical">
+      <h4><span class="priority priority-critical">Critique</span> Ajouter un filtre consentement marketing sur les tags Meta Pixel events</h4>
+      <p style="font-size:13px;color:var(--text-light)">Les 4 tags Meta Pixel events (Lead Calculator, Lead Contact, Contact Phone, Contact Email) se d&eacute;clenchent sur les triggers bruts sans filtre de consentement marketing. Ajouter la condition <code>JS - Marketing Consent Granted = true</code> sur chaque trigger ou configurer les <code>consentSettings</code>.</p>
+      <div class="rec-detail">
+        <div><dt>Effort</dt><dd>20 min</dd></div>
+        <div><dt>Impact</dt><dd>Conformit&eacute; RGPD</dd></div>
+        <div><dt>Responsable</dt><dd>MyDigipal</dd></div>
+      </div>
+    </div>
+
+    <!-- HIGH -->
+    <div class="rec-card high">
+      <h4><span class="priority priority-high">Haute</span> Mettre &agrave; jour la privacy policy</h4>
+      <p style="font-size:13px;color:var(--text-light)">Ajouter Meta Pixel et Hotjar dans la section services tiers. Retirer LinkedIn si l'Insight Tag n'est pas pr&eacute;vu. Pr&eacute;ciser les bases l&eacute;gales. Mettre &agrave; jour la date.</p>
+      <div class="rec-detail">
+        <div><dt>Effort</dt><dd>1h</dd></div>
+        <div><dt>Impact</dt><dd>Conformit&eacute; l&eacute;gale</dd></div>
+        <div><dt>Responsable</dt><dd>MyDigipal</dd></div>
+      </div>
+    </div>
+
+    <div class="rec-card high">
+      <h4><span class="priority priority-high">Haute</span> Corriger la devise dans le tag GA4 Calculator Lead</h4>
+      <p style="font-size:13px;color:var(--text-light)">Cr&eacute;er une variable <code>DLV - currency</code> dans GTM et remplacer la valeur hardcod&eacute;e 'EUR' par cette variable. Les leads en USD/GBP seront correctement attribu&eacute;s.</p>
+      <div class="rec-detail">
+        <div><dt>Effort</dt><dd>10 min</dd></div>
+        <div><dt>Impact</dt><dd>Qualit&eacute; des donn&eacute;es</dd></div>
+        <div><dt>Responsable</dt><dd>MyDigipal</dd></div>
+      </div>
+    </div>
+
+    <div class="rec-card high">
+      <h4><span class="priority priority-high">Haute</span> Exploiter les donn&eacute;es dataLayer manquantes dans GTM</h4>
+      <p style="font-size:13px;color:var(--text-light)">Cr&eacute;er les variables DLV pour <code>used_guided_mode</code>, <code>selected_domains</code> et <code>currency</code>, puis les ajouter comme param&egrave;tres dans le tag GA4 Calculator Lead. Ces donn&eacute;es sont pr&eacute;cieuses pour l'analyse.</p>
+      <div class="rec-detail">
+        <div><dt>Effort</dt><dd>20 min</dd></div>
+        <div><dt>Impact</dt><dd>Analyse des leads</dd></div>
+        <div><dt>Responsable</dt><dd>MyDigipal</dd></div>
+      </div>
+    </div>
+
+    <!-- MEDIUM -->
+    <div class="rec-card medium">
+      <h4><span class="priority priority-medium">Moyenne</span> D&eacute;cocher la checkbox marketing par d&eacute;faut</h4>
+      <p style="font-size:13px;color:var(--text-light)">Dans <code>CookieConsent.astro</code>, retirer l'attribut <code>checked</code> de la checkbox marketing (ligne 125). Le RGPD exige un opt-in explicite.</p>
+      <div class="rec-detail">
+        <div><dt>Effort</dt><dd>5 min</dd></div>
+        <div><dt>Impact</dt><dd>Conformit&eacute; RGPD</dd></div>
+        <div><dt>Responsable</dt><dd>MyDigipal</dd></div>
+      </div>
+    </div>
+
+    <div class="rec-card medium">
+      <h4><span class="priority priority-medium">Moyenne</span> Ajouter un trigger/tag pour calculator_mode_selected</h4>
+      <p style="font-size:13px;color:var(--text-light)">L'&eacute;v&eacute;nement est d&eacute;j&agrave; pouss&eacute; dans le dataLayer. Cr&eacute;er un trigger custom event + un tag GA4 event pour suivre l'adoption du mode guid&eacute; vs manuel.</p>
+      <div class="rec-detail">
+        <div><dt>Effort</dt><dd>10 min</dd></div>
+        <div><dt>Impact</dt><dd>Analyse produit</dd></div>
+        <div><dt>Responsable</dt><dd>MyDigipal</dd></div>
+      </div>
+    </div>
+
+    <div class="rec-card medium">
+      <h4><span class="priority priority-medium">Moyenne</span> V&eacute;rifier le Hotjar site ID 1979187</h4>
+      <p style="font-size:13px;color:var(--text-light)">Confirmer que ce site ID est toujours actif et associ&eacute; au bon projet Hotjar. Si Hotjar n'est plus utilis&eacute;, retirer le tag.</p>
+      <div class="rec-detail">
+        <div><dt>Effort</dt><dd>5 min</dd></div>
+        <div><dt>Impact</dt><dd>Hygi&egrave;ne tracking</dd></div>
+        <div><dt>Responsable</dt><dd>MyDigipal</dd></div>
+      </div>
+    </div>
+
+    <div class="rec-card low">
+      <h4><span class="priority priority-low">Basse</span> Ajouter Google Ads Conversion Tracking (si campagnes actives)</h4>
+      <p style="font-size:13px;color:var(--text-light)">Si des campagnes Google Ads sont actives ou pr&eacute;vues, ajouter un Conversion Linker + des tags de conversion pour calculator_form_submit et contact_form_submit.</p>
+      <div class="rec-detail">
+        <div><dt>Effort</dt><dd>30 min</dd></div>
+        <div><dt>Impact</dt><dd>Attribution ads</dd></div>
+        <div><dt>Responsable</dt><dd>MyDigipal</dd></div>
+      </div>
+    </div>
+
+    <div class="rec-card low">
+      <h4><span class="priority priority-low">Basse</span> Ajouter ou retirer LinkedIn Insight Tag</h4>
+      <p style="font-size:13px;color:var(--text-light)">La privacy policy mentionne LinkedIn mais aucun tag n'est pr&eacute;sent. Soit ajouter le tag si n&eacute;cessaire pour les campagnes LinkedIn Ads, soit retirer la mention de la privacy policy.</p>
+      <div class="rec-detail">
+        <div><dt>Effort</dt><dd>15 min</dd></div>
+        <div><dt>Impact</dt><dd>Coh&eacute;rence documentation</dd></div>
+        <div><dt>Responsable</dt><dd>MyDigipal</dd></div>
+      </div>
+    </div>
+
+    <h3>Roadmap d'impl&eacute;mentation</h3>
+
+    <div class="roadmap">
+      <div class="roadmap-phase p1">
+        <h4>Phase 1 - Urgences RGPD (J+1)</h4>
+        <ul>
+          <li>Ajouter lien "G&eacute;rer les cookies" dans le footer</li>
+          <li>D&eacute;cocher marketing checkbox par d&eacute;faut</li>
+          <li>Ajouter filtre consentement sur tags Meta events</li>
+        </ul>
+      </div>
+      <div class="roadmap-phase p2">
+        <h4>Phase 2 - Corrections GTM (S+1)</h4>
+        <ul>
+          <li>Configurer consentSettings sur tous les tags</li>
+          <li>Corriger devise hardcod&eacute;e (DLV - currency)</li>
+          <li>Cr&eacute;er DLV pour selected_domains, used_guided_mode</li>
+        </ul>
+      </div>
+      <div class="roadmap-phase p3">
+        <h4>Phase 3 - Privacy Policy (S+2)</h4>
+        <ul>
+          <li>Ajouter Meta Pixel et Hotjar</li>
+          <li>R&eacute;soudre incoh&eacute;rence LinkedIn</li>
+          <li>Pr&eacute;ciser bases l&eacute;gales</li>
+          <li>Mettre &agrave; jour la date</li>
+        </ul>
+      </div>
+      <div class="roadmap-phase p4">
+        <h4>Phase 4 - Am&eacute;liorations (&Agrave; planifier)</h4>
+        <ul>
+          <li>Google Ads conversion tracking</li>
+          <li>LinkedIn Insight Tag (si besoin)</li>
+          <li>Trigger calculator_mode_selected</li>
+          <li>V&eacute;rifier Hotjar</li>
+        </ul>
+      </div>
+    </div>
+
+    <label class="field-label" style="margin-top:16px">Notes</label>
+    <textarea class="editable-box" placeholder="Notes sur les recommandations..."></textarea>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- SECTION 8 : CHECKLIST                                                -->
+<!-- ================================================================== -->
+<div class="section" id="checklist">
+  <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
+    <h2><span class="sec-num">8</span> Checklist d'actions</h2>
+    <span class="section-chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+
+    <ul class="checklist">
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>Ajouter lien "G&eacute;rer les cookies"</strong> dans Footer.astro appelant <code>window.openCookieSettings()</code></span>
+        <span class="task-phase phase-1">Phase 1</span>
+      </li>
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>D&eacute;cocher marketing checkbox</strong> - Retirer <code>checked</code> de l'input marketing dans CookieConsent.astro</span>
+        <span class="task-phase phase-1">Phase 1</span>
+      </li>
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>Ajouter filtre consentement marketing</strong> sur les triggers des 4 tags Meta Pixel events dans GTM</span>
+        <span class="task-phase phase-1">Phase 1</span>
+      </li>
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>Configurer consentSettings</strong> sur les 11 tags GTM (analytics_storage pour GA4/Hotjar, ad_storage pour Meta)</span>
+        <span class="task-phase phase-2">Phase 2</span>
+      </li>
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>Cr&eacute;er DLV - currency</strong> dans GTM et remplacer 'EUR' hardcod&eacute; dans le tag GA4 Calculator Lead</span>
+        <span class="task-phase phase-2">Phase 2</span>
+      </li>
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>Cr&eacute;er DLV</strong> pour <code>used_guided_mode</code> et <code>selected_domains</code> + ajouter comme param&egrave;tres GA4</span>
+        <span class="task-phase phase-2">Phase 2</span>
+      </li>
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>Mettre &agrave; jour la privacy policy</strong> - Ajouter Meta Pixel (848469840083737) et Hotjar (1979187)</span>
+        <span class="task-phase phase-3">Phase 3</span>
+      </li>
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>R&eacute;soudre incoh&eacute;rence LinkedIn</strong> - Retirer mention ou ajouter Insight Tag</span>
+        <span class="task-phase phase-3">Phase 3</span>
+      </li>
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>Pr&eacute;ciser bases l&eacute;gales</strong> dans la privacy policy pour chaque traitement</span>
+        <span class="task-phase phase-3">Phase 3</span>
+      </li>
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>Ajouter trigger/tag</strong> pour <code>calculator_mode_selected</code></span>
+        <span class="task-phase phase-4">Phase 4</span>
+      </li>
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>V&eacute;rifier Hotjar site ID</strong> 1979187 - Confirmer qu'il est actif et correct</span>
+        <span class="task-phase phase-4">Phase 4</span>
+      </li>
+      <li>
+        <input type="checkbox">
+        <span class="task-text"><strong>Ajouter Google Ads conversion tracking</strong> si des campagnes sont actives/pr&eacute;vues</span>
+        <span class="task-phase phase-4">Phase 4</span>
+      </li>
+    </ul>
+
+    <label class="field-label" style="margin-top:16px">Notes</label>
+    <textarea class="editable-box" placeholder="Notes sur la checklist..."></textarea>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- SECTION 9 : ANNEXES TECHNIQUES                                       -->
+<!-- ================================================================== -->
+<div class="section" id="annexes">
+  <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
+    <h2><span class="sec-num">9</span> Annexes techniques</h2>
+    <span class="section-chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+
+    <h3>D&eacute;tail des triggers GTM</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Type</th>
+          <th>Condition</th>
+          <th>Utilis&eacute; par</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>117</td>
+          <td>All Pages - Analytics Consent</td>
+          <td>Pageview</td>
+          <td>JS - Analytics Consent Granted = true</td>
+          <td>GA4 Configuration, Hotjar</td>
+        </tr>
+        <tr>
+          <td>118</td>
+          <td>All Pages - Marketing Consent</td>
+          <td>Pageview</td>
+          <td>JS - Marketing Consent Granted = true</td>
+          <td>Meta Pixel Base Code</td>
+        </tr>
+        <tr>
+          <td>116</td>
+          <td>CE - Consent Update Analytics</td>
+          <td>Custom Event</td>
+          <td>event = consent_update AND Analytics Consent = true</td>
+          <td>GA4 Configuration</td>
+        </tr>
+        <tr>
+          <td>119</td>
+          <td>CE - Consent Update Marketing</td>
+          <td>Custom Event</td>
+          <td>event = consent_update AND Marketing Consent = true</td>
+          <td>Meta Pixel Base Code</td>
+        </tr>
+        <tr>
+          <td>83</td>
+          <td>CE - Calculator Form Submit</td>
+          <td>Custom Event</td>
+          <td>event = calculator_form_submit</td>
+          <td>GA4 Calculator Lead, Meta Lead (Calculator)</td>
+        </tr>
+        <tr>
+          <td>88</td>
+          <td>CE - Contact Form Submit</td>
+          <td>Custom Event</td>
+          <td>event = contact_form_submit</td>
+          <td>GA4 Contact Lead, Meta Lead (Contact)</td>
+        </tr>
+        <tr>
+          <td>84</td>
+          <td>CE - Email Click</td>
+          <td>Custom Event</td>
+          <td>event = email_click</td>
+          <td>GA4 Email Click, Meta Contact (Email)</td>
+        </tr>
+        <tr>
+          <td>92</td>
+          <td>CE - Phone Click</td>
+          <td>Custom Event</td>
+          <td>event = phone_click</td>
+          <td>GA4 Phone Click, Meta Contact (Phone)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>D&eacute;tail des variables GTM</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Type</th>
+          <th>Valeur / Cl&eacute;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>86</td>
+          <td>CONST - GA4 Measurement ID</td>
+          <td>Constante</td>
+          <td><span class="code">G-039QHRCWY1</span></td>
+        </tr>
+        <tr>
+          <td>80</td>
+          <td>CONST - Meta Pixel ID</td>
+          <td>Constante</td>
+          <td><span class="code">848469840083737</span></td>
+        </tr>
+        <tr>
+          <td>120</td>
+          <td>JS - Analytics Consent Granted</td>
+          <td>JavaScript</td>
+          <td>Lit le cookie mydigipal_consent, retourne true par d&eacute;faut (hybride)</td>
+        </tr>
+        <tr>
+          <td>114</td>
+          <td>JS - Marketing Consent Granted</td>
+          <td>JavaScript</td>
+          <td>Lit le cookie mydigipal_consent, retourne false par d&eacute;faut</td>
+        </tr>
+        <tr>
+          <td>85</td>
+          <td>DLV - calculator_total</td>
+          <td>Data Layer Variable</td>
+          <td>calculator_total</td>
+        </tr>
+        <tr>
+          <td>89</td>
+          <td>DLV - form_location</td>
+          <td>Data Layer Variable</td>
+          <td>form_location</td>
+        </tr>
+        <tr>
+          <td>96</td>
+          <td>DLV - click_url</td>
+          <td>Data Layer Variable</td>
+          <td>click_url</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Variables int&eacute;gr&eacute;es activ&eacute;es</h3>
+    <p style="font-size:13px;color:var(--text-light)">Click Text, Click URL, Page URL, Page Hostname, Page Path, Referrer, Event</p>
+
+    <h3>UTM Tracking (c&ocirc;t&eacute; code)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Param&egrave;tre</th>
+          <th>Stockage</th>
+          <th>Fichier source</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>utm_source</td><td>sessionStorage (utm_params)</td><td>src/lib/utils.ts</td></tr>
+        <tr><td>utm_medium</td><td>sessionStorage (utm_params)</td><td>src/lib/utils.ts</td></tr>
+        <tr><td>utm_campaign</td><td>sessionStorage (utm_params)</td><td>src/lib/utils.ts</td></tr>
+        <tr><td>utm_content</td><td>sessionStorage (utm_params)</td><td>src/lib/utils.ts</td></tr>
+        <tr><td>utm_term</td><td>sessionStorage (utm_params)</td><td>src/lib/utils.ts</td></tr>
+        <tr><td>gclid</td><td>sessionStorage (utm_params)</td><td>src/lib/utils.ts</td></tr>
+        <tr><td>fbclid</td><td>sessionStorage (utm_params)</td><td>src/lib/utils.ts</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Architecture technique du tracking</h3>
+    <div class="callout callout-info">
+      <strong>Flux de donn&eacute;es :</strong><br>
+      1. <code>BaseLayout.astro</code> : Initialise dataLayer + Consent Mode V2 (avant GTM)<br>
+      2. <code>BaseLayout.astro</code> : Charge GTM de mani&egrave;re diff&eacute;r&eacute;e (requestIdleCallback / interaction)<br>
+      3. <code>CookieConsent.astro</code> : G&egrave;re le consentement, met &agrave; jour gtag consent + pousse consent_update<br>
+      4. <code>Calculator.tsx</code> : Pousse calculator_form_submit et calculator_mode_selected<br>
+      5. <code>contact.astro</code> : Pousse contact_form_submit<br>
+      6. <code>BaseLayout.astro</code> : Listener global pour phone_click et email_click<br>
+      7. GTM : Re&ccedil;oit les &eacute;v&eacute;nements, v&eacute;rifie le consentement via triggers, fire les tags GA4/Meta/Hotjar
+    </div>
+
+    <label class="field-label" style="margin-top:16px">Notes</label>
+    <textarea class="editable-box" placeholder="Notes techniques..."></textarea>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>Audit Tracking Multi-Canal - MyDigipal - 15 mars 2026</p>
+  <p style="margin-top:8px">G&eacute;n&eacute;r&eacute; par <a href="https://mydigipal.com">MyDigipal</a> - Audit interne</p>
+</div>
+
+<script>
+/* SECTION TOGGLE */
+document.querySelectorAll('.section-header').forEach(header => {
+  header.addEventListener('click', () => {
+    const section = header.parentElement;
+    if (!section) return;
+    section.classList.toggle('open');
+  });
+});
+
+/* NAV ACTIVE STATE */
+const navLinks = document.querySelectorAll('.nav a');
+const sections = document.querySelectorAll('.exec-summary[id], .section[id]');
+function updateNav() {
+  let current = '';
+  sections.forEach(section => {
+    const rect = section.getBoundingClientRect();
+    if (rect.top <= 120) current = section.id;
+  });
+  navLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+  });
+}
+window.addEventListener('scroll', updateNav, { passive: true });
+
+/* SMOOTH SCROLL */
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(updateNav, 500);
+    }
+  });
+});
+
+/* GAUGE ANIMATION */
+window.addEventListener('load', () => {
+  const arc = document.getElementById('gaugeArc');
+  if (arc) {
+    const total = 251;
+    const scoreEl = document.querySelector('.gauge-score');
+    const score = parseInt(scoreEl ? scoreEl.textContent : '0') || 0;
+    const fill = total * (score / 100);
+    setTimeout(() => {
+      arc.style.strokeDashoffset = total - fill;
+    }, 300);
+  }
+});
+
+/* SAVE DOCUMENT */
+let fileHandle = null;
+let isDirty = false;
+
+function markDirty() {
+  if (!isDirty) {
+    isDirty = true;
+    const btn = document.getElementById('save-btn');
+    const lbl = document.getElementById('save-label');
+    if (btn) btn.classList.add('dirty');
+    if (lbl) lbl.textContent = 'Save *';
+  }
+}
+
+function markSaved() {
+  isDirty = false;
+  const btn = document.getElementById('save-btn');
+  const lbl = document.getElementById('save-label');
+  if (btn) { btn.classList.remove('dirty'); btn.classList.add('saved'); }
+  if (lbl) lbl.textContent = 'Saved!';
+  setTimeout(() => {
+    if (!isDirty) {
+      if (btn) btn.classList.remove('saved');
+      if (lbl) lbl.textContent = 'Save';
+    }
+  }, 2000);
+}
+
+function prepareHtmlForSave() {
+  document.querySelectorAll('textarea').forEach(ta => { ta.textContent = ta.value; });
+  document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    if (cb.checked) cb.setAttribute('checked', '');
+    else cb.removeAttribute('checked');
+  });
+  document.querySelectorAll('[contenteditable]').forEach(el => { el.setAttribute('data-saved', 'true'); });
+  document.querySelectorAll('.section').forEach(sec => {
+    if (sec.classList.contains('open')) sec.setAttribute('data-open', 'true');
+    else sec.removeAttribute('data-open');
+  });
+  return '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+}
+
+async function saveDocument() {
+  const btn = document.getElementById('save-btn');
+  const lbl = document.getElementById('save-label');
+  if (btn) btn.classList.add('saving');
+  if (lbl) lbl.textContent = 'Saving...';
+  try {
+    if (!fileHandle) {
+      let suggestedName = 'MyDigipal_Tracking_Audit_Mar2026.html';
+      try { const urlPath = window.location.pathname; suggestedName = urlPath.split('/').pop() || suggestedName; } catch(e) {}
+      fileHandle = await window.showSaveFilePicker({
+        suggestedName: suggestedName,
+        types: [{ description: 'HTML Document', accept: { 'text/html': ['.html'] } }],
+      });
+    }
+    const htmlContent = prepareHtmlForSave();
+    const writable = await fileHandle.createWritable();
+    await writable.write(htmlContent);
+    await writable.close();
+    markSaved();
+  } catch (err) {
+    if (btn) btn.classList.remove('saving');
+    if (err.name === 'AbortError') { if (lbl) lbl.textContent = isDirty ? 'Save *' : 'Save'; return; }
+    const htmlContent = prepareHtmlForSave();
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'MyDigipal_Tracking_Audit_Mar2026.html';
+    a.click();
+    URL.revokeObjectURL(url);
+    markSaved();
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveDocument(); }
+});
+
+document.querySelectorAll('.editable-box').forEach(el => { el.addEventListener('input', markDirty); });
+document.querySelectorAll('[contenteditable]').forEach(el => { el.addEventListener('input', markDirty); });
+document.querySelectorAll('input[type="checkbox"]').forEach(el => { el.addEventListener('change', markDirty); });
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.section[data-open="true"]').forEach(sec => { sec.classList.add('open'); });
+});
+</script>
+
+</body>
+</html>
