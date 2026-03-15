@@ -1,0 +1,497 @@
+---
+/**
+ * /test - Design prototype page
+ * Non-indexed, used for testing new components before production deployment
+ * Design V2: Inspired by Impeccable anti-patterns, Aceternity UI, Linear/Stripe
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Icon from '@/components/ui/Icon.astro';
+import FeaturedServiceBanner from '@/components/sections/FeaturedServiceBanner.astro';
+import TrustedBy from '@/components/sections/TrustedBy.astro';
+import { getCollection } from 'astro:content';
+
+const lang = 'en';
+
+// Fetch latest 3 featured/recent blog posts
+const allPosts = await getCollection('blog');
+const latestPosts = allPosts
+  .filter((post) => post.id.startsWith('en/') && !post.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const getBlogUrl = (post: typeof latestPosts[0]) => {
+  const slug = post.slug.replace(/^(en|fr)\//, '');
+  return `/en/blog/${slug}`;
+};
+
+// Category display names and accent colors
+const categoryMeta: Record<string, { label: string; color: string }> = {
+  'abm': { label: 'ABM', color: 'bg-pink-100 text-pink-700' },
+  'ai': { label: 'AI', color: 'bg-cyan-100 text-cyan-700' },
+  'paid-ads': { label: 'Paid Ads', color: 'bg-amber-100 text-amber-700' },
+  'seo': { label: 'SEO', color: 'bg-emerald-100 text-emerald-700' },
+  'marketing-ops': { label: 'Marketing Ops', color: 'bg-violet-100 text-violet-700' },
+  'strategy': { label: 'Strategy', color: 'bg-blue-100 text-blue-700' },
+  'company-news': { label: 'News', color: 'bg-slate-100 text-slate-700' },
+};
+
+// Format date
+const formatDate = (date: Date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+// Estimate reading time (rough)
+const readingTime = (post: typeof latestPosts[0]) => {
+  return `${Math.max(4, Math.ceil(post.body?.length || 0 / 1500))} min read`;
+};
+
+// Service data for the improved services section
+const services = [
+  { icon: "search", name: "SEO", description: "Technical optimization, content strategy, and link building that compounds over time.", link: "/en/services/seo", accent: "border-emerald-500", accentBg: "bg-emerald-500", features: ["Technical SEO", "Content Strategy", "Link Building"] },
+  { icon: "trending-up", name: "Google Ads", description: "Search, Display, YouTube & Performance Max campaigns engineered for ROI.", link: "/en/services/google-ads", accent: "border-amber-500", accentBg: "bg-amber-500", features: ["Search Campaigns", "Display Ads", "YouTube Ads"] },
+  { icon: "users", name: "Paid Social", description: "LinkedIn, Meta, TikTok - precision targeting on every platform that matters.", link: "/en/services/paid-social", accent: "border-violet-500", accentBg: "bg-violet-500", features: ["LinkedIn Ads", "Meta Ads", "Audience Targeting"] },
+  { icon: "mail", name: "Email Marketing", description: "Automated nurture sequences and campaigns that drive real engagement.", link: "/en/services/emailing", accent: "border-rose-500", accentBg: "bg-rose-500", features: ["Automation", "Nurture Flows", "A/B Testing"] },
+  { icon: "cpu", name: "AI Training", description: "Practical workshops to upskill your team on AI tools and automation.", link: "/en/services/ai-training", accent: "border-cyan-500", accentBg: "bg-cyan-500", features: ["ChatGPT", "Prompt Engineering", "Automation"] },
+  { icon: "settings", name: "AI Solutions", description: "Custom AI agents, workflows, and integrations for your business processes.", link: "/en/services/ai-solutions", accent: "border-indigo-500", accentBg: "bg-indigo-500", features: ["Custom Agents", "Workflows", "Integration"] },
+  { icon: "bar-chart-2", name: "Tracking & Reporting", description: "GA4, GTM, pixel setup and dashboards that drive informed decisions.", link: "/en/services/tracking-reporting", accent: "border-teal-500", accentBg: "bg-teal-500", features: ["GA4 & GTM", "Custom Dashboards", "AI Analytics"] },
+];
+
+// Testimonials
+const testimonials = [
+  {
+    quote: "We were looking to improve our digital marketing efforts, but had a gap in the marketing team and over 12 internal tools to handle. MyDigipal was able to overcome significant challenges and successfully executed an ABM revamp across LinkedIn. Very impressive.",
+    author: "Brett Rieser",
+    role: "Digital Marketing Director EMEA",
+    company: "Genesys",
+    image: "https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/66a8c81987fc1c9e891a99d4_Brett%20Reiser%20100px.webp",
+  },
+  {
+    quote: "From the ground up, MyDigipal's strategic acumen was invaluable. They didn't just consult; they immersed themselves in our mission. Their contributions led to a suite of high-value leads, a significant uptick in conversions.",
+    author: "Surbhi Rathore",
+    role: "CEO & Co-founder",
+    company: "Symbl.ai",
+    image: "https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/658bfb59bff3f1c0d42aa4a8_Surbhi%20Rathore.webp",
+  },
+  {
+    quote: "The ABM programs MyDigipal put in place helped Quantum Metrics identify and focus on the most valuable target accounts. We were able to accelerate the deal closing process by 30%!",
+    author: "Kelly Wright",
+    role: "Global Marketing Director",
+    company: "Quantum Metric",
+    image: "https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/65705ec9b5160a80c8b72771_Kelly%20Wright.webp",
+  },
+];
+---
+
+<BaseLayout lang={lang} title="Design Prototypes" noindex={true}>
+  <Header lang={lang} />
+
+  <main class="flex-grow">
+    <!-- ==================== -->
+    <!-- PROTOTYPE NAVIGATOR -->
+    <!-- ==================== -->
+    <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-slate-200/60">
+      <div class="container-custom py-3 flex items-center gap-6 overflow-x-auto no-scrollbar text-sm">
+        <span class="text-slate-400 font-medium shrink-0">Prototypes:</span>
+        <a href="#hero-v2" class="text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap">Hero V2</a>
+        <a href="#services-v2" class="text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap">Services V2</a>
+        <a href="#featured-service" class="text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap">Featured Service</a>
+        <a href="#testimonials-v2" class="text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap">Testimonials V2</a>
+        <a href="#blog-preview" class="text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap">Blog Preview</a>
+        <a href="#final-cta-v2" class="text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap">Final CTA V2</a>
+      </div>
+    </nav>
+
+
+    <!-- ============================== -->
+    <!-- SECTION 1: HERO V2 -->
+    <!-- ============================== -->
+    <section id="hero-v2" class="relative overflow-hidden min-h-[90vh] flex items-center">
+      <!-- Aurora-inspired background -->
+      <div class="absolute inset-0 bg-[#fafbfe]"></div>
+
+      <!-- Animated gradient mesh - warm, not purple-blue -->
+      <div class="absolute inset-0 aurora-bg opacity-30"
+        style="background-image:
+          radial-gradient(ellipse 80% 50% at 50% -20%, rgb(120 119 198 / 0.15), transparent),
+          radial-gradient(ellipse 60% 40% at 70% 60%, rgb(59 130 246 / 0.08), transparent);
+      "></div>
+
+      <!-- Spotlight beam -->
+      <svg class="absolute inset-0 w-full h-full pointer-events-none animate-spotlight" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="hero-spotlight" cx="50%" cy="30%" r="40%">
+            <stop offset="0%" stop-color="rgb(99 102 241 / 0.06)" />
+            <stop offset="100%" stop-color="transparent" />
+          </radialGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#hero-spotlight)" />
+      </svg>
+
+      <div class="relative z-10 container-custom py-28 lg:py-36">
+        <div class="max-w-4xl">
+          <!-- Label - small, understated -->
+          <p class="text-sm font-medium text-indigo-600 tracking-wide mb-6 animate-fade-in">
+            AI-Powered Digital Marketing Agency
+          </p>
+
+          <!-- Headline - display font, left-aligned, no gradient text -->
+          <h1 class="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 mb-6 animate-fade-in-up leading-[1.05] tracking-tight">
+            Your growth partner<br class="hidden md:block" />
+            in digital marketing
+          </h1>
+
+          <!-- Subheadline - distinct color, not just lighter gray -->
+          <p class="text-xl md:text-2xl text-slate-500 font-medium mb-4 animate-fade-in-up animation-delay-100 max-w-2xl">
+            We're not just another agency.<br class="hidden sm:block" />
+            We're an extension of your team.
+          </p>
+
+          <!-- Description -->
+          <p class="text-lg text-slate-400 mb-10 animate-fade-in-up animation-delay-200 max-w-xl leading-relaxed">
+            Forget about the fluff. Benefit from a truly international agency of passionate marketeers working alongside your internal team.
+          </p>
+
+          <!-- CTAs - solid primary, no gradient -->
+          <div class="flex flex-wrap gap-4 animate-fade-in-up animation-delay-300">
+            <a
+              href="/en/calculator"
+              class="group inline-flex items-center gap-2 px-7 py-3.5 bg-slate-900 text-white font-semibold rounded-lg hover:bg-slate-800 active:scale-[0.98] transition-all duration-200"
+            >
+              <span>Get your free quote</span>
+              <Icon name="arrow-right" size={18} class="group-hover:translate-x-0.5 transition-transform" />
+            </a>
+            <a
+              href="/en/case-studies"
+              class="inline-flex items-center gap-2 px-7 py-3.5 text-slate-600 font-semibold rounded-lg border border-slate-300 hover:border-slate-400 hover:text-slate-900 transition-all duration-200"
+            >
+              <span>View case studies</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================== -->
+    <!-- TRUSTED BY -->
+    <!-- ======================== -->
+    <TrustedBy lang={lang} variant="compact" />
+
+
+    <!-- ============================== -->
+    <!-- SECTION 2: SERVICES V2 -->
+    <!-- ============================== -->
+    <section id="services-v2" class="py-24 bg-white">
+      <div class="container-custom">
+        <!-- Header - left aligned, not centered -->
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-14 animate-on-scroll">
+          <div class="max-w-xl">
+            <p class="text-sm font-medium text-indigo-600 tracking-wide mb-3">Our services</p>
+            <h2 class="font-display text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+              Full-stack digital marketing
+            </h2>
+          </div>
+          <p class="text-slate-500 mt-4 lg:mt-0 max-w-md">
+            From strategy to execution, we cover every channel your audience uses.
+          </p>
+        </div>
+
+        <!-- Services list - colored left border, not icon-above pattern -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {services.map((service, index) => (
+            <a
+              href={service.link}
+              class={`group relative p-6 bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-soft transition-all duration-300 animate-on-scroll border-l-[3px] ${service.accent}`}
+              style={`animation-delay: ${index * 60}ms`}
+            >
+              <!-- Service name with inline icon -->
+              <div class="flex items-center gap-3 mb-3">
+                <div class={`w-8 h-8 rounded-md ${service.accentBg} flex items-center justify-center shrink-0`}>
+                  <Icon name={service.icon} size={16} class="text-white" />
+                </div>
+                <h3 class="font-display text-lg font-bold text-slate-900">{service.name}</h3>
+              </div>
+
+              <!-- Description -->
+              <p class="text-sm text-slate-500 leading-relaxed mb-4">{service.description}</p>
+
+              <!-- Features as inline tags -->
+              <div class="flex flex-wrap gap-1.5">
+                {service.features.map(feature => (
+                  <span class="px-2 py-0.5 text-xs text-slate-400 bg-slate-50 rounded">
+                    {feature}
+                  </span>
+                ))}
+              </div>
+
+              <!-- Hover arrow -->
+              <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <Icon name="arrow-right" size={16} class="text-slate-400" />
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================== -->
+    <!-- SECTION 3: FEATURED SERVICE BANNER -->
+    <!-- ============================== -->
+    <div id="featured-service">
+      <FeaturedServiceBanner lang={lang} />
+    </div>
+
+
+    <!-- ============================== -->
+    <!-- SECTION 4: TESTIMONIALS V2 -->
+    <!-- ============================== -->
+    <section id="testimonials-v2" class="py-24 bg-slate-50">
+      <div class="container-custom">
+        <!-- Header -->
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-14 animate-on-scroll">
+          <div>
+            <p class="text-sm font-medium text-indigo-600 tracking-wide mb-3">Client feedback</p>
+            <h2 class="font-display text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+              Trusted by marketing leaders
+            </h2>
+          </div>
+          <a href="/en/case-studies" class="group inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors mt-4 lg:mt-0">
+            <span>View all case studies</span>
+            <Icon name="arrow-right" size={14} class="group-hover:translate-x-0.5 transition-transform" />
+          </a>
+        </div>
+
+        <!-- Testimonials - asymmetric: 1 large + 2 stacked -->
+        <div class="grid lg:grid-cols-5 gap-6">
+          <!-- Featured testimonial (larger) -->
+          <div class="lg:col-span-3 bg-white rounded-2xl p-8 lg:p-10 border border-slate-200 animate-on-scroll">
+            <!-- Stars -->
+            <div class="flex gap-1 mb-6">
+              {[1,2,3,4,5].map(() => (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#f59e0b" class="shrink-0">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              ))}
+            </div>
+
+            <blockquote class="text-lg lg:text-xl text-slate-700 leading-relaxed mb-8">
+              "{testimonials[0].quote}"
+            </blockquote>
+
+            <div class="flex items-center gap-4">
+              <img
+                src={testimonials[0].image}
+                alt={testimonials[0].author}
+                class="w-12 h-12 rounded-full object-cover"
+                loading="lazy"
+              />
+              <div>
+                <div class="font-semibold text-slate-900">{testimonials[0].author}</div>
+                <div class="text-sm text-slate-500">{testimonials[0].role}, {testimonials[0].company}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Two smaller testimonials stacked -->
+          <div class="lg:col-span-2 flex flex-col gap-6">
+            {testimonials.slice(1).map((t, index) => (
+              <div class="bg-white rounded-2xl p-6 border border-slate-200 flex-1 animate-on-scroll" style={`animation-delay: ${(index + 1) * 100}ms`}>
+                <div class="flex gap-1 mb-4">
+                  {[1,2,3,4,5].map(() => (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b" class="shrink-0">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                  ))}
+                </div>
+
+                <blockquote class="text-sm text-slate-600 leading-relaxed mb-5">
+                  "{t.quote}"
+                </blockquote>
+
+                <div class="flex items-center gap-3">
+                  <img
+                    src={t.image}
+                    alt={t.author}
+                    class="w-10 h-10 rounded-full object-cover"
+                    loading="lazy"
+                  />
+                  <div>
+                    <div class="text-sm font-semibold text-slate-900">{t.author}</div>
+                    <div class="text-xs text-slate-500">{t.role}, {t.company}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================== -->
+    <!-- SECTION 5: BLOG PREVIEW -->
+    <!-- ============================== -->
+    <section id="blog-preview" class="py-24 bg-white">
+      <div class="container-custom">
+        <!-- Header -->
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-14 animate-on-scroll">
+          <div>
+            <p class="text-sm font-medium text-indigo-600 tracking-wide mb-3">Insights & Resources</p>
+            <h2 class="font-display text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+              Latest from our blog
+            </h2>
+          </div>
+          <a href="/en/blog" class="group inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors mt-4 lg:mt-0">
+            <span>View all articles</span>
+            <Icon name="arrow-right" size={14} class="group-hover:translate-x-0.5 transition-transform" />
+          </a>
+        </div>
+
+        <!-- Blog grid: 1 featured + 2 smaller (bento-ish) -->
+        {latestPosts.length >= 3 && (
+          <div class="grid lg:grid-cols-2 gap-6">
+            <!-- Featured article (left, tall) -->
+            <a href={getBlogUrl(latestPosts[0])} class="group relative block rounded-2xl overflow-hidden border border-slate-200 hover:border-slate-300 hover:shadow-soft transition-all duration-300 animate-on-scroll">
+              <!-- Image -->
+              <div class="aspect-[16/10] overflow-hidden bg-slate-100">
+                <img
+                  src={latestPosts[0].data.image}
+                  alt={latestPosts[0].data.title}
+                  class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                  loading="lazy"
+                />
+              </div>
+
+              <!-- Content -->
+              <div class="p-6">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class={`px-2.5 py-0.5 text-xs font-medium rounded-md ${categoryMeta[latestPosts[0].data.category]?.color || 'bg-slate-100 text-slate-600'}`}>
+                    {categoryMeta[latestPosts[0].data.category]?.label || latestPosts[0].data.category}
+                  </span>
+                  <span class="text-xs text-slate-400">{formatDate(latestPosts[0].data.date)}</span>
+                </div>
+
+                <h3 class="font-display text-xl font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors leading-snug">
+                  {latestPosts[0].data.title}
+                </h3>
+
+                <p class="text-sm text-slate-500 leading-relaxed line-clamp-2">
+                  {latestPosts[0].data.description}
+                </p>
+              </div>
+            </a>
+
+            <!-- Two smaller articles stacked (right) -->
+            <div class="flex flex-col gap-6">
+              {latestPosts.slice(1, 3).map((post, index) => (
+                <a
+                  href={getBlogUrl(post)}
+                  class="group flex gap-5 p-5 rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-soft transition-all duration-300 animate-on-scroll flex-1"
+                  style={`animation-delay: ${(index + 1) * 100}ms`}
+                >
+                  <!-- Thumbnail -->
+                  <div class="w-32 h-24 md:w-40 md:h-28 rounded-lg overflow-hidden bg-slate-100 shrink-0">
+                    <img
+                      src={post.data.image}
+                      alt={post.data.title}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <!-- Text -->
+                  <div class="flex flex-col justify-center min-w-0">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class={`px-2 py-0.5 text-xs font-medium rounded-md ${categoryMeta[post.data.category]?.color || 'bg-slate-100 text-slate-600'}`}>
+                        {categoryMeta[post.data.category]?.label || post.data.category}
+                      </span>
+                      <span class="text-xs text-slate-400">{formatDate(post.data.date)}</span>
+                    </div>
+
+                    <h3 class="font-display text-base font-bold text-slate-900 mb-1 group-hover:text-indigo-600 transition-colors leading-snug line-clamp-2">
+                      {post.data.title}
+                    </h3>
+
+                    <p class="text-xs text-slate-500 line-clamp-2 hidden md:block">
+                      {post.data.description}
+                    </p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+
+
+    <!-- ============================== -->
+    <!-- SECTION 6: FINAL CTA V2 -->
+    <!-- ============================== -->
+    <section id="final-cta-v2" class="py-24 bg-slate-50">
+      <div class="container-custom">
+        <div class="max-w-3xl mx-auto text-center animate-on-scroll">
+          <h2 class="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight mb-6">
+            Ready to grow your business?
+          </h2>
+          <p class="text-lg text-slate-500 mb-10 max-w-xl mx-auto">
+            Let's discuss how we can help you achieve your marketing goals.
+          </p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <a
+              href="/en/contact"
+              class="group inline-flex items-center gap-2 px-7 py-3.5 bg-slate-900 text-white font-semibold rounded-lg hover:bg-slate-800 active:scale-[0.98] transition-all duration-200"
+            >
+              <span>Start a Project</span>
+              <Icon name="arrow-right" size={18} class="group-hover:translate-x-0.5 transition-transform" />
+            </a>
+            <a
+              href="/en/calculator"
+              class="inline-flex items-center gap-2 px-7 py-3.5 text-slate-600 font-semibold rounded-lg border border-slate-300 hover:border-slate-400 hover:text-slate-900 transition-all duration-200"
+            >
+              <Icon name="calculator" size={18} />
+              <span>Interactive Quote</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer lang={lang} />
+</BaseLayout>
+
+<style>
+  /* Line clamp utility */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  // Intersection Observer for scroll animations
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px',
+      }
+    );
+
+    document.querySelectorAll('.animate-on-scroll, .stagger-children').forEach((el) => {
+      observer.observe(el);
+    });
+  });
+</script>

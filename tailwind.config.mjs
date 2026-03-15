@@ -46,6 +46,7 @@ export default {
       // ===== TYPOGRAPHIE =====
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         'display': ['4.5rem', { lineHeight: '1', letterSpacing: '-0.02em', fontWeight: '700' }],
@@ -89,6 +90,7 @@ export default {
         'slide-in-left': 'slideInLeft 0.5s ease-out',
         'slide-in-right': 'slideInRight 0.5s ease-out',
         'scale-in': 'scaleIn 0.3s ease-out',
+        'aurora': 'aurora 60s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -114,6 +116,10 @@ export default {
         scaleIn: {
           '0%': { opacity: '0', transform: 'scale(0.95)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        aurora: {
+          'from': { backgroundPosition: '50% 50%, 50% 50%' },
+          'to': { backgroundPosition: '350% 50%, 350% 50%' },
         },
       },
 

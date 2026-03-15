@@ -12,6 +12,14 @@
     src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2') format('woff2');
   }
 
+  @font-face {
+    font-family: 'Plus Jakarta Sans';
+    font-style: normal;
+    font-weight: 500 800;
+    font-display: swap;
+    src: url('https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_KU7NShXDFGKljA.woff2') format('woff2');
+  }
+
   html {
     @apply scroll-smooth antialiased;
   }
@@ -271,6 +279,86 @@
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
+}
+
+/* ===== DESIGN V2 - ENHANCED ANIMATIONS ===== */
+
+/* Aurora background - inspired by Aceternity UI */
+@keyframes aurora {
+  from { background-position: 50% 50%, 50% 50%; }
+  to { background-position: 350% 50%, 350% 50%; }
+}
+
+.aurora-bg {
+  animation: aurora 60s linear infinite;
+  background-size: 300%, 200%;
+}
+
+/* Floating orbs - subtle, purposeful drift */
+@keyframes float-drift {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(15px, -20px); }
+  50% { transform: translate(-10px, 10px); }
+  75% { transform: translate(20px, 5px); }
+}
+
+.animate-drift {
+  animation: float-drift 20s ease-in-out infinite;
+}
+
+/* Gradient shift - animated background position */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* Spotlight beam - fade in from scale */
+@keyframes spotlight-reveal {
+  0% { opacity: 0; transform: translate(-72%, -62%) scale(0.5); }
+  100% { opacity: 1; transform: translate(-50%, -40%) scale(1); }
+}
+
+.animate-spotlight {
+  animation: spotlight-reveal 2s ease 0.75s 1 forwards;
+  opacity: 0;
+}
+
+/* Line draw - for connecting elements */
+@keyframes draw-line {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.animate-draw-line {
+  transform-origin: left;
+  animation: draw-line 1.2s ease-out forwards;
+}
+
+/* Counter number animation helper */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Subtle pulse for attention */
+@keyframes subtle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-subtle-pulse {
+  animation: subtle-pulse 3s ease-in-out infinite;
+}
+
+/* Display font for headings */
+.font-display {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
 }
 
 /* ===== REDUCED MOTION ===== */
