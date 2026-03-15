@@ -1,6 +1,6 @@
 ---
 /**
- * DashboardShowcase - Interactive AppMyDigital dashboard preview
+ * DashboardShowcase - Interactive AppMyDigipal dashboard preview
  * Framer-style: dark background, glassmorphism, animated metrics, tab switching
  * Used on the Tracking & Reporting service page
  */
@@ -15,7 +15,7 @@ const { lang } = Astro.props;
 
 const content = {
   en: {
-    badge: "AppMyDigital Platform",
+    badge: "AppMyDigipal Platform",
     headline: "Your marketing data, unified",
     subtitle: "A centralized dashboard accessible 24/7 that consolidates all your marketing data in real time. No more spreadsheets, no more siloed tools.",
     tabs: ["Overview", "Google Ads", "Meta Ads", "Cross-Channel"],
@@ -30,7 +30,7 @@ const content = {
     also: "Also available on",
   },
   fr: {
-    badge: "Plateforme AppMyDigital",
+    badge: "Plateforme AppMyDigipal",
     headline: "Vos données marketing, unifiées",
     subtitle: "Un tableau de bord centralisé accessible 24/7 qui consolide toutes vos données marketing en temps réel. Fini les tableurs, fini les outils cloisonnés.",
     tabs: ["Vue d'ensemble", "Google Ads", "Meta Ads", "Cross-Canal"],
@@ -145,6 +145,76 @@ const c = content[lang] || content.en;
               </div>
             </div>
 
+            <!-- Performance trend chart (SVG) -->
+            <div class="p-4 rounded-xl bg-white/[0.03] border border-white/5 mb-6">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-sm font-medium text-white">{lang === 'fr' ? 'Évolution des leads (6 mois)' : 'Leads trend (6 months)'}</div>
+                <div class="flex gap-4 text-xs">
+                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-0.5 bg-blue-500 rounded-full inline-block"></span><span class="text-slate-500">Google Ads</span></span>
+                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-0.5 bg-indigo-500 rounded-full inline-block"></span><span class="text-slate-500">Meta Ads</span></span>
+                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-0.5 bg-emerald-500 rounded-full inline-block"></span><span class="text-slate-500">{lang === 'fr' ? 'Organique' : 'Organic'}</span></span>
+                </div>
+              </div>
+              <div class="relative h-36">
+                <!-- Grid lines -->
+                <div class="absolute inset-0 flex flex-col justify-between">
+                  {[0,1,2,3].map(() => (
+                    <div class="border-b border-white/[0.04] w-full"></div>
+                  ))}
+                </div>
+                <!-- SVG chart -->
+                <svg class="w-full h-full relative z-10" viewBox="0 0 600 140" preserveAspectRatio="none">
+                  <!-- Google Ads line -->
+                  <polyline
+                    class="trend-line"
+                    fill="none"
+                    stroke="#3b82f6"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    points="20,110 120,95 220,88 320,72 420,60 520,45"
+                    style="--line-delay: 0.2s"
+                  />
+                  <!-- Meta Ads line -->
+                  <polyline
+                    class="trend-line"
+                    fill="none"
+                    stroke="#6366f1"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    points="20,120 120,108 220,92 320,80 420,55 520,32"
+                    style="--line-delay: 0.5s"
+                  />
+                  <!-- Organic line -->
+                  <polyline
+                    class="trend-line"
+                    fill="none"
+                    stroke="#10b981"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    points="20,125 120,122 220,118 320,108 420,95 520,80"
+                    style="--line-delay: 0.8s"
+                  />
+                  <!-- Data points Google -->
+                  {[[20,110],[120,95],[220,88],[320,72],[420,60],[520,45]].map(([x,y]) => (
+                    <circle cx={x} cy={y} r="3" fill="#3b82f6" opacity="0.8" />
+                  ))}
+                  <!-- Data points Meta -->
+                  {[[20,120],[120,108],[220,92],[320,80],[420,55],[520,32]].map(([x,y]) => (
+                    <circle cx={x} cy={y} r="3" fill="#6366f1" opacity="0.8" />
+                  ))}
+                </svg>
+                <!-- Month labels -->
+                <div class="flex justify-between mt-2 px-2">
+                  {(lang === 'fr' ? ['Oct', 'Nov', 'Déc', 'Jan', 'Fév', 'Mars'] : ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar']).map(m => (
+                    <span class="text-xs text-slate-600">{m}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             <!-- Channel breakdown -->
             <div class="grid md:grid-cols-3 gap-3">
               <div class="channel-card p-4 rounded-xl bg-white/[0.03] border border-white/5 border-l-2 border-l-blue-500">
@@ -202,6 +272,31 @@ const c = content[lang] || content.en;
                 <div class="text-2xl font-bold text-white">526</div>
                 <div class="text-xs text-emerald-400 mt-1">+15%</div>
               </div>
+            </div>
+
+            <!-- Spend vs Conversions dual-line chart -->
+            <div class="p-4 rounded-xl bg-white/[0.03] border border-white/5 mb-6">
+              <div class="flex items-center justify-between mb-3">
+                <div class="text-sm font-medium text-white">{lang === 'fr' ? 'Dépense vs Conversions (30 jours)' : 'Spend vs Conversions (30 days)'}</div>
+                <div class="flex gap-4 text-xs">
+                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-0.5 bg-blue-400 rounded-full inline-block"></span><span class="text-slate-500">{lang === 'fr' ? 'Dépense' : 'Spend'}</span></span>
+                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-0.5 bg-emerald-400 rounded-full inline-block"></span><span class="text-slate-500">Conv.</span></span>
+                </div>
+              </div>
+              <svg class="w-full h-24" viewBox="0 0 600 100" preserveAspectRatio="none">
+                <!-- Spend area fill -->
+                <path d="M0,70 50,65 100,60 150,58 200,55 250,50 300,52 350,48 400,45 450,42 500,40 550,38 600,35 600,100 0,100Z" fill="url(#spendGrad)" opacity="0.15"/>
+                <!-- Spend line -->
+                <polyline class="trend-line" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="0,70 50,65 100,60 150,58 200,55 250,50 300,52 350,48 400,45 450,42 500,40 550,38 600,35" style="--line-delay: 0.2s"/>
+                <!-- Conversions line -->
+                <polyline class="trend-line" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="0,85 50,82 100,78 150,72 200,68 250,60 300,55 350,50 400,42 450,38 500,30 550,25 600,18" style="--line-delay: 0.5s"/>
+                <defs>
+                  <linearGradient id="spendGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#60a5fa"/>
+                    <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
 
             <!-- Campaign table -->
@@ -378,6 +473,18 @@ const c = content[lang] || content.en;
   @keyframes panel-in {
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SVG line draw animation */
+  .trend-line {
+    stroke-dasharray: 1200;
+    stroke-dashoffset: 1200;
+    animation: line-draw 1.5s ease-out forwards;
+    animation-delay: var(--line-delay, 0s);
+  }
+
+  @keyframes line-draw {
+    to { stroke-dashoffset: 0; }
   }
 </style>
 
