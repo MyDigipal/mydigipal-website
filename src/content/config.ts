@@ -132,6 +132,12 @@ const blogCollection = defineCollection({
       description: z.string().optional(),
       image: z.string().optional(),
     }).optional(),
+
+    // FAQ structured data (JSON-LD)
+    faqs: z.array(z.object({
+      question: z.string(),
+      answer: z.string(),
+    })).optional(),
   }),
 });
 

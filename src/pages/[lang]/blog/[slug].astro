@@ -5,6 +5,7 @@ import { getCollection } from 'astro:content';
 import Icon from '@/components/ui/Icon.astro';
 import ArticleSchema from '@/components/seo/ArticleSchema.astro';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
+import FAQSchema from '@/components/seo/FAQSchema.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -139,6 +140,9 @@ const categoryLabels: Record<string, Record<string, string>> = {
     lang={lang}
   />
   <BreadcrumbSchema items={breadcrumbItems} />
+  {post.data.faqs && post.data.faqs.length > 0 && (
+    <FAQSchema faqs={post.data.faqs} />
+  )}
 
   <!-- Hero Section -->
   <section class="relative bg-slate-950 text-white pt-32 pb-24 overflow-hidden">
