@@ -3,6 +3,10 @@ import { useState, useMemo, useCallback } from 'react';
 import type { ServiceDomain, AITrainingSelection, AISolutionsAnswers, ContactInfo, Currency, GuidedRecommendation } from './types';
 import GuidedMode from './GuidedMode';
 import { guidedDomainActions } from './guided-data';
+import HowWeWork from './HowWeWork';
+import TrackingJourney from './TrackingJourney';
+import PerformanceEstimation from './PerformanceEstimation';
+import ChannelCard from './ChannelCard';
 import {
   domainConfigs,
   BUDGET_CONFIG,
@@ -761,6 +765,49 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
     await doSubmit();
   }, [isSubmitting, hasActualMarketingSelections, hasTrackingSelected, trackingPopupDismissed, doSubmit, honeypot, formLoadTime, mathAnswer, mathChallenge.answer, lang]);
+
+  // Request full performance report (lightweight lead gen from PerformanceEstimation)
+  const requestFullReport = useCallback(async (lead: { name: string; email: string; company: string }) => {
+    const payload = {
+      source: 'calculator-performance-estimation',
+      report_type: 'full',
+      timestamp: new Date().toISOString(),
+      language: lang,
+      currency,
+      contact: {
+        name: lead.name,
+        email: lead.email,
+        company: lead.company,
+        phone: ''
+      },
+      selections: {
+        domains: selectedDomains,
+        services: selections,
+        adBudgets,
+        selectedSocialChannels,
+        duration
+      },
+      estimatedTotal: pricing.grandTotal,
+      guidedRecommendation: guidedRec || null
+    };
+    try {
+      await fetch('https://n8n.mydigipal.com/webhook/calculateur-marketing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        mode: 'cors',
+        body: JSON.stringify(payload)
+      });
+      if (typeof window !== 'undefined' && (window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: 'calculator_full_report_request',
+          form_name: 'calculator_full_report',
+          calculator_total: pricing.grandTotal
+        });
+      }
+    } catch (err) {
+      console.error('Full report request error:', err);
+    }
+  }, [lang, currency, selectedDomains, selections, adBudgets, selectedSocialChannels, duration, pricing.grandTotal, guidedRec]);
 
   // Handle guided mode completion
   const handleGuidedComplete = useCallback((rec: GuidedRecommendation) => {
@@ -1542,7 +1589,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         );
                       })()}
 
-                      {/* Social channels selection for paid-social */}
+                      {/* Social channels selection for paid-social - Interactive ChannelCards */}
                       {domainId === 'paid-social' && (
                         <div className="mb-8 p-4 sm:p-6 bg-white rounded-xl border border-slate-200">
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
@@ -1551,42 +1598,33 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                               <span className="text-[10px] sm:text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full w-fit">{t.socialChannelsRecommended}</span>
                             )}
                           </div>
-                          <p className="text-xs text-slate-500 mb-4">{t.socialChannelsDesc}</p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                          <p className="text-xs text-slate-500 mb-4">
+                            {t.socialChannelsDesc} - {lang === 'fr' ? 'Survole ou clique une carte pour voir le détail' : 'Hover or click a card for details'}
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {socialChannels.map(channel => {
                               const isSelected = selectedSocialChannels.includes(channel.id);
+                              const isRecommended = guidedRec?.recommendedChannels?.includes(channel.id);
+                              const perChannelBudget = selectedSocialChannels.length > 0
+                                ? adBudgets['paid-social'] / Math.max(selectedSocialChannels.length, 1)
+                                : 0;
                               return (
-                                <button
+                                <ChannelCard
                                   key={channel.id}
-                                  onClick={() => {
+                                  channel={channel}
+                                  isSelected={isSelected}
+                                  isRecommended={isRecommended}
+                                  lang={lang}
+                                  currency={currency}
+                                  allocatedBudget={isSelected ? perChannelBudget : undefined}
+                                  onToggle={() => {
                                     setSelectedSocialChannels(prev =>
                                       prev.includes(channel.id)
                                         ? prev.filter(c => c !== channel.id)
                                         : [...prev, channel.id]
                                     );
                                   }}
-                                  className={`flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all active:scale-[0.98] ${
-                                    isSelected
-                                      ? `${colors.border} ${colors.bgLight} border-solid`
-                                      : 'border-slate-200 bg-white hover:border-slate-300'
-                                  }`}
-                                >
-                                  <span className="text-xl flex-shrink-0">{channel.icon}</span>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between gap-2">
-                                      <span className="font-semibold text-sm text-slate-900 truncate">{lang === 'fr' ? channel.nameFr : channel.name}</span>
-                                      {isSelected && (
-                                        <span className={`w-5 h-5 rounded-full ${colors.bg} text-white flex items-center justify-center flex-shrink-0`}>
-                                          <CheckIcon />
-                                        </span>
-                                      )}
-                                    </div>
-                                    <p className="text-xs text-slate-500 mt-0.5 hidden sm:block">{lang === 'fr' ? channel.descriptionFr : channel.description}</p>
-                                    <p className="text-[10px] text-slate-400 mt-0.5">
-                                      Min: {fp(channel.minBudget)} - {lang === 'fr' ? 'Reco' : 'Rec'}: {fp(channel.recommendedBudget)}
-                                    </p>
-                                  </div>
-                                </button>
+                                />
                               );
                             })}
                           </div>
@@ -1839,8 +1877,17 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
         {/* Summary and form */}
         {hasSelections && (
-          <div className="bg-gradient-to-br from-slate-900 to-blue-900 rounded-2xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-8">{t.summary}</h3>
+          <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 rounded-2xl p-8 text-white shadow-2xl">
+            {/* Animated blobs - subtle V2 treatment */}
+            <div className="pointer-events-none absolute -top-20 -right-20 w-72 h-72 rounded-full bg-gradient-to-br from-blue-500/30 to-purple-500/30 blur-3xl animate-drift" aria-hidden="true" />
+            <div className="pointer-events-none absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 blur-3xl animate-drift" style={{ animationDelay: '4s' }} aria-hidden="true" />
+            <div className="relative">
+            <div className="flex items-center gap-3 mb-8">
+              <span className="inline-block px-3 py-1 bg-white/10 text-white text-xs font-semibold rounded-full uppercase tracking-wide backdrop-blur-sm">
+                {lang === 'fr' ? 'Ton devis' : 'Your quote'}
+              </span>
+              <h3 className="text-3xl font-bold font-display">{t.summary}</h3>
+            </div>
 
             <div className="space-y-4 mb-8">
               {/* "To discuss" domains */}
@@ -2114,7 +2161,104 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 <p className="text-slate-300">{t.successMessage}</p>
               </div>
             )}
+            </div>
           </div>
+        )}
+
+        {/* NOUVELLES SECTIONS - Affichées quand il y a une vraie sélection */}
+        {hasActualSelections && (
+          <>
+            {/* Comment on travaille ensemble */}
+            <HowWeWork lang={lang} />
+
+            {/* Performances estimées - uniquement si budget pub actif */}
+            {(budgetActivated['google-ads'] || budgetActivated['paid-social']) && (
+              <PerformanceEstimation
+                lang={lang}
+                currency={currency}
+                adBudgets={adBudgets}
+                googleAdsActive={budgetActivated['google-ads']}
+                paidSocialActive={budgetActivated['paid-social']}
+                selectedSocialChannels={selectedSocialChannels}
+                onRequestFullReport={requestFullReport}
+              />
+            )}
+
+            {/* Tracking journey - uniquement si pub active (le tracking est pertinent) */}
+            {(budgetActivated['google-ads'] || budgetActivated['paid-social']) && (
+              <TrackingJourney lang={lang} />
+            )}
+
+            {/* CTA final : Book a call + rassurance cards */}
+            <div className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-2xl p-8 md:p-10 border border-indigo-100">
+              <div className="text-center mb-8">
+                <h3 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3 font-display">
+                  {t.bookCallTitle}
+                </h3>
+                <p className="text-slate-600 max-w-2xl mx-auto">
+                  {t.bookCallDesc}
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+                <a
+                  href="https://calendar.app.google/ofYHfRHbFoMpVxf79"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-br from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                  onClick={() => {
+                    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                      (window as any).dataLayer.push({
+                        event: 'calculator_book_call',
+                        calculator_total: pricing.grandTotal
+                      });
+                    }
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  {t.bookCallButton}
+                </a>
+                <span className="text-slate-400 text-sm">{t.orSeparator}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const form = document.querySelector('form');
+                    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }}
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 font-semibold rounded-xl border-2 border-slate-200 hover:border-slate-300 transition-all"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                    <polyline points="22 6 12 13 2 6" />
+                  </svg>
+                  {lang === 'fr' ? 'Recevoir le devis par email' : 'Get quote by email'}
+                </button>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="bg-white rounded-xl p-5 border border-slate-200">
+                  <div className="text-2xl mb-2">🎯</div>
+                  <div className="font-bold text-slate-900 text-sm mb-1">{t.reassureNoSurprise}</div>
+                  <div className="text-xs text-slate-600 leading-relaxed">{t.reassureNoSurpriseDesc}</div>
+                </div>
+                <div className="bg-white rounded-xl p-5 border border-slate-200">
+                  <div className="text-2xl mb-2">📝</div>
+                  <div className="font-bold text-slate-900 text-sm mb-1">{t.reassureNonBinding}</div>
+                  <div className="text-xs text-slate-600 leading-relaxed">{t.reassureNonBindingDesc}</div>
+                </div>
+                <div className="bg-white rounded-xl p-5 border border-slate-200">
+                  <div className="text-2xl mb-2">🤝</div>
+                  <div className="font-bold text-slate-900 text-sm mb-1">{t.reassureMinCommit}</div>
+                  <div className="text-xs text-slate-600 leading-relaxed">{t.reassureMinCommitDesc}</div>
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </div>
 

@@ -189,7 +189,19 @@ export const translations = {
     guidedInsightsSource: 'Source',
 
     // Social channels in configure step
-    socialChannelsRecommended: 'Recommended for your industry'
+    socialChannelsRecommended: 'Recommended for your industry',
+
+    // Book a call CTA
+    bookCallTitle: 'Talk to a human',
+    bookCallDesc: 'Prefer a 30-min call over an email back-and-forth? Book a slot directly in our calendar.',
+    bookCallButton: 'Book a 30-min call',
+    orSeparator: 'or',
+    reassureNoSurprise: 'No hidden fees',
+    reassureNoSurpriseDesc: 'The price you see here is what you pay. No surprise on the invoice.',
+    reassureNonBinding: 'Non-binding quote',
+    reassureNonBindingDesc: 'This is a simulation. Everything is adjustable after our first call.',
+    reassureMinCommit: '4-month minimum',
+    reassureMinCommitDesc: 'Time to set up, test, optimize. Discount on 6 and 12 months.'
   },
   fr: {
     // Page title
@@ -381,7 +393,19 @@ export const translations = {
     guidedInsightsSource: 'Source',
 
     // Social channels in configure step
-    socialChannelsRecommended: 'Recommandé pour votre secteur'
+    socialChannelsRecommended: 'Recommandé pour votre secteur',
+
+    // Book a call CTA
+    bookCallTitle: 'Parler à un humain',
+    bookCallDesc: "Tu préfères 30 min au téléphone plutôt qu'un aller-retour email ? Réserve un créneau directement dans notre agenda.",
+    bookCallButton: 'Réserver un call de 30 min',
+    orSeparator: 'ou',
+    reassureNoSurprise: 'Pas de frais cachés',
+    reassureNoSurpriseDesc: "Le prix affiché ici est celui que tu paies. Aucune surprise sur la facture.",
+    reassureNonBinding: 'Devis non-contractuel',
+    reassureNonBindingDesc: "C'est une simulation. Tout est ajustable après notre premier échange.",
+    reassureMinCommit: 'Engagement 4 mois minimum',
+    reassureMinCommitDesc: 'Le temps de bien mettre en place, tester, optimiser. Remise sur 6 et 12 mois.'
   }
 } as const;
 
