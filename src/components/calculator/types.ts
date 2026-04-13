@@ -124,6 +124,7 @@ export interface ContactInfo {
   email: string;
   company: string;
   phone?: string;
+  message?: string;
 }
 
 export interface PricingSummary {

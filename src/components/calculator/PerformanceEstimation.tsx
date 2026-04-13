@@ -15,7 +15,7 @@ interface PerformanceEstimationProps {
   paidSocialActive: boolean;
   selectedSocialChannels: string[];
   // Callback quand l'utilisateur soumet le formulaire de rapport complet
-  onRequestFullReport: (payload: { name: string; email: string; company: string }) => Promise<void>;
+  onRequestFullReport: (payload: { name: string; email: string; company: string; message?: string }) => Promise<void>;
 }
 
 export default function PerformanceEstimation({
@@ -29,7 +29,7 @@ export default function PerformanceEstimation({
 }: PerformanceEstimationProps) {
   const [unlocked, setUnlocked] = useState(false);
   const [conversionRate, setConversionRate] = useState(BASELINE_CONVERSION_RATE * 100);
-  const [form, setForm] = useState({ name: '', email: '', company: '' });
+  const [form, setForm] = useState({ name: '', email: '', company: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -304,6 +304,14 @@ export default function PerformanceEstimation({
                   onChange={(e) => setForm(f => ({ ...f, company: e.target.value }))}
                   required
                   className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm"
+                />
+                <textarea
+                  placeholder={lang === 'fr' ? 'Un message ? (optionnel)' : 'A message? (optional)'}
+                  value={form.message}
+                  onChange={(e) => setForm(f => ({ ...f, message: e.target.value }))}
+                  rows={2}
+                  maxLength={500}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm resize-none"
                 />
                 {error && <p className="text-red-500 text-xs">{error}</p>}
                 <button

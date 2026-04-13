@@ -171,7 +171,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const [currency, setCurrency] = useState<Currency>('EUR');
 
   // Contact form
-  const [contact, setContact] = useState<ContactInfo>({ name: '', email: '', company: '', phone: '' });
+  const [contact, setContact] = useState<ContactInfo>({ name: '', email: '', company: '', phone: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -634,6 +634,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     }
 
     const payload = {
+      report_type: 'quote',
       contact,
       selectedDomains,
       notSureAbout: Object.fromEntries(
@@ -767,7 +768,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   }, [isSubmitting, hasActualMarketingSelections, hasTrackingSelected, trackingPopupDismissed, doSubmit, honeypot, formLoadTime, mathAnswer, mathChallenge.answer, lang]);
 
   // Request full performance report (lightweight lead gen from PerformanceEstimation)
-  const requestFullReport = useCallback(async (lead: { name: string; email: string; company: string }) => {
+  const requestFullReport = useCallback(async (lead: { name: string; email: string; company: string; message?: string }) => {
     const payload = {
       source: 'calculator-performance-estimation',
       report_type: 'full',
@@ -778,7 +779,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         name: lead.name,
         email: lead.email,
         company: lead.company,
-        phone: ''
+        phone: '',
+        message: lead.message || ''
       },
       selections: {
         domains: selectedDomains,
@@ -2113,6 +2115,18 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                 />
 
+                {/* Message libre (optionnel) */}
+                <textarea
+                  placeholder={lang === 'fr'
+                    ? 'Un message ou une question ? (optionnel)'
+                    : 'A message or question? (optional)'}
+                  value={contact.message || ''}
+                  onChange={(e) => setContact(prev => ({ ...prev, message: e.target.value }))}
+                  rows={3}
+                  maxLength={500}
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent resize-none"
+                />
+
                 {/* Anti-spam: Math challenge */}
                 <div>
                   <label className="block text-sm text-slate-300 mb-2">
@@ -2189,54 +2203,33 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               <TrackingJourney lang={lang} />
             )}
 
-            {/* CTA final : Book a call + rassurance cards */}
+            {/* CTA final : rassurance cards avant le formulaire */}
             <div className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-2xl p-8 md:p-10 border border-indigo-100">
               <div className="text-center mb-8">
                 <h3 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3 font-display">
-                  {t.bookCallTitle}
+                  {lang === 'fr' ? 'Prêt à recevoir ton plan sur-mesure ?' : 'Ready to receive your tailored plan?'}
                 </h3>
                 <p className="text-slate-600 max-w-2xl mx-auto">
-                  {t.bookCallDesc}
+                  {lang === 'fr'
+                    ? "Laisse-nous ton email et on t'envoie tout : récapitulatif, rapport complet, et on revient vers toi pour en parler."
+                    : "Leave us your email and we'll send you everything: summary, full report, and we'll get back to you to discuss."}
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-                <a
-                  href="https://calendar.app.google/ofYHfRHbFoMpVxf79"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-br from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
-                  onClick={() => {
-                    if (typeof window !== 'undefined' && (window as any).dataLayer) {
-                      (window as any).dataLayer.push({
-                        event: 'calculator_book_call',
-                        calculator_total: pricing.grandTotal
-                      });
-                    }
-                  }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
-                  {t.bookCallButton}
-                </a>
-                <span className="text-slate-400 text-sm">{t.orSeparator}</span>
+              <div className="flex justify-center mb-10">
                 <button
                   type="button"
                   onClick={() => {
                     const form = document.querySelector('form');
                     if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }}
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 font-semibold rounded-xl border-2 border-slate-200 hover:border-slate-300 transition-all"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-br from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                     <polyline points="22 6 12 13 2 6" />
                   </svg>
-                  {lang === 'fr' ? 'Recevoir le devis par email' : 'Get quote by email'}
+                  {lang === 'fr' ? 'Recevoir mon plan complet par email' : 'Get my full plan by email'}
                 </button>
               </div>
 
