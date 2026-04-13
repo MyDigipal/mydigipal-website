@@ -228,103 +228,111 @@ export const emailingServices: ServiceItem[] = [
     id: 'email-contacts-package',
     title: 'C. Acquisition de Contacts',
     titleEn: 'C. Contact Acquisition',
-    description: 'Enrichissement de votre base avec des contacts qualifiés et RGPD-compliant, ciblés selon vos critères.',
-    descriptionEn: 'Database enrichment with qualified, GDPR-compliant contacts targeted by your criteria.',
+    description: "Enrichissement de votre base avec des contacts qualifiés et RGPD-compliant : email seul, email enrichi par IA ou numéro de téléphone.",
+    descriptionEn: 'Database enrichment with qualified, GDPR-compliant contacts: email only, AI-enriched email, or phone number.',
     icon: '📇',
     isOneOff: true,
     detailedInfo: {
-      title: 'Acquisition de Contacts - C\'est quoi exactement ?',
+      title: "Acquisition de Contacts - C'est quoi exactement ?",
       content: {
-        intro: 'Des contacts vérifiés et qualifiés pour alimenter vos campagnes email et outreach.',
+        intro: 'Des contacts vérifiés et qualifiés pour alimenter tes campagnes email, outreach LinkedIn ou campagnes téléphoniques. Prix unitaire dégressif selon le volume.',
         sections: [
+          {
+            title: 'Types de contacts disponibles',
+            items: [
+              "📧 Email : adresse professionnelle vérifiée (bounce rate < 5%)",
+              "🤖 Email + IA : email + enrichissement IA (personnalisation automatique du message)",
+              "📞 Téléphone : numéro direct vérifié (pour campagnes cold call / SMS)"
+            ]
+          },
           {
             title: 'Critères de ciblage disponibles',
             items: [
               'Fonction / Titre du poste (CEO, CMO, CTO...)',
-              'Taille de l\'entreprise (PME, ETI, grands comptes)',
-              'Secteur d\'activité et sous-secteur',
+              "Taille de l'entreprise (PME, ETI, grands comptes)",
+              "Secteur d'activité et sous-secteur",
               'Localisation géographique',
               'Technologies utilisées (technographics)',
-              'Signaux d\'intention d\'achat'
+              "Signaux d'intention d'achat"
             ]
           },
           {
             title: 'Ce que nous garantissons',
             items: [
               'Contacts opt-in RGPD-compliant',
-              'Emails vérifiés (bounce rate < 5%)',
+              'Données vérifiées (bounce rate < 5%)',
               'Données enrichies (LinkedIn, company data)',
               'Remplacement des bounces',
               'Format CSV/Excel ou import direct'
             ]
           }
         ],
-        conclusion: 'Prix indicatif - ajusté selon les critères et le volume.'
+        conclusion: 'Prix dégressif : tarif unitaire plus avantageux à partir de 500 contacts puis de 2500 contacts.'
       }
     },
+    // Single placeholder level - real pricing computed dynamically via CONTACT_PRICING_CONFIG
     levels: [
       {
-        name: '500 contacts',
-        nameEn: '500 contacts',
-        price: 500,
+        name: 'Configurer',
+        nameEn: 'Configure',
+        price: 0,
+        priceNote: 'selon type + volume',
+        priceNoteEn: 'based on type + volume',
         features: [
-          '500 contacts vérifiés',
-          'Critères de base (fonction, secteur)',
-          'Format CSV/Excel',
-          'Remplacement bounces'
+          '📧 Email seul : dès 0.06€/contact',
+          '🤖 Email + IA personnalisée : dès 0.03€/contact',
+          '📞 Téléphone direct : dès 0.51€/contact',
+          'Tarif dégressif à partir de 500 et 2500 contacts',
+          'Remplacement bounces inclus'
         ],
         featuresEn: [
-          '500 verified contacts',
-          'Basic criteria (role, industry)',
-          'CSV/Excel format',
-          'Bounce replacement'
-        ],
-        recommended: 'Test ou petite campagne',
-        recommendedEn: 'Test or small campaign'
-      },
-      {
-        name: '2000 contacts',
-        nameEn: '2000 contacts',
-        price: 1500,
-        features: [
-          '2000 contacts vérifiés',
-          'Critères avancés (techno, taille)',
-          'Données enrichies (LinkedIn)',
-          'Import direct dans votre outil'
-        ],
-        featuresEn: [
-          '2000 verified contacts',
-          'Advanced criteria (tech, size)',
-          'Enriched data (LinkedIn)',
-          'Direct import into your tool'
-        ],
-        recommended: 'Campagne de prospection',
-        recommendedEn: 'Prospecting campaign',
-        popular: true
-      },
-      {
-        name: '5000+ contacts',
-        nameEn: '5000+ contacts',
-        price: 3000,
-        priceNote: 'À partir de',
-        priceNoteEn: 'Starting from',
-        features: [
-          '5000+ contacts sur-mesure',
-          'Critères personnalisés',
-          'Données premium + signaux d\'intention',
-          'Segmentation incluse',
-          'Accompagnement stratégique'
-        ],
-        featuresEn: [
-          '5000+ custom contacts',
-          'Custom criteria',
-          'Premium data + intent signals',
-          'Segmentation included',
-          'Strategic guidance'
-        ],
-        recommended: 'Volume important, outreach à grande échelle',
-        recommendedEn: 'High volume, large-scale outreach'
+          '📧 Email only: from €0.06/contact',
+          '🤖 Email + AI personalization: from €0.03/contact',
+          '📞 Direct phone: from €0.51/contact',
+          'Volume discount at 500 and 2500 contacts',
+          'Bounce replacement included'
+        ]
       }
     ]
   }
 ];
+
+// Pricing grid for Contact Acquisition service
+// 3 tiers basés sur le volume, avec prix unitaire dégressif
+export type ContactType = 'email' | 'email-ai' | 'phone';
+
+export const CONTACT_PRICING_CONFIG = {
+  tiers: [
+    { maxVolume: 500, label: '< 500 contacts', labelEn: '< 500 contacts' },
+    { maxVolume: 2500, label: '500 - 2500 contacts', labelEn: '500 - 2500 contacts' },
+    { maxVolume: Infinity, label: '> 2500 contacts', labelEn: '> 2500 contacts' }
+  ],
+  prices: {
+    email:      [0.10, 0.08, 0.06],
+    'email-ai': [0.05, 0.04, 0.03],
+    phone:      [0.80, 0.64, 0.51]
+  } as Record<ContactType, number[]>,
+  labels: {
+    email:      { fr: '📧 Email seul',                en: '📧 Email only' },
+    'email-ai': { fr: '🤖 Email + IA personnalisée',  en: '🤖 Email + AI personalization' },
+    phone:      { fr: '📞 Téléphone direct',          en: '📞 Direct phone' }
+  } as Record<ContactType, { fr: string; en: string }>,
+  descriptions: {
+    email:      { fr: 'Adresse email professionnelle vérifiée (bounce < 5%)', en: 'Verified professional email address (bounce < 5%)' },
+    'email-ai': { fr: 'Email + enrichissement IA pour personnaliser chaque message (tonalité, accroche, contexte)', en: 'Email + AI enrichment to personalize each message (tone, hook, context)' },
+    phone:      { fr: 'Numéro direct vérifié pour cold call ou SMS', en: 'Verified direct phone number for cold call or SMS' }
+  } as Record<ContactType, { fr: string; en: string }>
+} as const;
+
+// Helper : retourne le prix unitaire selon volume + type
+export function getContactUnitPrice(type: ContactType, volume: number): number {
+  const tierIdx = CONTACT_PRICING_CONFIG.tiers.findIndex(t => volume < t.maxVolume);
+  const idx = tierIdx === -1 ? CONTACT_PRICING_CONFIG.tiers.length - 1 : tierIdx;
+  return CONTACT_PRICING_CONFIG.prices[type][idx];
+}
+
+// Helper : prix total selon type + volume
+export function getContactTotalPrice(type: ContactType, volume: number): number {
+  if (!volume || volume <= 0) return 0;
+  return Math.round(getContactUnitPrice(type, volume) * volume);
+}

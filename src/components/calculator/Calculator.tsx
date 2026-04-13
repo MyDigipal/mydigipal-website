@@ -29,6 +29,12 @@ import {
   trackingPopupContent,
   servicesThatNeedTracking
 } from './data';
+import {
+  CONTACT_PRICING_CONFIG,
+  getContactUnitPrice,
+  getContactTotalPrice,
+  type ContactType
+} from './data/emailing-services';
 import { translations } from './translations';
 
 interface CalculatorProps {
@@ -146,6 +152,11 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const [guidedRec, setGuidedRec] = useState<GuidedRecommendation | null>(null);
   // Social channels selection for paid-social
   const [selectedSocialChannels, setSelectedSocialChannels] = useState<string[]>([]);
+  // Contact acquisition custom selection (type + volume)
+  const [contactAcquisition, setContactAcquisition] = useState<{ type: ContactType; volume: number }>({
+    type: 'email',
+    volume: 500
+  });
 
   // AI Training state - null format means nothing selected yet
   const [aiTraining, setAiTraining] = useState<AITrainingSelection>({
@@ -218,14 +229,19 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
   // Dynamic price helper - resolves dynamicPricing for paid-social services
   // Returns the level price multiplied by selected channel count when applicable
-  const getServicePrice = useCallback((service: { dynamicPricing?: { pricePerChannel: number; minChannels?: number } }, levelPrice: number, domainId?: string): number => {
+  // Also handles special case for email-contacts-package (volume × unit price)
+  const getServicePrice = useCallback((service: { id?: string; dynamicPricing?: { pricePerChannel: number; minChannels?: number } }, levelPrice: number, domainId?: string): number => {
+    // Special case : Contact Acquisition (type × volume)
+    if (service.id === 'email-contacts-package') {
+      return getContactTotalPrice(contactAcquisition.type, contactAcquisition.volume);
+    }
     if (service.dynamicPricing && domainId === 'paid-social') {
       const min = service.dynamicPricing.minChannels || 1;
       const nb = Math.max(selectedSocialChannels.length, min);
       return service.dynamicPricing.pricePerChannel * nb;
     }
     return levelPrice;
-  }, [selectedSocialChannels]);
+  }, [selectedSocialChannels, contactAcquisition]);
 
   // Compute nbChannels for a given domain (used for management fee multiplier)
   const getNbChannelsForDomain = useCallback((domain: 'google-ads' | 'paid-social'): number => {
@@ -669,6 +685,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       selectedSocialChannels: selectedDomains.includes('paid-social') ? selectedSocialChannels : null,
       aiTraining: selectedDomains.includes('ai-training') ? aiTraining : null,
       aiSolutions: selectedDomains.includes('ai-solutions') ? aiSolutions : null,
+      contactAcquisition: selectedDomains.includes('emailing') && selections['email-contacts-package'] === 0 ? contactAcquisition : null,
       pricing,
       duration,
       trackingSelections: Object.fromEntries(
@@ -744,7 +761,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     } finally {
       setIsSubmitting(false);
     }
-  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, trackingNotSure, cmsAddon, lang, isSubmitting, notSureAbout, dismissedDomains, disabledServices, budgetActivated, aiTrainingActivated, sessionCount, trackingDismissed, showAiCustomForm, currency, guidedRec, selectedSocialChannels]);
+  }, [contact, selectedDomains, selections, adBudgets, aiTraining, aiSolutions, pricing, duration, trackingSelections, trackingAudit, trackingNotSure, cmsAddon, lang, isSubmitting, notSureAbout, dismissedDomains, disabledServices, budgetActivated, aiTrainingActivated, sessionCount, trackingDismissed, showAiCustomForm, currency, guidedRec, selectedSocialChannels, contactAcquisition]);
 
   // Submit handler with popup check
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
@@ -1669,6 +1686,133 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                       <div className="space-y-6">
                         {domain.services.map(service => {
                           const selectedLevel = selections[service.id];
+
+                          // CUSTOM : Contact Acquisition with type (Email/Email+AI/Phone) + volume
+                          if (service.id === 'email-contacts-package') {
+                            const isActive = selectedLevel === 0;
+                            const unitPrice = getContactUnitPrice(contactAcquisition.type, contactAcquisition.volume);
+                            const totalPrice = getContactTotalPrice(contactAcquisition.type, contactAcquisition.volume);
+                            const typeLabel = CONTACT_PRICING_CONFIG.labels[contactAcquisition.type][lang];
+                            const typeDescription = CONTACT_PRICING_CONFIG.descriptions[contactAcquisition.type][lang];
+                            return (
+                              <div
+                                key={service.id}
+                                className={`p-4 sm:p-6 rounded-xl border-2 transition-all ${isActive ? `${colors.border} ${colors.bgLight}` : 'bg-white border-slate-200'}`}
+                              >
+                                <div className="flex items-start justify-between mb-4 gap-3">
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-2xl">{service.icon}</span>
+                                    <div>
+                                      <div className="flex items-center gap-1">
+                                        <h3 className="font-bold text-slate-900">{lang === 'fr' ? service.title : (service.titleEn || service.title)}</h3>
+                                        {service.detailedInfo && (
+                                          <Tooltip
+                                            content={service.detailedInfo.content.intro}
+                                            whyImportant={service.detailedInfo.content.conclusion}
+                                            lang={lang}
+                                          />
+                                        )}
+                                      </div>
+                                      <p className="text-sm text-slate-600">{lang === 'fr' ? service.description : (service.descriptionEn || service.description)}</p>
+                                    </div>
+                                  </div>
+                                  <button
+                                    onClick={() => toggleServiceLevel(service.id, 0)}
+                                    className={`flex-shrink-0 px-4 py-2 text-sm rounded-lg font-semibold transition-all ${isActive ? `${colors.bg} text-white` : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                                  >
+                                    {isActive ? (lang === 'fr' ? 'Inclus ✓' : 'Included ✓') : (lang === 'fr' ? 'Ajouter' : 'Add')}
+                                  </button>
+                                </div>
+
+                                {isActive && (
+                                  <div className="space-y-4">
+                                    {/* Type selector (3 options) */}
+                                    <div>
+                                      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
+                                        {lang === 'fr' ? 'Type de contact' : 'Contact type'}
+                                      </label>
+                                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                        {(Object.keys(CONTACT_PRICING_CONFIG.labels) as ContactType[]).map(ct => {
+                                          const isSelected = contactAcquisition.type === ct;
+                                          const minPrice = Math.min(...CONTACT_PRICING_CONFIG.prices[ct]);
+                                          return (
+                                            <button
+                                              key={ct}
+                                              onClick={() => setContactAcquisition(prev => ({ ...prev, type: ct }))}
+                                              className={`p-3 rounded-xl border-2 text-left transition-all ${
+                                                isSelected
+                                                  ? `${colors.border} ${colors.bgLight}`
+                                                  : 'border-slate-200 bg-white hover:border-slate-300'
+                                              }`}
+                                            >
+                                              <div className="text-sm font-bold text-slate-900">{CONTACT_PRICING_CONFIG.labels[ct][lang]}</div>
+                                              <div className="text-[11px] text-slate-500 mt-0.5 leading-tight">{CONTACT_PRICING_CONFIG.descriptions[ct][lang]}</div>
+                                              <div className={`text-xs font-semibold mt-2 ${isSelected ? colors.text : 'text-slate-600'}`}>
+                                                {lang === 'fr' ? 'Dès' : 'From'} {fp(minPrice).replace(',00', '')}{lang === 'fr' ? '/contact' : '/contact'}
+                                              </div>
+                                            </button>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+
+                                    {/* Volume slider */}
+                                    <div>
+                                      <div className="flex items-center justify-between mb-2">
+                                        <label className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                                          {lang === 'fr' ? 'Nombre de contacts' : 'Number of contacts'}
+                                        </label>
+                                        <span className="text-lg font-bold text-slate-900">
+                                          {contactAcquisition.volume.toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB')}
+                                        </span>
+                                      </div>
+                                      <input
+                                        type="range"
+                                        min="100"
+                                        max="10000"
+                                        step="100"
+                                        value={contactAcquisition.volume}
+                                        onChange={(e) => setContactAcquisition(prev => ({ ...prev, volume: parseInt(e.target.value) }))}
+                                        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+                                        style={{ accentColor: domain.color }}
+                                      />
+                                      <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                                        <span>100</span>
+                                        <span>2 500</span>
+                                        <span>5 000</span>
+                                        <span>10 000+</span>
+                                      </div>
+                                    </div>
+
+                                    {/* Tier pricing grid (visual) */}
+                                    <div className="grid grid-cols-3 gap-2 text-xs">
+                                      {CONTACT_PRICING_CONFIG.tiers.map((t, i) => {
+                                        const price = CONTACT_PRICING_CONFIG.prices[contactAcquisition.type][i];
+                                        const isActiveTier = contactAcquisition.volume < t.maxVolume && (i === 0 || contactAcquisition.volume >= CONTACT_PRICING_CONFIG.tiers[i-1].maxVolume);
+                                        return (
+                                          <div key={i} className={`p-2 rounded-lg text-center border ${isActiveTier ? `${colors.border} ${colors.bgLight} ${colors.text} font-semibold` : 'border-slate-200 text-slate-500'}`}>
+                                            <div className="text-[10px]">{lang === 'fr' ? t.label : t.labelEn}</div>
+                                            <div className="text-sm font-bold mt-0.5">{fp(price).replace(',00', '')}</div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+
+                                    {/* Total price */}
+                                    <div className={`p-4 rounded-xl ${colors.bgLight} border ${colors.border} flex items-center justify-between`}>
+                                      <div>
+                                        <div className="text-xs text-slate-600">{typeLabel} · {contactAcquisition.volume.toLocaleString()} contacts</div>
+                                        <div className="text-[11px] text-slate-500 mt-0.5">{fp(unitPrice).replace(',00', '')}{lang === 'fr' ? '/contact' : '/contact'}</div>
+                                      </div>
+                                      <div className={`text-2xl font-bold ${colors.text}`}>
+                                        {fp(totalPrice)}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
 
                           return (
                             <div

@@ -128,15 +128,17 @@ export const DURATION_CONFIG = {
 } as const;
 
 // Channel complexity multiplier for Paid Social management fee
-// More channels = more A/B tests, more reports to consolidate, more cross-channel optimization
+// Non-linéaire avec rendements décroissants : le 2e canal coûte cher (setup de zéro),
+// les canaux suivants ajoutent progressivement moins d'effort (certains process se mutualisent).
 export const CHANNEL_MULTIPLIER_CONFIG = {
   1: 1.0,
-  2: 1.1,
-  3: 1.2,
-  4: 1.3,
-  5: 1.4,
-  // 6+ caps at 1.5
-  default: 1.5
+  2: 1.7,
+  3: 2.2,
+  4: 2.6,
+  5: 2.9,
+  6: 3.1,
+  // 7+ caps at 3.3
+  default: 3.3
 } as const;
 
 export function getChannelMultiplier(nbChannels: number): number {
@@ -145,6 +147,7 @@ export function getChannelMultiplier(nbChannels: number): number {
   if (nbChannels === 3) return CHANNEL_MULTIPLIER_CONFIG[3];
   if (nbChannels === 4) return CHANNEL_MULTIPLIER_CONFIG[4];
   if (nbChannels === 5) return CHANNEL_MULTIPLIER_CONFIG[5];
+  if (nbChannels === 6) return CHANNEL_MULTIPLIER_CONFIG[6];
   return CHANNEL_MULTIPLIER_CONFIG.default;
 }
 
