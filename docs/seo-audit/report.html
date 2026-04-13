@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audit SEO - mydigipal.com - Mars 2026</title>
+<style>
+:root {
+  --brand-dark: #1a1a2e;
+  --brand-gold: #C8A951;
+  --critical: #e74c3c;
+  --critical-bg: #fdf0ef;
+  --warning: #f39c12;
+  --warning-bg: #fef9ef;
+  --good: #27ae60;
+  --good-bg: #eafaf1;
+  --info: #3498db;
+  --info-bg: #eef6fc;
+  --gray-50: #f8f9fa;
+  --gray-100: #e9ecef;
+  --gray-200: #dee2e6;
+  --gray-600: #6c757d;
+  --gray-800: #343a40;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: var(--gray-800); line-height: 1.6; background: var(--gray-50); }
+.header { background: linear-gradient(135deg, var(--brand-dark) 0%, #16213e 100%); color: white; padding: 40px 0; }
+.header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 28px; font-weight: 700; }
+.header .subtitle { color: var(--brand-gold); font-size: 16px; margin-top: 4px; }
+.header .date { color: rgba(255,255,255,0.7); font-size: 14px; }
+.logo { height: 40px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+.nav { background: white; border-bottom: 1px solid var(--gray-200); position: sticky; top: 0; z-index: 100; }
+.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; gap: 0; overflow-x: auto; }
+.nav a { padding: 14px 18px; text-decoration: none; color: var(--gray-600); font-size: 13px; font-weight: 500; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.2s; }
+.nav a:hover, .nav a.active { color: var(--brand-dark); border-bottom-color: var(--brand-gold); }
+section { margin-bottom: 40px; scroll-margin-top: 60px; }
+h2 { font-size: 22px; font-weight: 700; color: var(--brand-dark); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--brand-gold); }
+h3 { font-size: 17px; font-weight: 600; color: var(--brand-dark); margin: 20px 0 10px; }
+.card { background: white; border-radius: 10px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat { background: white; border-radius: 10px; padding: 20px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-top: 4px solid var(--gray-200); }
+.stat.critical { border-top-color: var(--critical); }
+.stat.warning { border-top-color: var(--warning); }
+.stat.good { border-top-color: var(--good); }
+.stat.info { border-top-color: var(--info); }
+.stat-value { font-size: 32px; font-weight: 800; line-height: 1.2; }
+.stat-value.critical { color: var(--critical); }
+.stat-value.warning { color: var(--warning); }
+.stat-value.good { color: var(--good); }
+.stat-value.info { color: var(--info); }
+.stat-label { font-size: 13px; color: var(--gray-600); margin-top: 4px; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.badge.critical { background: var(--critical-bg); color: var(--critical); }
+.badge.warning { background: var(--warning-bg); color: var(--warning); }
+.badge.good { background: var(--good-bg); color: var(--good); }
+.badge.info { background: var(--info-bg); color: var(--info); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--gray-50); padding: 10px 12px; text-align: left; font-weight: 600; color: var(--gray-600); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; border-bottom: 2px solid var(--gray-200); }
+td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
+tr:hover { background: var(--gray-50); }
+.url { color: var(--info); word-break: break-all; font-size: 12px; }
+.issue-block { border-left: 4px solid var(--critical); background: var(--critical-bg); padding: 16px 20px; border-radius: 0 8px 8px 0; margin-bottom: 12px; }
+.issue-block.warning { border-left-color: var(--warning); background: var(--warning-bg); }
+.issue-block.info { border-left-color: var(--info); background: var(--info-bg); }
+.issue-block.good { border-left-color: var(--good); background: var(--good-bg); }
+.issue-block h4 { font-size: 15px; margin-bottom: 6px; }
+.issue-block p { font-size: 13px; color: var(--gray-600); }
+.chart-container { background: white; border-radius: 10px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.bar-chart { display: flex; align-items: flex-end; gap: 4px; height: 200px; padding: 0 8px; }
+.bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar { width: 100%; min-width: 20px; border-radius: 4px 4px 0 0; transition: all 0.3s; position: relative; }
+.bar:hover { opacity: 0.8; }
+.bar.impressions { background: var(--info); }
+.bar.clicks { background: var(--brand-gold); }
+.bar-label { font-size: 10px; color: var(--gray-600); writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); height: 50px; }
+.bar-value { font-size: 10px; color: var(--gray-800); font-weight: 600; text-align: center; }
+.legend { display: flex; gap: 20px; justify-content: center; margin-top: 12px; font-size: 12px; color: var(--gray-600); }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+.priority-list { counter-reset: priority; }
+.priority-item { counter-increment: priority; padding: 16px 20px 16px 60px; position: relative; margin-bottom: 8px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.priority-item::before { content: counter(priority); position: absolute; left: 16px; top: 16px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+.priority-item.p1::before { background: var(--critical-bg); color: var(--critical); }
+.priority-item.p2::before { background: var(--warning-bg); color: var(--warning); }
+.priority-item.p3::before { background: var(--info-bg); color: var(--info); }
+.priority-item h4 { font-size: 14px; margin-bottom: 4px; }
+.priority-item p { font-size: 13px; color: var(--gray-600); }
+.impact { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+.impact.high { background: var(--critical-bg); color: var(--critical); }
+.impact.medium { background: var(--warning-bg); color: var(--warning); }
+.impact.low { background: var(--info-bg); color: var(--info); }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } .dashboard { grid-template-columns: repeat(2, 1fr); } }
+.score-ring { width: 120px; height: 120px; margin: 0 auto 16px; }
+.highlight { background: #fff3cd; padding: 2px 4px; border-radius: 3px; }
+.flex-row { display: flex; gap: 16px; align-items: center; }
+@media print { .nav { display: none; } .header { padding: 20px 0; } body { background: white; } .card, .stat, .chart-container { box-shadow: none; border: 1px solid var(--gray-200); } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <h1>Audit SEO - mydigipal.com</h1>
+      <div class="subtitle">Analyse approfondie Search Console + Ahrefs</div>
+    </div>
+    <div style="text-align:right">
+      <div class="date">15 mars 2026</div>
+      <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:4px">Auteur : MyDigipal / Claude</div>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="nav-inner">
+    <a href="#dashboard">Dashboard</a>
+    <a href="#evolution">Evolution</a>
+    <a href="#fragmentation">Fragmentation URLs</a>
+    <a href="#pages">Pages</a>
+    <a href="#requetes">Requetes</a>
+    <a href="#cannibalization">Cannibalization</a>
+    <a href="#onpage">On-Page</a>
+    <a href="#backlinks">Backlinks</a>
+    <a href="#pays">Pays</a>
+    <a href="#actions">Plan d'action</a>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===== DASHBOARD ===== -->
+<section id="dashboard">
+  <h2>Dashboard - Vue d'ensemble</h2>
+  <div class="dashboard">
+    <div class="stat critical">
+      <div class="stat-value critical">25/100</div>
+      <div class="stat-label">Score SEO global</div>
+    </div>
+    <div class="stat info">
+      <div class="stat-value info">17</div>
+      <div class="stat-label">Domain Rating (Ahrefs)</div>
+    </div>
+    <div class="stat warning">
+      <div class="stat-value warning">545</div>
+      <div class="stat-label">Clics totaux (9 mois)</div>
+    </div>
+    <div class="stat warning">
+      <div class="stat-value warning">140K</div>
+      <div class="stat-label">Impressions totales (9 mois)</div>
+    </div>
+    <div class="stat critical">
+      <div class="stat-value critical">0.39%</div>
+      <div class="stat-label">CTR moyen</div>
+    </div>
+    <div class="stat warning">
+      <div class="stat-value warning">11.2</div>
+      <div class="stat-label">Position moyenne (mars)</div>
+    </div>
+    <div class="stat info">
+      <div class="stat-value info">51</div>
+      <div class="stat-label">Domaines referents</div>
+    </div>
+    <div class="stat good">
+      <div class="stat-value good">100</div>
+      <div class="stat-label">Health Score Ahrefs</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Diagnostic rapide</h3>
+    <p style="font-size:15px;margin-bottom:16px">Le site MyDigipal presente un <strong>paradoxe SEO majeur</strong> : les impressions explosent (x10 en 9 mois) et les positions s'ameliorent (37.7 &rarr; 11.2), mais les clics restent quasi stagnants (~50-75/mois). Le site a un excellent score technique (100/100 Ahrefs) mais souffre de <strong>5 problemes structurels critiques</strong> qui empechent la conversion des impressions en trafic.</p>
+
+    <div class="issue-block">
+      <h4>1. Fragmentation des URLs - 3 domaines en competition</h4>
+      <p>L'ancien site (www.mydigipal.com + fr.mydigipal.com) represente encore 64% des impressions GSC. L'autorite est diluee entre 3 domaines.</p>
+    </div>
+    <div class="issue-block">
+      <h4>2. CTR catastrophique - 0.13% en fevrier malgre 58K impressions</h4>
+      <p>Des pages en position 3-5 avec 0 clics. Les titles trop longs (77% &gt; 60 car.) et les descriptions trop courtes (54% &lt; 145 car.) ne convertissent pas.</p>
+    </div>
+    <div class="issue-block warning">
+      <h4>3. Cannibalization massive - "mydigipal" sur 26 pages</h4>
+      <p>Les requetes de marque et cles se repartissent sur des dizaines de pages (ancien + nouveau site), diluant le signal.</p>
+    </div>
+    <div class="issue-block warning">
+      <h4>4. Faible autorite de domaine - DR 17 / 51 referring domains</h4>
+      <p>Insuffisant pour se positionner sur des mots-cles competitifs en marketing digital B2B.</p>
+    </div>
+    <div class="issue-block info">
+      <h4>5. Deconnexion geographique - USA = 48% impressions, 7% clics</h4>
+      <p>Le contenu attire des impressions US mais ne convertit pas. Le marche FR (1.41% CTR) et UK (0.48%) sont plus pertinents.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== EVOLUTION ===== -->
+<section id="evolution">
+  <h2>Evolution dans le temps</h2>
+
+  <div class="chart-container">
+    <h3>Evolution mensuelle - Impressions et clics (juin 2025 - mars 2026)</h3>
+    <div class="bar-chart" id="monthly-chart">
+      <!-- Impressions bars -->
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--info)"></div> Impressions</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--brand-gold)"></div> Clics</div>
+    </div>
+
+    <table style="margin-top:16px">
+      <thead>
+        <tr><th>Mois</th><th style="text-align:right">Impressions</th><th style="text-align:right">Clics</th><th style="text-align:right">CTR</th><th style="text-align:right">Position moy.</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Juin 2025</td><td style="text-align:right">5 114</td><td style="text-align:right">37</td><td style="text-align:right">0.72%</td><td style="text-align:right">37.7</td></tr>
+        <tr><td>Juil. 2025</td><td style="text-align:right">15 330</td><td style="text-align:right">75</td><td style="text-align:right">0.49%</td><td style="text-align:right">40.2</td></tr>
+        <tr><td>Aout 2025</td><td style="text-align:right">11 827</td><td style="text-align:right">74</td><td style="text-align:right">0.63%</td><td style="text-align:right">42.1</td></tr>
+        <tr><td>Sept. 2025</td><td style="text-align:right">5 937</td><td style="text-align:right">41</td><td style="text-align:right">0.69%</td><td style="text-align:right">27.3</td></tr>
+        <tr><td>Oct. 2025</td><td style="text-align:right">4 485</td><td style="text-align:right">42</td><td style="text-align:right">0.94%</td><td style="text-align:right">19.6</td></tr>
+        <tr style="background:var(--good-bg)"><td>Nov. 2025</td><td style="text-align:right">5 405</td><td style="text-align:right"><strong>61</strong></td><td style="text-align:right"><strong>1.13%</strong></td><td style="text-align:right">18.9</td></tr>
+        <tr><td>Dec. 2025</td><td style="text-align:right">6 821</td><td style="text-align:right">40</td><td style="text-align:right">0.59%</td><td style="text-align:right">25.7</td></tr>
+        <tr><td>Janv. 2026</td><td style="text-align:right">18 602</td><td style="text-align:right">72</td><td style="text-align:right">0.39%</td><td style="text-align:right">24.6</td></tr>
+        <tr style="background:var(--critical-bg)"><td>Fev. 2026</td><td style="text-align:right"><strong>58 663</strong></td><td style="text-align:right">77</td><td style="text-align:right"><strong>0.13%</strong></td><td style="text-align:right">14.3</td></tr>
+        <tr><td>Mars 2026*</td><td style="text-align:right">8 255</td><td style="text-align:right">26</td><td style="text-align:right">0.31%</td><td style="text-align:right">11.2</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--gray-600);margin-top:8px">* Mars 2026 : donnees partielles (13 premiers jours)</p>
+  </div>
+
+  <div class="card">
+    <h3>Analyse de la tendance</h3>
+    <div class="issue-block info">
+      <h4>Les impressions explosent... mais pas les clics</h4>
+      <p>Les impressions sont passees de 5K a 58K (+1050%), mais les clics plafonnent a ~70/mois. Cela signifie que Google indexe et affiche de plus en plus le site, mais les utilisateurs ne cliquent pas. <strong>Le probleme n'est pas l'indexation, c'est l'attractivite dans les SERP</strong> (titles, descriptions, rich snippets).</p>
+    </div>
+    <div class="issue-block good">
+      <h4>Bonne nouvelle : la position moyenne s'ameliore</h4>
+      <p>De 37.7 en juin 2025 a 11.2 en mars 2026. Le contenu gagne en pertinence aux yeux de Google. C'est la base sur laquelle construire.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FRAGMENTATION URLs ===== -->
+<section id="fragmentation">
+  <h2>Probleme critique n.1 : Fragmentation des URLs</h2>
+
+  <div class="card">
+    <h3>3 domaines en competition dans Google</h3>
+    <p style="margin-bottom:16px">La Search Console montre que Google indexe encore massivement les pages de l'ancien site. L'autorite de domaine est fragmentee entre 3 versions :</p>
+
+    <table>
+      <thead>
+        <tr><th>Domaine</th><th>Statut</th><th style="text-align:right">Pages indexees</th><th style="text-align:right">Impressions</th><th style="text-align:right">Clics</th><th style="text-align:right">% impressions</th></tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--critical-bg)">
+          <td><strong>www.mydigipal.com</strong></td>
+          <td><span class="badge critical">Ancien site</span></td>
+          <td style="text-align:right">77</td>
+          <td style="text-align:right">12 948</td>
+          <td style="text-align:right">41</td>
+          <td style="text-align:right"><strong>52%</strong></td>
+        </tr>
+        <tr style="background:var(--good-bg)">
+          <td><strong>mydigipal.com</strong></td>
+          <td><span class="badge good">Site actuel</span></td>
+          <td style="text-align:right">66</td>
+          <td style="text-align:right">8 979</td>
+          <td style="text-align:right">19</td>
+          <td style="text-align:right">36%</td>
+        </tr>
+        <tr style="background:var(--warning-bg)">
+          <td><strong>fr.mydigipal.com</strong></td>
+          <td><span class="badge warning">Ancien FR</span></td>
+          <td style="text-align:right">44</td>
+          <td style="text-align:right">2 827</td>
+          <td style="text-align:right">2</td>
+          <td style="text-align:right">11%</td>
+        </tr>
+        <tr>
+          <td>app.mydigipal.com</td>
+          <td><span class="badge info">App</span></td>
+          <td style="text-align:right">1</td>
+          <td style="text-align:right">26</td>
+          <td style="text-align:right">1</td>
+          <td style="text-align:right">&lt;1%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="issue-block" style="margin-top:16px">
+      <h4>Impact : l'ancien site cannibalise le nouveau</h4>
+      <p><strong>52% des impressions</strong> vont encore vers www.mydigipal.com (ancien site). Cela signifie que Google hesite entre l'ancien et le nouveau site, et divise le "link juice" et les signaux d'autorite. Exemples concrets :</p>
+      <ul style="margin-top:8px;padding-left:20px;font-size:13px;color:var(--gray-600)">
+        <li>"facebook dynamic ads automotive" - 3 URLs en competition (www + mydigipal.com + blog)</li>
+        <li>"agence marketing digital b2b" - 3 URLs (www.mydigipal.com/fr + fr.mydigipal.com + fr.mydigipal.com/fr)</li>
+        <li>"reseaux sociaux concession automobile" - 3 URLs (mydigipal.com/fr + fr.mydigipal.com + www.mydigipal.com/fr)</li>
+        <li>"google ads for car dealerships" - 3 URLs (mydigipal.com/en + www.mydigipal.com + www.mydigipal.com/automotive)</li>
+      </ul>
+    </div>
+
+    <div class="issue-block good" style="margin-top:12px">
+      <h4>Action requise : redirections 301 massives</h4>
+      <p>Toutes les URLs www.mydigipal.com/* et fr.mydigipal.com/* doivent rediriger en 301 vers les equivalents sur mydigipal.com. Il y a 121 pages de l'ancien site encore indexees. Chaque redirection transferera le "link juice" accumule vers le nouveau site.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Pages de l'ancien site encore actives en 2026</h3>
+    <table>
+      <thead>
+        <tr><th>URL ancienne</th><th style="text-align:right">Impressions (2026)</th><th style="text-align:right">Position</th><th>Rediriger vers</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="url">www.mydigipal.com/</td><td style="text-align:right">60</td><td style="text-align:right">9.5</td><td class="url">mydigipal.com/en</td></tr>
+        <tr><td class="url">www.mydigipal.com/case-study/gwi-paid-media-success</td><td style="text-align:right">56</td><td style="text-align:right">30.8</td><td class="url">mydigipal.com/en/case-studies/gwi</td></tr>
+        <tr><td class="url">www.mydigipal.com/case-study-categories/paid-search</td><td style="text-align:right">15</td><td style="text-align:right">11.4</td><td class="url">mydigipal.com/en/services/google-ads</td></tr>
+        <tr><td class="url">www.mydigipal.com/case-study/symbl-digital-marketing-introduction</td><td style="text-align:right">11</td><td style="text-align:right">9.5</td><td class="url">mydigipal.com/en/case-studies/symbl</td></tr>
+        <tr><td class="url">www.mydigipal.com/blog/how-to-rank-on-chatgpt</td><td style="text-align:right">historique</td><td style="text-align:right">52-88</td><td class="url">mydigipal.com/en/blog/how-to-rank-on-chatgpt</td></tr>
+        <tr><td class="url">www.mydigipal.com/blog/intent-data-in-b2b-marketing</td><td style="text-align:right">historique</td><td style="text-align:right">81-84</td><td class="url">mydigipal.com/en/blog/intent-data-b2b-marketing</td></tr>
+        <tr><td class="url">www.mydigipal.com/automotive/google-ads</td><td style="text-align:right">historique</td><td style="text-align:right">33-66</td><td class="url">mydigipal.com/en/automotive/google-ads</td></tr>
+        <tr><td class="url">fr.mydigipal.com/blog/google-consent-mode-v2</td><td style="text-align:right">historique</td><td style="text-align:right">91</td><td class="url">mydigipal.com/fr/blog/google-consent-mode-v2</td></tr>
+        <tr><td class="url">fr.mydigipal.com/campaign-management</td><td style="text-align:right">historique</td><td style="text-align:right">77-86</td><td class="url">mydigipal.com/fr/services</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--gray-600);margin-top:8px">Liste non exhaustive - 121 pages de l'ancien site a traiter au total.</p>
+  </div>
+</section>
+
+<!-- ===== TOP PAGES ===== -->
+<section id="pages">
+  <h2>Analyse des pages</h2>
+
+  <div class="card">
+    <h3>Pages avec le plus grand potentiel inexploite</h3>
+    <p style="margin-bottom:12px;font-size:13px;color:var(--gray-600)">Pages du site actuel avec beaucoup d'impressions mais quasi aucun clic. Ce sont les quick wins.</p>
+
+    <table>
+      <thead>
+        <tr><th>Page</th><th style="text-align:right">Impressions</th><th style="text-align:right">Clics</th><th style="text-align:right">CTR</th><th style="text-align:right">Position</th><th>Diagnostic</th></tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--critical-bg)">
+          <td class="url">/en/blog/claude-code-developer-productivity</td>
+          <td style="text-align:right"><strong>3 400</strong></td>
+          <td style="text-align:right">1</td>
+          <td style="text-align:right">0.03%</td>
+          <td style="text-align:right">8.0</td>
+          <td><span class="badge critical">Title/Desc a optimiser</span></td>
+        </tr>
+        <tr style="background:var(--critical-bg)">
+          <td class="url">/en/blog/ai-agents-n8n-automation</td>
+          <td style="text-align:right"><strong>2 907</strong></td>
+          <td style="text-align:right">0</td>
+          <td style="text-align:right">0%</td>
+          <td style="text-align:right">5.6</td>
+          <td><span class="badge critical">Position 5 - 0 clic!</span></td>
+        </tr>
+        <tr style="background:var(--critical-bg)">
+          <td class="url">/en/blog/facebook-dynamic-ads-automotive</td>
+          <td style="text-align:right"><strong>1 185</strong></td>
+          <td style="text-align:right">0</td>
+          <td style="text-align:right">0%</td>
+          <td style="text-align:right">9.4</td>
+          <td><span class="badge critical">Cannibalisee par ancien site</span></td>
+        </tr>
+        <tr style="background:var(--warning-bg)">
+          <td class="url">/en/automotive/google-ads</td>
+          <td style="text-align:right">998</td>
+          <td style="text-align:right">1</td>
+          <td style="text-align:right">0.1%</td>
+          <td style="text-align:right">20.6</td>
+          <td><span class="badge warning">Position trop basse</span></td>
+        </tr>
+        <tr style="background:var(--warning-bg)">
+          <td class="url">/en/blog/google-vehicle-ads-2026</td>
+          <td style="text-align:right">775</td>
+          <td style="text-align:right">0</td>
+          <td style="text-align:right">0%</td>
+          <td style="text-align:right"><strong>3.7</strong></td>
+          <td><span class="badge critical">Top 4 - 0 clic!</span></td>
+        </tr>
+        <tr style="background:var(--warning-bg)">
+          <td class="url">/en/blog/google-consent-mode-v2</td>
+          <td style="text-align:right">689</td>
+          <td style="text-align:right">0</td>
+          <td style="text-align:right">0%</td>
+          <td style="text-align:right">43.0</td>
+          <td><span class="badge warning">Cannibalisee (3 URLs)</span></td>
+        </tr>
+        <tr>
+          <td class="url">/en/blog/how-to-train-teams-on-ai</td>
+          <td style="text-align:right">391</td>
+          <td style="text-align:right">0</td>
+          <td style="text-align:right">0%</td>
+          <td style="text-align:right">9.7</td>
+          <td><span class="badge warning">Title/Desc a optimiser</span></td>
+        </tr>
+        <tr>
+          <td class="url">/fr/blog/how-to-rank-on-chatgpt</td>
+          <td style="text-align:right">345</td>
+          <td style="text-align:right">0</td>
+          <td style="text-align:right">0%</td>
+          <td style="text-align:right">49.0</td>
+          <td><span class="badge warning">Cannibalisee (5+ URLs)</span></td>
+        </tr>
+        <tr>
+          <td class="url">/en/services/b2b-abm</td>
+          <td style="text-align:right">296</td>
+          <td style="text-align:right">0</td>
+          <td style="text-align:right">0%</td>
+          <td style="text-align:right">14.9</td>
+          <td><span class="badge warning">Page 2 - besoin de boost</span></td>
+        </tr>
+        <tr>
+          <td class="url">/en/services/seo</td>
+          <td style="text-align:right">225</td>
+          <td style="text-align:right">0</td>
+          <td style="text-align:right">0%</td>
+          <td style="text-align:right">11.5</td>
+          <td><span class="badge warning">En bas de page 1</span></td>
+        </tr>
+        <tr>
+          <td class="url">/en/services/paid-social</td>
+          <td style="text-align:right">203</td>
+          <td style="text-align:right">0</td>
+          <td style="text-align:right">0%</td>
+          <td style="text-align:right">5.1</td>
+          <td><span class="badge critical">Position 5 - 0 clic!</span></td>
+        </tr>
+        <tr>
+          <td class="url">/en/blog/beware-of-scammers</td>
+          <td style="text-align:right">200</td>
+          <td style="text-align:right">0</td>
+          <td style="text-align:right">0%</td>
+          <td style="text-align:right">2.7</td>
+          <td><span class="badge critical">Top 3 - 0 clic!</span></td>
+        </tr>
+        <tr>
+          <td class="url">/en/blog/local-seo-tactics-that-win-dealership-traffic</td>
+          <td style="text-align:right">140</td>
+          <td style="text-align:right">0</td>
+          <td style="text-align:right">0%</td>
+          <td style="text-align:right">6.7</td>
+          <td><span class="badge warning">Bon potentiel</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Pages qui fonctionnent (relativement)</h3>
+    <table>
+      <thead>
+        <tr><th>Page</th><th style="text-align:right">Impressions</th><th style="text-align:right">Clics</th><th style="text-align:right">CTR</th><th style="text-align:right">Position</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="url">/fr (homepage FR)</td><td style="text-align:right">91</td><td style="text-align:right">14</td><td style="text-align:right"><strong>15.4%</strong></td><td style="text-align:right">5.5</td></tr>
+        <tr><td class="url">/en (homepage EN)</td><td style="text-align:right">1 157</td><td style="text-align:right">14</td><td style="text-align:right">1.2%</td><td style="text-align:right">6.3</td></tr>
+        <tr><td class="url">/en/blog/abm-deck</td><td style="text-align:right">144</td><td style="text-align:right">5</td><td style="text-align:right">3.5%</td><td style="text-align:right">29.1</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:13px;color:var(--gray-600);margin-top:8px">Notez que la homepage FR a un CTR 12x meilleur que la homepage EN malgre 12x moins d'impressions. Cela confirme que le marche francais est plus receptif.</p>
+  </div>
+</section>
+
+<!-- ===== REQUETES ===== -->
+<section id="requetes">
+  <h2>Analyse des requetes</h2>
+
+  <div class="card">
+    <h3>Quick wins : requetes proches du top 10 avec du volume</h3>
+    <p style="margin-bottom:12px;font-size:13px;color:var(--gray-600)">Requetes ou le site est en position 5-15 avec du volume - un petit push pourrait generer du trafic.</p>
+
+    <table>
+      <thead>
+        <tr><th>Requete</th><th style="text-align:right">Impressions</th><th style="text-align:right">Position</th><th>Page cible</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>"google ads" "service" "dealership"</td>
+          <td style="text-align:right">106</td>
+          <td style="text-align:right">6.9</td>
+          <td class="url">/en/automotive/google-ads</td>
+          <td><span class="badge warning">Optimiser title</span></td>
+        </tr>
+        <tr>
+          <td>anthropic claude code cli features 2026</td>
+          <td style="text-align:right">88</td>
+          <td style="text-align:right">7.6</td>
+          <td class="url">/en/blog/claude-code-developer-productivity</td>
+          <td><span class="badge warning">Optimiser title</span></td>
+        </tr>
+        <tr>
+          <td>gwi</td>
+          <td style="text-align:right">90</td>
+          <td style="text-align:right">6.5</td>
+          <td class="url">/fr/case-studies/gwi</td>
+          <td><span class="badge info">Branded - limitable</span></td>
+        </tr>
+        <tr>
+          <td>reseaux sociaux concession automobile</td>
+          <td style="text-align:right">33</td>
+          <td style="text-align:right">9.8</td>
+          <td class="url">/fr/automotive/paid-social</td>
+          <td><span class="badge critical">Cannibalisee x3</span></td>
+        </tr>
+        <tr>
+          <td>agence abm</td>
+          <td style="text-align:right">34</td>
+          <td style="text-align:right">10.2</td>
+          <td class="url">/en/services/b2b-abm</td>
+          <td><span class="badge warning">Optimiser contenu</span></td>
+        </tr>
+        <tr>
+          <td>llmo agency</td>
+          <td style="text-align:right">61</td>
+          <td style="text-align:right">18.2</td>
+          <td class="url">/en/services/seo</td>
+          <td><span class="badge warning">Creer contenu dedie</span></td>
+        </tr>
+        <tr>
+          <td>automotive paid social agency</td>
+          <td style="text-align:right">34</td>
+          <td style="text-align:right">17.9</td>
+          <td class="url">/en/automotive/paid-social</td>
+          <td><span class="badge warning">Renforcer contenu</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Requetes a fort volume mais position trop basse (&gt; 30)</h3>
+    <p style="margin-bottom:12px;font-size:13px;color:var(--gray-600)">Ces requetes montrent un potentiel de recherche, mais le contenu actuel ne repond pas assez bien a l'intention de recherche.</p>
+    <table>
+      <thead>
+        <tr><th>Requete</th><th style="text-align:right">Impressions</th><th style="text-align:right">Position</th><th>Opportunite</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>google consent mode v2</td><td style="text-align:right">253</td><td style="text-align:right">81.3</td><td>Contenu trop ancien/generique</td></tr>
+        <tr><td>developpement ia sur mesure</td><td style="text-align:right">158</td><td style="text-align:right">33.6</td><td>Page services IA a enrichir</td></tr>
+        <tr><td>how to rank on searchgpt</td><td style="text-align:right">121</td><td style="text-align:right">85.3</td><td>Article existant, contenu a renforcer</td></tr>
+        <tr><td>marketing automation b2b</td><td style="text-align:right">99</td><td style="text-align:right">38.2</td><td>Article blog a reediter/enrichir</td></tr>
+        <tr><td>connaitre positionnement sur chatgpt</td><td style="text-align:right">91</td><td style="text-align:right">61.4</td><td>Cannibalisee entre 3 versions</td></tr>
+        <tr><td>apparaitre sur chatgpt</td><td style="text-align:right">69</td><td style="text-align:right">31.3</td><td>Meme article, cannibalisation</td></tr>
+        <tr><td>automotive ppc agency</td><td style="text-align:right">42</td><td style="text-align:right">30.8</td><td>Page automotive a enrichir</td></tr>
+        <tr><td>digital marketing agency abm</td><td style="text-align:right">49</td><td style="text-align:right">33.1</td><td>Page ABM a positionner mieux</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== CANNIBALIZATION ===== -->
+<section id="cannibalization">
+  <h2>Cannibalization des mots-cles</h2>
+
+  <div class="card">
+    <h3>Requetes les plus cannibalisees</h3>
+    <p style="margin-bottom:12px;font-size:13px;color:var(--gray-600)">Quand plusieurs pages competent pour la meme requete, Google ne sait pas laquelle afficher et penalise toutes les versions.</p>
+
+    <table>
+      <thead>
+        <tr><th>Requete</th><th style="text-align:right">Nb pages</th><th>Pages en competition</th></tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--critical-bg)">
+          <td><strong>"mydigipal"</strong></td>
+          <td style="text-align:right"><strong>26</strong></td>
+          <td class="url">www.mydigipal.com/, /contact-us, /campaign-management, mydigipal.com/en/contact, /display... (26 pages!)</td>
+        </tr>
+        <tr style="background:var(--critical-bg)">
+          <td><strong>"digipal"</strong></td>
+          <td style="text-align:right"><strong>16</strong></td>
+          <td class="url">mydigipal.com/en, www.mydigipal.com/paid-social, /display, /our-team, /paid-search, /blogs, /content-creation...</td>
+        </tr>
+        <tr style="background:var(--warning-bg)">
+          <td>"facebook automotive dynamic ads"</td>
+          <td style="text-align:right">3</td>
+          <td class="url">www.mydigipal.com/blog/facebook-dynamic-ads-*, www.mydigipal.com/automotive/facebook-dynamic-ads, mydigipal.com/en/blog/facebook-dynamic-ads-automotive</td>
+        </tr>
+        <tr style="background:var(--warning-bg)">
+          <td>"agence marketing digital b2b & b2c"</td>
+          <td style="text-align:right">3</td>
+          <td class="url">www.mydigipal.com/fr, fr.mydigipal.com/, fr.mydigipal.com/fr</td>
+        </tr>
+        <tr style="background:var(--warning-bg)">
+          <td>"reseaux sociaux concession automobile"</td>
+          <td style="text-align:right">3</td>
+          <td class="url">mydigipal.com/fr/automotive/paid-social, fr.mydigipal.com/automotive/paid-social, www.mydigipal.com/fr/automotive/paid-social</td>
+        </tr>
+        <tr>
+          <td>"dynamic ads for automotive"</td>
+          <td style="text-align:right">3</td>
+          <td class="url">mydigipal.com/en/blog/*, www.mydigipal.com/blog/*, www.mydigipal.com/automotive/*</td>
+        </tr>
+        <tr>
+          <td>"annonces vehicules google ads"</td>
+          <td style="text-align:right">3</td>
+          <td class="url">fr.mydigipal.com/automotive/*, mydigipal.com/fr/automotive/*, www.mydigipal.com/automotive/*</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="issue-block" style="margin-top:16px">
+      <h4>La cannibalisation des requetes de marque est la plus grave</h4>
+      <p>"mydigipal" se repartit sur <strong>26 pages</strong>. Google doit choisir laquelle afficher et alterne, ce qui empeche d'avoir un sitelink riche et stable dans les SERP. La solution : redirections 301 de toutes les pages de l'ancien site, et s'assurer que le nouveau site a une hierarchie claire.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ON-PAGE SEO ===== -->
+<section id="onpage">
+  <h2>Audit On-Page (titles, descriptions, contenu)</h2>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Titres (meta title)</h3>
+      <div style="text-align:center;margin:16px 0">
+        <div class="stat-value critical" style="font-size:48px">77%</div>
+        <div class="stat-label" style="font-size:14px">des articles EN ont un titre trop long</div>
+      </div>
+      <table>
+        <tr><td>Titres OK (50-60 car.)</td><td style="text-align:right"><span class="badge good">13 articles (21%)</span></td></tr>
+        <tr><td>Titres trop longs (&gt; 60 car.)</td><td style="text-align:right"><span class="badge critical">47 articles (77%)</span></td></tr>
+        <tr><td>Titres trop courts (&lt; 50 car.)</td><td style="text-align:right"><span class="badge warning">1 article (2%)</span></td></tr>
+      </table>
+      <p style="font-size:12px;color:var(--gray-600);margin-top:8px">Rappel : le suffixe " | MyDigipal" (13 car.) est ajoute automatiquement. Le seo.title devrait etre 37-47 caracteres.</p>
+    </div>
+
+    <div class="card">
+      <h3>Descriptions (meta description)</h3>
+      <div style="text-align:center;margin:16px 0">
+        <div class="stat-value warning" style="font-size:48px">54%</div>
+        <div class="stat-label" style="font-size:14px">des descriptions EN sont hors plage optimale</div>
+      </div>
+      <table>
+        <tr><td>Descriptions OK (145-160 car.)</td><td style="text-align:right"><span class="badge good">28 articles (46%)</span></td></tr>
+        <tr><td>Trop courtes (&lt; 145 car.)</td><td style="text-align:right"><span class="badge warning">24 articles (39%)</span></td></tr>
+        <tr><td>Trop longues (&gt; 160 car.)</td><td style="text-align:right"><span class="badge warning">9 articles (15%)</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Impact sur le CTR</h3>
+    <div class="issue-block">
+      <h4>Lien direct entre titles tronques et 0% CTR</h4>
+      <p>Quand Google tronque un titre dans les SERP (au-dela de 60 caracteres), l'utilisateur voit "..." a la fin. C'est le cas pour 77% des articles. Combine avec des descriptions trop courtes/vagues, le resultat est un snippet peu attractif qui n'incite pas au clic meme en bonne position.</p>
+    </div>
+
+    <h3 style="margin-top:20px">Exemples concrets</h3>
+    <table>
+      <thead>
+        <tr><th>Page</th><th>Probleme</th><th style="text-align:right">Pos.</th><th style="text-align:right">Impressions</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="url">/en/blog/ai-agents-n8n-automation</td>
+          <td>Position 5.6, 2907 impressions, <strong>0 clics</strong> - le titre est probablement trop generique ou tronque</td>
+          <td style="text-align:right">5.6</td>
+          <td style="text-align:right">2 907</td>
+        </tr>
+        <tr>
+          <td class="url">/en/blog/google-vehicle-ads-2026</td>
+          <td>Position 3.7, 775 impressions, <strong>0 clics</strong> - top 4 sans un seul clic!</td>
+          <td style="text-align:right">3.7</td>
+          <td style="text-align:right">775</td>
+        </tr>
+        <tr>
+          <td class="url">/en/blog/beware-of-scammers</td>
+          <td>Position 2.7, 200 impressions, <strong>0 clics</strong> - titre/sujet decale vs audience</td>
+          <td style="text-align:right">2.7</td>
+          <td style="text-align:right">200</td>
+        </tr>
+        <tr>
+          <td class="url">/en/services/paid-social</td>
+          <td>Position 5.1, 203 impressions, <strong>0 clics</strong> - title de page service trop generique</td>
+          <td style="text-align:right">5.1</td>
+          <td style="text-align:right">203</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Elements techniques On-Page (positifs)</h3>
+    <table>
+      <thead><tr><th>Element</th><th>Statut</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>Sitemap XML</td><td><span class="badge good">OK</span></td><td>180 URLs, lastmod a jour</td></tr>
+        <tr><td>Hreflang (EN/FR)</td><td><span class="badge good">OK</span></td><td>540 tags bidirectionnels, x-default vers EN</td></tr>
+        <tr><td>Canonical URLs</td><td><span class="badge good">OK</span></td><td>Correctement implementees dans BaseLayout.astro</td></tr>
+        <tr><td>Robots.txt</td><td><span class="badge good">OK</span></td><td>Allow/Disallow bien configures</td></tr>
+        <tr><td>Schema ArticleSchema</td><td><span class="badge good">OK</span></td><td>headline, author, datePublished, image</td></tr>
+        <tr><td>Schema BreadcrumbSchema</td><td><span class="badge good">OK</span></td><td>Home &rarr; Blog &rarr; Article</td></tr>
+        <tr><td>Open Graph</td><td><span class="badge good">OK</span></td><td>og:type=article, published_time, author</td></tr>
+        <tr><td>Lazy loading images</td><td><span class="badge good">OK</span></td><td>Implemente correctement</td></tr>
+        <tr><td>Health Score Ahrefs</td><td><span class="badge good">100/100</span></td><td>Aucune erreur technique</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== BACKLINKS ===== -->
+<section id="backlinks">
+  <h2>Profil de backlinks</h2>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Metriques Ahrefs</h3>
+      <table>
+        <tr><td>Domain Rating (DR)</td><td style="text-align:right"><strong>17</strong> / 100</td></tr>
+        <tr><td>Backlinks live</td><td style="text-align:right">310</td></tr>
+        <tr><td>Backlinks historiques</td><td style="text-align:right">813</td></tr>
+        <tr><td>Referring domains live</td><td style="text-align:right">51</td></tr>
+        <tr><td>Referring domains historiques</td><td style="text-align:right">137</td></tr>
+        <tr><td>Ahrefs Rank</td><td style="text-align:right">10 268 214</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="card">
+      <h3>Diagnostic</h3>
+      <div class="issue-block warning">
+        <h4>DR 17 = insuffisant pour le marche B2B</h4>
+        <p>Les concurrents directs (agences marketing digital) ont generalement un DR de 40-70. Avec un DR 17, il est tres difficile de se positionner sur des mots-cles competitifs comme "b2b marketing agency", "ABM agency", etc.</p>
+      </div>
+      <div class="issue-block info">
+        <h4>86 referring domains perdus</h4>
+        <p>137 domaines referents historiques, mais seulement 51 encore actifs. Cela peut etre lie a la migration de site : les backlinks pointaient vers www.mydigipal.com et ne redirigent peut-etre pas correctement vers le nouveau domaine.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PAYS ===== -->
+<section id="pays">
+  <h2>Analyse geographique</h2>
+
+  <div class="card">
+    <h3>Repartition par pays</h3>
+    <table>
+      <thead>
+        <tr><th>Pays</th><th style="text-align:right">Impressions</th><th style="text-align:right">Clics</th><th style="text-align:right">CTR</th><th>Analyse</th></tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--critical-bg)">
+          <td>USA</td>
+          <td style="text-align:right"><strong>67 055</strong></td>
+          <td style="text-align:right">40</td>
+          <td style="text-align:right"><strong>0.06%</strong></td>
+          <td><span class="badge critical">48% des impressions, 7% des clics</span></td>
+        </tr>
+        <tr>
+          <td>UK</td>
+          <td style="text-align:right">15 490</td>
+          <td style="text-align:right">75</td>
+          <td style="text-align:right">0.48%</td>
+          <td><span class="badge warning">Marche cible principal - a ameliorer</span></td>
+        </tr>
+        <tr style="background:var(--good-bg)">
+          <td>France</td>
+          <td style="text-align:right">12 728</td>
+          <td style="text-align:right"><strong>179</strong></td>
+          <td style="text-align:right"><strong>1.41%</strong></td>
+          <td><span class="badge good">Meilleur CTR - marche le plus receptif</span></td>
+        </tr>
+        <tr>
+          <td>Canada</td>
+          <td style="text-align:right">4 159</td>
+          <td style="text-align:right">12</td>
+          <td style="text-align:right">0.29%</td>
+          <td>Secondaire</td>
+        </tr>
+        <tr>
+          <td>Inde</td>
+          <td style="text-align:right">2 831</td>
+          <td style="text-align:right">36</td>
+          <td style="text-align:right">1.27%</td>
+          <td>Bon CTR mais marche non cible</td>
+        </tr>
+        <tr>
+          <td>Ouganda</td>
+          <td style="text-align:right">2 646</td>
+          <td style="text-align:right">82</td>
+          <td style="text-align:right"><strong>3.10%</strong></td>
+          <td><span class="badge info">Article "beware of scammers"</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="issue-block" style="margin-top:16px">
+      <h4>Le probleme USA : beaucoup de bruit, peu de signal</h4>
+      <p>Les articles tech (Claude Code, n8n, AI agents) generent des impressions massives aux USA mais le site n'est pas assez autorite pour convertir. Les utilisateurs US voient MyDigipal dans les SERP mais preferent des sources connues. <strong>Concentrer les efforts SEO sur UK (marche cible) et France (meilleur CTR) avant de viser les USA.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PLAN D'ACTION ===== -->
+<section id="actions">
+  <h2>Plan d'action - par priorite</h2>
+
+  <h3>Priorite 1 - Critique (impact immediat)</h3>
+  <div class="priority-list">
+    <div class="priority-item p1">
+      <h4>Redirections 301 de l'ancien site <span class="impact high">Impact eleve</span></h4>
+      <p>Rediriger toutes les URLs de www.mydigipal.com et fr.mydigipal.com vers les equivalents sur mydigipal.com. Cela consolidera l'autorite sur un seul domaine et eliminera la cannibalisation. <strong>121 pages a rediriger.</strong></p>
+      <p style="margin-top:8px"><strong>Comment :</strong> Configurer les redirections au niveau DNS/hebergeur (Cloudflare, Netlify, ou equivalent). Mapper chaque ancienne URL vers la nouvelle URL correspondante.</p>
+    </div>
+    <div class="priority-item p1">
+      <h4>Optimiser les titles des 10 pages a fort potentiel <span class="impact high">Impact eleve</span></h4>
+      <p>Les pages en position 3-8 avec 0% CTR ont besoin de titles plus courts (37-47 car. dans seo.title), plus accrocheurs, avec le mot-cle principal en debut. Priorite aux 10 pages listees dans la section "Pages".</p>
+      <p style="margin-top:8px"><strong>Pages prioritaires :</strong> ai-agents-n8n-automation (pos 5.6), google-vehicle-ads-2026 (pos 3.7), beware-of-scammers (pos 2.7), paid-social (pos 5.1), local-seo-tactics (pos 6.7), claude-code-developer-productivity (pos 8)</p>
+    </div>
+    <div class="priority-item p1">
+      <h4>Corriger les meta descriptions des 33 articles trop courts <span class="impact high">Impact eleve</span></h4>
+      <p>Viser 145-160 caracteres avec : mot-cle principal + benefice + CTA implicite. Une bonne description peut doubler le CTR a position egale.</p>
+    </div>
+  </div>
+
+  <h3>Priorite 2 - Important (impact moyen terme)</h3>
+  <div class="priority-list">
+    <div class="priority-item p2">
+      <h4>Renforcer le contenu des pages services <span class="impact medium">Impact moyen</span></h4>
+      <p>Les pages /services/b2b-abm (pos 14.9), /services/seo (pos 11.5), /services/paid-social (pos 5.1) ont du potentiel mais manquent de contenu approfondi. Ajouter des sections FAQ, des temoignages clients, des chiffres concrets.</p>
+    </div>
+    <div class="priority-item p2">
+      <h4>Creer un article dedie LLMO (Large Language Model Optimization) <span class="impact medium">Impact moyen</span></h4>
+      <p>"llmo agency" genere 61 impressions en position 18 - le sujet est emergent et peu concurrentiel. Un article approfondi pourrait rapidement se positionner en top 5.</p>
+    </div>
+    <div class="priority-item p2">
+      <h4>Consolider les articles ChatGPT ranking <span class="impact medium">Impact moyen</span></h4>
+      <p>Les requetes "apparaitre sur chatgpt", "connaitre positionnement chatgpt", "how to rank on chatgpt" sont cannibalisees entre 5+ URLs (ancien + nouveau site, EN + FR). Un seul article par langue, bien optimise, concentrera l'autorite.</p>
+    </div>
+    <div class="priority-item p2">
+      <h4>Campagne de link building ciblee UK/FR <span class="impact medium">Impact moyen</span></h4>
+      <p>DR 17 est trop bas. Cibler 20-30 backlinks de qualite : guest posts sur blogs marketing, annuaires d'agences, partenariats clients (case studies avec lien retour). Objectif : DR 30 en 6 mois.</p>
+    </div>
+  </div>
+
+  <h3>Priorite 3 - Optimisation continue</h3>
+  <div class="priority-list">
+    <div class="priority-item p3">
+      <h4>Revoir la strategie de contenu blog <span class="impact low">Impact progressif</span></h4>
+      <p>Les articles tech (Claude Code, n8n) generent des impressions US massives mais 0 conversion. Privilegier le contenu cible UK/FR : "automotive digital marketing agency UK", "agence marketing B2B France", "ABM agency Europe".</p>
+    </div>
+    <div class="priority-item p3">
+      <h4>Ajouter FAQ Schema sur les articles cles <span class="impact low">Impact progressif</span></h4>
+      <p>Le schema FAQ dans les SERP augmente la visibilite et le CTR. A implementer sur les 10 articles avec le plus d'impressions.</p>
+    </div>
+    <div class="priority-item p3">
+      <h4>Maillage interne renforce <span class="impact low">Impact progressif</span></h4>
+      <p>Les articles de blog doivent systematiquement lier vers les pages services correspondantes (ex: article automotive &rarr; /automotive/google-ads). Et inversement, les pages services devraient lier vers les case studies et articles pertinents.</p>
+    </div>
+    <div class="priority-item p3">
+      <h4>Surveiller et deindexer les pages de l'ancien site <span class="impact low">Impact progressif</span></h4>
+      <p>Apres la mise en place des redirections 301, utiliser l'outil de suppression d'URL de Google Search Console pour accelerer la deindexation des anciennes URLs.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RESUME ===== -->
+<section id="resume">
+  <h2>Resume executif</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Dimension</th><th>Score</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>Infrastructure technique</td><td><span class="badge good">9/10</span></td><td>Excellent : sitemap, hreflang, schema, canonical</td></tr>
+        <tr><td>Optimisation on-page</td><td><span class="badge critical">3/10</span></td><td>Critique : 77% titles trop longs, 54% descriptions trop courtes</td></tr>
+        <tr><td>Architecture URL</td><td><span class="badge critical">2/10</span></td><td>Critique : 3 domaines en competition, 121 pages anciennes indexees</td></tr>
+        <tr><td>Autorite de domaine</td><td><span class="badge warning">4/10</span></td><td>Faible : DR 17, 51 referring domains, backlinks perdus post-migration</td></tr>
+        <tr><td>Strategie de contenu</td><td><span class="badge warning">5/10</span></td><td>Contenu de qualite mais mal cible geographiquement</td></tr>
+        <tr><td>CTR / Attractivite SERP</td><td><span class="badge critical">1/10</span></td><td>Catastrophique : 0.13% CTR moyen en fevrier, pages top 5 a 0 clics</td></tr>
+      </tbody>
+    </table>
+
+    <div class="issue-block good" style="margin-top:20px">
+      <h4>Le positif : la base est excellente</h4>
+      <p>Le site a un score technique parfait (100/100), un bon maillage hreflang, du contenu regulier et de qualite, et une position moyenne en amelioration constante. Le probleme n'est pas le contenu ni la technique - <strong>c'est la fragmentation des URLs et l'optimisation des snippets SERP</strong>. En resolvant ces 2 problemes, les 140K+ impressions devraient commencer a se convertir en clics significatifs.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div style="text-align:center;padding:24px;color:var(--gray-600);font-size:12px;border-top:1px solid var(--gray-200)">
+  Audit genere le 15 mars 2026 - MyDigipal / Claude Code
+</div>
+
+</body>
+</html>
