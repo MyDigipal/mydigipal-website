@@ -54,6 +54,12 @@ export interface ServiceItem {
   hasBudgetFee?: boolean;
   detailedInfo?: DetailedInfo;
   roiInfo?: DetailedInfo;
+  // Dynamic per-channel pricing : final price = pricePerChannel × nbSelectedChannels
+  // The single level "price" acts as fallback / starting price for 1 channel
+  dynamicPricing?: {
+    pricePerChannel: number;
+    minChannels?: number;
+  };
 }
 
 export interface DomainConfig {

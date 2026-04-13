@@ -216,6 +216,23 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const fp = useCallback((priceEUR: number) => formatPrice(priceEUR, currency), [currency]);
   const currencySymbol = CURRENCY_CONFIGS[currency].symbol;
 
+  // Dynamic price helper - resolves dynamicPricing for paid-social services
+  // Returns the level price multiplied by selected channel count when applicable
+  const getServicePrice = useCallback((service: { dynamicPricing?: { pricePerChannel: number; minChannels?: number } }, levelPrice: number, domainId?: string): number => {
+    if (service.dynamicPricing && domainId === 'paid-social') {
+      const min = service.dynamicPricing.minChannels || 1;
+      const nb = Math.max(selectedSocialChannels.length, min);
+      return service.dynamicPricing.pricePerChannel * nb;
+    }
+    return levelPrice;
+  }, [selectedSocialChannels]);
+
+  // Compute nbChannels for a given domain (used for management fee multiplier)
+  const getNbChannelsForDomain = useCallback((domain: 'google-ads' | 'paid-social'): number => {
+    if (domain === 'paid-social') return Math.max(selectedSocialChannels.length, 1);
+    return 1;
+  }, [selectedSocialChannels]);
+
   // Toggle domain selection
   const toggleDomain = useCallback((domain: ServiceDomain) => {
     setSelectedDomains(prev =>
@@ -329,21 +346,23 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       if (config.hasBudgetSlider && config.hasTieredManagementFee && budgetActivated[domain as 'google-ads' | 'paid-social']) {
         const budget = adBudgets[domain as 'google-ads' | 'paid-social'];
         adBudgetTotal += budget;
-        const feeResult = calculateManagementFee(domain as 'google-ads' | 'paid-social', budget);
+        const nbCh = getNbChannelsForDomain(domain as 'google-ads' | 'paid-social');
+        const feeResult = calculateManagementFee(domain as 'google-ads' | 'paid-social', budget, nbCh);
         managementFeesTotal += feeResult.fee;
         if (feeResult.isCustomQuote) hasCustomQuote = true;
       }
 
-      // Add service prices
+      // Add service prices (with dynamic per-channel pricing for paid-social services)
       config.services.forEach(service => {
         const selectedLevel = selections[service.id];
         if (selectedLevel !== null && selectedLevel !== undefined && !disabledServices[service.id]) {
           const level = service.levels[selectedLevel];
           if (level) {
+            const finalPrice = getServicePrice(service, level.price, domain);
             if (service.isOneOff) {
-              oneOffTotal += level.price;
+              oneOffTotal += finalPrice;
             } else {
-              monthlyTotal += level.price;
+              monthlyTotal += finalPrice;
             }
           }
         }
@@ -547,22 +566,24 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         });
       }
 
-      // Standard services
+      // Standard services (with dynamic per-channel pricing)
       domain.services.forEach(service => {
         const selectedLevel = selections[service.id];
         if (selectedLevel !== null && selectedLevel !== undefined && !disabledServices[service.id]) {
           const level = service.levels[selectedLevel];
           if (level) {
+            const finalPrice = getServicePrice(service, level.price, domainId);
+            const channelSuffix = service.dynamicPricing && domainId === 'paid-social' ? ` × ${Math.max(selectedSocialChannels.length, service.dynamicPricing.minChannels || 1)} canaux` : '';
             deptData.services.push({
               name: lang === 'fr' ? service.title : (service.titleEn || service.title),
-              level: lang === 'fr' ? level.name : (level.nameEn || level.name),
-              price: level.price,
+              level: (lang === 'fr' ? level.name : (level.nameEn || level.name)) + channelSuffix,
+              price: finalPrice,
               isOneOff: service.isOneOff || false
             });
             if (service.isOneOff) {
-              deptData.oneOffSubtotal += level.price;
+              deptData.oneOffSubtotal += finalPrice;
             } else {
-              deptData.monthlySubtotal += level.price;
+              deptData.monthlySubtotal += finalPrice;
             }
           }
         }
@@ -579,10 +600,11 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         deptData.monthlySubtotal += 100;
       }
 
-      // Management fee for ads
+      // Management fee for ads (with channel multiplier for paid-social)
       if (domain.hasTieredManagementFee && domain.hasBudgetSlider && budgetActivated[domainId as 'google-ads' | 'paid-social']) {
         const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
-        const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
+        const nbCh = getNbChannelsForDomain(domainId as 'google-ads' | 'paid-social');
+        const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget, nbCh);
         deptData.managementFee = feeResult.fee;
         deptData.mediaBudget = budget;
         deptData.monthlySubtotal += feeResult.fee;
@@ -1535,7 +1557,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                       {/* Budget slider for ads */}
                       {domain.hasBudgetSlider && (() => {
                         const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
-                        const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
+                        const nbCh = getNbChannelsForDomain(domainId as 'google-ads' | 'paid-social');
+                        const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget, nbCh);
                         const feeDescription = getManagementFeeDescription(budget, lang);
                         return (
                           <div className="mb-8 p-4 sm:p-6 bg-white rounded-xl border border-slate-200">
@@ -1573,6 +1596,15 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                 </span>
                               </div>
                               <p className="text-xs text-slate-500">{feeDescription}</p>
+                              {/* Channel multiplier indicator for paid-social */}
+                              {domainId === 'paid-social' && feeResult.channelMultiplier && feeResult.channelMultiplier > 1 && (
+                                <p className="text-xs text-slate-600 mt-1">
+                                  <span className={`font-semibold ${colors.text}`}>×{feeResult.channelMultiplier.toFixed(2).replace('.00', '')}</span>{' '}
+                                  {lang === 'fr'
+                                    ? `pour ${nbCh} canaux (plus d'optimisation cross-canal)`
+                                    : `for ${nbCh} channels (more cross-channel optimization)`}
+                                </p>
+                              )}
                               {/* 4-tier indicators */}
                               <div className="mt-3 flex gap-1">
                                 <div className={`flex-1 h-1.5 rounded-full ${budget < 2500 ? colors.bg : 'bg-slate-200'}`} title={lang === 'fr' ? '< 2500€: 500€/mois' : '< 2500€: 500€/mo'} />
@@ -1662,44 +1694,54 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                 </div>
                               </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {service.levels.map((level, idx) => (
-                                  <button
-                                    key={idx}
-                                    onClick={() => toggleServiceLevel(service.id, idx)}
-                                    className={`p-4 rounded-xl border-2 text-left transition-all relative ${
-                                      selectedLevel === idx
-                                        ? `${colors.border} ${colors.bgLight}`
-                                        : 'border-slate-200 hover:border-slate-300 bg-white'
-                                    }`}
-                                  >
-                                    {level.popular && (
-                                      <span className={`absolute -top-2 right-2 px-2 py-0.5 ${colors.bg} text-white text-xs font-medium rounded`}>
-                                        {t.popular}
-                                      </span>
-                                    )}
-                                    <div className="flex items-baseline gap-1 mb-2">
-                                      {level.priceNote && (
-                                        <span className="text-xs text-slate-500">{lang === 'fr' ? level.priceNote : (level.priceNoteEn || level.priceNote)}</span>
+                              <div className={`grid grid-cols-1 ${service.levels.length === 1 ? 'md:grid-cols-1' : 'md:grid-cols-3'} gap-4`}>
+                                {service.levels.map((level, idx) => {
+                                  const isDynamic = service.dynamicPricing && domainId === 'paid-social';
+                                  const nbCh = isDynamic ? Math.max(selectedSocialChannels.length, service.dynamicPricing!.minChannels || 1) : 1;
+                                  const displayPrice = isDynamic ? service.dynamicPricing!.pricePerChannel * nbCh : level.price;
+                                  return (
+                                    <button
+                                      key={idx}
+                                      onClick={() => toggleServiceLevel(service.id, idx)}
+                                      className={`p-4 rounded-xl border-2 text-left transition-all relative ${
+                                        selectedLevel === idx
+                                          ? `${colors.border} ${colors.bgLight}`
+                                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                                      }`}
+                                    >
+                                      {level.popular && (
+                                        <span className={`absolute -top-2 right-2 px-2 py-0.5 ${colors.bg} text-white text-xs font-medium rounded`}>
+                                          {t.popular}
+                                        </span>
                                       )}
-                                      <span className="text-xl font-bold text-slate-900">{fp(level.price)}</span>
-                                      {service.isOneOff || level.isOneOff ? (
-                                        <span className="text-xs text-slate-500">{t.oneOff}</span>
-                                      ) : (
-                                        <span className="text-xs text-slate-500">{t.perMonth}</span>
-                                      )}
-                                    </div>
-                                    <div className="font-medium text-slate-900 mb-2">{lang === 'fr' ? level.name : (level.nameEn || level.name)}</div>
-                                    <ul className="space-y-1">
-                                      {(lang === 'fr' ? level.features : (level.featuresEn || level.features)).slice(0, 3).map((feature, i) => (
-                                        <li key={i} className="text-xs text-slate-600 flex items-start gap-1">
-                                          <span className={`${colors.text} mt-0.5`}>•</span>
-                                          {feature}
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </button>
-                                ))}
+                                      <div className="flex items-baseline gap-1 mb-2 flex-wrap">
+                                        <span className="text-xl font-bold text-slate-900">{fp(displayPrice)}</span>
+                                        {service.isOneOff || level.isOneOff ? (
+                                          <span className="text-xs text-slate-500">{t.oneOff}</span>
+                                        ) : (
+                                          <span className="text-xs text-slate-500">{t.perMonth}</span>
+                                        )}
+                                        {isDynamic && (
+                                          <span className="text-xs text-slate-500 ml-1">
+                                            ({fp(service.dynamicPricing!.pricePerChannel)} × {nbCh} {nbCh > 1 ? (lang === 'fr' ? 'canaux' : 'channels') : (lang === 'fr' ? 'canal' : 'channel')})
+                                          </span>
+                                        )}
+                                        {!isDynamic && level.priceNote && (
+                                          <span className="text-xs text-slate-500 ml-1">{lang === 'fr' ? level.priceNote : (level.priceNoteEn || level.priceNote)}</span>
+                                        )}
+                                      </div>
+                                      <div className="font-medium text-slate-900 mb-2">{lang === 'fr' ? level.name : (level.nameEn || level.name)}</div>
+                                      <ul className="space-y-1">
+                                        {(lang === 'fr' ? level.features : (level.featuresEn || level.features)).slice(0, 3).map((feature, i) => (
+                                          <li key={i} className="text-xs text-slate-600 flex items-start gap-1">
+                                            <span className={`${colors.text} mt-0.5`}>•</span>
+                                            {feature}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </button>
+                                  );
+                                })}
                               </div>
                             </div>
                           );
@@ -1939,13 +1981,14 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                       const selectedLevel = selections[service.id];
                       if (selectedLevel !== null && selectedLevel !== undefined && !disabledServices[service.id] && !service.isOneOff) {
                         const level = service.levels[selectedLevel];
-                        if (level) domainMonthly += level.price;
+                        if (level) domainMonthly += getServicePrice(service, level.price, domainId);
                       }
                     });
                     // Add management fee for ads domains
                     if (domain.hasTieredManagementFee && domain.hasBudgetSlider) {
                       const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
-                      const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
+                      const nbCh = getNbChannelsForDomain(domainId as 'google-ads' | 'paid-social');
+                      const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget, nbCh);
                       domainMonthly += feeResult.fee;
                     }
                     // Add CMS addon if applicable
@@ -2006,7 +2049,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         const selectedLevel = selections[service.id];
                         if (selectedLevel !== null && selectedLevel !== undefined && !disabledServices[service.id] && service.isOneOff) {
                           const level = service.levels[selectedLevel];
-                          if (level) domainOneOff += level.price;
+                          if (level) domainOneOff += getServicePrice(service, level.price, domainId);
                         }
                       });
                     }
@@ -2400,8 +2443,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   if (selectedLevel !== null && selectedLevel !== undefined && !disabledServices[service.id]) {
                     const level = service.levels[selectedLevel];
                     if (level) {
-                      if (service.isOneOff) domainOneOff += level.price;
-                      else domainMonthly += level.price;
+                      const finalPrice = getServicePrice(service, level.price, domainId);
+                      if (service.isOneOff) domainOneOff += finalPrice;
+                      else domainMonthly += finalPrice;
                     }
                   }
                 });
@@ -2410,7 +2454,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 let domainManagementFee = 0;
                 if (domain.hasTieredManagementFee && domain.hasBudgetSlider) {
                   const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
-                  const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget);
+                  const nbCh = getNbChannelsForDomain(domainId as 'google-ads' | 'paid-social');
+                  const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget, nbCh);
                   domainManagementFee = feeResult.fee;
                 }
 
@@ -2441,10 +2486,13 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         if (selectedLevel === null || selectedLevel === undefined || disabledServices[service.id]) return null;
                         const level = service.levels[selectedLevel];
                         if (!level) return null;
+                        const finalPrice = getServicePrice(service, level.price, domainId);
+                        const isDynamic = service.dynamicPricing && domainId === 'paid-social';
+                        const nbCh = isDynamic ? Math.max(selectedSocialChannels.length, service.dynamicPricing!.minChannels || 1) : 1;
                         return (
                           <div key={service.id} className="flex justify-between text-slate-600">
-                            <span>{lang === 'fr' ? service.title : (service.titleEn || service.title)} - {lang === 'fr' ? level.name : (level.nameEn || level.name)}</span>
-                            <span>{fp(level.price)}{service.isOneOff ? '' : (lang === 'fr' ? '/mois' : '/mo')}</span>
+                            <span>{lang === 'fr' ? service.title : (service.titleEn || service.title)} - {lang === 'fr' ? level.name : (level.nameEn || level.name)}{isDynamic ? ` (× ${nbCh})` : ''}</span>
+                            <span>{fp(finalPrice)}{service.isOneOff ? '' : (lang === 'fr' ? '/mois' : '/mo')}</span>
                           </div>
                         );
                       })}

@@ -6,87 +6,61 @@ import type { ServiceItem } from '../types';
 //         + options transversales (visuels, feed/catalogue, audit)
 // Le Calculator.tsx gère le flow "Je sais quels canaux" vs "Aidez-moi à choisir"
 
-// Services one-off (audit, setup)
+// Services one-off (audit, setup) - prix dynamique selon nb canaux sélectionnés au-dessus
 export const paidSocialServices: ServiceItem[] = [
   {
     id: 'social-audit',
     title: 'A. Audit Campagnes Sociales',
     titleEn: 'A. Social Campaigns Audit',
-    description: 'Analyse de vos campagnes existantes sur tous les réseaux sociaux pour identifier les optimisations.',
-    descriptionEn: 'Analysis of your existing campaigns across all social networks to identify optimizations.',
+    description: 'Diagnostic complet de vos campagnes existantes sur les canaux sélectionnés.',
+    descriptionEn: 'Complete diagnostic of your existing campaigns on selected channels.',
     icon: '🔍',
     isOneOff: true,
+    dynamicPricing: { pricePerChannel: 350, minChannels: 1 },
     detailedInfo: {
-      title: 'Audit Social Ads - C\'est quoi exactement ?',
+      title: "Audit Social Ads - C'est quoi exactement ?",
       content: {
-        intro: 'Un diagnostic complet de vos campagnes publicitaires sur les réseaux sociaux.',
+        intro: 'Un diagnostic complet de vos campagnes publicitaires sur les canaux que vous avez sélectionnés ci-dessus.',
         sections: [
           {
-            title: 'Ce que nous analysons',
+            title: 'Ce que nous analysons par canal',
             items: [
               'Structure des campagnes et ensembles de publicités',
-              'Qualité des audiences et ciblage',
+              "Qualité des audiences et ciblage",
               'Performance des créatives (CTR, engagement, ROAS)',
-              'Paramètres d\'enchères et optimisation',
+              "Paramètres d'enchères et optimisation",
               'Pixel/CAPI et tracking des conversions',
               'Fréquence et fatigue publicitaire',
               'Benchmark concurrentiel'
             ]
-          },
-          {
-            title: 'Plateformes couvertes',
-            items: [
-              'Meta (Facebook & Instagram)',
-              'LinkedIn Ads',
-              'TikTok Ads',
-              'Google Display & YouTube'
-            ]
           }
         ],
-        conclusion: 'Livrable : Rapport d\'audit avec recommandations par plateforme et plan d\'action.'
+        conclusion: "Livrable : Rapport d'audit avec recommandations par plateforme et plan d'action priorisé."
       }
     },
     levels: [
       {
-        name: '1 plateforme',
-        nameEn: '1 platform',
-        price: 400,
+        name: 'Audit complet',
+        nameEn: 'Full audit',
+        price: 350,
+        priceNote: 'par canal sélectionné',
+        priceNoteEn: 'per selected channel',
         features: [
-          'Audit 1 plateforme au choix',
-          'Analyse des performances',
-          'Recommandations actionnables',
-          'Rapport détaillé'
-        ],
-        featuresEn: [
-          '1 platform audit of your choice',
-          'Performance analysis',
-          'Actionable recommendations',
-          'Detailed report'
-        ],
-        recommended: 'Focus sur un canal',
-        recommendedEn: 'Focus on one channel'
-      },
-      {
-        name: 'Multi-canal',
-        nameEn: 'Multi-channel',
-        price: 700,
-        features: [
-          'Audit 2-3 plateformes',
-          'Analyse cross-canal',
+          'Audit de chaque canal sélectionné',
+          'Analyse des performances actuelles',
           'Benchmark concurrentiel',
-          'Plan d\'action priorisé',
-          'Recommandations budget'
+          'Recommandations actionnables',
+          "Plan d'action priorisé"
         ],
         featuresEn: [
-          '2-3 platform audit',
-          'Cross-channel analysis',
+          'Audit of each selected channel',
+          'Current performance analysis',
           'Competitive benchmark',
-          'Prioritized action plan',
-          'Budget recommendations'
+          'Actionable recommendations',
+          'Prioritized action plan'
         ],
-        recommended: 'Vision complète de vos socials',
-        recommendedEn: 'Complete view of your socials',
-        popular: true
+        recommended: 'Si tu as déjà des campagnes en place',
+        recommendedEn: 'If you already have running campaigns'
       }
     ]
   },
@@ -98,101 +72,50 @@ export const paidSocialServices: ServiceItem[] = [
     descriptionEn: 'Creation and configuration of your campaigns on selected channels, with optimized structure.',
     icon: '⚙️',
     isOneOff: true,
+    dynamicPricing: { pricePerChannel: 450, minChannels: 1 },
     detailedInfo: {
-      title: 'Setup de Campagnes - C\'est quoi exactement ?',
+      title: "Setup de Campagnes - C'est quoi exactement ?",
       content: {
-        intro: 'Mise en place professionnelle de vos campagnes social ads avec une structure optimisée dès le départ.',
+        intro: 'Mise en place professionnelle de vos campagnes social ads avec une structure optimisée dès le départ, sur chacun des canaux sélectionnés.',
         sections: [
           {
-            title: 'Ce que nous configurons',
+            title: 'Ce que nous configurons par canal',
             items: [
               'Structure de compte et campagnes optimale',
               'Création des audiences (lookalike, retargeting, intérêts)',
               'Configuration pixel/CAPI + Consent Mode v2',
-              'Paramétrage des objectifs et enchères',
+              "Paramétrage des objectifs et enchères",
               'Premières créatives (textes + visuels de lancement)',
               'Tests A/B structurés dès le départ'
             ]
-          },
-          {
-            title: 'Par canal',
-            items: [
-              'Meta : Dynamic Ads, Advantage+, Lead Gen Forms',
-              'LinkedIn : Sponsored Content, InMail, Lead Gen',
-              'TikTok : In-Feed, TopView, Spark Ads',
-              'Google Display : Responsive, Remarketing'
-            ]
           }
         ],
-        conclusion: 'Livrable : Comptes configurés et campagnes prêtes à être activées.'
+        conclusion: 'Livrable : Comptes configurés et campagnes prêtes à être activées sur tous les canaux choisis.'
       }
     },
     levels: [
       {
-        name: '1 canal',
-        nameEn: '1 channel',
-        price: 500,
+        name: 'Setup initial',
+        nameEn: 'Initial setup',
+        price: 450,
+        priceNote: 'par canal sélectionné',
+        priceNoteEn: 'per selected channel',
         features: [
-          '1 plateforme configurée',
-          '2-3 campagnes',
-          'Audiences de base + retargeting',
-          'Pixel/CAPI configuré',
-          '3 visuels de lancement'
+          'Structure de compte et campagnes par canal',
+          'Audiences (lookalike, retargeting, intérêts)',
+          'Pixel/CAPI + Consent Mode v2',
+          'Premières créatives de lancement',
+          'Tests A/B structurés dès le départ'
         ],
         featuresEn: [
-          '1 platform configured',
-          '2-3 campaigns',
-          'Basic audiences + retargeting',
-          'Pixel/CAPI configured',
-          '3 launch visuals'
+          'Account and campaign structure per channel',
+          'Audiences (lookalike, retargeting, interests)',
+          'Pixel/CAPI + Consent Mode v2',
+          'Initial launch creatives',
+          'Structured A/B tests from day one'
         ],
-        recommended: 'Démarrage sur un canal',
-        recommendedEn: 'Starting on one channel'
-      },
-      {
-        name: '2 canaux',
-        nameEn: '2 channels',
-        price: 900,
-        features: [
-          '2 plateformes configurées',
-          '4-6 campagnes totales',
-          'Audiences avancées cross-canal',
-          'Retargeting multi-plateforme',
-          '6 visuels de lancement'
-        ],
-        featuresEn: [
-          '2 platforms configured',
-          '4-6 total campaigns',
-          'Advanced cross-channel audiences',
-          'Multi-platform retargeting',
-          '6 launch visuals'
-        ],
-        recommended: 'Stratégie multi-canal',
-        recommendedEn: 'Multi-channel strategy',
-        popular: true
-      },
-      {
-        name: '3+ canaux',
-        nameEn: '3+ channels',
-        price: 1500,
-        features: [
-          '3+ plateformes configurées',
-          'Campagnes illimitées',
-          'Audiences sur-mesure par canal',
-          'Dynamic Ads + catalogues',
-          '10 visuels de lancement',
-          'Tests A/B structurés'
-        ],
-        featuresEn: [
-          '3+ platforms configured',
-          'Unlimited campaigns',
-          'Custom audiences per channel',
-          'Dynamic Ads + catalogs',
-          '10 launch visuals',
-          'Structured A/B tests'
-        ],
-        recommended: 'Présence maximale',
-        recommendedEn: 'Maximum presence'
+        recommended: 'Lancement initial des campagnes',
+        recommendedEn: 'Initial campaign launch'
       }
     ]
   },

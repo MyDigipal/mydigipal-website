@@ -127,6 +127,27 @@ export const DURATION_CONFIG = {
   ]
 } as const;
 
+// Channel complexity multiplier for Paid Social management fee
+// More channels = more A/B tests, more reports to consolidate, more cross-channel optimization
+export const CHANNEL_MULTIPLIER_CONFIG = {
+  1: 1.0,
+  2: 1.1,
+  3: 1.2,
+  4: 1.3,
+  5: 1.4,
+  // 6+ caps at 1.5
+  default: 1.5
+} as const;
+
+export function getChannelMultiplier(nbChannels: number): number {
+  if (nbChannels <= 1) return CHANNEL_MULTIPLIER_CONFIG[1];
+  if (nbChannels === 2) return CHANNEL_MULTIPLIER_CONFIG[2];
+  if (nbChannels === 3) return CHANNEL_MULTIPLIER_CONFIG[3];
+  if (nbChannels === 4) return CHANNEL_MULTIPLIER_CONFIG[4];
+  if (nbChannels === 5) return CHANNEL_MULTIPLIER_CONFIG[5];
+  return CHANNEL_MULTIPLIER_CONFIG.default;
+}
+
 // Tiered management fee configuration
 // Based on: < 2500€ = 500€ flat, 2500€-7500€ = 20%, 7500€-12500€ = 15%, > 12500€ = custom quote
 export const MANAGEMENT_FEE_CONFIG = {
@@ -194,24 +215,31 @@ export {
 };
 
 // Helper: Calculate management fee using tiered structure
-export function calculateManagementFee(domain: 'google-ads' | 'paid-social', budget: number): { fee: number; type: 'flat' | 'percentage' | 'custom'; isCustomQuote: boolean } {
+// nbChannels: number of selected channels (only for paid-social, applies multiplier)
+export function calculateManagementFee(
+  domain: 'google-ads' | 'paid-social',
+  budget: number,
+  nbChannels: number = 1
+): { fee: number; type: 'flat' | 'percentage' | 'custom'; isCustomQuote: boolean; channelMultiplier?: number } {
   const config = domainConfigs[domain];
   if (!config.hasTieredManagementFee) return { fee: 0, type: 'flat', isCustomQuote: false };
+
+  // Apply channel multiplier only for paid-social
+  const multiplier = domain === 'paid-social' ? getChannelMultiplier(nbChannels) : 1;
 
   // Find the appropriate tier
   for (const tier of MANAGEMENT_FEE_CONFIG.tiers) {
     if (budget < tier.maxBudget) {
       if (tier.type === 'flat') {
-        return { fee: tier.value, type: 'flat', isCustomQuote: false };
+        return { fee: tier.value * multiplier, type: 'flat', isCustomQuote: false, channelMultiplier: multiplier };
       } else if (tier.type === 'percentage') {
-        return { fee: budget * (tier.value / 100), type: 'percentage', isCustomQuote: false };
+        return { fee: budget * (tier.value / 100) * multiplier, type: 'percentage', isCustomQuote: false, channelMultiplier: multiplier };
       } else {
-        // Custom quote - return 0 but flag it
-        return { fee: 0, type: 'custom', isCustomQuote: true };
+        return { fee: 0, type: 'custom', isCustomQuote: true, channelMultiplier: multiplier };
       }
     }
   }
-  return { fee: 0, type: 'custom', isCustomQuote: true };
+  return { fee: 0, type: 'custom', isCustomQuote: true, channelMultiplier: multiplier };
 }
 
 // Helper: Get management fee description for display
