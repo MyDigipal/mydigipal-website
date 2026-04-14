@@ -3,16 +3,25 @@ import { type Language } from '@/i18n/config';
 
 interface Props {
   lang: Language;
+  variant?: 'training' | 'solutions';
 }
 
-const { lang } = Astro.props;
+const { lang, variant = 'training' } = Astro.props;
 
 const translations = {
   en: {
-    badge: "Connected stack",
-    headline: "20+ platforms. One interface.",
-    subtitle:
-      "From Google Ads to Lemlist through BigQuery : we connect everything your team already uses. Here's what we orchestrate in production for our clients.",
+    training: {
+      badge: "Connected stack",
+      headline: "20+ platforms. One interface.",
+      subtitle:
+        "From Google Ads to Lemlist through BigQuery : we connect everything your team already uses. Here's what we orchestrate in production for our clients.",
+    },
+    solutions: {
+      badge: "What we connect",
+      headline: "Your stack, orchestrated.",
+      subtitle:
+        "From Google Ads to Lemlist through BigQuery : we build MCPs and automations on top of the tools you already rely on. Here's what we operate in production today.",
+    },
     proofTitle: "MCP Gateway in production",
     proofs: [
       { value: "244", label: "tools exposed" },
@@ -21,10 +30,18 @@ const translations = {
     ],
   },
   fr: {
-    badge: "Stack connectée",
-    headline: "20+ plateformes. Une seule interface.",
-    subtitle:
-      "De Google Ads à Lemlist en passant par BigQuery : on connecte tout ce que votre équipe utilise déjà. Voici ce qu'on orchestre en production pour nos clients.",
+    training: {
+      badge: "Stack connectée",
+      headline: "20+ plateformes. Une seule interface.",
+      subtitle:
+        "De Google Ads à Lemlist en passant par BigQuery : on connecte tout ce que votre équipe utilise déjà. Voici ce qu'on orchestre en production pour nos clients.",
+    },
+    solutions: {
+      badge: "Ce qu'on connecte",
+      headline: "Votre stack, orchestrée.",
+      subtitle:
+        "De Google Ads à Lemlist en passant par BigQuery : on construit des MCPs et des automatisations par-dessus les outils que vous utilisez déjà. Voici ce qu'on opère en production aujourd'hui.",
+    },
     proofTitle: "MCP Gateway en production",
     proofs: [
       { value: "244", label: "outils exposés" },
@@ -34,7 +51,9 @@ const translations = {
   },
 };
 
-const t = translations[lang] || translations.en;
+const tBlock = translations[lang] || translations.en;
+const tVariant = tBlock[variant] || tBlock.training;
+const t = { ...tVariant, proofTitle: tBlock.proofTitle, proofs: tBlock.proofs };
 
 type Category = "ppc" | "data" | "seo" | "sales" | "content" | "ops";
 

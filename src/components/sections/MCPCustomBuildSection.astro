@@ -1,0 +1,317 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import Button from '@/components/ui/Button.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Model Context Protocol",
+    headline: "Your MCP, built to order.",
+    headlineAccent: "We design. We deploy. We operate.",
+    subtitle:
+      "We operate our own MCP Gateway - 244 tools across 21 marketing platforms, live in production. We build yours the same way : with your data, your rules, your stack.",
+    bullets: [
+      {
+        icon: "cpu",
+        title: "Battle-tested in production",
+        text: "Our own MCP runs on Google Cloud Run, queried every day by 18+ clients. We know what breaks, what scales, and what's worth building versus what isn't.",
+      },
+      {
+        icon: "zap",
+        title: "Plugged into your real stack",
+        text: "Ahrefs, GA4, Meta Ads, BigQuery, HubSpot, Notion, Lemlist, your internal APIs. We build the connectors you actually need, not a generic vendor demo.",
+      },
+      {
+        icon: "sparkles",
+        title: "Claude Desktop, Claude Code or your own agent",
+        text: "Your MCP works with Anthropic's clients out of the box - and with any custom agent you decide to build on top. No lock-in.",
+      },
+    ],
+    cta: "Scope your MCP with us",
+    ctaHref: "/en/contact?topic=mcp-build",
+    terminalTitle: "your-mcp-server - live",
+    prompts: [
+      {
+        user: "Draft tomorrow's board update on Q1 marketing performance.",
+        tools: ["bq_query", "docs_create", "drive_upload"],
+        reply:
+          "Draft saved to Drive. Meta ROAS 3.2x, Google Ads CPA -18%, 3 risks flagged. Ready for your review.",
+      },
+      {
+        user: "Which accounts from our target list engaged with last month's campaign?",
+        tools: ["bq_query on linkedinAds", "airscale_get_company"],
+        reply:
+          "23 target accounts engaged. 8 already in pipeline. 15 new - pushed to HubSpot as MQLs.",
+      },
+      {
+        user: "Pause any campaign below 1.5 ROAS in the last 7 days.",
+        tools: ["google_ads_list_campaigns", "google_ads_update_status"],
+        reply:
+          "Identified 4 campaigns below threshold. Paused. Sent summary + savings estimate to #paid-media.",
+      },
+    ],
+  },
+  fr: {
+    badge: "Model Context Protocol",
+    headline: "Votre MCP, conçu pour vous.",
+    headlineAccent: "On le construit. On le déploie. On l'opère.",
+    subtitle:
+      "On opère notre propre MCP Gateway - 244 outils sur 21 plateformes marketing, en production. On construit le vôtre pareil : avec vos données, vos règles, votre stack.",
+    bullets: [
+      {
+        icon: "cpu",
+        title: "Éprouvé en production",
+        text: "Notre MCP tourne sur Google Cloud Run, utilisé chaque jour par 18+ clients. On sait ce qui casse, ce qui tient à l'échelle, et ce qui vaut le coup d'être construit ou non.",
+      },
+      {
+        icon: "zap",
+        title: "Connecté à votre vraie stack",
+        text: "Ahrefs, GA4, Meta Ads, BigQuery, HubSpot, Notion, Lemlist, vos API internes. On construit les connecteurs dont vous avez vraiment besoin, pas une démo générique.",
+      },
+      {
+        icon: "sparkles",
+        title: "Claude Desktop, Claude Code ou votre propre agent",
+        text: "Votre MCP fonctionne avec les clients Anthropic out of the box - et avec n'importe quel agent custom que vous décidez de construire dessus. Aucune dépendance.",
+      },
+    ],
+    cta: "Cadrer votre MCP avec nous",
+    ctaHref: "/fr/contact?topic=mcp-build",
+    terminalTitle: "your-mcp-server - live",
+    prompts: [
+      {
+        user: "Rédige le board update de demain sur les performances marketing Q1.",
+        tools: ["bq_query", "docs_create", "drive_upload"],
+        reply:
+          "Brouillon sauvegardé dans Drive. ROAS Meta 3,2x, CPA Google Ads -18%, 3 risques identifiés. Prêt pour relecture.",
+      },
+      {
+        user: "Quels comptes de notre target list ont engagé avec la campagne du mois dernier ?",
+        tools: ["bq_query on linkedinAds", "airscale_get_company"],
+        reply:
+          "23 comptes cibles ont engagé. 8 déjà en pipeline. 15 nouveaux - poussés dans HubSpot comme MQL.",
+      },
+      {
+        user: "Mets en pause toute campagne sous 1,5 de ROAS sur les 7 derniers jours.",
+        tools: ["google_ads_list_campaigns", "google_ads_update_status"],
+        reply:
+          "4 campagnes identifiées sous le seuil. Pausées. Récap + estimation des économies envoyés sur #paid-media.",
+      },
+    ],
+  },
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="mcp-custom relative overflow-hidden py-28 md:py-36 bg-slate-950 text-white">
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+    <div class="mcpc-blob mcpc-blob-1"></div>
+    <div class="mcpc-blob mcpc-blob-2"></div>
+    <div class="mcpc-blob mcpc-blob-3"></div>
+    <div
+      class="absolute inset-0 opacity-[0.05]"
+      style="background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px); background-size: 28px 28px;"
+    ></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <div class="grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+      <div class="animate-on-scroll">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 text-violet-300 text-sm font-medium mb-8"
+        >
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75 animate-ping"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-violet-400"></span>
+          </span>
+          <span>{t.badge}</span>
+        </div>
+
+        <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] mb-6">
+          {t.headline}<br />
+          <span class="mcpc-gradient-text">{t.headlineAccent}</span>
+        </h2>
+
+        <p class="text-lg text-slate-300 mb-10 max-w-xl leading-relaxed">{t.subtitle}</p>
+
+        <ul class="space-y-6 mb-10">
+          {
+            t.bullets.map((b) => (
+              <li class="flex gap-4">
+                <div class="shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500/20 to-cyan-500/20 border border-white/10 flex items-center justify-center text-violet-300">
+                  <Icon name={b.icon} size={22} />
+                </div>
+                <div>
+                  <h3 class="font-semibold text-white text-lg mb-1">{b.title}</h3>
+                  <p class="text-slate-400 leading-relaxed">{b.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+
+        <Button href={t.ctaHref} variant="primary" size="lg">
+          {t.cta}
+        </Button>
+      </div>
+
+      <div class="animate-on-scroll" style="animation-delay: 200ms;">
+        <div class="mcpc-terminal rounded-2xl border border-white/10 bg-slate-900/70 backdrop-blur-xl shadow-[0_30px_80px_-30px_rgba(139,92,246,0.4)] overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-white/5">
+            <span class="w-3 h-3 rounded-full bg-rose-400/80"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-400/80"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-400/80"></span>
+            <span class="ml-3 text-xs text-slate-400 font-mono">{t.terminalTitle}</span>
+          </div>
+
+          <div class="mcpc-terminal-body relative p-6 font-mono text-sm leading-relaxed min-h-[440px]">
+            {
+              t.prompts.map((p, i) => (
+                <div class={`mcpc-turn mcpc-turn-${i}`}>
+                  <div class="flex items-start gap-3 mb-3">
+                    <span class="text-violet-400 shrink-0">{'>'}</span>
+                    <span class="text-slate-100">{p.user}</span>
+                  </div>
+                  <div class="pl-6 text-xs text-slate-500 mb-2">
+                    {p.tools.map((tool) => (
+                      <div class="flex items-center gap-2 mb-1">
+                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                        <span>[calling tool: {tool}...]</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div class="pl-6 text-emerald-300">{p.reply}</div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .mcpc-gradient-text {
+    background: linear-gradient(120deg, #a78bfa 0%, #22d3ee 50%, #34d399 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: mcpc-gradient 8s ease infinite;
+  }
+
+  @keyframes mcpc-gradient {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .mcpc-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(110px);
+    opacity: 0.35;
+    animation: mcpc-drift 24s ease-in-out infinite;
+  }
+
+  .mcpc-blob-1 {
+    width: 540px;
+    height: 540px;
+    top: -140px;
+    right: -120px;
+    background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+  }
+
+  .mcpc-blob-2 {
+    width: 620px;
+    height: 620px;
+    bottom: -160px;
+    left: -160px;
+    background: radial-gradient(circle, #06b6d4 0%, transparent 70%);
+    animation-delay: -9s;
+  }
+
+  .mcpc-blob-3 {
+    width: 420px;
+    height: 420px;
+    top: 30%;
+    left: 35%;
+    background: radial-gradient(circle, #10b981 0%, transparent 70%);
+    opacity: 0.22;
+    animation-delay: -15s;
+  }
+
+  @keyframes mcpc-drift {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(-30px, 40px) scale(1.1);
+    }
+    66% {
+      transform: translate(40px, -30px) scale(0.95);
+    }
+  }
+
+  .mcpc-turn {
+    position: absolute;
+    left: 1.5rem;
+    right: 1.5rem;
+    top: 1.5rem;
+    opacity: 0;
+    animation: mcpc-cycle 18s linear infinite;
+  }
+  .mcpc-turn-0 {
+    animation-delay: 0s;
+  }
+  .mcpc-turn-1 {
+    animation-delay: 6s;
+  }
+  .mcpc-turn-2 {
+    animation-delay: 12s;
+  }
+
+  @keyframes mcpc-cycle {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    5%,
+    30% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    35%,
+    100% {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mcpc-blob,
+    .mcpc-gradient-text,
+    .mcpc-turn {
+      animation: none;
+    }
+    .mcpc-turn-0 {
+      opacity: 1;
+    }
+    .mcpc-turn-1,
+    .mcpc-turn-2 {
+      display: none;
+    }
+  }
+</style>

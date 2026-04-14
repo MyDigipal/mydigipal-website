@@ -1,0 +1,248 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Delivery packages",
+    headline: "Three ways to get your MCP into production.",
+    subtitle:
+      "Fixed scope, fixed timeline, fixed price. We ship working MCPs - not slide decks.",
+    packages: [
+      {
+        icon: "zap",
+        name: "MCP Starter",
+        timeline: "2 weeks",
+        positioning: "Prove the value on one high-impact use case",
+        description:
+          "One focused MCP, 3 to 5 connectors, deployed to your cloud. Ideal to unlock a specific workflow (reporting, lead enrichment, campaign ops).",
+        includes: [
+          "Discovery workshop + use case scoping",
+          "3-5 custom tools built and tested",
+          "Deployment to Cloud Run, Render or your infra",
+          "Claude Desktop / Claude Code setup for your team",
+          "Technical handover + 2 weeks of support",
+        ],
+        price: "From €6 500",
+        highlighted: false,
+      },
+      {
+        icon: "cpu",
+        name: "MCP Production",
+        timeline: "4-6 weeks",
+        positioning: "Your full marketing stack, orchestrated",
+        description:
+          "Multi-source MCP with authentication, error handling, monitoring and CI/CD. Ready for daily use across your team.",
+        includes: [
+          "Architecture review + multi-tenant auth model",
+          "10-15 custom tools across your stack",
+          "Monitoring, logging and error alerting",
+          "CI/CD pipeline + versioning workflow",
+          "Team training + runbooks",
+          "1 month of post-launch support",
+        ],
+        price: "From €15 000",
+        highlighted: true,
+      },
+      {
+        icon: "database",
+        name: "MCP Enterprise",
+        timeline: "8-12 weeks",
+        positioning: "SSO, audit logs, multi-tenant, SLA",
+        description:
+          "Production-grade MCP for enterprise IT. SSO, granular permissions, audit trails, SLA. Built to pass security reviews.",
+        includes: [
+          "SSO integration (Okta, Azure AD, Google Workspace)",
+          "Role-based access control + audit log",
+          "Multi-tenant isolation",
+          "Private deployment (VPC, on-prem option)",
+          "Security review + documentation for IT",
+          "Quarterly roadmap + SLA",
+        ],
+        price: "Custom pricing",
+        highlighted: false,
+      },
+    ],
+    cta: "Scope this package",
+    ctaHref: "/en/contact?topic=mcp-package",
+  },
+  fr: {
+    badge: "Packages de livraison",
+    headline: "Trois façons de mettre votre MCP en production.",
+    subtitle:
+      "Scope fixé, timeline fixée, prix fixé. On livre des MCP qui tournent - pas des slides.",
+    packages: [
+      {
+        icon: "zap",
+        name: "MCP Starter",
+        timeline: "2 semaines",
+        positioning: "Valider la valeur sur un cas d'usage fort",
+        description:
+          "Un MCP ciblé, 3 à 5 connecteurs, déployé sur votre cloud. Idéal pour débloquer un workflow précis (reporting, enrichissement de leads, ops campagnes).",
+        includes: [
+          "Workshop de discovery + cadrage du cas d'usage",
+          "3-5 tools custom construits et testés",
+          "Déploiement sur Cloud Run, Render ou votre infra",
+          "Configuration Claude Desktop / Claude Code pour votre équipe",
+          "Handover technique + 2 semaines de support",
+        ],
+        price: "À partir de 6 500€",
+        highlighted: false,
+      },
+      {
+        icon: "cpu",
+        name: "MCP Production",
+        timeline: "4-6 semaines",
+        positioning: "Toute votre stack marketing, orchestrée",
+        description:
+          "MCP multi-source avec authentification, gestion d'erreurs, monitoring et CI/CD. Prêt à tourner tous les jours sur votre équipe.",
+        includes: [
+          "Architecture review + modèle d'auth multi-tenant",
+          "10-15 tools custom sur votre stack",
+          "Monitoring, logging et alertes d'erreurs",
+          "Pipeline CI/CD + workflow de versioning",
+          "Formation équipe + runbooks",
+          "1 mois de support post-lancement",
+        ],
+        price: "À partir de 15 000€",
+        highlighted: true,
+      },
+      {
+        icon: "database",
+        name: "MCP Enterprise",
+        timeline: "8-12 semaines",
+        positioning: "SSO, audit logs, multi-tenant, SLA",
+        description:
+          "MCP production-grade pour IT grand compte. SSO, permissions fines, audit trails, SLA. Construit pour passer les reviews sécurité.",
+        includes: [
+          "Intégration SSO (Okta, Azure AD, Google Workspace)",
+          "Contrôle d'accès par rôle + audit log",
+          "Isolation multi-tenant",
+          "Déploiement privé (VPC, option on-prem)",
+          "Security review + documentation pour l'IT",
+          "Roadmap trimestrielle + SLA",
+        ],
+        price: "Sur devis",
+        highlighted: false,
+      },
+    ],
+    cta: "Cadrer ce package",
+    ctaHref: "/fr/contact?topic=mcp-package",
+  },
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 md:py-32 bg-white">
+  <div class="container-custom">
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-100 to-cyan-100 text-slate-700 font-medium mb-6 text-sm">
+        <Icon name="cpu" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 leading-tight mb-6">
+        {t.headline}
+      </h2>
+      <p class="text-lg text-slate-500 leading-relaxed">{t.subtitle}</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+      {
+        t.packages.map((pkg, index) => (
+          <div
+            class={`package-card relative flex flex-col p-8 rounded-2xl transition-all duration-300 animate-on-scroll ${
+              pkg.highlighted
+                ? "pkg-highlighted bg-slate-950 text-white border border-white/10 md:-translate-y-4 shadow-2xl shadow-violet-500/20"
+                : "bg-white border border-slate-200 hover:border-violet-300 hover:shadow-lg"
+            }`}
+            style={`animation-delay: ${index * 120}ms`}
+          >
+            {pkg.highlighted && (
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 text-[11px] font-semibold uppercase tracking-wider rounded-full bg-gradient-to-r from-violet-400 to-cyan-400 text-slate-950">
+                {lang === "fr" ? "Le plus choisi" : "Most chosen"}
+              </div>
+            )}
+
+            <div
+              class={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 ${
+                pkg.highlighted
+                  ? "bg-gradient-to-br from-violet-500/30 to-cyan-500/30 text-violet-300 border border-white/10"
+                  : "bg-gradient-to-br from-violet-50 to-cyan-50 text-violet-600 border border-violet-100"
+              }`}
+            >
+              <Icon name={pkg.icon} size={26} />
+            </div>
+
+            <div
+              class={`text-xs font-semibold uppercase tracking-[0.15em] mb-2 ${
+                pkg.highlighted ? "text-violet-300" : "text-slate-500"
+              }`}
+            >
+              {pkg.timeline} - {pkg.positioning}
+            </div>
+
+            <h3 class={`font-display text-2xl font-bold mb-3 ${pkg.highlighted ? "text-white" : "text-slate-900"}`}>
+              {pkg.name}
+            </h3>
+
+            <p class={`text-sm mb-6 leading-relaxed ${pkg.highlighted ? "text-slate-300" : "text-slate-500"}`}>
+              {pkg.description}
+            </p>
+
+            <ul class="space-y-3 mb-6 flex-grow">
+              {pkg.includes.map((item) => (
+                <li class="flex gap-3 text-sm">
+                  <span
+                    class={`shrink-0 mt-1 inline-flex items-center justify-center w-4 h-4 rounded-full ${
+                      pkg.highlighted ? "bg-violet-400/20 text-violet-300" : "bg-violet-100 text-violet-600"
+                    }`}
+                  >
+                    <Icon name="check" size={10} />
+                  </span>
+                  <span class={pkg.highlighted ? "text-slate-200" : "text-slate-600"}>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div class="mt-auto">
+              <div
+                class={`font-display text-2xl font-bold mb-4 ${
+                  pkg.highlighted
+                    ? "bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent"
+                    : "text-slate-900"
+                }`}
+              >
+                {pkg.price}
+              </div>
+              <a
+                href={t.ctaHref}
+                class={`block text-center px-5 py-3 rounded-xl font-semibold text-sm transition-all ${
+                  pkg.highlighted
+                    ? "bg-white text-slate-950 hover:bg-slate-100"
+                    : "bg-slate-900 text-white hover:bg-slate-800"
+                }`}
+              >
+                {t.cta}
+              </a>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    .pkg-highlighted {
+      transform: none !important;
+    }
+  }
+</style>
