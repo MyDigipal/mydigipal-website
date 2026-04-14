@@ -1,0 +1,246 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Technical tracks",
+    headline: "Three tracks. One outcome : autonomy.",
+    subtitle:
+      "Hands-on programs for growth operators and technical marketers who want to own their stack, not just use it.",
+    tracks: [
+      {
+        icon: "zap",
+        name: "Growth Automation",
+        duration: "1 day",
+        audience: "Growth managers, marketing ops",
+        description:
+          "Build workflows that enrich leads, sync campaigns to your BI, and run every morning without you.",
+        outcomes: [
+          "Launch an n8n workflow : Lemlist - Airscale - ClickUp",
+          "Export campaign performance to Sheets on a schedule",
+          "Set up daily jobs with error alerts on Gmail",
+        ],
+        price: "From €1 500",
+        highlighted: false,
+      },
+      {
+        icon: "cpu",
+        name: "Build Your MCP",
+        duration: "2 days",
+        audience: "Technical CMOs, founders, consultants",
+        description:
+          "Design, build and deploy your own Model Context Protocol. Claude Desktop or Claude Code, connected to your real marketing stack.",
+        outcomes: [
+          "Define the tools your MCP needs",
+          "Deploy a custom MCP to your infra (Cloud Run, Render or local)",
+          "Query your marketing stack in natural language",
+          "Evolve your agents over time - we transfer the method",
+        ],
+        bonus: "Delivered : a custom MCP live on your infra, full documentation, 1 month of support",
+        price: "From €3 500",
+        highlighted: true,
+      },
+      {
+        icon: "database",
+        name: "Data & Reporting BI",
+        duration: "1.5 days",
+        audience: "Analysts, performance managers",
+        description:
+          "Consolidate multi-channel data in BigQuery, write cross-platform SQL, and generate beautiful reports automatically.",
+        outcomes: [
+          "Consolidate Meta, Google Ads and GA4 into one BigQuery layer",
+          "Write SQL to compare channels, flag anomalies, compute ROI",
+          "Auto-generate HTML, Slides and Docs reports",
+        ],
+        price: "From €2 200",
+        highlighted: false,
+      },
+    ],
+    cta: "Discuss this track",
+    ctaHref: "/en/contact?topic=technical-track",
+  },
+  fr: {
+    badge: "Parcours techniques",
+    headline: "Trois parcours. Une promesse : l'autonomie.",
+    subtitle:
+      "Des programmes pratiques pour les growth operators et marketeurs techniques qui veulent maîtriser leur stack, pas seulement l'utiliser.",
+    tracks: [
+      {
+        icon: "zap",
+        name: "Growth Automation",
+        duration: "1 jour",
+        audience: "Growth managers, marketing ops",
+        description:
+          "Construisez des workflows qui enrichissent vos leads, synchronisent vos campagnes avec votre BI et tournent tous les matins sans vous.",
+        outcomes: [
+          "Lancer un workflow n8n : Lemlist - Airscale - ClickUp",
+          "Exporter les performances campaigns vers Sheets en automatique",
+          "Planifier des jobs quotidiens avec alertes d'erreur sur Gmail",
+        ],
+        price: "À partir de 1 500€",
+        highlighted: false,
+      },
+      {
+        icon: "cpu",
+        name: "Build Your MCP",
+        duration: "2 jours",
+        audience: "CMOs techniques, fondateurs, consultants",
+        description:
+          "Concevez, construisez et déployez votre propre Model Context Protocol. Claude Desktop ou Claude Code, connecté à votre vraie stack marketing.",
+        outcomes: [
+          "Définir les tools dont votre MCP a besoin",
+          "Déployer un MCP custom sur votre infra (Cloud Run, Render ou local)",
+          "Interroger votre stack marketing en langage naturel",
+          "Faire évoluer vos agents - on vous transmet la méthode",
+        ],
+        bonus: "Livrables : un MCP custom déployé sur votre infra, la documentation complète, 1 mois de support",
+        price: "À partir de 3 500€",
+        highlighted: true,
+      },
+      {
+        icon: "database",
+        name: "Data & Reporting BI",
+        duration: "1,5 jour",
+        audience: "Analystes, performance managers",
+        description:
+          "Consolidez vos données multi-canal dans BigQuery, écrivez du SQL cross-plateforme, et générez des rapports propres en automatique.",
+        outcomes: [
+          "Consolider Meta, Google Ads et GA4 dans une couche BigQuery unique",
+          "Écrire du SQL pour comparer canaux, détecter anomalies, calculer le ROI",
+          "Générer automatiquement rapports HTML, Slides et Docs",
+        ],
+        price: "À partir de 2 200€",
+        highlighted: false,
+      },
+    ],
+    cta: "Discuter ce parcours",
+    ctaHref: "/fr/contact?topic=parcours-technique",
+  },
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 md:py-32 bg-white">
+  <div class="container-custom">
+    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-100 to-violet-100 text-slate-700 font-medium mb-6 text-sm">
+        <Icon name="cpu" size={16} />
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 leading-tight mb-6">
+        {t.headline}
+      </h2>
+      <p class="text-lg text-slate-500 leading-relaxed">{t.subtitle}</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+      {
+        t.tracks.map((track, index) => (
+          <div
+            class={`track-card relative flex flex-col p-8 rounded-2xl transition-all duration-300 animate-on-scroll ${
+              track.highlighted
+                ? "track-highlighted bg-slate-950 text-white border border-white/10 md:-translate-y-4 shadow-2xl shadow-cyan-500/20"
+                : "bg-white border border-slate-200 hover:border-cyan-300 hover:shadow-lg"
+            }`}
+            style={`animation-delay: ${index * 120}ms`}
+          >
+            {track.highlighted && (
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 text-[11px] font-semibold uppercase tracking-wider rounded-full bg-gradient-to-r from-cyan-400 to-violet-400 text-slate-950">
+                {lang === "fr" ? "Le plus demandé" : "Most asked for"}
+              </div>
+            )}
+
+            <div
+              class={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 ${
+                track.highlighted
+                  ? "bg-gradient-to-br from-cyan-500/30 to-violet-500/30 text-cyan-300 border border-white/10"
+                  : "bg-gradient-to-br from-cyan-50 to-violet-50 text-cyan-600 border border-cyan-100"
+              }`}
+            >
+              <Icon name={track.icon} size={26} />
+            </div>
+
+            <div
+              class={`text-xs font-semibold uppercase tracking-[0.15em] mb-2 ${
+                track.highlighted ? "text-cyan-300" : "text-slate-500"
+              }`}
+            >
+              {track.duration} - {track.audience}
+            </div>
+
+            <h3 class={`font-display text-2xl font-bold mb-3 ${track.highlighted ? "text-white" : "text-slate-900"}`}>
+              {track.name}
+            </h3>
+
+            <p class={`text-sm mb-6 leading-relaxed ${track.highlighted ? "text-slate-300" : "text-slate-500"}`}>
+              {track.description}
+            </p>
+
+            <ul class="space-y-3 mb-6 flex-grow">
+              {track.outcomes.map((outcome) => (
+                <li class="flex gap-3 text-sm">
+                  <span
+                    class={`shrink-0 mt-1 inline-flex items-center justify-center w-4 h-4 rounded-full ${
+                      track.highlighted ? "bg-cyan-400/20 text-cyan-300" : "bg-cyan-100 text-cyan-600"
+                    }`}
+                  >
+                    <Icon name="check" size={10} />
+                  </span>
+                  <span class={track.highlighted ? "text-slate-200" : "text-slate-600"}>{outcome}</span>
+                </li>
+              ))}
+            </ul>
+
+            {track.bonus && (
+              <div
+                class={`text-xs leading-relaxed p-3 rounded-lg mb-6 ${
+                  track.highlighted ? "bg-white/5 text-cyan-200 border border-white/10" : "bg-cyan-50 text-cyan-700"
+                }`}
+              >
+                {track.bonus}
+              </div>
+            )}
+
+            <div class="mt-auto">
+              <div
+                class={`font-display text-2xl font-bold mb-4 ${
+                  track.highlighted
+                    ? "bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-transparent"
+                    : "text-slate-900"
+                }`}
+              >
+                {track.price}
+              </div>
+              <a
+                href={t.ctaHref}
+                class={`block text-center px-5 py-3 rounded-xl font-semibold text-sm transition-all ${
+                  track.highlighted
+                    ? "bg-white text-slate-950 hover:bg-slate-100"
+                    : "bg-slate-900 text-white hover:bg-slate-800"
+                }`}
+              >
+                {t.cta}
+              </a>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    .track-highlighted {
+      transform: none !important;
+    }
+  }
+</style>

@@ -1,0 +1,323 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import Button from '@/components/ui/Button.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Model Context Protocol",
+    headline: "Build your own MCP.",
+    headlineAccent: "Stop copy-pasting between your tools.",
+    subtitle:
+      "MyDigipal operates an MCP Gateway with 244 tools connected to 21 marketing platforms, live in production. We train you to build your own - on your stack, with your data.",
+    bullets: [
+      {
+        icon: "sparkles",
+        title: "Demystify the tech",
+        text: "Our Crawl / Walk / Run method : you start with the ChatGPT prompts you already use, you end with agents that query your CRM, your BI and your campaigns in real time.",
+      },
+      {
+        icon: "cpu",
+        title: "You stay autonomous",
+        text: "No vendor lock-in. We hand over the code, the configuration and the continuous-improvement method. Your MCP lives in your infra, not ours.",
+      },
+      {
+        icon: "zap",
+        title: "Your stack, your MCP",
+        text: "Ahrefs, GA4, Meta Ads, BigQuery, Notion, Lemlist - we connect what you actually use, not a generic vendor demo.",
+      },
+    ],
+    cta: "Talk about your MCP",
+    ctaHref: "/en/contact?topic=mcp",
+    terminalTitle: "Claude + MCP - live session",
+    prompts: [
+      {
+        user: "What's the ROAS of my Meta campaigns this month?",
+        tools: ["bq_query on metaAds_v2"],
+        reply:
+          "Average ROAS is 3.2x. \"Spring-Retargeting\" campaign hits 5.8x (+42% vs last month).",
+      },
+      {
+        user: "Enrich these 50 Lemlist leads with their LinkedIn profiles.",
+        tools: ["airscale_find_linkedin_url × 50"],
+        reply:
+          "47 profiles enriched. 3 not found (personal domains). Updated in Lemlist.",
+      },
+      {
+        user: "Generate this month's governance report for Servion.",
+        tools: ["bq_query", "docs_create", "drive_upload"],
+        reply:
+          "Report published in Drive - Servion Hub - Link sent on Slack.",
+      },
+    ],
+  },
+  fr: {
+    badge: "Model Context Protocol",
+    headline: "Construisez votre propre MCP.",
+    headlineAccent: "Arrêtez de copier-coller entre vos outils.",
+    subtitle:
+      "MyDigipal opère un MCP Gateway avec 244 outils connectés à 21 plateformes marketing, en production. On vous forme à construire le vôtre - sur votre stack, avec vos données.",
+    bullets: [
+      {
+        icon: "sparkles",
+        title: "Désacraliser la technique",
+        text: "Notre process Crawl / Walk / Run : on commence avec vos prompts ChatGPT actuels, on finit avec des agents qui interrogent votre CRM, votre BI et vos campagnes en direct.",
+      },
+      {
+        icon: "cpu",
+        title: "Vous serez autonome",
+        text: "Pas de dépendance fournisseur. On vous transmet le code, la config et la méthode d'amélioration continue. Votre MCP vit sur votre infra, pas la nôtre.",
+      },
+      {
+        icon: "zap",
+        title: "Votre stack, votre MCP",
+        text: "Ahrefs, GA4, Meta Ads, BigQuery, Notion, Lemlist - on connecte ce que vous utilisez vraiment, pas une démo générique de fournisseur.",
+      },
+    ],
+    cta: "Discuter de votre MCP",
+    ctaHref: "/fr/contact?topic=mcp",
+    terminalTitle: "Claude + MCP - session live",
+    prompts: [
+      {
+        user: "Quel est le ROAS de mes campagnes Meta ce mois-ci ?",
+        tools: ["bq_query on metaAds_v2"],
+        reply:
+          "Ton ROAS moyen est 3,2x. Campagne \"Spring-Retargeting\" tire à 5,8x (+42% vs mois dernier).",
+      },
+      {
+        user: "Enrichis ces 50 leads Lemlist avec leurs profils LinkedIn.",
+        tools: ["airscale_find_linkedin_url × 50"],
+        reply:
+          "47 profils enrichis. 3 non trouvés (domaines perso). Mis à jour dans Lemlist.",
+      },
+      {
+        user: "Génère le rapport de gouvernance Servion pour ce mois-ci.",
+        tools: ["bq_query", "docs_create", "drive_upload"],
+        reply:
+          "Rapport publié dans Drive - Hub Servion - Lien envoyé sur Slack.",
+      },
+    ],
+  },
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="mcp-build relative overflow-hidden py-28 md:py-36 bg-slate-950 text-white">
+  <!-- Animated blobs -->
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+    <div class="mcp-blob mcp-blob-1"></div>
+    <div class="mcp-blob mcp-blob-2"></div>
+    <div class="mcp-blob mcp-blob-3"></div>
+    <div
+      class="absolute inset-0 opacity-[0.05]"
+      style="background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px); background-size: 28px 28px;"
+    ></div>
+  </div>
+
+  <div class="container-custom relative z-10">
+    <div class="grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+      <!-- Left : copy -->
+      <div class="animate-on-scroll">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 text-cyan-300 text-sm font-medium mb-8"
+        >
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-cyan-400"></span>
+          </span>
+          <span>{t.badge}</span>
+        </div>
+
+        <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] mb-6">
+          {t.headline}<br />
+          <span class="mcp-gradient-text">{t.headlineAccent}</span>
+        </h2>
+
+        <p class="text-lg text-slate-300 mb-10 max-w-xl leading-relaxed">{t.subtitle}</p>
+
+        <ul class="space-y-6 mb-10">
+          {
+            t.bullets.map((b) => (
+              <li class="flex gap-4">
+                <div class="shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-white/10 flex items-center justify-center text-cyan-300">
+                  <Icon name={b.icon} size={22} />
+                </div>
+                <div>
+                  <h3 class="font-semibold text-white text-lg mb-1">{b.title}</h3>
+                  <p class="text-slate-400 leading-relaxed">{b.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+
+        <Button href={t.ctaHref} variant="primary" size="lg">
+          {t.cta}
+        </Button>
+      </div>
+
+      <!-- Right : terminal -->
+      <div class="animate-on-scroll" style="animation-delay: 200ms;">
+        <div class="mcp-terminal rounded-2xl border border-white/10 bg-slate-900/70 backdrop-blur-xl shadow-[0_30px_80px_-30px_rgba(6,182,212,0.35)] overflow-hidden">
+          <!-- Title bar -->
+          <div class="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-white/5">
+            <span class="w-3 h-3 rounded-full bg-rose-400/80"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-400/80"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-400/80"></span>
+            <span class="ml-3 text-xs text-slate-400 font-mono">{t.terminalTitle}</span>
+          </div>
+
+          <!-- Content -->
+          <div class="mcp-terminal-body relative p-6 font-mono text-sm leading-relaxed min-h-[420px]">
+            {
+              t.prompts.map((p, i) => (
+                <div class={`mcp-turn mcp-turn-${i}`}>
+                  <div class="flex items-start gap-3 mb-3">
+                    <span class="text-cyan-400 shrink-0">{'>'}</span>
+                    <span class="text-slate-100">{p.user}</span>
+                  </div>
+                  <div class="pl-6 text-xs text-slate-500 mb-2">
+                    {p.tools.map((tool) => (
+                      <div class="flex items-center gap-2 mb-1">
+                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse"></span>
+                        <span>[calling tool: {tool}...]</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div class="pl-6 text-emerald-300">{p.reply}</div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .mcp-gradient-text {
+    background: linear-gradient(120deg, #22d3ee 0%, #a78bfa 50%, #34d399 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: mcp-gradient 8s ease infinite;
+  }
+
+  @keyframes mcp-gradient {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .mcp-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(110px);
+    opacity: 0.35;
+    animation: mcp-drift 22s ease-in-out infinite;
+  }
+
+  .mcp-blob-1 {
+    width: 520px;
+    height: 520px;
+    top: -120px;
+    left: -120px;
+    background: radial-gradient(circle, #06b6d4 0%, transparent 70%);
+  }
+
+  .mcp-blob-2 {
+    width: 620px;
+    height: 620px;
+    bottom: -160px;
+    right: -160px;
+    background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+    animation-delay: -8s;
+  }
+
+  .mcp-blob-3 {
+    width: 400px;
+    height: 400px;
+    top: 40%;
+    left: 45%;
+    background: radial-gradient(circle, #10b981 0%, transparent 70%);
+    opacity: 0.22;
+    animation-delay: -14s;
+  }
+
+  @keyframes mcp-drift {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(40px, -30px) scale(1.1);
+    }
+    66% {
+      transform: translate(-30px, 40px) scale(0.95);
+    }
+  }
+
+  /* Terminal rotating turns */
+  .mcp-turn {
+    position: absolute;
+    left: 1.5rem;
+    right: 1.5rem;
+    top: 1.5rem;
+    opacity: 0;
+    animation: mcp-cycle 18s linear infinite;
+  }
+  .mcp-turn-0 {
+    animation-delay: 0s;
+  }
+  .mcp-turn-1 {
+    animation-delay: 6s;
+  }
+  .mcp-turn-2 {
+    animation-delay: 12s;
+  }
+
+  @keyframes mcp-cycle {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    5%,
+    30% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    35%,
+    100% {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mcp-blob,
+    .mcp-gradient-text,
+    .mcp-turn {
+      animation: none;
+    }
+    .mcp-turn-0 {
+      opacity: 1;
+    }
+    .mcp-turn-1,
+    .mcp-turn-2 {
+      display: none;
+    }
+  }
+</style>
