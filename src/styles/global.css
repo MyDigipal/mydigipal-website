@@ -481,9 +481,12 @@
 }
 
 /* Sliding nav marker (used by initSlidingNavMarker) */
+/* Only style position/marker context. Do NOT force `display` here - the Tailwind
+   utility `hidden lg:flex` on the element controls visibility per breakpoint.
+   Forcing display: inline-flex would override `hidden` on mobile and leak the
+   desktop pill nav onto small screens. */
 [data-nav-pill] {
   position: relative;
-  display: inline-flex;
   align-items: center;
   isolation: isolate;
 }
