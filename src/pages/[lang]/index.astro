@@ -485,30 +485,35 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
           </div>
         </div>
 
-        <!-- Right: Floating glass cards -->
-        <div class="relative hidden lg:block h-[500px]">
+        <!-- Right: Floating glass cards (animated) -->
+        <div class="relative hidden lg:block h-[500px]" data-hero-cards>
           <!-- Main glass card - Organic Traffic -->
-          <div class="glass-card absolute top-8 left-8 right-0 p-6 hero-animate" style="--delay: 200ms;">
+          <div class="glass-card hero-floating-1 absolute top-8 left-8 right-0 p-6 hero-animate" style="--delay: 200ms;">
             <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center hero-icon-bounce">
                 <Icon name="trending-up" size={20} class="text-white" />
               </div>
               <div>
                 <div class="text-sm font-semibold text-slate-900">Organic Traffic</div>
-                <div class="text-xs text-emerald-600">+247% this quarter</div>
+                <div class="text-xs text-emerald-600 flex items-center gap-1">
+                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-subtle-pulse"></span>
+                  <span>+<span data-target="247" data-suffix="%">0</span> this quarter</span>
+                </div>
               </div>
             </div>
-            <div class="flex gap-1 items-end h-16">
-              {[35, 42, 38, 55, 48, 62, 58, 72, 68, 85, 78, 95].map((h) => (
-                <div class="flex-1 rounded-sm bg-gradient-to-t from-emerald-500 to-emerald-400" style={`height: ${h}%`}></div>
+            <div class="flex gap-1 items-end h-16 hero-bars" data-counter-section>
+              {[35, 42, 38, 55, 48, 62, 58, 72, 68, 85, 78, 95].map((h, i) => (
+                <div class="flex-1 rounded-sm bg-gradient-to-t from-emerald-500 to-emerald-400 hero-bar" style={`--bar-h: ${h}%; --bar-i: ${i};`}></div>
               ))}
             </div>
+            <!-- Sparkle dot -->
+            <div class="hero-sparkle hero-sparkle-1" aria-hidden="true"></div>
           </div>
 
           <!-- Secondary glass card - ABM Campaign -->
-          <div class="glass-card absolute top-48 -left-4 w-72 p-5 hero-animate" style="--delay: 350ms;">
+          <div class="glass-card hero-floating-2 absolute top-48 -left-4 w-72 p-5 hero-animate" style="--delay: 350ms;">
             <div class="flex items-center gap-3 mb-3">
-              <div class="w-9 h-9 rounded-lg bg-violet-500 flex items-center justify-center">
+              <div class="w-9 h-9 rounded-lg bg-violet-500 flex items-center justify-center hero-icon-bounce">
                 <Icon name="target" size={18} class="text-white" />
               </div>
               <div>
@@ -516,25 +521,29 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
                 <div class="text-xs text-slate-500">Pipeline acceleration</div>
               </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2" data-counter-section>
               <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bg-violet-500 rounded-full" style="width: 78%"></div>
+                <div class="h-full bg-gradient-to-r from-violet-500 to-violet-600 rounded-full hero-progress-bar"></div>
               </div>
-              <span class="text-xs font-semibold text-violet-600">78%</span>
+              <span class="text-xs font-semibold text-violet-600"><span data-target="78" data-suffix="">0</span>%</span>
             </div>
           </div>
 
           <!-- Third glass card - ROAS -->
-          <div class="glass-card absolute bottom-8 right-4 w-64 p-5 hero-animate" style="--delay: 500ms;">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg bg-amber-500 flex items-center justify-center">
+          <div class="glass-card hero-floating-3 absolute bottom-8 right-4 w-64 p-5 hero-animate" style="--delay: 500ms;">
+            <div class="flex items-center gap-3" data-counter-section>
+              <div class="w-9 h-9 rounded-lg bg-amber-500 flex items-center justify-center hero-icon-bounce">
                 <Icon name="zap" size={18} class="text-white" />
               </div>
               <div>
                 <div class="text-sm font-semibold text-slate-900">ROAS</div>
-                <div class="text-2xl font-bold text-amber-600">4.8x</div>
+                <div class="text-2xl font-bold text-amber-600"><span data-target="4.8" data-decimals="1" data-suffix="x">0</span></div>
               </div>
             </div>
+            <!-- Tiny sparkline -->
+            <svg class="hero-spark-mini" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M0,18 L20,16 L40,12 L60,14 L80,8 L100,4" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
           </div>
         </div>
       </div>
@@ -994,6 +1003,144 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
     box-shadow:
       0 4px 24px -4px rgba(0, 0, 0, 0.08),
       0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .glass-card:hover {
+    transform: translateY(-4px) scale(1.015);
+    box-shadow:
+      0 12px 40px -8px rgba(0, 0, 0, 0.14),
+      0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+    z-index: 5;
+  }
+
+  /* ===== HERO FLOATING CARDS - bob animation ===== */
+  .hero-floating-1,
+  .hero-floating-2,
+  .hero-floating-3 {
+    animation: heroFloat 7s ease-in-out infinite;
+    will-change: transform;
+  }
+  .hero-floating-1 { animation-delay: 0s; }
+  .hero-floating-2 { animation-delay: -2.3s; animation-duration: 6.5s; }
+  .hero-floating-3 { animation-delay: -4.5s; animation-duration: 8s; }
+
+  @keyframes heroFloat {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(2px, -8px) rotate(0.3deg); }
+    50% { transform: translate(-2px, -4px) rotate(-0.2deg); }
+    75% { transform: translate(3px, -10px) rotate(0.4deg); }
+  }
+
+  .glass-card:hover.hero-floating-1,
+  .glass-card:hover.hero-floating-2,
+  .glass-card:hover.hero-floating-3 {
+    /* pause floating on hover, hover elevates instead */
+    animation-play-state: paused;
+  }
+
+  /* ===== HERO BAR CHART - grow up animation ===== */
+  .hero-bar {
+    height: 0%;
+    transform-origin: bottom;
+    animation: heroBarGrow 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(var(--bar-i, 0) * 60ms + 800ms);
+  }
+
+  @keyframes heroBarGrow {
+    from { height: 0%; opacity: 0.3; }
+    to { height: var(--bar-h, 50%); opacity: 1; }
+  }
+
+  /* ===== HERO PROGRESS BAR - fill animation ===== */
+  .hero-progress-bar {
+    width: 0%;
+    animation: heroProgressFill 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 1100ms;
+  }
+
+  @keyframes heroProgressFill {
+    to { width: 78%; }
+  }
+
+  /* ===== HERO ICON BOUNCE ===== */
+  .hero-icon-bounce {
+    animation: heroIconBob 5s ease-in-out infinite;
+  }
+  .hero-floating-2 .hero-icon-bounce { animation-delay: -1.5s; }
+  .hero-floating-3 .hero-icon-bounce { animation-delay: -3s; }
+
+  @keyframes heroIconBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  /* ===== HERO SPARKLE DOT ===== */
+  .hero-sparkle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #34d399 0%, transparent 70%);
+    pointer-events: none;
+    animation: heroSparklePulse 3s ease-in-out infinite;
+  }
+  .hero-sparkle-1 { top: 18px; right: 18px; }
+
+  @keyframes heroSparklePulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.5); }
+  }
+
+  /* ===== HERO MINI SPARKLINE ===== */
+  .hero-spark-mini {
+    position: absolute;
+    bottom: 10px;
+    left: 16px;
+    right: 16px;
+    height: 18px;
+    width: calc(100% - 32px);
+    opacity: 0;
+    animation: heroSparkFadeIn 0.6s ease-out 1.4s forwards;
+  }
+  .hero-spark-mini path {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: heroSparkDraw 1.6s cubic-bezier(0.4, 0, 0.2, 1) 1.4s forwards;
+  }
+
+  @keyframes heroSparkFadeIn {
+    to { opacity: 0.7; }
+  }
+  @keyframes heroSparkDraw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-floating-1,
+    .hero-floating-2,
+    .hero-floating-3,
+    .hero-icon-bounce,
+    .hero-sparkle,
+    .glass-card {
+      animation: none !important;
+      transition: none !important;
+    }
+    .hero-bar {
+      animation: none !important;
+      height: var(--bar-h, 50%);
+    }
+    .hero-progress-bar {
+      animation: none !important;
+      width: 78%;
+    }
+    .hero-spark-mini {
+      opacity: 0.7;
+    }
+    .hero-spark-mini path {
+      stroke-dashoffset: 0;
+      animation: none;
+    }
   }
 
   /* ===== SERVICE CARDS ===== */
