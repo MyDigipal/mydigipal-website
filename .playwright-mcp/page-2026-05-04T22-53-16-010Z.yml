@@ -1,0 +1,529 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - link "MyDigipal" [ref=e4] [cursor=pointer]:
+        - /url: /en
+        - img "MyDigipal" [ref=e5]
+      - generic [ref=e6]:
+        - link "Services" [ref=e8] [cursor=pointer]:
+          - /url: /en/services
+          - text: Services
+          - img [ref=e9]
+        - link "AI" [ref=e12] [cursor=pointer]:
+          - /url: /en/ai
+          - text: AI
+          - img [ref=e13]
+        - link "Automotive" [ref=e16] [cursor=pointer]:
+          - /url: /en/automotive
+          - text: Automotive
+          - img [ref=e17]
+        - link "Case Studies" [ref=e20] [cursor=pointer]:
+          - /url: /en/case-studies
+        - link "Blog" [ref=e22] [cursor=pointer]:
+          - /url: /en/blog
+      - generic [ref=e23]:
+        - link "Client Login" [ref=e24] [cursor=pointer]:
+          - /url: https://app.mydigipal.com/login
+          - img [ref=e25]
+          - text: Client Login
+        - link "Contact" [ref=e28] [cursor=pointer]:
+          - /url: /en/contact
+        - link "Quote" [ref=e29] [cursor=pointer]:
+          - /url: /en/calculator
+        - link "Switch to Français" [ref=e30] [cursor=pointer]:
+          - /url: /fr/blog/n8n-ai-workflows-b2b-marketing-teams
+          - text: 🇫🇷
+  - main [ref=e32]:
+    - generic [ref=e34]:
+      - link "Back to Blog" [ref=e35] [cursor=pointer]:
+        - /url: /en/blog
+        - img [ref=e36]
+        - text: Back to Blog
+      - generic [ref=e38]:
+        - generic [ref=e39]: AI
+        - generic [ref=e40]: •
+        - time [ref=e41]: April 13, 2026
+      - 'heading "n8n for B2B Marketing Teams: 5 AI Workflows to Deploy This Week" [level=1] [ref=e42]'
+      - paragraph [ref=e43]: Learn how to build practical n8n AI workflows for lead enrichment, content repurposing, and CRM sync with no code required for your marketing team.
+      - generic [ref=e44]:
+        - generic [ref=e45]: M
+        - generic [ref=e46]:
+          - generic [ref=e47]: MyDigipal Team
+          - generic [ref=e48]: Published on April 13, 2026
+    - 'img "n8n for B2B Marketing Teams: 5 AI Workflows to Deploy This Week" [ref=e52]'
+    - generic [ref=e54]:
+      - article [ref=e55]:
+        - paragraph [ref=e56]: If your B2B marketing team is still manually copying leads from LinkedIn into your CRM, writing the same follow-up emails by hand, or spending hours reformatting content for different channels, you are leaving serious revenue on the table. Automation platforms like n8n have quietly become one of the most powerful tools available to lean marketing teams — and when you layer in AI capabilities, the results are genuinely transformative.
+        - paragraph [ref=e57]: n8n is an open-source workflow automation platform that connects your existing tools — HubSpot, Salesforce, Slack, OpenAI, Google Sheets, LinkedIn, and dozens more — through a visual drag-and-drop interface. Unlike Zapier or Make, n8n can be self-hosted, offers unlimited executions on its self-hosted plan, and gives you full control over your data. For B2B tech companies handling sensitive prospect data, that last point alone is worth the switch.
+        - paragraph [ref=e58]: According to McKinsey, companies that adopt marketing automation see a 10–15% reduction in cost per lead and a 14.5% increase in sales productivity. Yet most B2B marketing teams are still using automation for basic email sequences and nothing more. In this article, we walk you through five practical AI-powered n8n workflows you can build and deploy this week — no developer required.
+        - heading "What Makes n8n Different for AI-Powered Marketing" [level=2] [ref=e59]
+        - paragraph [ref=e60]: Before diving into the workflows, it is worth understanding why n8n specifically is worth your attention. Most no-code automation tools treat AI as an add-on — a single node that calls ChatGPT and returns a result. n8n treats AI as a first-class citizen in your workflow logic.
+        - paragraph [ref=e61]: With n8n’s LangChain integration, you can build multi-step AI agents that reason through tasks, use memory across sessions, call external tools, and make decisions based on conditional logic. For marketing teams, this means you can build workflows that do not just automate tasks — they think through them.
+        - paragraph [ref=e62]:
+          - text: n8n also integrates natively with over 400 apps, supports webhooks, custom code nodes for edge cases, and has an active community publishing ready-made workflow templates. If you are already investing in
+          - link "AI solutions" [ref=e63] [cursor=pointer]:
+            - /url: /en/services/ai-solutions
+          - text: for your marketing stack, n8n is the connective tissue that makes those investments compound.
+        - 'heading "Workflow 1: Automated Lead Enrichment from LinkedIn and Web Sources" [level=2] [ref=e64]'
+        - paragraph [ref=e65]: "One of the highest-ROI workflows any B2B marketing team can build is automated lead enrichment. The premise is simple: a new lead enters your system (via form fill, LinkedIn connection, or inbound email), and n8n automatically gathers company size, funding status, tech stack, job title, LinkedIn profile data, and recent news — then pushes a fully enriched contact record into your CRM."
+        - paragraph [ref=e66]: "Here is how to structure this workflow in n8n:"
+        - list [ref=e67]:
+          - listitem [ref=e68]:
+            - strong [ref=e69]: Trigger
+            - text: ": New contact added in HubSpot or Salesforce"
+          - listitem [ref=e70]:
+            - strong [ref=e71]: Enrichment step 1
+            - text: ": Call Clearbit or Apollo API to pull firmographic data"
+          - listitem [ref=e72]:
+            - strong [ref=e73]: Enrichment step 2
+            - text: ": Use a web scraping node to pull the company’s latest press releases or blog posts"
+          - listitem [ref=e74]:
+            - strong [ref=e75]: AI summarization
+            - text: ": Send the raw data to OpenAI with a prompt like “Summarize this company’s recent activity and identify their top business challenges in 2 sentences”"
+          - listitem [ref=e76]:
+            - strong [ref=e77]: CRM update
+            - text: ": Push enriched data and the AI summary back into the contact record"
+          - listitem [ref=e78]:
+            - strong [ref=e79]: Slack notification
+            - text: ": Alert the relevant sales rep with a formatted message including the AI summary"
+        - paragraph [ref=e80]:
+          - text: This workflow typically takes 45–90 minutes to build the first time and runs in under 10 seconds per lead. Teams using similar setups report saving 3–5 hours per week on manual research alone. Pair this with your
+          - link "ABM" [ref=e81] [cursor=pointer]:
+            - /url: /en/services/b2b-abm
+          - text: strategy and you have a serious competitive advantage.
+        - 'heading "Workflow 2: AI-Powered Content Repurposing Pipeline" [level=2] [ref=e82]'
+        - paragraph [ref=e83]: "Content teams in B2B tech companies face a constant pressure: produce more content across more channels with the same headcount. The solution is not hiring more writers — it is building a repurposing pipeline that turns one piece of content into many."
+        - paragraph [ref=e84]: With n8n and OpenAI, you can build a workflow that takes a published blog post and automatically generates LinkedIn posts, email newsletter snippets, Twitter threads, and internal Slack summaries — all formatted and ready for review.
+        - table [ref=e85]:
+          - rowgroup [ref=e86]:
+            - row "Source Content Output Format Estimated Time Saved" [ref=e87]:
+              - columnheader "Source Content" [ref=e88]
+              - columnheader "Output Format" [ref=e89]
+              - columnheader "Estimated Time Saved" [ref=e90]
+          - rowgroup [ref=e91]:
+            - row "1,500-word blog post 3 LinkedIn posts 45 minutes" [ref=e92]:
+              - cell "1,500-word blog post" [ref=e93]
+              - cell "3 LinkedIn posts" [ref=e94]
+              - cell "45 minutes" [ref=e95]
+            - row "Webinar transcript 5-email nurture sequence 2 hours" [ref=e96]:
+              - cell "Webinar transcript" [ref=e97]
+              - cell "5-email nurture sequence" [ref=e98]
+              - cell "2 hours" [ref=e99]
+            - row "Case study PDF Sales one-pager summary 1 hour" [ref=e100]:
+              - cell "Case study PDF" [ref=e101]
+              - cell "Sales one-pager summary" [ref=e102]
+              - cell "1 hour" [ref=e103]
+            - row "Product update doc Customer announcement email 30 minutes" [ref=e104]:
+              - cell "Product update doc" [ref=e105]
+              - cell "Customer announcement email" [ref=e106]
+              - cell "30 minutes" [ref=e107]
+        - paragraph [ref=e108]: "The workflow logic works like this: a trigger fires when a new post is published on your CMS (via webhook or RSS feed). n8n fetches the full content, sends it to OpenAI with channel-specific prompts, formats the outputs into a Google Doc or Notion page, and sends a Slack message to your content manager for final review before publishing."
+        - paragraph [ref=e109]:
+          - text: The key to making this workflow produce high-quality output is prompt engineering. Rather than asking OpenAI to “write a LinkedIn post about this article,” give it your brand voice guidelines, your target audience description, and 2–3 examples of your best-performing posts. This is exactly the kind of workflow our
+          - link "AI content" [ref=e110] [cursor=pointer]:
+            - /url: /en/services/ai-content
+          - text: team helps B2B companies build and optimize.
+        - 'heading "Workflow 3: Intent Signal Monitoring and Automated Outreach Triggers" [level=2] [ref=e111]'
+        - paragraph [ref=e112]: B2B buying decisions are rarely spontaneous. They are preceded by weeks of research — job postings that signal new budget, executive hires that suggest strategic pivots, funding announcements that indicate growth mode. The problem is that monitoring these signals manually across dozens of target accounts is impossible at scale.
+        - paragraph [ref=e113]: "n8n solves this with an intent signal monitoring workflow:"
+        - list [ref=e114]:
+          - listitem [ref=e115]:
+            - strong [ref=e116]: Scheduled trigger
+            - text: ": Run every morning at 7 AM"
+          - listitem [ref=e117]:
+            - strong [ref=e118]: Data sources
+            - text: ": Pull from LinkedIn company pages, Crunchbase API, Google News RSS feeds for target account list"
+          - listitem [ref=e119]:
+            - strong [ref=e120]: AI analysis
+            - text: ": Send each update to OpenAI with the prompt: “Does this signal indicate a buying intent for [your product category]? Rate 1–10 and explain why”"
+          - listitem [ref=e121]:
+            - strong [ref=e122]: Filtering
+            - text: ": Only pass signals with a score of 7 or higher to the next step"
+          - listitem [ref=e123]:
+            - strong [ref=e124]: CRM task creation
+            - text: ": Create a follow-up task in HubSpot assigned to the account owner with the AI rationale"
+          - listitem [ref=e125]:
+            - strong [ref=e126]: Personalized email draft
+            - text: ": Generate a personalized outreach email referencing the specific trigger event"
+        - paragraph [ref=e127]:
+          - text: This workflow transforms your
+          - link "email marketing" [ref=e128] [cursor=pointer]:
+            - /url: /en/services/emailing
+          - text: from generic sequences into genuinely timely, relevant outreach. Companies using intent-based triggers see 3–5x higher reply rates compared to standard cold outreach sequences.
+        - 'heading "Workflow 4: CRM Data Quality and Deduplication Agent" [level=2] [ref=e129]'
+        - paragraph [ref=e130]: Dirty CRM data is one of the most expensive problems in B2B marketing, yet it rarely gets prioritized until it causes a visible failure — like sending the same prospect five emails because they exist as three different contacts. According to Experian, poor data quality costs organizations an average of $12.9 million annually.
+        - paragraph [ref=e131]: n8n can run a weekly CRM hygiene workflow that uses AI to identify and resolve data quality issues automatically.
+        - table [ref=e132]:
+          - rowgroup [ref=e133]:
+            - row "Data Issue n8n Solution Frequency" [ref=e134]:
+              - columnheader "Data Issue" [ref=e135]
+              - columnheader "n8n Solution" [ref=e136]
+              - columnheader "Frequency" [ref=e137]
+          - rowgroup [ref=e138]:
+            - row "Duplicate contacts Fuzzy match on name plus domain, merge records Weekly" [ref=e139]:
+              - cell "Duplicate contacts" [ref=e140]
+              - cell "Fuzzy match on name plus domain, merge records" [ref=e141]
+              - cell "Weekly" [ref=e142]
+            - row "Missing company data Auto-enrich via Clearbit API On creation" [ref=e143]:
+              - cell "Missing company data" [ref=e144]
+              - cell "Auto-enrich via Clearbit API" [ref=e145]
+              - cell "On creation" [ref=e146]
+            - row "Stale deal stages Flag deals with no activity for 30+ days Daily" [ref=e147]:
+              - cell "Stale deal stages" [ref=e148]
+              - cell "Flag deals with no activity for 30+ days" [ref=e149]
+              - cell "Daily" [ref=e150]
+            - row "Invalid email addresses Validate via ZeroBounce API On import" [ref=e151]:
+              - cell "Invalid email addresses" [ref=e152]
+              - cell "Validate via ZeroBounce API" [ref=e153]
+              - cell "On import" [ref=e154]
+            - row "Inconsistent job titles Normalize via OpenAI classification Weekly" [ref=e155]:
+              - cell "Inconsistent job titles" [ref=e156]
+              - cell "Normalize via OpenAI classification" [ref=e157]
+              - cell "Weekly" [ref=e158]
+        - paragraph [ref=e159]: The AI component here is particularly valuable for job title normalization. “VP of Marketing,” “Head of Marketing,” “Marketing Director,” and “CMO” might all represent the same persona in your ICP, but if they are stored inconsistently, your segmentation and personalization fall apart. An OpenAI node can classify and standardize these at scale in seconds.
+        - paragraph [ref=e160]:
+          - text: For teams using our
+          - link "tracking and reporting" [ref=e161] [cursor=pointer]:
+            - /url: /en/services/tracking-reporting
+          - text: services, clean CRM data is foundational — garbage in, garbage out applies directly to attribution modeling and pipeline reporting.
+        - 'heading "Workflow 5: Multi-Channel Campaign Performance Summarizer" [level=2] [ref=e162]'
+        - paragraph [ref=e163]: Marketing teams running campaigns across Google Ads, LinkedIn, email, and organic search spend hours every week pulling data from different platforms, copying it into spreadsheets, and building manual reports. This is time that should be spent on strategy and optimization, not data wrangling.
+        - paragraph [ref=e164]: An n8n campaign performance summarizer workflow can pull data from all your channels, have AI identify the key insights, and deliver a formatted weekly briefing to your team’s Slack channel or inbox — automatically.
+        - paragraph [ref=e165]: "Here is the workflow architecture:"
+        - list [ref=e166]:
+          - listitem [ref=e167]:
+            - strong [ref=e168]: Scheduled trigger
+            - text: ": Every Monday at 8 AM"
+          - listitem [ref=e169]:
+            - strong [ref=e170]: Data collection
+            - text: ": Pull last 7 days of data from Google Ads API, LinkedIn Campaign Manager API, HubSpot email analytics, and Google Analytics 4"
+          - listitem [ref=e171]:
+            - strong [ref=e172]: Data formatting
+            - text: ": Normalize metrics into a consistent structure (impressions, clicks, conversions, cost per conversion)"
+          - listitem [ref=e173]:
+            - strong [ref=e174]: AI analysis
+            - text: ": Send the combined dataset to OpenAI with the prompt: “You are a B2B marketing analyst. Identify the top 3 wins, top 3 concerns, and your single most important recommendation based on this data”"
+          - listitem [ref=e175]:
+            - strong [ref=e176]: Report generation
+            - text: ": Format the AI analysis plus raw data into a structured Slack message or email"
+          - listitem [ref=e177]:
+            - strong [ref=e178]: Delivery
+            - text: ": Send to the marketing team Slack channel and CC the CMO"
+        - table [ref=e179]:
+          - rowgroup [ref=e180]:
+            - row "Channel Metrics Pulled Key Insight Example" [ref=e181]:
+              - columnheader "Channel" [ref=e182]
+              - columnheader "Metrics Pulled" [ref=e183]
+              - columnheader "Key Insight Example" [ref=e184]
+          - rowgroup [ref=e185]:
+            - row "Google Ads Impressions, clicks, CPC, conversions ”Brand keywords converting at 4x lower CPA than competitor terms”" [ref=e186]:
+              - cell "Google Ads" [ref=e187]
+              - cell "Impressions, clicks, CPC, conversions" [ref=e188]
+              - cell "”Brand keywords converting at 4x lower CPA than competitor terms”" [ref=e189]
+            - row "LinkedIn Ads Reach, engagement rate, lead form fills ”Decision-maker audience segment underperforming vs. last month”" [ref=e190]:
+              - cell "LinkedIn Ads" [ref=e191]
+              - cell "Reach, engagement rate, lead form fills" [ref=e192]
+              - cell "”Decision-maker audience segment underperforming vs. last month”" [ref=e193]
+            - row "Email Open rate, click rate, unsubscribes ”Tuesday sends outperforming Thursday by 23% in open rate”" [ref=e194]:
+              - cell "Email" [ref=e195]
+              - cell "Open rate, click rate, unsubscribes" [ref=e196]
+              - cell "”Tuesday sends outperforming Thursday by 23% in open rate”" [ref=e197]
+            - row "Organic Sessions, goal completions, top pages ”Bottom-of-funnel pages driving 60% of demo requests”" [ref=e198]:
+              - cell "Organic" [ref=e199]
+              - cell "Sessions, goal completions, top pages" [ref=e200]
+              - cell "”Bottom-of-funnel pages driving 60% of demo requests”" [ref=e201]
+        - paragraph [ref=e202]:
+          - text: This workflow typically saves marketing managers 3–4 hours per week and ensures that performance data actually gets reviewed and acted on — rather than sitting in a spreadsheet nobody opens. If you want to see how this connects to a broader measurement strategy, explore our
+          - link "Google Ads" [ref=e203] [cursor=pointer]:
+            - /url: /en/services/google-ads
+          - text: and
+          - link "Paid Social" [ref=e204] [cursor=pointer]:
+            - /url: /en/services/paid-social
+          - text: management services.
+        - 'heading "Getting Started: Build vs. Buy Considerations" [level=2] [ref=e205]'
+        - paragraph [ref=e206]: Before you dive into building these workflows, it is worth making an honest assessment of your team’s capacity. n8n is genuinely no-code for simple workflows, but the AI-powered workflows described above involve API authentication, prompt engineering, conditional logic, and error handling. They are absolutely buildable by a technically curious marketer — but they do require a few days of focused effort per workflow.
+        - paragraph [ref=e207]: "| Approach | Time to First Workflow | Ongoing Maintenance | Best For | |---|---|---| | Self-build with n8n cloud | 1–3 days | Low | Teams with technical marketers | | Self-hosted n8n | 1 day setup + 2–4 days per workflow | Medium | Data-sensitive B2B companies | | Partner-built workflows | 3–5 days total | Minimal | Teams without technical resources | | Hybrid approach | 1–2 weeks for full stack | Low | Scaling teams |"
+        - paragraph [ref=e208]:
+          - text: For teams that want the benefits without the build time, our
+          - link "AI solutions" [ref=e209] [cursor=pointer]:
+            - /url: /en/services/ai-solutions
+          - text: team can architect and deploy these workflows on your behalf, connect them to your existing stack, and train your team to manage and extend them. We have built similar systems for B2B tech companies ranging from 10-person startups to 500-person scale-ups.
+        - heading "Common Mistakes to Avoid When Building n8n AI Workflows" [level=2] [ref=e210]
+        - paragraph [ref=e211]: After helping numerous B2B marketing teams implement workflow automation, we consistently see the same mistakes slow teams down or cause workflows to fail in production.
+        - paragraph [ref=e212]:
+          - strong [ref=e213]: Over-automating too fast
+          - text: ": Start with one workflow, get it running reliably, measure the time saved, then expand. Teams that try to automate everything at once end up with a fragile system nobody trusts."
+        - paragraph [ref=e214]:
+          - strong [ref=e215]: Weak error handling
+          - text: ": Every workflow that calls an external API will eventually fail due to rate limits, authentication expiry, or API downtime. Build error notification steps into every workflow from day one."
+        - paragraph [ref=e216]:
+          - strong [ref=e217]: Ignoring prompt versioning
+          - text: ": Your OpenAI prompts are as important as your code. Store them in a central document, version them, and test changes before pushing to production workflows."
+        - paragraph [ref=e218]:
+          - strong [ref=e219]: No human review step
+          - text: ": For any workflow that generates customer-facing content or sends external communications, always include a human review step — at least until you have validated the AI output quality over several weeks."
+        - paragraph [ref=e220]:
+          - strong [ref=e221]: Skipping documentation
+          - text: ": Future you (or your colleague) will thank you for a simple Notion page documenting what each workflow does, what tools it connects, and what to do when it breaks."
+        - paragraph [ref=e222]:
+          - text: If you are ready to explore what an AI-powered automation stack could look like for your specific marketing team,
+          - link "contact us" [ref=e223] [cursor=pointer]:
+            - /url: /en/contact
+          - text: for a no-obligation discovery call. We also offer
+          - link "AI training" [ref=e224] [cursor=pointer]:
+            - /url: /en/services/ai-training
+          - text: workshops specifically designed for B2B marketing teams who want to build internal capability.
+        - heading "Conclusion" [level=2] [ref=e225]
+        - paragraph [ref=e226]: The B2B marketing teams that will win in the next three years are not necessarily the ones with the biggest budgets — they are the ones that figure out how to operate with AI-powered leverage. n8n sits at the intersection of automation, AI, and the tools your team already uses, making it one of the highest-ROI investments a marketing leader can make right now.
+        - paragraph [ref=e227]: The five workflows we have covered — lead enrichment, content repurposing, intent signal monitoring, CRM hygiene, and campaign performance summarization — collectively represent 15–20 hours of manual work per week for a typical B2B marketing team. That is half a full-time headcount that can be redirected to strategy, creativity, and customer conversations.
+        - paragraph [ref=e228]: Start with one workflow this week. Pick the one that addresses your most painful manual process, spend a day building it in n8n, and measure the time saved over the next month. Then build the next one. Within a quarter, you will have an automation stack that makes your team feel genuinely superhuman.
+        - paragraph [ref=e229]:
+          - text: Explore our
+          - link "case studies" [ref=e230] [cursor=pointer]:
+            - /url: /en/case-studies
+          - text: to see how other B2B tech companies have implemented AI-powered marketing automation, or use our
+          - link "calculator" [ref=e231] [cursor=pointer]:
+            - /url: /en/calculator
+          - text: to estimate the ROI of automating your specific workflows.
+      - generic [ref=e232]:
+        - heading "Share this article" [level=3] [ref=e233]
+        - generic [ref=e234]:
+          - link [ref=e235] [cursor=pointer]:
+            - /url: https://twitter.com/intent/tweet?text=n8n%20for%20B2B%20Marketing%20Teams%3A%205%20AI%20Workflows%20to%20Deploy%20This%20Week&url=https%3A%2F%2Fmydigipal.com%2Fen%2Fblog%2Fn8n-ai-workflows-b2b-marketing-teams
+            - img [ref=e236]
+          - link [ref=e238] [cursor=pointer]:
+            - /url: https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fmydigipal.com%2Fen%2Fblog%2Fn8n-ai-workflows-b2b-marketing-teams
+            - img [ref=e239]
+          - button "Copy link" [ref=e241]:
+            - img [ref=e242]
+    - generic [ref=e246]:
+      - heading "Related Articles" [level=2] [ref=e247]
+      - generic [ref=e248]:
+        - article [ref=e249]:
+          - 'link "Claude Cowork vs Claude Code: Which AI Agent Fits Your B2B Marketing Team?" [ref=e250] [cursor=pointer]':
+            - /url: /en/blog/claude-cowork-vs-claude-code-b2b-marketing-teams
+            - 'img "Claude Cowork vs Claude Code: Which AI Agent Fits Your B2B Marketing Team?" [ref=e251]'
+          - generic [ref=e252]:
+            - generic [ref=e253]: Apr 17, 2026
+            - 'heading "Claude Cowork vs Claude Code: Which AI Agent Fits Your B2B Marketing Team?" [level=3] [ref=e254]':
+              - 'link "Claude Cowork vs Claude Code: Which AI Agent Fits Your B2B Marketing Team?" [ref=e255] [cursor=pointer]':
+                - /url: /en/blog/claude-cowork-vs-claude-code-b2b-marketing-teams
+            - link "Read more" [ref=e256] [cursor=pointer]:
+              - /url: /en/blog/claude-cowork-vs-claude-code-b2b-marketing-teams
+              - text: Read more
+              - img [ref=e257]
+        - article [ref=e259]:
+          - 'link "Claude Skills for Marketing: Build Reusable AI Workflows Your Whole Team Can Use" [ref=e260] [cursor=pointer]':
+            - /url: /en/blog/claude-skills-marketing-reusable-ai-workflows
+            - 'img "Claude Skills for Marketing: Build Reusable AI Workflows Your Whole Team Can Use" [ref=e261]'
+          - generic [ref=e262]:
+            - generic [ref=e263]: Apr 16, 2026
+            - 'heading "Claude Skills for Marketing: Build Reusable AI Workflows Your Whole Team Can Use" [level=3] [ref=e264]':
+              - 'link "Claude Skills for Marketing: Build Reusable AI Workflows Your Whole Team Can Use" [ref=e265] [cursor=pointer]':
+                - /url: /en/blog/claude-skills-marketing-reusable-ai-workflows
+            - link "Read more" [ref=e266] [cursor=pointer]:
+              - /url: /en/blog/claude-skills-marketing-reusable-ai-workflows
+              - text: Read more
+              - img [ref=e267]
+        - article [ref=e269]:
+          - 'link "Claude Skills for Marketing Teams: Build Once, Scale Forever" [ref=e270] [cursor=pointer]':
+            - /url: /en/blog/claude-skills-marketing-teams-build-once-scale-forever
+            - 'img "Claude Skills for Marketing Teams: Build Once, Scale Forever" [ref=e271]'
+          - generic [ref=e272]:
+            - generic [ref=e273]: Apr 15, 2026
+            - 'heading "Claude Skills for Marketing Teams: Build Once, Scale Forever" [level=3] [ref=e274]':
+              - 'link "Claude Skills for Marketing Teams: Build Once, Scale Forever" [ref=e275] [cursor=pointer]':
+                - /url: /en/blog/claude-skills-marketing-teams-build-once-scale-forever
+            - link "Read more" [ref=e276] [cursor=pointer]:
+              - /url: /en/blog/claude-skills-marketing-teams-build-once-scale-forever
+              - text: Read more
+              - img [ref=e277]
+    - generic [ref=e281]:
+      - article [ref=e282]:
+        - generic "5 sur 5" [ref=e283]: ★★★★★
+        - paragraph [ref=e284]: "\"We were looking to improve our digital marketing efforts but had a gap in the team and 12 internal tools. MyDigipal overcame significant challenges and successfully executed an ABM revamp across LinkedIn.\""
+        - generic [ref=e285]:
+          - img "Brett Rieser" [ref=e286]
+          - generic [ref=e287]:
+            - generic [ref=e288]: Brett Rieser
+            - generic [ref=e289]: Digital Marketing Director EMEA, Genesys
+      - article [ref=e290]:
+        - generic "5 sur 5" [ref=e291]: ★★★★★
+        - paragraph [ref=e292]: "\"From the ground up, MyDigipal strategic acumen was invaluable. They didn’t just consult; they immersed themselves in our mission. High-value leads, significant uptick in conversions.\""
+        - generic [ref=e293]:
+          - img "Surbhi Rathore" [ref=e294]
+          - generic [ref=e295]:
+            - generic [ref=e296]: Surbhi Rathore
+            - generic [ref=e297]: CEO and Co-founder, Symbl.ai
+      - article [ref=e298]:
+        - generic "5 sur 5" [ref=e299]: ★★★★★
+        - paragraph [ref=e300]: "\"The ABM programs MyDigipal put in place helped us identify and focus on the most valuable target accounts. We accelerated the deal closing process by 30%.\""
+        - generic [ref=e301]:
+          - img "Kelly Wright" [ref=e302]
+          - generic [ref=e303]:
+            - generic [ref=e304]: Kelly Wright
+            - generic [ref=e305]: Global Marketing Director, Quantum Metric
+      - article [ref=e306]:
+        - generic "5 sur 5" [ref=e307]: ★★★★★
+        - paragraph [ref=e308]: "\"MyDigipal pilots all our digital. Google Ads, Meta, tracking, dashboards - we know exactly what every euro spent does. No more black box.\""
+        - generic [ref=e309]:
+          - generic [ref=e310]: AA
+          - generic [ref=e311]:
+            - generic [ref=e312]: Adam Aidoudy
+            - generic [ref=e313]: CEO, Atelier PG
+      - article [ref=e314]:
+        - generic "5 sur 5" [ref=e315]: ★★★★★
+        - paragraph [ref=e316]: "\"Tracking and dashboards were a maze before. MyDigipal made the whole stack legible in 6 weeks. Now we ship campaigns on data, not gut feel.\""
+        - generic [ref=e317]:
+          - generic [ref=e318]: CV
+          - generic [ref=e319]:
+            - generic [ref=e320]: Caroline Vermeersch
+            - generic [ref=e321]: Marketing Manager, BeCom-Direct
+      - article [ref=e322]:
+        - generic "5 sur 5" [ref=e323]: ★★★★★
+        - paragraph [ref=e324]: "\"We were looking to improve our digital marketing efforts but had a gap in the team and 12 internal tools. MyDigipal overcame significant challenges and successfully executed an ABM revamp across LinkedIn.\""
+        - generic [ref=e325]:
+          - img "Brett Rieser" [ref=e326]
+          - generic [ref=e327]:
+            - generic [ref=e328]: Brett Rieser
+            - generic [ref=e329]: Digital Marketing Director EMEA, Genesys
+      - article [ref=e330]:
+        - generic "5 sur 5" [ref=e331]: ★★★★★
+        - paragraph [ref=e332]: "\"From the ground up, MyDigipal strategic acumen was invaluable. They didn’t just consult; they immersed themselves in our mission. High-value leads, significant uptick in conversions.\""
+        - generic [ref=e333]:
+          - img "Surbhi Rathore" [ref=e334]
+          - generic [ref=e335]:
+            - generic [ref=e336]: Surbhi Rathore
+            - generic [ref=e337]: CEO and Co-founder, Symbl.ai
+      - article [ref=e338]:
+        - generic "5 sur 5" [ref=e339]: ★★★★★
+        - paragraph [ref=e340]: "\"The ABM programs MyDigipal put in place helped us identify and focus on the most valuable target accounts. We accelerated the deal closing process by 30%.\""
+        - generic [ref=e341]:
+          - img "Kelly Wright" [ref=e342]
+          - generic [ref=e343]:
+            - generic [ref=e344]: Kelly Wright
+            - generic [ref=e345]: Global Marketing Director, Quantum Metric
+      - article [ref=e346]:
+        - generic "5 sur 5" [ref=e347]: ★★★★★
+        - paragraph [ref=e348]: "\"MyDigipal pilots all our digital. Google Ads, Meta, tracking, dashboards - we know exactly what every euro spent does. No more black box.\""
+        - generic [ref=e349]:
+          - generic [ref=e350]: AA
+          - generic [ref=e351]:
+            - generic [ref=e352]: Adam Aidoudy
+            - generic [ref=e353]: CEO, Atelier PG
+      - article [ref=e354]:
+        - generic "5 sur 5" [ref=e355]: ★★★★★
+        - paragraph [ref=e356]: "\"Tracking and dashboards were a maze before. MyDigipal made the whole stack legible in 6 weeks. Now we ship campaigns on data, not gut feel.\""
+        - generic [ref=e357]:
+          - generic [ref=e358]: CV
+          - generic [ref=e359]:
+            - generic [ref=e360]: Caroline Vermeersch
+            - generic [ref=e361]: Marketing Manager, BeCom-Direct
+    - generic [ref=e363]:
+      - heading "Need help with your digital marketing?" [level=2] [ref=e364]
+      - paragraph [ref=e365]: Let's discuss your goals and see how we can help you achieve them.
+      - link "Contact Us" [ref=e367] [cursor=pointer]:
+        - /url: /en/contact
+        - text: Contact Us
+        - img [ref=e368]
+  - contentinfo [ref=e370]:
+    - generic [ref=e372]:
+      - generic [ref=e373]:
+        - link "MyDigipal" [ref=e374] [cursor=pointer]:
+          - /url: /en
+          - img "MyDigipal" [ref=e375]
+        - paragraph [ref=e376]: The best of both intelligences
+        - paragraph [ref=e377]: Digital marketing agency based in London, specialized in B2B, ABM and Automotive.
+        - generic [ref=e378]:
+          - link "LinkedIn" [ref=e379] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/mydigipal
+            - img [ref=e380]
+          - link "YouTube" [ref=e382] [cursor=pointer]:
+            - /url: https://www.youtube.com/@MyDigipal-ABM
+            - img [ref=e383]
+          - link "RSS Feed" [ref=e386] [cursor=pointer]:
+            - /url: /en/rss.xml
+            - img [ref=e387]
+      - generic [ref=e391]:
+        - heading "Services" [level=4] [ref=e392]
+        - list [ref=e393]:
+          - listitem [ref=e394]:
+            - link "Google Ads" [ref=e395] [cursor=pointer]:
+              - /url: /en/services/google-ads
+          - listitem [ref=e396]:
+            - link "Paid Social" [ref=e397] [cursor=pointer]:
+              - /url: /en/services/paid-social
+          - listitem [ref=e398]:
+            - link "SEO" [ref=e399] [cursor=pointer]:
+              - /url: /en/services/seo
+          - listitem [ref=e400]:
+            - link "Emailing" [ref=e401] [cursor=pointer]:
+              - /url: /en/services/emailing
+          - listitem [ref=e402]:
+            - link "B2B / ABM" [ref=e403] [cursor=pointer]:
+              - /url: /en/services/b2b-abm
+          - listitem [ref=e404]:
+            - link "Tracking & Reporting" [ref=e405] [cursor=pointer]:
+              - /url: /en/services/tracking-reporting
+      - generic [ref=e406]:
+        - heading "AI" [level=4] [ref=e407]
+        - list [ref=e408]:
+          - listitem [ref=e409]:
+            - link "AI Training" [ref=e410] [cursor=pointer]:
+              - /url: /en/services/ai-training
+          - listitem [ref=e411]:
+            - link "AI Solutions" [ref=e412] [cursor=pointer]:
+              - /url: /en/services/ai-solutions
+          - listitem [ref=e413]:
+            - link "AI Content" [ref=e414] [cursor=pointer]:
+              - /url: /en/services/ai-content
+      - generic [ref=e415]:
+        - heading "Automotive" [level=4] [ref=e416]
+        - list [ref=e417]:
+          - listitem [ref=e418]:
+            - link "Google Ads" [ref=e419] [cursor=pointer]:
+              - /url: /en/automotive/google-ads
+          - listitem [ref=e420]:
+            - link "Paid Social" [ref=e421] [cursor=pointer]:
+              - /url: /en/automotive/paid-social
+          - listitem [ref=e422]:
+            - link "Dynamic Ads" [ref=e423] [cursor=pointer]:
+              - /url: /en/automotive/dynamic-ads
+      - generic [ref=e424]:
+        - heading "Company" [level=4] [ref=e425]
+        - list [ref=e426]:
+          - listitem [ref=e427]:
+            - link "Case Studies" [ref=e428] [cursor=pointer]:
+              - /url: /en/case-studies
+          - listitem [ref=e429]:
+            - link "Blog" [ref=e430] [cursor=pointer]:
+              - /url: /en/blog
+          - listitem [ref=e431]:
+            - link "Contact" [ref=e432] [cursor=pointer]:
+              - /url: /en/contact
+          - listitem [ref=e433]:
+            - link "Get a Quote" [ref=e434] [cursor=pointer]:
+              - /url: /en/calculator
+    - generic [ref=e437]:
+      - paragraph [ref=e438]: © 2026 MyDigipal LTD. All rights reserved.
+      - generic [ref=e439]:
+        - link "Privacy Policy" [ref=e440] [cursor=pointer]:
+          - /url: /en/privacy-policy
+        - generic [ref=e441]: •
+        - link "Terms of Service" [ref=e442] [cursor=pointer]:
+          - /url: /en/terms-of-service
+        - generic [ref=e443]: •
+        - button "Cookies" [ref=e444] [cursor=pointer]
+  - link "Calculate my budget" [ref=e446] [cursor=pointer]:
+    - /url: /en/calculator
+    - img [ref=e448]
+    - generic [ref=e450]: Calculate my budget
+    - img [ref=e451]
+  - dialog "Cookie consent" [ref=e454]:
+    - generic [ref=e456]:
+      - paragraph [ref=e457]:
+        - text: This site uses cookies to analyze traffic.
+        - button "Customize" [ref=e458] [cursor=pointer]
+      - generic [ref=e459]:
+        - button "Refuse" [ref=e460] [cursor=pointer]
+        - button "OK" [ref=e461] [cursor=pointer]
