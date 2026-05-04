@@ -1,0 +1,250 @@
+/* =========================================================
+   MyDigipal Design System — Colors & Typography
+   Source of truth: tailwind.config.mjs + src/styles/global.css
+   ========================================================= */
+
+/* ===== FONTS =====
+   Primary body: Inter
+   Display: Plus Jakarta Sans
+   Both served from Google Fonts (same gstatic URLs as the site).
+   Fallback stack mirrors the site.
+*/
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500 800;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_KU7NShXDFGKljA.woff2') format('woff2');
+}
+
+:root {
+  /* ========== COLOR TOKENS (from tailwind.config.mjs) ========== */
+
+  /* Primary — blue, used for CTAs, links, focus ring, brand accents */
+  --color-primary-50:  #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #3B82F6; /* main */
+  --color-primary-600: #2563EB; /* hover */
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* Neutrals — slate, covers surface/text/border */
+  --color-slate-50:  #F8FAFC; /* surface alt */
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #E2E8F0; /* borders */
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748B; /* secondary text */
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0F172A; /* primary text + footer bg */
+  --color-slate-950: #020617;
+
+  /* Service accent palette — pair each service with its hue.
+     These are the FULL Tailwind 500-line hexes used in the site. */
+  --color-seo:       #10B981; /* emerald  — SEO */
+  --color-ads:       #F59E0B; /* amber    — Google Ads */
+  --color-social:    #8B5CF6; /* violet   — Paid Social */
+  --color-abm:       #EC4899; /* pink     — ABM / B2B */
+  --color-emailing:  #F43F5E; /* rose     — Email Marketing */
+  --color-training:  #06B6D4; /* cyan     — AI Training */
+  --color-ai:        #6366F1; /* indigo   — AI Solutions */
+  --color-tracking:  #14B8A6; /* teal     — Tracking & Reporting */
+  --color-automotive:#0EA5E9; /* sky      — Automotive */
+
+  /* Utility status */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error:   #EF4444;
+  --color-info:    #3B82F6;
+
+  /* Hero gradient stops (from index.astro .hero-gradient-text) */
+  --gradient-hero:   linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+  --gradient-primary:linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  --gradient-calc:   linear-gradient(135deg, #4f46e5 0%, #6d28d9 100%); /* indigo → purple */
+  --gradient-abm:    linear-gradient(135deg, #6366f1 0%, #7c3aed 100%); /* B2B card */
+  --gradient-auto:   linear-gradient(135deg, #334155 0%, #0f172a 100%); /* automotive card */
+
+  /* ========== SEMANTIC TOKENS ========== */
+  --fg-1: var(--color-slate-900);  /* primary text */
+  --fg-2: var(--color-slate-600);  /* body / secondary */
+  --fg-3: var(--color-slate-500);  /* muted */
+  --fg-4: var(--color-slate-400);  /* placeholder, de-emphasized */
+  --fg-inverse: #ffffff;
+
+  --bg-1: #ffffff;                 /* page */
+  --bg-2: var(--color-slate-50);   /* surface alt */
+  --bg-3: var(--color-slate-100);  /* cards on color */
+  --bg-dark: var(--color-slate-900); /* footer, dark hero */
+
+  --border-1: var(--color-slate-200);
+  --border-2: var(--color-slate-100);
+  --border-strong: var(--color-slate-300);
+
+  --accent: var(--color-primary-500);
+  --accent-hover: var(--color-primary-600);
+  --accent-tint: var(--color-primary-50);
+
+  --focus-ring: var(--color-primary-500);
+  --selection-bg: rgba(59, 130, 246, 0.2); /* primary-500 / 20% */
+
+  /* ========== TYPE TOKENS ========== */
+  --font-sans:    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  --font-mono:    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+
+  /* Type scale — from Tailwind fontSize extend */
+  --text-display: 4.5rem;  /* 72px — hero-only */
+  --text-5xl: 3rem;        /* 48px */
+  --text-4xl: 2.25rem;     /* 36px */
+  --text-3xl: 1.875rem;    /* 30px */
+  --text-2xl: 1.5rem;      /* 24px */
+  --text-xl:  1.25rem;     /* 20px */
+  --text-lg:  1.125rem;    /* 18px */
+  --text-base: 1rem;       /* 16px */
+  --text-sm:  0.875rem;    /* 14px */
+  --text-xs:  0.75rem;     /* 12px */
+
+  --lh-display: 1;
+  --lh-tight:   1.1;
+  --lh-snug:    1.3;
+  --lh-body:    1.6;
+
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semibold:600;
+  --weight-bold:    700;
+  --weight-extra:   800;
+
+  --tracking-tight: -0.02em;
+  --tracking-snug:  -0.01em;
+
+  /* ========== SPACING / RADII / SHADOW ========== */
+  --radius-sm:  0.5rem;   /* inputs, small chips */
+  --radius:     0.75rem;  /* buttons */
+  --radius-lg:  1rem;     /* large buttons */
+  --radius-xl:  1.25rem;
+  --radius-2xl: 1rem;     /* cards */
+  --radius-3xl: 1.5rem;   /* industry cards */
+  --radius-4xl: 2rem;     /* hero glass */
+  --radius-pill: 9999px;  /* badges, chips, circular buttons */
+
+  --shadow-subtle: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  --shadow-soft:   0 2px 8px -2px rgb(0 0 0 / 0.05), 0 4px 16px -4px rgb(0 0 0 / 0.1);
+  --shadow-medium: 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 8px 24px -4px rgb(0 0 0 / 0.12);
+  --shadow-strong: 0 8px 24px -4px rgb(0 0 0 / 0.12), 0 16px 48px -8px rgb(0 0 0 / 0.15);
+
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast:    200ms;
+  --dur:         250ms;
+  --dur-slow:    350ms;
+}
+
+/* ===== SEMANTIC ELEMENT STYLES ===== */
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font-sans);
+  color: var(--fg-1);
+  background: var(--bg-1);
+  font-size: var(--text-base);
+  line-height: var(--lh-body);
+}
+
+::selection { background: var(--selection-bg); color: var(--fg-1); }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 4px; }
+
+/* Display (hero only) */
+.t-display, .heading-display {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw + 1rem, var(--text-display));
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--weight-extra);
+  color: var(--fg-1);
+}
+
+h1, .t-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.875rem, 3vw + 1rem, var(--text-5xl));
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-snug);
+  font-weight: var(--weight-bold);
+  color: var(--fg-1);
+}
+
+h2, .t-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2vw + 1rem, var(--text-4xl));
+  line-height: var(--lh-tight);
+  font-weight: var(--weight-bold);
+  color: var(--fg-1);
+}
+
+h3, .t-h3 {
+  font-size: var(--text-3xl);
+  line-height: 1.2;
+  font-weight: var(--weight-semibold);
+  color: var(--fg-1);
+}
+
+h4, .t-h4 {
+  font-size: var(--text-xl);
+  line-height: 1.4;
+  font-weight: var(--weight-medium);
+  color: var(--fg-1);
+}
+
+p, .t-body {
+  font-size: var(--text-base);
+  line-height: var(--lh-body);
+  color: var(--fg-2);
+}
+
+.t-body-lg { font-size: var(--text-lg); line-height: 1.5; color: var(--fg-2); }
+.t-body-sm { font-size: var(--text-sm); line-height: 1.5; color: var(--fg-3); }
+
+.t-eyebrow {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.02em;
+  color: var(--color-ai); /* indigo eyebrow, matches site */
+  text-transform: none;
+}
+
+code, .t-code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 0.15em 0.35em;
+  background: var(--bg-3);
+  border-radius: 4px;
+  color: var(--fg-1);
+}
+
+/* Links */
+a, .link {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-smooth);
+}
+a:hover, .link:hover { color: var(--accent-hover); }
+
+/* Gradient text helper (hero) */
+.t-gradient {
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

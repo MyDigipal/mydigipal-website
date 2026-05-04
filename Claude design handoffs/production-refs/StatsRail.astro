@@ -1,0 +1,128 @@
+---
+/**
+ * StatsRail.astro — Hero stats with count-up + sparklines (#2)
+ *
+ * Replaces the static "50+ / +247% / 8+ / 12+" stat row.
+ * Counts up via IntersectionObserver, sparklines draw via stroke-dashoffset.
+ *
+ * Honors prefers-reduced-motion (renders final values statically).
+ */
+interface Stat {
+  label: string;
+  pill: string;
+  target: number;
+  prefix?: string;
+  suffix?: string;
+  desc: string;
+  spark: string;   // SVG path d="…" in 100×32 viewBox
+}
+
+interface Props {
+  stats?: Stat[];
+}
+
+const defaults: Stat[] = [
+  { label: 'Clients',   pill: '+14% YoY',  target: 50,  suffix: '+', desc: 'across 8 countries',     spark: 'M0,24 L20,18 L40,22 L60,12 L80,14 L100,4' },
+  { label: 'Avg ROAS',  pill: 'last 12mo', target: 247, prefix: '+', suffix: '%', desc: 'paid + organic blended', spark: 'M0,28 L15,26 L30,22 L50,18 L70,10 L100,2' },
+  { label: 'Industries',pill: 'B2B · auto',target: 12,  suffix: '+', desc: 'SaaS, retail, OEM…',     spark: 'M0,20 L25,16 L50,18 L75,8 L100,10' },
+  { label: 'NPS',       pill: '2025',      target: 72,  desc: 'verified by Senja',                   spark: 'M0,24 L20,20 L40,16 L60,18 L80,8 L100,6' },
+];
+const { stats = defaults } = Astro.props;
+---
+
+<section class="stats-section" data-counter-section>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs><linearGradient id="statSpark" x1="0" x2="1"><stop offset="0" stop-color="#a5b4fc"/><stop offset="1" stop-color="#67e8f9"/></linearGradient></defs>
+  </svg>
+  <div class="stats-rail">
+    {stats.map(s => (
+      <div class="stat-tile">
+        <div class="label-row">
+          <span>{s.label}</span>
+          <span class="pill">{s.pill}</span>
+        </div>
+        <div
+          class="num"
+          data-target={s.target}
+          data-prefix={s.prefix ?? ''}
+          data-suffix={s.suffix ?? ''}
+        >0</div>
+        <div class="desc">{s.desc}</div>
+        <svg class="spark" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true">
+          <path d={s.spark} />
+        </svg>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .stats-section {
+    position: relative; padding: 64px 24px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    color: #fff; overflow: hidden;
+  }
+  .stats-section::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(800px circle at 30% 30%, rgba(99,102,241,0.25), transparent 50%),
+      radial-gradient(600px circle at 80% 70%, rgba(6,182,212,0.18), transparent 50%);
+    pointer-events: none;
+  }
+  .stats-rail {
+    position: relative; max-width: 80rem; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  @media (max-width: 800px) { .stats-rail { grid-template-columns: repeat(2, 1fr); } }
+  .stat-tile {
+    padding: 24px 20px; border-radius: 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px); position: relative; overflow: hidden;
+    transition: all .3s cubic-bezier(.4,0,.2,1);
+  }
+  .stat-tile:hover { background: rgba(255,255,255,0.07); transform: translateY(-2px); border-color: rgba(255,255,255,0.15); }
+  .label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 11px; color: rgba(255,255,255,0.5); font-family: ui-monospace, monospace; text-transform: uppercase; letter-spacing: .05em; }
+  .pill { padding: 2px 8px; border-radius: 9999px; background: rgba(16,185,129,0.15); color: #34d399; font-size: 10px; text-transform: none; letter-spacing: 0; }
+  .num { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 44px; letter-spacing: -0.02em; line-height: 1; background: linear-gradient(135deg, #a5b4fc, #67e8f9); -webkit-background-clip: text; background-clip: text; color: transparent; font-variant-numeric: tabular-nums; }
+  .desc { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 6px; line-height: 1.4; }
+  .spark { position: absolute; left: 0; right: 0; bottom: 0; height: 32px; opacity: .5; }
+  .spark path { fill: none; stroke: url(#statSpark); stroke-width: 1.5; stroke-dasharray: 200; stroke-dashoffset: 200; }
+  .stats-section.is-on .spark path { animation: drawSpark 2.4s cubic-bezier(.4,0,.2,1) forwards; }
+  @keyframes drawSpark { to { stroke-dashoffset: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spark path { stroke-dashoffset: 0 !important; animation: none !important; }
+    .stat-tile { transition: none; }
+  }
+</style>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const countUp = (el: HTMLElement) => {
+    const target = parseFloat(el.dataset.target || '0');
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    if (reduce) { el.textContent = prefix + target + suffix; return; }
+    const dur = 1400;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / dur);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = prefix + Math.round(target * eased) + suffix;
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('is-on');
+      e.target.querySelectorAll<HTMLElement>('[data-target]').forEach(countUp);
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('[data-counter-section]').forEach(p => io.observe(p));
+</script>

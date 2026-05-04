@@ -1,0 +1,100 @@
+---
+/**
+ * Header.astro — Pill nav with sliding marker (#5)
+ *
+ * Replaces the active-state styling in the existing Header. Keep the
+ * mobile drawer & language switcher from the current header — only the
+ * desktop nav-link block is replaced with the .nav-pill component below.
+ *
+ * Pair with `lib/scroll.ts` for the scroll progress bar + reveal.
+ */
+import { languages, type Language } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+
+interface Props { lang: Language; }
+const { lang } = Astro.props;
+
+const items = [
+  { href: `/${lang}/services`,    label: t(lang, 'nav.services')   },
+  { href: `/${lang}/ai`,          label: 'AI'                       },
+  { href: `/${lang}/automotive`,  label: t(lang, 'nav.automotive') },
+  { href: `/${lang}/case-studies`,label: t(lang, 'nav.cases')      },
+  { href: `/${lang}/blog`,        label: 'Blog'                     },
+];
+
+// crude active match — replace with your existing logic
+const path = Astro.url.pathname;
+const activeIdx = Math.max(0, items.findIndex(i => path.startsWith(i.href)));
+---
+
+<header class="site-header">
+  <div class="scroll-progress" aria-hidden="true"><i id="scrollProgress"></i></div>
+
+  <div class="header-inner">
+    <a class="logo" href={`/${lang}`}>
+      <img src="/images/Logos/02_Full Black.png" alt="MyDigipal" height="32"/>
+    </a>
+
+    <nav class="nav-pill" id="navPill" aria-label="Primary">
+      <span class="nav-marker" id="navMarker" aria-hidden="true"></span>
+      {items.map((it, i) => (
+        <a href={it.href} class={`nav-link${i === activeIdx ? ' active' : ''}`} data-i={i}>{it.label}</a>
+      ))}
+    </nav>
+
+    <div class="nav-actions">
+      <!-- keep your existing language switcher + CTA button here -->
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(15,23,42,0.06); }
+  .scroll-progress { position: absolute; left: 0; right: 0; top: 0; height: 3px; background: transparent; }
+  .scroll-progress i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #6366f1, #06b6d4); transition: width .12s linear; }
+
+  .header-inner { max-width: 88rem; margin: 0 auto; padding: 0 24px; height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .logo img { display: block; height: 32px; width: auto; }
+
+  .nav-pill {
+    position: relative; display: inline-flex; gap: 0; padding: 6px;
+    background: rgba(255,255,255,0.7); backdrop-filter: blur(12px);
+    border: 1px solid rgba(15,23,42,0.06); border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(15,23,42,0.06);
+  }
+  .nav-link { position: relative; padding: 9px 16px; font-size: 14px; font-weight: 500; color: #475569; cursor: pointer; border-radius: 9px; text-decoration: none; transition: color .2s; z-index: 2; }
+  .nav-link.active { color: #0F172A; }
+  .nav-link:hover { color: #0F172A; }
+  .nav-link:focus-visible { outline: 2px solid #3B82F6; outline-offset: 2px; }
+  .nav-marker { position: absolute; top: 6px; height: calc(100% - 12px); background: #fff; border-radius: 9px; box-shadow: 0 1px 3px rgba(15,23,42,0.08), 0 0 0 1px rgba(15,23,42,0.04); transition: left .35s cubic-bezier(.4,0,.2,1), width .35s cubic-bezier(.4,0,.2,1); z-index: 1; pointer-events: none; }
+
+  @media (prefers-reduced-motion: reduce) { .nav-marker, .scroll-progress i { transition: none; } }
+</style>
+
+<script>
+  import { initScrollProgress, initRevealOnScroll } from '@/lib/scroll';
+
+  const navPill = document.getElementById('navPill')!;
+  const marker  = document.getElementById('navMarker') as HTMLElement;
+
+  function moveMarker(btn: HTMLElement) {
+    const r  = btn.getBoundingClientRect();
+    const pr = navPill.getBoundingClientRect();
+    marker.style.left  = (r.left - pr.left) + 'px';
+    marker.style.width = r.width + 'px';
+  }
+
+  navPill.querySelectorAll<HTMLAnchorElement>('.nav-link').forEach(b => {
+    b.addEventListener('mouseenter', () => moveMarker(b));
+  });
+  navPill.addEventListener('mouseleave', () => {
+    const active = navPill.querySelector<HTMLElement>('.nav-link.active');
+    if (active) moveMarker(active);
+  });
+
+  const active = navPill.querySelector<HTMLElement>('.nav-link.active');
+  if (active) requestAnimationFrame(() => moveMarker(active));
+
+  initScrollProgress(document.getElementById('scrollProgress') as HTMLElement);
+  initRevealOnScroll();
+</script>

@@ -1,0 +1,115 @@
+---
+/**
+ * ServicesGridV2.astro — Magnetic services grid (#1)
+ *
+ * 3×2 grid of service cells with cursor-following radial gradient,
+ * ghost stat in the corner, and a reveal-on-hover link.
+ *
+ * Drop in `src/components/sections/`. Replace the existing services
+ * grid include in `src/pages/[lang]/index.astro`.
+ */
+import { type Language } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+
+interface Service {
+  num: string;        // "01"
+  code: string;       // "SEO"
+  title: string;
+  blurb: string;
+  stat: string;       // "+247%"
+  href: string;
+  tint: string;       // hex
+  color: string;      // hex
+}
+
+interface Props {
+  lang: Language;
+  services?: Service[];
+}
+
+const defaults: Service[] = [
+  { num: '01', code: 'SEO',         title: 'SEO that compounds',     blurb: 'Tech, content & links. Built to rank for years, not for a campaign.',           stat: '+247%', href: '/services/seo',          tint: '#ecfdf5', color: '#10B981' },
+  { num: '02', code: 'Google Ads',  title: 'Paid search, weekly',    blurb: 'Full-funnel campaigns reviewed every 7 days. No black-box reporting.',         stat: '3.4×',  href: '/services/google-ads',   tint: '#fffbeb', color: '#F59E0B' },
+  { num: '03', code: 'Paid Social', title: 'Creative-led social',    blurb: 'Meta, LinkedIn, TikTok. We ship 20+ creatives per sprint, not per quarter.',  stat: '+180%', href: '/services/paid-social',  tint: '#f5f3ff', color: '#8B5CF6' },
+  { num: '04', code: 'B2B / ABM',   title: 'Account-based pipeline', blurb: 'Target the 1,000 accounts that move revenue. Sales will thank you.',           stat: '+62%',  href: '/services/abm',          tint: '#fdf2f8', color: '#EC4899' },
+  { num: '05', code: 'Tracking',    title: 'Server-side, GA4-ready', blurb: 'Survives ITP, ATT and the cookie apocalypse. Dashboards your CFO opens.',     stat: '98%',   href: '/services/tracking',     tint: '#f0fdfa', color: '#14B8A6' },
+  { num: '06', code: 'AI',          title: 'AI training & solutions',blurb: 'Custom models, internal tools, AI-augmented content. Built for marketing.',   stat: '2.7×',  href: '/services/ai',           tint: '#ecfeff', color: '#06B6D4' },
+];
+const { lang, services = defaults } = Astro.props;
+---
+
+<section class="svc-section" data-reveal>
+  <div class="svc-grid">
+    {services.map(s => (
+      <a href={`/${lang}${s.href}`} class="svc-cell" style={`--svc-tint:${s.tint};--svc-color:${s.color}`}>
+        <div class="num">{s.num} / {s.code}</div>
+        <h3>{s.title}</h3>
+        <p>{s.blurb}</p>
+        <div class="stat">{s.stat}</div>
+        <div class="reveal">
+          {t(lang, 'common.learnMore') ?? 'Learn more'}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </a>
+    ))}
+  </div>
+</section>
+
+<style>
+  .svc-section { padding: 96px 0; background: #fff; }
+  .svc-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    background: #E2E8F0; border-radius: 16px; overflow: hidden;
+    max-width: 80rem; margin: 0 auto;
+  }
+  @media (max-width: 900px) { .svc-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .svc-grid { grid-template-columns: 1fr; } }
+  .svc-cell {
+    background: #fff; padding: 32px 28px; position: relative;
+    cursor: pointer; overflow: hidden; min-height: 220px;
+    transition: background .3s cubic-bezier(.4,0,.2,1);
+    text-decoration: none; color: inherit; display: block;
+  }
+  .svc-cell::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at var(--mx,50%) var(--my,50%), var(--svc-tint) 0%, transparent 60%);
+    opacity: 0; transition: opacity .35s cubic-bezier(.4,0,.2,1); pointer-events: none;
+  }
+  .svc-cell:hover::before { opacity: 1; }
+  .svc-cell .num { font-family: ui-monospace, 'SF Mono', monospace; font-size: 11px; color: #64748B; position: relative; z-index: 2; }
+  .svc-cell h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.01em; margin: 8px 0 8px; color: #0F172A; position: relative; z-index: 2; }
+  .svc-cell p { margin: 0; font-size: 13px; color: #475569; line-height: 1.5; position: relative; z-index: 2; max-width: 28ch; }
+  .svc-cell .reveal {
+    position: absolute; left: 28px; right: 28px; bottom: 24px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 500; color: var(--svc-color);
+    transform: translateY(8px); opacity: 0;
+    transition: all .35s cubic-bezier(.4,0,.2,1); z-index: 2;
+  }
+  .svc-cell:hover .reveal { transform: translateY(0); opacity: 1; }
+  .svc-cell .stat {
+    position: absolute; top: 28px; right: 28px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 28px;
+    letter-spacing: -0.02em; color: var(--svc-color);
+    opacity: 0; transform: scale(.8);
+    transition: all .35s cubic-bezier(.4,0,.2,1); z-index: 2;
+  }
+  .svc-cell:hover .stat { opacity: .18; transform: scale(1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .svc-cell, .svc-cell::before, .svc-cell .reveal, .svc-cell .stat { transition: none; }
+  }
+</style>
+
+<script>
+  const cells = document.querySelectorAll<HTMLElement>('.svc-cell');
+  cells.forEach(cell => {
+    cell.addEventListener('pointermove', (e) => {
+      const r = cell.getBoundingClientRect();
+      cell.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      cell.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    });
+  });
+</script>

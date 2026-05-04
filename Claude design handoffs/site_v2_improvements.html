@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MyDigipal — Site v2 · améliorations design</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);color:var(--fg-1);background:#fff;-webkit-font-smoothing:antialiased}
+  .page{max-width:1280px;margin:0 auto;padding:48px 32px 96px}
+  .top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:48px;border-bottom:1px solid var(--border-1);padding-bottom:24px}
+  .top h1{font-family:var(--font-display);font-weight:800;font-size:40px;letter-spacing:-0.02em;margin:0 0 8px}
+  .top p{margin:0;color:var(--fg-2);font-size:16px;max-width:560px;line-height:1.5}
+  .top .meta{font-family:var(--font-mono);font-size:11px;color:var(--fg-3);text-align:right;line-height:1.6}
+
+  /* Improvement card */
+  .imp{margin:80px 0;display:grid;grid-template-columns:300px 1fr;gap:48px;align-items:start}
+  @media(max-width:900px){.imp{grid-template-columns:1fr;gap:24px}}
+  .imp-meta .num{font-family:var(--font-display);font-weight:800;font-size:64px;letter-spacing:-0.04em;line-height:0.9;background:linear-gradient(135deg,#6366f1,#06b6d4);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px}
+  .imp-meta h2{font-family:var(--font-display);font-weight:700;font-size:24px;letter-spacing:-0.01em;margin:0 0 12px}
+  .imp-meta p{margin:0;color:var(--fg-2);font-size:14px;line-height:1.55}
+  .imp-meta .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .imp-meta .tag{font-family:var(--font-mono);font-size:10px;padding:3px 8px;border-radius:9999px;background:var(--color-slate-100);color:var(--color-slate-600)}
+  .imp-meta .impact{margin-top:14px;font-size:13px;color:var(--color-primary-600);font-weight:500;display:flex;align-items:center;gap:6px}
+
+  .demo{border:1px solid var(--border-1);border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 1px 2px rgb(0 0 0/0.03)}
+  .demo-tabs{display:flex;background:var(--color-slate-50);border-bottom:1px solid var(--border-1);padding:0 16px;gap:0}
+  .demo-tabs button{background:transparent;border:0;padding:12px 16px;font:inherit;font-size:13px;font-weight:500;color:var(--fg-3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s}
+  .demo-tabs button.active{color:var(--fg-1);border-bottom-color:var(--color-primary-500)}
+  .demo-stage{position:relative;min-height:380px;display:flex;align-items:stretch;justify-content:stretch;background:var(--color-slate-50);overflow:hidden}
+  .pane{display:none;width:100%;animation:paneIn .3s var(--ease-smooth)}
+  .pane.show{display:flex;flex-direction:column}
+  @keyframes paneIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ============ #1 Services grid v2 — magnetic hover + reveal ============ */
+  .pane-services{padding:48px 40px;background:#fff;align-items:center;justify-content:center}
+  .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--color-slate-200);border-radius:16px;overflow:hidden;width:100%;max-width:760px}
+  .svc-cell{background:#fff;padding:32px 28px;position:relative;cursor:pointer;transition:background .3s var(--ease-smooth);overflow:hidden;min-height:200px}
+  .svc-cell::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),var(--svc-tint,#ecfdf5) 0%,transparent 60%);opacity:0;transition:opacity .35s var(--ease-smooth);pointer-events:none}
+  .svc-cell:hover::before{opacity:1}
+  .svc-cell .num{font-family:var(--font-mono);font-size:11px;color:var(--fg-3);position:relative;z-index:2}
+  .svc-cell h3{font-family:var(--font-display);font-weight:700;font-size:20px;letter-spacing:-0.01em;margin:8px 0 8px;color:var(--fg-1);position:relative;z-index:2}
+  .svc-cell p{margin:0;font-size:13px;color:var(--fg-2);line-height:1.5;position:relative;z-index:2;max-width:28ch}
+  .svc-cell .reveal{position:absolute;left:28px;right:28px;bottom:24px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--svc-color);transform:translateY(8px);opacity:0;transition:all .35s var(--ease-smooth);z-index:2}
+  .svc-cell:hover .reveal{transform:translateY(0);opacity:1}
+  .svc-cell .stat{position:absolute;top:28px;right:28px;font-family:var(--font-display);font-weight:800;font-size:28px;letter-spacing:-0.02em;color:var(--svc-color);opacity:0;transform:scale(.8);transition:all .35s var(--ease-smooth);z-index:2}
+  .svc-cell:hover .stat{opacity:.18;transform:scale(1)}
+
+  /* ============ #2 Hero stats — count-up + counter rail ============ */
+  .pane-stats{padding:32px;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);color:#fff;position:relative;align-items:center;justify-content:center}
+  .pane-stats::before{content:"";position:absolute;inset:0;background:radial-gradient(800px circle at 30% 30%,rgba(99,102,241,0.25),transparent 50%),radial-gradient(600px circle at 80% 70%,rgba(6,182,212,0.18),transparent 50%);pointer-events:none}
+  .stats-rail{position:relative;width:100%;max-width:780px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;z-index:1}
+  .stat-tile{padding:24px 20px;border-radius:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);position:relative;overflow:hidden;backdrop-filter:blur(12px);transition:all .3s var(--ease-smooth)}
+  .stat-tile:hover{background:rgba(255,255,255,0.07);transform:translateY(-2px);border-color:rgba(255,255,255,0.15)}
+  .stat-tile .label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:11px;color:rgba(255,255,255,0.5);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+  .stat-tile .pill{padding:2px 8px;border-radius:9999px;background:rgba(16,185,129,0.15);color:#34d399;font-size:10px;font-family:var(--font-mono);text-transform:none;letter-spacing:0}
+  .stat-tile .num{font-family:var(--font-display);font-weight:800;font-size:44px;letter-spacing:-0.02em;line-height:1;background:linear-gradient(135deg,#a5b4fc,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat-tile .desc{font-size:12px;color:rgba(255,255,255,0.6);margin-top:6px;line-height:1.4}
+  .stat-tile .spark{position:absolute;left:0;right:0;bottom:0;height:32px;opacity:.5}
+  .stat-tile .spark path{fill:none;stroke:url(#g);stroke-width:1.5;stroke-dasharray:200;stroke-dashoffset:200;animation:drawSpark 2.4s var(--ease-smooth) forwards}
+  @keyframes drawSpark{to{stroke-dashoffset:0}}
+
+  /* ============ #3 Calculator — live preview pane ============ */
+  .pane-calc{padding:0;background:linear-gradient(135deg,#4f46e5,#6d28d9);color:#fff;align-items:stretch}
+  .calc-grid{display:grid;grid-template-columns:1.1fr 1fr;width:100%;min-height:380px}
+  @media(max-width:760px){.calc-grid{grid-template-columns:1fr}}
+  .calc-controls{padding:36px 32px;display:flex;flex-direction:column;gap:18px}
+  .calc-controls h3{font-family:var(--font-display);font-weight:800;font-size:24px;margin:0 0 4px;letter-spacing:-0.01em}
+  .calc-controls .lead{font-size:13px;opacity:.85;margin:0 0 8px}
+  .calc-row{display:flex;flex-direction:column;gap:8px}
+  .calc-row label{font-size:12px;font-weight:500;opacity:.85;text-transform:uppercase;letter-spacing:.05em}
+  .calc-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .calc-chip{padding:6px 12px;border-radius:9999px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;font-family:inherit}
+  .calc-chip.on{background:#fff;color:#4f46e5;border-color:#fff}
+  .calc-slider{appearance:none;width:100%;height:4px;background:rgba(255,255,255,0.2);border-radius:9999px;outline:none}
+  .calc-slider::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 0 0 4px rgba(255,255,255,0.15)}
+  .calc-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;cursor:pointer;border:0;box-shadow:0 0 0 4px rgba(255,255,255,0.15)}
+  .calc-row .v{font-family:var(--font-display);font-weight:700;font-size:18px}
+
+  .calc-preview{background:rgba(0,0,0,0.2);border-left:1px solid rgba(255,255,255,0.08);padding:32px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;position:relative;overflow:hidden}
+  .calc-preview .label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;opacity:.6;font-family:var(--font-mono)}
+  .calc-preview .total{font-family:var(--font-display);font-weight:800;font-size:48px;letter-spacing:-0.02em;line-height:1;margin-top:4px;transition:all .3s var(--ease-smooth)}
+  .calc-preview .total.bump{transform:scale(1.05)}
+  .calc-preview .breakdown{display:flex;flex-direction:column;gap:6px;font-size:13px}
+  .calc-preview .row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.12);opacity:.85}
+  .calc-preview .row:last-child{border-bottom:0}
+  .calc-preview .row.muted{opacity:.4;text-decoration:line-through}
+  .calc-bar{height:4px;border-radius:9999px;background:rgba(255,255,255,0.1);overflow:hidden;margin-top:6px}
+  .calc-bar i{display:block;height:100%;background:linear-gradient(90deg,#a5b4fc,#67e8f9);transition:width .35s var(--ease-smooth)}
+
+  /* ============ #4 Industry cards — interactive scene ============ */
+  .pane-industry{padding:40px;background:#fff;align-items:center;justify-content:center}
+  .ind-card{position:relative;width:100%;max-width:760px;height:300px;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,#0f172a,#1e1b4b);color:#fff;cursor:pointer;display:flex;align-items:flex-end;padding:32px}
+  .ind-card .layer{position:absolute;inset:0;pointer-events:none;transition:transform .8s var(--ease-smooth)}
+  .ind-card .layer.bg{background:radial-gradient(circle at 20% 80%,rgba(99,102,241,0.4),transparent 60%),radial-gradient(circle at 80% 30%,rgba(6,182,212,0.25),transparent 50%)}
+  .ind-card .layer.grid-l{background:url('../assets/patterns/grid.svg') center/120px 120px;opacity:0.06}
+  .ind-card .lines{position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none}
+  .ind-card .lines svg{position:absolute;inset:0;width:100%;height:100%}
+  .ind-card .lines path{fill:none;stroke:rgba(255,255,255,0.18);stroke-width:1;stroke-dasharray:600;stroke-dashoffset:600;transition:stroke-dashoffset 1.4s var(--ease-smooth)}
+  .ind-card:hover .lines path{stroke-dashoffset:0}
+  .ind-card:hover .layer.bg{transform:scale(1.08)}
+  .ind-card .body{position:relative;z-index:2;max-width:60%}
+  .ind-card .tag{display:inline-block;padding:4px 12px;border-radius:9999px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);font-size:12px;font-weight:500;margin-bottom:14px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+  .ind-card .title{font-family:var(--font-display);font-weight:700;font-size:32px;letter-spacing:-0.01em;line-height:1.1;margin:0 0 10px}
+  .ind-card .sub{font-size:14px;line-height:1.5;opacity:.75;margin:0 0 16px;max-width:36ch}
+  .ind-card .cta-arrow{display:inline-flex;align-items:center;gap:6px;font-weight:500;font-size:14px;transition:transform .3s var(--ease-smooth)}
+  .ind-card:hover .cta-arrow{transform:translateX(6px)}
+  .ind-card .floating{position:absolute;right:36px;top:50%;transform:translateY(-50%);width:200px;z-index:1;opacity:.85}
+  .ind-card .float-item{position:absolute;background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;font-size:12px;display:flex;align-items:center;gap:8px;animation:bob 4s ease-in-out infinite}
+  .ind-card .float-item:nth-child(1){top:0;right:0;animation-delay:0s}
+  .ind-card .float-item:nth-child(2){top:60px;right:60px;animation-delay:-1.5s}
+  .ind-card .float-item:nth-child(3){top:130px;right:20px;animation-delay:-3s}
+  .ind-card .float-item .dot{width:6px;height:6px;border-radius:50%;background:#34d399}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+  /* ============ #5 Header — sticky pill nav with marker ============ */
+  .pane-header{padding:24px 32px;background:var(--color-slate-50);align-items:flex-start;justify-content:flex-start}
+  .nav-mock{position:relative;background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);border:1px solid rgba(15,23,42,0.06);border-radius:16px;padding:8px;display:inline-flex;gap:0;box-shadow:0 4px 24px rgba(15,23,42,0.06);margin-bottom:24px}
+  .nav-link{position:relative;padding:10px 18px;font-size:14px;font-weight:500;color:var(--color-slate-600);cursor:pointer;border-radius:10px;background:transparent;border:0;font-family:inherit;transition:color .2s;z-index:2}
+  .nav-link.active{color:var(--color-slate-900)}
+  .nav-marker{position:absolute;top:8px;height:calc(100% - 16px);background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(15,23,42,0.08),0 0 0 1px rgba(15,23,42,0.04);transition:left .35s var(--ease-smooth),width .35s var(--ease-smooth);z-index:1}
+  .nav-mock + .note{font-size:13px;color:var(--fg-2);max-width:520px;line-height:1.5}
+
+  /* Scroll progress + reveal showcase */
+  .scroll-demo{margin-top:24px;border:1px solid var(--border-1);border-radius:14px;background:#fff;padding:0;overflow:hidden;width:100%;max-width:680px}
+  .scroll-bar{height:3px;background:var(--color-slate-100);position:relative}
+  .scroll-bar i{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#6366f1,#06b6d4);width:38%;transition:width .15s linear}
+  .scroll-content{padding:24px;display:flex;flex-direction:column;gap:14px}
+  .scroll-line{height:10px;border-radius:6px;background:var(--color-slate-100);width:100%;opacity:0;transform:translateY(12px);animation:revIn 0.6s var(--ease-smooth) forwards}
+  .scroll-line:nth-child(1){animation-delay:.1s;width:60%}
+  .scroll-line:nth-child(2){animation-delay:.25s;width:90%}
+  .scroll-line:nth-child(3){animation-delay:.4s;width:75%}
+  .scroll-line:nth-child(4){animation-delay:.55s;width:40%;height:32px;background:var(--color-primary-50);border:1px dashed var(--color-primary-500)}
+  @keyframes revIn{to{opacity:1;transform:translateY(0)}}
+
+  /* ============ #6 Testimonial / case-study marquee ============ */
+  .pane-marquee{padding:32px 0;background:var(--color-slate-50);align-items:center;justify-content:center;flex-direction:column;gap:18px}
+  .marquee{position:relative;width:100%;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+  .marquee-track{display:flex;gap:16px;animation:marq 30s linear infinite;width:max-content}
+  .marquee:hover .marquee-track{animation-play-state:paused}
+  @keyframes marq{to{transform:translateX(-50%)}}
+  .quote-card{flex:none;width:320px;background:#fff;border:1px solid var(--border-1);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  .quote-card .stars{display:flex;gap:2px;color:#F59E0B}
+  .quote-card .body{font-size:14px;line-height:1.55;color:var(--fg-1);margin:0;font-family:var(--font-display);font-weight:500;letter-spacing:-0.01em}
+  .quote-card .who{display:flex;align-items:center;gap:10px;margin-top:auto}
+  .quote-card .ava{width:32px;height:32px;border-radius:9999px;background:linear-gradient(135deg,#6366f1,#06b6d4);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px}
+  .quote-card .meta{font-size:12px}
+  .quote-card .meta .n{font-weight:600;color:var(--fg-1)}
+  .quote-card .meta .r{color:var(--fg-3)}
+
+  /* ============ #7 CTA — magnetic button ============ */
+  .pane-cta{padding:48px;background:#fff;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center}
+  .pane-cta h3{font-family:var(--font-display);font-weight:800;font-size:32px;letter-spacing:-0.02em;margin:0;max-width:18ch;line-height:1.1}
+  .pane-cta p{margin:0;color:var(--fg-2);max-width:42ch;font-size:14px;line-height:1.5}
+  .magnetic-wrap{position:relative;padding:40px}
+  .magnetic-btn{position:relative;display:inline-flex;align-items:center;gap:10px;padding:18px 36px;border-radius:9999px;background:#0f172a;color:#fff;font-weight:600;font-size:16px;border:0;cursor:pointer;font-family:inherit;transition:transform .25s var(--ease-smooth),box-shadow .25s var(--ease-smooth);overflow:hidden;z-index:2}
+  .magnetic-btn::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,0.2),transparent 70%);transform:translateX(-100%);transition:transform .6s var(--ease-smooth)}
+  .magnetic-btn:hover::before{transform:translateX(100%)}
+  .magnetic-btn:hover{box-shadow:0 12px 40px rgba(15,23,42,.25)}
+  .magnetic-btn .arrow{transition:transform .3s var(--ease-smooth)}
+  .magnetic-btn:hover .arrow{transform:translateX(4px)}
+  .pane-cta .helper{font-family:var(--font-mono);font-size:11px;color:var(--fg-3)}
+
+  /* footer */
+  .closing{margin-top:64px;padding:32px;border-radius:20px;background:var(--color-slate-50);border:1px solid var(--border-1)}
+  .closing h2{font-family:var(--font-display);font-weight:700;font-size:20px;margin:0 0 12px}
+  .closing ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;color:var(--fg-2)}
+  .closing li{padding-left:20px;position:relative;line-height:1.5}
+  .closing li::before{content:"→";position:absolute;left:0;color:var(--color-primary-500);font-weight:600}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top">
+    <div>
+      <h1>Site v2 — propositions d'amélioration</h1>
+      <p>Sept upgrades concrets pour rendre le site moins « plat » sans casser l'identité actuelle. Chaque démo est interactive et vit dans la stack existante (Astro + Tailwind, vanilla JS).</p>
+    </div>
+    <div class="meta">
+      Source · github.com/MyDigipal<br>
+      Stack · Astro 5 + Tailwind<br>
+      Niveau · affirmé
+    </div>
+  </div>
+
+  <!-- ============ #1 Services ============ -->
+  <section class="imp">
+    <div class="imp-meta">
+      <div class="num">01</div>
+      <h2>Grille services<br>magnétique</h2>
+      <p>Le current service grid empile icône → titre → blurb. Trop sage. Ici : index numéroté, gradient radial qui suit la souris, KPI fantôme qui apparaît au hover, lien révélé en bas.</p>
+      <div class="tags"><span class="tag">hover</span><span class="tag">--mx --my</span><span class="tag">no-JS</span></div>
+      <div class="impact">↑ engagement perçu · 0 dépendance</div>
+    </div>
+    <div class="demo">
+      <div class="demo-stage"><div class="pane pane-services show">
+        <div class="svc-grid" id="svcGrid">
+          <div class="svc-cell" style="--svc-tint:#ecfdf5;--svc-color:#10B981">
+            <div class="num">01 / SEO</div>
+            <h3>SEO that compounds</h3>
+            <p>Tech, content & links. Built to rank for years, not for a campaign.</p>
+            <div class="stat">+247%</div>
+            <div class="reveal">Voir les case studies <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="svc-cell" style="--svc-tint:#fffbeb;--svc-color:#F59E0B">
+            <div class="num">02 / Google Ads</div>
+            <h3>Paid search, weekly</h3>
+            <p>Full-funnel campaigns reviewed every 7 days. No black-box reporting.</p>
+            <div class="stat">3.4×</div>
+            <div class="reveal">Voir l'approche <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="svc-cell" style="--svc-tint:#f5f3ff;--svc-color:#8B5CF6">
+            <div class="num">03 / Paid Social</div>
+            <h3>Creative-led social</h3>
+            <p>Meta, LinkedIn, TikTok. We ship 20+ creatives per sprint, not per quarter.</p>
+            <div class="stat">+180%</div>
+            <div class="reveal">Voir les formats <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="svc-cell" style="--svc-tint:#fdf2f8;--svc-color:#EC4899">
+            <div class="num">04 / B2B / ABM</div>
+            <h3>Account-based pipeline</h3>
+            <p>Target 1,000 accounts that move revenue. Sales will thank you.</p>
+            <div class="stat">+62%</div>
+            <div class="reveal">Voir le playbook <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="svc-cell" style="--svc-tint:#f0fdfa;--svc-color:#14B8A6">
+            <div class="num">05 / Tracking</div>
+            <h3>Server-side, GA4-ready</h3>
+            <p>Survives ITP, ATT and the cookie apocalypse. With dashboards your CFO opens.</p>
+            <div class="stat">98%</div>
+            <div class="reveal">Voir le stack <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="svc-cell" style="--svc-tint:#ecfeff;--svc-color:#06B6D4">
+            <div class="num">06 / AI</div>
+            <h3>AI training & solutions</h3>
+            <p>Custom models, internal tools, AI-augmented content. Built for marketing teams.</p>
+            <div class="stat">2.7×</div>
+            <div class="reveal">Voir les cas d'usage <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ #2 Stats ============ -->
+  <section class="imp">
+    <div class="imp-meta">
+      <div class="num">02</div>
+      <h2>Hero stats<br>animés au scroll</h2>
+      <p>La rangée actuelle 50+ / +247% / 8+ est statique. Ici : count-up déclenché par IntersectionObserver, sparklines qui se dessinent, micro-pill « +14% YoY » par tile, hover lift discret.</p>
+      <div class="tags"><span class="tag">IntersectionObserver</span><span class="tag">SVG draw</span><span class="tag">requestAnimationFrame</span></div>
+      <div class="impact">↑ crédibilité · feedback chiffré tangible</div>
+    </div>
+    <div class="demo">
+      <div class="demo-stage"><div class="pane pane-stats show">
+        <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#a5b4fc"/><stop offset="1" stop-color="#67e8f9"/></linearGradient></defs></svg>
+        <div class="stats-rail">
+          <div class="stat-tile"><div class="label-row"><span>Clients</span><span class="pill">+14% YoY</span></div><div class="num" data-target="50" data-suffix="+">0</div><div class="desc">across 8 countries</div><svg class="spark" viewBox="0 0 100 32"><path d="M0,24 L20,18 L40,22 L60,12 L80,14 L100,4"/></svg></div>
+          <div class="stat-tile"><div class="label-row"><span>Avg ROAS</span><span class="pill">last 12mo</span></div><div class="num" data-target="247" data-suffix="%" data-prefix="+">0</div><div class="desc">across paid + organic</div><svg class="spark" viewBox="0 0 100 32"><path d="M0,28 L15,26 L30,22 L50,18 L70,10 L100,2"/></svg></div>
+          <div class="stat-tile"><div class="label-row"><span>Industries</span><span class="pill">B2B · auto</span></div><div class="num" data-target="12" data-suffix="+">0</div><div class="desc">SaaS, retail, OEM, fintech…</div><svg class="spark" viewBox="0 0 100 32"><path d="M0,20 L25,16 L50,18 L75,8 L100,10"/></svg></div>
+          <div class="stat-tile"><div class="label-row"><span>NPS</span><span class="pill">2025</span></div><div class="num" data-target="72" data-prefix="" data-suffix="">0</div><div class="desc">verified by Senja</div><svg class="spark" viewBox="0 0 100 32"><path d="M0,24 L20,20 L40,16 L60,18 L80,8 L100,6"/></svg></div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ #3 Calculator preview ============ -->
+  <section class="imp">
+    <div class="imp-meta">
+      <div class="num">03</div>
+      <h2>Calculateur<br>en aperçu live</h2>
+      <p>Le calculateur actuel est une page séparée. Ici : encart inline sur la home avec total qui « pulse » à chaque toggle, breakdown avec barres de progression, services désactivés en strike-through.</p>
+      <div class="tags"><span class="tag">progressive</span><span class="tag">no-blocker</span><span class="tag">React-ready</span></div>
+      <div class="impact">↑ conversion lead · 1er touch sans page change</div>
+    </div>
+    <div class="demo">
+      <div class="demo-stage"><div class="pane pane-calc show">
+        <div class="calc-grid">
+          <div class="calc-controls">
+            <h3>Build your budget</h3>
+            <p class="lead">Toggle services. Drag the slider. Total updates live.</p>
+            <div class="calc-row">
+              <label>Services</label>
+              <div class="calc-chips" id="calcChips">
+                <button class="calc-chip on" data-svc="seo" data-mult="1.4">SEO</button>
+                <button class="calc-chip on" data-svc="ads" data-mult="1.6">Google Ads</button>
+                <button class="calc-chip" data-svc="social" data-mult="1.3">Paid Social</button>
+                <button class="calc-chip" data-svc="email" data-mult="0.8">Email</button>
+                <button class="calc-chip" data-svc="abm" data-mult="2.0">ABM</button>
+              </div>
+            </div>
+            <div class="calc-row">
+              <label>Monthly budget · <span class="v" id="budgetV">£8,000</span></label>
+              <input class="calc-slider" id="budgetSlider" type="range" min="2000" max="40000" step="500" value="8000">
+            </div>
+            <div class="calc-row">
+              <label>Engagement · <span class="v" id="termV">6 mo</span></label>
+              <input class="calc-slider" id="termSlider" type="range" min="1" max="12" step="1" value="6">
+            </div>
+          </div>
+          <div class="calc-preview">
+            <div>
+              <div class="label">Estimated retainer · monthly</div>
+              <div class="total" id="calcTotal">£24,000</div>
+              <div class="calc-bar"><i id="calcBar" style="width:42%"></i></div>
+            </div>
+            <div class="breakdown" id="calcBreakdown"></div>
+            <div style="font-size:11px;opacity:.5;font-family:var(--font-mono)">incl. weekly optimisation · monthly reporting · dedicated strategist</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ #4 Industry card ============ -->
+  <section class="imp">
+    <div class="imp-meta">
+      <div class="num">04</div>
+      <h2>Cartes industries<br>multi-couches</h2>
+      <p>Les blocs B2B et Automotive actuels sont des plats blocks de gradient. Ici : SVG paths qui se dessinent au hover, badges KPI flottants en bob loop, scale subtil sur la lumière de fond.</p>
+      <div class="tags"><span class="tag">stroke-dasharray</span><span class="tag">backdrop-blur</span><span class="tag">@keyframes bob</span></div>
+      <div class="impact">↑ storytelling de l'industrie · sensation de profondeur</div>
+    </div>
+    <div class="demo">
+      <div class="demo-stage"><div class="pane pane-industry show">
+        <div class="ind-card">
+          <div class="layer bg"></div>
+          <div class="layer grid-l"></div>
+          <div class="lines"><svg viewBox="0 0 800 300" preserveAspectRatio="none"><path d="M0,260 C160,260 200,200 320,180 C440,160 520,120 640,100 C720,90 760,60 800,40"/><path d="M0,200 C100,200 180,180 280,160 C400,140 520,80 800,60"/><path d="M0,280 C200,280 320,260 480,220 C600,190 700,160 800,140"/></svg></div>
+          <div class="floating">
+            <div class="float-item"><span class="dot"></span>+62% pipeline · BYmyCAR</div>
+            <div class="float-item"><span class="dot" style="background:#a5b4fc"></span>1,200 accounts targeted</div>
+            <div class="float-item"><span class="dot" style="background:#f59e0b"></span>30% faster close</div>
+          </div>
+          <div class="body">
+            <span class="tag">B2B Tech · ABM</span>
+            <h3 class="title">ABM that closes the accounts that matter.</h3>
+            <p class="sub">Target the 1,000 accounts that move pipeline — with campaigns sales actually use.</p>
+            <span class="cta-arrow">Explore B2B<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ #5 Header pill ============ -->
+  <section class="imp">
+    <div class="imp-meta">
+      <div class="num">05</div>
+      <h2>Nav avec<br>marker animé</h2>
+      <p>Le header actuel utilise un état actif statique. Ici : pill marker qui glisse entre les sections (FLIP-style), progress bar de page, reveal sections au scroll. Plus moderne, sans JS lourd.</p>
+      <div class="tags"><span class="tag">FLIP transition</span><span class="tag">scroll-progress</span><span class="tag">reveal</span></div>
+      <div class="impact">↑ orientation · navigation perçue plus fluide</div>
+    </div>
+    <div class="demo">
+      <div class="demo-stage"><div class="pane pane-header show">
+        <nav class="nav-mock" id="navPill">
+          <span class="nav-marker" id="navMarker"></span>
+          <button class="nav-link active" data-i="0">Services</button>
+          <button class="nav-link" data-i="1">AI</button>
+          <button class="nav-link" data-i="2">Automotive</button>
+          <button class="nav-link" data-i="3">Cases</button>
+          <button class="nav-link" data-i="4">Blog</button>
+        </nav>
+        <p class="note">Cliquez sur un onglet — le marker glisse en 350ms (cubic-bezier .4 0 .2 1). Combinable avec le scroll-progress et le reveal-on-scroll ci-dessous.</p>
+        <div class="scroll-demo">
+          <div class="scroll-bar"><i id="scrollBarFill"></i></div>
+          <div class="scroll-content">
+            <div class="scroll-line"></div>
+            <div class="scroll-line"></div>
+            <div class="scroll-line"></div>
+            <div class="scroll-line"></div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ #6 Marquee ============ -->
+  <section class="imp">
+    <div class="imp-meta">
+      <div class="num">06</div>
+      <h2>Témoignages<br>en marquee</h2>
+      <p>Pas de carrousel à dot-pagination — un marquee infini, pause au hover. Quotes en typo display, nom + rôle compact. Crée du mouvement sans agressivité.</p>
+      <div class="tags"><span class="tag">CSS-only</span><span class="tag">reduce-motion safe</span></div>
+      <div class="impact">↑ social proof · animation passive</div>
+    </div>
+    <div class="demo">
+      <div class="demo-stage"><div class="pane pane-marquee show">
+        <div class="marquee">
+          <div class="marquee-track" id="marqueeTrack"></div>
+        </div>
+        <div style="font-size:12px;color:var(--fg-3);font-family:var(--font-mono)">survolez pour figer · @media (prefers-reduced-motion) → static</div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ #7 CTA ============ -->
+  <section class="imp">
+    <div class="imp-meta">
+      <div class="num">07</div>
+      <h2>CTA magnétique<br>avec shine</h2>
+      <p>Le bouton « Get a quote » mérite un upgrade : effet magnetic (le bouton suit le curseur), shine sweep, flèche qui glisse. Élément final du parcours — il doit être désirable.</p>
+      <div class="tags"><span class="tag">mousemove</span><span class="tag">transform</span><span class="tag">::before sheen</span></div>
+      <div class="impact">↑ click-rate sur le CTA principal</div>
+    </div>
+    <div class="demo">
+      <div class="demo-stage"><div class="pane pane-cta show">
+        <h3>Prêts à passer à la v2 ?</h3>
+        <p>Trois jours de design dev, un déploiement progressif. Pas de big bang.</p>
+        <div class="magnetic-wrap" id="magWrap">
+          <button class="magnetic-btn" id="magBtn">Démarrer la refonte<svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <span class="helper">survole le bouton — il vient à toi</span>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- closing checklist -->
+  <div class="closing">
+    <h2>Récap technique · ce qu'il faut intégrer dans le repo</h2>
+    <ul>
+      <li>Ajouter la grille radiale --mx --my dans <code>ServicesGrid.astro</code></li>
+      <li>Hook IntersectionObserver générique pour les <code>data-target</code> count-up</li>
+      <li>Encart calculateur léger sur la home (déjà page complète existante)</li>
+      <li>Wrapper SVG + bobs flottants dans <code>IndustryCard.astro</code></li>
+      <li>Marker pill dans <code>Header.astro</code> (FLIP-style)</li>
+      <li>Marquee CSS-only avec respect de <code>prefers-reduced-motion</code></li>
+      <li>Magnetic button comme primitive <code>MagneticButton.astro</code></li>
+      <li>Scroll progress + reveal-on-scroll en util global (~ 30 lignes JS)</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+/* ===== #1 service grid: radial gradient follows cursor ===== */
+document.querySelectorAll('.svc-cell').forEach(cell => {
+  cell.addEventListener('pointermove', e => {
+    const r = cell.getBoundingClientRect();
+    cell.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+    cell.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+  });
+});
+
+/* ===== #2 count-up on visible ===== */
+const countUp = (el) => {
+  const target = parseFloat(el.dataset.target);
+  const prefix = el.dataset.prefix || '';
+  const suffix = el.dataset.suffix || '';
+  const dur = 1400;
+  const start = performance.now();
+  const tick = (now) => {
+    const t = Math.min(1, (now - start) / dur);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const val = Math.round(target * eased);
+    el.textContent = prefix + val + suffix;
+    if (t < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+};
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('[data-target]').forEach(countUp);
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.4 });
+document.querySelectorAll('.pane-stats').forEach(p => io.observe(p));
+
+/* ===== #3 calculator ===== */
+const chips = document.querySelectorAll('#calcChips .calc-chip');
+const budgetSlider = document.getElementById('budgetSlider');
+const termSlider = document.getElementById('termSlider');
+const budgetV = document.getElementById('budgetV');
+const termV = document.getElementById('termV');
+const totalEl = document.getElementById('calcTotal');
+const barEl = document.getElementById('calcBar');
+const breakdownEl = document.getElementById('calcBreakdown');
+
+function calc() {
+  const budget = +budgetSlider.value;
+  const term = +termSlider.value;
+  budgetV.textContent = '£' + budget.toLocaleString();
+  termV.textContent = term + ' mo';
+  let total = 0;
+  const lines = [];
+  chips.forEach(c => {
+    const mult = parseFloat(c.dataset.mult);
+    const on = c.classList.contains('on');
+    const v = Math.round(budget * mult * 0.4);
+    if (on) total += v;
+    lines.push(`<div class="row${on?'':' muted'}"><span>${c.textContent}</span><span>£${v.toLocaleString()}/mo</span></div>`);
+  });
+  total = Math.round(total * (1 + (term-1) * 0.02));
+  breakdownEl.innerHTML = lines.join('');
+  totalEl.textContent = '£' + total.toLocaleString();
+  totalEl.classList.add('bump');
+  setTimeout(() => totalEl.classList.remove('bump'), 250);
+  const max = 80000;
+  barEl.style.width = Math.min(100, (total / max) * 100) + '%';
+}
+chips.forEach(c => c.addEventListener('click', () => { c.classList.toggle('on'); calc(); }));
+budgetSlider.addEventListener('input', calc);
+termSlider.addEventListener('input', calc);
+calc();
+
+/* ===== #5 nav pill marker ===== */
+const navPill = document.getElementById('navPill');
+const marker = document.getElementById('navMarker');
+function moveMarker(btn) {
+  const r = btn.getBoundingClientRect();
+  const pr = navPill.getBoundingClientRect();
+  marker.style.left = (r.left - pr.left) + 'px';
+  marker.style.width = r.width + 'px';
+}
+navPill.querySelectorAll('.nav-link').forEach(b => {
+  b.addEventListener('click', () => {
+    navPill.querySelectorAll('.nav-link').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    moveMarker(b);
+  });
+});
+requestAnimationFrame(() => moveMarker(navPill.querySelector('.nav-link.active')));
+
+/* fake scroll progress */
+const fill = document.getElementById('scrollBarFill');
+let p = 0.38, dir = 1;
+setInterval(() => { p += dir * 0.012; if (p > 1) { p = 1; dir = -1; } if (p < 0) { p = 0; dir = 1; } fill.style.width = (p*100) + '%'; }, 60);
+
+/* ===== #6 marquee ===== */
+const quotes = [
+  ['Madame X', 'CMO · BYmyCAR', 'On a doublé nos leads dealers en 4 mois. La transparence sur le tracking change tout.'],
+  ['Olivier B.', 'Head of Growth · SaaS B2B', 'Ils ont rebuilt notre stack ABM en 6 semaines. Sales et marketing parlent enfin la même langue.'],
+  ['Léa M.', 'Director · DTC retail', 'Le ROAS sur Paid Social est passé de 1.8 à 4.2. Sans augmenter le budget. Magique.'],
+  ['Tom S.', 'Founder · seed startup', '50% du temps c\'est eux qui me proposent des idées avant que je demande. Vrai partenariat.'],
+  ['Sophie R.', 'VP Marketing · OEM auto', 'Les dynamic ads véhicules nous ont sorti de l\'ornière. Inventory > campagnes désormais.'],
+];
+const track = document.getElementById('marqueeTrack');
+const initials = (n) => n.split(' ').map(x => x[0]).join('');
+const card = ([n, r, q]) => `<div class="quote-card"><div class="stars">${'★'.repeat(5)}</div><p class="body">"${q}"</p><div class="who"><div class="ava">${initials(n)}</div><div class="meta"><div class="n">${n}</div><div class="r">${r}</div></div></div></div>`;
+track.innerHTML = [...quotes, ...quotes].map(card).join('');
+
+/* ===== #7 magnetic button ===== */
+const magWrap = document.getElementById('magWrap');
+const magBtn = document.getElementById('magBtn');
+magWrap.addEventListener('pointermove', e => {
+  const r = magWrap.getBoundingClientRect();
+  const x = (e.clientX - r.left - r.width/2) * 0.3;
+  const y = (e.clientY - r.top - r.height/2) * 0.3;
+  magBtn.style.transform = `translate(${x}px,${y}px)`;
+});
+magWrap.addEventListener('pointerleave', () => { magBtn.style.transform = ''; });
+</script>
+</body></html>

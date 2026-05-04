@@ -1,0 +1,135 @@
+---
+/**
+ * CalculatorInlinePreview.astro — Inline budget calculator (#3)
+ *
+ * Lightweight homepage version of the full /calculator page. Vanilla JS
+ * only. Not a replacement for the full React calculator — a teaser surface.
+ */
+interface Props {
+  ctaHref?: string;
+}
+const { ctaHref = '/calculator' } = Astro.props;
+---
+
+<section class="calc-inline" data-reveal>
+  <div class="calc-inline__inner">
+    <div class="calc-grid">
+      <div class="calc-controls">
+        <h3>Build your budget</h3>
+        <p class="lead">Toggle services. Drag the slider. Total updates live.</p>
+
+        <div class="calc-row">
+          <label>Services</label>
+          <div class="calc-chips" id="calcChips">
+            <button type="button" class="calc-chip on" data-svc="seo"    data-mult="1.4">SEO</button>
+            <button type="button" class="calc-chip on" data-svc="ads"    data-mult="1.6">Google Ads</button>
+            <button type="button" class="calc-chip"    data-svc="social" data-mult="1.3">Paid Social</button>
+            <button type="button" class="calc-chip"    data-svc="email"  data-mult="0.8">Email</button>
+            <button type="button" class="calc-chip"    data-svc="abm"    data-mult="2.0">ABM</button>
+          </div>
+        </div>
+
+        <div class="calc-row">
+          <label>Monthly budget · <span class="v" id="budgetV">£8,000</span></label>
+          <input class="calc-slider" id="budgetSlider" type="range" min="2000" max="40000" step="500" value="8000" aria-label="Monthly budget"/>
+        </div>
+
+        <div class="calc-row">
+          <label>Engagement · <span class="v" id="termV">6 mo</span></label>
+          <input class="calc-slider" id="termSlider" type="range" min="1" max="12" step="1" value="6" aria-label="Engagement length"/>
+        </div>
+      </div>
+
+      <div class="calc-preview">
+        <div>
+          <div class="label">Estimated retainer · monthly</div>
+          <div class="total" id="calcTotal">£24,000</div>
+          <div class="calc-bar"><i id="calcBar" style="width:42%"></i></div>
+        </div>
+        <div class="breakdown" id="calcBreakdown"></div>
+        <a class="calc-cta" href={ctaHref}>
+          Get the full calculator
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .calc-inline { padding: 96px 0; background: linear-gradient(135deg, #4f46e5, #6d28d9); color: #fff; position: relative; overflow: hidden; }
+  .calc-inline__inner { max-width: 80rem; margin: 0 auto; padding: 0 24px; }
+  .calc-grid { display: grid; grid-template-columns: 1.1fr 1fr; min-height: 380px; border-radius: 24px; overflow: hidden; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); }
+  @media (max-width: 760px) { .calc-grid { grid-template-columns: 1fr; } }
+
+  .calc-controls { padding: 36px 32px; display: flex; flex-direction: column; gap: 18px; }
+  .calc-controls h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 24px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .calc-controls .lead { font-size: 13px; opacity: .85; margin: 0 0 8px; }
+  .calc-row { display: flex; flex-direction: column; gap: 8px; }
+  .calc-row label { font-size: 12px; font-weight: 500; opacity: .85; text-transform: uppercase; letter-spacing: .05em; }
+  .calc-row .v { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 18px; text-transform: none; letter-spacing: 0; }
+
+  .calc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .calc-chip { padding: 6px 12px; border-radius: 9999px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all .2s; }
+  .calc-chip.on { background: #fff; color: #4f46e5; border-color: #fff; }
+  .calc-chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+  .calc-slider { appearance: none; width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 9999px; outline: none; }
+  .calc-slider::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; cursor: pointer; box-shadow: 0 0 0 4px rgba(255,255,255,0.15); }
+  .calc-slider::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff; cursor: pointer; border: 0; box-shadow: 0 0 0 4px rgba(255,255,255,0.15); }
+
+  .calc-preview { background: rgba(0,0,0,0.2); border-left: 1px solid rgba(255,255,255,0.08); padding: 32px; display: flex; flex-direction: column; justify-content: space-between; gap: 16px; }
+  @media (max-width: 760px) { .calc-preview { border-left: 0; border-top: 1px solid rgba(255,255,255,0.08); } }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; opacity: .6; font-family: ui-monospace, monospace; }
+  .total { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 48px; letter-spacing: -0.02em; line-height: 1; margin-top: 4px; transition: transform .25s cubic-bezier(.4,0,.2,1); font-variant-numeric: tabular-nums; }
+  .total.bump { transform: scale(1.05); }
+  .calc-bar { height: 4px; border-radius: 9999px; background: rgba(255,255,255,0.1); overflow: hidden; margin-top: 6px; }
+  .calc-bar i { display: block; height: 100%; background: linear-gradient(90deg, #a5b4fc, #67e8f9); transition: width .35s cubic-bezier(.4,0,.2,1); }
+  .breakdown { display: flex; flex-direction: column; font-size: 13px; }
+  .breakdown .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.12); opacity: .85; }
+  .breakdown .row:last-child { border-bottom: 0; }
+  .breakdown .row.muted { opacity: .4; text-decoration: line-through; }
+  .calc-cta { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; padding: 10px 16px; border-radius: 9999px; background: rgba(255,255,255,0.12); color: #fff; font-size: 14px; font-weight: 500; text-decoration: none; transition: background .2s; }
+  .calc-cta:hover { background: rgba(255,255,255,0.2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .total, .calc-bar i, .calc-chip { transition: none; }
+  }
+</style>
+
+<script>
+  const chips = document.querySelectorAll<HTMLElement>('#calcChips .calc-chip');
+  const budgetSlider = document.getElementById('budgetSlider') as HTMLInputElement;
+  const termSlider   = document.getElementById('termSlider') as HTMLInputElement;
+  const budgetV      = document.getElementById('budgetV')!;
+  const termV        = document.getElementById('termV')!;
+  const totalEl      = document.getElementById('calcTotal')!;
+  const barEl        = document.getElementById('calcBar') as HTMLElement;
+  const breakdownEl  = document.getElementById('calcBreakdown')!;
+
+  function calc() {
+    const budget = +budgetSlider.value;
+    const term   = +termSlider.value;
+    budgetV.textContent = '£' + budget.toLocaleString();
+    termV.textContent   = term + ' mo';
+    let total = 0;
+    const lines: string[] = [];
+    chips.forEach(c => {
+      const mult = parseFloat(c.dataset.mult || '1');
+      const on   = c.classList.contains('on');
+      const v    = Math.round(budget * mult * 0.4);
+      if (on) total += v;
+      lines.push(`<div class="row${on ? '' : ' muted'}"><span>${c.textContent}</span><span>£${v.toLocaleString()}/mo</span></div>`);
+    });
+    total = Math.round(total * (1 + (term - 1) * 0.02));
+    breakdownEl.innerHTML = lines.join('');
+    totalEl.textContent = '£' + total.toLocaleString();
+    totalEl.classList.add('bump');
+    setTimeout(() => totalEl.classList.remove('bump'), 250);
+    barEl.style.width = Math.min(100, (total / 80000) * 100) + '%';
+  }
+  chips.forEach(c => c.addEventListener('click', () => { c.classList.toggle('on'); calc(); }));
+  budgetSlider.addEventListener('input', calc);
+  termSlider.addEventListener('input', calc);
+  calc();
+</script>

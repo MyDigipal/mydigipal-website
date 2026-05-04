@@ -1,0 +1,69 @@
+---
+/**
+ * TestimonialMarquee.astro — Infinite testimonial marquee (#6)
+ *
+ * CSS-only animation, pause on hover/focus, respects reduce-motion.
+ * Reads from `src/content/testimonials/` collection (markdown frontmatter:
+ * name, role, quote, rating). Falls back to inline defaults if none.
+ */
+import { getCollection } from 'astro:content';
+
+let testimonials: Array<{ name: string; role: string; quote: string; rating?: number }>;
+try {
+  const entries = await getCollection('testimonials');
+  testimonials = entries.map(e => e.data);
+} catch {
+  testimonials = [
+    { name: 'Madame X',  role: 'CMO · BYmyCAR',           quote: 'On a doublé nos leads dealers en 4 mois. La transparence sur le tracking change tout.', rating: 5 },
+    { name: 'Olivier B.',role: 'Head of Growth · SaaS',   quote: 'Stack ABM rebuilt en 6 semaines. Sales et marketing parlent enfin la même langue.',     rating: 5 },
+    { name: 'Léa M.',    role: 'Director · DTC retail',   quote: 'Le ROAS sur Paid Social est passé de 1.8 à 4.2. Sans augmenter le budget.',               rating: 5 },
+    { name: 'Tom S.',    role: 'Founder · seed startup',  quote: '50% du temps c\u2019est eux qui me proposent des idées avant que je demande.',            rating: 5 },
+    { name: 'Sophie R.', role: 'VP Marketing · OEM auto', quote: 'Les dynamic ads véhicules nous ont sorti de l\u2019ornière. Inventory > campagnes.',     rating: 5 },
+  ];
+}
+
+const initials = (n: string) => n.split(' ').map(x => x[0] ?? '').join('').toUpperCase().slice(0, 2);
+const doubled = [...testimonials, ...testimonials];   // for seamless loop
+---
+
+<section class="marquee-section" data-reveal>
+  <div class="marquee">
+    <div class="marquee-track">
+      {doubled.map(t => (
+        <article class="quote-card">
+          <div class="stars" aria-label={`${t.rating ?? 5} out of 5`}>{'★'.repeat(t.rating ?? 5)}</div>
+          <p class="body">"{t.quote}"</p>
+          <div class="who">
+            <div class="ava" aria-hidden="true">{initials(t.name)}</div>
+            <div class="meta">
+              <div class="n">{t.name}</div>
+              <div class="r">{t.role}</div>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .marquee-section { padding: 32px 0; background: #F8FAFC; }
+  .marquee { position: relative; width: 100%; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .marquee-track { display: flex; gap: 16px; width: max-content; animation: marq 30s linear infinite; padding: 16px; }
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track { animation-play-state: paused; }
+  @keyframes marq { to { transform: translateX(-50%); } }
+
+  .quote-card { flex: none; width: 320px; background: #fff; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 2px rgba(0,0,0,.03); }
+  .stars { display: flex; gap: 2px; color: #F59E0B; font-size: 14px; }
+  .body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500; font-size: 14px; letter-spacing: -0.01em; line-height: 1.55; color: #0F172A; }
+  .who { display: flex; align-items: center; gap: 10px; margin-top: auto; }
+  .ava { width: 32px; height: 32px; border-radius: 9999px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; }
+  .meta { font-size: 12px; }
+  .meta .n { font-weight: 600; color: #0F172A; }
+  .meta .r { color: #64748B; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track { animation: none; flex-wrap: wrap; justify-content: center; }
+  }
+</style>

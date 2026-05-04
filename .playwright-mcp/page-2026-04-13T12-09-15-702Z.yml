@@ -1,0 +1,237 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - link "MyDigipal" [ref=e4] [cursor=pointer]:
+        - /url: /fr
+        - img "MyDigipal" [ref=e5]
+      - generic [ref=e6]:
+        - link "Services" [ref=e8] [cursor=pointer]:
+          - /url: /fr/services
+          - text: Services
+          - img [ref=e9]
+        - link "IA" [ref=e12] [cursor=pointer]:
+          - /url: /fr/ai
+          - text: IA
+          - img [ref=e13]
+        - link "Automobile" [ref=e16] [cursor=pointer]:
+          - /url: /fr/automotive
+          - text: Automobile
+          - img [ref=e17]
+        - link "Études de cas" [ref=e20] [cursor=pointer]:
+          - /url: /fr/case-studies
+        - link "Blog" [ref=e22] [cursor=pointer]:
+          - /url: /fr/blog
+      - generic [ref=e23]:
+        - link "Espace Client" [ref=e24] [cursor=pointer]:
+          - /url: https://app.mydigipal.com/login
+          - img [ref=e25]
+          - text: Espace Client
+        - link "Contact" [ref=e28] [cursor=pointer]:
+          - /url: /fr/contact
+        - link "Devis" [ref=e29] [cursor=pointer]:
+          - /url: /fr/calculator
+        - link "Switch to English" [ref=e30] [cursor=pointer]:
+          - /url: /en/calculator
+          - text: 🇬🇧
+  - main [ref=e32]:
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - img [ref=e36]
+        - generic [ref=e41]: Calculateur interactif
+      - heading "Composez Votre Offre Marketing" [level=1] [ref=e42]
+      - paragraph [ref=e43]: Sélectionnez les services dont vous avez besoin, configurez-les selon vos besoins et obtenez une estimation instantanée. Sans engagement.
+    - generic [ref=e47]:
+      - generic [ref=e48]:
+        - heading "Sélectionnez vos services" [level=2] [ref=e49]
+        - paragraph [ref=e50]: Choisissez les services marketing dont vous avez besoin. Vous pouvez combiner plusieurs domaines.
+      - generic [ref=e51]:
+        - button "💡 Aidez-moi à choisir Répondez à 5 questions et nous vous recommanderons les bons services." [ref=e52] [cursor=pointer]:
+          - generic [ref=e53]: 💡
+          - generic [ref=e54]: Aidez-moi à choisir
+          - generic [ref=e55]: Répondez à 5 questions et nous vous recommanderons les bons services.
+        - button "🎯 Je sais ce qu'il me faut Sélectionnez directement ci-dessous" [ref=e56] [cursor=pointer]:
+          - generic [ref=e57]: 🎯
+          - generic [ref=e58]: Je sais ce qu'il me faut
+          - generic [ref=e59]: Sélectionnez directement ci-dessous
+      - generic [ref=e61]:
+        - generic [ref=e62]: "Devise:"
+        - button "€ EUR" [ref=e63] [cursor=pointer]
+        - button "$ USD" [ref=e64] [cursor=pointer]
+        - button "£ GBP" [ref=e65] [cursor=pointer]
+      - generic [ref=e66]:
+        - button "🔍 SEO Référencement naturel et visibilité organique" [ref=e67] [cursor=pointer]:
+          - generic [ref=e69]: 🔍
+          - heading "SEO" [level=3] [ref=e70]
+          - paragraph [ref=e71]: Référencement naturel et visibilité organique
+        - button "📊 Google Ads Publicité sur le réseau Google (Search, Display, YouTube)" [ref=e72] [cursor=pointer]:
+          - generic [ref=e74]: 📊
+          - heading "Google Ads" [level=3] [ref=e75]
+          - paragraph [ref=e76]: Publicité sur le réseau Google (Search, Display, YouTube)
+        - button "📱 Paid Social Publicité sur les réseaux sociaux (Meta, LinkedIn, TikTok)" [ref=e77] [cursor=pointer]:
+          - generic [ref=e79]: 📱
+          - heading "Paid Social" [level=3] [ref=e80]
+          - paragraph [ref=e81]: Publicité sur les réseaux sociaux (Meta, LinkedIn, TikTok)
+        - button "🎓 Formation IA Formation IA pour vos équipes, en présentiel ou à distance" [ref=e82] [cursor=pointer]:
+          - generic [ref=e84]: 🎓
+          - heading "Formation IA" [level=3] [ref=e85]
+          - paragraph [ref=e86]: Formation IA pour vos équipes, en présentiel ou à distance
+        - button "📧 Email Marketing Campagnes email alimentées par l'IA qui convertissent" [ref=e87] [cursor=pointer]:
+          - generic [ref=e89]: 📧
+          - heading "Email Marketing" [level=3] [ref=e90]
+          - paragraph [ref=e91]: Campagnes email alimentées par l'IA qui convertissent
+        - button "🤖 Solutions IA Chatbots IA, automatisation de workflows et solutions sur-mesure Packages + sur-mesure" [ref=e92] [cursor=pointer]:
+          - generic [ref=e94]: 🤖
+          - heading "Solutions IA" [level=3] [ref=e95]
+          - paragraph [ref=e96]: Chatbots IA, automatisation de workflows et solutions sur-mesure
+          - generic [ref=e97]: Packages + sur-mesure
+        - button "✍️ Contenu IA Articles de blog SEO, contenu social et landing pages propulsés par l'IA" [ref=e98] [cursor=pointer]:
+          - generic [ref=e100]: ✍️
+          - heading "Contenu IA" [level=3] [ref=e101]
+          - paragraph [ref=e102]: Articles de blog SEO, contenu social et landing pages propulsés par l'IA
+        - button "📊 Tracking & Reporting Mesurez, analysez et optimisez vos performances marketing" [ref=e103] [cursor=pointer]:
+          - generic [ref=e105]: 📊
+          - heading "Tracking & Reporting" [level=3] [ref=e106]
+          - paragraph [ref=e107]: Mesurez, analysez et optimisez vos performances marketing
+    - generic [ref=e110]:
+      - generic [ref=e111]:
+        - generic [ref=e112]: 50+
+        - generic [ref=e113]: Clients actifs
+      - generic [ref=e114]:
+        - generic [ref=e115]: +200%
+        - generic [ref=e116]: ROI moyen
+      - generic [ref=e117]:
+        - generic [ref=e118]: 5+
+        - generic [ref=e119]: Années d'expérience
+      - generic [ref=e120]:
+        - generic [ref=e121]: 24h
+        - generic [ref=e122]: Délai de réponse
+    - generic [ref=e124]:
+      - heading "Questions fréquentes" [level=2] [ref=e125]
+      - generic [ref=e126]:
+        - group [ref=e127]:
+          - generic "Comment fonctionne le calculateur ?" [ref=e128] [cursor=pointer]:
+            - heading "Comment fonctionne le calculateur ?" [level=3] [ref=e129]
+            - img [ref=e130]
+        - group [ref=e132]:
+          - generic "Les prix sont-ils définitifs ?" [ref=e133] [cursor=pointer]:
+            - heading "Les prix sont-ils définitifs ?" [level=3] [ref=e134]
+            - img [ref=e135]
+        - group [ref=e137]:
+          - generic "Puis-je modifier ma sélection après avoir envoyé le devis ?" [ref=e138] [cursor=pointer]:
+            - heading "Puis-je modifier ma sélection après avoir envoyé le devis ?" [level=3] [ref=e139]
+            - img [ref=e140]
+        - group [ref=e142]:
+          - generic "Quelle est la durée d'engagement minimum ?" [ref=e143] [cursor=pointer]:
+            - heading "Quelle est la durée d'engagement minimum ?" [level=3] [ref=e144]
+            - img [ref=e145]
+  - contentinfo [ref=e147]:
+    - generic [ref=e149]:
+      - generic [ref=e150]:
+        - link "MyDigipal" [ref=e151] [cursor=pointer]:
+          - /url: /fr
+          - img "MyDigipal" [ref=e152]
+        - paragraph [ref=e153]: Le meilleur des deux intelligences
+        - paragraph [ref=e154]: Agence de marketing digital basée à Londres, spécialisée en B2B, ABM et Automobile.
+        - generic [ref=e155]:
+          - link "LinkedIn" [ref=e156] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/mydigipal
+            - img [ref=e157]
+          - link "YouTube" [ref=e159] [cursor=pointer]:
+            - /url: https://www.youtube.com/@MyDigipal-ABM
+            - img [ref=e160]
+          - link "RSS Feed" [ref=e163] [cursor=pointer]:
+            - /url: /fr/rss.xml
+            - img [ref=e164]
+      - generic [ref=e168]:
+        - heading "Services" [level=4] [ref=e169]
+        - list [ref=e170]:
+          - listitem [ref=e171]:
+            - link "Google Ads" [ref=e172] [cursor=pointer]:
+              - /url: /fr/services/google-ads
+          - listitem [ref=e173]:
+            - link "Paid Social" [ref=e174] [cursor=pointer]:
+              - /url: /fr/services/paid-social
+          - listitem [ref=e175]:
+            - link "SEO" [ref=e176] [cursor=pointer]:
+              - /url: /fr/services/seo
+          - listitem [ref=e177]:
+            - link "Emailing" [ref=e178] [cursor=pointer]:
+              - /url: /fr/services/emailing
+          - listitem [ref=e179]:
+            - link "B2B / ABM" [ref=e180] [cursor=pointer]:
+              - /url: /fr/services/b2b-abm
+          - listitem [ref=e181]:
+            - link "Tracking & Reporting" [ref=e182] [cursor=pointer]:
+              - /url: /fr/services/tracking-reporting
+      - generic [ref=e183]:
+        - heading "IA" [level=4] [ref=e184]
+        - list [ref=e185]:
+          - listitem [ref=e186]:
+            - link "Formation IA" [ref=e187] [cursor=pointer]:
+              - /url: /fr/services/ai-training
+          - listitem [ref=e188]:
+            - link "Solutions IA" [ref=e189] [cursor=pointer]:
+              - /url: /fr/services/ai-solutions
+          - listitem [ref=e190]:
+            - link "Contenu IA" [ref=e191] [cursor=pointer]:
+              - /url: /fr/services/ai-content
+      - generic [ref=e192]:
+        - heading "Automobile" [level=4] [ref=e193]
+        - list [ref=e194]:
+          - listitem [ref=e195]:
+            - link "Google Ads" [ref=e196] [cursor=pointer]:
+              - /url: /fr/automotive/google-ads
+          - listitem [ref=e197]:
+            - link "Paid Social" [ref=e198] [cursor=pointer]:
+              - /url: /fr/automotive/paid-social
+          - listitem [ref=e199]:
+            - link "Dynamic Ads" [ref=e200] [cursor=pointer]:
+              - /url: /fr/automotive/dynamic-ads
+      - generic [ref=e201]:
+        - heading "Entreprise" [level=4] [ref=e202]
+        - list [ref=e203]:
+          - listitem [ref=e204]:
+            - link "Études de cas" [ref=e205] [cursor=pointer]:
+              - /url: /fr/case-studies
+          - listitem [ref=e206]:
+            - link "Blog" [ref=e207] [cursor=pointer]:
+              - /url: /fr/blog
+          - listitem [ref=e208]:
+            - link "Contact" [ref=e209] [cursor=pointer]:
+              - /url: /fr/contact
+          - listitem [ref=e210]:
+            - link "Devis Gratuit" [ref=e211] [cursor=pointer]:
+              - /url: /fr/calculator
+    - generic [ref=e214]:
+      - paragraph [ref=e215]: © 2026 MyDigipal LTD. Tous droits réservés.
+      - generic [ref=e216]:
+        - link "Politique de Confidentialité" [ref=e217] [cursor=pointer]:
+          - /url: /fr/privacy-policy
+        - generic [ref=e218]: •
+        - link "Conditions d'Utilisation" [ref=e219] [cursor=pointer]:
+          - /url: /fr/terms-of-service
+        - generic [ref=e220]: •
+        - button "Cookies" [ref=e221] [cursor=pointer]
+  - dialog "Consentement cookies" [ref=e222]:
+    - generic [ref=e224]:
+      - paragraph [ref=e225]:
+        - text: Ce site utilise des cookies pour analyser le trafic.
+        - button "Personnaliser" [ref=e226] [cursor=pointer]
+      - generic [ref=e227]:
+        - button "Refuser" [ref=e228] [cursor=pointer]
+        - button "OK" [ref=e229] [cursor=pointer]
+  - generic [ref=e232]:
+    - button "Menu" [ref=e233]:
+      - img [ref=e235]
+      - generic: Menu
+    - button "Inspect" [ref=e239]:
+      - img [ref=e241]
+      - generic: Inspect
+    - button "Audit" [ref=e243]:
+      - generic [ref=e244]:
+        - img [ref=e245]
+        - img [ref=e248]
+      - generic: Audit
+    - button "Settings" [ref=e251]:
+      - img [ref=e253]
+      - generic: Settings

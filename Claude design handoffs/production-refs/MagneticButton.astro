@@ -1,0 +1,95 @@
+---
+/**
+ * MagneticButton.astro — Magnetic CTA with shine sweep (#7)
+ *
+ * Use as a primitive: replace the existing `<Button>` in `FinalCTA.astro`
+ * and any other primary CTA where pull-to-cursor + sheen is appropriate.
+ *
+ * Renders an <a> when `href` is provided, otherwise a <button>.
+ * Honors prefers-reduced-motion (no magnetism, no shine).
+ */
+interface Props {
+  href?: string;
+  type?: 'button' | 'submit';
+  variant?: 'dark' | 'light';
+  strength?: number;     // 0.2 subtle, 0.3 default, 0.5 strong
+  class?: string;
+}
+
+const {
+  href,
+  type = 'button',
+  variant = 'dark',
+  strength = 0.3,
+  class: cls = '',
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const tagProps: Record<string, any> = href ? { href } : { type };
+---
+
+<span class={`mag-wrap ${cls}`} data-strength={strength}>
+  <Tag class={`mag-btn mag-btn--${variant}`} {...tagProps}>
+    <span class="mag-btn__label"><slot /></span>
+    <svg class="mag-btn__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </Tag>
+</span>
+
+<style>
+  .mag-wrap { display: inline-block; padding: 24px; }
+
+  .mag-btn {
+    position: relative;
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 18px 36px; border-radius: 9999px;
+    font-family: inherit; font-weight: 600; font-size: 16px;
+    cursor: pointer; border: 0; text-decoration: none;
+    overflow: hidden;
+    transition: transform .25s cubic-bezier(.4,0,.2,1),
+                box-shadow .25s cubic-bezier(.4,0,.2,1);
+    z-index: 2;
+  }
+
+  .mag-btn--dark  { background: #0F172A; color: #fff; }
+  .mag-btn--light { background: #fff;    color: #0F172A; box-shadow: 0 1px 2px rgba(15,23,42,0.06); }
+
+  .mag-btn::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.2), transparent 70%);
+    transform: translateX(-100%);
+    transition: transform .6s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+  }
+  .mag-btn:hover::before { transform: translateX(100%); }
+  .mag-btn:hover { box-shadow: 0 12px 40px rgba(15,23,42,.25); }
+
+  .mag-btn__arrow { transition: transform .3s cubic-bezier(.4,0,.2,1); }
+  .mag-btn:hover .mag-btn__arrow { transform: translateX(4px); }
+
+  .mag-btn:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mag-btn, .mag-btn::before, .mag-btn__arrow { transition: none; }
+    .mag-btn:hover::before { transform: translateX(-100%); }
+  }
+</style>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce) {
+    document.querySelectorAll<HTMLElement>('.mag-wrap').forEach(wrap => {
+      const btn = wrap.querySelector<HTMLElement>('.mag-btn');
+      if (!btn) return;
+      const strength = parseFloat(wrap.dataset.strength || '0.3');
+      wrap.addEventListener('pointermove', (e) => {
+        const r = wrap.getBoundingClientRect();
+        const x = (e.clientX - r.left - r.width  / 2) * strength;
+        const y = (e.clientY - r.top  - r.height / 2) * strength;
+        btn.style.transform = `translate(${x}px, ${y}px)`;
+      });
+      wrap.addEventListener('pointerleave', () => { btn.style.transform = ''; });
+    });
+  }
+</script>

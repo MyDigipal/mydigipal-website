@@ -1,0 +1,92 @@
+---
+/**
+ * IndustryCard.astro — Layered industry card (#4)
+ *
+ * 5-layer card: bg-glow + grid pattern + animated SVG lines + floating
+ * KPI chips + body. Use for B2B and Automotive blocks on the homepage.
+ */
+interface Float { dot: string; label: string; }   // dot is hex
+interface Props {
+  href: string;
+  tag: string;
+  title: string;
+  sub: string;
+  gradient?: string;     // base gradient, default the slate dark one
+  floats?: Float[];
+}
+
+const {
+  href,
+  tag,
+  title,
+  sub,
+  gradient = 'linear-gradient(135deg, #0f172a, #1e1b4b)',
+  floats = [
+    { dot: '#34d399', label: '+62% pipeline · BYmyCAR' },
+    { dot: '#a5b4fc', label: '1,200 accounts targeted' },
+    { dot: '#f59e0b', label: '30% faster close' },
+  ],
+} = Astro.props;
+---
+
+<a class="ind-card" href={href} style={`background:${gradient}`} data-reveal>
+  <div class="layer bg" aria-hidden="true"></div>
+  <div class="layer grid-l" aria-hidden="true"></div>
+  <div class="lines" aria-hidden="true">
+    <svg viewBox="0 0 800 300" preserveAspectRatio="none">
+      <path d="M0,260 C160,260 200,200 320,180 C440,160 520,120 640,100 C720,90 760,60 800,40"/>
+      <path d="M0,200 C100,200 180,180 280,160 C400,140 520,80 800,60"/>
+      <path d="M0,280 C200,280 320,260 480,220 C600,190 700,160 800,140"/>
+    </svg>
+  </div>
+  <div class="floating" aria-hidden="true">
+    {floats.map((f, i) => (
+      <div class="float-item" style={`animation-delay:${-i * 1.5}s`}>
+        <span class="dot" style={`background:${f.dot}`}></span>
+        {f.label}
+      </div>
+    ))}
+  </div>
+  <div class="body">
+    <span class="tag">{tag}</span>
+    <h3 class="title">{title}</h3>
+    <p class="sub">{sub}</p>
+    <span class="cta-arrow">
+      Explore
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+  </div>
+</a>
+
+<style>
+  .ind-card { position: relative; display: flex; align-items: flex-end; height: 300px; padding: 32px; border-radius: 24px; overflow: hidden; color: #fff; text-decoration: none; }
+  .layer { position: absolute; inset: 0; pointer-events: none; transition: transform .8s cubic-bezier(.4,0,.2,1); }
+  .layer.bg { background: radial-gradient(circle at 20% 80%, rgba(99,102,241,0.4), transparent 60%), radial-gradient(circle at 80% 30%, rgba(6,182,212,0.25), transparent 50%); }
+  .layer.grid-l { background: url('/images/patterns/grid.svg') center/120px 120px; opacity: .06; }
+  .ind-card:hover .layer.bg { transform: scale(1.08); }
+
+  .lines { position: absolute; inset: 0; pointer-events: none; }
+  .lines svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .lines path { fill: none; stroke: rgba(255,255,255,0.18); stroke-width: 1; stroke-dasharray: 600; stroke-dashoffset: 600; transition: stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1); }
+  .ind-card:hover .lines path { stroke-dashoffset: 0; }
+
+  .floating { position: absolute; right: 36px; top: 50%; transform: translateY(-50%); width: 200px; }
+  .float-item { position: absolute; background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 10px 14px; font-size: 12px; display: flex; align-items: center; gap: 8px; animation: bob 4s ease-in-out infinite; }
+  .float-item:nth-child(1) { top: 0; right: 0; }
+  .float-item:nth-child(2) { top: 60px; right: 60px; }
+  .float-item:nth-child(3) { top: 130px; right: 20px; }
+  .float-item .dot { width: 6px; height: 6px; border-radius: 50%; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+  .body { position: relative; z-index: 2; max-width: 60%; }
+  .tag { display: inline-block; padding: 4px 12px; border-radius: 9999px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); font-size: 12px; font-weight: 500; margin-bottom: 14px; font-family: ui-monospace, monospace; text-transform: uppercase; letter-spacing: .05em; }
+  .title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 32px; letter-spacing: -0.01em; line-height: 1.1; margin: 0 0 10px; }
+  .sub { font-size: 14px; line-height: 1.5; opacity: .75; margin: 0 0 16px; max-width: 36ch; }
+  .cta-arrow { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; font-size: 14px; transition: transform .3s cubic-bezier(.4,0,.2,1); }
+  .ind-card:hover .cta-arrow { transform: translateX(6px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .float-item, .layer.bg, .lines path, .cta-arrow { animation: none !important; transition: none !important; }
+    .lines path { stroke-dashoffset: 0; }
+  }
+</style>
