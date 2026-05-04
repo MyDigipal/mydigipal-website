@@ -68,9 +68,29 @@ seo:
 - 3 packs : Essentials (£4-5.3K/mois), Growth (£9.6-12.8K/mois), Impact (£15.5-20.1K/mois)
 - Évolution : Mois 1-2 Essentials, Mois 3-4 Growth, Mois 5-6 Impact
 
-## 5. Bugs corrigés (à retenir)
+## 5. Points techniques importants
+
+### Bugs corrigés (à retenir)
 - `handleGuidedComplete` : les clés de sélection doivent être `service.id` seul, PAS `${domainId}-${service.id}`
 - `budgetActivated` : activer pour tout domaine ads recommandé (pas seulement si budget > 500)
+
+### Pages services - switch par slug
+- Toutes les pages `/services/*` sont générées par `src/pages/[lang]/services/[slug].astro`
+- Le contenu est un switch géant `isXxxService` par slug, qui rend les bons composants de `src/components/sections/`
+- Les MDX dans `src/content/services/{lang}/` ne portent que la copy du hero (title, badge, headline, metrics, testimonial, seo)
+- Les sections riches (WhyXxx, XxxProcess, etc.) sont des composants .astro autonomes
+
+### Convention de réutilisation entre pages services
+- Même idée visuelle sur 2 pages services + copy légèrement différente → prop `variant` sur un composant partagé (voir `MarketingStackGrid.astro` avec `variant: 'training' | 'solutions'`)
+- Positioning fondamentalement différent (formation vs delivery) → composants dédiés pour éviter un mega-switch (voir `MCPBuildSection` sur AI Training vs `MCPCustomBuildSection` sur AI Solutions)
+
+### Chiffres MCP Gateway exposés publiquement - à synchroniser
+- `244` tools / `21` plateformes / `18+` clients affichés sur `/services/ai-training` ET `/services/ai-solutions` dans `MarketingStackGrid.astro` (tableau `proofs`)
+- Si le MCP Gateway évolue (ajout module, perte/gain client), resync ces 3 nombres dans ce fichier - c'est le seul endroit où ils sont en dur côté site
+
+### CTAs avec query param `?topic=` pour tracking futur
+- Les CTAs MCP vers `/contact` passent un `?topic=` : `mcp`, `mcp-build`, `mcp-package`, `parcours-technique`
+- Pas encore exploité par le formulaire, prévu pour segmenter les leads entrants par intention
 
 ## 6. Améliorations futures (mode guide)
 1. Ajouter les canaux sociaux spécifiques (Reddit, TikTok, LinkedIn) dans les recommandations
@@ -79,3 +99,39 @@ seo:
 4. Enrichir le reasoning avec des benchmarks réels (CPM, CPC, CTR)
 5. Ajouter des cas d'usage par industrie
 6. Proposer Google Ad Grants pour les organisations éligibles
+
+## 7. Refonte design V2 (mai 2026 - handoff Claude Design)
+
+Plan de refonte : `~/.claude/plans/serene-drifting-riddle.md`. Source : `Claude design handoffs/` (7 patterns + production-refs).
+
+### Fondation partagée
+- `src/lib/scroll.ts` - exports `initRevealOnScroll`, `initCountUp`, `initScrollProgress`, `initMagneticPointer`, `initMagneticButton`, `initSlidingNavMarker`, `initAll`. Tous skip sous `prefers-reduced-motion` (rendu final statique).
+- Wired dans `BaseLayout.astro` via `astro:page-load` listener pour survivre aux View Transitions.
+- Classes utility ajoutées dans `global.css` : `[data-reveal]`, `[data-scroll-progress]`, `[data-nav-pill]/[data-nav-marker]/[data-nav-link]`, `[data-magnetic]`, `[data-magnetic-btn]/[data-magnetic-target]`.
+
+### Composants V2 livrés
+| Composant | Fichier | Pattern |
+|---|---|---|
+| `Header.astro` (patché) | `src/components/layout/Header.astro` | Pill nav avec sliding marker (data-nav-pill / -marker / -link / -active) |
+| `ServicesGridV2.astro` | `src/components/sections/ServicesGridV2.astro` | Magnetic services grid 4x2 avec radial gradient pointer + ghost stat + reveal link |
+| `StatsRail.astro` | `src/components/sections/StatsRail.astro` | 4 tiles glassy dark gradient + count-up + sparkline SVG (drawSpark animation) |
+| `IndustryCardV2.astro` | `src/components/sections/IndustryCardV2.astro` | 5 layers : bg gradient + radial glow + grid pattern + lines SVG draw + floating chips bob |
+| `MagneticButton.astro` | `src/components/ui/MagneticButton.astro` | CTA magnétique avec shine sweep ::before (variants dark/light/gradient) |
+| Top scroll progress bar | injecté dans `BaseLayout.astro` (`<div data-scroll-progress><i></i></div>`) | Indigo→cyan gradient, position fixed top, suit le scroll |
+
+### Composants V2 à venir
+- `CalculatorInlinePreview.astro` - mini-calc vanilla JS sur la homepage (chips + 2 sliders + total bumped). Math à cross-checker avec `src/components/calculator/data/index.ts` (BUDGET_CONFIG, MANAGEMENT_FEE_CONFIG).
+- `TestimonialMarquee.astro` - bandeau infini horizontal CSS-only, pause on hover/focus-within.
+
+### Workflow V1/V2
+- Tous les composants V2 sont d'abord intégrés dans `src/pages/test.astro` (page noindex) pour validation visuelle Paul avant cutover homepage.
+- Cutover progressif dans `src/pages/[lang]/index.astro` une fois validé.
+- Les composants V1 (sections inline dans `index.astro`, `MetricsCounter`, etc.) ne sont PAS supprimés - ils restent utilisés sur d'autres pages (services/[slug], blog, contact).
+
+### Cohérence avec le Hub auth (mydigipal-dashboard/)
+Le Hub MyDigipal a son propre handoff Claude Design (KPI cards, charts ECharts, tables enrichies). Les deux ecosystèmes design sont distincts mais coordonnés via `~/.claude/projects/_shared/design-handoff-sync.md` :
+- Site = Inter + Plus Jakarta Sans, palette indigo→violet→cyan créative
+- Hub = Inter + Space Grotesk, palette brand-blue/dark + channel colors data
+- Patterns transversaux : count-up easing (easeOutCubic 1400ms), reveal-on-scroll cubic-bezier, magnetic button portable
+- Patterns site-only : magnetic services grid, testimonial marquee, layered industry cards, calc inline preview
+- Patterns hub-only : KPI variants A/B/C, ECharts trend/funnel/heatmap/donut, benchmark bars, campaign tables filtered/sorted/paginated

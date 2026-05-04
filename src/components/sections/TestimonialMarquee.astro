@@ -1,0 +1,299 @@
+---
+/**
+ * TestimonialMarquee - Infinite testimonial marquee (#6 from handoff).
+ *
+ * CSS-only animation. Pause on hover/focus-within. Respects reduce-motion
+ * (stacks the cards instead of scrolling them).
+ *
+ * Pulls testimonials from props (default = the 5 verified MyDigipal client
+ * quotes that already live on the homepage). Use the `direction` prop to
+ * reverse the scroll for a 2nd row in opposite direction if needed.
+ */
+import { type Language } from '@/i18n/config';
+
+interface Testimonial {
+  name: string;
+  role: string;
+  company?: string;
+  quote: string;
+  rating?: number;
+  image?: string;
+}
+
+interface Props {
+  lang: Language;
+  testimonials?: Testimonial[];
+  direction?: 'left' | 'right';
+  duration?: number; // seconds for one full cycle
+  background?: 'slate' | 'white' | 'dark';
+}
+
+const { lang, direction = 'left', duration = 40, background = 'slate' } = Astro.props;
+const isFr = lang === 'fr';
+
+const defaultsEn: Testimonial[] = [
+  {
+    name: 'Brett Rieser',
+    role: 'Digital Marketing Director EMEA',
+    company: 'Genesys',
+    quote: 'We were looking to improve our digital marketing efforts but had a gap in the team and 12 internal tools. MyDigipal overcame significant challenges and successfully executed an ABM revamp across LinkedIn.',
+    rating: 5,
+    image: 'https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/66a8c81987fc1c9e891a99d4_Brett%20Reiser%20100px.webp',
+  },
+  {
+    name: 'Surbhi Rathore',
+    role: 'CEO and Co-founder',
+    company: 'Symbl.ai',
+    quote: 'From the ground up, MyDigipal strategic acumen was invaluable. They didn’t just consult; they immersed themselves in our mission. High-value leads, significant uptick in conversions.',
+    rating: 5,
+    image: 'https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/658bfb59bff3f1c0d42aa4a8_Surbhi%20Rathore.webp',
+  },
+  {
+    name: 'Kelly Wright',
+    role: 'Global Marketing Director',
+    company: 'Quantum Metric',
+    quote: 'The ABM programs MyDigipal put in place helped us identify and focus on the most valuable target accounts. We accelerated the deal closing process by 30%.',
+    rating: 5,
+    image: 'https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/65705ec9b5160a80c8b72771_Kelly%20Wright.webp',
+  },
+  {
+    name: 'Andrew Critchlow',
+    role: 'CEO',
+    company: 'ControlAI',
+    quote: 'They built our paid social and Reddit presence from scratch. Inbound qualified leads went up 4x in three months and the team feels like our own.',
+    rating: 5,
+  },
+  {
+    name: 'Adam Aidoudy',
+    role: 'CEO',
+    company: 'Atelier PG',
+    quote: 'MyDigipal pilots all our digital. Google Ads, Meta, tracking, dashboards - we know exactly what every euro spent does. No more black box.',
+    rating: 5,
+  },
+  {
+    name: 'Caroline Vermeersch',
+    role: 'Marketing Manager',
+    company: 'BeCom-Direct',
+    quote: 'Tracking and dashboards were a maze before. MyDigipal made the whole stack legible in 6 weeks. Now we ship campaigns on data, not gut feel.',
+    rating: 5,
+  },
+];
+
+const defaultsFr: Testimonial[] = [
+  {
+    name: 'Brett Rieser',
+    role: 'Digital Marketing Director EMEA',
+    company: 'Genesys',
+    quote: 'On voulait booster notre marketing digital mais il manquait des bras et on avait 12 outils internes a gerer. MyDigipal a su lever les blocages et lancer une refonte ABM LinkedIn impressionnante.',
+    rating: 5,
+    image: 'https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/66a8c81987fc1c9e891a99d4_Brett%20Reiser%20100px.webp',
+  },
+  {
+    name: 'Surbhi Rathore',
+    role: 'CEO et co-fondatrice',
+    company: 'Symbl.ai',
+    quote: 'L acuite strategique de MyDigipal a ete inestimable des le depart. Ils ne se contentent pas de conseiller, ils plongent dans la mission. Leads qualifies haut de gamme, conversions en hausse.',
+    rating: 5,
+    image: 'https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/658bfb59bff3f1c0d42aa4a8_Surbhi%20Rathore.webp',
+  },
+  {
+    name: 'Kelly Wright',
+    role: 'Global Marketing Director',
+    company: 'Quantum Metric',
+    quote: 'Les programmes ABM ont aide Quantum Metric a se concentrer sur les comptes a plus forte valeur. On a accelere le closing de 30 pour cent.',
+    rating: 5,
+    image: 'https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/65705ec9b5160a80c8b72771_Kelly%20Wright.webp',
+  },
+  {
+    name: 'Andrew Critchlow',
+    role: 'CEO',
+    company: 'ControlAI',
+    quote: 'Ils ont monte notre presence paid social et Reddit from scratch. Les leads qualifies entrants ont quadruple en 3 mois et l equipe est comme la notre.',
+    rating: 5,
+  },
+  {
+    name: 'Adam Aidoudy',
+    role: 'CEO',
+    company: 'Atelier PG',
+    quote: 'MyDigipal pilote tout notre digital. Google Ads, Meta, tracking, dashboards - on sait exactement ce que chaque euro produit. Plus de boite noire.',
+    rating: 5,
+  },
+  {
+    name: 'Caroline Vermeersch',
+    role: 'Marketing Manager',
+    company: 'BeCom-Direct',
+    quote: 'Le tracking et les dashboards etaient un labyrinthe. MyDigipal a remis la stack au clair en 6 semaines. Maintenant on prend des decisions data-driven.',
+    rating: 5,
+  },
+];
+
+const { testimonials = (isFr ? defaultsFr : defaultsEn) } = Astro.props;
+
+const initials = (n: string) =>
+  n
+    .split(' ')
+    .map((x) => x[0] ?? '')
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
+const doubled = [...testimonials, ...testimonials];
+
+const bgClass =
+  background === 'white' ? 'bg-white' : background === 'dark' ? 'bg-slate-900 marquee-dark' : 'bg-slate-50';
+const animationName = direction === 'right' ? 'marqMyDigipalReverse' : 'marqMyDigipal';
+---
+
+<section class={`marquee-section ${bgClass}`} data-reveal>
+  <div class="marquee" tabindex="0">
+    <div
+      class="marquee-track"
+      style={`animation: ${animationName} ${duration}s linear infinite;`}
+    >
+      {doubled.map((t, i) => (
+        <article class="quote-card">
+          <div class="stars" aria-label={`${t.rating ?? 5} sur 5`}>
+            {'★'.repeat(t.rating ?? 5)}
+          </div>
+          <p class="body">"{t.quote}"</p>
+          <div class="who">
+            {t.image ? (
+              <img src={t.image} alt={t.name} class="ava-img" loading="lazy" />
+            ) : (
+              <div class="ava" aria-hidden="true">{initials(t.name)}</div>
+            )}
+            <div class="meta">
+              <div class="n">{t.name}</div>
+              <div class="r">{t.role}{t.company ? `, ${t.company}` : ''}</div>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .marquee-section {
+    padding: 40px 0;
+  }
+  .marquee {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .marquee:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 4px;
+    border-radius: 12px;
+  }
+  .marquee-track {
+    display: flex;
+    gap: 16px;
+    width: max-content;
+    padding: 16px;
+  }
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marqMyDigipal {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes marqMyDigipalReverse {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+
+  .quote-card {
+    flex: none;
+    width: 340px;
+    background: #fff;
+    border: 1px solid rgb(226 232 240);
+    border-radius: 16px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  }
+  .marquee-dark .quote-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+
+  .stars {
+    display: flex;
+    gap: 2px;
+    color: #f59e0b;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .body {
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.005em;
+    line-height: 1.55;
+    color: rgb(15 23 42);
+  }
+  .marquee-dark .body { color: rgba(255, 255, 255, 0.92); }
+
+  .who {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+  }
+  .ava {
+    width: 36px;
+    height: 36px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #6366f1, #06b6d4);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .ava-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 9999px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .meta {
+    font-size: 12.5px;
+    line-height: 1.35;
+    min-width: 0;
+  }
+  .meta .n {
+    font-weight: 600;
+    color: rgb(15 23 42);
+  }
+  .marquee-dark .meta .n { color: #fff; }
+  .meta .r {
+    color: rgb(100 116 139);
+  }
+  .marquee-dark .meta .r { color: rgba(255, 255, 255, 0.6); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none !important;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+    .quote-card { width: 320px; }
+  }
+</style>

@@ -1,0 +1,250 @@
+---
+/**
+ * IndustryCardV2 - Layered industry card (#4 from handoff).
+ *
+ * 5 stacked layers:
+ *   1. background gradient (the `gradient` prop)
+ *   2. radial glow layer that scales on parent hover
+ *   3. grid pattern overlay (/images/patterns/grid.svg)
+ *   4. SVG curves that draw themselves on hover
+ *   5. floating glass chips with bob animation
+ *   6. body content (z-index 2)
+ *
+ * Use for B2B and Automotive blocks. Composable as 2-up or 3-up.
+ */
+interface Float {
+  dot: string;
+  label: string;
+}
+
+interface Props {
+  href: string;
+  tag: string;
+  title: string;
+  sub: string;
+  ctaLabel?: string;
+  gradient?: string;
+  floats?: Float[];
+  iconName?: string;
+}
+
+const {
+  href,
+  tag,
+  title,
+  sub,
+  ctaLabel = 'Explore',
+  gradient = 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
+  floats = [],
+} = Astro.props;
+---
+
+<a class="ind-card-v2" href={href} style={`background: ${gradient};`} data-reveal>
+  <div class="layer bg" aria-hidden="true"></div>
+  <div class="layer grid-l" aria-hidden="true"></div>
+  <div class="lines" aria-hidden="true">
+    <svg viewBox="0 0 800 300" preserveAspectRatio="none">
+      <path d="M0,260 C160,260 200,200 320,180 C440,160 520,120 640,100 C720,90 760,60 800,40" />
+      <path d="M0,200 C100,200 180,180 280,160 C400,140 520,80 800,60" />
+      <path d="M0,280 C200,280 320,260 480,220 C600,190 700,160 800,140" />
+    </svg>
+  </div>
+
+  {floats.length > 0 && (
+    <div class="floating" aria-hidden="true">
+      {floats.slice(0, 3).map((f, i) => (
+        <div class="float-item" style={`animation-delay: ${-i * 1.5}s;`}>
+          <span class="dot" style={`background: ${f.dot};`}></span>
+          <span>{f.label}</span>
+        </div>
+      ))}
+    </div>
+  )}
+
+  <div class="ind-body">
+    <span class="ind-tag">{tag}</span>
+    <h3 class="ind-title">{title}</h3>
+    <p class="ind-sub">{sub}</p>
+    <span class="cta-arrow">
+      {ctaLabel}
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </span>
+  </div>
+</a>
+
+<style>
+  .ind-card-v2 {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 320px;
+    padding: 32px;
+    border-radius: 24px;
+    overflow: hidden;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 8px 32px -8px rgba(15, 23, 42, 0.25);
+  }
+
+  .layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .layer.bg {
+    background:
+      radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.4), transparent 60%),
+      radial-gradient(circle at 80% 30%, rgba(6, 182, 212, 0.25), transparent 50%);
+  }
+
+  .layer.grid-l {
+    background: url('/images/patterns/grid.svg') center / 120px 120px;
+    opacity: 0.06;
+  }
+
+  .ind-card-v2:hover .layer.bg {
+    transform: scale(1.08);
+  }
+
+  .lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .lines svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .lines path {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.18);
+    stroke-width: 1;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    transition: stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ind-card-v2:hover .lines path {
+    stroke-dashoffset: 0;
+  }
+
+  .floating {
+    position: absolute;
+    right: 28px;
+    top: 50%;
+    width: 220px;
+    height: 200px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  .float-item {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
+    padding: 9px 13px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    animation: floatBob 4s ease-in-out infinite;
+  }
+  .float-item:nth-child(1) { top: 4px;   right: 0; }
+  .float-item:nth-child(2) { top: 72px;  right: 48px; }
+  .float-item:nth-child(3) { top: 140px; right: 8px; }
+  .float-item .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  @keyframes floatBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .ind-body {
+    position: relative;
+    z-index: 2;
+    max-width: 60%;
+    color: #fff;
+  }
+
+  .ind-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #fff;
+  }
+
+  .ind-title {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    margin: 0 0 12px;
+    color: #fff;
+  }
+
+  .ind-sub {
+    font-size: 14px;
+    line-height: 1.55;
+    opacity: 0.85;
+    margin: 0 0 18px;
+    max-width: 36ch;
+    color: #fff;
+  }
+
+  .cta-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ind-card-v2:hover .cta-arrow {
+    transform: translateX(6px);
+  }
+
+  @media (max-width: 900px) {
+    .floating { display: none; }
+    .ind-body { max-width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .float-item,
+    .layer.bg,
+    .cta-arrow {
+      animation: none !important;
+      transition: none !important;
+    }
+    .lines path {
+      stroke-dashoffset: 0;
+      transition: none !important;
+    }
+  }
+</style>

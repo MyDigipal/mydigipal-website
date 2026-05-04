@@ -1,0 +1,242 @@
+---
+/**
+ * ServicesGridV2 - Magnetic services grid (#1 from Claude Design handoff).
+ *
+ * 4x2 cells with a radial gradient that follows the pointer (set via
+ * --mx / --my by initMagneticPointer in src/lib/scroll.ts).
+ * Each cell shows: eyebrow (NN / Code), title, blurb, ghost stat (top-right),
+ * reveal link (bottom, fades in on hover).
+ *
+ * Defaults match MyDigipal's 7 services + a final "all services" cell.
+ */
+import { type Language } from '@/i18n/config';
+
+interface Service {
+  num: string;
+  code: string;
+  title: string;
+  blurb: string;
+  stat: string;
+  href: string;
+  tint: string; // light hex for the radial gradient
+  color: string; // mid hex for the stat + reveal link
+}
+
+interface Props {
+  lang: Language;
+  badge?: string;
+  headline?: string;
+  subtitle?: string;
+  services?: Service[];
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const { lang } = Astro.props;
+const isFr = lang === 'fr';
+
+const defaults: Service[] = isFr
+  ? [
+      { num: '01', code: 'SEO',         title: 'SEO qui dure',           blurb: 'Tech, contenu et liens. Construit pour ranker des annees, pas une campagne.',                stat: '+247%', href: `/${lang}/services/seo`,                  tint: '#ecfdf5', color: '#10B981' },
+      { num: '02', code: 'Google Ads',  title: 'Search & PMax pilotes',  blurb: 'Campagnes full funnel revues chaque semaine. Pas de boite noire de reporting.',             stat: '3,4x',  href: `/${lang}/services/google-ads`,           tint: '#fffbeb', color: '#F59E0B' },
+      { num: '03', code: 'Paid Social', title: 'Social pilote creatif',  blurb: 'Meta, LinkedIn, TikTok. 20+ creas par sprint, pas par trimestre.',                          stat: '+180%', href: `/${lang}/services/paid-social`,          tint: '#f5f3ff', color: '#8B5CF6' },
+      { num: '04', code: 'Emailing',    title: 'Sequences qui engagent', blurb: 'Nurturing, automatisation, A/B test. Ouverture, clic, opportunites.',                       stat: '35%',   href: `/${lang}/services/emailing`,             tint: '#fff1f2', color: '#F43F5E' },
+      { num: '05', code: 'B2B / ABM',   title: 'Pipeline par compte',    blurb: 'Cibler les 1 000 comptes qui generent du revenu. Sales vous remerciera.',                   stat: '+62%',  href: `/${lang}/services/b2b-abm`,              tint: '#fdf2f8', color: '#EC4899' },
+      { num: '06', code: 'Formation IA',title: 'Equipes outillees IA',   blurb: 'Workshops pratiques. ChatGPT, Claude, prompt engineering, automatisation.',                 stat: '244',   href: `/${lang}/services/ai-training`,          tint: '#ecfeff', color: '#06B6D4' },
+      { num: '07', code: 'Solutions IA',title: 'Agents et workflows',    blurb: 'Agents custom, integrations MCP, dashboards. Conscus pour le marketing.',                   stat: '21',    href: `/${lang}/services/ai-solutions`,         tint: '#eef2ff', color: '#6366F1' },
+      { num: '08', code: 'Tracking',    title: 'GA4, GTM, server-side',  blurb: 'Survit a ITP, ATT et l apocalypse cookies. Dashboards que votre CFO ouvre.',                stat: '98%',   href: `/${lang}/services/tracking-reporting`,   tint: '#f0fdfa', color: '#14B8A6' },
+    ]
+  : [
+      { num: '01', code: 'SEO',         title: 'SEO that compounds',     blurb: 'Tech, content and links. Built to rank for years, not for a single campaign.',              stat: '+247%', href: `/${lang}/services/seo`,                  tint: '#ecfdf5', color: '#10B981' },
+      { num: '02', code: 'Google Ads',  title: 'Paid search, weekly',    blurb: 'Full-funnel campaigns reviewed every 7 days. No black-box reporting.',                       stat: '3.4x',  href: `/${lang}/services/google-ads`,           tint: '#fffbeb', color: '#F59E0B' },
+      { num: '03', code: 'Paid Social', title: 'Creative-led social',    blurb: 'Meta, LinkedIn, TikTok. We ship 20+ creatives per sprint, not per quarter.',                stat: '+180%', href: `/${lang}/services/paid-social`,          tint: '#f5f3ff', color: '#8B5CF6' },
+      { num: '04', code: 'Emailing',    title: 'Sequences that engage',  blurb: 'Nurture, automation, A/B testing. Opens, clicks, qualified opportunities.',                  stat: '35%',   href: `/${lang}/services/emailing`,             tint: '#fff1f2', color: '#F43F5E' },
+      { num: '05', code: 'B2B / ABM',   title: 'Account-based pipeline', blurb: 'Target the 1,000 accounts that move revenue. Sales will thank you.',                         stat: '+62%',  href: `/${lang}/services/b2b-abm`,              tint: '#fdf2f8', color: '#EC4899' },
+      { num: '06', code: 'AI Training', title: 'AI-fluent teams',        blurb: 'Hands-on workshops. ChatGPT, Claude, prompt engineering, automation.',                       stat: '244',   href: `/${lang}/services/ai-training`,          tint: '#ecfeff', color: '#06B6D4' },
+      { num: '07', code: 'AI Solutions',title: 'Agents and workflows',   blurb: 'Custom agents, MCP integrations, dashboards. Built for marketing teams.',                    stat: '21',    href: `/${lang}/services/ai-solutions`,         tint: '#eef2ff', color: '#6366F1' },
+      { num: '08', code: 'Tracking',    title: 'GA4, GTM, server-side',  blurb: 'Survives ITP, ATT and the cookie apocalypse. Dashboards your CFO opens.',                    stat: '98%',   href: `/${lang}/services/tracking-reporting`,   tint: '#f0fdfa', color: '#14B8A6' },
+    ];
+
+const {
+  badge = isFr ? 'Nos services' : 'Our services',
+  headline = isFr ? 'Marketing digital full-stack' : 'Full-stack digital marketing',
+  subtitle = isFr
+    ? 'De la strategie a l execution, on couvre chaque levier de votre presence digitale.'
+    : 'From strategy to execution, we cover every lever of your digital presence.',
+  services = defaults,
+  ctaLabel = isFr ? 'Voir tous les services' : 'See all services',
+  ctaHref = `/${lang}/services`,
+} = Astro.props;
+
+const learnMore = isFr ? 'En savoir plus' : 'Learn more';
+---
+
+<section class="svc-grid-v2-section py-24 bg-gradient-to-b from-slate-50 to-white" data-reveal>
+  <div class="container-custom">
+    <div class="text-center mb-14">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
+        <span class="font-mono text-xs uppercase tracking-wider">{badge}</span>
+      </div>
+      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">{headline}</h2>
+      <p class="text-xl text-slate-500 max-w-2xl mx-auto">{subtitle}</p>
+    </div>
+
+    <div class="svc-grid-v2">
+      {services.map((s) => (
+        <a
+          href={s.href}
+          class="svc-cell"
+          data-magnetic
+          style={`--svc-tint: ${s.tint}; --svc-color: ${s.color};`}
+        >
+          <div class="svc-num">{s.num} / {s.code}</div>
+          <h3 class="svc-title">{s.title}</h3>
+          <p class="svc-blurb">{s.blurb}</p>
+          <span class="svc-stat" aria-hidden="true">{s.stat}</span>
+          <span class="svc-reveal">
+            {learnMore}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+        </a>
+      ))}
+    </div>
+
+    {ctaHref && (
+      <div class="text-center mt-12">
+        <a
+          href={ctaHref}
+          class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:border-slate-300 hover:shadow-md transition-all duration-200"
+        >
+          <span>{ctaLabel}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .svc-grid-v2 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgb(226 232 240); /* slate-200 = grid line color */
+    border-radius: 1.25rem;
+    overflow: hidden;
+    max-width: 80rem;
+    margin: 0 auto;
+    box-shadow: 0 4px 24px -8px rgba(15, 23, 42, 0.08);
+  }
+  @media (max-width: 1023px) {
+    .svc-grid-v2 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .svc-grid-v2 { grid-template-columns: 1fr; }
+  }
+
+  .svc-cell {
+    background: #fff;
+    padding: 32px 28px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    min-height: 220px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .svc-cell:focus-visible {
+    outline: 2px solid var(--svc-color, #6366f1);
+    outline-offset: -4px;
+  }
+
+  .svc-num {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11px;
+    color: rgb(100 116 139); /* slate-500 */
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .svc-title {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    margin: 8px 0 8px;
+    color: rgb(15 23 42); /* slate-900 */
+  }
+
+  .svc-blurb {
+    margin: 0;
+    font-size: 13px;
+    color: rgb(71 85 105); /* slate-600 */
+    line-height: 1.55;
+    max-width: 28ch;
+  }
+
+  .svc-stat {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    letter-spacing: -0.02em;
+    color: var(--svc-color, #6366f1);
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .svc-cell:hover .svc-stat {
+    opacity: 0.18;
+    transform: scale(1);
+  }
+
+  .svc-reveal {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    bottom: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--svc-color, #6366f1);
+    transform: translateY(8px);
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .svc-cell:hover .svc-reveal {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .svc-cell:hover .svc-blurb {
+    /* keep blurb visible but slightly muted to make room for reveal link */
+    color: rgb(100 116 139);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .svc-cell,
+    .svc-stat,
+    .svc-reveal,
+    .svc-blurb {
+      transition: none;
+    }
+    .svc-stat { opacity: 0.18; transform: scale(1); }
+    .svc-reveal { opacity: 1; transform: none; }
+  }
+</style>
