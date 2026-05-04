@@ -485,65 +485,124 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
           </div>
         </div>
 
-        <!-- Right: Floating glass cards (animated) -->
+        <!-- Right: Hero storytelling cards (AI co-pilot + multi-channel + live results) -->
         <div class="relative hidden lg:block h-[500px]" data-hero-cards>
-          <!-- Main glass card - Organic Traffic -->
-          <div class="glass-card hero-floating-1 absolute top-8 left-8 right-0 p-6 hero-animate" style="--delay: 200ms;">
+
+          <!-- Card 1 - AI Co-pilot: shows the AI agent orchestrating tasks across channels -->
+          <div class="glass-card hero-floating-1 absolute top-4 left-8 right-2 p-5 hero-animate" style="--delay: 200ms;">
             <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center hero-icon-bounce">
-                <Icon name="trending-up" size={20} class="text-white" />
+              <div class="hero-ai-avatar">
+                <span class="hero-ai-pulse"></span>
+                <Icon name="cpu" size={18} class="text-white relative z-10" />
               </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                  <span>AI Co-pilot</span>
+                  <span class="hero-status-dot"></span>
+                  <span class="text-[10px] font-mono text-emerald-600 uppercase tracking-wider">Live</span>
+                </div>
+                <div class="text-xs text-slate-500">Claude · GPT · Gemini · n8n</div>
+              </div>
+            </div>
+            <!-- Cycling task list -->
+            <div class="hero-tasks-window" data-hero-tasks>
+              <div class="hero-task" data-task-channel="ads">
+                <span class="hero-task-dot" style="background:#F59E0B"></span>
+                <span class="hero-task-label">Optimising Google Ads bids</span>
+                <span class="hero-task-status">running</span>
+              </div>
+              <div class="hero-task" data-task-channel="social">
+                <span class="hero-task-dot" style="background:#8B5CF6"></span>
+                <span class="hero-task-label">Drafting 12 LinkedIn ads</span>
+                <span class="hero-task-status">queued</span>
+              </div>
+              <div class="hero-task" data-task-channel="seo">
+                <span class="hero-task-dot" style="background:#10B981"></span>
+                <span class="hero-task-label">Refreshing 4 SEO pages</span>
+                <span class="hero-task-status">queued</span>
+              </div>
+              <div class="hero-task" data-task-channel="reporting">
+                <span class="hero-task-dot" style="background:#14B8A6"></span>
+                <span class="hero-task-label">Pushing GA4 weekly report</span>
+                <span class="hero-task-status">queued</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 - Multi-channel performance: shows we run all channels in parallel -->
+          <div class="glass-card hero-floating-2 absolute top-72 -left-2 w-72 p-5 hero-animate" style="--delay: 350ms;">
+            <div class="flex items-center justify-between mb-4">
               <div>
-                <div class="text-sm font-semibold text-slate-900">Organic Traffic</div>
-                <div class="text-xs text-emerald-600 flex items-center gap-1">
-                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-subtle-pulse"></span>
-                  <span>+<span data-target="247" data-suffix="%">0</span> this quarter</span>
+                <div class="text-sm font-semibold text-slate-900">Multi-channel mix</div>
+                <div class="text-xs text-slate-500">last 30 days revenue</div>
+              </div>
+              <div class="hero-trending text-emerald-600 text-xs font-semibold flex items-center gap-1">
+                <Icon name="trending-up" size={12} />
+                <span>+38%</span>
+              </div>
+            </div>
+            <div class="flex gap-1.5 items-end h-12 mb-3" data-counter-section>
+              {[
+                { h: 70, color: '#F59E0B', label: 'Ads' },
+                { h: 88, color: '#8B5CF6', label: 'Social' },
+                { h: 55, color: '#10B981', label: 'SEO' },
+                { h: 62, color: '#F43F5E', label: 'Email' },
+                { h: 78, color: '#EC4899', label: 'ABM' },
+                { h: 45, color: '#14B8A6', label: 'Track' },
+              ].map((b, i) => (
+                <div class="flex-1 flex flex-col items-center gap-1 group">
+                  <div
+                    class="hero-channel-bar w-full rounded-sm"
+                    style={`--bar-h: ${b.h}%; --bar-i: ${i}; background: linear-gradient(to top, ${b.color}, ${b.color}cc);`}
+                  ></div>
+                  <span class="text-[9px] font-mono text-slate-400 uppercase tracking-wider">{b.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Card 3 - Rotating KPIs: revenue, leads, ROAS -->
+          <div class="glass-card hero-floating-3 absolute bottom-2 right-2 w-64 p-5 hero-animate overflow-hidden" style="--delay: 500ms;">
+            <div class="flex items-start justify-between mb-2">
+              <div class="text-[10px] font-mono uppercase tracking-wider text-slate-500">Real-time results</div>
+              <span class="hero-status-dot"></span>
+            </div>
+            <!-- Cycling KPI window -->
+            <div class="hero-kpi-window" data-hero-kpis>
+              <div class="hero-kpi" data-kpi="0">
+                <div class="hero-kpi-icon" style="background:#F59E0B">
+                  <Icon name="zap" size={18} class="text-white" />
+                </div>
+                <div>
+                  <div class="text-xs text-slate-500">Average ROAS</div>
+                  <div class="text-2xl font-bold text-amber-600 font-display">4.8x</div>
+                </div>
+              </div>
+              <div class="hero-kpi" data-kpi="1">
+                <div class="hero-kpi-icon" style="background:#8B5CF6">
+                  <Icon name="users" size={18} class="text-white" />
+                </div>
+                <div>
+                  <div class="text-xs text-slate-500">Pipeline acceleration</div>
+                  <div class="text-2xl font-bold text-violet-600 font-display">+62%</div>
+                </div>
+              </div>
+              <div class="hero-kpi" data-kpi="2">
+                <div class="hero-kpi-icon" style="background:#10B981">
+                  <Icon name="trending-up" size={18} class="text-white" />
+                </div>
+                <div>
+                  <div class="text-xs text-slate-500">Organic traffic</div>
+                  <div class="text-2xl font-bold text-emerald-600 font-display">+247%</div>
                 </div>
               </div>
             </div>
-            <div class="flex gap-1 items-end h-16 hero-bars" data-counter-section>
-              {[35, 42, 38, 55, 48, 62, 58, 72, 68, 85, 78, 95].map((h, i) => (
-                <div class="flex-1 rounded-sm bg-gradient-to-t from-emerald-500 to-emerald-400 hero-bar" style={`--bar-h: ${h}%; --bar-i: ${i};`}></div>
-              ))}
+            <!-- Indicator dots -->
+            <div class="hero-kpi-dots">
+              <span class="hero-kpi-dot is-active" data-kpi-dot="0"></span>
+              <span class="hero-kpi-dot" data-kpi-dot="1"></span>
+              <span class="hero-kpi-dot" data-kpi-dot="2"></span>
             </div>
-            <!-- Sparkle dot -->
-            <div class="hero-sparkle hero-sparkle-1" aria-hidden="true"></div>
-          </div>
-
-          <!-- Secondary glass card - ABM Campaign -->
-          <div class="glass-card hero-floating-2 absolute top-48 -left-4 w-72 p-5 hero-animate" style="--delay: 350ms;">
-            <div class="flex items-center gap-3 mb-3">
-              <div class="w-9 h-9 rounded-lg bg-violet-500 flex items-center justify-center hero-icon-bounce">
-                <Icon name="target" size={18} class="text-white" />
-              </div>
-              <div>
-                <div class="text-sm font-semibold text-slate-900">ABM Campaign</div>
-                <div class="text-xs text-slate-500">Pipeline acceleration</div>
-              </div>
-            </div>
-            <div class="flex items-center gap-2" data-counter-section>
-              <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-violet-500 to-violet-600 rounded-full hero-progress-bar"></div>
-              </div>
-              <span class="text-xs font-semibold text-violet-600"><span data-target="78" data-suffix="">0</span>%</span>
-            </div>
-          </div>
-
-          <!-- Third glass card - ROAS -->
-          <div class="glass-card hero-floating-3 absolute bottom-8 right-4 w-64 p-5 hero-animate" style="--delay: 500ms;">
-            <div class="flex items-center gap-3" data-counter-section>
-              <div class="w-9 h-9 rounded-lg bg-amber-500 flex items-center justify-center hero-icon-bounce">
-                <Icon name="zap" size={18} class="text-white" />
-              </div>
-              <div>
-                <div class="text-sm font-semibold text-slate-900">ROAS</div>
-                <div class="text-2xl font-bold text-amber-600"><span data-target="4.8" data-decimals="1" data-suffix="x">0</span></div>
-              </div>
-            </div>
-            <!-- Tiny sparkline -->
-            <svg class="hero-spark-mini" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M0,18 L20,16 L40,12 L60,14 L80,8 L100,4" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" />
-            </svg>
           </div>
         </div>
       </div>
@@ -1039,107 +1098,196 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
     animation-play-state: paused;
   }
 
-  /* ===== HERO BAR CHART - grow up animation ===== */
-  .hero-bar {
-    height: 0%;
-    transform-origin: bottom;
-    animation: heroBarGrow 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: calc(var(--bar-i, 0) * 60ms + 800ms);
+  /* ===== HERO AI CO-PILOT CARD ===== */
+  .hero-ai-avatar {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 60%, #06b6d4 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .hero-ai-pulse {
+    position: absolute;
+    inset: -4px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #6366f1, #06b6d4);
+    opacity: 0.4;
+    z-index: 0;
+    animation: heroAiPulse 2.5s ease-in-out infinite;
+  }
+  @keyframes heroAiPulse {
+    0%, 100% { transform: scale(1); opacity: 0.35; }
+    50% { transform: scale(1.15); opacity: 0.15; }
   }
 
-  @keyframes heroBarGrow {
+  .hero-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    animation: heroStatusPulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes heroStatusPulse {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2); }
+    50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.05); }
+  }
+
+  .hero-tasks-window {
+    background: rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 10px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .hero-task {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    transition: background 0.3s, opacity 0.4s;
+  }
+  .hero-task.is-running {
+    background: rgba(255, 255, 255, 0.7);
+    opacity: 1;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  }
+  .hero-task:not(.is-running) {
+    opacity: 0.45;
+  }
+  .hero-task-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .hero-task.is-running .hero-task-dot {
+    box-shadow: 0 0 8px currentColor;
+    animation: heroTaskDotPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes heroTaskDotPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+  }
+  .hero-task-label {
+    flex: 1;
+    color: rgb(15 23 42);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hero-task-status {
+    font-size: 9px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgb(100 116 139);
+  }
+  .hero-task.is-running .hero-task-status {
+    color: rgb(16 185 129);
+  }
+
+  /* ===== HERO MULTI-CHANNEL CARD ===== */
+  .hero-channel-bar {
+    height: 0%;
+    transform-origin: bottom;
+    animation: heroChannelGrow 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(var(--bar-i, 0) * 80ms + 700ms);
+    transition: filter 0.3s, transform 0.3s;
+  }
+  .group:hover .hero-channel-bar {
+    filter: brightness(1.1);
+    transform: scaleY(1.05);
+  }
+  @keyframes heroChannelGrow {
     from { height: 0%; opacity: 0.3; }
     to { height: var(--bar-h, 50%); opacity: 1; }
   }
 
-  /* ===== HERO PROGRESS BAR - fill animation ===== */
-  .hero-progress-bar {
-    width: 0%;
-    animation: heroProgressFill 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    animation-delay: 1100ms;
+  .hero-trending {
+    padding: 4px 8px;
+    border-radius: 9999px;
+    background: rgba(16, 185, 129, 0.12);
   }
 
-  @keyframes heroProgressFill {
-    to { width: 78%; }
+  /* ===== HERO ROTATING KPI CARD ===== */
+  .hero-kpi-window {
+    position: relative;
+    height: 60px;
+    margin-top: 8px;
   }
-
-  /* ===== HERO ICON BOUNCE ===== */
-  .hero-icon-bounce {
-    animation: heroIconBob 5s ease-in-out infinite;
-  }
-  .hero-floating-2 .hero-icon-bounce { animation-delay: -1.5s; }
-  .hero-floating-3 .hero-icon-bounce { animation-delay: -3s; }
-
-  @keyframes heroIconBob {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
-  }
-
-  /* ===== HERO SPARKLE DOT ===== */
-  .hero-sparkle {
+  .hero-kpi {
     position: absolute;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #34d399 0%, transparent 70%);
-    pointer-events: none;
-    animation: heroSparklePulse 3s ease-in-out infinite;
-  }
-  .hero-sparkle-1 { top: 18px; right: 18px; }
-
-  @keyframes heroSparklePulse {
-    0%, 100% { opacity: 0.4; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.5); }
-  }
-
-  /* ===== HERO MINI SPARKLINE ===== */
-  .hero-spark-mini {
-    position: absolute;
-    bottom: 10px;
-    left: 16px;
-    right: 16px;
-    height: 18px;
-    width: calc(100% - 32px);
+    inset: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     opacity: 0;
-    animation: heroSparkFadeIn 0.6s ease-out 1.4s forwards;
+    transform: translateY(8px);
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
   }
-  .hero-spark-mini path {
-    stroke-dasharray: 200;
-    stroke-dashoffset: 200;
-    animation: heroSparkDraw 1.6s cubic-bezier(0.4, 0, 0.2, 1) 1.4s forwards;
+  .hero-kpi.is-active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
   }
-
-  @keyframes heroSparkFadeIn {
-    to { opacity: 0.7; }
+  .hero-kpi-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
-  @keyframes heroSparkDraw {
-    to { stroke-dashoffset: 0; }
+  .hero-kpi-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 14px;
+  }
+  .hero-kpi-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: rgb(203 213 225);
+    transition: width 0.3s, background 0.3s;
+    cursor: pointer;
+  }
+  .hero-kpi-dot.is-active {
+    width: 18px;
+    background: rgb(99 102 241);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .hero-floating-1,
     .hero-floating-2,
     .hero-floating-3,
-    .hero-icon-bounce,
-    .hero-sparkle,
+    .hero-ai-pulse,
+    .hero-status-dot,
     .glass-card {
       animation: none !important;
       transition: none !important;
     }
-    .hero-bar {
+    .hero-channel-bar {
       animation: none !important;
       height: var(--bar-h, 50%);
     }
-    .hero-progress-bar {
-      animation: none !important;
-      width: 78%;
-    }
-    .hero-spark-mini {
-      opacity: 0.7;
-    }
-    .hero-spark-mini path {
-      stroke-dashoffset: 0;
-      animation: none;
+    .hero-kpi {
+      transition: none !important;
     }
   }
 
@@ -1163,6 +1311,97 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
 
   .animation-delay-150 { animation-delay: 150ms; }
 </style>
+
+<script>
+  // Hero AI tasks rotation: highlight one task at a time, cycle every 2.5s
+  const wireHeroTasks = () => {
+    const containers = document.querySelectorAll<HTMLElement>('[data-hero-tasks]');
+    if (!containers.length) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    containers.forEach((c) => {
+      if (c.dataset.heroTasksWired === 'true') return;
+      c.dataset.heroTasksWired = 'true';
+
+      const tasks = Array.from(c.querySelectorAll<HTMLElement>('.hero-task'));
+      if (!tasks.length) return;
+
+      let idx = 0;
+      const setActive = (i: number) => {
+        tasks.forEach((t, j) => {
+          t.classList.toggle('is-running', j === i);
+          const status = t.querySelector('.hero-task-status');
+          if (status) status.textContent = j === i ? 'running' : (j < i ? 'done' : 'queued');
+        });
+      };
+      setActive(0);
+
+      if (reduce) return;
+
+      const interval = setInterval(() => {
+        idx = (idx + 1) % tasks.length;
+        setActive(idx);
+      }, 2200);
+
+      // Clean up on page transitions to avoid duplicate intervals
+      const cleanup = () => {
+        clearInterval(interval);
+        document.removeEventListener('astro:before-swap', cleanup);
+      };
+      document.addEventListener('astro:before-swap', cleanup);
+    });
+  };
+
+  // Hero KPI rotation: cycle through ROAS / Pipeline / Organic every 3.5s
+  const wireHeroKpis = () => {
+    const containers = document.querySelectorAll<HTMLElement>('[data-hero-kpis]');
+    if (!containers.length) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    containers.forEach((c) => {
+      if (c.dataset.heroKpisWired === 'true') return;
+      c.dataset.heroKpisWired = 'true';
+
+      const kpis = Array.from(c.querySelectorAll<HTMLElement>('.hero-kpi'));
+      const dots = Array.from(c.parentElement?.querySelectorAll<HTMLElement>('.hero-kpi-dot') || []);
+      if (!kpis.length) return;
+
+      let idx = 0;
+      const setActive = (i: number) => {
+        kpis.forEach((k, j) => k.classList.toggle('is-active', j === i));
+        dots.forEach((d, j) => d.classList.toggle('is-active', j === i));
+      };
+      setActive(0);
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+          idx = i;
+          setActive(idx);
+        });
+      });
+
+      if (reduce) return;
+
+      const interval = setInterval(() => {
+        idx = (idx + 1) % kpis.length;
+        setActive(idx);
+      }, 3200);
+
+      const cleanup = () => {
+        clearInterval(interval);
+        document.removeEventListener('astro:before-swap', cleanup);
+      };
+      document.addEventListener('astro:before-swap', cleanup);
+    });
+  };
+
+  wireHeroTasks();
+  wireHeroKpis();
+  document.addEventListener('astro:page-load', () => {
+    wireHeroTasks();
+    wireHeroKpis();
+  });
+</script>
 
 <script>
   // Blog category filter
