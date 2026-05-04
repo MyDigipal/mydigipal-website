@@ -1,7 +1,7 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Icon from '@/components/ui/Icon.astro';
 import CaseStudySchema from '@/components/seo/CaseStudySchema.astro';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
@@ -14,7 +14,7 @@ export async function getStaticPaths() {
   const studiesBySlug = new Map<string, Map<string, any>>();
 
   caseStudies.forEach((study) => {
-    const [studyLang, ...slugParts] = study.slug.split('/');
+    const [studyLang, ...slugParts] = study.id.split('/');
     const slug = slugParts.join('/');
 
     if (!studiesBySlug.has(slug)) {
@@ -41,14 +41,14 @@ export async function getStaticPaths() {
 
 const { lang } = Astro.params as { lang: Language };
 const { caseStudy } = Astro.props;
-const { Content } = await caseStudy.render();
+const { Content } = await render(caseStudy);
 
 // Get related case studies (same category, same language, exclude current)
 const allCaseStudies = await getCollection('case-studies');
 const relatedStudies = allCaseStudies
   .filter((s) => {
-    const studyLang = s.slug.split('/')[0];
-    return studyLang === lang && s.data.category === caseStudy.data.category && s.slug !== caseStudy.slug;
+    const studyLang = s.id.split('/')[0];
+    return studyLang === lang && s.data.category === caseStudy.data.category && s.id !== caseStudy.id;
   })
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
@@ -85,7 +85,7 @@ const translations = {
 const t = translations[lang] || translations.en;
 
 // SEO Schema data
-const studySlug = caseStudy.slug.replace(/^(en|fr)\//, '');
+const studySlug = caseStudy.id.replace(/^(en|fr)\//, '');
 const studyUrl = `https://mydigipal.com/${lang}/case-studies/${studySlug}`;
 const breadcrumbItems = [
   { name: lang === 'fr' ? 'Accueil' : 'Home', url: `/${lang}` },
@@ -327,7 +327,7 @@ const breadcrumbItems = [
         <div class="grid md:grid-cols-3 gap-8">
           {relatedStudies.map((study) => (
             <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100">
-              <a href={`/${lang}/case-studies/${study.slug.replace(/^(en|fr)\//, '')}`} class="block relative aspect-[16/10] overflow-hidden">
+              <a href={`/${lang}/case-studies/${study.id.replace(/^(en|fr)\//, '')}`} class="block relative aspect-[16/10] overflow-hidden">
                 <img
                   src={study.data.image}
                   alt={study.data.client}
@@ -342,7 +342,7 @@ const breadcrumbItems = [
               <div class="p-6">
                 <p class="text-slate-600 text-sm mb-4 line-clamp-2">{study.data.title}</p>
                 <a
-                  href={`/${lang}/case-studies/${study.slug.replace(/^(en|fr)\//, '')}`}
+                  href={`/${lang}/case-studies/${study.id.replace(/^(en|fr)\//, '')}`}
                   class="inline-flex items-center gap-2 text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
                 >
                   {t.viewStudy}
@@ -430,6 +430,8 @@ const breadcrumbItems = [
 </script>
 
 <style>
+  @reference "../../../styles/global.css";
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

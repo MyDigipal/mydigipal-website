@@ -1,7 +1,7 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Icon from '@/components/ui/Icon.astro';
 import ArticleSchema from '@/components/seo/ArticleSchema.astro';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
@@ -16,7 +16,7 @@ export async function getStaticPaths() {
   posts.forEach((post) => {
     // Generate pages for each language that has content
     const postLang = post.id.startsWith('fr/') ? 'fr' : 'en';
-    const slug = post.slug.replace(/^(en|fr)\//, '');
+    const slug = post.id.replace(/^(en|fr)\//, '');
 
     paths.push({
       params: { lang: postLang, slug },
@@ -29,7 +29,7 @@ export async function getStaticPaths() {
 
 const { lang } = Astro.params as { lang: Language };
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content } = await render(post);
 
 // Get related posts (prioritize: same category + shared tags, then same category, then shared tags)
 const allPosts = await getCollection('blog');
@@ -37,7 +37,7 @@ const currentTags = new Set(post.data.tags || []);
 
 // Score posts by relevance
 const scoredPosts = allPosts
-  .filter((p) => p.id.startsWith(`${lang}/`) && p.slug !== post.slug && !p.data.draft)
+  .filter((p) => p.id.startsWith(`${lang}/`) && p.id !== post.id && !p.data.draft)
   .map((p) => {
     let score = 0;
     // Same category = +10 points
@@ -62,7 +62,7 @@ const relatedPosts = scoredPosts;
 
 // Helper to get blog URL for current language
 const getRelatedPostUrl = (relatedPost: typeof relatedPosts[0]) => {
-  const slug = relatedPost.slug.replace(/^(en|fr)\//, '');
+  const slug = relatedPost.id.replace(/^(en|fr)\//, '');
   return `/${lang}/blog/${slug}`;
 };
 
@@ -88,7 +88,7 @@ const translations = {
 const t = translations[lang] || translations.en;
 
 // SEO Schema data
-const postSlug = post.slug.replace(/^(en|fr)\//, '');
+const postSlug = post.id.replace(/^(en|fr)\//, '');
 const postUrl = `https://mydigipal.com/${lang}/blog/${postSlug}`;
 const breadcrumbItems = [
   { name: lang === 'fr' ? 'Accueil' : 'Home', url: `/${lang}` },
@@ -339,6 +339,8 @@ const categoryLabels: Record<string, Record<string, string>> = {
 </PageLayout>
 
 <style>
+  @reference "../../../styles/global.css";
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

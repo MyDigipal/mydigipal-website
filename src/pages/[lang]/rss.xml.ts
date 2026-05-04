@@ -40,7 +40,7 @@ export const GET: APIRoute = async ({ params }) => {
 
   // Build RSS items
   const items = posts.map((post) => {
-    const slug = post.slug.replace(`${lang}/`, '');
+    const slug = post.id.replace(`${lang}/`, '');
     const url = `${site}/${lang}/blog/${slug}`;
     const pubDate = new Date(post.data.date).toUTCString();
 

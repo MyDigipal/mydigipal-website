@@ -89,7 +89,7 @@ export const GET: APIRoute = async () => {
   try {
     const services = await getCollection('services', ({ id }) => id.startsWith('en/'));
     for (const service of services) {
-      const slug = service.slug.replace('en/', '');
+      const slug = service.id.replace('en/', '');
       const images: ImageInfo[] = [];
 
       if (service.data.hero?.image) {
@@ -115,7 +115,7 @@ export const GET: APIRoute = async () => {
   try {
     const posts = await getCollection('blog', ({ id }) => id.startsWith('en/'));
     for (const post of posts) {
-      const slug = post.slug.replace('en/', '');
+      const slug = post.id.replace('en/', '');
       const images: ImageInfo[] = [];
 
       if (post.data.image) {
@@ -141,7 +141,7 @@ export const GET: APIRoute = async () => {
   try {
     const caseStudies = await getCollection('case-studies', ({ id }) => id.startsWith('en/'));
     for (const study of caseStudies) {
-      const slug = study.slug.replace('en/', '');
+      const slug = study.id.replace('en/', '');
       const images: ImageInfo[] = [];
 
       if (study.data.image) {
@@ -178,7 +178,7 @@ export const GET: APIRoute = async () => {
   try {
     const automotive = await getCollection('automotive', ({ id }) => id.startsWith('en/'));
     for (const page of automotive) {
-      const slug = page.slug.replace('en/', '');
+      const slug = page.id.replace('en/', '');
       addBilingualPage(`/automotive/${slug}`, 0.8, 'monthly');
     }
   } catch (e) {

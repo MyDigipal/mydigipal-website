@@ -1,8 +1,9 @@
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 // Service page schema
 const servicesCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/services' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -11,7 +12,6 @@ const servicesCollection = defineCollection({
     color: z.enum(['seo', 'ads', 'social', 'abm', 'training', 'emailing', 'ai', 'tracking', 'content', 'primary']).default('primary'),
     order: z.number().default(0),
 
-    // Hero section
     hero: z.object({
       badge: z.string().optional(),
       headline: z.string(),
@@ -19,30 +19,25 @@ const servicesCollection = defineCollection({
       image: z.string().optional(),
     }).optional(),
 
-    // Metrics/stats
     metrics: z.array(z.object({
       value: z.string(),
       label: z.string(),
     })).optional(),
 
-    // Features list
     features: z.array(z.object({
       icon: z.string().optional(),
       title: z.string(),
       description: z.string(),
     })).optional(),
 
-    // Process steps
     process: z.array(z.object({
       step: z.number(),
       title: z.string(),
       description: z.string(),
     })).optional(),
 
-    // Related case study
     caseStudy: z.string().optional(),
 
-    // Testimonial
     testimonial: z.object({
       quote: z.string(),
       author: z.string(),
@@ -52,21 +47,18 @@ const servicesCollection = defineCollection({
       companyLogo: z.string().optional(),
     }).optional(),
 
-    // SEO
     seo: z.object({
       title: z.string().optional(),
       description: z.string().optional(),
       image: z.string().optional(),
     }).optional(),
 
-    // Calculator service ID
     calculatorServiceId: z.string().optional(),
   }),
 });
 
-// Case studies schema
 const caseStudiesCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/case-studies' }),
   schema: z.object({
     title: z.string(),
     client: z.string(),
@@ -77,23 +69,17 @@ const caseStudiesCollection = defineCollection({
     date: z.date(),
     featured: z.boolean().default(false),
 
-    // Services used
     services: z.array(z.string()),
 
-    // Key Performance Indicators - main stats to highlight
     kpis: z.array(z.object({
       value: z.string(),
       label: z.string(),
       icon: z.string().optional(),
     })),
 
-    // Challenge faced
     challenge: z.string(),
-
-    // Solution provided
     solution: z.string(),
 
-    // Testimonial
     testimonial: z.object({
       quote: z.string(),
       author: z.string(),
@@ -101,7 +87,6 @@ const caseStudiesCollection = defineCollection({
       image: z.string().optional(),
     }).optional(),
 
-    // SEO
     seo: z.object({
       title: z.string().optional(),
       description: z.string().optional(),
@@ -110,9 +95,8 @@ const caseStudiesCollection = defineCollection({
   }),
 });
 
-// Blog posts schema
 const blogCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -126,14 +110,12 @@ const blogCollection = defineCollection({
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
 
-    // SEO
     seo: z.object({
       title: z.string().optional(),
       description: z.string().optional(),
       image: z.string().optional(),
     }).optional(),
 
-    // FAQ structured data (JSON-LD)
     faqs: z.array(z.object({
       question: z.string(),
       answer: z.string(),
@@ -141,9 +123,8 @@ const blogCollection = defineCollection({
   }),
 });
 
-// Training pages schema
 const trainingCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/training' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -152,19 +133,14 @@ const trainingCollection = defineCollection({
     level: z.enum(['beginner', 'intermediate', 'advanced']),
     price: z.string().optional(),
 
-    // What you'll learn
     learningOutcomes: z.array(z.string()),
-
-    // Target audience
     audience: z.array(z.string()),
 
-    // Curriculum/modules
     modules: z.array(z.object({
       title: z.string(),
       topics: z.array(z.string()),
     })).optional(),
 
-    // Trainer info
     trainer: z.object({
       name: z.string(),
       role: z.string(),
@@ -172,7 +148,6 @@ const trainingCollection = defineCollection({
       image: z.string(),
     }).optional(),
 
-    // SEO
     seo: z.object({
       title: z.string().optional(),
       description: z.string().optional(),
@@ -181,14 +156,12 @@ const trainingCollection = defineCollection({
   }),
 });
 
-// Pages schema (for static pages like About, Contact, etc.)
 const pagesCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/pages' }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
 
-    // SEO
     seo: z.object({
       title: z.string().optional(),
       description: z.string().optional(),
@@ -197,9 +170,8 @@ const pagesCollection = defineCollection({
   }),
 });
 
-// Automotive pages schema
 const automotiveCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/automotive' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -207,7 +179,6 @@ const automotiveCollection = defineCollection({
     color: z.enum(['automotive', 'ads', 'social', 'primary']).default('automotive'),
     order: z.number().default(0),
 
-    // Hero section
     hero: z.object({
       badge: z.string().optional(),
       headline: z.string(),
@@ -215,13 +186,11 @@ const automotiveCollection = defineCollection({
       image: z.string().optional(),
     }).optional(),
 
-    // Metrics/stats
     metrics: z.array(z.object({
       value: z.string(),
       label: z.string(),
     })).optional(),
 
-    // Benchmarks
     benchmarks: z.array(z.object({
       logo: z.string(),
       logoAlt: z.string(),
@@ -230,7 +199,6 @@ const automotiveCollection = defineCollection({
       comparison: z.string().optional(),
     })).optional(),
 
-    // Use cases (New Cars, Used Cars, Events)
     useCases: z.array(z.object({
       id: z.string(),
       title: z.string(),
@@ -239,7 +207,6 @@ const automotiveCollection = defineCollection({
       features: z.array(z.string()).optional(),
     })).optional(),
 
-    // Team members
     team: z.array(z.object({
       name: z.string(),
       role: z.string(),
@@ -250,32 +217,26 @@ const automotiveCollection = defineCollection({
       })),
     })).optional(),
 
-    // Client logos
     clients: z.array(z.object({
       name: z.string(),
       logo: z.string(),
     })).optional(),
 
-    // FAQ
     faq: z.array(z.object({
       question: z.string(),
       answer: z.string(),
     })).optional(),
 
-    // Related case study
     caseStudy: z.string().optional(),
 
-    // SEO
     seo: z.object({
       title: z.string().optional(),
       description: z.string().optional(),
       image: z.string().optional(),
     }).optional(),
 
-    // Calculator service ID
     calculatorServiceId: z.string().optional(),
 
-    // Testimonial
     testimonial: z.object({
       quote: z.string(),
       author: z.string(),
@@ -285,7 +246,6 @@ const automotiveCollection = defineCollection({
       companyLogo: z.string().optional(),
     }).optional(),
 
-    // Why Section
     whySection: z.object({
       title: z.string(),
       description: z.string(),
@@ -296,7 +256,6 @@ const automotiveCollection = defineCollection({
       })),
     }).optional(),
 
-    // Services/Features
     services: z.object({
       title: z.string(),
       subtitle: z.string().optional(),

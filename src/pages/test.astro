@@ -25,7 +25,7 @@ const posts = allPosts
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 const getBlogUrl = (post: typeof posts[0]) => {
-  const slug = post.slug.replace(/^(en|fr)\//, '');
+  const slug = post.id.replace(/^(en|fr)\//, '');
   return `/en/blog/${slug}`;
 };
 
