@@ -28,9 +28,9 @@ const content = {
   en: {
     hero: {
       badge: "AI-Powered Digital Marketing Agency",
-      headline: "Your growth partner in digital marketing",
-      subheadline: "We're not just another agency. We're an extension of your team.",
-      description: "Forget about the fluff or long SLAs. Benefit from a truly international agency formed of passionate marketeers working as an extension of your internal team.",
+      headline: "Multi-channel marketing, AI co-piloted",
+      subheadline: "Marketers paired with AI co-pilots, working as one team.",
+      description: "We run your SEO, paid search, paid social, ABM and reporting end-to-end - with AI co-pilots that make every euro work harder. No fluff, no long SLAs, just a team that ships.",
       cta1: "Get your free quote",
       cta2: "View case studies",
     },
@@ -180,9 +180,9 @@ const content = {
   fr: {
     hero: {
       badge: "Agence de Marketing Digital propulsée par l'IA",
-      headline: "Votre partenaire de croissance en marketing digital",
-      subheadline: "Nous ne sommes pas juste une agence. Nous sommes une extension de votre équipe.",
-      description: "Oubliez les processus longs et les engagements contraignants. Bénéficiez d'une agence vraiment internationale formée de marketeurs passionnés qui travaillent comme une extension de votre équipe interne.",
+      headline: "Marketing multi-canal, co-piloté par l'IA",
+      subheadline: "Des marketers humains, doublés de co-pilotes IA, qui travaillent comme une seule équipe.",
+      description: "On pilote votre SEO, paid search, paid social, ABM et reporting de bout en bout - avec des co-pilotes IA qui font travailler chaque euro plus dur. Pas de blabla, pas de SLA interminables, juste une équipe qui shippe.",
       cta1: "Obtenez votre devis gratuit",
       cta2: "Voir les études de cas",
     },
@@ -448,11 +448,11 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
           </div>
 
           <!-- Headline -->
-          <h1 class="font-display text-5xl md:text-6xl lg:text-[4.5rem] font-extrabold text-slate-900 leading-[1.05] tracking-tight mb-6 hero-animate" style="--delay: 100ms;">
+          <h1 class="font-display text-5xl md:text-6xl lg:text-[4.25rem] font-extrabold text-slate-900 leading-[1.05] tracking-tight mb-6 hero-animate" style="--delay: 100ms;">
             {lang === 'fr' ? (
-              <Fragment>Votre partenaire<br />de croissance en<br /><span class="hero-gradient-text">marketing digital</span></Fragment>
+              <Fragment>Marketing<br />multi-canal,<br /><span class="hero-gradient-text">co-piloté par l'IA</span></Fragment>
             ) : (
-              <Fragment>Your growth<br />partner in<br /><span class="hero-gradient-text">digital marketing</span></Fragment>
+              <Fragment>Multi-channel<br />marketing,<br /><span class="hero-gradient-text">AI co-piloted</span></Fragment>
             )}
           </h1>
 
@@ -1073,16 +1073,24 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
     z-index: 5;
   }
 
-  /* ===== HERO FLOATING CARDS - bob animation ===== */
+  /* ===== HERO FLOATING CARDS - reveal + bob animation combined ===== */
+  /* Multi-animation: hero-reveal (one-shot fade-in) + heroFloat (infinite bob).
+     Both must be declared together because animation: shorthand overrides. */
   .hero-floating-1,
   .hero-floating-2,
   .hero-floating-3 {
-    animation: heroFloat 7s ease-in-out infinite;
-    will-change: transform;
+    will-change: transform, opacity;
+    opacity: 0;
+    transform: translateY(20px);
+    animation-name: hero-reveal, heroFloat;
+    animation-duration: 0.7s, 7s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1), ease-in-out;
+    animation-delay: var(--delay, 0ms), calc(var(--delay, 0ms) + 800ms);
+    animation-fill-mode: forwards, none;
+    animation-iteration-count: 1, infinite;
   }
-  .hero-floating-1 { animation-delay: 0s; }
-  .hero-floating-2 { animation-delay: -2.3s; animation-duration: 6.5s; }
-  .hero-floating-3 { animation-delay: -4.5s; animation-duration: 8s; }
+  .hero-floating-2 { animation-duration: 0.7s, 6.5s; }
+  .hero-floating-3 { animation-duration: 0.7s, 8s; }
 
   @keyframes heroFloat {
     0%, 100% { transform: translate(0, 0) rotate(0deg); }
@@ -1094,8 +1102,7 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
   .glass-card:hover.hero-floating-1,
   .glass-card:hover.hero-floating-2,
   .glass-card:hover.hero-floating-3 {
-    /* pause floating on hover, hover elevates instead */
-    animation-play-state: paused;
+    animation-play-state: running, paused;
   }
 
   /* ===== HERO AI CO-PILOT CARD ===== */
