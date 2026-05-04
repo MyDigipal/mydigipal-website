@@ -6,6 +6,8 @@ import Icon from '@/components/ui/Icon.astro';
 import ArticleSchema from '@/components/seo/ArticleSchema.astro';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
 import FAQSchema from '@/components/seo/FAQSchema.astro';
+import TestimonialMarquee from '@/components/sections/TestimonialMarquee.astro';
+import MagneticButton from '@/components/ui/MagneticButton.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -317,6 +319,9 @@ const categoryLabels: Record<string, Record<string, string>> = {
   )}
 
   <!-- CTA -->
+  <!-- Social proof - infinite testimonial marquee -->
+  <TestimonialMarquee lang={lang} background="white" />
+
   <section class="py-16 bg-slate-900 text-white">
     <div class="container-custom text-center">
       <h2 class="text-3xl font-bold mb-4">
@@ -325,13 +330,10 @@ const categoryLabels: Record<string, Record<string, string>> = {
       <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
         {lang === 'fr' ? 'Discutons de vos objectifs et voyons comment nous pouvons vous aider à les atteindre.' : 'Let\'s discuss your goals and see how we can help you achieve them.'}
       </p>
-      <a
-        href={`/${lang}/contact`}
-        class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-white text-blue-700 font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-      >
+      <MagneticButton href={`/${lang}/contact`} variant="light" size="lg">
         {lang === 'fr' ? 'Contactez-nous' : 'Contact Us'}
         <Icon name="arrow-right" size={20} />
-      </a>
+      </MagneticButton>
     </div>
   </section>
 </PageLayout>

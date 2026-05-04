@@ -1,0 +1,256 @@
+---
+/**
+ * StatsRail - Hero stats with count-up + sparklines (#2 from handoff).
+ *
+ * Each tile has a count-up number, a pill caption, a description, and an
+ * SVG sparkline that draws itself once the section is in view.
+ *
+ * Count-up is wired by initCountUp() in src/lib/scroll.ts (re-runs after
+ * View Transitions). The sparkline draw is gated by the `.is-on` class
+ * applied by an inline IntersectionObserver below (which also handles
+ * astro:page-load).
+ */
+import { type Language } from '@/i18n/config';
+
+interface Stat {
+  label: string;
+  pill: string;
+  target: number;
+  prefix?: string;
+  suffix?: string;
+  decimals?: number;
+  desc: string;
+  spark: string; // SVG path d="..." in 100x32 viewBox
+}
+
+interface Props {
+  lang: Language;
+  stats?: Stat[];
+  badge?: string;
+  headline?: string;
+  subtitle?: string;
+}
+
+const { lang } = Astro.props;
+const isFr = lang === 'fr';
+
+const defaults: Stat[] = isFr
+  ? [
+      { label: 'Clients',    pill: '+14% YoY',  target: 50,  suffix: '+', desc: '8 pays couverts',                       spark: 'M0,24 L20,18 L40,22 L60,12 L80,14 L100,4' },
+      { label: 'Trafic',     pill: '12 derniers mois', target: 247, prefix: '+', suffix: '%', desc: 'Organique + paid blende', spark: 'M0,28 L15,26 L30,22 L50,18 L70,10 L100,2' },
+      { label: 'Industries', pill: 'B2B et auto', target: 12,  suffix: '+', desc: 'SaaS, retail, OEM, education',          spark: 'M0,20 L25,16 L50,18 L75,8 L100,10' },
+      { label: 'Annees',     pill: 'depuis 2019',  target: 5,   suffix: '+', desc: 'Equipe sourcee France et UK',         spark: 'M0,24 L20,20 L40,16 L60,18 L80,8 L100,6' },
+    ]
+  : [
+      { label: 'Clients',    pill: '+14% YoY',  target: 50,  suffix: '+', desc: 'across 8 countries',                  spark: 'M0,24 L20,18 L40,22 L60,12 L80,14 L100,4' },
+      { label: 'Avg ROAS',   pill: 'last 12mo', target: 247, prefix: '+', suffix: '%', desc: 'paid + organic blended', spark: 'M0,28 L15,26 L30,22 L50,18 L70,10 L100,2' },
+      { label: 'Industries', pill: 'B2B + auto',target: 12,  suffix: '+', desc: 'SaaS, retail, OEM, education',         spark: 'M0,20 L25,16 L50,18 L75,8 L100,10' },
+      { label: 'Years',      pill: 'since 2019',target: 5,   suffix: '+', desc: 'team across France and UK',            spark: 'M0,24 L20,20 L40,16 L60,18 L80,8 L100,6' },
+    ];
+
+const {
+  stats = defaults,
+  badge = isFr ? 'En chiffres' : 'By the numbers',
+  headline,
+  subtitle,
+} = Astro.props;
+---
+
+<section class="stats-rail-section" data-counter-section data-stats-rail data-reveal>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="statsRailSpark" x1="0" x2="1">
+        <stop offset="0" stop-color="#a5b4fc" />
+        <stop offset="1" stop-color="#67e8f9" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="container-custom">
+    {(badge || headline || subtitle) && (
+      <div class="text-center mb-12">
+        {badge && (
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur border border-white/15 text-sm font-medium text-white/80 mb-5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-subtle-pulse"></span>
+            <span>{badge}</span>
+          </div>
+        )}
+        {headline && <h2 class="font-display text-3xl md:text-4xl font-bold text-white mb-3">{headline}</h2>}
+        {subtitle && <p class="text-white/70 max-w-2xl mx-auto">{subtitle}</p>}
+      </div>
+    )}
+
+    <div class="stats-rail">
+      {stats.map((s, idx) => (
+        <div class="stat-tile" style={`--tile-delay: ${idx * 80}ms;`}>
+          <div class="label-row">
+            <span>{s.label}</span>
+            <span class="pill">{s.pill}</span>
+          </div>
+          <div
+            class="num"
+            data-target={s.target}
+            data-prefix={s.prefix ?? ''}
+            data-suffix={s.suffix ?? ''}
+            data-decimals={s.decimals ?? 0}
+          >0</div>
+          <div class="desc">{s.desc}</div>
+          <svg class="spark" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true">
+            <path d={s.spark} />
+          </svg>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .stats-rail-section {
+    position: relative;
+    padding: 80px 0;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    color: #fff;
+    overflow: hidden;
+  }
+  .stats-rail-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(800px circle at 30% 30%, rgba(99, 102, 241, 0.25), transparent 50%),
+      radial-gradient(600px circle at 80% 70%, rgba(6, 182, 212, 0.18), transparent 50%);
+    pointer-events: none;
+  }
+
+  .stats-rail {
+    position: relative;
+    max-width: 80rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 800px) {
+    .stats-rail { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .stat-tile {
+    padding: 24px 20px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .stat-tile:hover {
+    background: rgba(255, 255, 255, 0.07);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+
+  .label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .pill {
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    font-size: 10px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .num {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 44px;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    background: linear-gradient(135deg, #a5b4fc, #67e8f9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .desc {
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 8px;
+    line-height: 1.45;
+  }
+
+  .spark {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 32px;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .spark path {
+    fill: none;
+    stroke: url(#statsRailSpark);
+    stroke-width: 1.5;
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+  }
+  .stats-rail-section.is-on .spark path {
+    animation: drawSparkRail 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: var(--tile-delay, 0ms);
+  }
+
+  @keyframes drawSparkRail {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spark path {
+      stroke-dashoffset: 0 !important;
+      animation: none !important;
+    }
+    .stat-tile { transition: none; }
+  }
+</style>
+
+<script>
+  // Trigger sparkline draw when the rail enters the viewport.
+  // Re-attach observers after View Transitions via astro:page-load.
+  const wireRail = () => {
+    const rails = document.querySelectorAll<HTMLElement>('[data-stats-rail]:not(.is-on)');
+    if (!rails.length) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      rails.forEach(r => r.classList.add('is-on'));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('is-on');
+          io.unobserve(e.target);
+        });
+      },
+      { threshold: 0.35 }
+    );
+    rails.forEach((r) => io.observe(r));
+  };
+  wireRail();
+  document.addEventListener('astro:page-load', wireRail);
+</script>

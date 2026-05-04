@@ -9,6 +9,11 @@ import Footer from '@/components/layout/Footer.astro';
 import Icon from '@/components/ui/Icon.astro';
 import FeaturedServiceBanner from '@/components/sections/FeaturedServiceBanner.astro';
 import TrustedBy from '@/components/sections/TrustedBy.astro';
+import ServicesGridV2 from '@/components/sections/ServicesGridV2.astro';
+import StatsRail from '@/components/sections/StatsRail.astro';
+import IndustryCardV2 from '@/components/sections/IndustryCardV2.astro';
+import TestimonialMarquee from '@/components/sections/TestimonialMarquee.astro';
+import MagneticButton from '@/components/ui/MagneticButton.astro';
 import { getCollection } from 'astro:content';
 
 const lang = 'en';
@@ -96,6 +101,10 @@ const testimonials = [
         <span class="text-slate-400 font-medium shrink-0">V2:</span>
         <a href="#hero-v2" class="text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap">Hero</a>
         <a href="#services-v2" class="text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap">Services</a>
+        <a href="#services-grid-v2" class="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors whitespace-nowrap">Services Magnetic <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-indigo-100">NEW</span></a>
+        <a href="#stats-rail" class="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors whitespace-nowrap">Stats Rail <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-indigo-100">NEW</span></a>
+        <a href="#industry-cards" class="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors whitespace-nowrap">Industry Cards <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-indigo-100">NEW</span></a>
+        <a href="#testimonial-marquee" class="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors whitespace-nowrap">Marquee <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-indigo-100">NEW</span></a>
         <a href="#featured-service" class="text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap">Featured</a>
         <a href="#testimonials-v2" class="text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap">Testimonials</a>
         <a href="#blog-preview" class="text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap">Blog</a>
@@ -273,6 +282,74 @@ const testimonials = [
     </section>
 
 
+    <!-- =========================================== -->
+    <!-- SERVICES GRID V2 - Magnetic radial gradient (handoff #1) -->
+    <!-- =========================================== -->
+    <div id="services-grid-v2">
+      <ServicesGridV2 lang={lang} />
+    </div>
+
+
+    <!-- =========================================== -->
+    <!-- STATS RAIL - Count-up + sparklines (handoff #2) -->
+    <!-- =========================================== -->
+    <div id="stats-rail">
+      <StatsRail lang={lang} headline="A few numbers we are proud of" subtitle="Every metric below is verified - no fluff." />
+    </div>
+
+
+    <!-- =========================================== -->
+    <!-- INDUSTRY CARDS V2 - Layered (handoff #4) -->
+    <!-- =========================================== -->
+    <section id="industry-cards" class="py-24 bg-white">
+      <div class="container-custom">
+        <div class="text-center mb-12">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-4">
+            <span class="font-mono text-xs uppercase tracking-wider">Industry expertise</span>
+          </div>
+          <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-3">Specialists in B2B and Automotive</h2>
+          <p class="text-lg text-slate-500 max-w-2xl mx-auto">We work across all industries, but we have built deep expertise in two key sectors.</p>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-6">
+          <IndustryCardV2
+            href="/en/services/b2b-abm"
+            tag="B2B / ABM"
+            title="Account-based pipeline"
+            sub="Target the 1,000 accounts that move revenue. From lead gen to pipeline acceleration."
+            ctaLabel="Explore B2B/ABM"
+            gradient="linear-gradient(135deg, #312e81 0%, #4338ca 50%, #6d28d9 100%)"
+            floats={[
+              { dot: '#34d399', label: '+62% pipeline · Genesys' },
+              { dot: '#a5b4fc', label: '1,200 accounts targeted' },
+              { dot: '#f59e0b', label: '30% faster close' },
+            ]}
+          />
+          <IndustryCardV2
+            href="/en/automotive"
+            tag="Automotive"
+            title="Dealers and OEMs digitalised"
+            sub="Dynamic ads, local SEO, lead gen that fills your showroom. Tracked end-to-end."
+            ctaLabel="Explore Automotive"
+            gradient="linear-gradient(135deg, #0f172a 0%, #1e293b 100%)"
+            floats={[
+              { dot: '#0ea5e9', label: 'Vehicle Ads live · MotorK' },
+              { dot: '#a5b4fc', label: '+187% leads · BYmyCAR' },
+              { dot: '#f59e0b', label: '8 dealer groups served' },
+            ]}
+          />
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =========================================== -->
+    <!-- TESTIMONIAL MARQUEE (handoff #6) -->
+    <!-- =========================================== -->
+    <div id="testimonial-marquee">
+      <TestimonialMarquee lang={lang} />
+    </div>
+
+
     <!-- FEATURED SERVICE BANNER -->
     <div id="featured-service">
       <FeaturedServiceBanner lang={lang} />
@@ -435,14 +512,18 @@ const testimonials = [
             Let's discuss how we can help you achieve your marketing goals.
           </p>
           <div class="flex flex-wrap justify-center gap-4">
-            <a href="/en/contact" class="group inline-flex items-center gap-2 px-7 py-4 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-slate-900/20">
+            <MagneticButton href="/en/contact" variant="dark" size="md">
               <span>Start a Project</span>
-              <Icon name="arrow-right" size={18} class="group-hover:translate-x-0.5 transition-transform" />
-            </a>
-            <a href="/en/calculator" class="inline-flex items-center gap-2 px-7 py-4 bg-white text-slate-600 font-semibold rounded-xl border border-slate-200 hover:border-slate-300 hover:text-slate-900 transition-all duration-200">
+              <Icon name="arrow-right" size={18} />
+            </MagneticButton>
+            <MagneticButton href="/en/calculator" variant="light" size="md">
               <Icon name="calculator" size={18} />
               <span>Interactive Quote</span>
-            </a>
+            </MagneticButton>
+            <MagneticButton href="/en/contact" variant="gradient" size="md" strength={0.4}>
+              <span>Gradient + Strong magnet</span>
+              <Icon name="arrow-right" size={18} />
+            </MagneticButton>
           </div>
         </div>
       </div>

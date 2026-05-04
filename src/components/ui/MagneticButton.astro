@@ -1,0 +1,141 @@
+---
+/**
+ * MagneticButton - CTA with magnetic pointer pull + shine sweep (#7).
+ *
+ * Renders an <a> if `href` is set, else a <button>. The wrapper has 8px of
+ * padding ("gravity well") and the inner element is translated toward the
+ * cursor by initMagneticButton in src/lib/scroll.ts. A ::before pseudo
+ * sweeps a diagonal shine on hover.
+ *
+ * Respects prefers-reduced-motion via initMagneticButton (which skips the
+ * pointermove listener entirely under reduce). The shine sweep is also
+ * disabled in reduced-motion media query.
+ */
+import { cn } from '@/lib/utils';
+
+interface Props {
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  variant?: 'dark' | 'light' | 'gradient';
+  size?: 'sm' | 'md' | 'lg';
+  strength?: number; // 0.2 (subtle) to 0.5 (strong). Default 0.3.
+  external?: boolean;
+  class?: string;
+  ariaLabel?: string;
+}
+
+const {
+  href,
+  type = 'button',
+  variant = 'dark',
+  size = 'md',
+  strength = 0.3,
+  external = false,
+  class: className,
+  ariaLabel,
+} = Astro.props;
+
+const sizes = {
+  sm: 'px-5 py-2.5 text-sm gap-2',
+  md: 'px-7 py-4 text-base gap-2.5',
+  lg: 'px-9 py-5 text-lg gap-3',
+};
+
+const variants = {
+  dark: 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/20',
+  light: 'bg-white text-slate-900 border border-slate-200 hover:border-slate-300 shadow-sm',
+  gradient: 'text-white shadow-lg shadow-indigo-500/30',
+};
+
+const targetClasses = cn(
+  'magnetic-target inline-flex items-center justify-center font-semibold rounded-full',
+  sizes[size],
+  variants[variant],
+  variant === 'gradient' && 'magnetic-gradient'
+);
+
+const externalProps = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+const Tag = href ? 'a' : 'button';
+---
+
+<span
+  class={cn('magnetic-wrap', className)}
+  data-magnetic-btn
+  data-strength={strength}
+>
+  <Tag
+    {...(href ? { href, ...externalProps } : { type })}
+    class={targetClasses}
+    data-magnetic-target
+    aria-label={ariaLabel}
+  >
+    <slot />
+  </Tag>
+</span>
+
+<style>
+  .magnetic-wrap {
+    display: inline-block;
+    padding: 8px;
+    /* enables pointermove tracking inside this gravity well */
+  }
+
+  .magnetic-target {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    /* the translate is set by initMagneticButton via inline transform */
+  }
+
+  /* Shine sweep */
+  .magnetic-target::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.22) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .magnetic-target:hover::before {
+    transform: translateX(100%);
+  }
+
+  /* slot content sits above the shine */
+  .magnetic-target > :global(*) {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Gradient variant - hero/v2 indigo->violet->cyan */
+  .magnetic-gradient {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+    background-size: 200% 200%;
+    transition: background-position 0.5s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .magnetic-gradient:hover {
+    background-position: 100% 0%;
+  }
+
+  /* Focus ring stays visible */
+  .magnetic-target:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .magnetic-target::before {
+      display: none;
+    }
+    .magnetic-target {
+      transition: none;
+    }
+  }
+</style>

@@ -299,32 +299,44 @@ const canonical = canonicalURL || Astro.url.href;
 
     <slot />
 
+    <!-- Top-of-page scroll progress bar (filled by initScrollProgress in scroll.ts) -->
+    <div data-scroll-progress aria-hidden="true"><i></i></div>
+
     <!-- Scripts -->
     <script>
       // Store UTM params on page load
       import { storeUTMParams } from '@/lib/utils';
       storeUTMParams();
 
-      // Intersection Observer for scroll animations
-      document.addEventListener('DOMContentLoaded', () => {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-              }
-            });
-          },
-          {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px',
-          }
-        );
+      // Design v2 scroll/interaction utilities (reveal, count-up, scroll progress,
+      // magnetic pointer/button, sliding nav marker). Wired to astro:page-load so
+      // they re-run after every View Transition.
+      import { initAll } from '@/lib/scroll';
 
-        document.querySelectorAll('.animate-on-scroll, .stagger-children').forEach((el) => {
-          observer.observe(el);
-        });
-      });
+      // Intersection Observer for the legacy .animate-on-scroll / .stagger-children
+      // pattern (kept for backwards compatibility - many existing components use it).
+      const legacyObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+            }
+          });
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      );
+
+      const wireAll = () => {
+        initAll();
+        document
+          .querySelectorAll('.animate-on-scroll:not(.is-visible), .stagger-children:not(.is-visible)')
+          .forEach((el) => legacyObserver.observe(el));
+      };
+
+      // Initial load
+      wireAll();
+      // Re-run after View Transitions
+      document.addEventListener('astro:page-load', wireAll);
     </script>
 
     <!-- Analytics slot -->

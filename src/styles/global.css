@@ -361,6 +361,104 @@
   font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
 }
 
+/* ===== DESIGN V2 - SHARED PATTERNS ===== */
+
+/* Reveal-on-scroll wrapper (used by initRevealOnScroll) */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* Top-of-page scroll progress bar (used by initScrollProgress) */
+[data-scroll-progress] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(99, 102, 241, 0.08);
+  z-index: 60;
+  pointer-events: none;
+}
+[data-scroll-progress] > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #6366f1 0%, #06b6d4 100%);
+  transition: width 0.1s ease-out;
+}
+
+/* Sliding nav marker (used by initSlidingNavMarker) */
+[data-nav-pill] {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  isolation: isolate;
+}
+[data-nav-marker] {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 0;
+  height: calc(100% - 8px);
+  transform: translateY(-50%);
+  background: rgb(241 245 249); /* slate-100 */
+  border-radius: 0.5rem;
+  z-index: 0;
+  opacity: 0;
+  transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s ease-out;
+  pointer-events: none;
+}
+[data-nav-link] {
+  position: relative;
+  z-index: 1;
+}
+
+/* Magnetic button (used by initMagneticButton) */
+[data-magnetic-btn] {
+  display: inline-block;
+  padding: 8px;
+}
+[data-magnetic-target] {
+  display: inline-flex;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Magnetic radial cell (used by initMagneticPointer) */
+[data-magnetic] {
+  position: relative;
+  isolation: isolate;
+}
+[data-magnetic] > * {
+  position: relative;
+  z-index: 1;
+}
+[data-magnetic]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    var(--svc-tint, rgba(99, 102, 241, 0.08)) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+[data-magnetic]:hover::before {
+  opacity: 1;
+}
+
 /* ===== REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -370,5 +468,14 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+
+  [data-scroll-progress] > i {
+    width: 100% !important;
   }
 }
