@@ -912,7 +912,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     return (
       <div className="min-h-[600px]">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">{t.selectDomains}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">{t.selectDomains}</h2>
           <p className="text-lg text-slate-600">{t.selectDomainsDesc}</p>
         </div>
 
@@ -965,7 +965,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
           {Object.values(domainConfigs).map(domain => {
             const isSelected = selectedDomains.includes(domain.id);
             const colorClasses: Record<string, string> = {
@@ -983,7 +983,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               <button
                 key={domain.id}
                 onClick={() => toggleDomain(domain.id)}
-                className={`p-6 rounded-2xl border-2 text-left transition-all duration-300 hover:shadow-lg ${
+                className={`p-4 sm:p-6 rounded-2xl border-2 text-left transition-all duration-300 hover:shadow-lg ${
                   isSelected
                     ? `${colorClasses[domain.colorClass]} border-2`
                     : 'border-slate-200 bg-white hover:border-slate-300'
@@ -1056,15 +1056,15 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     <div className="min-h-[600px]">
       {/* Sticky top bar with totals */}
       {hasSelections && (
-        <div className="sticky top-16 z-40 -mx-4 px-4 py-3 mb-6 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
-          <div className="flex items-center justify-between gap-4 max-w-5xl mx-auto">
-            <div className="flex items-center gap-6">
+        <div className="sticky top-16 z-40 -mx-4 px-3 sm:px-4 py-2 sm:py-3 mb-6 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between gap-2 sm:gap-4 max-w-5xl mx-auto flex-wrap">
+            <div className="flex items-center gap-3 sm:gap-6">
               {/* Monthly */}
-              <div className="text-center">
-                <p className="text-[10px] text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</p>
-                <p className="text-xl font-bold text-slate-900">
+              <div className="text-left">
+                <p className="text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-wide leading-none">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</p>
+                <p className="text-base sm:text-xl font-bold text-slate-900 leading-tight">
                   {pricing.hasCustomQuote ? (
-                    <span className="text-amber-600 text-base">{lang === 'fr' ? 'Sur devis' : 'Custom'}</span>
+                    <span className="text-amber-600 text-xs sm:text-base">{lang === 'fr' ? 'Sur devis' : 'Custom'}</span>
                   ) : (
                     <>{fp(Math.round(pricing.totalMonthlyWithoutBudget))}</>
                   )}
@@ -1072,36 +1072,39 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               </div>
               {/* One-off */}
               {pricing.oneOffTotal > 0 && (
-                <div className="text-center border-l border-slate-200 pl-6">
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'One-off' : 'One-time'}</p>
-                  <p className="text-xl font-bold text-emerald-600">
+                <div className="text-left border-l border-slate-200 pl-3 sm:pl-6">
+                  <p className="text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-wide leading-none">{lang === 'fr' ? 'One-off' : 'One-time'}</p>
+                  <p className="text-base sm:text-xl font-bold text-emerald-600 leading-tight">
                     {fp(Math.round(pricing.oneOffTotal))}
                   </p>
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-3">
-              {/* Currency selector */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Currency selector - icons only on mobile */}
               <div className="flex items-center bg-slate-100 rounded-lg p-0.5">
                 {(['EUR', 'USD', 'GBP'] as Currency[]).map(c => (
                   <button
                     key={c}
                     onClick={() => setCurrency(c)}
-                    className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                    aria-label={c}
+                    className={`px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
                       currency === c
                         ? 'bg-white text-slate-900 shadow-sm'
                         : 'text-slate-500 hover:text-slate-700'
                     }`}
                   >
-                    {CURRENCY_CONFIGS[c].symbol} {c}
+                    <span className="sm:hidden">{CURRENCY_CONFIGS[c].symbol}</span>
+                    <span className="hidden sm:inline">{CURRENCY_CONFIGS[c].symbol} {c}</span>
                   </button>
                 ))}
               </div>
               <button
                 onClick={() => setShowSummaryPopup(true)}
-                className="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-sm"
+                className="px-3 sm:px-5 py-2 sm:py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-xs sm:text-sm whitespace-nowrap"
               >
-                {t.viewSummary}
+                <span className="sm:hidden">{lang === 'fr' ? 'Récap' : 'Summary'}</span>
+                <span className="hidden sm:inline">{t.viewSummary}</span>
               </button>
             </div>
           </div>
@@ -1146,12 +1149,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   isDismissed ? 'max-h-24 opacity-60 bg-white' : `max-h-[2000px] ${colors.bgLight}`
                 }`}
               >
-                <div className="p-8">
+                <div className="p-4 sm:p-8">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
                       <span className="text-4xl">{domain.icon}</span>
                       <div>
-                        <h2 className="text-2xl font-bold text-slate-900">
+                        <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
                           {lang === 'fr' ? domain.nameFr : domain.name}
                         </h2>
                         <p className="text-slate-600">{lang === 'fr' ? domain.descriptionFr : domain.description}</p>
@@ -1196,7 +1199,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                       </button>
 
                       <div className={`transition-all duration-300 ${isNotSure ? 'opacity-40 pointer-events-none' : ''}`}>
-                        <div className="grid md:grid-cols-2 gap-8">
+                        <div className="grid md:grid-cols-2 gap-4 sm:gap-8">
                           {/* Format selection */}
                           <div>
                             <label className="block text-sm font-medium text-slate-700 mb-3">{t.aiTrainingFormat}</label>
@@ -1296,13 +1299,13 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         </div>
 
                         {/* Price display */}
-                        <div className={`mt-6 p-6 ${colors.bgLight} rounded-xl border ${colors.border}`}>
+                        <div className={`mt-6 p-4 sm:p-6 ${colors.bgLight} rounded-xl border ${colors.border}`}>
                           <div className="flex items-center justify-between">
                             <span className="text-slate-700">
                               {aiTraining.format === 'full-day' ? t.fullDay : t.halfDay} × {aiTraining.sessions === '5+' ? sessionCount : '1'} session(s)
                               {aiTraining.inPerson && ` + ${lang === 'fr' ? 'frais de déplacement' : 'travel'}`}
                             </span>
-                            <span className={`text-2xl font-bold ${colors.text}`}>
+                            <span className={`text-xl sm:text-2xl font-bold ${colors.text}`}>
                               {(() => {
                                 const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
                                 const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
@@ -1333,12 +1336,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   isDismissed ? 'max-h-24 opacity-60 bg-white' : `max-h-[8000px] ${colors.bgLight}`
                 }`}
               >
-                <div className="p-8">
+                <div className="p-4 sm:p-8">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
                       <span className="text-4xl">{domain.icon}</span>
                       <div>
-                        <h2 className="text-2xl font-bold text-slate-900">
+                        <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
                           {lang === 'fr' ? domain.nameFr : domain.name}
                         </h2>
                         <p className="text-slate-600">{lang === 'fr' ? domain.descriptionFr : domain.description}</p>
@@ -1388,7 +1391,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                           {domain.services.map(service => {
                             const selectedLevel = selections[service.id];
                             return (
-                              <div key={service.id} className="p-6 rounded-xl bg-white border border-slate-200">
+                              <div key={service.id} className="p-4 sm:p-6 rounded-xl bg-white border border-slate-200">
                                 <div className="flex items-start mb-4">
                                   <div className="flex items-center gap-3">
                                     <span className="text-2xl">{service.icon}</span>
@@ -1448,7 +1451,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         </div>
 
                         {/* Custom quote toggle */}
-                        <div className="mt-8 p-6 bg-white rounded-xl border border-violet-200">
+                        <div className="mt-8 p-4 sm:p-6 bg-white rounded-xl border border-violet-200">
                           <button
                             onClick={() => setShowAiCustomForm(!showAiCustomForm)}
                             className="w-full flex items-center justify-between"
@@ -1521,12 +1524,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 isDismissed ? 'max-h-24 opacity-60 bg-white' : `max-h-[5000px] ${colors.bgLight}`
               }`}
             >
-              <div className="p-8">
+              <div className="p-4 sm:p-8">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-4">
                     <span className="text-4xl">{domain.icon}</span>
                     <div>
-                      <h2 className="text-2xl font-bold text-slate-900">
+                      <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
                         {lang === 'fr' ? domain.nameFr : domain.name}
                       </h2>
                       <p className="text-slate-600">{lang === 'fr' ? domain.descriptionFr : domain.description}</p>
@@ -1804,7 +1807,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                         <div className="text-xs text-slate-600">{typeLabel} · {contactAcquisition.volume.toLocaleString()} contacts</div>
                                         <div className="text-[11px] text-slate-500 mt-0.5">{fp(unitPrice).replace(',00', '')}{lang === 'fr' ? '/contact' : '/contact'}</div>
                                       </div>
-                                      <div className={`text-2xl font-bold ${colors.text}`}>
+                                      <div className={`text-xl sm:text-2xl font-bold ${colors.text}`}>
                                         {fp(totalPrice)}
                                       </div>
                                     </div>
@@ -1906,13 +1909,13 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               trackingDismissed ? 'max-h-24 opacity-60' : 'max-h-[2000px]'
             }`}
           >
-            <div className="p-8">
+            <div className="p-4 sm:p-8">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
                   <span className="text-4xl">📊</span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-2xl font-bold text-slate-900">{t.trackingTitle}</h2>
+                      <h2 className="text-xl sm:text-2xl font-bold text-slate-900">{t.trackingTitle}</h2>
                       <span className="px-2 py-1 bg-cyan-500 text-white text-xs font-bold rounded-full">
                         {t.trackingRecommended}
                       </span>
@@ -2038,7 +2041,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
         {/* Duration selection - only show if there are actual selections (not just "to discuss" domains) */}
         {hasActualSelections && !selectedDomains.every(d => d === 'ai-solutions') && (
-          <div className="bg-white rounded-2xl border border-slate-200 p-8">
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8">
             <h3 className="text-xl font-bold text-slate-900 mb-6">{t.duration}</h3>
             <div className="grid grid-cols-3 gap-4">
               {DURATION_CONFIG.options.map(opt => (
@@ -2065,7 +2068,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
         {/* Summary and form */}
         {hasSelections && (
-          <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 rounded-2xl p-8 text-white shadow-2xl">
+          <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 rounded-2xl p-4 sm:p-8 text-white shadow-2xl">
             {/* Animated blobs - subtle V2 treatment */}
             <div className="pointer-events-none absolute -top-20 -right-20 w-72 h-72 rounded-full bg-gradient-to-br from-blue-500/30 to-purple-500/30 blur-3xl animate-drift" aria-hidden="true" />
             <div className="pointer-events-none absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 blur-3xl animate-drift" style={{ animationDelay: '4s' }} aria-hidden="true" />
@@ -2074,7 +2077,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               <span className="inline-block px-3 py-1 bg-white/10 text-white text-xs font-semibold rounded-full uppercase tracking-wide backdrop-blur-sm">
                 {lang === 'fr' ? 'Ton devis' : 'Your quote'}
               </span>
-              <h3 className="text-3xl font-bold font-display">{t.summary}</h3>
+              <h3 className="text-2xl sm:text-3xl font-bold font-display">{t.summary}</h3>
             </div>
 
             <div className="space-y-4 mb-8">
@@ -2247,7 +2250,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                   {/* Effective monthly */}
                   <div className="flex justify-between mt-4">
                     <span className="text-slate-300">{t.effectiveMonthly} <span className="text-xs">({lang === 'fr' ? 'hors budget média' : 'excl. media budget'})</span></span>
-                    <span className="text-2xl font-bold text-blue-400">
+                    <span className="text-xl sm:text-2xl font-bold text-blue-400">
                       {fp(Math.round(pricing.grandTotalWithoutBudget / duration))}{lang === 'fr' ? '/mois' : '/mo'}
                     </span>
                   </div>
@@ -2391,7 +2394,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             )}
 
             {/* CTA final : rassurance cards avant le formulaire */}
-            <div className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-2xl p-8 md:p-10 border border-indigo-100">
+            <div className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-2xl p-4 sm:p-8 md:p-10 border border-indigo-100">
               <div className="text-center mb-8">
                 <h3 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3 font-display">
                   {lang === 'fr' ? 'Prêt à recevoir ton plan sur-mesure ?' : 'Ready to receive your tailored plan?'}
@@ -2445,11 +2448,11 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       {/* Tracking Reminder Popup */}
       {showTrackingPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-4 sm:p-8 animate-fade-in">
             <div className="flex items-start justify-between mb-6">
               <div className="flex items-center gap-3">
                 <span className="text-4xl">📊</span>
-                <h3 className="text-2xl font-bold text-slate-900">{t.trackingPopupTitle}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900">{t.trackingPopupTitle}</h3>
               </div>
               <button
                 onClick={() => setShowTrackingPopup(false)}
@@ -2507,8 +2510,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-slate-900">{t.summary}</h3>
+            <div className="sticky top-0 bg-white border-b border-slate-200 p-4 sm:p-6 flex items-center justify-between">
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900">{t.summary}</h3>
               <button
                 onClick={() => setShowSummaryPopup(false)}
                 className="text-slate-400 hover:text-slate-600 transition-colors"
@@ -2517,7 +2520,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-6">
               {/* "To discuss" domains section */}
               {hasNotSureSelections && (
                 <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
@@ -2716,7 +2719,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               )}
 
               {/* Totals */}
-              <div className="bg-gradient-to-br from-slate-900 to-blue-900 rounded-xl p-6 text-white">
+              <div className="bg-gradient-to-br from-slate-900 to-blue-900 rounded-xl p-4 sm:p-6 text-white">
                 <div className="space-y-3">
                   {pricing.monthlyTotal + pricing.managementFeesTotal > 0 && (
                     <div className="flex justify-between">

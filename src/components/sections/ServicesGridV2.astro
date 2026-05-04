@@ -156,6 +156,9 @@ const learnMore = isFr ? 'En savoir plus' : 'Learn more';
     color: inherit;
     display: block;
     transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Subtle tinted bg + colored top border for visual identity even without hover (mobile) */
+    background: linear-gradient(180deg, var(--svc-tint, #fff) 0%, #fff 60%);
+    box-shadow: inset 0 3px 0 0 var(--svc-color, #6366f1);
   }
 
   .svc-cell:focus-visible {
@@ -237,5 +240,16 @@ const learnMore = isFr ? 'En savoir plus' : 'Learn more';
     }
     .svc-stat { opacity: 0.18; transform: scale(1); }
     .svc-reveal { opacity: 1; transform: none; }
+  }
+
+  /* Mobile / touch: pas de hover, donc on montre les details en permanence */
+  @media (hover: none), (max-width: 768px) {
+    .svc-stat { opacity: 0.22; transform: scale(1); }
+    .svc-reveal { opacity: 1; transform: none; }
+    .svc-cell { padding: 24px 20px; min-height: 180px; }
+    .svc-title { font-size: 22px; }
+    .svc-blurb { font-size: 12.5px; }
+    .svc-stat { top: 18px; right: 18px; font-size: 22px; }
+    .svc-reveal { left: 20px; right: 20px; bottom: 16px; }
   }
 </style>
