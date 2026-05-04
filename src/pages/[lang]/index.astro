@@ -1044,12 +1044,20 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
     }
   }
 
-  /* ===== GRADIENT TEXT ===== */
+  /* ===== GRADIENT TEXT (oklch interpolation pour transitions plus douces) ===== */
   .hero-gradient-text {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+    background: linear-gradient(in oklch 135deg, oklch(58% 0.21 280) 0%, oklch(58% 0.27 305) 50%, oklch(72% 0.15 200) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+  /* Fallback pour navigateurs sans support oklch (Safari < 16.4) */
+  @supports not (background: linear-gradient(in oklch, red, blue)) {
+    .hero-gradient-text {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
   }
 
   /* ===== GLASS CARDS ===== */

@@ -86,6 +86,17 @@ const {
     color: #fff;
     text-decoration: none;
     box-shadow: 0 8px 32px -8px rgba(15, 23, 42, 0.25);
+    /* 3D transforms (Tailwind 4 / native CSS) - subtle perspective tilt at hover */
+    transform-style: preserve-3d;
+    transform: perspective(1200px) rotateX(0deg) rotateY(0deg);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s;
+  }
+  .ind-card-v2:hover {
+    transform: perspective(1200px) rotateX(2deg) rotateY(-2deg) translateY(-4px);
+    box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.35);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ind-card-v2, .ind-card-v2:hover { transform: none; transition: none; }
   }
 
   .layer {
