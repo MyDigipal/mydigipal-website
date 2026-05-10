@@ -4,11 +4,32 @@
 
 | Clé | Valeur |
 |-----|--------|
-| Stack | Astro 5 (static build, ~14s) + React islands |
+| Stack | Astro 6.2.2 + Tailwind 4.2.4 + React islands |
 | Calculateur | `/en/calculator` et `/fr/calculator` (React island) |
 | Webhook | `https://n8n.mydigipal.com/webhook/calculateur-marketing` |
-| Build | `npm run build` |
-| Déploiement | TOUJOURS commit + push après un build réussi, sans demander |
+| Build | `npm run build` (~14s, 200 pages) |
+| Hosting | **Render** (auto-deploy GitHub via `render.yaml`) - Cloudflare = DNS proxy/CDN devant uniquement |
+| Déploiement | `git push origin main` → Render webhook → build → publish (~2-3 min) |
+
+### Tailwind 4 setup
+- Theme tokens en CSS-natif via `@theme {}` dans `src/styles/global.css` (drop legacy `tailwind.config.mjs`)
+- Vite plugin direct (`@tailwindcss/vite`), pas d'intégration `@astrojs/tailwind` (deprecated en T4)
+- Pour les `<style>` Astro scopés qui utilisent `@apply` : ajouter `@reference "<path>/global.css"` au début du bloc
+- Pour les classes custom : ne PAS faire `@apply <custom>` dans une autre classe (cassé en T4) - inliner les utilities
+
+### Astro 6 Content Layer API
+- `src/content.config.ts` (top-level), pas `src/content/config.ts`
+- Chaque collection : `loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/X' })`
+- Utiliser `entry.id` (pas `entry.slug`), `render(entry)` (pas `entry.render()`)
+
+### Convention images blog
+- Frontmatter `image:` toujours en path local : `image: '/images/Blog Thumbnails/<slug>.jpg'`
+- **Jamais d'URLs absolues `raw.githubusercontent.com`** (passe à côté des optim + latence)
+- Default extension : `.jpg` (quality 85, ratio 1200×630). PNG seulement pour logos avec vraie alpha.
+
+### Convention CSS coexistence Tailwind
+- Les sélecteurs CSS globaux (`[data-*]`, `.classes`) ne doivent PAS définir `display` sur des éléments qui utilisent une utility responsive Tailwind (ex: `hidden lg:flex`)
+- Sinon ça écrase la utility et casse le responsive (cas réel : menu mobile cassé par `[data-nav-pill] { display: inline-flex }`)
 
 ## 2. SEO - Règles obligatoires
 

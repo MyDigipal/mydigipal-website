@@ -350,6 +350,61 @@ const canonical = canonicalURL || Astro.url.href;
     <!-- Analytics slot -->
     <slot name="analytics" />
 
+    <!-- Form start + field focus + abandon tracking (GTM funnel) -->
+    <script is:inline>
+      (function() {
+        var formsStarted = new WeakSet();
+        var formFieldsTouched = new WeakMap();
+
+        function pushEvent(name, payload) {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push(Object.assign({ event: name }, payload || {}));
+        }
+
+        // Fire form_start on first focus of any input/select/textarea inside a <form>
+        document.addEventListener('focusin', function(e) {
+          var field = e.target;
+          if (!field.matches || !field.matches('input, select, textarea')) return;
+          var form = field.closest('form');
+          if (!form) return;
+          var formId = form.id || form.getAttribute('name') || 'unknown';
+
+          // form_field_focus per field (max once per field per session)
+          var touched = formFieldsTouched.get(form) || new Set();
+          var fieldKey = field.name || field.id || field.type;
+          if (!touched.has(fieldKey)) {
+            touched.add(fieldKey);
+            formFieldsTouched.set(form, touched);
+            pushEvent('form_field_focus', { form_id: formId, field_name: fieldKey });
+          }
+
+          // form_start: first focus of any field
+          if (!formsStarted.has(form)) {
+            formsStarted.add(form);
+            pushEvent('form_start', { form_id: formId });
+          }
+        });
+
+        // form_abandon: page hidden after at least 1 field touched but no submit
+        document.addEventListener('visibilitychange', function() {
+          if (document.visibilityState !== 'hidden') return;
+          document.querySelectorAll('form').forEach(function(form) {
+            if (formsStarted.has(form) && !form.dataset.submitted) {
+              var formId = form.id || form.getAttribute('name') || 'unknown';
+              var fieldsTouched = (formFieldsTouched.get(form) || new Set()).size;
+              pushEvent('form_abandon', { form_id: formId, fields_touched: fieldsTouched });
+            }
+          });
+        }, { once: false });
+
+        // Mark submitted forms so we don't fire abandon after success
+        document.addEventListener('submit', function(e) {
+          var form = e.target;
+          if (form && form.tagName === 'FORM') form.dataset.submitted = 'true';
+        }, true);
+      })();
+    </script>
+
     <!-- Phone and Email Click Tracking -->
     <script is:inline>
       (function() {

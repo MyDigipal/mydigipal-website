@@ -441,8 +441,24 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
       <div class="grid lg:grid-cols-2 gap-16 items-center">
         <!-- Left: Text content -->
         <div>
+          <!-- Social proof above-the-fold (chiffré + clients) -->
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm font-medium text-slate-600 mb-5 hero-animate" style="--delay: 0ms;">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span class="font-bold text-emerald-700">+247%</span>
+              <span>{lang === 'fr' ? 'organic' : 'organic'}</span>
+            </span>
+            <span class="text-slate-300">·</span>
+            <span class="inline-flex items-center gap-1.5">
+              <span class="font-bold text-amber-700">3,4×</span>
+              <span>ROAS</span>
+            </span>
+            <span class="text-slate-300 hidden sm:inline">·</span>
+            <span class="hidden sm:inline">Genesys · Quantum Metric · BYmyCAR</span>
+          </div>
+
           <!-- Animated badge -->
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-sm text-sm font-medium text-slate-700 mb-8 hero-animate" style="--delay: 0ms;">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-sm text-sm font-medium text-slate-700 mb-8 hero-animate" style="--delay: 50ms;">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-subtle-pulse"></span>
             <span>{c.hero.badge}</span>
           </div>
@@ -461,14 +477,14 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
             {c.hero.description}
           </p>
 
-          <!-- CTAs -->
-          <div class="flex flex-wrap gap-4 hero-animate" style="--delay: 300ms;">
-            <MagneticButton href={`/${lang}/calculator`} variant="dark" size="md">
-              <span>{c.hero.cta1}</span>
+          <!-- CTAs split: Primary audit / Secondary calculator -->
+          <div class="flex flex-wrap gap-3 sm:gap-4 hero-animate" style="--delay: 300ms;">
+            <MagneticButton href={`/${lang}/contact?topic=audit`} variant="dark" size="md">
+              <span>{lang === 'fr' ? 'Audit gratuit (30 min)' : 'Free audit (30 min)'}</span>
               <Icon name="arrow-right" size={18} />
             </MagneticButton>
-            <MagneticButton href={`/${lang}/case-studies`} variant="light" size="md">
-              <span>{c.hero.cta2}</span>
+            <MagneticButton href={`/${lang}/calculator`} variant="light" size="md">
+              <span>{lang === 'fr' ? 'Estimer mon plan' : 'Estimate my plan'}</span>
             </MagneticButton>
           </div>
 
