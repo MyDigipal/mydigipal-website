@@ -60,6 +60,10 @@ export interface ServiceItem {
     pricePerChannel: number;
     minChannels?: number;
   };
+  // Optional small italic mention rendered below service title (refonte CRO mai 2026):
+  // when one-off setup fees may apply but we don't want a separate "Setup" service box
+  // that adds friction. Lighter than a level/box.
+  setupNote?: { fr: string; en: string };
 }
 
 export interface DomainConfig {

@@ -6,118 +6,10 @@ import type { ServiceItem } from '../types';
 
 export const emailingServices: ServiceItem[] = [
   {
-    id: 'email-setup-package',
-    title: 'A. Setup & Configuration',
-    titleEn: 'A. Setup & Configuration',
-    description: 'Configuration complète de votre plateforme email : outil, DNS, CRM, segmentation et formation de votre équipe.',
-    descriptionEn: 'Complete email platform setup: tool, DNS, CRM, segmentation and team training.',
-    icon: '⚙️',
-    isOneOff: true,
-    detailedInfo: {
-      title: 'Setup & Configuration - C\'est quoi exactement ?',
-      content: {
-        intro: 'Mise en place complète de votre infrastructure email pour être opérationnel rapidement.',
-        sections: [
-          {
-            title: 'Ce qui est inclus',
-            items: [
-              'Choix et configuration de la plateforme (Mailchimp, Klaviyo, HubSpot, Brevo...)',
-              'Paramétrage DNS complet (SPF, DKIM, DMARC) pour une délivrabilité optimale',
-              'Intégration CRM et synchronisation bidirectionnelle des données',
-              'Création de segments d\'audience (comportementaux, démographiques, engagement)',
-              'Templates email personnalisés à votre charte graphique',
-              'Formulaires d\'inscription et pop-ups',
-              'Configuration des automations de base (welcome, abandon panier...)',
-              'Formation de votre équipe (1-2h)'
-            ]
-          },
-          {
-            title: 'Plateformes supportées',
-            items: [
-              'Mailchimp, Klaviyo, HubSpot, Brevo (Sendinblue)',
-              'ActiveCampaign, Lemlist, Instantly',
-              'Intégrations : Salesforce, Pipedrive, Google Sheets, Shopify...'
-            ]
-          }
-        ],
-        conclusion: 'Livrable : Plateforme configurée, intégrée et documentée. Votre équipe est autonome.'
-      }
-    },
-    levels: [
-      {
-        name: 'Essentiel',
-        nameEn: 'Essential',
-        price: 500,
-        features: [
-          'Configuration plateforme + DNS',
-          '1 intégration CRM simple',
-          '3 templates de base',
-          '5 segments d\'audience',
-          'Documentation'
-        ],
-        featuresEn: [
-          'Platform configuration + DNS',
-          '1 simple CRM integration',
-          '3 basic templates',
-          '5 audience segments',
-          'Documentation'
-        ],
-        recommended: 'Démarrage simple, une seule source de données',
-        recommendedEn: 'Simple start, single data source'
-      },
-      {
-        name: 'Avancé',
-        nameEn: 'Advanced',
-        price: 1000,
-        features: [
-          'Configuration complète + DNS avancé',
-          '2-3 intégrations CRM bidirectionnelles',
-          '5 templates personnalisés',
-          '10-15 segments dynamiques',
-          '3 automations configurées',
-          'Formation 2h + support 2 semaines'
-        ],
-        featuresEn: [
-          'Complete configuration + advanced DNS',
-          '2-3 bidirectional CRM integrations',
-          '5 custom templates',
-          '10-15 dynamic segments',
-          '3 configured automations',
-          '2h training + 2 weeks support'
-        ],
-        recommended: 'Setup complet pour croissance rapide',
-        recommendedEn: 'Complete setup for rapid growth',
-        popular: true
-      },
-      {
-        name: 'Premium',
-        nameEn: 'Premium',
-        price: 2000,
-        features: [
-          'Setup sur-mesure intégral',
-          'Intégrations illimitées (API custom si nécessaire)',
-          'Templates illimités + design system email',
-          'Segments avancés + scoring comportemental',
-          'Automations avancées (nurturing, lifecycle)',
-          'Formation 4h + support 1 mois'
-        ],
-        featuresEn: [
-          'Full custom setup',
-          'Unlimited integrations (custom API if needed)',
-          'Unlimited templates + email design system',
-          'Advanced segments + behavioral scoring',
-          'Advanced automations (nurturing, lifecycle)',
-          '4h training + 1 month support'
-        ],
-        recommended: 'Écosystème complexe, besoins avancés',
-        recommendedEn: 'Complex ecosystem, advanced needs'
-      }
-    ]
-  },
-  {
     id: 'email-management-package',
-    title: 'B. Gestion de Campagnes',
-    titleEn: 'B. Campaign Management',
+    title: 'A. Gestion de Campagnes',
+    titleEn: 'A. Campaign Management',
+    setupNote: { fr: 'Frais de setup possibles selon contexte (DNS, plateforme, CRM) - on en discute en kick-off.', en: 'Setup fees may apply depending on context (DNS, platform, CRM) - we discuss at kick-off.' },
     description: 'Gestion complète de vos campagnes email : création de contenu, envoi, A/B testing, analytics et optimisation continue.',
     descriptionEn: 'Complete email campaign management: content creation, sending, A/B testing, analytics and continuous optimization.',
     icon: '📧',
@@ -226,8 +118,8 @@ export const emailingServices: ServiceItem[] = [
   },
   {
     id: 'email-contacts-package',
-    title: 'C. Acquisition de Contacts',
-    titleEn: 'C. Contact Acquisition',
+    title: 'B. Acquisition de Contacts',
+    titleEn: 'B. Contact Acquisition',
     description: "Enrichissement de votre base avec des contacts qualifiés et RGPD-compliant : email seul, email enrichi par IA ou numéro de téléphone.",
     descriptionEn: 'Database enrichment with qualified, GDPR-compliant contacts: email only, AI-enriched email, or phone number.',
     icon: '📇',

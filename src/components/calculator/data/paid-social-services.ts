@@ -6,123 +6,14 @@ import type { ServiceItem } from '../types';
 //         + options transversales (visuels, feed/catalogue, audit)
 // Le Calculator.tsx gère le flow "Je sais quels canaux" vs "Aidez-moi à choisir"
 
-// Services one-off (audit, setup) - prix dynamique selon nb canaux sélectionnés au-dessus
+// Refonte CRO mai 2026: drop social-audit + social-setup (one-off complexes).
+// On garde uniquement les services additionnels qui apportent une vraie valeur recurrente:
+// creation de visuels (mensuel) + setup catalogue (one-off pour Vehicle/Dynamic Ads).
 export const paidSocialServices: ServiceItem[] = [
   {
-    id: 'social-audit',
-    title: 'A. Audit Campagnes Sociales',
-    titleEn: 'A. Social Campaigns Audit',
-    description: 'Diagnostic complet de vos campagnes existantes sur les canaux sélectionnés.',
-    descriptionEn: 'Complete diagnostic of your existing campaigns on selected channels.',
-    icon: '🔍',
-    isOneOff: true,
-    dynamicPricing: { pricePerChannel: 350, minChannels: 1 },
-    detailedInfo: {
-      title: "Audit Social Ads - C'est quoi exactement ?",
-      content: {
-        intro: 'Un diagnostic complet de vos campagnes publicitaires sur les canaux que vous avez sélectionnés ci-dessus.',
-        sections: [
-          {
-            title: 'Ce que nous analysons par canal',
-            items: [
-              'Structure des campagnes et ensembles de publicités',
-              "Qualité des audiences et ciblage",
-              'Performance des créatives (CTR, engagement, ROAS)',
-              "Paramètres d'enchères et optimisation",
-              'Pixel/CAPI et tracking des conversions',
-              'Fréquence et fatigue publicitaire',
-              'Benchmark concurrentiel'
-            ]
-          }
-        ],
-        conclusion: "Livrable : Rapport d'audit avec recommandations par plateforme et plan d'action priorisé."
-      }
-    },
-    levels: [
-      {
-        name: 'Audit complet',
-        nameEn: 'Full audit',
-        price: 350,
-        priceNote: 'par canal sélectionné',
-        priceNoteEn: 'per selected channel',
-        features: [
-          'Audit de chaque canal sélectionné',
-          'Analyse des performances actuelles',
-          'Benchmark concurrentiel',
-          'Recommandations actionnables',
-          "Plan d'action priorisé"
-        ],
-        featuresEn: [
-          'Audit of each selected channel',
-          'Current performance analysis',
-          'Competitive benchmark',
-          'Actionable recommendations',
-          'Prioritized action plan'
-        ],
-        recommended: 'Si tu as déjà des campagnes en place',
-        recommendedEn: 'If you already have running campaigns'
-      }
-    ]
-  },
-  {
-    id: 'social-setup',
-    title: 'B. Setup de Campagnes',
-    titleEn: 'B. Campaign Setup',
-    description: 'Création et configuration de vos campagnes sur les canaux sélectionnés, avec structure optimisée.',
-    descriptionEn: 'Creation and configuration of your campaigns on selected channels, with optimized structure.',
-    icon: '⚙️',
-    isOneOff: true,
-    dynamicPricing: { pricePerChannel: 450, minChannels: 1 },
-    detailedInfo: {
-      title: "Setup de Campagnes - C'est quoi exactement ?",
-      content: {
-        intro: 'Mise en place professionnelle de vos campagnes social ads avec une structure optimisée dès le départ, sur chacun des canaux sélectionnés.',
-        sections: [
-          {
-            title: 'Ce que nous configurons par canal',
-            items: [
-              'Structure de compte et campagnes optimale',
-              'Création des audiences (lookalike, retargeting, intérêts)',
-              'Configuration pixel/CAPI + Consent Mode v2',
-              "Paramétrage des objectifs et enchères",
-              'Premières créatives (textes + visuels de lancement)',
-              'Tests A/B structurés dès le départ'
-            ]
-          }
-        ],
-        conclusion: 'Livrable : Comptes configurés et campagnes prêtes à être activées sur tous les canaux choisis.'
-      }
-    },
-    levels: [
-      {
-        name: 'Setup initial',
-        nameEn: 'Initial setup',
-        price: 450,
-        priceNote: 'par canal sélectionné',
-        priceNoteEn: 'per selected channel',
-        features: [
-          'Structure de compte et campagnes par canal',
-          'Audiences (lookalike, retargeting, intérêts)',
-          'Pixel/CAPI + Consent Mode v2',
-          'Premières créatives de lancement',
-          'Tests A/B structurés dès le départ'
-        ],
-        featuresEn: [
-          'Account and campaign structure per channel',
-          'Audiences (lookalike, retargeting, interests)',
-          'Pixel/CAPI + Consent Mode v2',
-          'Initial launch creatives',
-          'Structured A/B tests from day one'
-        ],
-        recommended: 'Lancement initial des campagnes',
-        recommendedEn: 'Initial campaign launch'
-      }
-    ]
-  },
-  {
     id: 'social-creatives',
-    title: 'C. Création de Visuels',
-    titleEn: 'C. Visual Creation',
+    title: 'A. Création de Visuels',
+    titleEn: 'A. Visual Creation',
     description: 'Production de visuels et vidéos publicitaires optimisés pour chaque plateforme sociale.',
     descriptionEn: 'Production of visuals and ad videos optimized for each social platform.',
     icon: '🎨',
@@ -221,8 +112,8 @@ export const paidSocialServices: ServiceItem[] = [
   },
   {
     id: 'social-feed-catalogue',
-    title: 'D. Catalogue & Feed Management',
-    titleEn: 'D. Catalogue & Feed Management',
+    title: 'B. Catalogue & Feed Management',
+    titleEn: 'B. Catalogue & Feed Management',
     description: 'Création et gestion de catalogues produits pour Meta, Google Shopping et autres plateformes.',
     descriptionEn: 'Product catalogue creation and management for Meta, Google Shopping and other platforms.',
     icon: '📦',

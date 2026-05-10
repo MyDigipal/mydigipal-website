@@ -488,8 +488,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     return hasOtherSelections;
   }, [selectedDomains, selections, dismissedDomains, notSureAbout]);
 
-  // Combined check - show summary if either actual selections or "not sure" domains exist
-  const hasSelections = hasActualSelections || hasNotSureSelections;
+  // Combined check - show summary if user has any actual selection (services, "not sure" domains, OR tracking-only)
+  // Bug fix mai 2026: tracking-only selections n'etaient pas comptees, donc le sticky bar
+  // (et le total) restaient caches tant qu'un service "principal" n'etait pas selectionne.
+  const hasSelections = hasActualSelections || hasNotSureSelections || hasTrackingSelected;
 
   // Core submission logic (extracted for reuse)
   const doSubmit = useCallback(async () => {
@@ -1403,6 +1405,11 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                         )}
                                       </div>
                                       <p className="text-sm text-slate-600">{lang === 'fr' ? service.description : (service.descriptionEn || service.description)}</p>
+                                      {service.setupNote && (
+                                        <p className="mt-2 text-xs italic text-slate-500 leading-snug">
+                                          ⚙ {lang === 'fr' ? service.setupNote.fr : service.setupNote.en}
+                                        </p>
+                                      )}
                                     </div>
                                   </div>
                                 </div>

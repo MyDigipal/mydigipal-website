@@ -247,10 +247,10 @@ const seo = {
               ></textarea>
             </div>
 
-            <!-- Separator + facultatifs collapsed group -->
-            <div class="pt-2 border-t border-dashed border-slate-200">
+            <!-- Separator + facultatifs collapsed group (progressive disclosure: revealed when user starts typing message) -->
+            <div id="optional-fields-group" class="pt-2 border-t border-dashed border-slate-200 optional-fields-collapsed">
               <p class="text-xs italic text-slate-500 mb-4 mt-3">
-                {lang === 'fr' ? 'Les champs ci-dessous sont facultatifs - ils nous aident juste à mieux te répondre.' : 'Fields below are optional - they just help us reply better.'}
+                {lang === 'fr' ? 'Champs facultatifs ci-dessous - ils nous aident à mieux te répondre.' : 'Optional fields below - they help us reply better.'}
               </p>
 
               <div class="grid md:grid-cols-2 gap-6 mb-5">
@@ -448,8 +448,42 @@ const seo = {
   <TestimonialMarquee lang={lang} background="white" />
 </PageLayout>
 
+<style>
+  /* Progressive disclosure: optional fields hidden by default, revealed when user types in message */
+  #optional-fields-group.optional-fields-collapsed {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-top: 0;
+    padding-top: 0;
+    border-top-width: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease, padding-top 0.3s ease, margin-top 0.3s ease;
+  }
+  #optional-fields-group:not(.optional-fields-collapsed) {
+    max-height: 1200px;
+    opacity: 1;
+    transition: max-height 0.6s ease, opacity 0.5s ease 0.1s, padding-top 0.3s ease, margin-top 0.3s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #optional-fields-group { transition: none !important; }
+  }
+</style>
+
 <script define:vars={{ webhookUrl: 'https://n8n.mydigipal.com/webhook/mydigipal-contact', pageLang: lang }}>
   const form = document.getElementById('contact-form');
+  const messageField = document.getElementById('message');
+  const optionalGroup = document.getElementById('optional-fields-group');
+
+  // Progressive disclosure: reveal optional fields when user starts typing in message
+  if (messageField && optionalGroup) {
+    messageField.addEventListener('input', function reveal() {
+      if (messageField.value.trim().length > 0) {
+        optionalGroup.classList.remove('optional-fields-collapsed');
+        messageField.removeEventListener('input', reveal);
+      }
+    });
+  }
+
   const submitBtn = document.getElementById('submit-btn');
   const btnText = document.getElementById('btn-text');
   const btnIcon = document.getElementById('btn-icon');
