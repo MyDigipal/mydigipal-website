@@ -1,0 +1,298 @@
+---
+/**
+ * HeroUseCases - Widget 4 personas verticalisés.
+ *
+ * À insérer entre le hero et la grille services. Aide le visiteur à se
+ * projeter ("c'est moi qui parle à MyDigipal").
+ *
+ * Mobile : horizontal scroll snap, 1 card visible à la fois (peek next).
+ * Desktop : grid 2x2.
+ *
+ * Au survol/touch : magnetic glow + reveal mini-CTA "Voir le cas X".
+ */
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const isFr = lang === 'fr';
+
+const personas = isFr
+  ? [
+      {
+        id: 'b2b',
+        emoji: '🚀',
+        persona: 'Founder B2B SaaS',
+        pain: '« 1 lead/mois sur LinkedIn malgré le budget. »',
+        outcome: '+247% pipeline qualifié en 6 mois',
+        proof: 'Comme Genesys',
+        ctaLabel: 'Voir le cas Genesys',
+        ctaHref: `/${lang}/case-studies/genesys`,
+        gradient: 'from-indigo-500 via-violet-500 to-fuchsia-500',
+        accent: '#8B5CF6',
+      },
+      {
+        id: 'auto',
+        emoji: '🚗',
+        persona: 'Concession Auto',
+        pain: '« On a du trafic Maps, mais peu de leads concession. »',
+        outcome: '+187% leads · 30% closing plus rapide',
+        proof: 'Comme BYmyCAR',
+        ctaLabel: 'Voir le cas BYmyCAR',
+        ctaHref: `/${lang}/case-studies/dmd-group`,
+        gradient: 'from-sky-500 via-blue-500 to-indigo-500',
+        accent: '#3B82F6',
+      },
+      {
+        id: 'ai-rank',
+        emoji: '🤖',
+        persona: 'Marque qui veut ranker sur ChatGPT',
+        pain: '« Mes prospects cherchent sur ChatGPT - on est invisible. »',
+        outcome: 'GEO + LLMO : citations dans 4 LLMs majeurs',
+        proof: 'Notre méthode 2026',
+        ctaLabel: 'Lire le guide LLMO',
+        ctaHref: `/${lang}/blog`,
+        gradient: 'from-emerald-500 via-teal-500 to-cyan-500',
+        accent: '#10B981',
+      },
+      {
+        id: 'ai-team',
+        emoji: '⚡',
+        persona: 'Équipe marketing qui veut maitriser l\'IA',
+        pain: '« On lit beaucoup sur l\'IA, mais on ne sait pas par où commencer. »',
+        outcome: '+339 retours apprenants · 9.4/10',
+        proof: 'Formations live et async',
+        ctaLabel: 'Voir les formations IA',
+        ctaHref: `/${lang}/services/ai-training`,
+        gradient: 'from-amber-500 via-orange-500 to-rose-500',
+        accent: '#F59E0B',
+      },
+    ]
+  : [
+      {
+        id: 'b2b',
+        emoji: '🚀',
+        persona: 'B2B SaaS Founder',
+        pain: '"1 lead/month on LinkedIn despite the budget."',
+        outcome: '+247% qualified pipeline in 6 months',
+        proof: 'Like Genesys',
+        ctaLabel: 'See Genesys case study',
+        ctaHref: `/${lang}/case-studies/genesys`,
+        gradient: 'from-indigo-500 via-violet-500 to-fuchsia-500',
+        accent: '#8B5CF6',
+      },
+      {
+        id: 'auto',
+        emoji: '🚗',
+        persona: 'Auto Dealer / OEM',
+        pain: '"We get Maps traffic but few showroom leads."',
+        outcome: '+187% leads · 30% faster closing',
+        proof: 'Like BYmyCAR',
+        ctaLabel: 'See BYmyCAR case',
+        ctaHref: `/${lang}/case-studies/dmd-group`,
+        gradient: 'from-sky-500 via-blue-500 to-indigo-500',
+        accent: '#3B82F6',
+      },
+      {
+        id: 'ai-rank',
+        emoji: '🤖',
+        persona: 'Brand that wants to rank on ChatGPT',
+        pain: '"Our prospects search on ChatGPT - we\'re invisible."',
+        outcome: 'GEO + LLMO: cited in 4 major LLMs',
+        proof: 'Our 2026 method',
+        ctaLabel: 'Read the LLMO guide',
+        ctaHref: `/${lang}/blog`,
+        gradient: 'from-emerald-500 via-teal-500 to-cyan-500',
+        accent: '#10B981',
+      },
+      {
+        id: 'ai-team',
+        emoji: '⚡',
+        persona: 'Marketing team that wants AI mastery',
+        pain: '"We read about AI, but don\'t know where to start."',
+        outcome: '+339 learner reviews · 9.4/10',
+        proof: 'Live and async trainings',
+        ctaLabel: 'See AI trainings',
+        ctaHref: `/${lang}/services/ai-training`,
+        gradient: 'from-amber-500 via-orange-500 to-rose-500',
+        accent: '#F59E0B',
+      },
+    ];
+
+const heading = isFr ? 'À qui on parle ?' : 'Who we talk to';
+const subheading = isFr
+  ? 'On est spécialisés sur 4 cas où l\'IA change vraiment la donne marketing.'
+  : 'We\'re specialised in 4 cases where AI truly moves the marketing needle.';
+---
+
+<section class="hero-usecases-section py-20 lg:py-24 bg-gradient-to-b from-slate-50 to-white" data-reveal>
+  <div class="container-custom">
+    <div class="text-center mb-12 lg:mb-16">
+      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-semibold mb-4">
+        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+        {isFr ? 'Nos clients types' : 'Our typical clients'}
+      </span>
+      <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight mb-3">
+        {heading}
+      </h2>
+      <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+        {subheading}
+      </p>
+    </div>
+
+    <!-- Grid desktop, scroll-snap mobile -->
+    <div class="usecases-grid">
+      {personas.map((p, i) => (
+        <a
+          href={p.ctaHref}
+          class="usecase-card group"
+          style={`--accent: ${p.accent}; --delay: ${i * 80}ms;`}
+          data-magnetic
+        >
+          <!-- Emoji + persona -->
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-3xl" aria-hidden="true">{p.emoji}</span>
+            <h3 class="font-display text-lg font-bold text-slate-900 leading-tight">
+              {p.persona}
+            </h3>
+          </div>
+
+          <!-- Pain quote -->
+          <p class="usecase-pain text-sm text-slate-500 italic mb-5 leading-snug">
+            {p.pain}
+          </p>
+
+          <!-- Outcome -->
+          <div class="usecase-outcome mb-2">
+            <div class="text-xs text-slate-400 uppercase tracking-wider font-mono mb-1">
+              {isFr ? 'Avec MyDigipal' : 'With MyDigipal'}
+            </div>
+            <div class="text-base sm:text-lg font-bold leading-snug" style={`color: ${p.accent}`}>
+              {p.outcome}
+            </div>
+            <div class="text-xs text-slate-500 mt-1">
+              <span class="inline-flex items-center gap-1">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                {p.proof}
+              </span>
+            </div>
+          </div>
+
+          <!-- CTA reveal -->
+          <div class="usecase-cta">
+            <span class="inline-flex items-center gap-1 text-sm font-semibold" style={`color: ${p.accent}`}>
+              {p.ctaLabel}
+              <Icon name="arrow-right" size={14} />
+            </span>
+          </div>
+
+          <!-- Decorative accent gradient blob (corner) -->
+          <div class={`usecase-blob bg-gradient-to-br ${p.gradient}`} aria-hidden="true"></div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Grid desktop, horizontal scroll-snap mobile */
+  .usecases-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 72rem;
+    margin: 0 auto;
+  }
+  @media (max-width: 768px) {
+    .usecases-grid {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 85%;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 14px;
+      padding: 4px 16px 16px;
+      margin: 0 -16px;
+      scrollbar-width: thin;
+    }
+    .usecase-card {
+      scroll-snap-align: start;
+      min-width: 0;
+    }
+  }
+
+  .usecase-card {
+    position: relative;
+    display: block;
+    padding: 28px 24px;
+    background: #fff;
+    border: 1px solid rgb(226 232 240);
+    border-radius: 20px;
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Magnetic radial gradient (set by initMagneticPointer via --mx, --my) */
+    background-image:
+      radial-gradient(
+        220px circle at var(--mx, -100px) var(--my, -100px),
+        color-mix(in oklch, var(--accent, #6366f1) 18%, transparent) 0%,
+        transparent 70%
+      );
+  }
+
+  .usecase-card:hover,
+  .usecase-card:focus-visible {
+    transform: translateY(-4px);
+    border-color: var(--accent, #6366f1);
+    box-shadow: 0 16px 32px -16px color-mix(in oklch, var(--accent, #6366f1) 35%, transparent);
+  }
+
+  .usecase-blob {
+    position: absolute;
+    bottom: -40px;
+    right: -40px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    opacity: 0.08;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .usecase-card:hover .usecase-blob {
+    opacity: 0.18;
+    transform: scale(1.2);
+  }
+
+  .usecase-cta {
+    margin-top: auto;
+    padding-top: 8px;
+    transform: translateY(4px);
+    opacity: 0.7;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .usecase-card:hover .usecase-cta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Mobile + touch: cta visible permanent */
+  @media (hover: none), (max-width: 768px) {
+    .usecase-cta { opacity: 1; transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .usecase-card,
+    .usecase-blob,
+    .usecase-cta {
+      transition: none;
+    }
+  }
+</style>

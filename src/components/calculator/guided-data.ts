@@ -15,97 +15,72 @@ export interface GuidedQuestion {
   optional?: boolean;
 }
 
+// Refonte CRO mai 2026: 5 questions -> 3 questions ultra-simples (single-select uniquement).
+// Drop maxSelections et multi-select hierarchisations qui faisaient drop 93% au step 2.
+// On reste sur 3 clics et on affiche le résultat tout de suite.
 export const guidedQuestions: GuidedQuestion[] = [
   {
     id: 'industry',
     type: 'single',
     question: {
-      en: 'What industry are you in?',
-      fr: 'Quel est votre secteur d\'activité ?'
+      en: 'You do what?',
+      fr: 'Tu fais quoi ?'
     },
     subtitle: {
-      en: 'This helps us tailor our channel recommendations',
-      fr: 'Cela nous aide à adapter nos recommandations de canaux'
+      en: 'Pick the closest one - we tailor the plan to it',
+      fr: 'Choisis le plus proche - on adapte le plan'
     },
     options: [
       { id: 'b2b-saas', label: { en: 'B2B / SaaS', fr: 'B2B / SaaS' }, icon: '💼' },
-      { id: 'ecommerce', label: { en: 'E-commerce', fr: 'E-commerce' }, icon: '🛒' },
       { id: 'automotive', label: { en: 'Automotive', fr: 'Automobile' }, icon: '🚗' },
-      { id: 'local', label: { en: 'Local business', fr: 'Commerce local' }, icon: '🏪' },
-      { id: 'startup', label: { en: 'Startup', fr: 'Startup' }, icon: '🚀' },
-      { id: 'other', label: { en: 'Other', fr: 'Autre' }, icon: '🏢' }
+      { id: 'ecommerce', label: { en: 'E-commerce / Retail', fr: 'E-commerce / Retail' }, icon: '🛒' },
+      { id: 'other', label: { en: 'Something else', fr: 'Autre chose' }, icon: '🏢' }
     ]
   },
   {
     id: 'goals',
-    type: 'multi',
+    type: 'single',
     question: {
-      en: 'What are your marketing goals?',
-      fr: 'Quels sont vos objectifs marketing ?'
+      en: 'Your main goal?',
+      fr: 'Ton objectif principal ?'
     },
     subtitle: {
-      en: 'Select up to 3 priorities',
-      fr: 'Sélectionnez jusqu\'à 3 priorités'
+      en: 'One pick - we focus the plan on it',
+      fr: 'Un seul - on focus le plan dessus'
     },
-    maxSelections: 3,
     options: [
-      { id: 'traffic', label: { en: 'More traffic', fr: 'Plus de trafic' }, icon: '📈' },
-      { id: 'leads', label: { en: 'Generate leads', fr: 'Générer des leads' }, icon: '🎯' },
-      { id: 'awareness', label: { en: 'Brand awareness', fr: 'Notoriété de marque' }, icon: '📣' },
-      { id: 'sales', label: { en: 'Increase sales', fr: 'Augmenter les ventes' }, icon: '💰' },
-      { id: 'retention', label: { en: 'Customer retention', fr: 'Fidélisation client' }, icon: '🤝' },
-      { id: 'automation', label: { en: 'Automate tasks', fr: 'Automatiser les tâches' }, icon: '⚙️' },
+      { id: 'leads', label: { en: 'More B2B leads', fr: 'Plus de leads B2B' }, icon: '🎯' },
+      { id: 'sales', label: { en: 'More online sales', fr: 'Plus de ventes online' }, icon: '💰' },
       { id: 'ai-training', label: { en: 'Train team on AI', fr: 'Former l\'équipe à l\'IA' }, icon: '🎓' }
     ]
   },
   {
     id: 'monthlyBudget',
-    type: 'slider',
+    type: 'single',
     question: {
-      en: 'What\'s your estimated monthly budget?',
-      fr: 'Quel est votre budget mensuel estimé ?'
+      en: 'Your monthly budget?',
+      fr: 'Ton budget mensuel ?'
     },
     subtitle: {
-      en: 'Including services and ad spend',
-      fr: 'Services et budget publicitaire inclus'
+      en: 'Services + ad spend, ballpark - you can refine later',
+      fr: 'Services + budget média, à la louche - on ajuste après'
     },
-    sliderConfig: { min: 500, max: 10000, step: 500 }
-  },
-  {
-    id: 'currentEfforts',
-    type: 'multi',
-    question: {
-      en: 'What marketing are you currently doing?',
-      fr: 'Que faites-vous actuellement en marketing ?'
-    },
-    subtitle: {
-      en: 'Select all that apply',
-      fr: 'Sélectionnez tout ce qui s\'applique'
-    },
-    maxSelections: 6,
     options: [
-      { id: 'nothing', label: { en: 'Nothing yet', fr: 'Rien pour l\'instant' }, icon: '🆕' },
-      { id: 'some-seo', label: { en: 'Some SEO', fr: 'Un peu de SEO' }, icon: '🔍' },
-      { id: 'running-ads', label: { en: 'Running ads', fr: 'Ads en cours' }, icon: '📊' },
-      { id: 'email-setup', label: { en: 'Email in place', fr: 'Email en place' }, icon: '📧' },
-      { id: 'tracking-ok', label: { en: 'Tracking set up', fr: 'Tracking configuré' }, icon: '📡' },
-      { id: 'other-agency', label: { en: 'Other agency', fr: 'Autre agence' }, icon: '🔄' }
+      { id: 'budget-1500', label: { en: '< 2K€', fr: '< 2K€' }, icon: '🌱' },
+      { id: 'budget-3500', label: { en: '2-5K€', fr: '2-5K€' }, icon: '🚀' },
+      { id: 'budget-7500', label: { en: '5-10K€', fr: '5-10K€' }, icon: '⚡' },
+      { id: 'budget-15000', label: { en: '> 10K€', fr: '> 10K€' }, icon: '🏆' }
     ]
-  },
-  {
-    id: 'freeTextContext',
-    type: 'textarea',
-    question: {
-      en: 'Anything else we should know?',
-      fr: 'Quelque chose d\'autre à nous dire ?'
-    },
-    subtitle: {
-      en: 'Optional - share any context that could help',
-      fr: 'Optionnel - partagez tout contexte utile'
-    },
-    optional: true
   }
 ];
+
+// Map budget option IDs to numeric values (used by buildRecommendation)
+export const budgetOptionToValue: Record<string, number> = {
+  'budget-1500': 1500,
+  'budget-3500': 3500,
+  'budget-7500': 7500,
+  'budget-15000': 15000,
+};
 
 // ---- Industry → domain relevance scores (0-1) ----
 // Refined from ControlAI proposal insights:

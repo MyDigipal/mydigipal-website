@@ -1,7 +1,7 @@
 /** @jsxImportSource react */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { ServiceDomain, GuidedAnswers, GuidedRecommendation } from './types';
-import { guidedQuestions, generateRecommendation, getBudgetLabel, guidedDomainActions, buildEvolutionPath, getBenchmarks, industryInsights } from './guided-data';
+import { guidedQuestions, generateRecommendation, getBudgetLabel, guidedDomainActions, buildEvolutionPath, getBenchmarks, industryInsights, budgetOptionToValue } from './guided-data';
 import { domainConfigs, formatPrice } from './data';
 import type { Currency } from './types';
 
@@ -151,9 +151,16 @@ export default function GuidedMode({ lang, currency, onComplete, onSkip, t }: Gu
     if (q.id === 'industry') {
       updatedAnswers.industry = answerValue as string;
     } else if (q.id === 'goals') {
-      updatedAnswers.goals = answerValue as string[];
+      // Now single-select (refonte CRO mai 2026): wrap in array for downstream compat
+      const goalId = typeof answerValue === 'string' ? answerValue : (answerValue as string[])[0];
+      updatedAnswers.goals = goalId ? [goalId] : [];
     } else if (q.id === 'monthlyBudget') {
-      updatedAnswers.monthlyBudget = answerValue as number;
+      // Now stepper buttons (id like 'budget-3500') instead of slider
+      if (typeof answerValue === 'string' && budgetOptionToValue[answerValue]) {
+        updatedAnswers.monthlyBudget = budgetOptionToValue[answerValue];
+      } else {
+        updatedAnswers.monthlyBudget = answerValue as number;
+      }
     } else if (q.id === 'currentEfforts') {
       updatedAnswers.currentEfforts = answerValue as string[];
     } else if (q.id === 'freeTextContext') {

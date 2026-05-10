@@ -200,75 +200,107 @@ const seo = {
         <!-- Form (3 columns) -->
         <div class="lg:col-span-3 bg-white rounded-2xl p-8 shadow-2xl">
           <form id="contact-form" class="space-y-6">
+            <!-- 3 OBLIGATOIRES en gros (Nom + Email puis Message) -->
             <div class="grid md:grid-cols-2 gap-6">
-              <!-- Name -->
               <div>
-                <label for="name" class="block text-sm font-medium text-slate-700 mb-2">{t.form.name}</label>
+                <label for="name" class="block text-sm font-bold text-slate-900 mb-2">
+                  {t.form.name}
+                  <span class="text-rose-500" aria-hidden="true">*</span>
+                </label>
                 <input
                   type="text"
                   id="name"
                   name="name"
                   required
                   placeholder={t.form.namePlaceholder}
-                  class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+                  class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 transition-all outline-none"
                 />
               </div>
-
-              <!-- Email -->
               <div>
-                <label for="email" class="block text-sm font-medium text-slate-700 mb-2">{t.form.email}</label>
+                <label for="email" class="block text-sm font-bold text-slate-900 mb-2">
+                  {t.form.email}
+                  <span class="text-rose-500" aria-hidden="true">*</span>
+                </label>
                 <input
                   type="email"
                   id="email"
                   name="email"
                   required
                   placeholder={t.form.emailPlaceholder}
-                  class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
+                  class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 transition-all outline-none"
                 />
               </div>
             </div>
 
-            <!-- Company -->
             <div>
-              <label for="company" class="block text-sm font-medium text-slate-700 mb-2">{t.form.company}</label>
-              <input
-                type="text"
-                id="company"
-                name="company"
-                placeholder={t.form.companyPlaceholder}
-                class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none"
-              />
-            </div>
-
-            <!-- Services (Checkboxes) -->
-            <div>
-              <label class="block text-sm font-medium text-slate-700 mb-3">{t.form.service}</label>
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {t.form.serviceOptions.map((option) => (
-                  <label class="flex items-center gap-2 cursor-pointer group">
-                    <input
-                      type="checkbox"
-                      name="services"
-                      value={option}
-                      class="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500 focus:ring-2"
-                    />
-                    <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">{option}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <!-- Message -->
-            <div>
-              <label for="message" class="block text-sm font-medium text-slate-700 mb-2">{t.form.message}</label>
+              <label for="message" class="block text-sm font-bold text-slate-900 mb-2">
+                {t.form.message}
+                <span class="text-rose-500" aria-hidden="true">*</span>
+              </label>
               <textarea
                 id="message"
                 name="message"
                 rows="4"
                 required
                 placeholder={t.form.messagePlaceholder}
-                class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none resize-none"
+                class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 transition-all outline-none resize-none"
               ></textarea>
+            </div>
+
+            <!-- Separator + facultatifs collapsed group -->
+            <div class="pt-2 border-t border-dashed border-slate-200">
+              <p class="text-xs italic text-slate-500 mb-4 mt-3">
+                {lang === 'fr' ? 'Les champs ci-dessous sont facultatifs - ils nous aident juste à mieux te répondre.' : 'Fields below are optional - they just help us reply better.'}
+              </p>
+
+              <div class="grid md:grid-cols-2 gap-6 mb-5">
+                <div>
+                  <label for="company" class="block text-xs font-medium text-slate-500 mb-2">
+                    {t.form.company} <span class="italic font-normal">{lang === 'fr' ? '(facultatif)' : '(optional)'}</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="company"
+                    name="company"
+                    placeholder={t.form.companyPlaceholder}
+                    class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all outline-none text-slate-700"
+                  />
+                </div>
+                <div>
+                  <label for="website" class="block text-xs font-medium text-slate-500 mb-2">
+                    {lang === 'fr' ? 'Site web' : 'Website'} <span class="italic font-normal">{lang === 'fr' ? '(facultatif)' : '(optional)'}</span>
+                  </label>
+                  <input
+                    type="url"
+                    id="website"
+                    name="website"
+                    placeholder="https://"
+                    class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all outline-none text-slate-700"
+                  />
+                </div>
+              </div>
+
+              <!-- Services chips (cliquables, facultatif) -->
+              <div>
+                <label class="block text-xs font-medium text-slate-500 mb-2">
+                  {t.form.service} <span class="italic font-normal">{lang === 'fr' ? '(facultatif)' : '(optional)'}</span>
+                </label>
+                <div class="flex flex-wrap gap-2" id="services-chips">
+                  {t.form.serviceOptions.map((option) => (
+                    <label class="cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="services"
+                        value={option}
+                        class="peer sr-only"
+                      />
+                      <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:border-slate-400 peer-checked:bg-primary-500 peer-checked:text-white peer-checked:border-primary-500 transition-all select-none">
+                        {option}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <!-- Anti-Spam Protection -->
@@ -538,10 +570,7 @@ const seo = {
       });
 
       if (response.ok) {
-        successMsg?.classList.remove('hidden');
-        form.reset();
-
-        // Track conversion in GTM
+        // Track conversion in GTM before redirect
         if (typeof window !== 'undefined' && window.dataLayer) {
           window.dataLayer.push({
             'event': 'contact_form_submit',
@@ -549,6 +578,11 @@ const seo = {
             'form_location': window.location.pathname
           });
         }
+        // Mark form as submitted to suppress form_abandon event
+        form.dataset.submitted = 'true';
+        // Redirect to thank-you page (with spam warning + nurture content)
+        window.location.href = `/${pageLang}/contact/merci`;
+        return;
       } else {
         throw new Error('Failed to send');
       }

@@ -1,0 +1,225 @@
+---
+/**
+ * Timeline30Days - Visualisation simple "ce qu'il se passe en 30 jours avec MyDigipal".
+ *
+ * 3 étapes : Week 1 (audit), Week 2 (quick wins), Week 4 (premiers résultats).
+ * But : montrer le tangible et raccourcir le sentiment "ça va prendre des mois".
+ *
+ * Animations CSS only - draw-line + reveal stagger via data-reveal foundation.
+ */
+import { type Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const isFr = lang === 'fr';
+
+const steps = isFr
+  ? [
+      {
+        when: 'Semaine 1',
+        title: 'Audit + plan d\'action',
+        desc: 'On se cale 30 min. Vous nous décrivez votre projet, on revient avec un plan personnalisé en 24h.',
+        icon: 'search',
+        color: '#6366f1',
+      },
+      {
+        when: 'Semaine 2',
+        title: 'Quick wins déployés',
+        desc: 'Tracking propre, premières optims SEO + ads, contenus IA-assistés - les premiers leviers tournent.',
+        icon: 'zap',
+        color: '#10b981',
+      },
+      {
+        when: 'Semaine 4',
+        title: 'Premiers résultats',
+        desc: 'Un dashboard partagé, des KPIs qui bougent, une routine de gouvernance hebdo. On itère ensemble.',
+        icon: 'trending-up',
+        color: '#f59e0b',
+      },
+    ]
+  : [
+      {
+        when: 'Week 1',
+        title: 'Audit + action plan',
+        desc: 'A 30-min call. You describe the project, we come back with a personalised plan within 24h.',
+        icon: 'search',
+        color: '#6366f1',
+      },
+      {
+        when: 'Week 2',
+        title: 'Quick wins shipped',
+        desc: 'Clean tracking, first SEO + ads optimisations, AI-assisted content - first levers are running.',
+        icon: 'zap',
+        color: '#10b981',
+      },
+      {
+        when: 'Week 4',
+        title: 'First measurable results',
+        desc: 'Shared dashboard, KPIs that move, weekly governance routine. We iterate together.',
+        icon: 'trending-up',
+        color: '#f59e0b',
+      },
+    ];
+
+const heading = isFr ? 'En 30 jours avec MyDigipal' : 'In 30 days with MyDigipal';
+const sub = isFr
+  ? 'Pas de SLA de 6 mois pour rien. Le travail démarre vite et se mesure vite.'
+  : 'No 6-month SLA for nothing. Work starts fast and gets measured fast.';
+---
+
+<section class="timeline30-section py-20 lg:py-24 bg-white" data-reveal>
+  <div class="container-custom">
+    <div class="text-center mb-12">
+      <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight mb-3">
+        {heading}
+      </h2>
+      <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+        {sub}
+      </p>
+    </div>
+
+    <div class="timeline-track max-w-5xl mx-auto">
+      {steps.map((s, i) => (
+        <div class="timeline-step" style={`--step-color: ${s.color}; --step-delay: ${i * 150}ms;`} data-step={i + 1}>
+          <div class="timeline-dot" aria-hidden="true">
+            <span class="timeline-dot-inner"></span>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-when">{s.when}</div>
+            <h3 class="timeline-title">{s.title}</h3>
+            <p class="timeline-desc">{s.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Desktop: horizontal track with 3 dots + connecting line */
+  .timeline-track {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .timeline-track::before {
+    content: '';
+    position: absolute;
+    top: 32px;
+    left: 12%;
+    right: 12%;
+    height: 2px;
+    background: linear-gradient(to right, #6366f1, #10b981, #f59e0b);
+    opacity: 0.25;
+    z-index: 0;
+  }
+
+  .timeline-step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    z-index: 1;
+  }
+
+  .timeline-dot {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--step-color, #6366f1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px -4px color-mix(in oklch, var(--step-color, #6366f1) 40%, transparent);
+  }
+  .timeline-dot-inner {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--step-color, #6366f1);
+    display: block;
+    animation: timelinePulse 2.4s ease-in-out infinite;
+    animation-delay: var(--step-delay, 0ms);
+  }
+
+  @keyframes timelinePulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--step-color, #6366f1) 50%, transparent); }
+    50% { box-shadow: 0 0 0 10px transparent; }
+  }
+
+  .timeline-card {
+    max-width: 26rem;
+  }
+
+  .timeline-when {
+    display: inline-block;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--step-color, #6366f1);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+
+  .timeline-title {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: rgb(15 23 42);
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+  }
+
+  .timeline-desc {
+    font-size: 14px;
+    color: rgb(71 85 105);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* Mobile: vertical timeline */
+  @media (max-width: 768px) {
+    .timeline-track {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding-left: 16px;
+    }
+    .timeline-track::before {
+      left: 32px;
+      right: auto;
+      top: 48px;
+      bottom: 48px;
+      width: 2px;
+      height: auto;
+      background: linear-gradient(to bottom, #6366f1, #10b981, #f59e0b);
+    }
+    .timeline-step {
+      flex-direction: row;
+      align-items: flex-start;
+      text-align: left;
+      gap: 16px;
+    }
+    .timeline-dot {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 0;
+    }
+    .timeline-card {
+      flex: 1;
+      padding-top: 6px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-dot-inner { animation: none !important; }
+  }
+</style>
