@@ -8,6 +8,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
 import FAQSchema from '@/components/seo/FAQSchema.astro';
 import TestimonialMarquee from '@/components/sections/TestimonialMarquee.astro';
 import MagneticButton from '@/components/ui/MagneticButton.astro';
+import NewsletterOptIn from '@/components/sections/NewsletterOptIn.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -272,7 +273,15 @@ const categoryLabels: Record<string, Record<string, string>> = {
         </div>
       </div>
     </div>
+
+    <!-- Newsletter opt-in (mid-article) -->
+    <div class="container-custom max-w-3xl mx-auto">
+      <NewsletterOptIn lang={lang} variant="inline" />
+    </div>
   </section>
+
+  <!-- Sticky newsletter opt-in (mobile only, reveals after 50% scroll) -->
+  <NewsletterOptIn lang={lang} variant="sticky" />
 
   <!-- Related Articles -->
   {relatedPosts.length > 0 && (

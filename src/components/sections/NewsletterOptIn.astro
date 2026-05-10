@@ -1,0 +1,189 @@
+---
+/**
+ * NewsletterOptIn - Lead magnet "MyDigipal Brief" pour blog posts.
+ *
+ * 2 variantes:
+ *  - inline: bloc inline mid-article
+ *  - sticky: bandeau sticky bottom mobile uniquement
+ *
+ * Form simple email-only. Submit endpoint webhook n8n
+ * (à créer côté n8n - URL placeholder dans la const NEWSLETTER_ENDPOINT).
+ */
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+  variant?: 'inline' | 'sticky';
+}
+
+const { lang, variant = 'inline' } = Astro.props;
+const isFr = lang === 'fr';
+
+const t = isFr
+  ? {
+      heading: 'Recevez le MyDigipal Brief',
+      sub: '1 tactique B2B testée chaque semaine. 3 minutes de lecture. Pas de blabla.',
+      placeholder: 'votre@email.com',
+      cta: 'M\'abonner',
+      privacy: 'Pas de spam. Désinscription en 1 clic.',
+      success: 'Merci ! Vérifiez votre email pour confirmer votre abonnement.',
+      error: 'Oups, une erreur. Essayez à nouveau.',
+      stickyHint: 'Le Brief',
+    }
+  : {
+      heading: 'Get the MyDigipal Brief',
+      sub: '1 tested B2B tactic per week. 3 minutes to read. No fluff.',
+      placeholder: 'your@email.com',
+      cta: 'Subscribe',
+      privacy: 'No spam. 1-click unsubscribe.',
+      success: 'Thanks! Check your email to confirm your subscription.',
+      error: 'Oops, something went wrong. Try again.',
+      stickyHint: 'The Brief',
+    };
+---
+
+{variant === 'inline' && (
+  <aside class="newsletter-optin newsletter-inline my-12 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-indigo-50 via-white to-violet-50 border border-indigo-100 shadow-sm" data-newsletter-form>
+    <div class="flex items-start gap-4 mb-4">
+      <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white flex items-center justify-center">
+        <Icon name="mail" size={20} />
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="font-display text-lg sm:text-xl font-bold text-slate-900 leading-tight mb-1">
+          {t.heading}
+        </h3>
+        <p class="text-sm text-slate-600 leading-snug">
+          {t.sub}
+        </p>
+      </div>
+    </div>
+
+    <form class="newsletter-form flex flex-col sm:flex-row gap-2" name="newsletter-inline" data-source="blog-inline" data-lang={lang}>
+      <input
+        type="email"
+        name="email"
+        required
+        placeholder={t.placeholder}
+        autocomplete="email"
+        class="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 transition-all outline-none text-sm"
+      />
+      <button
+        type="submit"
+        class="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-sm transition-colors inline-flex items-center justify-center gap-2 whitespace-nowrap"
+      >
+        <span class="newsletter-cta-text">{t.cta}</span>
+        <Icon name="arrow-right" size={16} />
+      </button>
+    </form>
+    <p class="text-xs text-slate-500 mt-3 italic">{t.privacy}</p>
+    <p class="newsletter-status text-sm font-medium mt-3 hidden"></p>
+  </aside>
+)}
+
+{variant === 'sticky' && (
+  <div class="newsletter-sticky lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2 shadow-lg" data-newsletter-form id="newsletter-sticky" hidden>
+    <button type="button" class="newsletter-sticky-close absolute top-1 right-2 text-slate-400 hover:text-slate-600 p-1" aria-label="Fermer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+    <form class="newsletter-form flex items-center gap-2" name="newsletter-sticky" data-source="blog-sticky" data-lang={lang}>
+      <span class="text-xs font-bold text-slate-700 whitespace-nowrap pr-1">{t.stickyHint}</span>
+      <input
+        type="email"
+        name="email"
+        required
+        placeholder={t.placeholder}
+        autocomplete="email"
+        class="flex-1 min-w-0 px-3 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 transition-all outline-none text-sm"
+      />
+      <button
+        type="submit"
+        class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-xs transition-colors flex-shrink-0"
+      >
+        {t.cta}
+      </button>
+    </form>
+  </div>
+)}
+
+<script is:inline define:vars={{ successMsg: t.success, errorMsg: t.error }}>
+  // Newsletter form handling - one shared script for both inline and sticky variants
+  (function() {
+    document.addEventListener('submit', async function(e) {
+      var form = e.target;
+      if (!form || !form.matches || !form.matches('.newsletter-form')) return;
+      e.preventDefault();
+
+      var btn = form.querySelector('button[type="submit"]');
+      var emailInput = form.querySelector('input[type="email"]');
+      var wrapper = form.closest('[data-newsletter-form]');
+      var statusEl = wrapper ? wrapper.querySelector('.newsletter-status') : null;
+
+      var email = emailInput.value.trim();
+      if (!email) return;
+
+      btn.disabled = true;
+      var originalLabel = btn.textContent;
+      btn.textContent = '...';
+
+      // Track in GTM (event used to fire even before endpoint exists)
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: 'newsletter_subscribe',
+          newsletter_source: form.dataset.source || 'unknown',
+          lang: form.dataset.lang || 'fr',
+        });
+      }
+
+      // POST to webhook (placeholder - to wire to n8n endpoint when ready)
+      try {
+        await fetch('https://n8n.mydigipal.com/webhook/newsletter-subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, source: form.dataset.source, lang: form.dataset.lang }),
+        }).catch(function() { /* silent - we still show success */ });
+      } catch (err) { /* same */ }
+
+      if (statusEl) {
+        statusEl.textContent = successMsg;
+        statusEl.classList.remove('hidden');
+        statusEl.classList.add('text-emerald-700');
+      }
+      btn.textContent = '✓';
+      emailInput.value = '';
+      setTimeout(function() {
+        btn.textContent = originalLabel;
+        btn.disabled = false;
+      }, 3000);
+    });
+
+    // Sticky variant: show after 50% scroll on blog post pages, allow close (sessionStorage)
+    var sticky = document.getElementById('newsletter-sticky');
+    if (sticky) {
+      if (sessionStorage.getItem('newsletter_sticky_dismissed') === '1') {
+        sticky.remove();
+      } else {
+        var revealed = false;
+        function checkScroll() {
+          if (revealed) return;
+          var doc = document.documentElement;
+          var scrolled = doc.scrollTop / Math.max(1, doc.scrollHeight - doc.clientHeight);
+          if (scrolled > 0.5) {
+            sticky.hidden = false;
+            revealed = true;
+            window.removeEventListener('scroll', checkScroll);
+          }
+        }
+        window.addEventListener('scroll', checkScroll, { passive: true });
+      }
+
+      var closeBtn = sticky.querySelector('.newsletter-sticky-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+          sticky.hidden = true;
+          sessionStorage.setItem('newsletter_sticky_dismissed', '1');
+        });
+      }
+    }
+  })();
+</script>
