@@ -7,6 +7,8 @@ import HowWeWork from './HowWeWork';
 import TrackingJourney from './TrackingJourney';
 import PerformanceEstimation from './PerformanceEstimation';
 import ChannelCard from './ChannelCard';
+import StickySummary from './StickySummary';
+import CaptureModal from './CaptureModal';
 import {
   domainConfigs,
   BUDGET_CONFIG,
@@ -185,6 +187,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const [contact, setContact] = useState<ContactInfo>({ name: '', email: '', company: '', phone: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  // V5.2 capture modal (replaces inline form at bottom)
+  const [showCaptureModal, setShowCaptureModal] = useState(false);
+  const [callPreference, setCallPreference] = useState(false);
 
   // Anti-spam protection
   const [mathAnswer, setMathAnswer] = useState('');
@@ -450,6 +456,89 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     return selectedDomains.some(d => servicesThatNeedTracking.includes(d)) || selectedDomains.includes('tracking-reporting');
   }, [selectedDomains]);
 
+  // V5.2 sticky summary: per-domain lines (monthly + one-off subtotals)
+  const domainLines = useMemo(() => {
+    const lines: Array<{ id: string; name: string; icon: string; monthly: number; oneOff: number; isNotSure?: boolean }> = [];
+
+    selectedDomains.forEach(domainId => {
+      if (domainId === 'tracking-reporting') return;
+      const config = domainConfigs[domainId];
+      if (!config) return;
+      if (dismissedDomains[domainId]) return;
+
+      const baseLine = {
+        id: domainId,
+        name: lang === 'fr' ? config.nameFr : config.name,
+        icon: config.icon,
+        monthly: 0,
+        oneOff: 0,
+      };
+
+      if (notSureAbout[domainId]) {
+        lines.push({ ...baseLine, isNotSure: true });
+        return;
+      }
+
+      if (domainId === 'ai-training') {
+        if (aiTrainingActivated && aiTraining.format && aiTraining.sessions) {
+          const tier = aiTraining.sessions === '1' ? aiTrainingPricing.single : aiTrainingPricing.bulk;
+          const base = aiTraining.format === 'full-day' ? tier.fullDay.price : tier.halfDay.price;
+          const mult = aiTraining.sessions === '5+' ? sessionCount : 1;
+          baseLine.oneOff = base * mult + (aiTraining.inPerson ? 500 : 0);
+        }
+        if (baseLine.oneOff > 0) lines.push(baseLine);
+        return;
+      }
+
+      // Management fee + ad budget for ads domains
+      if (config.hasBudgetSlider && config.hasTieredManagementFee && budgetActivated[domainId as 'google-ads' | 'paid-social']) {
+        const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
+        const nbCh = getNbChannelsForDomain(domainId as 'google-ads' | 'paid-social');
+        const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget, nbCh);
+        baseLine.monthly += feeResult.fee;
+      }
+
+      // Service prices
+      config.services.forEach(service => {
+        const level = selections[service.id];
+        if (level !== null && level !== undefined && !disabledServices[service.id]) {
+          const lvl = service.levels[level];
+          if (lvl) {
+            const price = getServicePrice(service, lvl.price, domainId);
+            if (service.isOneOff) baseLine.oneOff += price;
+            else baseLine.monthly += price;
+          }
+        }
+      });
+
+      // CMS addon for SEO
+      if (domainId === 'seo' && cmsAddon && selections['seo-content'] !== null) {
+        baseLine.monthly += 100;
+      }
+
+      if (baseLine.monthly > 0 || baseLine.oneOff > 0) lines.push(baseLine);
+    });
+
+    // Tracking line (if user has tracking selected)
+    if (selectedDomains.includes('tracking-reporting') || trackingAudit || Object.values(trackingSelections).some(Boolean) || trackingNotSure) {
+      let trackOneOff = 0;
+      if (!trackingDismissed && !trackingNotSure) {
+        if (trackingAudit) trackOneOff += trackingAuditOption.price;
+        trackingServices.forEach(s => { if (trackingSelections[s.id]) trackOneOff += s.price; });
+      }
+      lines.push({
+        id: 'tracking',
+        name: 'Tracking & Reporting',
+        icon: '📊',
+        monthly: 0,
+        oneOff: trackOneOff,
+        isNotSure: trackingNotSure,
+      });
+    }
+
+    return lines;
+  }, [selectedDomains, dismissedDomains, notSureAbout, selections, disabledServices, adBudgets, budgetActivated, aiTraining, aiTrainingActivated, sessionCount, cmsAddon, trackingSelections, trackingAudit, trackingNotSure, trackingDismissed, lang, getServicePrice, getNbChannelsForDomain]);
+
   // Check if user has selected any marketing channel with actual selections (not just "I'm not sure")
   const hasActualMarketingSelections = useMemo(() => {
     return selectedDomains.some(d =>
@@ -676,6 +765,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     const payload = {
       report_type: 'quote',
       contact,
+      callPreference,
       selectedDomains,
       notSureAbout: Object.fromEntries(
         Object.entries(notSureAbout).filter(([_, v]) => v)
@@ -710,8 +800,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       } : null,
       metadata: {
         timestamp: new Date().toISOString(),
-        source: 'marketing-calculator-v5',
+        source: 'marketing-calculator-v5.2',
         usedGuidedMode: !!guidedRec,
+        callPreference,
         lang
       }
     };
@@ -807,6 +898,26 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
     await doSubmit();
   }, [isSubmitting, hasActualMarketingSelections, hasTrackingSelected, trackingPopupDismissed, doSubmit, honeypot, formLoadTime, mathAnswer, mathChallenge.answer, lang]);
+
+  // V5.2 modale capture submit: lighter (no math challenge, just honeypot + timing)
+  const handleModalSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+    setAntiSpamError('');
+    if (honeypot.trim() !== '') {
+      console.warn('AntiSpam: Honeypot triggered');
+      return;
+    }
+    const elapsed = (Date.now() - formLoadTime) / 1000;
+    if (elapsed < 3) return;
+    // Tracking popup interception (preserved)
+    if (hasActualMarketingSelections && !hasTrackingSelected && !trackingPopupDismissed) {
+      setShowCaptureModal(false);
+      setShowTrackingPopup(true);
+      return;
+    }
+    await doSubmit();
+  }, [isSubmitting, hasActualMarketingSelections, hasTrackingSelected, trackingPopupDismissed, doSubmit, honeypot, formLoadTime]);
 
   // Request full performance report (lightweight lead gen from PerformanceEstimation)
   const requestFullReport = useCallback(async (lead: { name: string; email: string; company: string; message?: string }) => {
@@ -1055,63 +1166,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
   // Configuration step
   return (
-    <div className="min-h-[600px]">
-      {/* Sticky top bar with totals */}
-      {hasSelections && (
-        <div className="sticky top-16 z-40 -mx-4 px-3 sm:px-4 py-2 sm:py-3 mb-6 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
-          <div className="flex items-center justify-between gap-2 sm:gap-4 max-w-5xl mx-auto flex-wrap">
-            <div className="flex items-center gap-3 sm:gap-6">
-              {/* Monthly */}
-              <div className="text-left">
-                <p className="text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-wide leading-none">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</p>
-                <p className="text-base sm:text-xl font-bold text-slate-900 leading-tight">
-                  {pricing.hasCustomQuote ? (
-                    <span className="text-amber-600 text-xs sm:text-base">{lang === 'fr' ? 'Sur devis' : 'Custom'}</span>
-                  ) : (
-                    <>{fp(Math.round(pricing.totalMonthlyWithoutBudget))}</>
-                  )}
-                </p>
-              </div>
-              {/* One-off */}
-              {pricing.oneOffTotal > 0 && (
-                <div className="text-left border-l border-slate-200 pl-3 sm:pl-6">
-                  <p className="text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-wide leading-none">{lang === 'fr' ? 'One-off' : 'One-time'}</p>
-                  <p className="text-base sm:text-xl font-bold text-emerald-600 leading-tight">
-                    {fp(Math.round(pricing.oneOffTotal))}
-                  </p>
-                </div>
-              )}
-            </div>
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Currency selector - icons only on mobile */}
-              <div className="flex items-center bg-slate-100 rounded-lg p-0.5">
-                {(['EUR', 'USD', 'GBP'] as Currency[]).map(c => (
-                  <button
-                    key={c}
-                    onClick={() => setCurrency(c)}
-                    aria-label={c}
-                    className={`px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
-                      currency === c
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-700'
-                    }`}
-                  >
-                    <span className="sm:hidden">{CURRENCY_CONFIGS[c].symbol}</span>
-                    <span className="hidden sm:inline">{CURRENCY_CONFIGS[c].symbol} {c}</span>
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={() => setShowSummaryPopup(true)}
-                className="px-3 sm:px-5 py-2 sm:py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-xs sm:text-sm whitespace-nowrap"
-              >
-                <span className="sm:hidden">{lang === 'fr' ? 'Récap' : 'Summary'}</span>
-                <span className="hidden sm:inline">{t.viewSummary}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+    <div className="min-h-[600px] lg:pr-[336px]">
+      {/* V5.2: Sticky bar TOP replaced by StickySummary right card + mobile bottom bar (rendered at end of JSX) */}
 
       {/* Back button header */}
       <div className="mb-8">
@@ -2281,90 +2337,29 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               )}
             </div>
 
-            {/* Contact form */}
+            {/* V5.2: form inline replaced by CTA -> modale (anti-spam preserved via hidden honeypot) */}
+            <div className="absolute -left-[9999px] opacity-0 h-0 overflow-hidden" aria-hidden="true">
+              <input
+                type="text"
+                name="website_url"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
             {!submitted ? (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <h4 className="text-lg font-semibold">{t.receiveQuote}</h4>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder={t.name}
-                    value={contact.name}
-                    onChange={(e) => setContact(prev => ({ ...prev, name: e.target.value }))}
-                    required
-                    className="px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                  />
-                  <input
-                    type="email"
-                    placeholder={t.email}
-                    value={contact.email}
-                    onChange={(e) => setContact(prev => ({ ...prev, email: e.target.value }))}
-                    required
-                    className="px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                  />
-                </div>
-                <input
-                  type="text"
-                  placeholder={t.company}
-                  value={contact.company}
-                  onChange={(e) => setContact(prev => ({ ...prev, company: e.target.value }))}
-                  required
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                />
-
-                {/* Message libre (optionnel) */}
-                <textarea
-                  placeholder={lang === 'fr'
-                    ? 'Un message ou une question ? (optionnel)'
-                    : 'A message or question? (optional)'}
-                  value={contact.message || ''}
-                  onChange={(e) => setContact(prev => ({ ...prev, message: e.target.value }))}
-                  rows={3}
-                  maxLength={500}
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent resize-none"
-                />
-
-                {/* Anti-spam: Math challenge */}
-                <div>
-                  <label className="block text-sm text-slate-300 mb-2">
-                    {lang === 'fr' ? 'Vérification de sécurité' : 'Security check'}:{' '}
-                    <span className="font-mono bg-white/10 px-2 py-1 rounded text-blue-300">
-                      {mathChallenge.num1} {mathChallenge.operator} {mathChallenge.num2} = ?
-                    </span>
-                  </label>
-                  <input
-                    type="number"
-                    placeholder={lang === 'fr' ? 'Votre réponse' : 'Your answer'}
-                    value={mathAnswer}
-                    onChange={(e) => { setMathAnswer(e.target.value); setAntiSpamError(''); }}
-                    required
-                    className="w-32 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                  />
-                  {antiSpamError && (
-                    <p className="mt-2 text-red-400 text-sm">{antiSpamError}</p>
-                  )}
-                </div>
-
-                {/* Anti-spam: Honeypot (hidden) */}
-                <div className="absolute -left-[9999px] opacity-0 h-0 overflow-hidden" aria-hidden="true">
-                  <input
-                    type="text"
-                    name="website_url"
-                    value={honeypot}
-                    onChange={(e) => setHoneypot(e.target.value)}
-                    tabIndex={-1}
-                    autoComplete="off"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting || !contact.name || !contact.email || !contact.company || !mathAnswer}
-                  className="w-full py-4 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? t.sending : t.send}
-                </button>
-              </form>
+              <button
+                type="button"
+                onClick={() => setShowCaptureModal(true)}
+                className="w-full inline-flex items-center justify-center gap-3 py-4 px-6 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-lg"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22 6 12 13 2 6" />
+                </svg>
+                {lang === 'fr' ? 'Recevoir ce plan par email' : 'Get this plan by email'}
+              </button>
             ) : (
               <div className="text-center py-8">
                 <div className="text-4xl mb-4">✅</div>
@@ -2416,10 +2411,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               <div className="flex justify-center mb-10">
                 <button
                   type="button"
-                  onClick={() => {
-                    const form = document.querySelector('form');
-                    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  }}
+                  onClick={() => setShowCaptureModal(true)}
                   className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-br from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -2760,9 +2752,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 <button
                   onClick={() => {
                     setShowSummaryPopup(false);
-                    // Scroll to contact form
-                    const form = document.querySelector('form');
-                    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setShowCaptureModal(true);
                   }}
                   className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
                 >
@@ -2773,6 +2763,37 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           </div>
         </div>
       )}
+
+      {/* V5.2: Sticky summary card right (desktop) + bottom bar (mobile) */}
+      <StickySummary
+        lang={lang}
+        currency={currency}
+        setCurrency={setCurrency}
+        pricing={pricing as any}
+        domainLines={domainLines}
+        hasSelections={hasSelections}
+        hasActualSelections={hasActualSelections}
+        hasNotSureSelections={hasNotSureSelections}
+        onRequestPlan={() => setShowCaptureModal(true)}
+      />
+
+      {/* V5.2: Capture modal */}
+      <CaptureModal
+        open={showCaptureModal}
+        onClose={() => setShowCaptureModal(false)}
+        lang={lang}
+        currency={currency}
+        pricing={pricing as any}
+        domainLines={domainLines}
+        hasActualSelections={hasActualSelections}
+        isSubmitting={isSubmitting}
+        submitted={submitted}
+        contact={contact}
+        setContact={setContact}
+        callPreference={callPreference}
+        setCallPreference={setCallPreference}
+        onSubmit={handleModalSubmit}
+      />
     </div>
   );
 }
