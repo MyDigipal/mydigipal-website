@@ -63,13 +63,13 @@ export default function StickySummary({
 
   return (
     <>
-      {/* === DESKTOP: floating card right === */}
+      {/* === DESKTOP: sticky card aligned to grid column right === */}
       <aside
-        className="hidden lg:flex fixed z-40 flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 backdrop-blur-md shadow-2xl p-5"
+        className="hidden lg:flex z-40 flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 backdrop-blur-md shadow-2xl p-5"
         style={{
-          width: '300px',
+          position: 'sticky',
           top: '120px',
-          right: '24px',
+          alignSelf: 'start',
           maxHeight: 'calc(100vh - 160px)',
           overflowY: 'auto',
         }}

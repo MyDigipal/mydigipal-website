@@ -1212,8 +1212,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
   // Configuration step
   return (
-    <div className="min-h-[600px] lg:pr-[336px]">
-      {/* V5.2: Sticky bar TOP replaced by StickySummary right card + mobile bottom bar (rendered at end of JSX) */}
+    <div className="min-h-[600px] lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:items-start">
+      <div className="min-w-0">
+      {/* V5.5: layout grid 2 colonnes : main content gauche, StickySummary droite en sticky (au lieu de fixed) */}
 
       {/* Back button header */}
       <div className="mb-8">
@@ -2836,7 +2837,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         </div>
       )}
 
-      {/* V5.2: Sticky summary card right (desktop) + bottom bar (mobile) */}
+      </div>{/* end of main content column */}
+
+      {/* V5.5: Sticky summary card - second column on desktop grid, fixed bottom bar on mobile */}
       <StickySummary
         lang={lang}
         currency={currency}
@@ -2849,7 +2852,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         onRequestPlan={() => setShowCaptureModal(true)}
       />
 
-      {/* V5.2: Capture modal */}
+      {/* V5.2: Capture modal - rendered outside grid (modal portal-like) */}
       <CaptureModal
         open={showCaptureModal}
         onClose={() => setShowCaptureModal(false)}
