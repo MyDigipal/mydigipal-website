@@ -188,25 +188,19 @@ export const MANAGEMENT_FEE_CONFIG = {
     { maxBudget: 12500, type: 'percentage' as const, value: 15, description: TIER_DESC.degressiveMedium.fr, descriptionEn: TIER_DESC.degressiveMedium.en },
     { maxBudget: Infinity, type: 'custom' as const, value: 0, description: TIER_DESC.custom.fr, descriptionEn: TIER_DESC.custom.en }
   ],
-  // Google Ads: degressive scale up to 50k (Search Performance scales well)
+  // Google Ads (V5.4 : plancher 12% applique a tout >= 12500, plus de palier Custom Quote)
   googleAds: [
     { maxBudget: 2500, type: 'flat' as const, value: 500, description: TIER_DESC.flatMin.fr, descriptionEn: TIER_DESC.flatMin.en },
     { maxBudget: 7500, type: 'percentage' as const, value: 20, description: TIER_DESC.proportional.fr, descriptionEn: TIER_DESC.proportional.en },
     { maxBudget: 12500, type: 'percentage' as const, value: 15, description: TIER_DESC.degressiveMedium.fr, descriptionEn: TIER_DESC.degressiveMedium.en },
-    { maxBudget: 25000, type: 'percentage' as const, value: 12, description: TIER_DESC.degressiveLarge.fr, descriptionEn: TIER_DESC.degressiveLarge.en },
-    { maxBudget: 40000, type: 'percentage' as const, value: 10, description: TIER_DESC.degressiveLarge.fr, descriptionEn: TIER_DESC.degressiveLarge.en },
-    { maxBudget: 50001, type: 'percentage' as const, value: 8, description: TIER_DESC.degressiveXLarge.fr, descriptionEn: TIER_DESC.degressiveXLarge.en },
-    { maxBudget: Infinity, type: 'custom' as const, value: 0, description: TIER_DESC.custom.fr, descriptionEn: TIER_DESC.custom.en }
+    { maxBudget: Infinity, type: 'percentage' as const, value: 12, description: TIER_DESC.degressiveLarge.fr, descriptionEn: TIER_DESC.degressiveLarge.en }
   ],
-  // Paid Social: degressive scale further (channel multiplier already covers complexity)
+  // Paid Social (V5.4 : plancher 12% aussi, channel multiplier ajoute deja a la complexite)
   paidSocial: [
     { maxBudget: 2500, type: 'flat' as const, value: 500, description: TIER_DESC.flatMin.fr, descriptionEn: TIER_DESC.flatMin.en },
     { maxBudget: 7500, type: 'percentage' as const, value: 20, description: TIER_DESC.proportional.fr, descriptionEn: TIER_DESC.proportional.en },
-    { maxBudget: 10000, type: 'percentage' as const, value: 15, description: TIER_DESC.degressiveMedium.fr, descriptionEn: TIER_DESC.degressiveMedium.en },
-    { maxBudget: 15000, type: 'percentage' as const, value: 13, description: TIER_DESC.degressiveLarge.fr, descriptionEn: TIER_DESC.degressiveLarge.en },
-    { maxBudget: 25000, type: 'percentage' as const, value: 11, description: TIER_DESC.degressiveLarge.fr, descriptionEn: TIER_DESC.degressiveLarge.en },
-    { maxBudget: 50001, type: 'percentage' as const, value: 9, description: TIER_DESC.degressiveXLarge.fr, descriptionEn: TIER_DESC.degressiveXLarge.en },
-    { maxBudget: Infinity, type: 'custom' as const, value: 0, description: TIER_DESC.custom.fr, descriptionEn: TIER_DESC.custom.en }
+    { maxBudget: 12500, type: 'percentage' as const, value: 15, description: TIER_DESC.degressiveMedium.fr, descriptionEn: TIER_DESC.degressiveMedium.en },
+    { maxBudget: Infinity, type: 'percentage' as const, value: 12, description: TIER_DESC.degressiveLarge.fr, descriptionEn: TIER_DESC.degressiveLarge.en }
   ]
 } as const;
 

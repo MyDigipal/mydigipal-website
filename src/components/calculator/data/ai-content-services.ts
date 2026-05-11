@@ -42,6 +42,35 @@ export const aiContentServices: ServiceItem[] = [
         conclusion: 'Formé sur VOTRE voix de marque. Pas du ChatGPT générique.'
       }
     },
+    detailedInfoEn: {
+      title: 'SEO Articles - What exactly is it?',
+      content: {
+        intro: 'Quality content produced at scale through our proprietary AI pipeline, with systematic human validation.',
+        sections: [
+          {
+            title: 'Our 4-step process',
+            items: [
+              '1. Brand Voice Training: analysis of 10+ existing pieces of content to capture your tone',
+              '2. Data-driven strategy: Ahrefs + Search Console integration to identify opportunities',
+              '3. AI generation: structured articles (H1-H6, meta, FAQ, internal links)',
+              '4. Human validation: proofreading, fact-checking, final optimization'
+            ]
+          },
+          {
+            title: 'Each article includes',
+            items: [
+              'Meta title (max 60 characters) + meta description (max 155)',
+              'H1 structure + 4-7 optimized H2',
+              'Primary keyword + ~5 secondary keywords',
+              '8-12 internal links',
+              'FAQ section for featured snippets',
+              'Natural keyword density (1-2%)'
+            ]
+          }
+        ],
+        conclusion: 'Trained on YOUR brand voice. Not generic ChatGPT.'
+      }
+    },
     levels: [
       {
         name: '4 articles',
@@ -139,6 +168,35 @@ export const aiContentServices: ServiceItem[] = [
           }
         ],
         conclusion: '50+ clients servis dont Genesys, Quantum Metrics, OpenText, Edenred.'
+      }
+    },
+    detailedInfoEn: {
+      title: 'Social Content & Landing Pages - What exactly is it?',
+      content: {
+        intro: 'Varied content for every channel, with the same quality and brand consistency.',
+        sections: [
+          {
+            title: 'Content types available',
+            items: [
+              'LinkedIn posts (thought leadership, engagement)',
+              'Instagram/Facebook posts (carousels, stories)',
+              'High-conversion landing pages (headlines, benefits, CTA)',
+              'Case studies (problem-solution-results)',
+              'SEO-friendly product descriptions',
+              'Email nurturing sequences'
+            ]
+          },
+          {
+            title: 'Delivery formats',
+            items: [
+              'Google Docs / Word / Notion / Plain text',
+              'Direct CMS publishing (WordPress, Webflow, Shopify)',
+              'Social scheduling (LinkedIn, Twitter/X)',
+              'Canva-ready exports for visuals'
+            ]
+          }
+        ],
+        conclusion: '50+ clients served including Genesys, Quantum Metrics, OpenText, Edenred.'
       }
     },
     levels: [

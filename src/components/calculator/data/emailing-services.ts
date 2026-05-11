@@ -45,6 +45,38 @@ export const emailingServices: ServiceItem[] = [
         conclusion: 'Résultat : +760% de revenus en moyenne grâce à une segmentation pertinente.'
       }
     },
+    detailedInfoEn: {
+      title: 'Campaign Management - What exactly is it?',
+      content: {
+        intro: 'We handle the full execution of your email campaigns so you can focus on your business.',
+        sections: [
+          {
+            title: 'What\'s included',
+            items: [
+              'Monthly editorial calendar',
+              'Copywriting (subject, content, CTA)',
+              'Responsive email design',
+              'Campaign scheduling and sending',
+              'Systematic A/B testing (subjects, content, timing)',
+              'Deliverability monitoring',
+              'Unsubscribe and list management',
+              'Monthly reporting with recommendations'
+            ]
+          },
+          {
+            title: 'Types of emails managed',
+            items: [
+              'Regular newsletters',
+              'Sales emails and promotions',
+              'Automated nurturing sequences',
+              'Transactional emails',
+              'Event-based campaigns'
+            ]
+          }
+        ],
+        conclusion: 'Result: +760% revenue on average through relevant segmentation.'
+      }
+    },
     levels: [
       {
         name: 'Essentiel',
@@ -160,6 +192,44 @@ export const emailingServices: ServiceItem[] = [
           }
         ],
         conclusion: 'Prix dégressif : tarif unitaire plus avantageux à partir de 500 contacts puis de 2500 contacts.'
+      }
+    },
+    detailedInfoEn: {
+      title: 'Contact Acquisition - What exactly is it?',
+      content: {
+        intro: 'Verified, qualified contacts to fuel your email campaigns, LinkedIn outreach or phone campaigns. Volume-based discount on the unit price.',
+        sections: [
+          {
+            title: 'Available contact types',
+            items: [
+              '📧 Email: verified professional address (bounce rate < 5%)',
+              '🤖 Email + AI: email + AI enrichment (automatic message personalization)',
+              '📞 Phone: verified direct number (for cold call / SMS campaigns)'
+            ]
+          },
+          {
+            title: 'Available targeting criteria',
+            items: [
+              'Job function / Title (CEO, CMO, CTO...)',
+              'Company size (SMB, mid-market, enterprise)',
+              'Industry and sub-industry',
+              'Geographic location',
+              'Technographics (tech stack)',
+              'Buying intent signals'
+            ]
+          },
+          {
+            title: 'What we guarantee',
+            items: [
+              'GDPR-compliant opt-in contacts',
+              'Verified data (bounce rate < 5%)',
+              'Enriched data (LinkedIn, company data)',
+              'Bounce replacement',
+              'CSV/Excel format or direct import'
+            ]
+          }
+        ],
+        conclusion: 'Volume discount: better unit price from 500 contacts and again from 2,500 contacts.'
       }
     },
     // Single placeholder level - real pricing computed dynamically via CONTACT_PRICING_CONFIG

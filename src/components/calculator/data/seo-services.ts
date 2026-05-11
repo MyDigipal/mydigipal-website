@@ -45,6 +45,37 @@ export const seoServices: ServiceItem[] = [
         conclusion: 'Livrable : Rapport d\'audit complet avec recommandations actionnables et plan d\'action.'
       }
     },
+    detailedInfoEn: {
+      title: 'SEO Audit - What exactly is it?',
+      content: {
+        intro: 'A complete diagnostic of your online presence and your organic growth opportunities.',
+        sections: [
+          {
+            title: 'What we analyze',
+            items: [
+              'Technical performance (Core Web Vitals, speed, mobile)',
+              'Site architecture and URL structure',
+              'Metadata (titles, descriptions, H1-H6)',
+              'Internal linking and navigation',
+              'Indexing, sitemap.xml, robots.txt',
+              '404 errors, redirects, broken links',
+              'Analysis of your direct competitors',
+              'High-potential keyword research'
+            ]
+          },
+          {
+            title: 'Premium version - Additional',
+            items: [
+              'In-depth analysis of 100+ keywords',
+              'Backlink audit and link profile review',
+              '6-month prioritized action roadmap',
+              'Detailed competitive benchmark'
+            ]
+          }
+        ],
+        conclusion: 'Deliverable: Complete audit report with actionable recommendations and action plan.'
+      }
+    },
     levels: [
       {
         name: 'Essentiel',
@@ -151,6 +182,43 @@ export const seoServices: ServiceItem[] = [
           }
         ],
         conclusion: 'Résultat moyen : +68% de trafic organique après 6 mois de publication régulière.'
+      }
+    },
+    detailedInfoEn: {
+      title: 'Monthly SEO Management - What exactly is it?',
+      content: {
+        intro: 'Complete management to grow your organic traffic month after month.',
+        sections: [
+          {
+            title: 'Strategy and steering',
+            items: [
+              'Ongoing keyword and opportunity research',
+              'Position and performance tracking',
+              'Optimization of existing pages',
+              'Internal linking improvements',
+              'Competitive monitoring'
+            ]
+          },
+          {
+            title: 'AI-optimized content creation',
+            items: [
+              'SEO articles produced with our proprietary AI system',
+              'Optimal structure (H1, H2, FAQ, Schema)',
+              'AI writing personalized to your brand voice',
+              'Human proofreading and validation',
+              'LLMO optimization (ChatGPT, Perplexity, Gemini)'
+            ]
+          },
+          {
+            title: 'Tracking and collaboration',
+            items: [
+              'Regular reporting with key KPIs',
+              'Meetings to discuss results and priorities',
+              'Email support for your SEO questions'
+            ]
+          }
+        ],
+        conclusion: 'Average result: +68% organic traffic after 6 months of regular publishing.'
       }
     },
     levels: [

@@ -45,6 +45,34 @@ export const paidSocialServices: ServiceItem[] = [
         conclusion: 'Des créatives qui convertissent, pas juste qui font joli.'
       }
     },
+    detailedInfoEn: {
+      title: 'Visual Creation - What exactly is it?',
+      content: {
+        intro: 'High-performing creatives are essential - they account for 50-70% of a campaign\'s performance.',
+        sections: [
+          {
+            title: 'What we produce',
+            items: [
+              'Static visuals (carousels, singles, stories)',
+              'Short videos (Reels, TikTok, Stories)',
+              'Animations and motion design',
+              'Variations per format and platform',
+              'UGC-style content'
+            ]
+          },
+          {
+            title: 'Our approach',
+            items: [
+              'Creative brief aligned with your goals',
+              'Adapted to each platform\'s best practices',
+              'Continuous creative testing (winner/challenger)',
+              'Regular refresh to avoid ad fatigue'
+            ]
+          }
+        ],
+        conclusion: 'Creatives that convert, not just look good.'
+      }
+    },
     levels: [
       {
         name: 'Essentiel',
@@ -145,6 +173,36 @@ export const paidSocialServices: ServiceItem[] = [
           }
         ],
         conclusion: 'Indispensable pour le e-commerce et les concessionnaires automobiles.'
+      }
+    },
+    detailedInfoEn: {
+      title: 'Catalogue & Feed Management - What exactly is it?',
+      content: {
+        intro: 'Your products or vehicles automatically synced and optimized across every ad platform.',
+        sections: [
+          {
+            title: 'What we set up',
+            items: [
+              'Source data feed import and transformation',
+              'Field mapping to required format (Meta, Google)',
+              'Automated daily synchronization',
+              'Title and description optimization for performance',
+              'Image and media handling',
+              'Monitoring and error alerts'
+            ]
+          },
+          {
+            title: 'Supported platforms',
+            items: [
+              'Meta Catalogue (Facebook Dynamic Ads, Instagram Shopping)',
+              'Google Merchant Center (Google Shopping, Performance Max)',
+              'Leboncoin (automotive feed)',
+              'TikTok Catalog',
+              'Others on request'
+            ]
+          }
+        ],
+        conclusion: 'Essential for e-commerce and automotive dealerships.'
       }
     },
     levels: [

@@ -1502,16 +1502,19 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                     <div>
                                       <div className="flex items-center gap-1">
                                         <h3 className="font-bold text-slate-900">{lang === 'fr' ? service.title : (service.titleEn || service.title)}</h3>
-                                        {service.detailedInfo && (
-                                          <Tooltip
-                                            lang={lang}
-                                            icon={service.icon}
-                                            title={service.detailedInfo.title}
-                                            intro={service.detailedInfo.content.intro}
-                                            sections={service.detailedInfo.content.sections as any}
-                                            conclusion={service.detailedInfo.content.conclusion}
-                                          />
-                                        )}
+                                        {service.detailedInfo && (() => {
+                                          const di = (lang === 'en' && service.detailedInfoEn) ? service.detailedInfoEn : service.detailedInfo;
+                                          return (
+                                            <Tooltip
+                                              lang={lang}
+                                              icon={service.icon}
+                                              title={di.title}
+                                              intro={di.content.intro}
+                                              sections={di.content.sections as any}
+                                              conclusion={di.content.conclusion}
+                                            />
+                                          );
+                                        })()}
                                       </div>
                                       <p className="text-sm text-slate-600">{lang === 'fr' ? service.description : (service.descriptionEn || service.description)}</p>
                                       {service.setupNote && (

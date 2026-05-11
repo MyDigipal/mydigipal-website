@@ -53,7 +53,9 @@ export interface ServiceItem {
   hasAddon?: boolean;
   hasBudgetFee?: boolean;
   detailedInfo?: DetailedInfo;
+  detailedInfoEn?: DetailedInfo;
   roiInfo?: DetailedInfo;
+  roiInfoEn?: DetailedInfo;
   // Dynamic per-channel pricing : final price = pricePerChannel × nbSelectedChannels
   // The single level "price" acts as fallback / starting price for 1 channel
   dynamicPricing?: {

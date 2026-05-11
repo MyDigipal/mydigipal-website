@@ -68,6 +68,34 @@ export const aiSolutionsServices: ServiceItem[] = [
         conclusion: 'Livrable : Chatbot déployé, documenté et testé. Formation de votre équipe incluse.'
       }
     },
+    detailedInfoEn: {
+      title: 'AI Chatbot - What exactly is it?',
+      content: {
+        intro: 'A custom AI assistant that answers your customer and prospect questions based on your knowledge base.',
+        sections: [
+          {
+            title: 'What we build',
+            items: [
+              'Chatbot trained on your documentation (FAQ, guides, products)',
+              'Integration on your website (custom widget)',
+              'Context and intent understanding',
+              'Escalation to a human when needed',
+              'Multilingual (FR/EN and others on request)'
+            ]
+          },
+          {
+            title: 'Technologies used',
+            items: [
+              'Claude / GPT with RAG (Retrieval Augmented Generation)',
+              'Vector knowledge base',
+              'N8N or Make for integrations',
+              'Custom API where needed'
+            ]
+          }
+        ],
+        conclusion: 'Deliverable: Deployed, documented and tested chatbot. Team training included.'
+      }
+    },
     levels: [
       {
         name: 'Essentiel',
@@ -176,6 +204,35 @@ export const aiSolutionsServices: ServiceItem[] = [
         conclusion: 'ROI typique : 10-20h/mois économisées par workflow automatisé.'
       }
     },
+    detailedInfoEn: {
+      title: 'Workflow Automation - What exactly is it?',
+      content: {
+        intro: 'We identify and automate the repetitive tasks that drain your time, with AI workflows connected to your tools.',
+        sections: [
+          {
+            title: 'Automation examples',
+            items: [
+              'Automatic processing of incoming leads',
+              'CRM data enrichment',
+              'Automated report generation',
+              'Sync between tools (CRM, email, billing)',
+              'Smart alerts and notifications',
+              'Document extraction and classification'
+            ]
+          },
+          {
+            title: 'Technologies used',
+            items: [
+              'N8N (self-hosted, secure)',
+              'Make / Zapier',
+              'Direct APIs when needed',
+              'Claude / GPT for intelligence'
+            ]
+          }
+        ],
+        conclusion: 'Typical ROI: 10-20 hours/month saved per automated workflow.'
+      }
+    },
     levels: [
       {
         name: 'Essentiel',
@@ -270,6 +327,26 @@ export const aiSolutionsServices: ServiceItem[] = [
           }
         ],
         conclusion: 'Gardez vos solutions IA à jour et performantes.'
+      }
+    },
+    detailedInfoEn: {
+      title: 'AI Maintenance - What exactly is it?',
+      content: {
+        intro: 'Your AI solutions need ongoing care to stay performant and evolve with your needs.',
+        sections: [
+          {
+            title: 'What\'s included',
+            items: [
+              'Performance monitoring',
+              'Model and knowledge base updates',
+              'Bug fixes and optimizations',
+              'Addition of minor new features',
+              'Email technical support',
+              'Monthly usage reporting'
+            ]
+          }
+        ],
+        conclusion: 'Keep your AI solutions up to date and performing well.'
       }
     },
     levels: [
