@@ -9,12 +9,10 @@ const { lang } = Astro.props;
 
 const text = lang === 'fr' ? 'Calculer mon budget' : 'Calculate my budget';
 const textShort = lang === 'fr' ? 'Mon budget' : 'My budget';
-const auditText = lang === 'fr' ? 'Audit gratuit' : 'Free audit';
 
 // Don't show on calculator page
 const currentPath = Astro.url.pathname;
 const isCalculatorPage = currentPath.includes('/calculator');
-const isContactPage = currentPath.includes('/contact');
 ---
 
 {!isCalculatorPage && (
@@ -22,22 +20,6 @@ const isContactPage = currentPath.includes('/contact');
     id="sticky-calculator-cta"
     class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-500 flex flex-col gap-3 items-end"
   >
-    <!-- 2nd FAB: free audit (compact, neutral) -->
-    {!isContactPage && (
-      <a
-        href={`/${lang}/contact?topic=audit`}
-        aria-label={auditText}
-        class="group flex items-center gap-2 px-4 py-2.5 bg-white text-slate-900 font-semibold text-sm rounded-2xl shadow-xl border border-slate-200 hover:shadow-2xl hover:scale-105 transition-all duration-300"
-      >
-        <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex-shrink-0">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </span>
-        <span>{auditText}</span>
-      </a>
-    )}
     <a
       href={`/${lang}/calculator`}
       aria-label={text}
