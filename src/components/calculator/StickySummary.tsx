@@ -21,6 +21,7 @@ interface StickySummaryProps {
     hasCustomQuote: boolean;
     adBudgetTotal: number;
   };
+  duration: number;
   domainLines: DomainLine[];
   hasSelections: boolean;
   hasActualSelections: boolean;
@@ -36,6 +37,7 @@ export default function StickySummary({
   currency,
   setCurrency,
   pricing,
+  duration,
   domainLines,
   hasSelections,
   hasActualSelections,
@@ -51,15 +53,22 @@ export default function StickySummary({
 
   if (!hasSelections) return null;
 
+  // V5.6 : amortize one-off over the contract duration so the displayed "monthly"
+  // truly represents what the client will pay per month.
+  const safeDuration = Math.max(1, duration);
+  const amortizedMonthlyTotal = pricing.totalMonthlyWithoutBudget + (pricing.oneOffTotal / safeDuration);
   const monthlyDisplay = pricing.hasCustomQuote
     ? lang === 'fr' ? 'Sur devis' : 'Custom'
-    : fp(Math.round(pricing.totalMonthlyWithoutBudget), lang, currency);
+    : fp(Math.round(amortizedMonthlyTotal), lang, currency);
 
   const ctaLabel = hasActualSelections
     ? lang === 'fr' ? 'Recevoir ce plan par email' : 'Get this plan by email'
     : lang === 'fr' ? 'Discutons-en' : "Let's discuss";
 
-  const titleText = lang === 'fr' ? 'Mon plan personnalisé' : 'My tailored plan';
+  const titleText = lang === 'fr' ? 'Mon plan mensuel personnalisé' : 'My tailored monthly plan';
+
+  // Per-domain amortized monthly (oneOff repartitioned over duration)
+  const lineMonthly = (d: DomainLine) => d.monthly + (d.oneOff / safeDuration);
 
   return (
     <>
@@ -77,55 +86,55 @@ export default function StickySummary({
       >
         <div className="flex items-center gap-2">
           <span className="text-2xl">🎯</span>
-          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">{titleText}</h3>
+          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide leading-tight">{titleText}</h3>
         </div>
 
         {/* Domain lines */}
         {domainLines.length > 0 && (
           <ul className="space-y-2 pt-2 border-t border-slate-100">
-            {domainLines.map(d => (
-              <li key={d.id} className="flex items-center justify-between gap-2 text-sm">
-                <span className="flex items-center gap-1.5 text-slate-700 truncate">
-                  <span className="text-base">{d.icon}</span>
-                  <span className="truncate">{d.name}</span>
-                </span>
-                {d.isNotSure ? (
-                  <span className="text-amber-600 text-xs font-medium whitespace-nowrap">
-                    {lang === 'fr' ? 'à discuter' : 'to discuss'}
+            {domainLines.map(d => {
+              const amortized = lineMonthly(d);
+              return (
+                <li key={d.id} className="flex items-center justify-between gap-2 text-sm">
+                  <span className="flex items-center gap-1.5 text-slate-700 truncate">
+                    <span className="text-base">{d.icon}</span>
+                    <span className="truncate">{d.name}</span>
                   </span>
-                ) : d.monthly > 0 ? (
-                  <span className="text-slate-900 font-semibold text-xs whitespace-nowrap">
-                    {fp(Math.round(d.monthly), lang, currency)}<span className="text-slate-400 font-normal">/mo</span>
-                  </span>
-                ) : d.oneOff > 0 ? (
-                  <span className="text-emerald-600 font-semibold text-xs whitespace-nowrap">
-                    {fp(Math.round(d.oneOff), lang, currency)}
-                  </span>
-                ) : null}
-              </li>
-            ))}
+                  {d.isNotSure ? (
+                    <span className="text-amber-600 text-xs font-medium whitespace-nowrap">
+                      {lang === 'fr' ? 'à discuter' : 'to discuss'}
+                    </span>
+                  ) : amortized > 0 ? (
+                    <span className="text-slate-900 font-semibold text-xs whitespace-nowrap">
+                      {fp(Math.round(amortized), lang, currency)}
+                    </span>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
         )}
 
         {/* Totals */}
-        <div className="pt-3 border-t border-slate-100 space-y-1">
+        <div className="pt-3 border-t border-slate-100 space-y-1.5">
           <div className="flex items-baseline justify-between">
-            <span className="text-xs text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</span>
+            <span className="text-xs text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'Management' : 'Management'}</span>
             <span className={`font-bold leading-none ${pricing.hasCustomQuote ? 'text-amber-600 text-base' : 'text-slate-900 text-2xl'}`}>
               {monthlyDisplay}
             </span>
           </div>
-          {pricing.oneOffTotal > 0 && (
-            <div className="flex items-baseline justify-between">
-              <span className="text-xs text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'One-off' : 'One-time'}</span>
-              <span className="text-emerald-600 font-bold">{fp(Math.round(pricing.oneOffTotal), lang, currency)}</span>
-            </div>
-          )}
           {pricing.adBudgetTotal > 0 && (
             <div className="flex items-baseline justify-between">
-              <span className="text-xs text-amber-700 uppercase tracking-wide">{lang === 'fr' ? 'Budget pub' : 'Ad budget'}</span>
-              <span className="text-amber-700 font-semibold text-sm">{fp(Math.round(pricing.adBudgetTotal), lang, currency)}<span className="text-amber-500 text-xs">/mo</span></span>
+              <span className="text-xs text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'Budget pub' : 'Ad budget'}</span>
+              <span className="text-slate-700 font-semibold text-sm">{fp(Math.round(pricing.adBudgetTotal), lang, currency)}</span>
             </div>
+          )}
+          {pricing.oneOffTotal > 0 && (
+            <p className="text-[10px] text-slate-500 italic leading-snug pt-1">
+              {lang === 'fr'
+                ? `Inclut ${fp(Math.round(pricing.oneOffTotal), lang, currency)} de frais initiaux répartis sur ${safeDuration} mois`
+                : `Includes ${fp(Math.round(pricing.oneOffTotal), lang, currency)} one-time fees spread over ${safeDuration} months`}
+            </p>
           )}
         </div>
 
@@ -172,7 +181,7 @@ export default function StickySummary({
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🎯</span>
-                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">{titleText}</h3>
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide leading-tight">{titleText}</h3>
               </div>
               <button
                 type="button"
@@ -188,40 +197,40 @@ export default function StickySummary({
             </div>
             {domainLines.length > 0 && (
               <ul className="space-y-2 pb-3 border-b border-slate-100">
-                {domainLines.map(d => (
-                  <li key={d.id} className="flex items-center justify-between gap-2 text-sm">
-                    <span className="flex items-center gap-1.5 text-slate-700 truncate">
-                      <span className="text-base">{d.icon}</span>
-                      <span className="truncate">{d.name}</span>
-                    </span>
-                    {d.isNotSure ? (
-                      <span className="text-amber-600 text-xs font-medium whitespace-nowrap">
-                        {lang === 'fr' ? 'à discuter' : 'to discuss'}
+                {domainLines.map(d => {
+                  const amortized = lineMonthly(d);
+                  return (
+                    <li key={d.id} className="flex items-center justify-between gap-2 text-sm">
+                      <span className="flex items-center gap-1.5 text-slate-700 truncate">
+                        <span className="text-base">{d.icon}</span>
+                        <span className="truncate">{d.name}</span>
                       </span>
-                    ) : d.monthly > 0 ? (
-                      <span className="text-slate-900 font-semibold text-xs whitespace-nowrap">
-                        {fp(Math.round(d.monthly), lang, currency)}<span className="text-slate-400 font-normal">/mo</span>
-                      </span>
-                    ) : d.oneOff > 0 ? (
-                      <span className="text-emerald-600 font-semibold text-xs whitespace-nowrap">
-                        {fp(Math.round(d.oneOff), lang, currency)}
-                      </span>
-                    ) : null}
-                  </li>
-                ))}
+                      {d.isNotSure ? (
+                        <span className="text-amber-600 text-xs font-medium whitespace-nowrap">
+                          {lang === 'fr' ? 'à discuter' : 'to discuss'}
+                        </span>
+                      ) : amortized > 0 ? (
+                        <span className="text-slate-900 font-semibold text-xs whitespace-nowrap">
+                          {fp(Math.round(amortized), lang, currency)}
+                        </span>
+                      ) : null}
+                    </li>
+                  );
+                })}
               </ul>
             )}
-            {pricing.oneOffTotal > 0 && (
+            {pricing.adBudgetTotal > 0 && (
               <div className="flex items-baseline justify-between pt-2">
-                <span className="text-xs text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'One-off' : 'One-time'}</span>
-                <span className="text-emerald-600 font-bold">{fp(Math.round(pricing.oneOffTotal), lang, currency)}</span>
+                <span className="text-xs text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'Budget pub' : 'Ad budget'}</span>
+                <span className="text-slate-700 font-semibold text-sm">{fp(Math.round(pricing.adBudgetTotal), lang, currency)}</span>
               </div>
             )}
-            {pricing.adBudgetTotal > 0 && (
-              <div className="flex items-baseline justify-between pt-1">
-                <span className="text-xs text-amber-700 uppercase tracking-wide">{lang === 'fr' ? 'Budget pub' : 'Ad budget'}</span>
-                <span className="text-amber-700 font-semibold text-sm">{fp(Math.round(pricing.adBudgetTotal), lang, currency)}<span className="text-amber-500 text-xs">/mo</span></span>
-              </div>
+            {pricing.oneOffTotal > 0 && (
+              <p className="text-[10px] text-slate-500 italic leading-snug pt-2">
+                {lang === 'fr'
+                  ? `Inclut ${fp(Math.round(pricing.oneOffTotal), lang, currency)} de frais initiaux répartis sur ${safeDuration} mois`
+                  : `Includes ${fp(Math.round(pricing.oneOffTotal), lang, currency)} one-time fees spread over ${safeDuration} months`}
+              </p>
             )}
             <div className="flex items-center justify-center gap-1 bg-slate-100 rounded-lg p-0.5 mt-3">
               {(['EUR', 'USD', 'GBP'] as Currency[]).map(c => (
@@ -251,7 +260,7 @@ export default function StickySummary({
             className="flex-shrink-0 flex flex-col items-start"
             aria-label={mobileExpanded ? (lang === 'fr' ? 'Réduire' : 'Collapse') : (lang === 'fr' ? 'Détails' : 'Details')}
           >
-            <span className="text-[9px] text-slate-500 uppercase tracking-wide leading-none">{lang === 'fr' ? 'Mensuel' : 'Monthly'}</span>
+            <span className="text-[9px] text-slate-500 uppercase tracking-wide leading-none">{lang === 'fr' ? 'Management' : 'Management'}</span>
             <span className={`font-bold leading-tight ${pricing.hasCustomQuote ? 'text-amber-600 text-sm' : 'text-slate-900 text-lg'}`}>
               {monthlyDisplay}
             </span>

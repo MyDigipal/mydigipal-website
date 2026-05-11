@@ -22,6 +22,7 @@ interface CaptureModalProps {
     hasCustomQuote: boolean;
     adBudgetTotal: number;
   };
+  duration: number;
   domainLines: DomainLine[];
   hasActualSelections: boolean;
   isSubmitting: boolean;
@@ -42,6 +43,7 @@ export default function CaptureModal({
   lang,
   currency,
   pricing,
+  duration,
   domainLines,
   hasActualSelections,
   isSubmitting,
@@ -77,9 +79,13 @@ export default function CaptureModal({
 
   if (!open) return null;
 
+  // V5.6 : amortize one-off over duration, no /mo suffix
+  const safeDuration = Math.max(1, duration);
+  const amortizedMonthlyTotal = pricing.totalMonthlyWithoutBudget + (pricing.oneOffTotal / safeDuration);
   const monthlyDisplay = pricing.hasCustomQuote
     ? lang === 'fr' ? 'Sur devis' : 'Custom'
-    : `${fp(Math.round(pricing.totalMonthlyWithoutBudget), lang, currency)}${lang === 'fr' ? '/mois' : '/mo'}`;
+    : fp(Math.round(amortizedMonthlyTotal), lang, currency);
+  const lineMonthly = (d: DomainLine) => d.monthly + (d.oneOff / safeDuration);
 
   return (
     <div
@@ -163,28 +169,35 @@ export default function CaptureModal({
 
               {domainLines.length > 0 && (
                 <ul className="space-y-2 mb-5 pb-5 border-b border-slate-700">
-                  {domainLines.slice(0, 6).map(d => (
-                    <li key={d.id} className="flex items-center justify-between text-sm">
-                      <span className="flex items-center gap-2 text-slate-200">
-                        <span>{d.icon}</span>
-                        <span>{d.name}</span>
-                      </span>
-                      {d.isNotSure ? (
-                        <span className="text-amber-300 text-xs">{lang === 'fr' ? 'à discuter' : 'to discuss'}</span>
-                      ) : d.monthly > 0 ? (
-                        <span className="text-white font-semibold text-xs">{fp(Math.round(d.monthly), lang, currency)}/mo</span>
-                      ) : null}
-                    </li>
-                  ))}
+                  {domainLines.slice(0, 6).map(d => {
+                    const amortized = lineMonthly(d);
+                    return (
+                      <li key={d.id} className="flex items-center justify-between text-sm">
+                        <span className="flex items-center gap-2 text-slate-200">
+                          <span>{d.icon}</span>
+                          <span>{d.name}</span>
+                        </span>
+                        {d.isNotSure ? (
+                          <span className="text-amber-300 text-xs">{lang === 'fr' ? 'à discuter' : 'to discuss'}</span>
+                        ) : amortized > 0 ? (
+                          <span className="text-white font-semibold text-xs">{fp(Math.round(amortized), lang, currency)}</span>
+                        ) : null}
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
 
               {hasActualSelections && !pricing.hasCustomQuote && (
                 <div className="mb-4">
-                  <div className="text-xs text-blue-200 uppercase tracking-wide mb-1">{lang === 'fr' ? 'Total mensuel' : 'Monthly total'}</div>
+                  <div className="text-xs text-blue-200 uppercase tracking-wide mb-1">{lang === 'fr' ? 'Management mensuel' : 'Monthly management'}</div>
                   <div className="text-3xl font-bold">{monthlyDisplay}</div>
                   {pricing.oneOffTotal > 0 && (
-                    <div className="text-sm text-emerald-300 mt-1">+ {fp(Math.round(pricing.oneOffTotal), lang, currency)} {lang === 'fr' ? 'one-off' : 'one-time'}</div>
+                    <div className="text-[11px] text-blue-200/80 italic mt-1">
+                      {lang === 'fr'
+                        ? `Inclut ${fp(Math.round(pricing.oneOffTotal), lang, currency)} de frais initiaux répartis sur ${safeDuration} mois`
+                        : `Includes ${fp(Math.round(pricing.oneOffTotal), lang, currency)} one-time fees spread over ${safeDuration} months`}
+                    </div>
                   )}
                 </div>
               )}
