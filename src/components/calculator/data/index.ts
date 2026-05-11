@@ -151,38 +151,62 @@ export function getChannelMultiplier(nbChannels: number): number {
   return CHANNEL_MULTIPLIER_CONFIG.default;
 }
 
-// Tiered management fee configuration
-// Based on: < 2500€ = 500€ flat, 2500€-7500€ = 20%, 7500€-12500€ = 15%, > 12500€ = custom quote
+// Tiered management fee configuration (per-domain since 2026-05-11)
+// V5.3: Google Ads tolère des gros budgets en linéaire dégressif (Search Performance), Paid Social converge plus tôt en custom
+const TIER_DESC = {
+  flatMin: {
+    fr: 'Minimum pour couvrir le vital : optimisation, suivi des campagnes, ajustements, reporting',
+    en: 'Minimum to cover essentials: optimization, campaign tracking, adjustments, reporting'
+  },
+  proportional: {
+    fr: 'Ajustement proportionnel aux efforts nécessaires : plus de campagnes, plus de données à analyser, plus d\'optimisations',
+    en: 'Proportional to required effort: more campaigns, more data to analyze, more optimizations'
+  },
+  degressiveMedium: {
+    fr: 'Tarif dégressif pour budgets moyens : économies d\'échelle sur la gestion et l\'optimisation',
+    en: 'Degressive rate for medium budgets: economies of scale on management and optimization'
+  },
+  degressiveLarge: {
+    fr: 'Tarif dégressif pour gros budgets : mutualisation des process et automatisation poussée',
+    en: 'Degressive rate for large budgets: process pooling and advanced automation'
+  },
+  degressiveXLarge: {
+    fr: 'Tarif dégressif pour très gros budgets : équipe dédiée, reporting avancé, gestion multi-comptes',
+    en: 'Degressive rate for very large budgets: dedicated team, advanced reporting, multi-account management'
+  },
+  custom: {
+    fr: 'Étude approfondie du volume de travail : nombre de marques, de campagnes, véhicules à promouvoir, canaux activés',
+    en: 'In-depth study of workload: number of brands, campaigns, vehicles to promote, activated channels'
+  }
+};
+
 export const MANAGEMENT_FEE_CONFIG = {
+  // Default tiers (used as fallback for any new ads domain)
   tiers: [
-    {
-      maxBudget: 2500,
-      type: 'flat' as const,
-      value: 500,
-      description: 'Minimum pour couvrir le vital : optimisation, suivi des campagnes, ajustements, reporting',
-      descriptionEn: 'Minimum to cover essentials: optimization, campaign tracking, adjustments, reporting'
-    },
-    {
-      maxBudget: 7500,
-      type: 'percentage' as const,
-      value: 20,
-      description: 'Ajustement proportionnel aux efforts nécessaires : plus de campagnes, plus de données à analyser, plus d\'optimisations',
-      descriptionEn: 'Proportional to required effort: more campaigns, more data to analyze, more optimizations'
-    },
-    {
-      maxBudget: 12500,
-      type: 'percentage' as const,
-      value: 15,
-      description: 'Tarif dégressif pour budgets moyens : économies d\'échelle sur la gestion et l\'optimisation',
-      descriptionEn: 'Degressive rate for medium budgets: economies of scale on management and optimization'
-    },
-    {
-      maxBudget: Infinity,
-      type: 'custom' as const,
-      value: 0,
-      description: 'Étude approfondie du volume de travail : nombre de marques, de campagnes, véhicules à promouvoir, canaux activés',
-      descriptionEn: 'In-depth study of workload: number of brands, campaigns, vehicles to promote, activated channels'
-    }
+    { maxBudget: 2500, type: 'flat' as const, value: 500, description: TIER_DESC.flatMin.fr, descriptionEn: TIER_DESC.flatMin.en },
+    { maxBudget: 7500, type: 'percentage' as const, value: 20, description: TIER_DESC.proportional.fr, descriptionEn: TIER_DESC.proportional.en },
+    { maxBudget: 12500, type: 'percentage' as const, value: 15, description: TIER_DESC.degressiveMedium.fr, descriptionEn: TIER_DESC.degressiveMedium.en },
+    { maxBudget: Infinity, type: 'custom' as const, value: 0, description: TIER_DESC.custom.fr, descriptionEn: TIER_DESC.custom.en }
+  ],
+  // Google Ads: degressive scale up to 50k (Search Performance scales well)
+  googleAds: [
+    { maxBudget: 2500, type: 'flat' as const, value: 500, description: TIER_DESC.flatMin.fr, descriptionEn: TIER_DESC.flatMin.en },
+    { maxBudget: 7500, type: 'percentage' as const, value: 20, description: TIER_DESC.proportional.fr, descriptionEn: TIER_DESC.proportional.en },
+    { maxBudget: 12500, type: 'percentage' as const, value: 15, description: TIER_DESC.degressiveMedium.fr, descriptionEn: TIER_DESC.degressiveMedium.en },
+    { maxBudget: 25000, type: 'percentage' as const, value: 12, description: TIER_DESC.degressiveLarge.fr, descriptionEn: TIER_DESC.degressiveLarge.en },
+    { maxBudget: 40000, type: 'percentage' as const, value: 10, description: TIER_DESC.degressiveLarge.fr, descriptionEn: TIER_DESC.degressiveLarge.en },
+    { maxBudget: 50001, type: 'percentage' as const, value: 8, description: TIER_DESC.degressiveXLarge.fr, descriptionEn: TIER_DESC.degressiveXLarge.en },
+    { maxBudget: Infinity, type: 'custom' as const, value: 0, description: TIER_DESC.custom.fr, descriptionEn: TIER_DESC.custom.en }
+  ],
+  // Paid Social: degressive scale further (channel multiplier already covers complexity)
+  paidSocial: [
+    { maxBudget: 2500, type: 'flat' as const, value: 500, description: TIER_DESC.flatMin.fr, descriptionEn: TIER_DESC.flatMin.en },
+    { maxBudget: 7500, type: 'percentage' as const, value: 20, description: TIER_DESC.proportional.fr, descriptionEn: TIER_DESC.proportional.en },
+    { maxBudget: 10000, type: 'percentage' as const, value: 15, description: TIER_DESC.degressiveMedium.fr, descriptionEn: TIER_DESC.degressiveMedium.en },
+    { maxBudget: 15000, type: 'percentage' as const, value: 13, description: TIER_DESC.degressiveLarge.fr, descriptionEn: TIER_DESC.degressiveLarge.en },
+    { maxBudget: 25000, type: 'percentage' as const, value: 11, description: TIER_DESC.degressiveLarge.fr, descriptionEn: TIER_DESC.degressiveLarge.en },
+    { maxBudget: 50001, type: 'percentage' as const, value: 9, description: TIER_DESC.degressiveXLarge.fr, descriptionEn: TIER_DESC.degressiveXLarge.en },
+    { maxBudget: Infinity, type: 'custom' as const, value: 0, description: TIER_DESC.custom.fr, descriptionEn: TIER_DESC.custom.en }
   ]
 } as const;
 
@@ -217,6 +241,13 @@ export {
   servicesThatNeedTracking
 };
 
+// Helper: Get the right tier list for a domain
+function getTiersForDomain(domain: 'google-ads' | 'paid-social') {
+  if (domain === 'google-ads') return MANAGEMENT_FEE_CONFIG.googleAds;
+  if (domain === 'paid-social') return MANAGEMENT_FEE_CONFIG.paidSocial;
+  return MANAGEMENT_FEE_CONFIG.tiers;
+}
+
 // Helper: Calculate management fee using tiered structure
 // nbChannels: number of selected channels (only for paid-social, applies multiplier)
 export function calculateManagementFee(
@@ -230,8 +261,9 @@ export function calculateManagementFee(
   // Apply channel multiplier only for paid-social
   const multiplier = domain === 'paid-social' ? getChannelMultiplier(nbChannels) : 1;
 
-  // Find the appropriate tier
-  for (const tier of MANAGEMENT_FEE_CONFIG.tiers) {
+  // Find the appropriate tier from the domain-specific scale
+  const tiers = getTiersForDomain(domain);
+  for (const tier of tiers) {
     if (budget < tier.maxBudget) {
       if (tier.type === 'flat') {
         return { fee: tier.value * multiplier, type: 'flat', isCustomQuote: false, channelMultiplier: multiplier };
@@ -246,8 +278,9 @@ export function calculateManagementFee(
 }
 
 // Helper: Get management fee description for display
-export function getManagementFeeDescription(budget: number, lang: 'en' | 'fr'): string {
-  for (const tier of MANAGEMENT_FEE_CONFIG.tiers) {
+export function getManagementFeeDescription(budget: number, lang: 'en' | 'fr', domain?: 'google-ads' | 'paid-social'): string {
+  const tiers = domain ? getTiersForDomain(domain) : MANAGEMENT_FEE_CONFIG.tiers;
+  for (const tier of tiers) {
     if (budget < tier.maxBudget) {
       return lang === 'fr' ? tier.description : tier.descriptionEn;
     }

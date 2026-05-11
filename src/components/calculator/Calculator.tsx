@@ -94,9 +94,23 @@ const getDomainColors = (colorClass: string) => {
   return colors[colorClass] || colors.blue;
 };
 
-// Tooltip component
-const Tooltip = ({ content, whyImportant, lang }: { content: string; whyImportant?: string; lang: 'en' | 'fr' }) => {
+// Tooltip component - V5.3: structured visual tooltip with title, icon, sections, conclusion
+interface TooltipProps {
+  lang: 'en' | 'fr';
+  // Legacy props (backward compat)
+  content?: string;
+  whyImportant?: string;
+  // Rich props (preferred)
+  title?: string;
+  icon?: string;
+  intro?: string;
+  sections?: Array<{ title: string; items: string[] }>;
+  conclusion?: string;
+}
+const Tooltip = ({ lang, content, whyImportant, title, icon, intro, sections, conclusion }: TooltipProps) => {
   const [isVisible, setIsVisible] = useState(false);
+  const introText = intro ?? content;
+  const conclusionText = conclusion ?? whyImportant;
 
   return (
     <div className="relative inline-block">
@@ -105,22 +119,51 @@ const Tooltip = ({ content, whyImportant, lang }: { content: string; whyImportan
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
         onClick={(e) => { e.stopPropagation(); setIsVisible(!isVisible); }}
-        className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
+        className="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 hover:bg-blue-100 hover:text-blue-600 transition-colors"
+        aria-label={lang === 'fr' ? 'Plus d\'infos' : 'More info'}
       >
-        <InfoIcon />
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
       </button>
       {isVisible && (
-        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-4 bg-slate-900 text-white text-sm rounded-xl shadow-xl">
-          <div className="mb-2">{content}</div>
-          {whyImportant && (
-            <div className="pt-2 border-t border-slate-700">
-              <span className="text-blue-400 font-medium text-xs block mb-1">
-                {lang === 'fr' ? 'Pourquoi c\'est important ?' : 'Why is this important?'}
-              </span>
-              <span className="text-slate-300">{whyImportant}</span>
+        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-3 w-80 sm:w-96 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none">
+          {/* Header gradient + icon + title */}
+          {(title || icon) && (
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 px-4 py-3 flex items-center gap-2.5">
+              {icon && <span className="text-2xl leading-none">{icon}</span>}
+              {title && <h4 className="font-bold text-white text-sm leading-tight">{title}</h4>}
             </div>
           )}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full border-8 border-transparent border-t-slate-900"></div>
+          {/* Body */}
+          <div className="bg-white text-slate-700 text-sm px-4 py-3 space-y-3 max-h-80 overflow-y-auto">
+            {introText && <p className="text-slate-700 leading-snug">{introText}</p>}
+            {sections && sections.length > 0 && sections.map((sec, i) => (
+              <div key={i}>
+                <p className="text-xs font-bold uppercase tracking-wide text-blue-600 mb-1.5">{sec.title}</p>
+                <ul className="space-y-1">
+                  {sec.items.map((item, j) => (
+                    <li key={j} className="flex gap-2 text-xs leading-snug">
+                      <span className="text-blue-500 font-bold mt-0.5">→</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            {conclusionText && (
+              <div className="pt-2 mt-1 border-t border-slate-200 bg-blue-50/60 -mx-4 -mb-3 px-4 py-2.5 rounded-b-2xl">
+                <span className="block text-[11px] font-bold uppercase tracking-wide text-blue-700 mb-1">
+                  {lang === 'fr' ? '💡 À retenir' : '💡 Why this matters'}
+                </span>
+                <p className="text-xs text-blue-900 leading-snug font-medium">{conclusionText}</p>
+              </div>
+            )}
+          </div>
+          {/* Arrow */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full border-[10px] border-transparent border-t-white drop-shadow"></div>
         </div>
       )}
     </div>
@@ -180,8 +223,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   });
   const [showAiCustomForm, setShowAiCustomForm] = useState(false);
 
-  // Currency state
-  const [currency, setCurrency] = useState<Currency>('EUR');
+  // Currency state - default USD on EN, EUR on FR (V5.3)
+  const [currency, setCurrency] = useState<Currency>(lang === 'en' ? 'USD' : 'EUR');
 
   // Contact form
   const [contact, setContact] = useState<ContactInfo>({ name: '', email: '', company: '', phone: '', message: '' });
@@ -565,6 +608,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   // Check if any service is selected (excluding dismissed/notSure domains)
   const hasActualSelections = useMemo(() => {
     if (selectedDomains.includes('ai-training') && !dismissedDomains['ai-training'] && !notSureAbout['ai-training']) return true;
+    // V5.3: ad-budget-only selection (slider moved without service ticks) counts too
+    if (budgetActivated['google-ads'] && !dismissedDomains['google-ads'] && !notSureAbout['google-ads']) return true;
+    if (budgetActivated['paid-social'] && !dismissedDomains['paid-social'] && !notSureAbout['paid-social']) return true;
     // Check if any non-dismissed domain has selections
     const hasOtherSelections = Object.entries(selections).some(([serviceId, level]) => {
       if (level === null) return false;
@@ -575,7 +621,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       return domainId && !dismissedDomains[domainId] && !notSureAbout[domainId];
     });
     return hasOtherSelections;
-  }, [selectedDomains, selections, dismissedDomains, notSureAbout]);
+  }, [selectedDomains, selections, dismissedDomains, notSureAbout, budgetActivated]);
 
   // Combined check - show summary if user has any actual selection (services, "not sure" domains, OR tracking-only)
   // Bug fix mai 2026: tracking-only selections n'etaient pas comptees, donc le sticky bar
@@ -1457,7 +1503,14 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                       <div className="flex items-center gap-1">
                                         <h3 className="font-bold text-slate-900">{lang === 'fr' ? service.title : (service.titleEn || service.title)}</h3>
                                         {service.detailedInfo && (
-                                          <Tooltip content={service.detailedInfo.content.intro} whyImportant={service.detailedInfo.content.conclusion} lang={lang} />
+                                          <Tooltip
+                                            lang={lang}
+                                            icon={service.icon}
+                                            title={service.detailedInfo.title}
+                                            intro={service.detailedInfo.content.intro}
+                                            sections={service.detailedInfo.content.sections as any}
+                                            conclusion={service.detailedInfo.content.conclusion}
+                                          />
                                         )}
                                       </div>
                                       <p className="text-sm text-slate-600">{lang === 'fr' ? service.description : (service.descriptionEn || service.description)}</p>
@@ -1642,7 +1695,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                         const budget = adBudgets[domainId as 'google-ads' | 'paid-social'];
                         const nbCh = getNbChannelsForDomain(domainId as 'google-ads' | 'paid-social');
                         const feeResult = calculateManagementFee(domainId as 'google-ads' | 'paid-social', budget, nbCh);
-                        const feeDescription = getManagementFeeDescription(budget, lang);
+                        const feeDescription = getManagementFeeDescription(budget, lang, domainId as 'google-ads' | 'paid-social');
                         return (
                           <div className="mb-8 p-4 sm:p-6 bg-white rounded-xl border border-slate-200">
                             <label className="block text-sm font-medium text-slate-700 mb-4">{t.adBudget}</label>
@@ -1688,19 +1741,35 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                     : `for ${nbCh} channels (more cross-channel optimization)`}
                                 </p>
                               )}
-                              {/* 4-tier indicators */}
-                              <div className="mt-3 flex gap-1">
-                                <div className={`flex-1 h-1.5 rounded-full ${budget < 2500 ? colors.bg : 'bg-slate-200'}`} title={lang === 'fr' ? '< 2500€: 500€/mois' : '< 2500€: 500€/mo'} />
-                                <div className={`flex-1 h-1.5 rounded-full ${budget >= 2500 && budget < 7500 ? colors.bg : 'bg-slate-200'}`} title="2500€-7500€: 20%" />
-                                <div className={`flex-1 h-1.5 rounded-full ${budget >= 7500 && budget < 12500 ? colors.bg : 'bg-slate-200'}`} title="7500€-12500€: 15%" />
-                                <div className={`flex-1 h-1.5 rounded-full ${budget >= 12500 ? 'bg-amber-500' : 'bg-slate-200'}`} title={lang === 'fr' ? '> 12500€: Sur devis' : '> 12500€: Custom'} />
-                              </div>
-                              <div className="mt-1 flex justify-between text-[10px] text-slate-400">
-                                <span>{fp(500)}</span>
-                                <span>20%</span>
-                                <span>15%</span>
-                                <span>{lang === 'fr' ? 'Devis' : 'Quote'}</span>
-                              </div>
+                              {/* Tier indicators - dynamic per domain (V5.3) */}
+                              {(() => {
+                                const tiers = domainId === 'google-ads'
+                                  ? MANAGEMENT_FEE_CONFIG.googleAds
+                                  : domainId === 'paid-social'
+                                    ? MANAGEMENT_FEE_CONFIG.paidSocial
+                                    : MANAGEMENT_FEE_CONFIG.tiers;
+                                const activeTierIdx = tiers.findIndex(t => budget < t.maxBudget);
+                                return (
+                                  <>
+                                    <div className="mt-3 flex gap-1">
+                                      {tiers.map((tier, idx) => (
+                                        <div
+                                          key={idx}
+                                          className={`flex-1 h-1.5 rounded-full ${idx === activeTierIdx ? (tier.type === 'custom' ? 'bg-amber-500' : colors.bg) : 'bg-slate-200'}`}
+                                          title={tier.type === 'flat' ? `< ${fp(tier.maxBudget)}: ${fp(tier.value)}` : tier.type === 'percentage' ? `${fp(idx === 0 ? 0 : tiers[idx-1].maxBudget)}-${fp(tier.maxBudget)}: ${tier.value}%` : `> ${fp(idx === 0 ? 0 : tiers[idx-1].maxBudget)}: ${lang === 'fr' ? 'Sur devis' : 'Custom'}`}
+                                        />
+                                      ))}
+                                    </div>
+                                    <div className="mt-1 flex justify-between text-[10px] text-slate-400">
+                                      {tiers.map((tier, idx) => (
+                                        <span key={idx} className="text-center" style={{ flex: 1 }}>
+                                          {tier.type === 'flat' ? fp(tier.value) : tier.type === 'percentage' ? `${tier.value}%` : (lang === 'fr' ? 'Devis' : 'Quote')}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </>
+                                );
+                              })()}
                             </div>
                           </div>
                         );
