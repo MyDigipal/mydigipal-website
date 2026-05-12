@@ -27,6 +27,8 @@ interface StickySummaryProps {
   hasActualSelections: boolean;
   hasNotSureSelections: boolean;
   onRequestPlan: () => void;
+  onStartGuided?: () => void;
+  guidedActive?: boolean;
 }
 
 const fp = (n: number, lang: 'en' | 'fr', currency: Currency) =>
@@ -43,6 +45,8 @@ export default function StickySummary({
   hasActualSelections,
   hasNotSureSelections,
   onRequestPlan,
+  onStartGuided,
+  guidedActive,
 }: StickySummaryProps) {
   const [mobileExpanded, setMobileExpanded] = useState(false);
 
@@ -51,15 +55,18 @@ export default function StickySummary({
     if (!hasSelections) setMobileExpanded(false);
   }, [hasSelections]);
 
-  if (!hasSelections) return null;
+  // V5.8 : never return null - sticky always visible. Empty state when no selections.
+  const isEmpty = !hasSelections;
 
   // V5.6 : amortize one-off over the contract duration so the displayed "monthly"
   // truly represents what the client will pay per month.
   const safeDuration = Math.max(1, duration);
   const amortizedMonthlyTotal = pricing.totalMonthlyWithoutBudget + (pricing.oneOffTotal / safeDuration);
-  const monthlyDisplay = pricing.hasCustomQuote
-    ? lang === 'fr' ? 'Sur devis' : 'Custom'
-    : fp(Math.round(amortizedMonthlyTotal), lang, currency);
+  const monthlyDisplay = isEmpty
+    ? fp(0, lang, currency)
+    : pricing.hasCustomQuote
+      ? lang === 'fr' ? 'Sur devis' : 'Custom'
+      : fp(Math.round(amortizedMonthlyTotal), lang, currency);
 
   const ctaLabel = hasActualSelections
     ? lang === 'fr' ? 'Recevoir ce plan par email' : 'Get this plan by email'
@@ -69,6 +76,14 @@ export default function StickySummary({
 
   // Per-domain amortized monthly (oneOff repartitioned over duration)
   const lineMonthly = (d: DomainLine) => d.monthly + (d.oneOff / safeDuration);
+
+  const guidedButtonLabel = lang === 'fr' ? 'Aidez-moi à choisir' : 'Help me choose';
+  const guidedHint = lang === 'fr'
+    ? guidedActive ? 'Répondez aux questions, le plan se mettra à jour automatiquement.' : 'Répondez à 3 questions et on vous recommande les bons services.'
+    : guidedActive ? 'Answer the questions and your plan will update automatically.' : 'Answer 3 quick questions and we will recommend the right services.';
+  const orPickHint = lang === 'fr'
+    ? 'Ou sélectionnez directement les services à gauche.'
+    : 'Or pick services directly on the left.';
 
   return (
     <>
@@ -116,10 +131,10 @@ export default function StickySummary({
         )}
 
         {/* Totals */}
-        <div className="pt-3 border-t border-slate-100 space-y-1.5">
+        <div className={`${domainLines.length > 0 ? 'pt-3 border-t border-slate-100' : 'pt-2'} space-y-1.5`}>
           <div className="flex items-baseline justify-between">
             <span className="text-xs text-slate-500 uppercase tracking-wide">{lang === 'fr' ? 'Management' : 'Management'}</span>
-            <span className={`font-bold leading-none ${pricing.hasCustomQuote ? 'text-amber-600 text-base' : 'text-slate-900 text-2xl'}`}>
+            <span className={`font-bold leading-none ${pricing.hasCustomQuote ? 'text-amber-600 text-base' : isEmpty ? 'text-slate-400 text-2xl' : 'text-slate-900 text-2xl'}`}>
               {monthlyDisplay}
             </span>
           </div>
@@ -156,21 +171,39 @@ export default function StickySummary({
           ))}
         </div>
 
-        {/* CTA */}
-        <button
-          type="button"
-          onClick={onRequestPlan}
-          className="w-full mt-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transition-all text-sm"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-            <polyline points="22 6 12 13 2 6" />
-          </svg>
-          {ctaLabel}
-        </button>
-        <p className="text-[11px] text-slate-500 text-center leading-snug">
-          {lang === 'fr' ? 'Sans engagement · Réponse sous 24h' : 'No commitment · Reply within 24h'}
-        </p>
+        {/* CTA - "Aidez-moi" in empty state, "Recevoir par email" otherwise */}
+        {isEmpty && onStartGuided ? (
+          <>
+            <button
+              type="button"
+              onClick={onStartGuided}
+              disabled={guidedActive}
+              className="w-full mt-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transition-all text-sm disabled:opacity-60 disabled:cursor-default"
+            >
+              <span className="text-base leading-none">🤖</span>
+              {guidedButtonLabel}
+            </button>
+            <p className="text-[11px] text-slate-600 text-center leading-snug">{guidedHint}</p>
+            <p className="text-[10px] text-slate-400 text-center leading-snug italic">{orPickHint}</p>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={onRequestPlan}
+              className="w-full mt-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transition-all text-sm"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22 6 12 13 2 6" />
+              </svg>
+              {ctaLabel}
+            </button>
+            <p className="text-[11px] text-slate-500 text-center leading-snug">
+              {lang === 'fr' ? 'Sans engagement · Réponse sous 24h' : 'No commitment · Reply within 24h'}
+            </p>
+          </>
+        )}
       </aside>
 
       {/* === MOBILE: bottom bar (collapsed) + expandable drawer === */}
@@ -261,10 +294,21 @@ export default function StickySummary({
             aria-label={mobileExpanded ? (lang === 'fr' ? 'Réduire' : 'Collapse') : (lang === 'fr' ? 'Détails' : 'Details')}
           >
             <span className="text-[9px] text-slate-500 uppercase tracking-wide leading-none">{lang === 'fr' ? 'Management' : 'Management'}</span>
-            <span className={`font-bold leading-tight ${pricing.hasCustomQuote ? 'text-amber-600 text-sm' : 'text-slate-900 text-lg'}`}>
+            <span className={`font-bold leading-tight ${pricing.hasCustomQuote ? 'text-amber-600 text-sm' : isEmpty ? 'text-slate-400 text-lg' : 'text-slate-900 text-lg'}`}>
               {monthlyDisplay}
             </span>
           </button>
+          {isEmpty && onStartGuided ? (
+            <button
+              type="button"
+              onClick={onStartGuided}
+              disabled={guidedActive}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all text-sm whitespace-nowrap disabled:opacity-60 disabled:cursor-default"
+            >
+              <span className="text-sm leading-none">🤖</span>
+              <span>{guidedButtonLabel}</span>
+            </button>
+          ) : (
           <button
             type="button"
             onClick={onRequestPlan}
@@ -276,6 +320,7 @@ export default function StickySummary({
             </svg>
             <span>{lang === 'fr' ? 'Recevoir par email' : 'Get by email'}</span>
           </button>
+          )}
         </div>
       </div>
     </>

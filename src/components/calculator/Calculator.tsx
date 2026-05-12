@@ -1069,62 +1069,17 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   // Domain selection step
   if (step === 'domains') {
     return (
-      <div className="min-h-[600px]">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">{t.selectDomains}</h2>
+      <div className="min-h-[600px] lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:items-start">
+        <div className="min-w-0">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">{t.selectDomains}</h2>
           <p className="text-lg text-slate-600">{t.selectDomainsDesc}</p>
         </div>
 
-        {/* Mode choice - Guided vs Manual */}
-        <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto mb-10">
-          <button
-            onClick={() => {
-              if (typeof window !== 'undefined' && (window as any).dataLayer) {
-                (window as any).dataLayer.push({ event: 'calculator_mode_selected', mode: 'guided' });
-              }
-              setStep('guided');
-            }}
-            className="flex-1 group relative px-6 py-4 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl hover:shadow-lg hover:shadow-blue-600/25 transition-all active:scale-[0.98]"
-          >
-            <span className="text-2xl block mb-2">💡</span>
-            <span className="font-bold block">{t.guidedHelpMe}</span>
-            <span className="text-sm text-blue-200 block mt-1">{t.guidedSubtitle}</span>
-          </button>
-          <button
-            onClick={() => {
-              if (typeof window !== 'undefined' && (window as any).dataLayer) {
-                (window as any).dataLayer.push({ event: 'calculator_mode_selected', mode: 'manual' });
-              }
-            }}
-            className="flex-1 group px-6 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-2xl hover:border-slate-300 hover:shadow-md transition-all active:scale-[0.98]"
-          >
-            <span className="text-2xl block mb-2">🎯</span>
-            <span className="font-bold block">{t.guidedKnowWhat}</span>
-            <span className="text-sm text-slate-500 block mt-1">{lang === 'fr' ? 'Sélectionnez directement ci-dessous' : 'Select directly below'}</span>
-          </button>
-        </div>
+        {/* V5.8 : 2 grandes cards "Aidez-moi vs Je sais" supprimees, le bouton
+            "Aidez-moi a choisir" est maintenant dans la sticky card a droite */}
 
-        {/* Currency selector on domain page */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center gap-2 bg-slate-100 rounded-xl p-1">
-            <span className="text-sm text-slate-500 px-2">{t.currency}:</span>
-            {(['EUR', 'USD', 'GBP'] as Currency[]).map(c => (
-              <button
-                key={c}
-                onClick={() => setCurrency(c)}
-                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                  currency === c
-                    ? 'bg-white text-slate-900 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                {CURRENCY_CONFIGS[c].symbol} {c}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
+        <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
           {Object.values(domainConfigs).map(domain => {
             const isSelected = selectedDomains.includes(domain.id);
             const colorClasses: Record<string, string> = {
@@ -1206,6 +1161,28 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
         {/* Spacer to prevent content from being hidden behind sticky bar */}
         {selectedDomains.length > 0 && <div className="h-24" />}
+        </div>{/* end of main content column */}
+
+        {/* V5.8: Sticky summary card visible from the empty state too (with "Help me choose" CTA) */}
+        <StickySummary
+          lang={lang}
+          currency={currency}
+          setCurrency={setCurrency}
+          pricing={pricing as any}
+          duration={duration}
+          domainLines={domainLines}
+          hasSelections={hasSelections}
+          hasActualSelections={hasActualSelections}
+          hasNotSureSelections={hasNotSureSelections}
+          onRequestPlan={() => setShowCaptureModal(true)}
+          onStartGuided={() => {
+            if (typeof window !== 'undefined' && (window as any).dataLayer) {
+              (window as any).dataLayer.push({ event: 'calculator_mode_selected', mode: 'guided', source: 'sticky' });
+            }
+            setStep('guided');
+          }}
+          guidedActive={false}
+        />
       </div>
     );
   }
@@ -2851,6 +2828,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         hasActualSelections={hasActualSelections}
         hasNotSureSelections={hasNotSureSelections}
         onRequestPlan={() => setShowCaptureModal(true)}
+        onStartGuided={() => setStep('guided')}
+        guidedActive={false}
       />
 
       {/* V5.2: Capture modal - rendered outside grid (modal portal-like) */}
