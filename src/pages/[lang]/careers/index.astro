@@ -1,0 +1,197 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '@/layouts/PageLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { languages, type Language } from '@/i18n/config';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+const allJobs = await getCollection('jobs', (job) => job.data.status === 'open');
+const jobsForLang = allJobs.filter((j) => j.data.lang === lang);
+const otherLangJobs = allJobs.filter((j) => j.data.lang !== lang);
+
+const t = {
+  en: {
+    badge: "We're hiring",
+    title: "Open roles at MyDigipal",
+    subtitle: "We grow by hiring people who care about the craft and about our clients. Browse open roles below.",
+    nothingOpen: "No open roles right now in English.",
+    otherLangBanner: "We currently have an open role available in another language:",
+    apply: "View role & apply",
+    posted: "Posted",
+    startDate: "Start date",
+    format: "Format",
+    hours: "Hours",
+    duration: "Duration",
+    location: "Location",
+    spontaneous: {
+      title: "Don't see your role?",
+      body: "We always welcome spontaneous applications from strong marketers, content creators, and developers. Drop us a line.",
+      cta: "Contact us",
+    },
+  },
+  fr: {
+    badge: "Recrutement",
+    title: "Postes ouverts chez MyDigipal",
+    subtitle: "Nous grandissons en recrutant des personnes qui se soucient du métier et de nos clients. Découvrez les postes ouverts ci-dessous.",
+    nothingOpen: "Aucun poste ouvert pour le moment en français.",
+    otherLangBanner: "Nous avons actuellement un poste ouvert dans une autre langue :",
+    apply: "Voir le poste et postuler",
+    posted: "Publié le",
+    startDate: "Date de démarrage",
+    format: "Format",
+    hours: "Heures",
+    duration: "Durée",
+    location: "Localisation",
+    spontaneous: {
+      title: "Pas de poste qui correspond ?",
+      body: "Nous accueillons volontiers les candidatures spontanées de marketeurs solides, créateurs de contenu et développeurs. Écrivez-nous.",
+      cta: "Nous contacter",
+    },
+  },
+}[lang];
+
+const seo = {
+  en: {
+    title: "Careers - Join MyDigipal",
+    description: "Open roles at MyDigipal. Remote-friendly digital marketing agency hiring freelancers, contractors and employees across paid media, content, and growth.",
+  },
+  fr: {
+    title: "Recrutement - Rejoignez MyDigipal",
+    description: "Postes ouverts chez MyDigipal. Agence de marketing digital remote-friendly qui recrute freelances, contractors et salariés en paid media, contenu et growth.",
+  },
+}[lang];
+---
+
+<PageLayout title={seo.title} description={seo.description} lang={lang}>
+  <section class="relative py-20 lg:py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-violet-500/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="container-custom relative z-10">
+      <div class="text-center max-w-3xl mx-auto">
+        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-sm font-medium mb-6">
+          <Icon name="users" size={16} />
+          {t.badge}
+        </span>
+        <h1 class="font-display text-4xl lg:text-6xl font-bold text-white mb-6">
+          {t.title}
+        </h1>
+        <p class="text-xl text-slate-300">
+          {t.subtitle}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 lg:py-20">
+    <div class="container-custom max-w-4xl">
+      {jobsForLang.length === 0 && otherLangJobs.length === 0 && (
+        <div class="text-center py-16">
+          <p class="text-lg text-slate-600">{t.nothingOpen}</p>
+        </div>
+      )}
+
+      {jobsForLang.length === 0 && otherLangJobs.length > 0 && (
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-10">
+          <p class="text-amber-900 text-sm font-medium mb-4">
+            {t.otherLangBanner}
+          </p>
+          <div class="space-y-3">
+            {otherLangJobs.map((job) => {
+              const slug = job.id.replace(/\.mdx?$/, '');
+              return (
+                <a
+                  href={`/${job.data.lang}/careers/${slug}`}
+                  class="block bg-white rounded-xl p-5 border border-amber-100 hover:border-primary-400 hover:shadow-md transition-all"
+                >
+                  <div class="flex justify-between items-start gap-4 flex-wrap">
+                    <div>
+                      <h3 class="text-lg font-bold text-slate-900 mb-1">{job.data.title}</h3>
+                      <p class="text-sm text-slate-600">{job.data.location} · {job.data.format}</p>
+                    </div>
+                    <span class="inline-flex items-center gap-1 text-primary-600 text-sm font-semibold">
+                      {t.apply}
+                      <Icon name="arrow-right" size={16} />
+                    </span>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div class="space-y-6">
+        {jobsForLang.map((job) => {
+          const slug = job.id.replace(/\.mdx?$/, '');
+          return (
+            <a
+              href={`/${lang}/careers/${slug}`}
+              class="block bg-white rounded-2xl p-8 border-2 border-slate-200 hover:border-primary-500 hover:shadow-xl transition-all group"
+            >
+              <div class="flex justify-between items-start gap-6 flex-wrap">
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-2xl font-bold text-slate-900 mb-2 group-hover:text-primary-600 transition-colors">
+                    {job.data.title}
+                  </h3>
+                  <p class="text-slate-600 mb-4 leading-relaxed">
+                    {job.data.pitch}
+                  </p>
+                  <div class="flex flex-wrap gap-3 text-sm">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full text-slate-700">
+                      <Icon name="map-pin" size={14} />
+                      {job.data.location}
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full text-slate-700">
+                      <Icon name="briefcase" size={14} />
+                      {job.data.format}
+                    </span>
+                    {job.data.hours && (
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full text-slate-700">
+                        <Icon name="clock" size={14} />
+                        {job.data.hours}
+                      </span>
+                    )}
+                    {job.data.start_date && (
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-100 rounded-full text-primary-700 font-medium">
+                        <Icon name="calendar" size={14} />
+                        {t.startDate}: {job.data.start_date}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-lg group-hover:bg-primary-600 transition-colors font-semibold">
+                    {t.apply}
+                    <Icon name="arrow-right" size={18} />
+                  </span>
+                </div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+
+      <div class="mt-16 bg-slate-50 rounded-2xl p-8 text-center">
+        <h2 class="text-2xl font-bold text-slate-900 mb-3">{t.spontaneous.title}</h2>
+        <p class="text-slate-600 mb-6 max-w-xl mx-auto">{t.spontaneous.body}</p>
+        <a
+          href={`/${lang}/contact`}
+          class="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-semibold transition-colors"
+        >
+          {t.spontaneous.cta}
+          <Icon name="arrow-right" size={18} />
+        </a>
+      </div>
+    </div>
+  </section>
+</PageLayout>

@@ -268,6 +268,41 @@ const automotiveCollection = defineCollection({
   }),
 });
 
+const jobsCollection = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/jobs' }),
+  schema: z.object({
+    title: z.string(),
+    role: z.string(),
+    lang: z.enum(['en', 'fr']).default('en'),
+    status: z.enum(['open', 'closed', 'draft']).default('open'),
+    format: z.string(),
+    location: z.string(),
+    hours: z.string().optional(),
+    duration: z.string().optional(),
+    start_date: z.string().optional(),
+    posted_date: z.date().optional(),
+    hide_client: z.boolean().default(false),
+    pitch: z.string(),
+    apply_email: z.string().default('heather@mydigipal.com'),
+
+    seo: z.object({
+      title: z.string().optional(),
+      description: z.string().optional(),
+      image: z.string().optional(),
+    }).optional(),
+
+    questions_optional: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      type: z.enum(['text', 'url', 'textarea']),
+      placeholder: z.string().optional(),
+      help: z.string().optional(),
+    })).default([]),
+
+    scoring_prompt: z.string().optional(),
+  }),
+});
+
 export const collections = {
   services: servicesCollection,
   'case-studies': caseStudiesCollection,
@@ -275,4 +310,5 @@ export const collections = {
   training: trainingCollection,
   pages: pagesCollection,
   automotive: automotiveCollection,
+  jobs: jobsCollection,
 };

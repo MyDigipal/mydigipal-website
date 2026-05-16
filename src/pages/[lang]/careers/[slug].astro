@@ -1,0 +1,549 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageLayout from '@/layouts/PageLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import AntiSpam from '@/components/ui/AntiSpam.astro';
+import { type Language } from '@/i18n/config';
+
+export async function getStaticPaths() {
+  const jobs = await getCollection('jobs', (j) => j.data.status === 'open');
+  return jobs.map((job) => {
+    const slug = job.id.replace(/\.mdx?$/, '');
+    return {
+      params: { lang: job.data.lang, slug },
+      props: { job },
+    };
+  });
+}
+
+const { lang } = Astro.params as { lang: Language; slug: string };
+const { job } = Astro.props;
+const { Content } = await render(job);
+
+const t = {
+  en: {
+    backToJobs: "All open roles",
+    aboutBadge: "About the role",
+    apply: "Apply for this role",
+    applySubtitle: "Quick form. Optional questions are exactly that, optional. We respond to every application.",
+    required: "required",
+    optional: "optional",
+    form: {
+      name: "Full name",
+      namePh: "Jane Doe",
+      email: "Email address",
+      emailPh: "jane@example.com",
+      country: "Country",
+      countryPh: "United Kingdom",
+      startDate: "Earliest start date",
+      rate: "Weekday rate (day rate or hourly)",
+      ratePh: "e.g. £300/day or £35/hour",
+      whyRole: "Why this role?",
+      whyRolePh: "What pulls you specifically toward this engagement?",
+      bonusTitle: "Bonus questions",
+      bonusSubtitle: "Answer the ones that fit. The more substance you bring, the more it helps our screening.",
+      cv: "CV / Resume",
+      cvHelp: "PDF or DOC, max 5MB. Optional - we look at examples and the form answers first.",
+      cvSelected: "File selected:",
+      cvRemove: "Remove",
+      submit: "Send my application",
+      sending: "Sending...",
+      success: "Application received! We'll be in touch within 48 hours.",
+      error: "Something went wrong. Please try again or email",
+      errorFileSize: "File too large (max 5MB)",
+      errorFileType: "Unsupported file type (PDF / DOC / DOCX only)",
+    },
+    sidebar: {
+      details: "Role details",
+      format: "Format",
+      location: "Location",
+      hours: "Hours",
+      duration: "Duration",
+      start: "Start date",
+      posted: "Posted",
+      prefer: "Prefer email?",
+      preferDesc: "Send your application directly to",
+    },
+  },
+  fr: {
+    backToJobs: "Tous les postes ouverts",
+    aboutBadge: "À propos du poste",
+    apply: "Postuler à ce poste",
+    applySubtitle: "Formulaire rapide. Les questions facultatives sont exactement cela, facultatives. Nous répondons à toutes les candidatures.",
+    required: "obligatoire",
+    optional: "facultatif",
+    form: {
+      name: "Nom complet",
+      namePh: "Jeanne Dupont",
+      email: "Adresse email",
+      emailPh: "jeanne@example.com",
+      country: "Pays",
+      countryPh: "France",
+      startDate: "Date de démarrage souhaitée",
+      rate: "Tarif (à la journée ou à l'heure)",
+      ratePh: "Ex: 300 €/jour ou 35 €/heure",
+      whyRole: "Pourquoi ce poste ?",
+      whyRolePh: "Qu'est-ce qui vous attire spécifiquement vers cette mission ?",
+      bonusTitle: "Questions bonus",
+      bonusSubtitle: "Répondez à celles qui vous correspondent. Plus vous apportez de matière, mieux c'est pour le screening.",
+      cv: "CV",
+      cvHelp: "PDF ou DOC, 5 Mo max. Facultatif - nous regardons d'abord les exemples et les réponses au formulaire.",
+      cvSelected: "Fichier sélectionné :",
+      cvRemove: "Retirer",
+      submit: "Envoyer ma candidature",
+      sending: "Envoi en cours...",
+      success: "Candidature reçue ! Nous reviendrons vers vous sous 48 heures.",
+      error: "Une erreur est survenue. Réessayez ou écrivez à",
+      errorFileSize: "Fichier trop volumineux (5 Mo max)",
+      errorFileType: "Type de fichier non supporté (PDF / DOC / DOCX uniquement)",
+    },
+    sidebar: {
+      details: "Détails du poste",
+      format: "Format",
+      location: "Localisation",
+      hours: "Heures",
+      duration: "Durée",
+      start: "Démarrage",
+      posted: "Publié le",
+      prefer: "Vous préférez l'email ?",
+      preferDesc: "Envoyez votre candidature directement à",
+    },
+  },
+}[lang];
+
+const seo = {
+  title: job.data.seo?.title || `${job.data.title}`,
+  description: job.data.seo?.description || job.data.pitch,
+};
+
+const slug = job.id.replace(/\.mdx?$/, '');
+const formId = `careers-form-${slug}`;
+const postedDate = job.data.posted_date
+  ? new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(job.data.posted_date)
+  : null;
+---
+
+<PageLayout title={seo.title} description={seo.description} lang={lang}>
+  <section class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-16 lg:py-20">
+    <div class="container-custom">
+      <a
+        href={`/${lang}/careers`}
+        class="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors mb-6"
+      >
+        <Icon name="arrow-left" size={16} />
+        {t.backToJobs}
+      </a>
+
+      <div class="max-w-3xl">
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/15 border border-primary-500/30 text-primary-300 text-xs font-medium mb-4 uppercase tracking-wider">
+          <Icon name="users" size={14} />
+          {job.data.role}
+        </span>
+        <h1 class="font-display text-3xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+          {job.data.title}
+        </h1>
+        <p class="text-lg text-slate-300 mb-6 leading-relaxed">
+          {job.data.pitch}
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full text-white text-sm">
+            <Icon name="map-pin" size={14} />
+            {job.data.location}
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full text-white text-sm">
+            <Icon name="briefcase" size={14} />
+            {job.data.format}
+          </span>
+          {job.data.hours && (
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full text-white text-sm">
+              <Icon name="clock" size={14} />
+              {job.data.hours}
+            </span>
+          )}
+          {job.data.start_date && (
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-500 rounded-full text-white text-sm font-medium">
+              <Icon name="calendar" size={14} />
+              {t.sidebar.start}: {job.data.start_date}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 lg:py-16">
+    <div class="container-custom">
+      <div class="grid lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
+        <div class="lg:col-span-2">
+          <div class="prose prose-slate prose-lg max-w-none prose-headings:font-display prose-headings:text-slate-900 prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-p:text-slate-700 prose-li:text-slate-700 prose-strong:text-slate-900 prose-a:text-primary-600">
+            <Content />
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="lg:sticky lg:top-24 space-y-6">
+            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+              <h3 class="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">{t.sidebar.details}</h3>
+              <dl class="space-y-3 text-sm">
+                <div>
+                  <dt class="text-slate-500">{t.sidebar.format}</dt>
+                  <dd class="text-slate-900 font-medium">{job.data.format}</dd>
+                </div>
+                <div>
+                  <dt class="text-slate-500">{t.sidebar.location}</dt>
+                  <dd class="text-slate-900 font-medium">{job.data.location}</dd>
+                </div>
+                {job.data.hours && (
+                  <div>
+                    <dt class="text-slate-500">{t.sidebar.hours}</dt>
+                    <dd class="text-slate-900 font-medium">{job.data.hours}</dd>
+                  </div>
+                )}
+                {job.data.duration && (
+                  <div>
+                    <dt class="text-slate-500">{t.sidebar.duration}</dt>
+                    <dd class="text-slate-900 font-medium">{job.data.duration}</dd>
+                  </div>
+                )}
+                {job.data.start_date && (
+                  <div>
+                    <dt class="text-slate-500">{t.sidebar.start}</dt>
+                    <dd class="text-primary-600 font-bold">{job.data.start_date}</dd>
+                  </div>
+                )}
+                {postedDate && (
+                  <div>
+                    <dt class="text-slate-500">{t.sidebar.posted}</dt>
+                    <dd class="text-slate-900 font-medium">{postedDate}</dd>
+                  </div>
+                )}
+              </dl>
+            </div>
+
+            <div class="bg-gradient-to-br from-primary-600 to-violet-600 rounded-2xl p-6 text-white">
+              <h3 class="font-bold mb-2">{t.sidebar.prefer}</h3>
+              <p class="text-sm text-primary-100 mb-3">{t.sidebar.preferDesc}</p>
+              <a href={`mailto:${job.data.apply_email}?subject=${encodeURIComponent('Application: ' + job.data.title)}`} class="inline-flex items-center gap-2 text-white font-semibold underline">
+                {job.data.apply_email}
+                <Icon name="arrow-right" size={14} />
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section id="apply" class="py-16 lg:py-24 bg-slate-50">
+    <div class="container-custom max-w-3xl">
+      <div class="text-center mb-10">
+        <h2 class="font-display text-3xl lg:text-4xl font-bold text-slate-900 mb-3">
+          {t.apply}
+        </h2>
+        <p class="text-slate-600 max-w-xl mx-auto">
+          {t.applySubtitle}
+        </p>
+      </div>
+
+      <form id={formId} class="bg-white rounded-2xl p-8 shadow-xl space-y-6" enctype="multipart/form-data">
+        <input type="hidden" name="job_slug" value={slug} />
+        <input type="hidden" name="job_title" value={job.data.title} />
+        <input type="hidden" name="job_role" value={job.data.role} />
+        <input type="hidden" name="lang" value={lang} />
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label for={`${formId}-name`} class="block text-sm font-bold text-slate-900 mb-2">
+              {t.form.name} <span class="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              id={`${formId}-name`}
+              name="name"
+              required
+              placeholder={t.form.namePh}
+              class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 transition-all outline-none"
+            />
+          </div>
+          <div>
+            <label for={`${formId}-email`} class="block text-sm font-bold text-slate-900 mb-2">
+              {t.form.email} <span class="text-rose-500">*</span>
+            </label>
+            <input
+              type="email"
+              id={`${formId}-email`}
+              name="email"
+              required
+              placeholder={t.form.emailPh}
+              class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 transition-all outline-none"
+            />
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label for={`${formId}-country`} class="block text-sm font-bold text-slate-900 mb-2">
+              {t.form.country} <span class="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              id={`${formId}-country`}
+              name="country"
+              required
+              placeholder={t.form.countryPh}
+              class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 transition-all outline-none"
+            />
+          </div>
+          <div>
+            <label for={`${formId}-start_date`} class="block text-sm font-bold text-slate-900 mb-2">
+              {t.form.startDate} <span class="text-rose-500">*</span>
+            </label>
+            <input
+              type="date"
+              id={`${formId}-start_date`}
+              name="earliest_start_date"
+              required
+              class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 transition-all outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for={`${formId}-rate`} class="block text-sm font-bold text-slate-900 mb-2">
+            {t.form.rate} <span class="text-rose-500">*</span>
+          </label>
+          <input
+            type="text"
+            id={`${formId}-rate`}
+            name="weekday_rate"
+            required
+            placeholder={t.form.ratePh}
+            class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 transition-all outline-none"
+          />
+        </div>
+
+        {job.data.questions_optional && job.data.questions_optional.length > 0 && (
+          <div class="pt-6 border-t-2 border-dashed border-slate-200">
+            <h3 class="font-bold text-slate-900 mb-1">{t.form.bonusTitle}</h3>
+            <p class="text-sm text-slate-500 mb-6 italic">{t.form.bonusSubtitle}</p>
+            <div class="space-y-5">
+              {job.data.questions_optional.map((q) => (
+                <div>
+                  <label for={`${formId}-${q.id}`} class="block text-sm font-medium text-slate-700 mb-2">
+                    {q.label} <span class="italic text-slate-400 font-normal text-xs">({t.optional})</span>
+                  </label>
+                  {q.type === 'textarea' ? (
+                    <textarea
+                      id={`${formId}-${q.id}`}
+                      name={`q_${q.id}`}
+                      rows="3"
+                      placeholder={q.placeholder || ''}
+                      class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all outline-none text-slate-700 resize-none"
+                    ></textarea>
+                  ) : (
+                    <input
+                      type={q.type === 'url' ? 'url' : 'text'}
+                      id={`${formId}-${q.id}`}
+                      name={`q_${q.id}`}
+                      placeholder={q.placeholder || ''}
+                      class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all outline-none text-slate-700"
+                    />
+                  )}
+                  {q.help && (
+                    <p class="mt-1.5 text-xs text-slate-500 italic">{q.help}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div class="pt-6 border-t-2 border-dashed border-slate-200">
+          <label class="block text-sm font-medium text-slate-700 mb-2">
+            {t.form.cv} <span class="italic text-slate-400 font-normal text-xs">({t.optional})</span>
+          </label>
+          <div id={`${formId}-cv-wrap`} class="relative">
+            <input
+              type="file"
+              id={`${formId}-cv`}
+              name="cv"
+              accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              class="block w-full text-sm text-slate-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-900 file:text-white hover:file:bg-slate-800 file:cursor-pointer cursor-pointer"
+            />
+            <div id={`${formId}-cv-selected`} class="hidden mt-3 flex items-center gap-3 p-3 bg-primary-50 border border-primary-200 rounded-lg">
+              <Icon name="check-circle" size={20} class="text-primary-600 shrink-0" />
+              <span class="text-sm text-slate-700 flex-1 truncate" id={`${formId}-cv-filename`}></span>
+              <button type="button" id={`${formId}-cv-remove`} class="text-xs text-rose-600 font-medium hover:text-rose-800 shrink-0">{t.form.cvRemove}</button>
+            </div>
+            <div id={`${formId}-cv-error`} class="hidden mt-2 text-xs text-rose-600"></div>
+          </div>
+          <p class="mt-2 text-xs text-slate-500 italic">{t.form.cvHelp}</p>
+        </div>
+
+        <AntiSpam lang={lang} formId={`careers-${slug}`} />
+
+        <button
+          type="submit"
+          id={`${formId}-submit`}
+          class="w-full py-4 px-6 bg-slate-900 text-white hover:bg-slate-800 font-semibold rounded-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+        >
+          <span class={`${formId}-btn-text`}>{t.form.submit}</span>
+          <Icon name="send" size={20} />
+          <svg class={`${formId}-spinner hidden animate-spin h-5 w-5`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </button>
+
+        <div id={`${formId}-success`} class="hidden p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-center">
+          {t.form.success}
+        </div>
+        <div id={`${formId}-error`} class="hidden p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-center">
+          <span>{t.form.error}</span> <a href={`mailto:${job.data.apply_email}`} class="underline font-semibold">{job.data.apply_email}</a>.
+        </div>
+      </form>
+    </div>
+  </section>
+</PageLayout>
+
+<script define:vars={{ webhookUrl: 'https://n8n.mydigipal.com/webhook/careers-apply', formId, pageLang: lang, antispamFormId: `careers-${slug}`, applyEmail: job.data.apply_email, maxFileSize: 5 * 1024 * 1024, errorFileSize: t.form.errorFileSize, errorFileType: t.form.errorFileType, sendingText: t.form.sending, submitText: t.form.submit }}>
+  const form = document.getElementById(formId);
+  if (form) {
+    const submitBtn = document.getElementById(`${formId}-submit`);
+    const btnText = form.querySelector(`.${formId}-btn-text`);
+    const spinner = form.querySelector(`.${formId}-spinner`);
+    const successMsg = document.getElementById(`${formId}-success`);
+    const errorMsg = document.getElementById(`${formId}-error`);
+
+    // CV upload UI
+    const cvInput = document.getElementById(`${formId}-cv`);
+    const cvSelected = document.getElementById(`${formId}-cv-selected`);
+    const cvFilename = document.getElementById(`${formId}-cv-filename`);
+    const cvRemove = document.getElementById(`${formId}-cv-remove`);
+    const cvError = document.getElementById(`${formId}-cv-error`);
+
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+    cvInput?.addEventListener('change', () => {
+      cvError.classList.add('hidden');
+      cvError.textContent = '';
+      const file = cvInput.files?.[0];
+      if (!file) {
+        cvSelected.classList.add('hidden');
+        return;
+      }
+      if (file.size > maxFileSize) {
+        cvError.textContent = errorFileSize;
+        cvError.classList.remove('hidden');
+        cvInput.value = '';
+        cvSelected.classList.add('hidden');
+        return;
+      }
+      if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|docx?|DOC|DOCX|PDF)$/)) {
+        cvError.textContent = errorFileType;
+        cvError.classList.remove('hidden');
+        cvInput.value = '';
+        cvSelected.classList.add('hidden');
+        return;
+      }
+      cvFilename.textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+      cvSelected.classList.remove('hidden');
+    });
+
+    cvRemove?.addEventListener('click', () => {
+      cvInput.value = '';
+      cvSelected.classList.add('hidden');
+      cvError.classList.add('hidden');
+    });
+
+    function validateAntiSpam(formData) {
+      const messages = {
+        en: { math: 'Incorrect answer to the security question.', honeypot: 'Form submission blocked.', timing: 'Please take a moment to fill out the form properly.' },
+        fr: { math: 'Réponse incorrecte à la question de sécurité.', honeypot: 'Soumission bloquée.', timing: 'Veuillez prendre le temps de remplir le formulaire correctement.' },
+      };
+      const t = messages[pageLang] || messages.en;
+      const honeypot = formData.get('website_url');
+      if (honeypot && String(honeypot).trim() !== '') return { valid: false, error: t.honeypot };
+      const timestamp = formData.get('antispam_timestamp');
+      if (timestamp) {
+        const elapsed = (Date.now() - parseInt(timestamp, 10)) / 1000;
+        if (elapsed < 3) return { valid: false, error: t.timing };
+      }
+      const answer = formData.get('antispam_answer');
+      const expected = formData.get('antispam_expected');
+      if (!answer || !expected) return { valid: false, error: t.math };
+      try {
+        const expectedVal = parseInt(atob(expected), 10);
+        const providedVal = parseInt(answer, 10);
+        if (providedVal !== expectedVal) return { valid: false, error: t.math };
+      } catch (e) { return { valid: false, error: t.math }; }
+      return { valid: true };
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      const spamCheck = validateAntiSpam(formData);
+      if (!spamCheck.valid) {
+        const errorEl = document.getElementById(`antispam-error-${antispamFormId}`);
+        if (errorEl) {
+          errorEl.textContent = spamCheck.error;
+          errorEl.classList.remove('hidden');
+        }
+        const inputEl = document.getElementById(`antispam-${antispamFormId}`);
+        if (inputEl) inputEl.classList.add('border-red-500');
+        return;
+      }
+
+      const errorEl = document.getElementById(`antispam-error-${antispamFormId}`);
+      if (errorEl) errorEl.classList.add('hidden');
+      const inputEl = document.getElementById(`antispam-${antispamFormId}`);
+      if (inputEl) inputEl.classList.remove('border-red-500');
+
+      // Append metadata
+      formData.append('timestamp', new Date().toISOString());
+      formData.append('source', window.location.href);
+
+      btnText.textContent = sendingText;
+      spinner.classList.remove('hidden');
+      submitBtn.disabled = true;
+      successMsg.classList.add('hidden');
+      errorMsg.classList.add('hidden');
+
+      try {
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          if (typeof window !== 'undefined' && window.dataLayer) {
+            window.dataLayer.push({
+              event: 'careers_application_submit',
+              form_name: 'careers',
+              job_slug: formData.get('job_slug'),
+              form_location: window.location.pathname,
+            });
+          }
+          form.dataset.submitted = 'true';
+          successMsg.classList.remove('hidden');
+          form.reset();
+          cvSelected.classList.add('hidden');
+          // Smooth scroll to success message
+          successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          throw new Error('Failed to submit');
+        }
+      } catch (err) {
+        errorMsg.classList.remove('hidden');
+        errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } finally {
+        btnText.textContent = submitText;
+        spinner.classList.add('hidden');
+        submitBtn.disabled = false;
+      }
+    });
+  }
+</script>
