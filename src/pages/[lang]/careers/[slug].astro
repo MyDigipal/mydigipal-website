@@ -252,6 +252,12 @@ const postedDate = job.data.posted_date
         <input type="hidden" name="job_title" value={job.data.title} />
         <input type="hidden" name="job_role" value={job.data.role} />
         <input type="hidden" name="lang" value={lang} />
+        <input type="hidden" name="utm_source" value="" />
+        <input type="hidden" name="utm_medium" value="" />
+        <input type="hidden" name="utm_campaign" value="" />
+        <input type="hidden" name="utm_content" value="" />
+        <input type="hidden" name="utm_term" value="" />
+        <input type="hidden" name="referrer" value="" />
 
         <div class="grid md:grid-cols-2 gap-6">
           <div>
@@ -411,6 +417,30 @@ const postedDate = job.data.posted_date
 <script define:vars={{ webhookUrl: 'https://n8n.mydigipal.com/webhook/careers-apply', formId, pageLang: lang, antispamFormId: `careers-${slug}`, applyEmail: job.data.apply_email, maxFileSize: 5 * 1024 * 1024, errorFileSize: t.form.errorFileSize, errorFileType: t.form.errorFileType, sendingText: t.form.sending, submitText: t.form.submit }}>
   const form = document.getElementById(formId);
   if (form) {
+    // Capture UTM params + referrer at page load and inject into hidden fields.
+    // Persist last-seen UTMs to sessionStorage so they survive in-site nav between landing and submit.
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+      const stored = (() => {
+        try { return JSON.parse(sessionStorage.getItem('mdp_utm') || '{}'); } catch { return {}; }
+      })();
+      const captured = { ...stored };
+      utmKeys.forEach((k) => {
+        const v = params.get(k);
+        if (v) captured[k] = v;
+      });
+      try { sessionStorage.setItem('mdp_utm', JSON.stringify(captured)); } catch {}
+      utmKeys.forEach((k) => {
+        const input = form.querySelector(`input[name="${k}"]`);
+        if (input && captured[k]) input.value = captured[k];
+      });
+      const refInput = form.querySelector('input[name="referrer"]');
+      if (refInput) refInput.value = document.referrer || '';
+    } catch (e) {
+      // non-blocking
+    }
+
     const submitBtn = document.getElementById(`${formId}-submit`);
     const btnText = form.querySelector(`.${formId}-btn-text`);
     const spinner = form.querySelector(`.${formId}-spinner`);
