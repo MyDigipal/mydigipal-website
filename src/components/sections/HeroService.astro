@@ -1,8 +1,19 @@
 ---
 import { type Language } from '@/i18n/config';
 import { t } from '@/i18n/utils';
-import Button from '@/components/ui/Button.astro';
 import Icon from '@/components/ui/Icon.astro';
+
+interface Metric {
+  value: string;
+  label: string;
+}
+
+interface HeroTestimonial {
+  quote: string;
+  author: string;
+  role?: string;
+  company?: string;
+}
 
 interface Props {
   lang: Language;
@@ -11,292 +22,222 @@ interface Props {
   subheadline?: string;
   description: string;
   color?: 'seo' | 'ads' | 'social' | 'abm' | 'training' | 'emailing' | 'ai' | 'tracking' | 'content' | 'primary' | 'automotive';
+  /** 2-4 key result metrics surfaced above the fold (proof). */
+  metrics?: Metric[];
+  /** Scannable "what you get" bullets (typically service feature titles). */
+  proofPoints?: string[];
+  /** Optional one-line social proof shown in the proof panel footer. */
+  testimonial?: HeroTestimonial;
 }
 
-const { lang, badge, headline, subheadline, description, color = 'primary' } = Astro.props;
+const {
+  lang,
+  badge,
+  headline,
+  subheadline,
+  description,
+  color = 'primary',
+  metrics = [],
+  proofPoints = [],
+  testimonial,
+} = Astro.props;
 
 const colorConfig = {
-  seo: {
-    gradient: 'from-emerald-500 to-teal-600',
-    light: 'bg-emerald-50 text-emerald-600',
-    glow: 'shadow-emerald-500/25',
-    accent: 'text-emerald-500',
-  },
-  ads: {
-    gradient: 'from-amber-500 to-orange-600',
-    light: 'bg-amber-50 text-amber-600',
-    glow: 'shadow-amber-500/25',
-    accent: 'text-amber-500',
-  },
-  social: {
-    gradient: 'from-violet-500 to-purple-600',
-    light: 'bg-violet-50 text-violet-600',
-    glow: 'shadow-violet-500/25',
-    accent: 'text-violet-500',
-  },
-  abm: {
-    gradient: 'from-pink-500 to-rose-600',
-    light: 'bg-pink-50 text-pink-600',
-    glow: 'shadow-pink-500/25',
-    accent: 'text-pink-500',
-  },
-  training: {
-    gradient: 'from-cyan-500 to-blue-600',
-    light: 'bg-cyan-50 text-cyan-600',
-    glow: 'shadow-cyan-500/25',
-    accent: 'text-cyan-500',
-  },
-  emailing: {
-    gradient: 'from-rose-500 to-pink-600',
-    light: 'bg-rose-50 text-rose-600',
-    glow: 'shadow-rose-500/25',
-    accent: 'text-rose-500',
-  },
-  ai: {
-    gradient: 'from-indigo-500 to-purple-600',
-    light: 'bg-indigo-50 text-indigo-600',
-    glow: 'shadow-indigo-500/25',
-    accent: 'text-indigo-500',
-  },
-  tracking: {
-    gradient: 'from-teal-500 to-cyan-600',
-    light: 'bg-teal-50 text-teal-600',
-    glow: 'shadow-teal-500/25',
-    accent: 'text-teal-500',
-  },
-  content: {
-    gradient: 'from-violet-500 to-purple-600',
-    light: 'bg-violet-50 text-violet-600',
-    glow: 'shadow-violet-500/25',
-    accent: 'text-violet-500',
-  },
-  primary: {
-    gradient: 'from-blue-500 to-indigo-600',
-    light: 'bg-blue-50 text-blue-600',
-    glow: 'shadow-blue-500/25',
-    accent: 'text-blue-500',
-  },
-  automotive: {
-    gradient: 'from-sky-500 to-blue-600',
-    light: 'bg-sky-50 text-sky-600',
-    glow: 'shadow-sky-500/25',
-    accent: 'text-sky-500',
-  },
+  seo: { gradient: 'from-emerald-500 to-teal-600', accent: 'text-emerald-400', ring: 'ring-emerald-500/30' },
+  ads: { gradient: 'from-amber-500 to-orange-600', accent: 'text-amber-400', ring: 'ring-amber-500/30' },
+  social: { gradient: 'from-violet-500 to-purple-600', accent: 'text-violet-400', ring: 'ring-violet-500/30' },
+  abm: { gradient: 'from-pink-500 to-rose-600', accent: 'text-pink-400', ring: 'ring-pink-500/30' },
+  training: { gradient: 'from-cyan-500 to-blue-600', accent: 'text-cyan-400', ring: 'ring-cyan-500/30' },
+  emailing: { gradient: 'from-rose-500 to-pink-600', accent: 'text-rose-400', ring: 'ring-rose-500/30' },
+  ai: { gradient: 'from-indigo-500 to-purple-600', accent: 'text-indigo-400', ring: 'ring-indigo-500/30' },
+  tracking: { gradient: 'from-teal-500 to-cyan-600', accent: 'text-teal-400', ring: 'ring-teal-500/30' },
+  content: { gradient: 'from-violet-500 to-purple-600', accent: 'text-violet-400', ring: 'ring-violet-500/30' },
+  primary: { gradient: 'from-blue-500 to-indigo-600', accent: 'text-blue-400', ring: 'ring-blue-500/30' },
+  automotive: { gradient: 'from-sky-500 to-blue-600', accent: 'text-sky-400', ring: 'ring-sky-500/30' },
 };
 
 const colors = colorConfig[color];
+
+// Compact, dark-safe client logo strip (white pills) for instant credibility.
+const heroLogos = [
+  { name: 'Genesys', logo: '/images/Client logo/genesys-vector-logo.png' },
+  { name: 'Quantum Metrics', logo: '/images/Client logo/quantum.png' },
+  { name: 'OpenText', logo: '/images/Client logo/opentext-logo.png' },
+  { name: 'GWI', logo: '/images/Client logo/GWI.webp' },
+  { name: 'BYmyCAR', logo: '/images/Client logo/BYmyCAR.png' },
+];
+
+const labels = {
+  en: { trusted: 'Trusted by', results: 'Real results', whatYouGet: 'What you get', and: 'and' },
+  fr: { trusted: 'Ils nous font confiance', results: 'Résultats concrets', whatYouGet: 'Ce que vous obtenez', and: 'et' },
+};
+const lbl = labels[lang] || labels.en;
+
+const showPanel = metrics.length > 0 || proofPoints.length > 0;
 ---
 
-<section class="hero-section relative min-h-screen flex items-center overflow-hidden bg-slate-950">
+<section class="hero-section relative flex items-center overflow-hidden bg-slate-950 min-h-[88vh] lg:min-h-screen">
   <!-- Animated Background with Parallax -->
   <div class="absolute inset-0 pointer-events-none">
-    <!-- Main gradient orbs - will move with mouse -->
-    <div
-      class={`parallax-orb orb-1 absolute w-[500px] h-[500px] bg-gradient-to-r ${colors.gradient} rounded-full blur-[100px] opacity-30`}
-      data-speed="0.05"
-    ></div>
-    <div
-      class={`parallax-orb orb-2 absolute w-[400px] h-[400px] bg-gradient-to-r ${colors.gradient} rounded-full blur-[80px] opacity-25`}
-      data-speed="0.03"
-    ></div>
-    <div
-      class={`parallax-orb orb-3 absolute w-[300px] h-[300px] bg-gradient-to-br from-purple-500 to-pink-500 rounded-full blur-[60px] opacity-20`}
-      data-speed="0.07"
-    ></div>
-    <div
-      class="parallax-orb orb-4 absolute w-[600px] h-[600px] bg-gradient-to-r from-slate-800 to-slate-900 rounded-full blur-[100px] opacity-60"
-      data-speed="0.02"
-    ></div>
-
-    <!-- Floating particles -->
-    <div class="particles">
-      {Array.from({ length: 20 }).map((_, i) => (
-        <div
-          class={`particle absolute w-1 h-1 rounded-full bg-gradient-to-r ${colors.gradient} opacity-40`}
-          style={`
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            animation-delay: ${Math.random() * 5}s;
-            animation-duration: ${3 + Math.random() * 4}s;
-          `}
-        ></div>
-      ))}
-    </div>
+    <div class={`parallax-orb orb-1 absolute w-[500px] h-[500px] bg-gradient-to-r ${colors.gradient} rounded-full blur-[100px] opacity-30`} data-speed="0.05"></div>
+    <div class={`parallax-orb orb-2 absolute w-[400px] h-[400px] bg-gradient-to-r ${colors.gradient} rounded-full blur-[80px] opacity-25`} data-speed="0.03"></div>
+    <div class="parallax-orb orb-4 absolute w-[600px] h-[600px] bg-gradient-to-r from-slate-800 to-slate-900 rounded-full blur-[100px] opacity-60" data-speed="0.02"></div>
 
     <!-- Grid pattern -->
     <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiMxZTI5M2IiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6TTEgMWg1OHY1OEgxVjF6IiBmaWxsPSIjMzM0MTU1IiBmaWxsLW9wYWNpdHk9Ii4zIi8+PC9nPjwvc3ZnPg==')] opacity-10"></div>
-
-    <!-- Radial gradient overlay -->
     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/50 to-slate-950"></div>
   </div>
 
   <!-- Content -->
-  <div class="relative z-10 container-custom py-20 pb-32">
-    <div class="max-w-4xl mx-auto text-center">
-      <!-- Badge -->
-      {badge && (
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 mb-8 animate-fade-in-down">
-          <span class={`w-2 h-2 rounded-full bg-gradient-to-r ${colors.gradient} animate-pulse`}></span>
-          <span class="text-white/90 font-medium">{badge}</span>
-          <span class="text-white/60">✨</span>
+  <div class="relative z-10 container-custom py-24 lg:py-20">
+    <div class={`grid items-center gap-10 lg:gap-16 ${showPanel ? 'lg:grid-cols-[1.05fr_0.95fr]' : ''}`}>
+      <!-- Left column: message + CTAs + logos -->
+      <div class="max-w-2xl">
+        {badge && (
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 mb-6 animate-fade-in-down">
+            <span class={`w-2 h-2 rounded-full bg-gradient-to-r ${colors.gradient} animate-pulse`}></span>
+            <span class="text-white/90 font-medium text-sm">{badge}</span>
+          </div>
+        )}
+
+        <h1 class="font-display text-[2.25rem] sm:text-5xl lg:text-6xl font-bold text-white mb-5 leading-[1.08] break-words hyphens-auto" lang={lang}>
+          {headline}
+        </h1>
+
+        {subheadline && (
+          <p class={`text-lg sm:text-xl font-semibold ${colors.accent} mb-5 animate-fade-in animation-delay-300`}>
+            {subheadline}
+          </p>
+        )}
+
+        <p class="text-base sm:text-lg text-slate-400 mb-8 animate-fade-in animation-delay-500">
+          {description}
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap gap-4 animate-fade-in animation-delay-700">
+          <a
+            href={`/${lang}/contact`}
+            class="group inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-white text-slate-900 hover:bg-slate-100 font-semibold text-base shadow-xl hover:shadow-2xl hover:scale-[1.03] transition-all duration-300"
+          >
+            {t(lang, 'cta.startProject')}
+            <Icon name="arrow-right" size={20} class="group-hover:translate-x-1 transition-transform" />
+          </a>
+          <a
+            href={`/${lang}/calculator`}
+            class="inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold text-base hover:bg-white/20 hover:scale-[1.03] transition-all duration-300"
+          >
+            <span>🧮</span>
+            {t(lang, 'cta.calculateBudget')}
+          </a>
+        </div>
+
+        <!-- Client logo strip -->
+        <div class="mt-10 animate-fade-in animation-delay-700">
+          <p class="text-xs uppercase tracking-wider text-slate-500 mb-3">{lbl.trusted}</p>
+          <div class="flex flex-wrap items-center gap-2.5">
+            {heroLogos.map((c) => (
+              <div class="h-9 w-[88px] bg-white/90 rounded-lg flex items-center justify-center px-2.5 shadow-sm">
+                <img src={c.logo} alt={c.name} class="max-h-5 max-w-full object-contain" loading="eager" width="80" height="20" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column: proof panel -->
+      {showPanel && (
+        <div class={`relative rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-6 sm:p-7 shadow-2xl ring-1 ${colors.ring} animate-fade-in animation-delay-500`}>
+          {metrics.length > 0 && (
+            <>
+              <div class="flex items-center gap-2 mb-5">
+                <span class={`w-2 h-2 rounded-full bg-gradient-to-r ${colors.gradient}`}></span>
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">{lbl.results}</span>
+              </div>
+              <div class="grid grid-cols-2 gap-x-6 gap-y-5 mb-6">
+                {metrics.slice(0, 4).map((m) => (
+                  <div>
+                    <div class={`text-3xl sm:text-4xl font-bold font-display ${colors.accent} leading-none`}>{m.value}</div>
+                    <div class="text-xs text-slate-400 mt-1.5 leading-tight">{m.label}</div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {proofPoints.length > 0 && (
+            <div class={metrics.length > 0 ? 'pt-5 border-t border-white/10' : ''}>
+              <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-3">{lbl.whatYouGet}</p>
+              <ul class="space-y-2.5">
+                {proofPoints.slice(0, 4).map((p) => (
+                  <li class="flex items-start gap-2.5 text-sm text-slate-200">
+                    <span class={`mt-0.5 flex-shrink-0 w-4 h-4 rounded-full bg-gradient-to-r ${colors.gradient} flex items-center justify-center`}>
+                      <svg class="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    </span>
+                    <span>{p}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {testimonial && (
+            <figure class="mt-6 pt-5 border-t border-white/10">
+              <blockquote class="text-sm text-slate-300 italic leading-relaxed">“{testimonial.quote}”</blockquote>
+              <figcaption class="mt-2 text-xs text-slate-400">
+                <span class="text-slate-200 font-medium not-italic">{testimonial.author}</span>{testimonial.role ? `, ${testimonial.role}` : ''}{testimonial.company ? ` — ${testimonial.company}` : ''}
+              </figcaption>
+            </figure>
+          )}
         </div>
       )}
-
-      <!-- Headline with gradient -->
-      <h1 class="font-display text-[2.25rem] sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.1] break-words hyphens-auto" lang={lang}>
-        <span class="hero-text-reveal">{headline}</span>
-      </h1>
-
-      <!-- Subheadline -->
-      {subheadline && (
-        <p class={`text-xl sm:text-2xl font-medium ${colors.accent} mb-6 animate-fade-in animation-delay-300`}>
-          {subheadline}
-        </p>
-      )}
-
-      <!-- Description -->
-      <p class="text-lg text-slate-400 max-w-2xl mx-auto mb-10 animate-fade-in animation-delay-500">
-        {description}
-      </p>
-
-      <!-- CTA Buttons -->
-      <div class="flex flex-wrap justify-center gap-4 animate-fade-in animation-delay-700">
-        <a
-          href={`/${lang}/contact`}
-          class={`group inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300`}
-        >
-          <span>🚀</span>
-          {t(lang, 'cta.startProject')}
-          <Icon name="arrow-right" size={20} class="group-hover:translate-x-1 transition-transform" />
-        </a>
-        <a
-          href={`/${lang}/calculator`}
-          class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold text-lg hover:bg-white/20 hover:scale-105 transition-all duration-300"
-        >
-          <span>🧮</span>
-          {t(lang, 'cta.calculateBudget')}
-        </a>
-      </div>
     </div>
   </div>
-
 </section>
 
 <style>
-  /* Orb positions */
-  .orb-1 {
-    top: 10%;
-    left: -10%;
-  }
-  .orb-2 {
-    bottom: 20%;
-    right: -5%;
-  }
-  .orb-3 {
-    top: 50%;
-    left: 60%;
-    transform: translate(-50%, -50%);
-  }
-  .orb-4 {
-    top: 40%;
-    left: 30%;
-  }
+  .orb-1 { top: 8%; left: -10%; }
+  .orb-2 { bottom: 15%; right: -5%; }
+  .orb-4 { top: 40%; left: 30%; }
 
-  /* Particle animation */
-  .particle {
-    animation: float-particle linear infinite;
-  }
-
-  @keyframes float-particle {
-    0%, 100% {
-      transform: translateY(0) translateX(0) scale(1);
-      opacity: 0;
-    }
-    10% {
-      opacity: 0.4;
-    }
-    50% {
-      transform: translateY(-100px) translateX(20px) scale(1.5);
-      opacity: 0.6;
-    }
-    90% {
-      opacity: 0.4;
-    }
-  }
-
-  /* Text reveal animation */
-  .hero-text-reveal {
-    background: linear-gradient(90deg, #fff 0%, #fff 50%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.3) 100%);
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    animation: text-reveal 1s ease forwards;
-  }
-
-  @keyframes text-reveal {
-    from { background-position: 100% 0; }
-    to { background-position: 0% 0; }
-  }
-
-  /* Animation delays */
   .animation-delay-300 { animation-delay: 300ms; }
   .animation-delay-500 { animation-delay: 500ms; }
   .animation-delay-700 { animation-delay: 700ms; }
 
-  /* Fade animations */
-  @keyframes fade-in {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fade-in-down { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-  @keyframes fade-in-down {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  .animate-fade-in { animation: fade-in 0.7s ease forwards; opacity: 0; }
+  .animate-fade-in-down { animation: fade-in-down 0.7s ease forwards; opacity: 0; }
 
-  .animate-fade-in {
-    animation: fade-in 0.8s ease forwards;
-    opacity: 0;
-  }
-
-  .animate-fade-in-down {
-    animation: fade-in-down 0.8s ease forwards;
-    opacity: 0;
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in, .animate-fade-in-down { animation: none; opacity: 1; transform: none; }
+    .parallax-orb { animation: none !important; }
   }
 </style>
 
 <script>
-  // Mouse parallax effect for orbs
+  // Mouse parallax for orbs (skipped under reduced motion)
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const heroSection = document.querySelector('.hero-section');
   const orbs = document.querySelectorAll('.parallax-orb');
 
-  if (heroSection && orbs.length > 0) {
-    let mouseX = 0;
-    let mouseY = 0;
-    let currentX = 0;
-    let currentY = 0;
-
+  if (!prefersReduced && heroSection && orbs.length > 0) {
+    let mouseX = 0, mouseY = 0, currentX = 0, currentY = 0;
     heroSection.addEventListener('mousemove', (e) => {
       const rect = heroSection.getBoundingClientRect();
-      mouseX = (e.clientX - rect.left - rect.width / 2) / rect.width;
-      mouseY = (e.clientY - rect.top - rect.height / 2) / rect.height;
+      mouseX = ((e as MouseEvent).clientX - rect.left - rect.width / 2) / rect.width;
+      mouseY = ((e as MouseEvent).clientY - rect.top - rect.height / 2) / rect.height;
     });
-
     function animate() {
-      // Smooth interpolation
       currentX += (mouseX - currentX) * 0.05;
       currentY += (mouseY - currentY) * 0.05;
-
       orbs.forEach((orb) => {
         const speed = parseFloat(orb.getAttribute('data-speed') || '0.05');
-        const x = currentX * 100 * speed;
-        const y = currentY * 100 * speed;
-        (orb as HTMLElement).style.transform = `translate(${x}px, ${y}px)`;
+        (orb as HTMLElement).style.transform = `translate(${currentX * 100 * speed}px, ${currentY * 100 * speed}px)`;
       });
-
       requestAnimationFrame(animate);
     }
-
     animate();
   }
 </script>

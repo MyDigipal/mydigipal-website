@@ -135,10 +135,14 @@ const {
   color = 'primary',
   hero,
   metrics,
+  features,
   testimonial,
   calculatorServiceId,
   seo
 } = service.data;
+
+// Top feature titles surfaced as scannable "what you get" proof in the hero.
+const heroProofPoints = (features || []).slice(0, 4).map((f: { title: string }) => f.title);
 
 // OG Image: use seo.image > hero.image > default
 const ogImage = seo?.image || hero?.image || undefined;
@@ -266,6 +270,9 @@ const breadcrumbItems = [
     subheadline={hero?.subheadline}
     description={description}
     color={color}
+    metrics={metrics}
+    proofPoints={heroProofPoints}
+    testimonial={testimonial}
   />
 
   <!-- Metrics Counter -->
