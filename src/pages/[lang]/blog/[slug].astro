@@ -8,6 +8,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
 import FAQSchema from '@/components/seo/FAQSchema.astro';
 import TestimonialMarquee from '@/components/sections/TestimonialMarquee.astro';
 import MagneticButton from '@/components/ui/MagneticButton.astro';
+import BlogServiceCTA from '@/components/sections/BlogServiceCTA.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -229,6 +230,9 @@ const categoryLabels: Record<string, Record<string, string>> = {
         <Content />
       </article>
 
+      <!-- Contextual next-step CTA (category-aware) for readers who finish the body -->
+      <BlogServiceCTA lang={lang} category={post.data.category} variant="inline" />
+
       <!-- Tags -->
       {post.data.tags && post.data.tags.length > 0 && (
         <div class="mt-12 pt-8 border-t border-slate-200">
@@ -322,24 +326,11 @@ const categoryLabels: Record<string, Record<string, string>> = {
     </section>
   )}
 
-  <!-- CTA -->
   <!-- Social proof - infinite testimonial marquee -->
   <TestimonialMarquee lang={lang} background="white" />
 
-  <section class="py-16 bg-slate-900 text-white">
-    <div class="container-custom text-center">
-      <h2 class="text-3xl font-bold mb-4">
-        {lang === 'fr' ? 'Besoin d\'aide avec votre marketing digital ?' : 'Need help with your digital marketing?'}
-      </h2>
-      <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-        {lang === 'fr' ? 'Discutons de vos objectifs et voyons comment nous pouvons vous aider à les atteindre.' : 'Let\'s discuss your goals and see how we can help you achieve them.'}
-      </p>
-      <MagneticButton href={`/${lang}/contact`} variant="light" size="lg">
-        {lang === 'fr' ? 'Contactez-nous' : 'Contact Us'}
-        <Icon name="arrow-right" size={20} />
-      </MagneticButton>
-    </div>
-  </section>
+  <!-- Category-aware conversion CTA (maps the article topic to the matching service) -->
+  <BlogServiceCTA lang={lang} category={post.data.category} variant="full" />
 </PageLayout>
 
 <style>

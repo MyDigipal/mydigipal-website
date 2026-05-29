@@ -1,0 +1,104 @@
+---
+/**
+ * BlogServiceCTA - category-aware conversion block for blog articles.
+ *
+ * Blog organic landings bounce 85-88% with no next-step pull. Instead of a
+ * generic "Contact us" footer, this maps the post category to the relevant
+ * service page + a tailored pitch, turning topical reading intent into a
+ * service path. Two variants:
+ *   - inline: compact card placed right after the article body (catches
+ *     readers who finish the prose but would otherwise leave).
+ *   - full:   rich dark section at the bottom of the page.
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import MagneticButton from '@/components/ui/MagneticButton.astro';
+
+interface Props {
+  lang: Language;
+  category?: string;
+  variant?: 'inline' | 'full';
+}
+
+const { lang, category = 'strategy', variant = 'full' } = Astro.props;
+
+type CtaConfig = {
+  service: string; // service slug, or '' for contact
+  en: { eyebrow: string; title: string; body: string; cta: string };
+  fr: { eyebrow: string; title: string; body: string; cta: string };
+};
+
+const map: Record<string, CtaConfig> = {
+  ai: {
+    service: 'ai-training',
+    en: { eyebrow: 'AI for your team', title: 'Put this into practice with your team', body: 'We train marketing teams to use AI in production and build custom MCP agents on the tools you already use.', cta: 'Explore AI Training' },
+    fr: { eyebrow: "L'IA pour votre équipe", title: 'Passez de la théorie à la pratique', body: "On forme les équipes marketing à utiliser l'IA en production et on construit des agents MCP sur mesure sur vos outils.", cta: 'Voir la Formation IA' },
+  },
+  seo: {
+    service: 'seo',
+    en: { eyebrow: 'SEO & LLMO', title: 'Want results like this on your site?', body: 'AI-enhanced SEO and LLMO: visible on Google, ChatGPT, Perplexity and Gemini. +200% average organic traffic across 50+ clients.', cta: 'Explore SEO' },
+    fr: { eyebrow: 'SEO & LLMO', title: 'Vous voulez ces résultats sur votre site ?', body: "SEO et LLMO boostés à l'IA : visible sur Google, ChatGPT, Perplexity et Gemini. +200% de trafic organique en moyenne sur 50+ clients.", cta: 'Voir le SEO' },
+  },
+  'paid-ads': {
+    service: 'google-ads',
+    en: { eyebrow: 'Paid Media', title: 'Make every euro work harder', body: 'Google Ads and paid social run end-to-end, AI co-piloted. 3.4x average ROAS, no long contracts.', cta: 'Explore Paid Ads' },
+    fr: { eyebrow: 'Paid Media', title: 'Faites travailler chaque euro', body: "Google Ads et paid social pilotés de bout en bout, co-pilotés par l'IA. 3,4x de ROAS moyen, sans engagement long.", cta: 'Voir le Paid Ads' },
+  },
+  abm: {
+    service: 'b2b-abm',
+    en: { eyebrow: 'B2B & ABM', title: 'Turn target accounts into pipeline', body: 'Account-based marketing for B2B: orchestrated across LinkedIn, Google and email, measured down to pipeline.', cta: 'Explore B2B / ABM' },
+    fr: { eyebrow: 'B2B & ABM', title: 'Transformez vos comptes cibles en pipeline', body: "Account-based marketing B2B : orchestré sur LinkedIn, Google et email, mesuré jusqu'au pipeline.", cta: 'Voir le B2B / ABM' },
+  },
+  'marketing-ops': {
+    service: 'tracking-reporting',
+    en: { eyebrow: 'Tracking & Reporting', title: 'Trust your numbers again', body: 'Server-side tracking, clean attribution and AI-generated reports your team can actually act on.', cta: 'Explore Tracking' },
+    fr: { eyebrow: 'Tracking & Reporting', title: 'Refaites confiance à vos chiffres', body: "Tracking server-side, attribution propre et rapports générés par l'IA, exploitables par votre équipe.", cta: 'Voir le Tracking' },
+  },
+  strategy: {
+    service: '',
+    en: { eyebrow: 'Strategy', title: 'Need help with your digital marketing?', body: "Let's discuss your goals and see how our multi-channel, AI co-piloted approach can help you reach them.", cta: 'Book a call' },
+    fr: { eyebrow: 'Stratégie', title: 'Besoin d\'aide avec votre marketing digital ?', body: "Discutons de vos objectifs et voyons comment notre approche multi-canal co-pilotée par l'IA peut vous aider.", cta: 'Réserver un appel' },
+  },
+};
+
+const cfg = map[category] || map.strategy;
+const c = cfg[lang] || cfg.en;
+const primaryHref = cfg.service ? `/${lang}/services/${cfg.service}` : `/${lang}/contact`;
+const calcLabel = lang === 'fr' ? 'Calculer mon budget' : 'Calculate my budget';
+const seeCases = lang === 'fr' ? 'Voir nos études de cas' : 'See our case studies';
+---
+
+{variant === 'inline' ? (
+  <aside class="my-12 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-indigo-50/40 p-6 sm:p-8 not-prose">
+    <p class="text-xs uppercase tracking-wider font-semibold text-indigo-600 mb-2">{c.eyebrow}</p>
+    <h3 class="text-xl font-bold text-slate-900 mb-2 font-display">{c.title}</h3>
+    <p class="text-slate-600 mb-5">{c.body}</p>
+    <div class="flex flex-wrap gap-3">
+      <a href={primaryHref} class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-colors">
+        {c.cta}
+        <Icon name="arrow-right" size={16} />
+      </a>
+      <a href={`/${lang}/calculator`} class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white border border-slate-300 hover:border-indigo-400 text-slate-700 font-semibold text-sm transition-colors">
+        🧮 {calcLabel}
+      </a>
+    </div>
+  </aside>
+) : (
+  <section class="py-16 bg-slate-900 text-white relative overflow-hidden">
+    <div class="absolute top-0 -right-20 w-96 h-96 bg-indigo-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="container-custom relative z-10 max-w-3xl mx-auto text-center">
+      <p class="text-xs uppercase tracking-wider font-semibold text-indigo-300 mb-3">{c.eyebrow}</p>
+      <h2 class="text-3xl font-bold mb-4 font-display">{c.title}</h2>
+      <p class="text-lg text-slate-300 mb-8">{c.body}</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <MagneticButton href={primaryHref} variant="light" size="lg">
+          {c.cta}
+          <Icon name="arrow-right" size={20} />
+        </MagneticButton>
+        <a href={`/${lang}/case-studies`} class="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-white/25 text-white font-semibold hover:bg-white/10 transition-colors">
+          {seeCases}
+        </a>
+      </div>
+    </div>
+  </section>
+)}
