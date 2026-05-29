@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Review site MyDigipal - 29 mai 2026</title>
+<style>
+  :root{
+    --indigo:#4f46e5; --indigo-deep:#3730a3; --violet:#7c3aed; --cyan:#06b6d4;
+    --ink:#0f172a; --ink-2:#1e293b; --muted:#64748b; --muted-2:#94a3b8;
+    --bg:#f8fafc; --card:#ffffff; --border:#e2e8f0;
+    --green:#16a34a; --green-soft:#dcfce7; --amber:#d97706; --amber-soft:#fef3c7;
+    --rose:#e11d48; --rose-soft:#ffe4e6;
+    --font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+  h1,h2,h3{line-height:1.2;letter-spacing:-.01em}
+  a{color:var(--indigo)}
+  code{background:#eef2ff;color:var(--indigo-deep);padding:1px 6px;border-radius:5px;font-size:.85em;font-family:ui-monospace,Menlo,Consolas,monospace}
+
+  header.hero{background:linear-gradient(135deg,#0f172a 0%,#312e81 55%,#4f46e5 100%);color:#fff;padding:46px 0 38px}
+  header.hero .wrap{position:relative}
+  .kicker{font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;color:#c7d2fe;font-weight:700;margin-bottom:10px}
+  header.hero h1{font-size:2.2rem;margin:0 0 10px;font-weight:800}
+  header.hero p.sub{font-size:1.05rem;color:#dbeafe;max-width:720px;margin:0}
+  .statbar{display:flex;flex-wrap:wrap;gap:14px;margin-top:26px}
+  .stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 16px;min-width:130px}
+  .stat .v{font-size:1.5rem;font-weight:800}
+  .stat .l{font-size:.74rem;color:#c7d2fe;text-transform:uppercase;letter-spacing:.06em}
+
+  nav.spy{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  nav.spy ul{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:0;list-style:none;margin:0;padding:0;scrollbar-width:none}
+  nav.spy ul::-webkit-scrollbar{display:none}
+  nav.spy a{display:block;padding:13px 15px;font-size:.8rem;font-weight:600;color:var(--muted);text-decoration:none;border-bottom:3px solid transparent;white-space:nowrap}
+  nav.spy a.active{color:var(--indigo);border-bottom-color:var(--indigo)}
+
+  section{padding:40px 0;border-bottom:1px solid var(--border)}
+  section h2{font-size:1.55rem;margin:0 0 6px;display:flex;align-items:center;gap:12px}
+  section h2 .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:var(--indigo);color:#fff;font-size:.9rem;font-weight:800}
+  section .lead{color:var(--muted);margin:0 0 22px;font-size:1.02rem}
+  h3{font-size:1.12rem;margin:26px 0 10px}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin:14px 0;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+
+  table{width:100%;border-collapse:collapse;font-size:.9rem;margin:10px 0}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--border)}
+  th{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  tr.bad td{background:#fff1f2}
+  tr.good td{background:#f0fdf4}
+  .pill{display:inline-block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:999px}
+  .pill.red{background:var(--rose-soft);color:#9f1239}
+  .pill.amber{background:var(--amber-soft);color:#92400e}
+  .pill.green{background:var(--green-soft);color:#14532d}
+
+  .callout{border-radius:12px;padding:14px 18px;margin:16px 0;border-left:4px solid}
+  .callout.crit{background:#fff1f2;border-color:var(--rose)}
+  .callout.ok{background:#f0fdf4;border-color:var(--green)}
+  .callout.info{background:#eff6ff;border-color:var(--indigo)}
+  .callout.warn{background:#fffbeb;border-color:var(--amber)}
+  .callout strong{color:var(--ink)}
+
+  .banner{border-radius:14px;padding:16px 22px;margin:8px 0 20px;color:#fff;background:linear-gradient(135deg,#15803d,#16a34a)}
+  .banner .t{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;opacity:.9}
+
+  figure{margin:0}
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  @media(max-width:760px){.ba{grid-template-columns:1fr}}
+  .ba figure img{width:100%;border-radius:10px;border:1px solid var(--border);display:block}
+  .ba figcaption{font-size:.8rem;color:var(--muted);margin-top:6px;font-weight:600}
+  .tag-before{color:#9f1239}.tag-after{color:#14532d}
+
+  ul.checklist{list-style:none;margin:8px 0 14px;padding:0}
+  ul.checklist li{margin:0}
+  label.check{display:flex;gap:11px;align-items:flex-start;padding:7px 10px;border-radius:9px;cursor:pointer;transition:background .12s}
+  label.check:hover{background:#f1f5f9}
+  label.check input{flex-shrink:0;width:18px;height:18px;margin:3px 0 0;accent-color:var(--indigo);cursor:pointer}
+  label.check.is-done .txt{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--muted-2)}
+  .txt small{display:block;color:var(--muted);font-weight:400;text-decoration:none}
+  .txt b{font-weight:700}
+
+  textarea{width:100%;min-height:90px;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-family:var(--font);font-size:.92rem;resize:vertical;background:#fffdf7}
+  textarea:focus{outline:none;border-color:var(--indigo)}
+
+  .ref{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+  .ref:last-child{border-bottom:none}
+  .ref .d{font-weight:700;min-width:130px}
+
+  .savebtn{position:fixed;bottom:22px;right:22px;z-index:9999;display:inline-flex;align-items:center;gap:9px;background:var(--indigo);color:#fff;border:none;border-radius:14px;padding:14px 20px;font-family:var(--font);font-size:.95rem;font-weight:700;cursor:pointer;box-shadow:0 8px 24px -6px rgba(79,70,229,.6)}
+  .savebtn:hover{background:var(--indigo-deep)}
+  .savebtn.dirty{animation:pulse 1.4s infinite}
+  .savebtn.saved{background:var(--green)}
+  @keyframes pulse{0%,100%{box-shadow:0 8px 24px -6px rgba(79,70,229,.6)}50%{box-shadow:0 8px 30px 0 rgba(217,119,6,.7)}}
+  .footnote{color:var(--muted);font-size:.85rem}
+  @media print{.savebtn,nav.spy{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Review interne - 29 mai 2026 - Opus 4.8</div>
+    <h1>Review du site MyDigipal : contenu, architecture, design</h1>
+    <p class="sub">Les visiteurs arrivent mais ne restent pas (33s d'engagement moyen, 28% de taux d'engagement). Diagnostic chiffre par page, puis refonte des points de fuite. La home n'est pas le probleme - les pages services et le blog le sont.</p>
+    <div class="statbar">
+      <div class="stat"><div class="v">96 s</div><div class="l">Dwell home /en</div></div>
+      <div class="stat"><div class="v">15-40 s</div><div class="l">Dwell pages services</div></div>
+      <div class="stat"><div class="v">~30</div><div class="l">Conversions / 2 mois</div></div>
+      <div class="stat"><div class="v">24 -> 3</div><div class="l">Calculateur start -> fin</div></div>
+      <div class="stat"><div class="v">5 / 6</div><div class="l">Chantiers livres</div></div>
+    </div>
+  </div>
+</header>
+
+<nav class="spy">
+  <div class="wrap">
+    <ul>
+      <li><a href="#diagnostic">Diagnostic</a></li>
+      <li><a href="#fuites">Les 3 fuites</a></li>
+      <li><a href="#livre">Ce qui est livre</a></li>
+      <li><a href="#reste">Reste a faire</a></li>
+      <li><a href="#benchmark">Benchmark</a></li>
+      <li><a href="#github">Comment Claude code</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ DIAGNOSTIC ============ -->
+<section id="diagnostic">
+  <h2><span class="num">1</span>Diagnostic data (BigQuery GA4, avril-mai 2026)</h2>
+  <p class="lead">Le "33s / 28%" du GA4 est une moyenne trompeuse. Par page, la realite est nette : la home retient, les pages services et le blog font fuir.</p>
+
+  <h3>Pages d'atterrissage (les plus trafiquees)</h3>
+  <table>
+    <thead><tr><th>Page</th><th class="num">Sessions</th><th class="num">Bounce</th><th class="num">Dwell</th><th class="num">Conv.</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr class="good"><td>/en (home)</td><td class="num">1 562</td><td class="num">38,7%</td><td class="num">96 s</td><td class="num">12</td><td><span class="pill green">Sain</span></td></tr>
+      <tr class="good"><td>/fr (home)</td><td class="num">318</td><td class="num">27,7%</td><td class="num">120 s</td><td class="num">0</td><td><span class="pill green">Sain</span></td></tr>
+      <tr class="bad"><td>/fr/services/ai-training</td><td class="num">649</td><td class="num">52,7%</td><td class="num">37 s</td><td class="num">1</td><td><span class="pill red">Fuite</span></td></tr>
+      <tr class="bad"><td>/fr/services/seo</td><td class="num">473</td><td class="num">52,2%</td><td class="num">34 s</td><td class="num">0</td><td><span class="pill red">Fuite</span></td></tr>
+      <tr class="bad"><td>/en/services/ai-training</td><td class="num">436</td><td class="num">53%</td><td class="num">18 s</td><td class="num">1</td><td><span class="pill red">Fuite</span></td></tr>
+      <tr class="bad"><td>/en/services/b2b-abm</td><td class="num">408</td><td class="num">60,3%</td><td class="num">41 s</td><td class="num">0</td><td><span class="pill red">Fuite</span></td></tr>
+      <tr class="bad"><td>/fr/services/google-ads</td><td class="num">231</td><td class="num">80,1%</td><td class="num">15 s</td><td class="num">0</td><td><span class="pill red">Critique</span></td></tr>
+      <tr class="bad"><td>/en/blog/ai-agents-n8n-automation</td><td class="num">228</td><td class="num">88,6%</td><td class="num">47 s</td><td class="num">0</td><td><span class="pill red">Critique</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">Funnel casse en haut</h3>
+      <table>
+        <tbody>
+          <tr><td>Visiteurs (first_visit)</td><td class="num">6 004</td></tr>
+          <tr><td>Scroll a 90%</td><td class="num">842 <span class="footnote">(~13%)</span></td></tr>
+          <tr><td>Clic CTA</td><td class="num">337 <span class="footnote">(~5%)</span></td></tr>
+          <tr><td>Calculateur demarre</td><td class="num">24</td></tr>
+          <tr><td>Calculateur termine</td><td class="num">3</td></tr>
+          <tr><td>Contact (conversion)</td><td class="num">19</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Mobile sous-performe</h3>
+      <table>
+        <thead><tr><th>Device</th><th class="num">Sessions</th><th class="num">Conv.</th></tr></thead>
+        <tbody>
+          <tr><td>Desktop</td><td class="num">3 912</td><td class="num">25</td></tr>
+          <tr class="bad"><td>Mobile</td><td class="num">1 677</td><td class="num">3</td></tr>
+          <tr><td>Tablet</td><td class="num">28</td><td class="num">0</td></tr>
+        </tbody>
+      </table>
+      <p class="footnote">Le mobile = 30% du trafic mais convertit 3,5x moins que le desktop.</p>
+    </div>
+  </div>
+
+  <div class="callout crit">
+    <strong>La decouverte la plus importante.</strong> Le CTA primaire du hero ("Calculate my budget", duplique dans le header) pousse vers un calculateur qui n'a eu que <strong>24 demarrages et 3 completions en 2 mois</strong>. On impose un outil de milieu de funnel a un visiteur froid. Et ceux qui l'utilisent voient le prix dans la sticky card (gratuit) puis repartent sans laisser leur email.
+  </div>
+</section>
+
+<!-- ============ LES 3 FUITES ============ -->
+<section id="fuites">
+  <h2><span class="num">2</span>Les 3 fuites principales</h2>
+  <div class="grid2">
+    <div class="card">
+      <span class="pill red">Fuite n.1</span>
+      <h3>Pages services : hero vide</h3>
+      <p>Hero sur fond sombre = un titre vague + 2 boutons + un grand vide. Aucune preuve, aucun "ce que vous obtenez" above the fold. Resultat : bounce 50-80%, dwell 15-40s, ~0 conversion. C'est la ou atterrit le trafic payant.</p>
+    </div>
+    <div class="card">
+      <span class="pill red">Fuite n.2</span>
+      <h3>Blog : pas de traction</h3>
+      <p>Les articles qui captent l'organique bouncent a 85-88% : aucun pont vers l'etape suivante. Le seul article gated (abm-deck) convertit a 8/34 sessions - preuve que le contenu gated marche.</p>
+    </div>
+    <div class="card">
+      <span class="pill amber">Fuite n.3</span>
+      <h3>Calculateur sous-exploite</h3>
+      <p>Excellent outil (les clients adorent) mais 24 starts / 3 finish. Impose au trafic froid + le prix visible gratuitement = peu de raisons de convertir. A garder et muscler, pas a retrograder.</p>
+    </div>
+    <div class="card">
+      <span class="pill amber">Bonus</span>
+      <h3>2 bugs prod</h3>
+      <p>Police Plus Jakarta Sans en 404 (titres en fallback) + tracking lemlist en 400. Detectes en console live.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CE QUI EST LIVRE ============ -->
+<section id="livre">
+  <h2><span class="num">3</span>Ce qui a ete livre</h2>
+  <div class="banner"><div class="t">Deploye et live</div><div>Tout ce qui suit est en production sur mydigipal.com (commits CRO V6.1 a V6.3, deploy Render).</div></div>
+
+  <h3>3.1 - Police self-hosted (fix du 404)</h3>
+  <p>Le <code>@font-face</code> hardcodait une URL gstatic <code>v8</code> que Google a retiree (404). Les woff2 Inter v20 + Plus Jakarta Sans v12 (latin + latin-ext pour les accents FR) sont desormais heberges dans <code>/public/fonts</code>, charges en local. Plus de 404, plus de requete externe render-blocking.</p>
+  <ul class="checklist">
+    <li><label class="check is-done" for="c1"><input type="checkbox" id="c1" checked><span class="txt"><b>Polices auto-hebergees + 404 elimine</b> <small>verifie live : la home precharge /fonts/*.woff2, le lien gstatic stale a disparu</small></span></label></li>
+  </ul>
+
+  <h3>3.2 - Hero des pages services (la plus grosse fuite)</h3>
+  <p>Un seul composant partage (<code>HeroService.astro</code>) corrige les 9 pages. Layout 2 colonnes : message + CTA + logos clients a gauche, panneau preuve a droite (resultats chiffres, "ce que vous obtenez", temoignage). Visible above the fold y compris sur mobile.</p>
+  <div class="ba">
+    <figure><img src="img/seo-service-abovefold.jpeg" alt="Avant - hero service vide"><figcaption class="tag-before">AVANT - titre vague + 2 boutons + vide</figcaption></figure>
+    <figure><img src="img/seo-hero-NEW-desktop.jpeg" alt="Apres - hero service avec preuve"><figcaption class="tag-after">APRES - metrics + ce que vous obtenez + temoignage + logos</figcaption></figure>
+  </div>
+  <ul class="checklist">
+    <li><label class="check is-done" for="c2"><input type="checkbox" id="c2" checked><span class="txt"><b>Refonte hero des 9 pages services</b> <small>metrics + features + temoignage (deja dans les MDX) remontes above the fold</small></span></label></li>
+  </ul>
+
+  <h3>3.3 - Blog : CTA contextuels par categorie</h3>
+  <p>Nouveau composant <code>BlogServiceCTA.astro</code> qui mappe la categorie de l'article vers le bon service (ai -> Formation IA, seo -> SEO, paid-ads -> Google Ads, abm -> B2B/ABM, marketing-ops -> Tracking), avec un pitch sur mesure. Deux placements : carte compacte juste apres le corps de l'article + section riche en bas. Remplace le "Contact us" generique. Bilingue.</p>
+  <ul class="checklist">
+    <li><label class="check is-done" for="c3"><input type="checkbox" id="c3" checked><span class="txt"><b>CTA blog contextuels (inline + bas de page)</b> <small>pour casser le bounce 85-88% des landings organiques</small></span></label></li>
+  </ul>
+
+  <h3>3.4 - Calculateur : chemin "reserver un appel"</h3>
+  <p>Ajout d'un chemin a faible friction dans le <code>CaptureModal</code> (etat formulaire + etat succes) : "Reserver un appel de 15 min" vers le calendrier MyDigipal. Capte les visiteurs qui ont configure un plan, vu le prix, mais ne rempliront pas le formulaire email.</p>
+  <ul class="checklist">
+    <li><label class="check is-done" for="c4"><input type="checkbox" id="c4" checked><span class="txt"><b>Calculateur : alternative book-a-call</b> <small>conversion additive sans risque sur le composant existant</small></span></label></li>
+  </ul>
+
+  <h3>3.5 - Hero mobile de la home</h3>
+  <p>Les cartes storytelling du hero sont <code>hidden lg:block</code> : invisibles sur mobile. Le mobile ne voyait qu'un titre + un long paragraphe + des CTA. Description resserree + carte preuve mobile-only ("Real-time results" : 4.8x ROAS / +62% pipeline / +247% organique) pres de la ligne de flottaison.</p>
+  <div class="ba">
+    <figure><img src="img/home-mobile-abovefold.jpeg" alt="Avant - mobile home"><figcaption class="tag-before">AVANT - titre + long paragraphe, aucune preuve</figcaption></figure>
+    <figure><img src="img/home-mobile-proofcard.jpeg" alt="Apres - mobile home avec carte preuve"><figcaption class="tag-after">APRES - carte preuve mobile + police corrigee</figcaption></figure>
+  </div>
+  <ul class="checklist">
+    <li><label class="check is-done" for="c5"><input type="checkbox" id="c5" checked><span class="txt"><b>Hero mobile : preuve visuelle ajoutee</b> <small>le mobile convertit 3,5x moins, on lui rend le hook de credibilite</small></span></label></li>
+  </ul>
+</section>
+
+<!-- ============ RESTE A FAIRE ============ -->
+<section id="reste">
+  <h2><span class="num">4</span>Reste a faire</h2>
+  <p class="lead">A cocher au fur et a mesure. Notes editables en bas (bouton Save en bas a droite).</p>
+
+  <div class="callout warn">
+    <strong>Tracking lemlist (action de Paul).</strong> Le tag GTM est correct et installe (tag 144, conteneur GTM-P4TSQ9Q). Mais l'URL <code>app.lemlist.com/api/visitors/tracking?k=...&t=tea_...</code> renvoie un <strong>400 (corps vide)</strong>, en navigateur reel comme en serveur : la cle <code>k</code>/<code>t</code> est expiree ou l'endpoint est deprecie cote lemlist. On ne supprime pas le tag. Il faut recuperer le snippet de tracking a jour dans ton compte lemlist (Settings -> Website visitors / tracking) ; des que tu me le donnes, je remplace le contenu du tag 144 en 30 secondes.
+  </div>
+
+  <ul class="checklist">
+    <li><label class="check" for="t1"><input type="checkbox" id="t1"><span class="txt"><b>Recuperer le snippet lemlist a jour</b> <small>compte lemlist -> me transmettre la nouvelle URL k/t, je patche le tag GTM 144</small></span></label></li>
+    <li><label class="check" for="t2"><input type="checkbox" id="t2"><span class="txt"><b>Repositionner le calculateur en milieu de funnel (P3)</b> <small>le proposer apres une preuve (case study, page service scrollee) plutot qu'au visiteur froid</small></span></label></li>
+    <li><label class="check" for="t3"><input type="checkbox" id="t3"><span class="txt"><b>Generaliser le contenu gated (P2)</b> <small>decks / audits types comme l'abm-deck qui convertit a 8/34</small></span></label></li>
+    <li><label class="check" for="t4"><input type="checkbox" id="t4"><span class="txt"><b>Mesurer l'effet sous 2-4 semaines</b> <small>bounce + dwell pages services, conv. mobile, completions calculateur</small></span></label></li>
+  </ul>
+
+  <h3>Notes / decisions</h3>
+  <textarea id="notes" placeholder="Tes notes, arbitrages, idees pour la prochaine iteration..."></textarea>
+</section>
+
+<!-- ============ BENCHMARK ============ -->
+<section id="benchmark">
+  <h2><span class="num">5</span>Benchmark 2026</h2>
+  <p class="lead">Ce que disent les references et ce qu'on a applique.</p>
+  <div class="callout info">
+    Preuve above the fold = <strong>+7 a +34%</strong> de conversion selon le placement. Les logos clients sont presents above the fold sur <strong>76%</strong> des pages B2B qui convertissent. La preuve chiffree specifique bat 2x les temoignages generiques. C'est exactement ce que la home faisait deja (et pourquoi elle retient), et ce qu'on vient d'apporter aux pages services.
+  </div>
+  <div class="card">
+    <div class="ref"><div class="d">Scale, HockeyStack</div><div>Hero dark high-contrast + screenshots produit reels + preuve persistante. Le modele "preuve immediate" qu'on a porte sur les pages services.</div></div>
+    <div class="ref"><div class="d">Awwwards motion/GSAP</div><div>Patterns d'animation au scroll (staggered fade-up, spring). A utiliser avec parcimonie : seuls ~13% scrollent en profondeur, l'impact doit etre dans le premier ecran.</div></div>
+  </div>
+</section>
+
+<!-- ============ GITHUB ============ -->
+<section id="github" style="border-bottom:none">
+  <h2><span class="num">6</span>Comment Claude code tout ca dans GitHub</h2>
+  <p class="lead">Stack Astro 6 + Tailwind 4 + React islands sur le repo <code>MyDigipal/mydigipal-website</code>, deploy Render auto a chaque push sur <code>main</code>.</p>
+  <div class="card">
+    <p>Toutes les ameliorations ci-dessus ont ete faites directement dans le repo, sans nouvelle dependance ni techno :</p>
+    <ul>
+      <li>Les composants V2 (logos, metrics, magnetic buttons, glass cards) existaient deja - on les a recomposes.</li>
+      <li>Les donnees de preuve (metrics, features, temoignages) etaient deja dans les fichiers MDX des services - on les a juste remontees dans le hero.</li>
+      <li>Les effets "a la Scale/Awwwards" sont reproduits en CSS natif + <code>scroll.ts</code> (pas de Framer payant).</li>
+      <li>Workflow : edit -> build local -> commit -> push -> Render deploie en ~2-3 min. 3 commits propres, chacun build-verifie.</li>
+    </ul>
+    <p class="footnote">Captures et detail technique : ce dossier <code>docs/site-review/</code>. Memoire projet : <code>site_review_action_plan_may2026.md</code>.</p>
+  </div>
+</section>
+
+</main>
+
+<button class="savebtn" id="saveBtn" title="Enregistrer (Ctrl+S)">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+  <span id="saveLabel">Enregistrer</span>
+</button>
+
+<script>
+(function(){
+  // ---- ScrollSpy ----
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main section[id]'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.spy a'));
+  function spy(){
+    var top = window.scrollY + 80, active = null;
+    sections.forEach(function(s){ if(s.offsetTop <= top) active = s.id; });
+    links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#'+active); });
+  }
+  links.forEach(function(a){ a.addEventListener('click', function(e){
+    var t = document.querySelector(a.getAttribute('href')); if(!t) return;
+    e.preventDefault(); t.scrollIntoView({behavior:'smooth',block:'start'});
+    links.forEach(function(x){x.classList.remove('active')}); a.classList.add('active');
+  });});
+  window.addEventListener('scroll', function(){ requestAnimationFrame(spy); }); spy();
+
+  // ---- Checkbox strike-through ----
+  document.querySelectorAll('label.check input[type=checkbox]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      var l = cb.closest('label.check');
+      if(cb.checked) l.classList.add('is-done'); else l.classList.remove('is-done');
+      markDirty();
+    });
+  });
+
+  // ---- Dirty state ----
+  var dirty = false, fileHandle = null;
+  var btn = document.getElementById('saveBtn'), label = document.getElementById('saveLabel');
+  function markDirty(){ dirty = true; btn.classList.add('dirty'); btn.classList.remove('saved'); label.textContent = 'Enregistrer *'; }
+  document.getElementById('notes').addEventListener('input', markDirty);
+
+  // ---- Serialize current DOM with checkbox/textarea state baked in ----
+  function prepareHtmlForSave(){
+    document.querySelectorAll('input[type=checkbox]').forEach(function(c){
+      if(c.checked) c.setAttribute('checked',''); else c.removeAttribute('checked');
+    });
+    document.querySelectorAll('textarea').forEach(function(t){ t.textContent = t.value; });
+    return '<!doctype html>\n' + document.documentElement.outerHTML;
+  }
+  function markSaved(){ dirty=false; btn.classList.remove('dirty'); btn.classList.add('saved'); label.textContent='Enregistre !'; setTimeout(function(){ if(!dirty){ btn.classList.remove('saved'); label.textContent='Enregistrer'; } },2200); }
+
+  async function save(){
+    var html = prepareHtmlForSave();
+    if(window.showSaveFilePicker){
+      try{
+        if(!fileHandle){
+          fileHandle = await window.showSaveFilePicker({ suggestedName:'MyDigipal_Site_Review_29May2026.html', types:[{description:'HTML',accept:{'text/html':['.html']}}] });
+        }
+        var w = await fileHandle.createWritable(); await w.write(html); await w.close(); markSaved(); return;
+      }catch(e){ if(e && e.name==='AbortError') return; }
+    }
+    var blob = new Blob([html],{type:'text/html'}); var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download='MyDigipal_Site_Review_29May2026.html'; a.click(); URL.revokeObjectURL(a.href); markSaved();
+  }
+  btn.addEventListener('click', save);
+  document.addEventListener('keydown', function(e){ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); save(); } });
+})();
+</script>
+</body>
+</html>
