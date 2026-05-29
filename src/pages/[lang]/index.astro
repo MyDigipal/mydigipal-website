@@ -475,7 +475,7 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
           </h1>
 
           <!-- Description -->
-          <p class="text-xl text-slate-500 mb-10 max-w-lg leading-relaxed hero-animate" style="--delay: 200ms;">
+          <p class="text-lg sm:text-xl text-slate-500 mb-8 max-w-lg leading-relaxed hero-animate" style="--delay: 200ms;">
             {c.hero.description}
           </p>
 
@@ -499,6 +499,31 @@ const catLabels = categoryLabels[lang] || categoryLabels.en;
             </div>
             <div class="text-sm text-slate-500">
               <span class="font-semibold text-slate-700">50+ clients</span> {c.socialProof}
+            </div>
+          </div>
+
+          <!-- Mobile-only proof card (desktop gets the floating storytelling cards;
+               on mobile those are hidden, so surface the same credibility here) -->
+          <div class="lg:hidden mt-8 hero-animate" style="--delay: 450ms;">
+            <div class="glass-card p-4">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500">{lang === 'fr' ? 'Résultats en temps réel' : 'Real-time results'}</span>
+                <span class="hero-status-dot"></span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div>
+                  <div class="text-xl font-bold text-amber-600 font-display leading-none">4.8x</div>
+                  <div class="text-[10px] text-slate-500 mt-1 leading-tight">{lang === 'fr' ? 'ROAS moyen' : 'Avg ROAS'}</div>
+                </div>
+                <div class="border-x border-slate-200/70">
+                  <div class="text-xl font-bold text-violet-600 font-display leading-none">+62%</div>
+                  <div class="text-[10px] text-slate-500 mt-1 leading-tight">{lang === 'fr' ? 'Pipeline' : 'Pipeline'}</div>
+                </div>
+                <div>
+                  <div class="text-xl font-bold text-emerald-600 font-display leading-none">+247%</div>
+                  <div class="text-[10px] text-slate-500 mt-1 leading-tight">{lang === 'fr' ? 'Organique' : 'Organic'}</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
