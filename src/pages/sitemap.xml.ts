@@ -83,6 +83,9 @@ export const GET: APIRoute = async () => {
   addBilingualPage('/privacy-policy', 0.3, 'yearly');
   addBilingualPage('/terms-of-service', 0.3, 'yearly');
 
+  // Careers index (bilingual)
+  addBilingualPage('/careers', 0.6, 'weekly');
+
   // ==================
   // SERVICES (from content collection)
   // ==================
@@ -183,6 +186,41 @@ export const GET: APIRoute = async () => {
     }
   } catch (e) {
     // Automotive collection might not exist
+  }
+
+  // ==================
+  // JOB POSTINGS (from content collection)
+  // Emitted per available language only, so a mono-lingual role never
+  // produces a hreflang alternate pointing at a non-existent translation.
+  // ==================
+  try {
+    const jobs = await getCollection('jobs', (j) => j.data.status === 'open');
+    // Group open roles by slug -> list of languages that actually exist
+    const langsBySlug = new Map<string, string[]>();
+    for (const job of jobs) {
+      const slug = job.id.replace(/^(en|fr)\//, '').replace(/\.mdx?$/, '');
+      const arr = langsBySlug.get(slug) ?? [];
+      if (!arr.includes(job.data.lang)) arr.push(job.data.lang);
+      langsBySlug.set(slug, arr);
+    }
+    for (const [slug, langs] of langsBySlug) {
+      for (const l of langs) {
+        urls.push({
+          loc: `${site}/${l}/careers/${slug}`,
+          lastmod: today,
+          changefreq: 'weekly',
+          priority: 0.5,
+          alternates: [
+            ...(langs.includes('en')
+              ? [{ lang: 'x-default', href: `${site}/en/careers/${slug}` }]
+              : []),
+            ...langs.map((al) => ({ lang: al, href: `${site}/${al}/careers/${slug}` })),
+          ],
+        });
+      }
+    }
+  } catch (e) {
+    // Jobs collection might not exist
   }
 
   // ==================

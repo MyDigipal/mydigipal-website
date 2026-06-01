@@ -12,9 +12,13 @@ export function getStaticPaths() {
 
 const { lang } = Astro.params as { lang: Language };
 
+const jobSlug = (j: { id: string }) => j.id.replace(/^(en|fr)\//, '').replace(/\.mdx?$/, '');
+
 const allJobs = await getCollection('jobs', (job) => job.data.status === 'open');
 const jobsForLang = allJobs.filter((j) => j.data.lang === lang);
-const otherLangJobs = allJobs.filter((j) => j.data.lang !== lang);
+// A job only appears in the "other language" banner if it has no version in the current language
+const slugsInLang = new Set(jobsForLang.map(jobSlug));
+const otherLangJobs = allJobs.filter((j) => j.data.lang !== lang && !slugsInLang.has(jobSlug(j)));
 
 const t = {
   en: {
@@ -107,7 +111,7 @@ const seo = {
           </p>
           <div class="space-y-3">
             {otherLangJobs.map((job) => {
-              const slug = job.id.replace(/\.mdx?$/, '');
+              const slug = jobSlug(job);
               return (
                 <a
                   href={`/${job.data.lang}/careers/${slug}`}
@@ -132,7 +136,7 @@ const seo = {
 
       <div class="space-y-6">
         {jobsForLang.map((job) => {
-          const slug = job.id.replace(/\.mdx?$/, '');
+          const slug = jobSlug(job);
           return (
             <a
               href={`/${lang}/careers/${slug}`}

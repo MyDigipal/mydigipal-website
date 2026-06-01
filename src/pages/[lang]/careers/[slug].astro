@@ -8,7 +8,7 @@ import { type Language } from '@/i18n/config';
 export async function getStaticPaths() {
   const jobs = await getCollection('jobs', (j) => j.data.status === 'open');
   return jobs.map((job) => {
-    const slug = job.id.replace(/\.mdx?$/, '');
+    const slug = job.id.replace(/^(en|fr)\//, '').replace(/\.mdx?$/, '');
     return {
       params: { lang: job.data.lang, slug },
       props: { job },
@@ -118,7 +118,7 @@ const seo = {
   description: job.data.seo?.description || job.data.pitch,
 };
 
-const slug = job.id.replace(/\.mdx?$/, '');
+const slug = job.id.replace(/^(en|fr)\//, '').replace(/\.mdx?$/, '');
 const formId = `careers-form-${slug}`;
 const postedDate = job.data.posted_date
   ? new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(job.data.posted_date)
