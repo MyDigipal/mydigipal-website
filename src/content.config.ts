@@ -110,6 +110,12 @@ const blogCollection = defineCollection({
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
 
+    // Optional hero video (Remotion-generated intro). When present, an
+    // autoplaying muted loop video is shown at the top of the article.
+    // Articles without it keep their previous behavior unchanged.
+    video: z.string().optional(),
+    videoPoster: z.string().optional(),
+
     seo: z.object({
       title: z.string().optional(),
       description: z.string().optional(),

@@ -15,6 +15,9 @@ export async function getStaticPaths() {
   const paths: { params: { lang: string; slug: string }; props: { post: any } }[] = [];
 
   posts.forEach((post) => {
+    // Drafts are not built at all: no page, 404 until published.
+    // This is how the scheduled publisher gates the drip (draft:true -> hidden).
+    if (post.data.draft) return;
     // Generate pages for each language that has content
     const postLang = post.id.startsWith('fr/') ? 'fr' : 'en';
     const slug = post.id.replace(/^(en|fr)\//, '');
@@ -203,8 +206,30 @@ const categoryLabels: Record<string, Record<string, string>> = {
     </div>
   </section>
 
-  <!-- Featured Image -->
-  {post.data.image && !post.data.image.includes('/images/blog/') && (
+  <!-- Hero Video (Remotion-generated intro). Shown when present. -->
+  {post.data.video && (
+    <section class="relative -mt-12 pb-8 bg-white">
+      <div class="container-custom max-w-5xl mx-auto">
+        <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-slate-950">
+          <video
+            class="w-full h-auto"
+            src={post.data.video}
+            poster={post.data.videoPoster || post.data.image}
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            width="1920"
+            height="1080"
+          ></video>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Featured Image (fallback when there is no hero video) -->
+  {!post.data.video && post.data.image && !post.data.image.includes('/images/blog/') && (
     <section class="relative -mt-12 pb-8 bg-white">
       <div class="container-custom max-w-5xl mx-auto">
         <div class="relative rounded-2xl overflow-hidden shadow-2xl">
