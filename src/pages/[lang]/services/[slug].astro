@@ -144,6 +144,20 @@ const {
 // Top feature titles surfaced as scannable "what you get" proof in the hero.
 const heroProofPoints = (features || []).slice(0, 4).map((f: { title: string }) => f.title);
 
+// Per-page override of the hero "Trusted by" logo strip.
+// AI Training must surface its AI-training clients (via On Train), not the
+// acquisition clients shown by default on the other service pages.
+const heroLogosByService: Record<string, { name: string; logo: string }[]> = {
+  'ai-training': [
+    { name: 'Kering', logo: '/images/Training Logo/Kering.svg' },
+    { name: 'Chanel', logo: '/images/Training Logo/Chanel.webp' },
+    { name: 'Gucci', logo: '/images/Training Logo/Gucci.avif' },
+    { name: 'Pierre Fabre', logo: '/images/Training Logo/Pierre fabre.avif' },
+    { name: 'Pernod Ricard', logo: '/images/Training Logo/Pernod Ricard.avif' },
+  ],
+};
+const heroLogos = heroLogosByService[slug];
+
 // OG Image: use seo.image > hero.image > default
 const ogImage = seo?.image || hero?.image || undefined;
 
@@ -273,6 +287,7 @@ const breadcrumbItems = [
     metrics={metrics}
     proofPoints={heroProofPoints}
     testimonial={testimonial}
+    heroLogos={heroLogos}
   />
 
   <!-- Metrics Counter -->
@@ -333,18 +348,24 @@ const breadcrumbItems = [
   <!-- AI Training Service: Interactive Sections -->
   {isAITrainingService && (
     <>
+      <!-- Why train / for whom -->
       <WhyAITraining lang={lang} />
       <TrainingUseCases lang={lang} />
+      <!-- Value for both audiences -->
+      <TrainingBenefitsManagers lang={lang} />
+      <TrainingBenefitsEmployees lang={lang} />
+      <!-- What they learn & how we build it -->
+      <TrainingAgenda lang={lang} />
+      <TrainingProcess lang={lang} />
+      <!-- Core offer: formats & pricing -->
+      <AITrainingModules lang={lang} />
+      <!-- Go further: technical / automation tracks -->
       <MCPBuildSection lang={lang} />
       <MarketingStackGrid lang={lang} />
       <MCPTrainingTracks lang={lang} />
+      <!-- Proof -->
       <TrainingTestimonials lang={lang} />
-      <TrainingBenefitsManagers lang={lang} />
-      <TrainingBenefitsEmployees lang={lang} />
       <TrainingClients lang={lang} />
-      <TrainingAgenda lang={lang} />
-      <TrainingProcess lang={lang} />
-      <AITrainingModules lang={lang} />
     </>
   )}
 

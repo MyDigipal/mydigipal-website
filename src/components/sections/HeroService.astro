@@ -28,6 +28,8 @@ interface Props {
   proofPoints?: string[];
   /** Optional one-line social proof shown in the proof panel footer. */
   testimonial?: HeroTestimonial;
+  /** Optional per-page override of the "Trusted by" logo strip. */
+  heroLogos?: { name: string; logo: string }[];
 }
 
 const {
@@ -40,6 +42,7 @@ const {
   metrics = [],
   proofPoints = [],
   testimonial,
+  heroLogos: heroLogosProp,
 } = Astro.props;
 
 const colorConfig = {
@@ -59,13 +62,16 @@ const colorConfig = {
 const colors = colorConfig[color];
 
 // Compact, dark-safe client logo strip (white pills) for instant credibility.
-const heroLogos = [
+// Defaults to the acquisition clients; a page can override with its own set
+// (e.g. AI Training passes its training clients).
+const defaultHeroLogos = [
   { name: 'Genesys', logo: '/images/Client logo/genesys-vector-logo.png' },
   { name: 'Quantum Metrics', logo: '/images/Client logo/quantum.png' },
   { name: 'OpenText', logo: '/images/Client logo/opentext-logo.png' },
   { name: 'GWI', logo: '/images/Client logo/GWI.webp' },
   { name: 'BYmyCAR', logo: '/images/Client logo/BYmyCAR.png' },
 ];
+const heroLogos = (heroLogosProp && heroLogosProp.length > 0) ? heroLogosProp : defaultHeroLogos;
 
 const labels = {
   en: { trusted: 'Trusted by', results: 'Real results', whatYouGet: 'What you get', and: 'and' },

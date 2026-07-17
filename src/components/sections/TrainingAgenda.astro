@@ -9,90 +9,32 @@ const { lang } = Astro.props;
 
 const translations = {
   en: {
-    badge: "Full Day Program",
-    headline: "AI Program - Full Day",
-    morning: {
-      label: "Morning",
-      duration: "3H",
-      sessions: [
-        {
-          title: "Session 1 (1h30)",
-          description: "Roundtable, fundamentals of AI, definition of key concepts, capabilities of AI, ethical issues. Discussion on the geopolitics of AI, its application in the functions represented in the training."
-        },
-        {
-          title: "Session 2 (1h30)",
-          description: "Introduction to prompting with a precise and recognized method. Trainer demonstration then individual exercise consisting of transforming a basic prompt into an advanced prompt. Exploration of advanced prompting techniques (Part 1), followed by a group exercise applying these methods in real-world prompting scenarios."
-        }
-      ]
-    },
-    afternoon: {
-      label: "Afternoon",
-      duration: "3H30",
-      sessions: [
-        {
-          title: "Session 3 (1 hour)",
-          description: "Continuation of the teaching of advanced prompting techniques (Part 2) with group practice. Demonstration of AI tools for different functions (cloning, dubbing, creation of text, image, video content, etc.) then analysis of scenarios of companies that have been able to combine several AIs to improve their processes."
-        },
-        {
-          title: "Session 4 (2h30)",
-          description: "Group exercise aimed at creating an AI application to improve one or more specific processes of the participants. Collection of the process in the form of a business case so that the company can then develop it internally."
-        }
-      ]
-    },
-    craft: {
-      title: "The CRAFT Method",
-      subtitle: "Our proven framework for effective AI prompts",
-      items: [
-        { letter: "C", word: "Context", description: "What's the situation or background?" },
-        { letter: "R", word: "Role", description: "Who is the AI supposed to act as?" },
-        { letter: "A", word: "Action", description: "What do you want it to do?" },
-        { letter: "F", word: "Format", description: "What should the output look like?" },
-        { letter: "T", word: "Tone", description: "How should it sound?" }
-      ]
-    }
+    badge: "The foundations",
+    headline: "The CRAFT method",
+    subtitle: "Most people think \"AI doesn't work\" — they just don't know how to ask. CRAFT is the prompt structure that turns a correct answer into a usable one. It's part of the foundations every participant leaves with, alongside the non-negotiable data-security module.",
+    craft: [
+      { letter: "C", word: "Context", description: "What's the situation or background?" },
+      { letter: "R", word: "Role", description: "Who is the AI supposed to act as?" },
+      { letter: "A", word: "Action", description: "What do you want it to do?" },
+      { letter: "F", word: "Format", description: "What should the output look like?" },
+      { letter: "T", word: "Tone", description: "How should it sound?" }
+    ],
+    securityTitle: "Data security, the non-negotiable module",
+    securityText: "A client file, a sales sheet or a contract doesn't get pasted just anywhere. We cover which data never to send, which settings to switch on, and which European options exist — the module we consider mandatory in every sector."
   },
   fr: {
-    badge: "Programme journée complète",
-    headline: "Programme IA - Journée complète",
-    morning: {
-      label: "Matin",
-      duration: "3H",
-      sessions: [
-        {
-          title: "Session 1 (1h30)",
-          description: "Table ronde, fondamentaux de l'IA, définition des concepts clés, capacités de l'IA, enjeux éthiques. Discussion sur la géopolitique de l'IA, son application dans les fonctions représentées dans la formation."
-        },
-        {
-          title: "Session 2 (1h30)",
-          description: "Introduction au prompting avec une méthode précise et reconnue. Démonstration du formateur puis exercice individuel consistant à transformer un prompt basique en prompt avancé. Exploration des techniques de prompting avancées (Partie 1), suivie d'un exercice de groupe appliquant ces méthodes."
-        }
-      ]
-    },
-    afternoon: {
-      label: "Après-midi",
-      duration: "3H30",
-      sessions: [
-        {
-          title: "Session 3 (1 heure)",
-          description: "Suite de l'enseignement des techniques de prompting avancées (Partie 2) avec pratique en groupe. Démonstration d'outils IA pour différentes fonctions (clonage, doublage, création de texte, image, vidéo, etc.) puis analyse de scénarios d'entreprises ayant combiné plusieurs IA pour améliorer leurs processus."
-        },
-        {
-          title: "Session 4 (2h30)",
-          description: "Exercice de groupe visant à créer une application IA pour améliorer un ou plusieurs processus spécifiques des participants. Collecte du processus sous forme de business case pour que l'entreprise puisse ensuite le développer en interne."
-        }
-      ]
-    },
-    craft: {
-      title: "La méthode CRAFT",
-      subtitle: "Notre framework éprouvé pour des prompts IA efficaces",
-      items: [
-        { letter: "C", word: "Contexte", description: "Quelle est la situation ou le contexte ?" },
-        { letter: "R", word: "Rôle", description: "Quel rôle doit jouer l'IA ?" },
-        { letter: "A", word: "Action", description: "Que voulez-vous qu'elle fasse ?" },
-        { letter: "F", word: "Format", description: "À quoi doit ressembler le résultat ?" },
-        { letter: "T", word: "Ton", description: "Comment doit-elle s'exprimer ?" }
-      ]
-    }
+    badge: "Les fondations",
+    headline: "La méthode CRAFT",
+    subtitle: "La plupart des gens pensent que \"l'IA ne fonctionne pas\" : ils ne savent simplement pas la solliciter. CRAFT est la structure de prompt qui transforme un résultat correct en résultat exploitable. Elle fait partie des fondations que chaque participant emporte, avec le module non négociable de sécurité des données.",
+    craft: [
+      { letter: "C", word: "Contexte", description: "Quelle est la situation ou le contexte ?" },
+      { letter: "R", word: "Rôle", description: "Quel rôle doit jouer l'IA ?" },
+      { letter: "A", word: "Action", description: "Que voulez-vous qu'elle fasse ?" },
+      { letter: "F", word: "Format", description: "À quoi doit ressembler le résultat ?" },
+      { letter: "T", word: "Ton", description: "Comment doit-elle s'exprimer ?" }
+    ],
+    securityTitle: "La sécurité des données, le module non négociable",
+    securityText: "Un fichier client, un tableau de vente ou un contrat ne se colle pas n'importe où. Nous couvrons quelles données ne jamais envoyer, quels réglages activer et quelles options européennes existent — le module que nous considérons indispensable, quel que soit le secteur."
   }
 };
 
@@ -102,91 +44,25 @@ const t = translations[lang] || translations.en;
 <section class="py-24 bg-gradient-to-br from-cyan-50 via-blue-50 to-violet-50 overflow-hidden">
   <div class="container-custom">
     <!-- Header -->
-    <div class="mb-16">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 font-medium mb-6">
-        <span>📅</span>
+    <div class="max-w-3xl mx-auto text-center mb-14">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm text-cyan-700 font-medium mb-6">
+        <span class="w-2 h-2 bg-cyan-500 rounded-full"></span>
         <span>{t.badge}</span>
       </div>
-      <h2 class="text-4xl md:text-5xl font-bold text-slate-900">
+      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
         {t.headline}
       </h2>
+      <p class="text-slate-600 leading-relaxed">{t.subtitle}</p>
     </div>
 
-    <!-- Agenda Cards -->
-    <div class="grid lg:grid-cols-2 gap-8 mb-24">
-      <!-- Morning -->
-      <div class="agenda-card relative">
-        <div class="absolute inset-0 bg-gradient-to-br from-cyan-100 to-teal-100 rounded-3xl transform -rotate-1"></div>
-        <div class="relative bg-white rounded-3xl p-8 shadow-xl">
-          <!-- Header -->
-          <div class="flex items-center gap-4 mb-8">
-            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-              {t.morning.duration}
-            </div>
-            <div class="px-6 py-3 bg-slate-900 text-white rounded-full font-semibold text-lg">
-              {t.morning.label}
-            </div>
-          </div>
-
-          <!-- Sessions -->
-          <div class="space-y-6">
-            {t.morning.sessions.map((session, index) => (
-              <div
-                class="session-item"
-                style={`animation-delay: ${index * 200}ms`}
-              >
-                <h4 class="font-bold text-slate-900 mb-2">{session.title}</h4>
-                <p class="text-slate-600 text-sm leading-relaxed">{session.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <!-- Afternoon -->
-      <div class="agenda-card relative">
-        <div class="absolute inset-0 bg-gradient-to-br from-violet-100 to-pink-100 rounded-3xl transform rotate-1"></div>
-        <div class="relative bg-white rounded-3xl p-8 shadow-xl">
-          <!-- Header -->
-          <div class="flex items-center gap-4 mb-8">
-            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-              {t.afternoon.duration}
-            </div>
-            <div class="px-6 py-3 bg-slate-900 text-white rounded-full font-semibold text-lg">
-              {t.afternoon.label}
-            </div>
-          </div>
-
-          <!-- Sessions -->
-          <div class="space-y-6">
-            {t.afternoon.sessions.map((session, index) => (
-              <div
-                class="session-item"
-                style={`animation-delay: ${(index + 2) * 200}ms`}
-              >
-                <h4 class="font-bold text-slate-900 mb-2">{session.title}</h4>
-                <p class="text-slate-600 text-sm leading-relaxed">{session.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CRAFT Method Section - Interactive Scroll -->
+    <!-- CRAFT Letters - Scroll Reveal -->
     <div class="max-w-4xl mx-auto">
-      <div class="text-center mb-12">
-        <h3 class="text-3xl md:text-4xl font-bold text-slate-900 mb-3">{t.craft.title}</h3>
-        <p class="text-slate-600">{t.craft.subtitle}</p>
-      </div>
-
-      <!-- CRAFT Letters - Scroll Reveal -->
-      <div class="craft-container relative py-12">
+      <div class="craft-container relative py-10">
         <!-- Connection line -->
-        <div class="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-cyan-200 via-blue-300 to-violet-200 -translate-y-1/2 hidden md:block"></div>
+        <div class="absolute top-[52px] md:top-[64px] left-0 right-0 h-1 bg-gradient-to-r from-cyan-200 via-blue-300 to-violet-200 hidden md:block"></div>
 
         <div class="grid grid-cols-5 gap-2 md:gap-6">
-          {t.craft.items.map((item, index) => (
+          {t.craft.map((item, index) => (
             <div
               class="craft-letter relative flex flex-col items-center text-center"
               data-index={index}
@@ -197,9 +73,9 @@ const t = translations[lang] || translations.en;
               </div>
 
               <!-- Word -->
-              <h4 class="craft-word font-bold text-slate-900 text-sm md:text-base mb-2 opacity-0 transform translate-y-4">
+              <h3 class="craft-word font-bold text-slate-900 text-sm md:text-base mb-2 opacity-0 transform translate-y-4">
                 {item.word}
-              </h4>
+              </h3>
 
               <!-- Description -->
               <p class="craft-desc text-xs md:text-sm text-slate-500 leading-tight opacity-0 transform translate-y-4 hidden md:block">
@@ -210,44 +86,21 @@ const t = translations[lang] || translations.en;
         </div>
       </div>
 
+      <!-- Data security callout -->
+      <div class="mt-10 rounded-2xl bg-white/80 backdrop-blur-sm border border-white shadow-sm p-6 md:p-8 flex items-start gap-4">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center flex-shrink-0 text-white">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-slate-900 mb-1.5">{t.securityTitle}</h3>
+          <p class="text-slate-600 text-sm leading-relaxed">{t.securityText}</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
-  .agenda-card {
-    opacity: 0;
-    transform: translateY(30px);
-    animation: fadeInUp 0.8s ease forwards;
-  }
-
-  .agenda-card:nth-child(1) { animation-delay: 0ms; }
-  .agenda-card:nth-child(2) { animation-delay: 200ms; }
-
-  .session-item {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-
-  .session-item.visible {
-    animation: slideIn 0.6s ease forwards;
-  }
-
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slideIn {
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  /* CRAFT animations */
   .craft-circle.visible {
     animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
   }
@@ -262,41 +115,23 @@ const t = translations[lang] || translations.en;
   }
 
   @keyframes popIn {
-    to {
-      transform: scale(1);
-      opacity: 1;
-    }
+    to { transform: scale(1); opacity: 1; }
   }
 
   @keyframes slideUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .craft-circle, .craft-word, .craft-desc { animation: none !important; opacity: 1 !important; transform: none !important; }
   }
 </style>
 
 <script>
-  // Intersection Observer for session items
-  const sessionObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.3 });
-
-  document.querySelectorAll('.session-item').forEach(el => {
-    sessionObserver.observe(el);
-  });
-
-  // CRAFT section scroll reveal
   const craftObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        const container = entry.target;
-        const letters = container.querySelectorAll('.craft-letter');
-
+        const letters = entry.target.querySelectorAll('.craft-letter');
         letters.forEach((letter, index) => {
           setTimeout(() => {
             letter.querySelector('.craft-circle')?.classList.add('visible');
@@ -306,12 +141,11 @@ const t = translations[lang] || translations.en;
             }, 200);
           }, index * 150);
         });
+        craftObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.5 });
+  }, { threshold: 0.4 });
 
   const craftContainer = document.querySelector('.craft-container');
-  if (craftContainer) {
-    craftObserver.observe(craftContainer);
-  }
+  if (craftContainer) craftObserver.observe(craftContainer);
 </script>
