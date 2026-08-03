@@ -1,0 +1,690 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - link "MyDigipal" [ref=e4] [cursor=pointer]:
+        - /url: /fr
+        - img "MyDigipal" [ref=e5]
+      - generic [ref=e6]:
+        - link "Services" [ref=e8] [cursor=pointer]:
+          - /url: /fr/services
+          - text: Services
+          - img [ref=e9]
+        - link "IA" [ref=e12] [cursor=pointer]:
+          - /url: /fr/ai
+          - text: IA
+          - img [ref=e13]
+        - link "Automobile" [ref=e16] [cursor=pointer]:
+          - /url: /fr/automotive
+          - text: Automobile
+          - img [ref=e17]
+        - link "Études de cas" [ref=e20] [cursor=pointer]:
+          - /url: /fr/case-studies
+        - link "Blog" [ref=e22] [cursor=pointer]:
+          - /url: /fr/blog
+      - generic [ref=e23]:
+        - link "Espace Client" [ref=e24] [cursor=pointer]:
+          - /url: https://app.mydigipal.com/login
+          - img [ref=e25]
+          - text: Espace Client
+        - link "Contact" [ref=e28] [cursor=pointer]:
+          - /url: /fr/contact
+        - link "Devis" [ref=e29] [cursor=pointer]:
+          - /url: /fr/calculator
+        - link "Switch to English" [ref=e30] [cursor=pointer]:
+          - /url: /en/calculator
+          - text: 🇬🇧
+  - main [ref=e32]:
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - img [ref=e36]
+        - generic [ref=e41]: Calculateur interactif
+      - heading "Composez Votre Offre Marketing" [level=1] [ref=e42]
+      - paragraph [ref=e43]: Sélectionnez les services dont vous avez besoin, configurez-les selon vos besoins et obtenez une estimation instantanée. Sans engagement.
+    - generic [ref=e47]:
+      - button "Retour à la sélection" [ref=e277] [cursor=pointer]:
+        - img [ref=e278]
+        - text: Retour à la sélection
+      - generic [ref=e60]:
+        - generic [ref=e281]:
+          - generic [ref=e282]:
+            - generic [ref=e283]:
+              - generic [ref=e284]: 📱
+              - generic [ref=e285]:
+                - heading "Paid Social" [level=2] [ref=e286]
+                - paragraph [ref=e287]: Publicité sur les réseaux sociaux (Meta, LinkedIn, TikTok)
+            - button "Pas besoin" [ref=e288] [cursor=pointer]
+          - button "🔍 Je ne suis pas sûr pour Paid Social - Discutons-en" [ref=e289] [cursor=pointer]:
+            - generic [ref=e290]:
+              - generic [ref=e291]: 🔍
+              - generic [ref=e293]: Je ne suis pas sûr pour Paid Social - Discutons-en
+          - generic [ref=e294]:
+            - generic [ref=e295]:
+              - generic [ref=e296]: Budget publicitaire mensuel
+              - slider [ref=e297] [cursor=pointer]: "500"
+              - generic [ref=e298]:
+                - generic [ref=e299]: 500€
+                - generic [ref=e300]: 500€/mois
+                - generic [ref=e301]: 50,000€
+              - generic [ref=e302]:
+                - generic [ref=e303]:
+                  - generic [ref=e304]: Frais de gestion
+                  - generic [ref=e305]: 500€/mois
+                - paragraph [ref=e306]: "Minimum pour couvrir le vital : optimisation, suivi des campagnes, ajustements, reporting"
+                - generic [ref=e307]:
+                  - 'generic "< 2500€: 500€/mois" [ref=e308]'
+                  - 'generic "2500€-7500€: 20%" [ref=e309]'
+                  - 'generic "7500€-12500€: 15%" [ref=e310]'
+                  - 'generic "> 12500€: Sur devis" [ref=e311]'
+                - generic [ref=e312]:
+                  - generic [ref=e313]: 500€
+                  - generic [ref=e314]: 20%
+                  - generic [ref=e315]: 15%
+                  - generic [ref=e316]: Devis
+            - generic [ref=e317]:
+              - generic [ref=e319]: Sélectionnez vos canaux
+              - paragraph [ref=e320]: Choisissez les plateformes sur lesquelles vous voulez lancer des campagnes - Survole ou clique une carte pour voir le détail
+              - generic [ref=e321]:
+                - generic [ref=e322]:
+                  - button "📱 Meta (Facebook & Instagram) Grand public, jeunes professionnels, ciblage par intérêts et audiences lookalike Engagement + Conversion CPC ~0.36€" [ref=e323] [cursor=pointer]:
+                    - generic [ref=e325]:
+                      - generic [ref=e326]: 📱
+                      - generic [ref=e327]:
+                        - generic [ref=e328]: Meta (Facebook & Instagram)
+                        - generic [ref=e329]: Grand public, jeunes professionnels, ciblage par intérêts et audiences lookalike
+                    - generic [ref=e332]:
+                      - generic [ref=e333]: Engagement + Conversion
+                      - generic [ref=e334]: CPC ~0.36€
+                  - button "En savoir +" [ref=e335] [cursor=pointer]
+                - generic [ref=e336]:
+                  - button "💼 LinkedIn Ads Décideurs B2B, dirigeants, conseillers stratégiques, cadres supérieurs Autorité B2B + Décideurs CPC ~5.2€" [ref=e337] [cursor=pointer]:
+                    - generic [ref=e339]:
+                      - generic [ref=e340]: 💼
+                      - generic [ref=e341]:
+                        - generic [ref=e342]: LinkedIn Ads
+                        - generic [ref=e343]: Décideurs B2B, dirigeants, conseillers stratégiques, cadres supérieurs
+                    - generic [ref=e346]:
+                      - generic [ref=e347]: Autorité B2B + Décideurs
+                      - generic [ref=e348]: CPC ~5.2€
+                  - button "En savoir +" [ref=e349] [cursor=pointer]
+                - generic [ref=e350]:
+                  - button "🎵 TikTok Ads Gen Z et jeunes millennials 18-30, early adopters, natifs du format vidéo court Notoriété + Potentiel viral CPC ~0.23€" [ref=e351] [cursor=pointer]:
+                    - generic [ref=e353]:
+                      - generic [ref=e354]: 🎵
+                      - generic [ref=e355]:
+                        - generic [ref=e356]: TikTok Ads
+                        - generic [ref=e357]: Gen Z et jeunes millennials 18-30, early adopters, natifs du format vidéo court
+                    - generic [ref=e360]:
+                      - generic [ref=e361]: Notoriété + Potentiel viral
+                      - generic [ref=e362]: CPC ~0.23€
+                  - button "En savoir +" [ref=e363] [cursor=pointer]
+                - generic [ref=e364]:
+                  - button "🎬 Google Display & YouTube Reach cross-canal, audiences affinitaires, remarketing et contextuel Reach + Remarketing CPC ~0.58€" [ref=e365] [cursor=pointer]:
+                    - generic [ref=e367]:
+                      - generic [ref=e368]: 🎬
+                      - generic [ref=e369]:
+                        - generic [ref=e370]: Google Display & YouTube
+                        - generic [ref=e371]: Reach cross-canal, audiences affinitaires, remarketing et contextuel
+                    - generic [ref=e374]:
+                      - generic [ref=e375]: Reach + Remarketing
+                      - generic [ref=e376]: CPC ~0.58€
+                  - button "En savoir +" [ref=e377] [cursor=pointer]
+            - generic [ref=e378]:
+              - generic [ref=e379]:
+                - generic [ref=e381]:
+                  - generic [ref=e382]: 🔍
+                  - generic [ref=e383]:
+                    - generic [ref=e384]:
+                      - heading "A. Audit Campagnes Sociales" [level=3] [ref=e385]
+                      - button [ref=e387] [cursor=pointer]:
+                        - img [ref=e388]
+                    - paragraph [ref=e390]: Analyse de vos campagnes existantes sur tous les réseaux sociaux pour identifier les optimisations.
+                - generic [ref=e391]:
+                  - button "400€ Unique 1 plateforme • Audit 1 plateforme au choix • Analyse des performances • Recommandations actionnables" [ref=e392] [cursor=pointer]:
+                    - generic [ref=e393]:
+                      - generic [ref=e394]: 400€
+                      - generic [ref=e395]: Unique
+                    - generic [ref=e396]: 1 plateforme
+                    - list [ref=e397]:
+                      - listitem [ref=e398]:
+                        - generic [ref=e399]: •
+                        - text: Audit 1 plateforme au choix
+                      - listitem [ref=e400]:
+                        - generic [ref=e401]: •
+                        - text: Analyse des performances
+                      - listitem [ref=e402]:
+                        - generic [ref=e403]: •
+                        - text: Recommandations actionnables
+                  - button "Populaire 700€ Unique Multi-canal • Audit 2-3 plateformes • Analyse cross-canal • Benchmark concurrentiel" [ref=e404] [cursor=pointer]:
+                    - generic [ref=e405]: Populaire
+                    - generic [ref=e406]:
+                      - generic [ref=e407]: 700€
+                      - generic [ref=e408]: Unique
+                    - generic [ref=e409]: Multi-canal
+                    - list [ref=e410]:
+                      - listitem [ref=e411]:
+                        - generic [ref=e412]: •
+                        - text: Audit 2-3 plateformes
+                      - listitem [ref=e413]:
+                        - generic [ref=e414]: •
+                        - text: Analyse cross-canal
+                      - listitem [ref=e415]:
+                        - generic [ref=e416]: •
+                        - text: Benchmark concurrentiel
+              - generic [ref=e417]:
+                - generic [ref=e419]:
+                  - generic [ref=e420]: ⚙️
+                  - generic [ref=e421]:
+                    - generic [ref=e422]:
+                      - heading "B. Setup de Campagnes" [level=3] [ref=e423]
+                      - button [ref=e425] [cursor=pointer]:
+                        - img [ref=e426]
+                    - paragraph [ref=e428]: Création et configuration de vos campagnes sur les canaux sélectionnés, avec structure optimisée.
+                - generic [ref=e429]:
+                  - button "500€ Unique 1 canal • 1 plateforme configurée • 2-3 campagnes • Audiences de base + retargeting" [ref=e430] [cursor=pointer]:
+                    - generic [ref=e431]:
+                      - generic [ref=e432]: 500€
+                      - generic [ref=e433]: Unique
+                    - generic [ref=e434]: 1 canal
+                    - list [ref=e435]:
+                      - listitem [ref=e436]:
+                        - generic [ref=e437]: •
+                        - text: 1 plateforme configurée
+                      - listitem [ref=e438]:
+                        - generic [ref=e439]: •
+                        - text: 2-3 campagnes
+                      - listitem [ref=e440]:
+                        - generic [ref=e441]: •
+                        - text: Audiences de base + retargeting
+                  - button "Populaire 900€ Unique 2 canaux • 2 plateformes configurées • 4-6 campagnes totales • Audiences avancées cross-canal" [ref=e442] [cursor=pointer]:
+                    - generic [ref=e443]: Populaire
+                    - generic [ref=e444]:
+                      - generic [ref=e445]: 900€
+                      - generic [ref=e446]: Unique
+                    - generic [ref=e447]: 2 canaux
+                    - list [ref=e448]:
+                      - listitem [ref=e449]:
+                        - generic [ref=e450]: •
+                        - text: 2 plateformes configurées
+                      - listitem [ref=e451]:
+                        - generic [ref=e452]: •
+                        - text: 4-6 campagnes totales
+                      - listitem [ref=e453]:
+                        - generic [ref=e454]: •
+                        - text: Audiences avancées cross-canal
+                  - button "1,500€ Unique 3+ canaux • 3+ plateformes configurées • Campagnes illimitées • Audiences sur-mesure par canal" [ref=e455] [cursor=pointer]:
+                    - generic [ref=e456]:
+                      - generic [ref=e457]: 1,500€
+                      - generic [ref=e458]: Unique
+                    - generic [ref=e459]: 3+ canaux
+                    - list [ref=e460]:
+                      - listitem [ref=e461]:
+                        - generic [ref=e462]: •
+                        - text: 3+ plateformes configurées
+                      - listitem [ref=e463]:
+                        - generic [ref=e464]: •
+                        - text: Campagnes illimitées
+                      - listitem [ref=e465]:
+                        - generic [ref=e466]: •
+                        - text: Audiences sur-mesure par canal
+              - generic [ref=e467]:
+                - generic [ref=e469]:
+                  - generic [ref=e470]: 🎨
+                  - generic [ref=e471]:
+                    - generic [ref=e472]:
+                      - heading "C. Création de Visuels" [level=3] [ref=e473]
+                      - button [ref=e475] [cursor=pointer]:
+                        - img [ref=e476]
+                    - paragraph [ref=e478]: Production de visuels et vidéos publicitaires optimisés pour chaque plateforme sociale.
+                - generic [ref=e479]:
+                  - button "400€ /mois Essentiel • 5 visuels statiques/mois • Formats adaptés par plateforme • 1 round de révisions" [ref=e480] [cursor=pointer]:
+                    - generic [ref=e481]:
+                      - generic [ref=e482]: 400€
+                      - generic [ref=e483]: /mois
+                    - generic [ref=e484]: Essentiel
+                    - list [ref=e485]:
+                      - listitem [ref=e486]:
+                        - generic [ref=e487]: •
+                        - text: 5 visuels statiques/mois
+                      - listitem [ref=e488]:
+                        - generic [ref=e489]: •
+                        - text: Formats adaptés par plateforme
+                      - listitem [ref=e490]:
+                        - generic [ref=e491]: •
+                        - text: 1 round de révisions
+                  - button "Populaire 800€ /mois Avancé • 10 visuels + 2 vidéos/mois • Direction artistique • Déclinaisons multi-formats" [ref=e492] [cursor=pointer]:
+                    - generic [ref=e493]: Populaire
+                    - generic [ref=e494]:
+                      - generic [ref=e495]: 800€
+                      - generic [ref=e496]: /mois
+                    - generic [ref=e497]: Avancé
+                    - list [ref=e498]:
+                      - listitem [ref=e499]:
+                        - generic [ref=e500]: •
+                        - text: 10 visuels + 2 vidéos/mois
+                      - listitem [ref=e501]:
+                        - generic [ref=e502]: •
+                        - text: Direction artistique
+                      - listitem [ref=e503]:
+                        - generic [ref=e504]: •
+                        - text: Déclinaisons multi-formats
+                  - button "1,500€ /mois Premium • 20 visuels + 5 vidéos/mois • UGC-style + motion design • Direction artistique complète" [ref=e505] [cursor=pointer]:
+                    - generic [ref=e506]:
+                      - generic [ref=e507]: 1,500€
+                      - generic [ref=e508]: /mois
+                    - generic [ref=e509]: Premium
+                    - list [ref=e510]:
+                      - listitem [ref=e511]:
+                        - generic [ref=e512]: •
+                        - text: 20 visuels + 5 vidéos/mois
+                      - listitem [ref=e513]:
+                        - generic [ref=e514]: •
+                        - text: UGC-style + motion design
+                      - listitem [ref=e515]:
+                        - generic [ref=e516]: •
+                        - text: Direction artistique complète
+              - generic [ref=e517]:
+                - generic [ref=e519]:
+                  - generic [ref=e520]: 📦
+                  - generic [ref=e521]:
+                    - generic [ref=e522]:
+                      - heading "D. Catalogue & Feed Management" [level=3] [ref=e523]
+                      - button [ref=e525] [cursor=pointer]:
+                        - img [ref=e526]
+                    - paragraph [ref=e528]: Création et gestion de catalogues produits pour Meta, Google Shopping et autres plateformes.
+                - generic [ref=e529]:
+                  - button "500€ Unique 1 plateforme • Setup flux pour 1 plateforme • Transformation et mapping des données • Synchronisation quotidienne automatique" [ref=e530] [cursor=pointer]:
+                    - generic [ref=e531]:
+                      - generic [ref=e532]: 500€
+                      - generic [ref=e533]: Unique
+                    - generic [ref=e534]: 1 plateforme
+                    - list [ref=e535]:
+                      - listitem [ref=e536]:
+                        - generic [ref=e537]: •
+                        - text: Setup flux pour 1 plateforme
+                      - listitem [ref=e538]:
+                        - generic [ref=e539]: •
+                        - text: Transformation et mapping des données
+                      - listitem [ref=e540]:
+                        - generic [ref=e541]: •
+                        - text: Synchronisation quotidienne automatique
+                  - button "Populaire 800€ Unique 2 plateformes • Setup flux pour 2 plateformes • Optimisation des titres/descriptions • Synchronisation multi-canal" [ref=e542] [cursor=pointer]:
+                    - generic [ref=e543]: Populaire
+                    - generic [ref=e544]:
+                      - generic [ref=e545]: 800€
+                      - generic [ref=e546]: Unique
+                    - generic [ref=e547]: 2 plateformes
+                    - list [ref=e548]:
+                      - listitem [ref=e549]:
+                        - generic [ref=e550]: •
+                        - text: Setup flux pour 2 plateformes
+                      - listitem [ref=e551]:
+                        - generic [ref=e552]: •
+                        - text: Optimisation des titres/descriptions
+                      - listitem [ref=e553]:
+                        - generic [ref=e554]: •
+                        - text: Synchronisation multi-canal
+                  - button "1,200€ Unique 3+ plateformes • Setup flux pour 3+ plateformes • Optimisation avancée par canal • Règles de filtrage et segmentation" [ref=e555] [cursor=pointer]:
+                    - generic [ref=e556]:
+                      - generic [ref=e557]: 1,200€
+                      - generic [ref=e558]: Unique
+                    - generic [ref=e559]: 3+ plateformes
+                    - list [ref=e560]:
+                      - listitem [ref=e561]:
+                        - generic [ref=e562]: •
+                        - text: Setup flux pour 3+ plateformes
+                      - listitem [ref=e563]:
+                        - generic [ref=e564]: •
+                        - text: Optimisation avancée par canal
+                      - listitem [ref=e565]:
+                        - generic [ref=e566]: •
+                        - text: Règles de filtrage et segmentation
+        - generic [ref=e568]:
+          - generic [ref=e569]:
+            - generic [ref=e570]:
+              - generic [ref=e571]: 📊
+              - generic [ref=e572]:
+                - heading "Google Ads" [level=2] [ref=e573]
+                - paragraph [ref=e574]: Publicité sur le réseau Google (Search, Display, YouTube)
+            - button "Pas besoin" [ref=e575] [cursor=pointer]
+          - button "🔍 Je ne suis pas sûr pour Google Ads - Discutons-en" [ref=e576] [cursor=pointer]:
+            - generic [ref=e577]:
+              - generic [ref=e578]: 🔍
+              - generic [ref=e580]: Je ne suis pas sûr pour Google Ads - Discutons-en
+          - generic [ref=e581]:
+            - generic [ref=e582]:
+              - generic [ref=e583]: Budget publicitaire mensuel
+              - slider [ref=e584] [cursor=pointer]: "500"
+              - generic [ref=e585]:
+                - generic [ref=e586]: 500€
+                - generic [ref=e587]: 500€/mois
+                - generic [ref=e588]: 50,000€
+              - generic [ref=e589]:
+                - generic [ref=e590]:
+                  - generic [ref=e591]: Frais de gestion
+                  - generic [ref=e592]: 500€/mois
+                - paragraph [ref=e593]: "Minimum pour couvrir le vital : optimisation, suivi des campagnes, ajustements, reporting"
+                - generic [ref=e594]:
+                  - 'generic "< 2500€: 500€/mois" [ref=e595]'
+                  - 'generic "2500€-7500€: 20%" [ref=e596]'
+                  - 'generic "7500€-12500€: 15%" [ref=e597]'
+                  - 'generic "> 12500€: Sur devis" [ref=e598]'
+                - generic [ref=e599]:
+                  - generic [ref=e600]: 500€
+                  - generic [ref=e601]: 20%
+                  - generic [ref=e602]: 15%
+                  - generic [ref=e603]: Devis
+            - generic [ref=e604]:
+              - generic [ref=e605]:
+                - generic [ref=e607]:
+                  - generic [ref=e608]: 🔍
+                  - generic [ref=e609]:
+                    - generic [ref=e610]:
+                      - heading "A. Audit Google Ads" [level=3] [ref=e611]
+                      - button [ref=e613] [cursor=pointer]:
+                        - img [ref=e614]
+                    - paragraph [ref=e616]: Analyse complète de vos campagnes existantes pour identifier les optimisations et opportunités.
+                - generic [ref=e617]:
+                  - button "300€ Unique Basic • Analyse de la structure • Audit des mots-clés • Recommandations générales" [ref=e618] [cursor=pointer]:
+                    - generic [ref=e619]:
+                      - generic [ref=e620]: 300€
+                      - generic [ref=e621]: Unique
+                    - generic [ref=e622]: Basic
+                    - list [ref=e623]:
+                      - listitem [ref=e624]:
+                        - generic [ref=e625]: •
+                        - text: Analyse de la structure
+                      - listitem [ref=e626]:
+                        - generic [ref=e627]: •
+                        - text: Audit des mots-clés
+                      - listitem [ref=e628]:
+                        - generic [ref=e629]: •
+                        - text: Recommandations générales
+                  - button "Populaire 500€ Unique Avancé • Analyse complète • Étude concurrentielle • Audit des conversions" [ref=e630] [cursor=pointer]:
+                    - generic [ref=e631]: Populaire
+                    - generic [ref=e632]:
+                      - generic [ref=e633]: 500€
+                      - generic [ref=e634]: Unique
+                    - generic [ref=e635]: Avancé
+                    - list [ref=e636]:
+                      - listitem [ref=e637]:
+                        - generic [ref=e638]: •
+                        - text: Analyse complète
+                      - listitem [ref=e639]:
+                        - generic [ref=e640]: •
+                        - text: Étude concurrentielle
+                      - listitem [ref=e641]:
+                        - generic [ref=e642]: •
+                        - text: Audit des conversions
+              - generic [ref=e643]:
+                - generic [ref=e645]:
+                  - generic [ref=e646]: ⚙️
+                  - generic [ref=e647]:
+                    - generic [ref=e648]:
+                      - heading "B. Setup de Campagnes" [level=3] [ref=e649]
+                      - button [ref=e651] [cursor=pointer]:
+                        - img [ref=e652]
+                    - paragraph [ref=e654]: Création et configuration de vos campagnes Google Ads avec une structure optimisée dès le départ.
+                - generic [ref=e655]:
+                  - button "400€ Unique Essentiel • 1-2 campagnes Search • Recherche mots-clés • 3 groupes d'annonces" [ref=e656] [cursor=pointer]:
+                    - generic [ref=e657]:
+                      - generic [ref=e658]: 400€
+                      - generic [ref=e659]: Unique
+                    - generic [ref=e660]: Essentiel
+                    - list [ref=e661]:
+                      - listitem [ref=e662]:
+                        - generic [ref=e663]: •
+                        - text: 1-2 campagnes Search
+                      - listitem [ref=e664]:
+                        - generic [ref=e665]: •
+                        - text: Recherche mots-clés
+                      - listitem [ref=e666]:
+                        - generic [ref=e667]: •
+                        - text: 3 groupes d'annonces
+                  - button "Populaire 700€ Unique Avancé • 3-5 campagnes Search • Recherche approfondie • Extensions complètes" [ref=e668] [cursor=pointer]:
+                    - generic [ref=e669]: Populaire
+                    - generic [ref=e670]:
+                      - generic [ref=e671]: 700€
+                      - generic [ref=e672]: Unique
+                    - generic [ref=e673]: Avancé
+                    - list [ref=e674]:
+                      - listitem [ref=e675]:
+                        - generic [ref=e676]: •
+                        - text: 3-5 campagnes Search
+                      - listitem [ref=e677]:
+                        - generic [ref=e678]: •
+                        - text: Recherche approfondie
+                      - listitem [ref=e679]:
+                        - generic [ref=e680]: •
+                        - text: Extensions complètes
+                  - button "1,200€ Unique Premium • Campagnes Search + Display • YouTube Ads • Remarketing avancé" [ref=e681] [cursor=pointer]:
+                    - generic [ref=e682]:
+                      - generic [ref=e683]: 1,200€
+                      - generic [ref=e684]: Unique
+                    - generic [ref=e685]: Premium
+                    - list [ref=e686]:
+                      - listitem [ref=e687]:
+                        - generic [ref=e688]: •
+                        - text: Campagnes Search + Display
+                      - listitem [ref=e689]:
+                        - generic [ref=e690]: •
+                        - text: YouTube Ads
+                      - listitem [ref=e691]:
+                        - generic [ref=e692]: •
+                        - text: Remarketing avancé
+        - generic [ref=e694]:
+          - generic [ref=e695]:
+            - generic [ref=e696]:
+              - generic [ref=e697]: 📊
+              - generic [ref=e698]:
+                - generic [ref=e699]:
+                  - heading "Tracking & Reporting" [level=2] [ref=e700]
+                  - generic [ref=e701]: Recommandé
+                - paragraph [ref=e702]: Mesurez, analysez et optimisez vos performances marketing
+            - button "Pas besoin" [ref=e703] [cursor=pointer]
+          - button "📊 Je ne suis pas sûr pour Tracking - Discutons-en Vous n'êtes pas sûr de ce dont vous avez besoin ? Discutons-en !" [ref=e704] [cursor=pointer]:
+            - generic [ref=e705]:
+              - generic [ref=e706]: 📊
+              - generic [ref=e707]:
+                - generic [ref=e708]: Je ne suis pas sûr pour Tracking - Discutons-en
+                - paragraph [ref=e709]: Vous n'êtes pas sûr de ce dont vous avez besoin ? Discutons-en !
+          - generic [ref=e710]:
+            - button "🔍 A. Audit Tracking Analyse complète de votre setup tracking actuel 300€" [ref=e711] [cursor=pointer]:
+              - generic [ref=e712]:
+                - generic [ref=e713]: 🔍
+                - generic [ref=e714]:
+                  - generic [ref=e715]:
+                    - generic [ref=e716]: A. Audit Tracking
+                    - button [ref=e718]:
+                      - img [ref=e719]
+                  - paragraph [ref=e721]: Analyse complète de votre setup tracking actuel
+                - generic [ref=e722]: 300€
+            - generic [ref=e723]:
+              - button "📈 Installation / Révision GA4 400€ Mise en place ou optimisation de Google Analytics 4" [ref=e724] [cursor=pointer]:
+                - generic [ref=e725]:
+                  - generic [ref=e726]: 📈
+                  - generic [ref=e727]:
+                    - generic [ref=e728]: Installation / Révision GA4
+                    - button [ref=e730]:
+                      - img [ref=e731]
+                  - generic [ref=e733]: 400€
+                - paragraph [ref=e734]: Mise en place ou optimisation de Google Analytics 4
+              - button "🎯 Mise en place des Points de Conversion 350€ Trackez soumissions de formulaires, achats, appels et actions clés" [ref=e735] [cursor=pointer]:
+                - generic [ref=e736]:
+                  - generic [ref=e737]: 🎯
+                  - generic [ref=e738]:
+                    - generic [ref=e739]: Mise en place des Points de Conversion
+                    - button [ref=e741]:
+                      - img [ref=e742]
+                  - generic [ref=e744]: 350€
+                - paragraph [ref=e745]: Trackez soumissions de formulaires, achats, appels et actions clés
+              - button "🍪 Cookie Banner + Tracking du Consentement 300€ Gestion des cookies conforme RGPD avec Google Consent Mode v2" [ref=e746] [cursor=pointer]:
+                - generic [ref=e747]:
+                  - generic [ref=e748]: 🍪
+                  - generic [ref=e749]:
+                    - generic [ref=e750]: Cookie Banner + Tracking du Consentement
+                    - button [ref=e752]:
+                      - img [ref=e753]
+                  - generic [ref=e755]: 300€
+                - paragraph [ref=e756]: Gestion des cookies conforme RGPD avec Google Consent Mode v2
+              - button "🔗 Intégration CRM 500€ Connectez vos analytics avec votre CRM pour une visibilité full-funnel (Varies by CRM)" [ref=e757] [cursor=pointer]:
+                - generic [ref=e758]:
+                  - generic [ref=e759]: 🔗
+                  - generic [ref=e760]:
+                    - generic [ref=e761]: Intégration CRM
+                    - button [ref=e763]:
+                      - img [ref=e764]
+                  - generic [ref=e766]: 500€
+                - paragraph [ref=e767]: Connectez vos analytics avec votre CRM pour une visibilité full-funnel
+                - paragraph [ref=e768]: (Varies by CRM)
+              - button "📊 Dashboard Reporting Multicanal 600€ Dashboard personnalisé regroupant toutes vos données marketing" [ref=e769] [cursor=pointer]:
+                - generic [ref=e770]:
+                  - generic [ref=e771]: 📊
+                  - generic [ref=e772]:
+                    - generic [ref=e773]: Dashboard Reporting Multicanal
+                    - button [ref=e775]:
+                      - img [ref=e776]
+                  - generic [ref=e778]: 600€
+                - paragraph [ref=e779]: Dashboard personnalisé regroupant toutes vos données marketing
+    - generic [ref=e110]:
+      - generic [ref=e111]:
+        - generic [ref=e112]: 50+
+        - generic [ref=e113]: Clients actifs
+      - generic [ref=e114]:
+        - generic [ref=e115]: +200%
+        - generic [ref=e116]: ROI moyen
+      - generic [ref=e117]:
+        - generic [ref=e118]: 5+
+        - generic [ref=e119]: Années d'expérience
+      - generic [ref=e120]:
+        - generic [ref=e121]: 24h
+        - generic [ref=e122]: Délai de réponse
+    - generic [ref=e124]:
+      - heading "Questions fréquentes" [level=2] [ref=e125]
+      - generic [ref=e126]:
+        - group [ref=e127]:
+          - generic "Comment fonctionne le calculateur ?" [ref=e128] [cursor=pointer]:
+            - heading "Comment fonctionne le calculateur ?" [level=3] [ref=e129]
+            - img [ref=e130]
+        - group [ref=e132]:
+          - generic "Les prix sont-ils définitifs ?" [ref=e133] [cursor=pointer]:
+            - heading "Les prix sont-ils définitifs ?" [level=3] [ref=e134]
+            - img [ref=e135]
+        - group [ref=e137]:
+          - generic "Puis-je modifier ma sélection après avoir envoyé le devis ?" [ref=e138] [cursor=pointer]:
+            - heading "Puis-je modifier ma sélection après avoir envoyé le devis ?" [level=3] [ref=e139]
+            - img [ref=e140]
+        - group [ref=e142]:
+          - generic "Quelle est la durée d'engagement minimum ?" [ref=e143] [cursor=pointer]:
+            - heading "Quelle est la durée d'engagement minimum ?" [level=3] [ref=e144]
+            - img [ref=e145]
+  - contentinfo [ref=e147]:
+    - generic [ref=e149]:
+      - generic [ref=e150]:
+        - link "MyDigipal" [ref=e151] [cursor=pointer]:
+          - /url: /fr
+          - img "MyDigipal" [ref=e152]
+        - paragraph [ref=e153]: Le meilleur des deux intelligences
+        - paragraph [ref=e154]: Agence de marketing digital basée à Londres, spécialisée en B2B, ABM et Automobile.
+        - generic [ref=e155]:
+          - link "LinkedIn" [ref=e156] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/mydigipal
+            - img [ref=e157]
+          - link "YouTube" [ref=e159] [cursor=pointer]:
+            - /url: https://www.youtube.com/@MyDigipal-ABM
+            - img [ref=e160]
+          - link "RSS Feed" [ref=e163] [cursor=pointer]:
+            - /url: /fr/rss.xml
+            - img [ref=e164]
+      - generic [ref=e168]:
+        - heading "Services" [level=4] [ref=e169]
+        - list [ref=e170]:
+          - listitem [ref=e171]:
+            - link "Google Ads" [ref=e172] [cursor=pointer]:
+              - /url: /fr/services/google-ads
+          - listitem [ref=e173]:
+            - link "Paid Social" [ref=e174] [cursor=pointer]:
+              - /url: /fr/services/paid-social
+          - listitem [ref=e175]:
+            - link "SEO" [ref=e176] [cursor=pointer]:
+              - /url: /fr/services/seo
+          - listitem [ref=e177]:
+            - link "Emailing" [ref=e178] [cursor=pointer]:
+              - /url: /fr/services/emailing
+          - listitem [ref=e179]:
+            - link "B2B / ABM" [ref=e180] [cursor=pointer]:
+              - /url: /fr/services/b2b-abm
+          - listitem [ref=e181]:
+            - link "Tracking & Reporting" [ref=e182] [cursor=pointer]:
+              - /url: /fr/services/tracking-reporting
+      - generic [ref=e183]:
+        - heading "IA" [level=4] [ref=e184]
+        - list [ref=e185]:
+          - listitem [ref=e186]:
+            - link "Formation IA" [ref=e187] [cursor=pointer]:
+              - /url: /fr/services/ai-training
+          - listitem [ref=e188]:
+            - link "Solutions IA" [ref=e189] [cursor=pointer]:
+              - /url: /fr/services/ai-solutions
+          - listitem [ref=e190]:
+            - link "Contenu IA" [ref=e191] [cursor=pointer]:
+              - /url: /fr/services/ai-content
+      - generic [ref=e192]:
+        - heading "Automobile" [level=4] [ref=e193]
+        - list [ref=e194]:
+          - listitem [ref=e195]:
+            - link "Google Ads" [ref=e196] [cursor=pointer]:
+              - /url: /fr/automotive/google-ads
+          - listitem [ref=e197]:
+            - link "Paid Social" [ref=e198] [cursor=pointer]:
+              - /url: /fr/automotive/paid-social
+          - listitem [ref=e199]:
+            - link "Dynamic Ads" [ref=e200] [cursor=pointer]:
+              - /url: /fr/automotive/dynamic-ads
+      - generic [ref=e201]:
+        - heading "Entreprise" [level=4] [ref=e202]
+        - list [ref=e203]:
+          - listitem [ref=e204]:
+            - link "Études de cas" [ref=e205] [cursor=pointer]:
+              - /url: /fr/case-studies
+          - listitem [ref=e206]:
+            - link "Blog" [ref=e207] [cursor=pointer]:
+              - /url: /fr/blog
+          - listitem [ref=e208]:
+            - link "Contact" [ref=e209] [cursor=pointer]:
+              - /url: /fr/contact
+          - listitem [ref=e210]:
+            - link "Devis Gratuit" [ref=e211] [cursor=pointer]:
+              - /url: /fr/calculator
+    - generic [ref=e214]:
+      - paragraph [ref=e215]: © 2026 MyDigipal LTD. Tous droits réservés.
+      - generic [ref=e216]:
+        - link "Politique de Confidentialité" [ref=e217] [cursor=pointer]:
+          - /url: /fr/privacy-policy
+        - generic [ref=e218]: •
+        - link "Conditions d'Utilisation" [ref=e219] [cursor=pointer]:
+          - /url: /fr/terms-of-service
+        - generic [ref=e220]: •
+        - button "Cookies" [ref=e221] [cursor=pointer]
+  - dialog "Consentement cookies" [ref=e222]:
+    - generic [ref=e224]:
+      - paragraph [ref=e225]:
+        - text: Ce site utilise des cookies pour analyser le trafic.
+        - button "Personnaliser" [ref=e226] [cursor=pointer]
+      - generic [ref=e227]:
+        - button "Refuser" [ref=e228] [cursor=pointer]
+        - button "OK" [ref=e229] [cursor=pointer]
+  - generic [ref=e232]:
+    - button "Menu" [ref=e233]:
+      - img [ref=e235]
+      - generic: Menu
+    - button "Inspect" [ref=e239]:
+      - img [ref=e241]
+      - generic: Inspect
+    - button "Audit" [ref=e243]:
+      - generic [ref=e244]:
+        - img [ref=e245]
+        - img [ref=e780]
+      - generic: Audit
+    - button "Settings" [ref=e251]:
+      - img [ref=e253]
+      - generic: Settings
