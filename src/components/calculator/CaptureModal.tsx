@@ -1,7 +1,7 @@
 /** @jsxImportSource react */
 import { useState, useEffect, useRef } from 'react';
 import type { Currency, PricingSummary, ContactInfo } from './types';
-import { CURRENCY_CONFIGS, convertPrice, formatPrice } from './data';
+import { CURRENCY_CONFIGS, formatPrice } from './data';
 
 interface DomainLine {
   id: string;
@@ -34,8 +34,10 @@ interface CaptureModalProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
-const fp = (n: number, lang: 'en' | 'fr', currency: Currency) =>
-  formatPrice(convertPrice(n, currency), currency, lang);
+// Voir StickySummary : formatPrice fait deja la conversion depuis l'EUR, le
+// convertPrice en amont provoquait une double conversion sur l'ecran de capture.
+const fp = (n: number, _lang: 'en' | 'fr', currency: Currency) =>
+  formatPrice(n, currency);
 
 export default function CaptureModal({
   open,

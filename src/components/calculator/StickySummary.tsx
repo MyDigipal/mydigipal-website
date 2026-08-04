@@ -1,7 +1,7 @@
 /** @jsxImportSource react */
 import { useState, useEffect } from 'react';
 import type { Currency, PricingSummary } from './types';
-import { CURRENCY_CONFIGS, convertPrice, formatPrice } from './data';
+import { CURRENCY_CONFIGS, formatPrice } from './data';
 
 interface DomainLine {
   id: string;
@@ -31,8 +31,12 @@ interface StickySummaryProps {
   guidedActive?: boolean;
 }
 
-const fp = (n: number, lang: 'en' | 'fr', currency: Currency) =>
-  formatPrice(convertPrice(n, currency), currency, lang);
+// formatPrice convertit deja depuis l'EUR en interne. L'ancienne version appelait
+// convertPrice AVANT de passer a formatPrice : le montant etait converti deux fois
+// (+9% en USD, -12% en GBP), et le recap affichait donc un total different des prix
+// listes dans le corps du calculateur. Le 3e argument n'a jamais existe.
+const fp = (n: number, _lang: 'en' | 'fr', currency: Currency) =>
+  formatPrice(n, currency);
 
 export default function StickySummary({
   lang,

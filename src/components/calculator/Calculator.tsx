@@ -1,6 +1,7 @@
 /** @jsxImportSource react */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import type { ServiceDomain, AITrainingSelection, AISolutionsAnswers, ContactInfo, Currency, GuidedRecommendation } from './types';
+import { track, trackStep, trackDomain, trackService, trackChannel, trackBudget, trackAbandon } from './tracking';
 import GuidedMode from './GuidedMode';
 import { guidedDomainActions } from './guided-data';
 import HowWeWork from './HowWeWork';
@@ -180,7 +181,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   );
   const [selections, setSelections] = useState<Record<string, number | null>>({});
   const [disabledServices, setDisabledServices] = useState<Record<string, boolean>>({});
-  const [adBudgets, setAdBudgets] = useState({
+  // Annotation explicite : sans elle, TS infere le type litteral `500` depuis
+  // BUDGET_CONFIG.min et refuse toute autre valeur de budget.
+  const [adBudgets, setAdBudgets] = useState<Record<'google-ads' | 'paid-social', number>>({
     'google-ads': BUDGET_CONFIG.min,
     'paid-social': BUDGET_CONFIG.min
   });
@@ -298,13 +301,26 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     return 1;
   }, [selectedSocialChannels]);
 
+  // Index serviceId -> { domainId, service } : permet au tracking de retrouver le
+  // domaine et le libelle du niveau a partir du seul serviceId manipule par les toggles.
+  const serviceIndex = useMemo(() => {
+    const idx: Record<string, { domainId: string; service: { id: string; title: string; levels: Array<{ name: string; price: number }> } }> = {};
+    Object.values(domainConfigs).forEach(domain => {
+      domain.services.forEach(service => {
+        idx[service.id] = { domainId: domain.id, service: service as never };
+      });
+    });
+    return idx;
+  }, []);
+
   // Toggle domain selection
   const toggleDomain = useCallback((domain: ServiceDomain) => {
-    setSelectedDomains(prev =>
-      prev.includes(domain)
-        ? prev.filter(d => d !== domain)
-        : [...prev, domain]
-    );
+    setSelectedDomains(prev => {
+      const isSelected = prev.includes(domain);
+      const next = isSelected ? prev.filter(d => d !== domain) : [...prev, domain];
+      trackDomain(domain, !isSelected, next.length);
+      return next;
+    });
   }, []);
 
   // Toggle domain dismissal (for "Not needed" button on section level)
@@ -372,11 +388,23 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
 
   // Toggle service level
   const toggleServiceLevel = useCallback((serviceId: string, levelIndex: number) => {
-    setSelections(prev => ({
-      ...prev,
-      [serviceId]: prev[serviceId] === levelIndex ? null : levelIndex
-    }));
-  }, []);
+    setSelections(prev => {
+      const willDeselect = prev[serviceId] === levelIndex;
+      const entry = serviceIndex[serviceId];
+      if (entry) {
+        const level = entry.service.levels?.[levelIndex];
+        trackService({
+          domainId: entry.domainId,
+          serviceId,
+          levelName: level?.name ?? `level-${levelIndex}`,
+          levelIndex,
+          price: level?.price ?? 0,
+          selected: !willDeselect
+        });
+      }
+      return { ...prev, [serviceId]: willDeselect ? null : levelIndex };
+    });
+  }, [serviceIndex]);
 
   // Disable service (no thanks)
   const toggleDisabled = useCallback((serviceId: string) => {
@@ -490,9 +518,66 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       totalMonthlyWithBudget,
       grandTotalWithoutBudget,
       grandTotalWithBudget,
+      // Valeur de conversion envoyee au webhook, a GA4 et au pixel Meta.
+      // Elle etait consommee comme `pricing.grandTotal` a 4 endroits alors que le
+      // champ n'existait pas : tous les leads partaient avec une valeur undefined.
+      // On expose le total HORS budget media, parce que le budget media n'est pas
+      // du chiffre d'affaires MyDigipal et gonflerait artificiellement la valeur
+      // sur laquelle Meta et Google optimisent.
+      grandTotal: grandTotalWithoutBudget,
       hasCustomQuote
     };
   }, [selectedDomains, selections, disabledServices, adBudgets, budgetActivated, aiTraining, aiTrainingActivated, cmsAddon, trackingSelections, trackingAudit, duration, dismissedDomains, trackingDismissed, trackingNotSure, notSureAbout, sessionCount]);
+
+  // --- Tracking du funnel ---------------------------------------------------
+  // Une ref plutot qu'un state : le handler d'abandon doit lire l'etat au moment
+  // du depart, sans re-souscrire l'ecouteur a chaque frappe clavier.
+  const funnelSnapshot = useRef({ step, domains: 0, services: 0, total: 0 });
+  funnelSnapshot.current = {
+    step,
+    domains: selectedDomains.length,
+    services: Object.values(selections).filter(v => v !== null && v !== undefined).length,
+    total: pricing.grandTotal
+  };
+
+  // Arrivee sur le calculateur
+  useEffect(() => {
+    trackStep('landed', { calculator_lang: lang, calculator_entry_domain: preselectedDomain || 'none' });
+  }, [lang, preselectedDomain]);
+
+  // Changement d'etape
+  useEffect(() => {
+    trackStep(step as never, {
+      calculator_domains_count: funnelSnapshot.current.domains,
+      calculator_services_count: funnelSnapshot.current.services
+    });
+  }, [step]);
+
+  // Abandon : pagehide couvre la fermeture d'onglet et la navigation arriere sur
+  // mobile (ou beforeunload ne se declenche pas de facon fiable).
+  useEffect(() => {
+    const onLeave = () => {
+      const s = funnelSnapshot.current;
+      // On ignore les visiteurs qui repartent sans avoir rien touche : ce sont des
+      // sorties de page, pas des abandons de calculateur.
+      if (s.domains === 0 && s.services === 0) return;
+      trackAbandon({
+        calculator_domains_count: s.domains,
+        calculator_services_count: s.services,
+        calculator_total: s.total,
+        currency
+      });
+    };
+    window.addEventListener('pagehide', onLeave);
+    return () => window.removeEventListener('pagehide', onLeave);
+  }, [currency]);
+
+  // Ouverture de la modale de capture. Passe par un handler unique pour que chaque
+  // point d'entree (sticky, resume, bas de page) soit identifiable dans GA4.
+  const openCaptureModal = useCallback((source: string) => {
+    trackStep('lead_form', { calculator_cta_source: source, calculator_total: pricing.grandTotal, currency });
+    setShowCaptureModal(true);
+  }, [pricing.grandTotal, currency]);
 
   // Check if user needs tracking (has marketing services selected or explicitly selected tracking)
   const needsTracking = useMemo(() => {
@@ -1149,7 +1234,13 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 </p>
               </div>
               <button
-                onClick={() => setStep('configure')}
+                onClick={() => {
+                  track('calculator_continue_click', {
+                    calculator_domains: selectedDomains.join(','),
+                    calculator_domains_count: selectedDomains.length
+                  });
+                  setStep('configure');
+                }}
                 className="inline-flex items-center gap-2 px-8 py-3.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all hover:shadow-lg hover:shadow-blue-600/25 active:scale-[0.98]"
               >
                 {t.continue}
@@ -1174,7 +1265,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           hasSelections={hasSelections}
           hasActualSelections={hasActualSelections}
           hasNotSureSelections={hasNotSureSelections}
-          onRequestPlan={() => setShowCaptureModal(true)}
+          onRequestPlan={() => openCaptureModal('sticky_domains')}
           onStartGuided={() => {
             if (typeof window !== 'undefined' && (window as any).dataLayer) {
               (window as any).dataLayer.push({ event: 'calculator_mode_selected', mode: 'guided', source: 'sticky' });
@@ -1690,6 +1781,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                 setBudgetActivated(prev => ({ ...prev, [domainId]: true }));
                                 setAdBudgets(prev => ({ ...prev, [domainId]: parseInt(e.target.value) }));
                               }}
+                              // onMouseUp/onTouchEnd plutot que onChange : un seul event
+                              // par reglage, sinon on inonde GA4 a chaque pixel du slider.
+                              onMouseUp={(e) => trackBudget(domainId, parseInt((e.target as HTMLInputElement).value), currency)}
+                              onTouchEnd={(e) => trackBudget(domainId, parseInt((e.target as HTMLInputElement).value), currency)}
                               className={`w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer`}
                               style={{ accentColor: domain.color }}
                             />
@@ -1785,11 +1880,12 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                   currency={currency}
                                   allocatedBudget={isSelected ? perChannelBudget : undefined}
                                   onToggle={() => {
-                                    setSelectedSocialChannels(prev =>
-                                      prev.includes(channel.id)
-                                        ? prev.filter(c => c !== channel.id)
-                                        : [...prev, channel.id]
-                                    );
+                                    setSelectedSocialChannels(prev => {
+                                      const was = prev.includes(channel.id);
+                                      const next = was ? prev.filter(c => c !== channel.id) : [...prev, channel.id];
+                                      trackChannel(channel.id, !was, next.length);
+                                      return next;
+                                    });
                                   }}
                                 />
                               );
@@ -1821,13 +1917,16 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                     <div>
                                       <div className="flex items-center gap-1">
                                         <h3 className="font-bold text-slate-900">{lang === 'fr' ? service.title : (service.titleEn || service.title)}</h3>
-                                        {service.detailedInfo && (
-                                          <Tooltip
-                                            content={service.detailedInfo.content.intro}
-                                            whyImportant={service.detailedInfo.content.conclusion}
-                                            lang={lang}
-                                          />
-                                        )}
+                                        {service.detailedInfo && (() => {
+                                          const di = (lang === 'en' && service.detailedInfoEn) ? service.detailedInfoEn : service.detailedInfo;
+                                          return (
+                                            <Tooltip
+                                              content={di.content.intro}
+                                              whyImportant={di.content.conclusion}
+                                              lang={lang}
+                                            />
+                                          );
+                                        })()}
                                       </div>
                                       <p className="text-sm text-slate-600">{lang === 'fr' ? service.description : (service.descriptionEn || service.description)}</p>
                                     </div>
@@ -1941,13 +2040,16 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                                   <div>
                                     <div className="flex items-center gap-1">
                                       <h3 className="font-bold text-slate-900">{lang === 'fr' ? service.title : (service.titleEn || service.title)}</h3>
-                                      {service.detailedInfo && (
-                                        <Tooltip
-                                          content={service.detailedInfo.content.intro}
-                                          whyImportant={service.detailedInfo.content.conclusion}
-                                          lang={lang}
-                                        />
-                                      )}
+                                      {service.detailedInfo && (() => {
+                                        const di = (lang === 'en' && service.detailedInfoEn) ? service.detailedInfoEn : service.detailedInfo;
+                                        return (
+                                          <Tooltip
+                                            content={di.content.intro}
+                                            whyImportant={di.content.conclusion}
+                                            lang={lang}
+                                          />
+                                        );
+                                      })()}
                                     </div>
                                     <p className="text-sm text-slate-600">{lang === 'fr' ? service.description : (service.descriptionEn || service.description)}</p>
                                   </div>
@@ -2401,7 +2503,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             {!submitted ? (
               <button
                 type="button"
-                onClick={() => setShowCaptureModal(true)}
+                onClick={() => openCaptureModal('summary_main')}
                 className="w-full inline-flex items-center justify-center gap-3 py-4 px-6 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-lg"
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -2461,7 +2563,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
               <div className="flex justify-center mb-10">
                 <button
                   type="button"
-                  onClick={() => setShowCaptureModal(true)}
+                  onClick={() => openCaptureModal('summary_secondary')}
                   className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-br from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -2802,7 +2904,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
                 <button
                   onClick={() => {
                     setShowSummaryPopup(false);
-                    setShowCaptureModal(true);
+                    openCaptureModal('summary_popup');
                   }}
                   className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
                 >
@@ -2827,7 +2929,7 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         hasSelections={hasSelections}
         hasActualSelections={hasActualSelections}
         hasNotSureSelections={hasNotSureSelections}
-        onRequestPlan={() => setShowCaptureModal(true)}
+        onRequestPlan={() => openCaptureModal('sticky_configure')}
         onStartGuided={() => setStep('guided')}
         guidedActive={false}
       />
