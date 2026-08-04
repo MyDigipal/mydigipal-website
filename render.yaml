@@ -1,5 +1,17 @@
 # Render.yaml configuration for MyDigipal Website
 # Static site deployment on Render
+#
+# ATTENTION (verifie le 04/08/2026) : ce fichier n'est PAS la source de verite
+# des redirections. Le service srv-d53carkhg0os738p2q50 a ete configure a la
+# main dans le dashboard Render et n'est pas rattache a un Blueprint : la preuve
+# est que son buildCommand reel est "npm install && npm run build:tina", alors
+# que ce fichier declare "npm install && npm run build".
+#
+# Consequence : ajouter une route ici ne la rend PAS active. Les redirections
+# qui fonctionnent aujourd'hui ont ete saisies dans le dashboard, onglet
+# Redirects and Rewrites. Toute nouvelle redirection doit y etre ajoutee aussi.
+# On garde le fichier a jour parce qu'il documente l'intention et qu'il servira
+# le jour ou le service sera rattache a un Blueprint.
 
 services:
   - type: web
