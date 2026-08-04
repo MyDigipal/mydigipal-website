@@ -1,0 +1,91 @@
+---
+title: "Claude Opus 5 : ce qu'un million de tokens change vraiment pour une agence"
+description: "Opus 5 est sorti le 24 juillet avec un contexte d'un million de tokens. Ce que ça change au quotidien, et où le coût par token devient la vraie limite."
+author: "MyDigipal Team"
+date: 2026-07-25
+image: "/images/Blog Thumbnails/claude-opus-5-marketing-agency-what-changes.jpg"
+category: "ai"
+industry: "general"
+tags: ["Claude", "Anthropic", "Agents IA", "Workflow agence"]
+featured: false
+draft: false
+video: "/videos/blog/claude-opus-5-marketing-agency-what-changes-fr.mp4"
+videoPoster: "/images/Blog Thumbnails/claude-opus-5-marketing-agency-what-changes-fr.jpg"
+seo:
+  title: "Claude Opus 5 : ce qui change pour une agence"
+  description: "Opus 5 est sorti le 24 juillet avec un contexte d'un million de tokens. Ce que ça change au quotidien, et où le coût par token devient la limite réelle."
+faqs:
+  - question: "Quelles sont les caractéristiques principales de Claude Opus 5 ?"
+    answer: "Sorti le 24 juillet 2026, il offre une fenêtre de contexte d'un million de tokens avec jusqu'à 128 000 tokens de sortie, au tarif de 5 dollars par million de tokens en entrée et 25 dollars par million en sortie."
+  - question: "Une fenêtre plus grande dispense-t-elle de structurer ses données ?"
+    answer: "Non, et c'est l'erreur classique. Une grande fenêtre permet de sauter une partie de l'ingénierie de recherche documentaire, mais donner au modèle des exports contradictoires venus de trois systèmes produit une réponse assurée bâtie sur la version qu'il aura le plus pondérée. La propreté des entrées décide toujours de la qualité de sortie."
+---
+
+Anthropic a sorti Claude Opus 5 le 24 juillet. Un million de tokens de contexte, jusqu'à 128 000 tokens en sortie, à 5 dollars le million en entrée et 25 le million en sortie.
+
+Le chiffre intéressant est la fenêtre de contexte, et pas pour la raison qu'on avance d'habitude.
+
+## À quoi sert un million de tokens
+
+La démonstration standard consiste à déposer une base de code entière dans un prompt. Utile pour l'ingénierie, moins parlant pour nous.
+
+Voici la version agence. Un an de données de campagne sur quatre plateformes, la charte de marque du client, les douze derniers rapports mensuels et la transcription du comité trimestriel, le tout dans un seul contexte. Pas de couche de recherche documentaire, pas de stratégie de découpage, pas de base vectorielle à maintenir.
+
+C'est cette dernière partie qui constitue le vrai basculement. Avant, faire raisonner un modèle sur l'historique complet d'un client supposait de construire une infrastructure. Quelqu'un devait découper les documents, choisir un modèle d'embedding, régler la recherche, puis déboguer pourquoi le modèle ratait systématiquement le seul paragraphe qui comptait. Une fenêtre suffisamment grande rend toute une catégorie de travail d'ingénierie optionnelle.
+
+Optionnelle, pas obsolète. La recherche documentaire reste gagnante sur le coût à grande échelle, et elle reste gagnante quand le corpus est vraiment volumineux. Mais pour un compte client unique, le calcul s'est inversé.
+
+<div class="mdpl-note">
+  <strong>À retenir.</strong> Une fenêtre plus grande supprime un problème de recherche documentaire. Elle ne supprime pas un problème de qualité de données. Des entrées contradictoires produisent toujours des absurdités assurées, simplement sur davantage de pages.
+</div>
+
+## Où atterrit le coût
+
+À 5 dollars le million de tokens en entrée, remplir la fenêtre complète une fois coûte environ 5 dollars. Ça paraît anecdotique jusqu'à ce que vous le fassiez en boucle.
+
+Un agent qui relit le contexte complet à chaque étape d'un workflow en dix étapes dépense 50 dollars rien qu'en entrée, pour une exécution, pour un client. Multipliez par un portefeuille de comptes et une cadence quotidienne, et le modèle qui semblait bon marché devient la première ligne de votre budget outils.
+
+C'est la contrainte pratique qui remplace l'ancienne. Nous concevions autour des limites de contexte. Nous concevons désormais autour de l'économie du contexte. La discipline est la même : mettre ce dont la tâche a besoin, pas tout ce que vous possédez.
+
+<div class="mdpl-stats">
+  <div class="mdpl-stat"><div class="mdpl-stat__value">1M</div><div class="mdpl-stat__label">tokens de contexte dans une seule requête</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">128K</div><div class="mdpl-stat__label">tokens de sortie au maximum</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">5 $ / 25 $</div><div class="mdpl-stat__label">par million de tokens, entrée et sortie</div></div>
+</div>
+
+<div class="mdpl-cta">
+  <p class="mdpl-cta__eyebrow">L'IA POUR VOTRE ÉQUIPE</p>
+  <p class="mdpl-cta__title">Mettez les nouveaux modèles au travail sur de vrais comptes</p>
+  <p class="mdpl-cta__body">On forme les équipes marketing aux workflows qui tiennent en production, et on construit ceux qui demandent de l'ingénierie.</p>
+  <div class="mdpl-cta__actions">
+    <a class="mdpl-cta__btn mdpl-cta__btn--primary" href="/fr/services/ai-training">Formation IA pour les équipes</a>
+    <a class="mdpl-cta__btn mdpl-cta__btn--ghost" href="/fr/services/ai-solutions">Solutions IA</a>
+  </div>
+</div>
+
+## Ce que nous avons changé dans notre propre workflow
+
+Trois choses, immédiatement.
+
+**Les revues trimestrielles prennent désormais l'année entière en une passe.** Avant, nous résumions chaque mois, puis nous résumions les résumés, et nous perdions le détail qui rendait un schéma visible. Maintenant toute la période entre d'un coup, et le modèle repère la chose qui s'est produite en mars et s'est répétée en septembre.
+
+**Nous avons cessé de maintenir une couche de recherche documentaire pour l'analyse d'un compte.** C'était une infrastructure qui existait pour contourner une limite qui ne s'applique plus à cette échelle.
+
+**Nous avons resserré ce qui entre dans le contexte, pas relâché.** C'est contre-intuitif et c'est le point important. Une fenêtre plus large donne envie de tout coller. Ce tout comprend les exports contradictoires, la convention de nommage abandonnée et le rapport auquel personne ne croit. Le modèle lira l'ensemble et fera la moyenne.
+
+<blockquote class="mdpl-quote">
+  Une fenêtre de contexte plus grande n'autorise pas à arrêter de réfléchir à ce qu'on y met. Elle offre une plus grande occasion d'y mettre la mauvaise chose.
+  <cite>MyDigipal</cite>
+</blockquote>
+
+## La frontière qui n'a pas bougé
+
+Tout ce que nous disions sur la délégation reste valable. Le modèle prépare, une personne confirme tout ce qui est irréversible. Publier, envoyer, dépenser, supprimer.
+
+Opus 5 tient mieux les longues séquences autonomes, ce qui rend cette frontière plus importante et non moins. Un modèle qui travaille vingt minutes sans repasser par vous produit davantage de travail entre deux points de contrôle, donc la relecture doit être délibérée plutôt qu'un coup d'oeil.
+
+Nous en parlions quand [Opus 4.8 a introduit les dynamic workflows](/fr/blog/claude-opus-4-8-dynamic-workflows-agency-automation), et le principe a tenu au changement de version. Ce qui a changé, c'est le volume de production que vous relisez, pas la nécessité de le relire.
+
+Si vous branchez des modèles sur des workflows qui touchent des données clients ou du budget publicitaire, les [contrôles de sécurité décrits en juin](/fr/blog/ai-agent-security-marketing-stack-anthropic-report) comptent davantage à ce niveau de capacité, pas moins.
+
+**Sources :** [Claude Opus 5 face à Fable 5, benchmarks et tarifs](https://www.datacamp.com/blog/claude-opus-5-vs-claude-fable-5) - [Claude Opus 5, benchmarks et guide complet](https://coursiv.io/blog/claude-opus-5) - [Chronologie des sorties de modèles Claude](https://www.scriptbyai.com/anthropic-claude-timeline/)

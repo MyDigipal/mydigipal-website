@@ -1,0 +1,97 @@
+---
+title: "Kimi K3 is a frontier model you can download. Should you run it?"
+description: "Moonshot released 2.8 trillion parameters as open weights on 27 July. The real decision is not performance, it is where the model runs and who sees your data."
+author: "MyDigipal Team"
+date: 2026-08-01
+image: "/images/Blog Thumbnails/kimi-k3-open-weight-frontier-model-agency-decision.jpg"
+category: "ai"
+industry: "general"
+tags: ["Open Weights", "Kimi K3", "Moonshot AI", "Data Sovereignty"]
+featured: false
+draft: false
+video: "/videos/blog/kimi-k3-open-weight-frontier-model-agency-decision-en.mp4"
+videoPoster: "/images/Blog Thumbnails/kimi-k3-open-weight-frontier-model-agency-decision-en.jpg"
+seo:
+  title: "Kimi K3: should your agency run an open model?"
+  description: "Moonshot released 2.8 trillion parameters as open weights. The real decision is not performance, it is where the model runs and who gets to see your data."
+faqs:
+  - question: "Is running an open-weight model actually cheaper?"
+    answer: "Only above a certain volume. You trade a per-token price for fixed infrastructure and engineering time. Below roughly continuous daily usage, an API is almost always cheaper once you count the hours someone spends keeping the deployment alive."
+  - question: "Does using a Chinese-developed model create a GDPR problem?"
+    answer: "Not if you run the weights yourself inside your own infrastructure, because no data leaves your environment. The compliance question attaches to hosted APIs and where they process data, not to the origin of the weights you downloaded."
+---
+
+Moonshot AI published the full weights of Kimi K3 on 27 July, after releasing the model in mid-July. Roughly 2.8 trillion parameters, a one million token context window, and benchmark results that sit behind the leading closed models without being far behind.
+
+It went to the top of the trending charts within half an hour. Moonshot's daily revenue reportedly grew by a factor of at least six since launch.
+
+The interesting question for an agency is not whether it is good. It is good enough. The question is whether you should run it yourself, and the answer turns on something other than performance.
+
+<div class="mdpl-takeaways">
+  <p class="mdpl-takeaways__title">Key takeaways</p>
+  <ul>
+    <li>Open weights at frontier level change the deployment question, not the capability question.</li>
+    <li>Self-hosting means no data leaves your environment, which resolves a real class of client objection.</li>
+    <li>It also means you own the infrastructure, the uptime and the upgrade path.</li>
+    <li>For most agencies the honest answer is a hybrid: hosted API by default, self-hosted for the accounts that require it.</li>
+  </ul>
+</div>
+
+## What open weights actually buy you
+
+Three things, and only one of them is about money.
+
+**Data never leaves.** This is the big one. When a client in a regulated sector asks where their data is processed, "on our own infrastructure, and it does not leave" ends the conversation. No processing agreement to negotiate, no sub-processor list to maintain, no transfer mechanism to justify. For some accounts this is the difference between a project happening and not happening.
+
+**No dependency on someone else's roadmap.** A hosted model can be deprecated, reprised or repriced. Weights you downloaded cannot. If a workflow depends on specific model behaviour, owning the weights means owning the stability.
+
+**Cost, above a volume threshold.** Per-token pricing beats infrastructure until it does not. The crossover point sits higher than most people expect, because the honest calculation includes the engineer who keeps the deployment running.
+
+## What it costs you
+
+Running 2.8 trillion parameters is not a laptop exercise. You need serious hardware or a rented equivalent, and someone who understands inference optimisation, quantisation trade-offs and how to keep a service available.
+
+That person is expensive and they are not doing marketing work while they do this. For most agencies, that is the real cost, and it rarely appears in the comparison.
+
+There is also an upgrade tax. When the next frontier model arrives, a hosted API gives it to you by changing a string. A self-hosted deployment gives it to you after an evaluation, a migration and a re-tuning of everything you built on the previous behaviour.
+
+<div class="mdpl-stats">
+  <div class="mdpl-stat"><div class="mdpl-stat__value">2.8T</div><div class="mdpl-stat__label">parameters, likely the largest open-weight release</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">1M</div><div class="mdpl-stat__label">token context window</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">30 min</div><div class="mdpl-stat__label">to reach number one on the trending chart</div></div>
+</div>
+
+<div class="mdpl-cta">
+  <p class="mdpl-cta__eyebrow">AI FOR YOUR TEAM</p>
+  <p class="mdpl-cta__title">Decide where your models should run</p>
+  <p class="mdpl-cta__body">We help teams work out which workloads justify self-hosting and which do not, then build whichever setup the answer points to.</p>
+  <div class="mdpl-cta__actions">
+    <a class="mdpl-cta__btn mdpl-cta__btn--primary" href="/en/services/ai-solutions">AI solutions</a>
+    <a class="mdpl-cta__btn mdpl-cta__btn--ghost" href="/en/contact">Book a call</a>
+  </div>
+</div>
+
+## The sovereignty argument, examined honestly
+
+There is a strand of commentary framing open Chinese models as a sovereignty play: free frontier capability that reduces dependence on American providers.
+
+The argument holds, with a caveat worth stating plainly. Downloading weights developed in China and running them in your own data centre creates no data transfer, because nothing leaves. The compliance question attaches to hosted APIs, not to the origin of a file you run locally.
+
+What weights do carry is training data and alignment choices you cannot inspect. That matters less for summarising campaign performance than for anything touching content judgement or safety. Evaluate on your own tasks rather than on published benchmarks, because benchmark position and usefulness on your specific work are only loosely related.
+
+<blockquote class="mdpl-quote">
+  Open weights do not make the model free. They move the cost from a per-token line to a headcount line.
+  <cite>MyDigipal</cite>
+</blockquote>
+
+## What we actually recommend
+
+For the large majority of marketing work, keep using a hosted API. The quality is there, the operational burden is zero, and your engineering time is better spent on the data layer that feeds it.
+
+Self-host when one of three conditions is true. A client contractually requires that data stays in your infrastructure. Your volume is high enough and stable enough that the crossover maths genuinely works. Or you need a specific model behaviour frozen in place for a production workflow.
+
+For everyone else, the useful takeaway is not "download Kimi K3". It is that a credible open alternative at this level puts a ceiling on what hosted providers can charge, and that is good for you whether you ever run it or not.
+
+If you are weighing this for a client account with real data constraints, our [AI solutions team](/en/services/ai-solutions) does the evaluation, and our [training](/en/services/ai-training) covers the decision framework so your team can run it next time. Before either, make sure the [data feeding the model is consistent](/en/blog/fragmented-martech-stack-blocks-ai-roi-proof), because no model fixes contradictory inputs.
+
+**Sources:** [VentureBeat on the Kimi K3 release](https://venturebeat.com/technology/chinas-moonshot-ai-releases-kimi-k3-the-largest-open-source-model-ever-rivaling-top-u-s-systems) - [Rest of World on open models and sovereign AI](https://restofworld.org/2026/china-moonshot-kimi-k3-free-sovereign-ai/) - [Fortune on Kimi K3 benchmark position](https://fortune.com/2026/07/16/moonshots-kimi-k3-pushes-chinese-ai-into-fable-level-territory/) - [Quartz on the open-weights download](https://qz.com/moonshot-ai-kimi-k3-open-weights-download-072726)

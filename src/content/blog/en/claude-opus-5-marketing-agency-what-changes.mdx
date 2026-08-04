@@ -1,0 +1,91 @@
+---
+title: "Claude Opus 5: what a million tokens actually changes for an agency"
+description: "Opus 5 landed on 24 July with a one million token context window. What that changes in daily agency work, and where the cost per token becomes the limit."
+author: "MyDigipal Team"
+date: 2026-07-25
+image: "/images/Blog Thumbnails/claude-opus-5-marketing-agency-what-changes.jpg"
+category: "ai"
+industry: "general"
+tags: ["Claude", "Anthropic", "AI Agents", "Agency Workflow"]
+featured: false
+draft: false
+video: "/videos/blog/claude-opus-5-marketing-agency-what-changes-en.mp4"
+videoPoster: "/images/Blog Thumbnails/claude-opus-5-marketing-agency-what-changes-en.jpg"
+seo:
+  title: "Claude Opus 5: what changes for a marketing agency"
+  description: "Opus 5 arrived on 24 July with a one million token context window. What it changes in daily agency work, and where cost per token becomes the real limit."
+faqs:
+  - question: "What are the headline specifications of Claude Opus 5?"
+    answer: "Released on 24 July 2026, it offers a one million token context window with up to 128,000 tokens of output, priced at 5 dollars per million input tokens and 25 dollars per million output tokens."
+  - question: "Does a bigger context window remove the need for structured data?"
+    answer: "No, and this is the common mistake. A large window lets you skip some retrieval engineering, but feeding a model contradictory exports from three systems produces a confident answer built on whichever version it weighted most. Clean inputs still decide output quality."
+---
+
+Anthropic released Claude Opus 5 on 24 July. One million tokens of context, up to 128,000 tokens of output, at 5 dollars per million input and 25 per million output.
+
+The interesting number is the context window, and not for the reason people usually give.
+
+## What a million tokens is for
+
+The standard demo is dropping an entire codebase into a prompt. Useful for engineering, less relevant to us.
+
+Here is the agency version. A year of campaign data across four platforms, the client's brand guidelines, the last twelve monthly reports, and the transcript of the quarterly review, all in one context. No retrieval layer, no chunking strategy, no vector database to maintain.
+
+That last part is the real shift. Before, getting a model to reason across a client's full history meant building infrastructure. Someone had to chunk documents, choose an embedding model, tune retrieval and then debug why the model kept missing the one paragraph that mattered. A large enough window makes a category of engineering work optional.
+
+Optional, not obsolete. Retrieval still wins on cost at scale, and it still wins when the corpus is genuinely large. But for a single client account, the calculation flipped.
+
+<div class="mdpl-note">
+  <strong>Worth remembering.</strong> A bigger window removes a retrieval problem. It does not remove a data quality problem. Contradictory inputs still produce confident nonsense, just across more pages.
+</div>
+
+## Where the cost lands
+
+At 5 dollars per million input tokens, filling the full window once costs about 5 dollars. That sounds trivial until you do it in a loop.
+
+An agent that re-reads the full context on every step of a ten-step workflow spends 50 dollars on input alone, for one run, for one client. Multiply by an account list and a daily cadence, and the model that felt cheap becomes the largest line in your tooling budget.
+
+This is the practical constraint that replaces the old one. We used to design around context limits. Now we design around context economics. The discipline is the same: put in what the task needs, not everything you have.
+
+<div class="mdpl-stats">
+  <div class="mdpl-stat"><div class="mdpl-stat__value">1M</div><div class="mdpl-stat__label">tokens of context in a single request</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">128K</div><div class="mdpl-stat__label">maximum output tokens</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">$5 / $25</div><div class="mdpl-stat__label">per million tokens, input and output</div></div>
+</div>
+
+<div class="mdpl-cta">
+  <p class="mdpl-cta__eyebrow">AI FOR YOUR TEAM</p>
+  <p class="mdpl-cta__title">Put the new models to work on real client accounts</p>
+  <p class="mdpl-cta__body">We train marketing teams on the workflows that hold up in production, and we build the ones that need engineering.</p>
+  <div class="mdpl-cta__actions">
+    <a class="mdpl-cta__btn mdpl-cta__btn--primary" href="/en/services/ai-training">AI training for teams</a>
+    <a class="mdpl-cta__btn mdpl-cta__btn--ghost" href="/en/services/ai-solutions">AI solutions</a>
+  </div>
+</div>
+
+## What we changed in our own workflow
+
+Three things, immediately.
+
+**Quarterly reviews now get the full year in one pass.** Previously we summarised each month, then summarised the summaries, and lost the detail that made a pattern visible. Now the whole period goes in at once, and the model spots the thing that happened in March and repeated in September.
+
+**We stopped maintaining a retrieval layer for single-account analysis.** It was infrastructure that existed to work around a limit that no longer applies at this scale.
+
+**We tightened what goes into the context, not loosened it.** This is counterintuitive and it is the important one. A larger window makes it tempting to paste everything. Everything includes the contradictory exports, the deprecated naming convention and the report nobody trusts. The model will read all of it and average across it.
+
+<blockquote class="mdpl-quote">
+  A bigger context window is not permission to stop thinking about what you put in it. It is a bigger opportunity to put in the wrong thing.
+  <cite>MyDigipal</cite>
+</blockquote>
+
+## The boundary that has not moved
+
+Everything we said about delegation still applies. The model prepares, a person confirms anything irreversible. Publishing, sending, spending, deleting.
+
+Opus 5 is better at long autonomous stretches, which makes that boundary more important rather than less. A model that works for twenty minutes without checking in produces more work between review points, so the review has to be deliberate rather than a glance.
+
+We covered this when [Opus 4.8 introduced dynamic workflows](/en/blog/claude-opus-4-8-dynamic-workflows-agency-automation), and the principle held through the upgrade. What changed is the volume of output you are reviewing, not the need to review it.
+
+If you are wiring models into workflows that touch client data or ad spend, the [security controls we described in June](/en/blog/ai-agent-security-marketing-stack-anthropic-report) matter more at this capability level, not less.
+
+**Sources:** [Claude Opus 5 versus Fable 5, benchmarks and pricing](https://www.datacamp.com/blog/claude-opus-5-vs-claude-fable-5) - [Claude Opus 5 benchmarks, pricing and guide](https://coursiv.io/blog/claude-opus-5) - [Anthropic Claude model release timeline](https://www.scriptbyai.com/anthropic-claude-timeline/)

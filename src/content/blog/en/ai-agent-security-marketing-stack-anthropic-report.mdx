@@ -1,0 +1,103 @@
+---
+title: "Your AI agents are now an attack surface"
+description: "Anthropic mapped a year of AI-enabled cyberattacks to MITRE ATT&CK. Here is what it means for the marketing agents holding your CRM and ad account keys."
+author: "MyDigipal Team"
+date: 2026-06-10
+image: "/images/Blog Thumbnails/ai-agent-security-marketing-stack-anthropic-report.jpg"
+category: "ai"
+industry: "general"
+tags: ["AI Agents", "Security", "Anthropic", "Marketing Ops"]
+featured: false
+draft: false
+video: "/videos/blog/ai-agent-security-marketing-stack-anthropic-report-en.mp4"
+videoPoster: "/images/Blog Thumbnails/ai-agent-security-marketing-stack-anthropic-report-en.jpg"
+seo:
+  title: "AI agent security: what the Anthropic report changes"
+  description: "Anthropic mapped a year of AI-enabled attacks onto MITRE ATT&CK. Here is what it really means for the agents holding your CRM and ad account keys."
+faqs:
+  - question: "What did Anthropic actually publish on 3 June 2026?"
+    answer: "A study of 832 accounts banned for malicious cyber activity between March 2025 and March 2026, with each case mapped onto the MITRE ATT&CK framework. The headline finding is that AI lowers the skill floor for attackers rather than creating brand new attack types."
+  - question: "Does this mean we should stop giving agents access to our marketing tools?"
+    answer: "No. It means scoping that access properly. An agent that reads campaign data needs read-only credentials, not the same admin token your team uses. Separate the keys, log the calls, and cap what each agent can spend or delete."
+---
+
+On 3 June, Anthropic published something more useful than another warning about AI and cybercrime. Its threat intelligence team took 832 accounts banned for malicious activity between March 2025 and March 2026, and mapped every case onto MITRE ATT&CK, the standard framework security teams already use to describe attacker behaviour.
+
+The conclusion is not that AI invented new attacks. It is that AI removed the skill requirement for old ones.
+
+That distinction matters for you, because your marketing stack is now full of agents holding real credentials.
+
+<div class="mdpl-takeaways">
+  <p class="mdpl-takeaways__title">Key takeaways</p>
+  <ul>
+    <li>The Anthropic study maps a year of AI-assisted attacks onto a framework your security team already understands.</li>
+    <li>The shift is about accessibility: low-skill actors now run operations that used to need a specialist.</li>
+    <li>Marketing is exposed because agents hold CRM, ad account and analytics credentials, often over-scoped.</li>
+    <li>The fix is boring and effective: scoped keys, spend caps, logging, and a human gate on anything irreversible.</li>
+  </ul>
+</div>
+
+## What the report actually says
+
+Anthropic's earlier disclosure in November 2025 got the headlines: a Chinese state-linked group, tracked as GTG-1002, ran what the company described as the first largely autonomous AI-orchestrated cyber espionage campaign, against roughly thirty targets. Anthropic estimated that 80 to 90 percent of the operations executed without human intervention.
+
+Plenty of security researchers pushed back on that framing, and fairly. The claim that AI ran the operation is hard to verify from the outside, and the industry has been burned before by vendors overselling their own telemetry.
+
+The June study is more grounded, because it is not one dramatic case. It is a year of banned accounts, categorised. And the pattern it shows is consistent: reconnaissance, vulnerability discovery, credential harvesting and data analysis are the phases where AI helps most. These are the tedious, knowledge-heavy parts of an intrusion. Automate them and someone who could not previously run a campaign suddenly can.
+
+## Why this lands on marketing, not just IT
+
+Two years ago, the marketing department did not hold credentials that mattered to an attacker. That is no longer true.
+
+Think about what a connected agent touches in a typical setup. It reads your CRM to enrich lead records. It queries your ad accounts to build reports. It has an analytics token. It probably has write access somewhere, because read-only agents are less useful and nobody wanted to configure two sets of keys.
+
+Now consider how those credentials were provisioned. In most companies we audit, the answer is the same: someone pasted an existing admin key into a configuration file, because it worked and the deadline was Friday.
+
+<div class="mdpl-stats">
+  <div class="mdpl-stat"><div class="mdpl-stat__value">832</div><div class="mdpl-stat__label">accounts analysed over twelve months</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">80-90%</div><div class="mdpl-stat__label">of GTG-1002 operations run without human input</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">~30</div><div class="mdpl-stat__label">organisations targeted in that campaign</div></div>
+</div>
+
+The risk is not that a model turns hostile. It is that an over-scoped credential sits in a place with weaker controls than your production infrastructure, and that an agent can be steered into using it. Prompt injection through a scraped page, a poisoned dataset, a malicious document dropped into a shared folder: the entry points are mundane.
+
+<div class="mdpl-cta">
+  <p class="mdpl-cta__eyebrow">AI FOR YOUR TEAM</p>
+  <p class="mdpl-cta__title">Deploy agents your security team can live with</p>
+  <p class="mdpl-cta__body">We train marketing teams to build agents that are actually scoped, logged and reversible, not demos that quietly hold admin keys.</p>
+  <div class="mdpl-cta__actions">
+    <a class="mdpl-cta__btn mdpl-cta__btn--primary" href="/en/services/ai-training">AI training for teams</a>
+    <a class="mdpl-cta__btn mdpl-cta__btn--ghost" href="/en/contact">Book a call</a>
+  </div>
+</div>
+
+## What we actually changed on our own stack
+
+We run agents across client accounts, so this is not theoretical for us. Four things we now treat as non-negotiable.
+
+**Separate credentials per agent, always read-only by default.** If an agent builds reports, it gets a reporting token. Write access is granted per use case, never as a convenience. This is dull work and it is the single highest-value control.
+
+**Spend caps at the platform level, not in the prompt.** Telling an agent not to exceed a budget is a suggestion. Setting a campaign-level cap in the ad platform is a rule. Never rely on instructions to enforce something a setting can enforce.
+
+**Every tool call logged, with the arguments.** When something goes wrong you need to know what the agent did, not what it said it did. Anthropic recovered roughly 17,600 attacker actions from logs during a later incident. Logs are what turned that case from a mystery into a timeline.
+
+**A human gate on anything irreversible.** Publishing, sending, deleting, spending. An agent can prepare all of it. A person confirms it. We wrote about this when we looked at [what you can safely delegate to agents](/en/blog/claude-opus-4-8-dynamic-workflows-agency-automation), and the boundary has not moved.
+
+<blockquote class="mdpl-quote">
+  The threat is not a clever model. It is an admin token that nobody remembered was in a config file.
+  <cite>MyDigipal</cite>
+</blockquote>
+
+## The uncomfortable part
+
+There is a version of this article that ends with "so be careful out there". That is not useful.
+
+Here is the harder point. Most marketing teams cannot currently answer three questions about their own agents: which credentials does each one hold, what is the blast radius if one is compromised, and where are the logs. If you cannot answer those, you do not have an AI security problem yet. You have an inventory problem, and it will become an AI security problem.
+
+Start with the inventory. List every agent, automation and integration touching your marketing stack. Write down what each one can read and what each one can write. Most teams find at least one credential that should have been revoked months ago.
+
+That exercise takes an afternoon. It is also the only part of this that you can do without buying anything.
+
+If your tracking and data flows are already unclear, that audit is the natural place to start, and it is [work we do](/en/services/tracking-reporting) before we connect anything to anything. And if you are building agents into client-facing workflows, our [AI solutions team](/en/services/ai-solutions) scopes them with these controls from day one.
+
+**Sources:** [Anthropic, mapping a year of AI-enabled cyber threats (3 June 2026)](https://www.anthropic.com/news/AI-enabled-cyber-threats-mitre-attack) - [Help Net Security on the study (5 June 2026)](https://www.helpnetsecurity.com/2026/06/05/anthropic-ai-cyber-activity-analysis/) - [Anthropic on the GTG-1002 campaign](https://www.anthropic.com/news/disrupting-AI-espionage) - [The Conversation, why researchers have questions](https://theconversation.com/an-ai-lab-says-chinese-backed-bots-are-running-cyber-espionage-attacks-experts-have-questions-269815)
