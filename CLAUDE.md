@@ -56,6 +56,23 @@ seo:
 - Pas de trailing slash (config Astro : `trailingSlash: 'never'`)
 - Image blog : 1200x630px
 
+### Case studies : le client est déjà préfixé
+Le template `[slug].astro` construit le title avec `client - titre`. Ne PAS répéter
+le nom du client dans `seo.title`, sinon Google affiche "Quantum Metrics - Quantum
+Metrics: ...". Six fiches sur huit étaient dans ce cas avant le 04/08/2026. Le
+template lit `seo.title` / `seo.description` en priorité, avec fallback sur le
+champ `title` racine (qui sert au H1 et ne doit pas bouger).
+
+### Vérifier avant de conclure
+`node scripts/audit-metas.py` lit le `dist/` et sort les titres hors 50-60, les
+descriptions hors 145-160, les doublons EN/FR et les H1 manquants. Le lancer après
+build plutôt que se fier aux sources : c'est le HTML généré que Google voit.
+
+### Redirections
+Elles ne se configurent PAS dans `render.yaml` : le service Render n'est rattaché à
+aucun Blueprint (son buildCommand réel diffère de celui du fichier). Elles se
+saisissent dans le dashboard Render, onglet Redirects and Rewrites.
+
 ## 3. Architecture du calculateur (v5)
 
 ### Fichiers principaux
@@ -66,17 +83,39 @@ seo:
 - **Traductions** : `translations.ts` - clés EN/FR, fonction `t()`
 - **Docs** : `docs/calculator/CALCULATOR-AUDIT.md`
 
+### Écran unique depuis le 04/08/2026
+Il n'y a plus d'étape intermédiaire ni de bouton "Continuer". La grille de domaines
+(`domainPicker`) et la configuration partagent le même écran : cocher un domaine
+déplie sa section juste en dessous. `step` ne vaut plus que `'guided' | 'configure'
+| 'summary'` et démarre sur `'configure'`.
+
+**Piège** : les sections portent une ancre `data-domain-section={domainId}` et un
+`scrollMarginTop` de 112 px. C'est ce qui fait défiler l'écran vers la section qui
+s'ouvre. Sans l'ancre, la section s'ouvre hors écran et le clic paraît sans effet.
+
 ### Patterns importants
 - Prix affichés via `fp()` (formatPrice) pour support multi-devises
-- Les prix restent en EUR dans le code, conversion côté affichage seulement
+- **`formatPrice(priceEUR, currency)` convertit DÉJÀ depuis l'EUR.** Ne jamais lui
+  passer `convertPrice(...)` : c'était le bug de double conversion (+9% USD, -12% GBP)
+  corrigé le 04/08/2026 dans StickySummary et CaptureModal
+- `pricing.grandTotal` = total hors budget média. C'est la valeur de conversion
+  envoyée au webhook, à GA4 et au pixel Meta
 - AI Solutions a des packages concrets + formulaire custom (showAiCustomForm)
 - Paid Social a `socialChannels` export pour la sélection de canaux
+
+### Tracking du funnel
+`tracking.ts` pousse les events dans le dataLayer : `calculator_step`,
+`_domain_toggle`, `_service_toggle` (avec niveau et prix), `_channel_toggle`,
+`_budget_set`, `_abandon`. Côté GTM, container `GTM-P4TSQ9Q`, version 75 publiée le
+04/08/2026 avec 15 variables, 6 triggers et 6 tags. Property GA4 du site =
+**281550532**, pas 523618980 qui est le Client Portal.
 
 ## 4. Mode guide conversationnel (v1)
 
 ### Fichiers
 - `GuidedMode.tsx` (chat UI), `guided-data.ts` (questions + scoring)
-- Intégration : step `'guided'` dans Calculator.tsx, avant la sélection manuelle
+- Intégration : step `'guided'`, accessible depuis le bouton "Aidez-moi à choisir"
+  de la sticky card
 
 ### Logique
 - 5 questions : industrie, objectifs (multi), budget (slider), efforts actuels (multi), contexte libre
@@ -120,6 +159,20 @@ seo:
 4. Enrichir le reasoning avec des benchmarks réels (CPM, CPC, CTR)
 5. Ajouter des cas d'usage par industrie
 6. Proposer Google Ad Grants pour les organisations éligibles
+
+### À regarder à partir de fin août 2026
+Le tracking du funnel a été posé le 04/08/2026. Comparer les données avant et après
+cette date répondra à deux questions restées ouvertes :
+- le retrait du bouton "Continuer" a-t-il fait monter le taux d'arrivée en configuration
+- quels domaines et quels niveaux de service font décrocher (`calculator_service_toggle`
+  porte le service, le niveau et le prix)
+
+Deux constats de l'audit du 04/08/2026 qui restent entiers :
+- **le calculateur ne reçoit aucun trafic organique** (absent du top 25 GSC sur 3 mois),
+  tout son trafic vient du bouton du header
+- **CTR anormalement bas sur des articles à forte impression** : `ai-agents-n8n-automation`
+  faisait 71 112 impressions pour 8 clics, `claude-code-developer-productivity` 9 406 pour 2.
+  En position moyenne 9, on attendrait 2-3 %. Gisement plus gros que le calculateur.
 
 ## 7. Refonte design V2 (mai 2026 - handoff Claude Design)
 
