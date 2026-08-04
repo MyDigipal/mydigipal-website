@@ -302,6 +302,22 @@ services:
         status: 301
 
       # ========================
+      # DEDOUBLONNAGE BLOG (04/08/2026)
+      # Deux articles quasi identiques sur le first-party data en concession
+      # avaient ete publies a trois jours d'ecart (24 et 27 janvier 2026) et se
+      # cannibalisaient sur les memes requetes. On garde le plus recent et le
+      # plus complet, l'autre est redirige.
+      # ========================
+      - type: redirect
+        source: /en/blog/first-party-data-automotive-dealerships-post-cookie
+        destination: /en/blog/first-party-data-auto-dealerships-post-cookie
+        status: 301
+      - type: redirect
+        source: /fr/blog/first-party-data-automotive-dealerships-post-cookie
+        destination: /fr/blog/first-party-data-auto-dealerships-post-cookie
+        status: 301
+
+      # ========================
       # CASE STUDIES LIST
       # ========================
       - type: redirect
