@@ -183,24 +183,20 @@ Plan de refonte : `~/.claude/plans/serene-drifting-riddle.md`. Source : `Claude 
 - Wired dans `BaseLayout.astro` via `astro:page-load` listener pour survivre aux View Transitions.
 - Classes utility ajoutées dans `global.css` : `[data-reveal]`, `[data-scroll-progress]`, `[data-nav-pill]/[data-nav-marker]/[data-nav-link]`, `[data-magnetic]`, `[data-magnetic-btn]/[data-magnetic-target]`.
 
-### Composants V2 livrés
-| Composant | Fichier | Pattern |
-|---|---|---|
-| `Header.astro` (patché) | `src/components/layout/Header.astro` | Pill nav avec sliding marker (data-nav-pill / -marker / -link / -active) |
-| `ServicesGridV2.astro` | `src/components/sections/ServicesGridV2.astro` | Magnetic services grid 4x2 avec radial gradient pointer + ghost stat + reveal link |
-| `StatsRail.astro` | `src/components/sections/StatsRail.astro` | 4 tiles glassy dark gradient + count-up + sparkline SVG (drawSpark animation) |
-| `IndustryCardV2.astro` | `src/components/sections/IndustryCardV2.astro` | 5 layers : bg gradient + radial glow + grid pattern + lines SVG draw + floating chips bob |
-| `MagneticButton.astro` | `src/components/ui/MagneticButton.astro` | CTA magnétique avec shine sweep ::before (variants dark/light/gradient) |
-| Top scroll progress bar | injecté dans `BaseLayout.astro` (`<div data-scroll-progress><i></i></div>`) | Indigo→cyan gradient, position fixed top, suit le scroll |
+### Composants V2 (livrés et en production)
+`Header.astro` (pill nav + sliding marker), `ServicesGridV2.astro` (grille magnétique
+4x2), `StatsRail.astro` (tiles + count-up + sparkline), `IndustryCardV2.astro`
+(5 couches), `MagneticButton.astro` (shine sweep), `TestimonialMarquee.astro`
+(bandeau infini CSS), et la barre de progression de scroll injectée dans
+`BaseLayout.astro`.
 
-### Composants V2 à venir
-- `CalculatorInlinePreview.astro` - mini-calc vanilla JS sur la homepage (chips + 2 sliders + total bumped). Math à cross-checker avec `src/components/calculator/data/index.ts` (BUDGET_CONFIG, MANAGEMENT_FEE_CONFIG).
-- `TestimonialMarquee.astro` - bandeau infini horizontal CSS-only, pause on hover/focus-within.
+Reste à faire : `CalculatorInlinePreview.astro`, mini-calculateur sur la homepage.
+Son calcul devra être recoupé avec `data/index.ts` (BUDGET_CONFIG, MANAGEMENT_FEE_CONFIG).
 
-### Workflow V1/V2
-- Tous les composants V2 sont d'abord intégrés dans `src/pages/test.astro` (page noindex) pour validation visuelle Paul avant cutover homepage.
-- Cutover progressif dans `src/pages/[lang]/index.astro` une fois validé.
-- Les composants V1 (sections inline dans `index.astro`, `MetricsCounter`, etc.) ne sont PAS supprimés - ils restent utilisés sur d'autres pages (services/[slug], blog, contact).
+### Workflow de validation
+Nouveau composant visuel : d'abord dans `src/pages/test.astro` (noindex) pour
+validation par Paul, cutover ensuite. Les composants V1 restent en place sur les
+pages qui les utilisent encore (services/[slug], blog, contact).
 
 ### Cohérence avec le Hub auth (mydigipal-dashboard/)
 Le Hub MyDigipal a son propre handoff Claude Design (KPI cards, charts ECharts, tables enrichies). Les deux ecosystèmes design sont distincts mais coordonnés via `~/.claude/projects/_shared/design-handoff-sync.md` :
