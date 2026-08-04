@@ -15,9 +15,9 @@ type Payload = Record<string, string | number | boolean | null | undefined>;
 /** Etapes du funnel, dans l'ordre. L'index sert a calculer la profondeur atteinte. */
 export const FUNNEL_STEPS = [
   'landed',        // arrivee sur la page
-  'domains',       // ecran de selection des domaines
+  'domains',       // conserve pour l'historique : ecran de selection separe, supprime en aout 2026
   'guided',        // mode conversationnel
-  'configure',     // configuration des services
+  'configure',     // ecran unique selection + configuration
   'lead_form',     // ouverture de la modale de capture
   'submitted'      // formulaire envoye
 ] as const;

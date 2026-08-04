@@ -175,7 +175,9 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
   const t = translations[lang];
 
   // State
-  const [step, setStep] = useState<'domains' | 'guided' | 'configure' | 'summary'>('domains');
+  // 'domains' n'existe plus comme ecran a part : la selection et la configuration
+  // partagent le meme ecran depuis aout 2026. On demarre donc sur 'configure'.
+  const [step, setStep] = useState<'guided' | 'configure' | 'summary'>('configure');
   const [selectedDomains, setSelectedDomains] = useState<ServiceDomain[]>(
     preselectedDomain ? [preselectedDomain] : []
   );
@@ -313,15 +315,31 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     return idx;
   }, []);
 
+  // Domaine dont la section vient de s'ouvrir : sert a la faire defiler a l'ecran.
+  const justOpenedDomain = useRef<string | null>(null);
+
   // Toggle domain selection
   const toggleDomain = useCallback((domain: ServiceDomain) => {
     setSelectedDomains(prev => {
       const isSelected = prev.includes(domain);
       const next = isSelected ? prev.filter(d => d !== domain) : [...prev, domain];
       trackDomain(domain, !isSelected, next.length);
+      if (!isSelected) justOpenedDomain.current = domain;
       return next;
     });
   }, []);
+
+  // La configuration se deplie sous la grille : sans ce scroll, elle s'ouvre hors
+  // ecran et l'utilisateur croit que son clic n'a rien fait.
+  useEffect(() => {
+    const domain = justOpenedDomain.current;
+    if (!domain) return;
+    justOpenedDomain.current = null;
+    const el = document.querySelector(`[data-domain-section="${domain}"]`);
+    if (!el) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }, [selectedDomains]);
 
   // Toggle domain dismissal (for "Not needed" button on section level)
   const toggleDomainDismissed = useCallback((domainId: string) => {
@@ -1136,6 +1154,69 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
     setStep('configure');
   }, []);
 
+  // Selecteur de domaines. Rendu en haut du meme ecran que la configuration :
+  // depuis aout 2026 il n'y a plus d'etape intermediaire ni de bouton Continuer,
+  // la configuration d'un domaine se deplie directement sous la grille quand on le coche.
+  const domainPicker = (
+    <>
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">{t.selectDomains}</h2>
+            <p className="text-lg text-slate-600">{t.selectDomainsDesc}</p>
+          </div>
+
+          {/* V5.8 : 2 grandes cards "Aidez-moi vs Je sais" supprimees, le bouton
+              "Aidez-moi a choisir" est maintenant dans la sticky card a droite */}
+
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+            {Object.values(domainConfigs).map(domain => {
+              const isSelected = selectedDomains.includes(domain.id);
+              const colorClasses: Record<string, string> = {
+                indigo: 'border-indigo-500 bg-indigo-50',
+                blue: 'border-blue-500 bg-blue-50',
+                purple: 'border-purple-500 bg-purple-50',
+                emerald: 'border-emerald-500 bg-emerald-50',
+                amber: 'border-amber-500 bg-amber-50',
+                violet: 'border-violet-500 bg-violet-50',
+                cyan: 'border-cyan-500 bg-cyan-50',
+                pink: 'border-pink-500 bg-pink-50'
+              };
+
+              return (
+                <button
+                  key={domain.id}
+                  onClick={() => toggleDomain(domain.id)}
+                  className={`p-4 sm:p-6 rounded-2xl border-2 text-left transition-all duration-300 hover:shadow-lg ${
+                    isSelected
+                      ? `${colorClasses[domain.colorClass]} border-2`
+                      : 'border-slate-200 bg-white hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-4xl">{domain.icon}</span>
+                    {isSelected && (
+                      <span className={`w-6 h-6 rounded-full bg-${domain.colorClass}-500 text-white flex items-center justify-center`}>
+                        <CheckIcon />
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">
+                    {lang === 'fr' ? domain.nameFr : domain.name}
+                  </h3>
+                  <p className="text-sm text-slate-600">
+                    {lang === 'fr' ? domain.descriptionFr : domain.description}
+                  </p>
+                  {domain.id === 'ai-solutions' && (
+                    <span className="inline-block mt-3 px-2 py-1 bg-violet-100 text-violet-700 text-xs font-medium rounded">
+                      {lang === 'fr' ? 'Packages + sur-mesure' : 'Packages + custom'}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+    </>
+  );
+
   // Guided mode step
   if (step === 'guided') {
     return (
@@ -1144,166 +1225,37 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           lang={lang}
           currency={currency}
           onComplete={handleGuidedComplete}
-          onSkip={() => setStep('domains')}
+          onSkip={() => setStep('configure')}
           t={t}
         />
       </div>
     );
   }
 
-  // Domain selection step
-  if (step === 'domains') {
-    return (
-      <div className="min-h-[600px] lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:items-start">
-        <div className="min-w-0">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">{t.selectDomains}</h2>
-          <p className="text-lg text-slate-600">{t.selectDomainsDesc}</p>
-        </div>
-
-        {/* V5.8 : 2 grandes cards "Aidez-moi vs Je sais" supprimees, le bouton
-            "Aidez-moi a choisir" est maintenant dans la sticky card a droite */}
-
-        <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
-          {Object.values(domainConfigs).map(domain => {
-            const isSelected = selectedDomains.includes(domain.id);
-            const colorClasses: Record<string, string> = {
-              indigo: 'border-indigo-500 bg-indigo-50',
-              blue: 'border-blue-500 bg-blue-50',
-              purple: 'border-purple-500 bg-purple-50',
-              emerald: 'border-emerald-500 bg-emerald-50',
-              amber: 'border-amber-500 bg-amber-50',
-              violet: 'border-violet-500 bg-violet-50',
-              cyan: 'border-cyan-500 bg-cyan-50',
-              pink: 'border-pink-500 bg-pink-50'
-            };
-
-            return (
-              <button
-                key={domain.id}
-                onClick={() => toggleDomain(domain.id)}
-                className={`p-4 sm:p-6 rounded-2xl border-2 text-left transition-all duration-300 hover:shadow-lg ${
-                  isSelected
-                    ? `${colorClasses[domain.colorClass]} border-2`
-                    : 'border-slate-200 bg-white hover:border-slate-300'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-4xl">{domain.icon}</span>
-                  {isSelected && (
-                    <span className={`w-6 h-6 rounded-full bg-${domain.colorClass}-500 text-white flex items-center justify-center`}>
-                      <CheckIcon />
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">
-                  {lang === 'fr' ? domain.nameFr : domain.name}
-                </h3>
-                <p className="text-sm text-slate-600">
-                  {lang === 'fr' ? domain.descriptionFr : domain.description}
-                </p>
-                {domain.id === 'ai-solutions' && (
-                  <span className="inline-block mt-3 px-2 py-1 bg-violet-100 text-violet-700 text-xs font-medium rounded">
-                    {lang === 'fr' ? 'Packages + sur-mesure' : 'Packages + custom'}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Sticky bottom CTA bar - always visible when domains are selected */}
-        {selectedDomains.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] py-4 px-4 animate-slide-up">
-            <div className="max-w-5xl mx-auto flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-1">
-                  {selectedDomains.slice(0, 4).map(d => (
-                    <span key={d} className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-sm">
-                      {domainConfigs[d].icon}
-                    </span>
-                  ))}
-                  {selectedDomains.length > 4 && (
-                    <span className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-medium text-slate-600">
-                      +{selectedDomains.length - 4}
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-slate-600">
-                  <span className="font-semibold text-slate-900">{selectedDomains.length}</span> {selectedDomains.length === 1 ? (lang === 'fr' ? 'service sélectionné' : 'service selected') : t.selected}
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  track('calculator_continue_click', {
-                    calculator_domains: selectedDomains.join(','),
-                    calculator_domains_count: selectedDomains.length
-                  });
-                  setStep('configure');
-                }}
-                className="inline-flex items-center gap-2 px-8 py-3.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all hover:shadow-lg hover:shadow-blue-600/25 active:scale-[0.98]"
-              >
-                {t.continue}
-                <ChevronRight />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Spacer to prevent content from being hidden behind sticky bar */}
-        {selectedDomains.length > 0 && <div className="h-24" />}
-        </div>{/* end of main content column */}
-
-        {/* V5.8: Sticky summary card visible from the empty state too (with "Help me choose" CTA) */}
-        <StickySummary
-          lang={lang}
-          currency={currency}
-          setCurrency={setCurrency}
-          pricing={pricing as any}
-          duration={duration}
-          domainLines={domainLines}
-          hasSelections={hasSelections}
-          hasActualSelections={hasActualSelections}
-          hasNotSureSelections={hasNotSureSelections}
-          onRequestPlan={() => openCaptureModal('sticky_domains')}
-          onStartGuided={() => {
-            if (typeof window !== 'undefined' && (window as any).dataLayer) {
-              (window as any).dataLayer.push({ event: 'calculator_mode_selected', mode: 'guided', source: 'sticky' });
-            }
-            setStep('guided');
-          }}
-          guidedActive={false}
-        />
-      </div>
-    );
-  }
-
-  // Configuration step
+  // Ecran unique : selection des domaines + configuration deplie en dessous.
   return (
     <div className="min-h-[600px] lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:items-start">
       <div className="min-w-0">
       {/* V5.5: layout grid 2 colonnes : main content gauche, StickySummary droite en sticky (au lieu de fixed) */}
 
-      {/* Back button header */}
-      <div className="mb-8">
-        <button
-          onClick={() => {
-            if (guidedRec) {
-              // Return to guided mode if user came from there
-              setStep('guided');
-            } else {
-              setStep('domains');
-            }
-          }}
-          className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
-        >
-          <ArrowLeft />
-          {t.backToDomains}
-        </button>
-      </div>
+      {/* Selection des domaines */}
+      {domainPicker}
 
-      {/* Services configuration */}
-      <div className="space-y-12">
+      {/* Retour au mode guide, uniquement si l'utilisateur en vient */}
+      {guidedRec && (
+        <div className="mt-8">
+          <button
+            onClick={() => setStep('guided')}
+            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
+          >
+            <ArrowLeft />
+            {t.backToDomains}
+          </button>
+        </div>
+      )}
+
+      {/* Configuration des services, une section par domaine coche */}
+      <div className="space-y-12 mt-12">
         {selectedDomains.map(domainId => {
           const domain = domainConfigs[domainId];
 
@@ -1318,6 +1270,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             return (
               <div
                 key={domainId}
+                data-domain-section={domainId}
+                style={{ scrollMarginTop: 112 }}
                 className={`rounded-2xl border-2 ${colors.border} overflow-hidden transition-all duration-300 ${
                   isDismissed ? 'max-h-24 opacity-60 bg-white' : `max-h-[2000px] ${colors.bgLight}`
                 }`}
@@ -1505,6 +1459,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
             return (
               <div
                 key={domainId}
+                data-domain-section={domainId}
+                style={{ scrollMarginTop: 112 }}
                 className={`rounded-2xl border-2 ${colors.border} overflow-hidden transition-all duration-300 ${
                   isDismissed ? 'max-h-24 opacity-60 bg-white' : `max-h-[8000px] ${colors.bgLight}`
                 }`}
@@ -1708,6 +1664,8 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
           return (
             <div
               key={domainId}
+              data-domain-section={domainId}
+              style={{ scrollMarginTop: 112 }}
               className={`rounded-2xl border-2 ${colors.border} overflow-hidden transition-all duration-300 ${
                 isDismissed ? 'max-h-24 opacity-60 bg-white' : `max-h-[5000px] ${colors.bgLight}`
               }`}
@@ -2930,7 +2888,10 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
         hasActualSelections={hasActualSelections}
         hasNotSureSelections={hasNotSureSelections}
         onRequestPlan={() => openCaptureModal('sticky_configure')}
-        onStartGuided={() => setStep('guided')}
+        onStartGuided={() => {
+          track('calculator_mode_selected', { mode: 'guided', source: 'sticky' });
+          setStep('guided');
+        }}
         guidedActive={false}
       />
 
