@@ -45,6 +45,14 @@ Beaucoup de chercheurs en sécurité ont contesté cette présentation, et à ju
 
 L'étude de juin est plus solide, justement parce qu'elle ne repose pas sur un cas spectaculaire. C'est une année de comptes bannis, classée. Et le schéma qu'elle révèle est constant : reconnaissance, découverte de vulnérabilités, collecte d'identifiants et analyse de données sont les phases où l'IA aide le plus. Ce sont les parties fastidieuses et techniques d'une intrusion. Automatisez-les, et quelqu'un qui ne savait pas mener une campagne se met soudain à en être capable.
 
+### Les deux chiffres qui comptent plus que le titre
+
+Retirez l'angle espionnage et deux constats subsistent.
+
+Le premier : les phases où l'IA contribue le plus sont celles qui demandaient auparavant de l'expertise et de la patience. La reconnaissance de la surface publique d'une cible. La lecture de code pour y trouver une faiblesse. Le test d'identifiants à grande échelle. La corrélation de données exfiltrées pour déterminer ce qui a de la valeur. Rien de spectaculaire, et pourtant c'était exactement la barrière à l'entrée.
+
+Le second : le volume de comptes concernés, 832 sur douze mois, décrit un flux régulier plutôt qu'une poignée d'opérateurs sophistiqués. C'est la partie qui vous concerne. Un monde avec quelques attaquants d'élite est un monde où vous n'êtes probablement pas une cible. Un monde où le niveau requis s'est effondré est un monde où être quelconque cesse de vous protéger.
+
 ## Pourquoi ça atterrit sur le marketing, pas seulement sur la DSI
 
 Il y a deux ans, le service marketing ne détenait aucun identifiant qui intéresse un attaquant. Ce n'est plus vrai.
@@ -87,6 +95,28 @@ Nous faisons tourner des agents sur des comptes clients, donc le sujet n'a rien 
   La menace, ce n'est pas un modèle malin. C'est un jeton administrateur que personne ne se rappelait avoir laissé dans un fichier de configuration.
   <cite>MyDigipal</cite>
 </blockquote>
+
+## Ce qu'un audit d'agents fait vraiment remonter
+
+Nous avons mené cet exercice sur assez de comptes pour savoir ce qu'on y trouve. Les constats se répètent avec une régularité déprimante.
+
+**Un identifiant appartenant à quelqu'un qui est parti.** Une agence, un freelance ou un ancien salarié. Personne ne l'a révoqué parce que personne ne savait qu'il existait, et l'automatisation qu'il alimente fonctionne toujours, ce qui explique précisément qu'il soit passé inaperçu.
+
+**Un agent avec un accès en écriture dont il n'a jamais eu besoin.** Accordé pendant la configuration pour débloquer un test, et le test est devenu la production.
+
+**Un outil connecté à un compte personnel.** Quelqu'un a autorisé une intégration avec ses propres identifiants parce que le compte partagé n'avait pas la bonne permission ce jour-là. L'intégration dépend désormais de la session d'une seule personne.
+
+**Aucun journal.** L'agent tourne, agit, et ne laisse aucune trace au-delà de son résultat final. Quand quelque chose cloche, il n'y a rien à inspecter.
+
+**Un prompt contenant une règle qui devrait être un réglage.** « Ne dépense pas plus de 500 par jour » écrit dans une instruction, sans aucun plafond configuré nulle part.
+
+Aucun de ces cas n'a besoin d'un attaquant pour vous coûter quelque chose. L'identifiant d'un prestataire parti est un problème de conformité en soi. L'absence de journaux transforme une erreur ordinaire en énigme.
+
+### L'objection qu'on nous fait le plus
+
+« On est trop petits pour être une cible. » C'était une position raisonnable quand mener une intrusion exigeait un spécialiste. Tout l'intérêt des données d'Anthropic est justement que ce n'est plus la contrainte.
+
+L'opportunisme automatisé ne sélectionne pas par taille d'entreprise. Il sélectionne par exposition. Une petite structure avec une clé d'API trop permissive dans un dépôt public est plus exposée qu'une grande avec une hygiène correcte, et l'outillage qui trouve cette clé se moque de savoir laquelle des deux vous êtes.
 
 ## La partie inconfortable
 

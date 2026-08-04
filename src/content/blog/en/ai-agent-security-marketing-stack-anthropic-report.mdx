@@ -45,6 +45,14 @@ Plenty of security researchers pushed back on that framing, and fairly. The clai
 
 The June study is more grounded, because it is not one dramatic case. It is a year of banned accounts, categorised. And the pattern it shows is consistent: reconnaissance, vulnerability discovery, credential harvesting and data analysis are the phases where AI helps most. These are the tedious, knowledge-heavy parts of an intrusion. Automate them and someone who could not previously run a campaign suddenly can.
 
+### The two numbers that matter more than the headline
+
+Strip out the espionage angle and two findings survive.
+
+The first is that the phases where AI contributes most are the ones that used to take expertise and patience. Reconnaissance across a target's public surface. Reading code to find a weakness. Testing credentials at scale. Correlating exfiltrated data to work out what is valuable. None of that is glamorous, all of it used to be a barrier to entry.
+
+The second is that the volume of accounts involved, 832 over twelve months, describes a steady flow rather than a handful of sophisticated operators. That is the part with consequences for you. A world with a few elite attackers is a world where you are probably not a target. A world where the skill floor collapsed is a world where being unremarkable stops protecting you.
+
 ## Why this lands on marketing, not just IT
 
 Two years ago, the marketing department did not hold credentials that mattered to an attacker. That is no longer true.
@@ -87,6 +95,28 @@ We run agents across client accounts, so this is not theoretical for us. Four th
   The threat is not a clever model. It is an admin token that nobody remembered was in a config file.
   <cite>MyDigipal</cite>
 </blockquote>
+
+## What an agent audit actually turns up
+
+We have now run this exercise on enough accounts to know what comes out of it. The findings repeat with unhelpful reliability.
+
+**A credential belonging to someone who left.** Usually an agency, a freelancer or a former employee. Nobody revoked it because nobody knew it existed, and the automation it powers still works, which is exactly why it went unnoticed.
+
+**An agent with write access it never needed.** It was granted during setup to unblock a test, and the test became production.
+
+**A tool connected to a personal account.** Someone authorised an integration with their own login because the shared account did not have the right permission that day. The integration now depends on one person's session.
+
+**No logs at all.** The agent runs, does things, and leaves no trace beyond its final output. When something looks wrong, there is nothing to inspect.
+
+**A prompt containing a rule that should be a setting.** "Do not spend more than 500 a day" written in an instruction, with no cap configured anywhere.
+
+None of these require an attacker to be involved before they cost you something. The credential from a departed contractor is a compliance problem on its own. The missing logs mean an ordinary mistake becomes unexplainable.
+
+### The objection we hear most
+
+"We are too small to be a target." It was a reasonable position when running an intrusion required a specialist. The whole point of the Anthropic data is that this is no longer the constraint.
+
+Automated opportunism does not select for company size. It selects for exposure. A small firm with an over-scoped API key sitting in a public repository is more exposed than a large one with proper credential hygiene, and the tooling that finds that key does not care which of the two you are.
 
 ## The uncomfortable part
 

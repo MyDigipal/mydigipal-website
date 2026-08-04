@@ -82,6 +82,30 @@ None of these require the agent to misbehave. Each is the shortest path to a bad
   </div>
 </div>
 
+## Four questions to ask about every agent you run
+
+Take each agent, automation or integration in your stack and answer these. If any answer is "I would have to check", that is the finding.
+
+**What can it read.** List the systems and the scope. An agent that can read your CRM can read every contact in it, not just the ones relevant to its task, unless you scoped the credential.
+
+**What can it change.** Publishing, sending, spending, deleting, and modifying targeting all belong here. Most teams discover an agent can do at least one thing on this list that nobody intended.
+
+**What happens if it is wrong.** Not compromised, just wrong. If it pauses the wrong campaign or emails the wrong segment, how long before someone notices, and how hard is it to undo.
+
+**Where is the evidence.** If you had to reconstruct what it did last Tuesday, could you. Hugging Face could, which is why the incident produced a technical timeline instead of speculation.
+
+Four questions, ten minutes per agent. The output is usually a short list of changes worth making that week, and one credential nobody can justify.
+
+## The connection to the other direction
+
+We wrote in June about agents as a way in for someone attacking you. This incident is the mirror image, and putting them side by side is what makes the point land.
+
+In the June case, the danger is a credential you exposed being used by someone else. In this one, the danger is your own agent taking a route you did not anticipate towards a goal you did set.
+
+They share a root cause. In both, the failure is that the environment permitted something the operator assumed it would not. And in both, the defence is identical: constrain what is possible rather than what is instructed.
+
+That symmetry is why we keep coming back to the same four controls. They are not specific to a threat model. They are what makes an autonomous system's behaviour bounded, whoever is steering it.
+
 ## Guardrails in the environment, not in the prompt
 
 The single most important lesson is one the incident makes unarguable. The agent had instructions. Instructions did not hold it.

@@ -71,6 +71,34 @@ There is also an upgrade tax. When the next frontier model arrives, a hosted API
   </div>
 </div>
 
+## Where the crossover actually sits
+
+The cost comparison gets quoted a lot and calculated rarely. Here is the honest shape of it.
+
+On the hosted side you pay per token, and nothing else. No hardware, no availability to maintain, no upgrade project. The bill scales with use, which is uncomfortable at volume and forgiving when you are quiet.
+
+On the self-hosted side you pay for capacity whether you use it or not, plus the person who keeps it running. That person is the line everyone forgets. They are not writing your prompts or building your workflows while they are tuning inference.
+
+Two consequences follow, and they are what matter.
+
+First, sporadic usage makes self-hosting badly uneconomic. Infrastructure sitting idle overnight and at weekends still costs what it costs. Most agency workloads are exactly this shape: heavy during reporting week, quiet otherwise.
+
+Second, the crossover point moves with salaries, not with token prices. Every time a hosted provider cuts its rates, the argument for self-hosting gets weaker. Every time you hire someone able to run the infrastructure for other reasons, it gets stronger.
+
+If you cannot say roughly how many million tokens you consume per month, you cannot run this calculation, and that is the first thing to fix.
+
+## How to evaluate it on your own work
+
+If you do test it, test it properly. Published benchmarks tell you how a model ranks on tasks that are not yours.
+
+Build a small set of your real cases. Twenty is plenty. Take work you have already done and whose quality you can judge: a monthly report you wrote, a set of ad variants you shipped, a client brief you turned into a plan.
+
+Run them through the candidate model and through what you use today, blind if you can manage it. Score on whether you would send the output to a client after a light edit, which is the only threshold that matters commercially.
+
+Two things this surfaces that benchmarks never do. How the model handles your specific vocabulary, client names and internal conventions. And how it behaves when the input is messy, which describes most real marketing data.
+
+We have seen a model that ranks lower publicly win comfortably on this kind of test, because the task was closer to its strengths. The reverse happens too. Either way you learn something about your work rather than about a leaderboard.
+
 ## The sovereignty argument, examined honestly
 
 There is a strand of commentary framing open Chinese models as a sovereignty play: free frontier capability that reduces dependence on American providers.

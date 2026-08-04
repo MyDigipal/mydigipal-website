@@ -63,6 +63,28 @@ C'est la contrainte pratique qui remplace l'ancienne. Nous concevions autour des
   </div>
 </div>
 
+## Trois choses testées la première semaine
+
+Les promesses abstraites de capacité ne coûtent rien. Voici les trois usages que nous avons réellement menés, avec ce qui en est sorti.
+
+**La revue de compte sur l'année entière.** Nous lui avons donné douze mois de données de campagne sur quatre plateformes plus les notes de réunion, en demandant ce qui avait changé et pourquoi. Il a trouvé un schéma qui nous avait échappé : une baisse sur un canal coïncidant avec une modification de page d'atterrissage que personne n'y avait reliée, parce que les deux événements vivaient dans des rapports différents et étaient séparés de huit semaines. C'est exactement le lien qu'un contexte résumé fait disparaître.
+
+**Le contrôle de voix de marque sur un lot de contenus.** Vingt articles dans un seul contexte, avec la charte du client, avec pour consigne de signaler les dérives de ton. Moins concluant qu'espéré. Il repère les violations évidentes de façon fiable, et se montre nettement plus faible sur la dérive subtile qu'un bon relecteur attrape, qui est précisément la partie où nous voulions de l'aide.
+
+**Le brouillon de rapport à partir des exports bruts.** Aucun pré-traitement, juste les exports de plateformes et une demande de premier jet. Bonne structure, arithmétique juste, et une erreur assurée sur une métrique parce que deux exports utilisaient des fenêtres d'attribution différentes et qu'il en a choisi une sans le dire. Cet échec mérite d'être retenu : le modèle ne sait pas que vos données se contredisent, il résout la contradiction en silence.
+
+Le point commun des trois : un grand contexte aide surtout là où la valeur vient du repérage de liens sur une longue période, et aide le moins là où la tâche demande un jugement sur la qualité.
+
+## Est-ce la fin de la recherche documentaire
+
+Réponse courte : non, et la question est mal posée.
+
+La recherche documentaire garde l'avantage sur trois points. Le coût, quand on interroge le même corpus de façon répétée, puisqu'on n'en paie qu'une fraction à chaque fois plutôt que l'ensemble. L'échelle, quand le corpus dépasse réellement le million de tokens, ce qui est le cas de la plupart des bases documentaires ayant quelques années. Et la traçabilité, puisqu'un système de recherche montre quelle source a produit une réponse, là où une lecture en contexte complet donne une réponse venue de partout à la fois.
+
+Ce qui a changé, c'est le seuil. Un an de données marketing d'un client ne justifie plus de construire une infrastructure. Une archive de cinq ans sur quarante clients, si.
+
+Notre règle désormais : si le corpus entier tient confortablement et n'est lu qu'une ou deux fois, il va dans le contexte. S'il est lu tous les jours, ou s'il ne tient pas, on garde la couche de recherche.
+
 ## Ce que nous avons changé dans notre propre workflow
 
 Trois choses, immédiatement.

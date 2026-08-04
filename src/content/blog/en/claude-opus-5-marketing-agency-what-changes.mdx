@@ -63,6 +63,28 @@ This is the practical constraint that replaces the old one. We used to design ar
   </div>
 </div>
 
+## Three things we tested in the first week
+
+Abstract capability claims are cheap. These are the three we actually ran, with what came out.
+
+**The full-year account review.** We gave it twelve months of campaign data across four platforms plus the meeting notes, and asked what changed and why. It found a pattern we had missed: a drop in one channel that coincided with a landing page change nobody had connected to it, because the two events lived in different reports and were eight weeks apart. That is the kind of link a summarised context loses.
+
+**The brand voice check across a content batch.** Twenty articles in one context, with the client's guidelines, asked to flag where the tone drifts. This worked less well than expected. It identifies obvious violations reliably and is much weaker on the subtle drift that a good editor catches, which is the part we actually wanted help with.
+
+**The reporting draft with the raw exports.** No pre-processing, just the platform exports and a request for a first draft. Good structure, correct arithmetic, and confidently wrong on one metric because two exports used different attribution windows and it picked one without saying so. That failure is worth remembering: the model does not know your data is inconsistent, it just resolves the inconsistency silently.
+
+The pattern across all three is that a large context helps most where the value comes from spotting connections across a long period, and helps least where the task needs judgement about quality.
+
+## Does this kill retrieval
+
+Short answer: no, and the framing is wrong.
+
+Retrieval still wins on three counts. Cost, when the same corpus is queried repeatedly, since you pay for a fraction of it each time rather than the whole thing. Scale, when the corpus genuinely exceeds a million tokens, which is most document repositories of any age. And traceability, since a retrieval system can show you which source produced an answer, while a full-context read gives you an answer that came from everywhere at once.
+
+What changed is the threshold. A year of one client's marketing data no longer justifies building infrastructure. A five-year archive across forty clients still does.
+
+Our rule now: if the whole corpus fits comfortably and gets read once or twice, put it in the context. If it gets read every day, or does not fit, keep the retrieval layer.
+
 ## What we changed in our own workflow
 
 Three things, immediately.
