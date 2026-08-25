@@ -266,8 +266,11 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
   (la démonstration reste dans la nuit parce qu'elle montre les vrais écrans du produit ; le
   schéma se lit sur papier), fils `#d3ccbe` au repos et `#a8862f` actifs. Les verbatims sont
   **ceux des clients, mot pour mot, jamais réécrits** : la page vend l'en-ligne, donc `Maison.tsx`
-  écarte ceux qui parlent de la salle (règle `retenu`, un texte contenant « session ») et ne
-  montre plus l'intitulé de la session sous l'auteur ; titre « Ils ont adoré le training ». La
+  ne montre plus l'intitulé de la session sous l'auteur ; titre « Ils ont adoré le training ».
+  Depuis le 25/08 au soir, le JSON sert **24 verbatims choisis dans l'export des 497 retours**
+  (`mydigipal-academy/src/lib/academy/temoignages.ts`, avec la note), affichés en grille de
+  trois colonnes dès md, en défilé au doigt en dessous ; une société sans logo s'écrit en
+  toutes lettres (GL Events, Datawords, CBTW). La
   section configurateur s'appelle **Tarifs / Pricing**, ancre `#pricing` (l'ancien `#composer`
   n'existe plus). **Le bouton qui suit le visiteur est celui de l'en-tête du site** : `Header.astro`
   accepte `ctaHref` et `ctaLabel`, et `academy.astro` y met « Ouvrir mon compte » vers `#pricing`,

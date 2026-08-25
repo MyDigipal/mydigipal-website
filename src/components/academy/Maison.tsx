@@ -28,17 +28,36 @@ const LOGOS: Array<{ src: string; alt: string; h: number; c: number }> = [
   { src: '/images/Training Logo/La Redoute.svg', alt: 'La Redoute', h: 32, c: 28 },
   { src: '/images/Training Logo/Pierre fabre.avif', alt: 'Pierre Fabre', h: 28, c: 24 },
   { src: '/images/Training Logo/Pernod Ricard.avif', alt: 'Pernod Ricard', h: 32, c: 28 },
+  { src: '/images/Training Logo/Kaufman broad.avif', alt: 'Kaufman & Broad', h: 24, c: 20 },
 ];
 
 /**
- * Les verbatims sont ceux des clients, mot pour mot : on n'en réécrit aucun.
- * Mais cette page vend la formation en ligne, donc on écarte ceux qui parlent
- * de la salle (« la session a duré deux heures et demie »), et on ne montre
- * pas l'intitulé de la session sous l'auteur. Paul, 25/08/2026 : « Ils ont
- * adoré le training », pas des retours sur des sessions en réel.
+ * Les verbatims sont ceux des clients, mot pour mot, choisis dans l'export des
+ * 497 retours (`lib/academy/temoignages.ts` dans l'app, servi par le JSON) :
+ * ceux qui parlent du contenu et de ce qu'on en fait le lendemain, pas de la
+ * salle. Paul, 25/08/2026 : « Ils ont adoré le training », au moins quinze.
  */
-function retenu(t: { texte: string }) {
-  return !/\bsession\b/i.test(t.texte);
+/**
+ * L'ordre d'affichage alterne les sociétés (un tour de table, puis un
+ * deuxième) : servis dans l'ordre du fichier, six Kering ouvraient la grille
+ * et la preuve paraissait venir d'un seul client.
+ */
+function alterner<T extends { societe: string }>(liste: T[]): T[] {
+  const files = new Map<string, T[]>();
+  for (const t of liste) files.set(t.societe, [...(files.get(t.societe) || []), t]);
+  const out: T[] = [];
+  let reste = true;
+  while (reste) {
+    reste = false;
+    for (const file of files.values()) {
+      const t = file.shift();
+      if (t) {
+        out.push(t);
+        reste = true;
+      }
+    }
+  }
+  return out;
 }
 
 /** Le logo d'un verbatim, résolu dans la même table par le nom de la société. */
@@ -133,13 +152,13 @@ export default function Maison({ locale, temoignages }: { locale: Locale; temoig
           <h3 className="m-0 text-[clamp(22px,2.8vw,28px)] font-medium leading-[1.2] tracking-[-0.02em] text-encre">{c.avisTitre}</h3>
           <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-brume">{c.avisLigne}</p>
         </div>
-        <div className="j30-avis flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6 [scroll-padding-inline:16px]">
-          {temoignages.filter(retenu).map((t) => {
+        <div className="j30-avis flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6 [scroll-padding-inline:16px] md:mx-auto md:grid md:max-w-[1180px] md:grid-cols-2 md:items-start md:overflow-visible lg:grid-cols-3">
+          {alterner(temoignages).map((t) => {
             const logo = logoDe(t.societe);
             return (
               <figure
                 key={t.auteur + t.societe}
-                className="m-0 flex w-[min(390px,84vw)] flex-none snap-start flex-col gap-3.5 rounded-carte border border-lin bg-craie px-6 py-[22px]"
+                className="m-0 flex w-[min(390px,84vw)] flex-none snap-start flex-col gap-3.5 rounded-carte border border-lin bg-craie px-6 py-[22px] md:w-auto"
               >
                 {logo ? (
                   <img src={logo.src} alt={t.societe} loading="lazy" className="w-auto max-w-[150px] self-start object-contain object-left" style={{ height: logo.c, mixBlendMode: 'multiply' }} />
@@ -147,9 +166,12 @@ export default function Maison({ locale, temoignages }: { locale: Locale; temoig
                   <span className="font-ac-mono text-[11px] font-bold uppercase tracking-[0.16em] text-brume">{t.societe}</span>
                 )}
                 <blockquote className="m-0 flex-1 text-[16px] leading-[1.5] text-encre">{locale === 'fr' ? `« ${t.texte} »` : `“${t.texte}”`}</blockquote>
-                <figcaption className="border-t border-lin pt-3">
-                  <span className="block text-[13.5px] text-encre">{t.auteur}</span>
-                  <span className="mt-[3px] block font-ac-mono text-[10.5px] uppercase tracking-[0.1em] text-brume">{t.societe}</span>
+                <figcaption className="flex items-end justify-between gap-3 border-t border-lin pt-3">
+                  <span className="min-w-0">
+                    <span className="block text-[13.5px] text-encre">{t.auteur}</span>
+                    <span className="mt-[3px] block font-ac-mono text-[10.5px] uppercase tracking-[0.1em] text-brume">{t.societe}</span>
+                  </span>
+                  {typeof t.note === 'number' ? <span className="flex-none font-ac-mono text-[12px] text-or-grave">{t.note}/10</span> : null}
                 </figcaption>
               </figure>
             );

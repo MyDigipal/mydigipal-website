@@ -69,7 +69,7 @@ export interface Jour30Data {
   offres: Offre[];
   hausse: { date: string; ttc_minor: number };
   equipe: { paliers: Array<{ seats: number; discount: number }>; devisAPartirDe: number };
-  temoignages: Array<{ logo: string; societe: string; session: string; texte: string; auteur: string }>;
+  temoignages: Array<{ logo?: string; societe: string; session: string; texte: string; auteur: string; note?: number }>;
   urls: { base: string; checkout: string; login: string; terms: string; privacy: string; legal: string };
 }
 
