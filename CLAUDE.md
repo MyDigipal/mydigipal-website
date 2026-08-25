@@ -262,6 +262,17 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
   E.Leclerc), qui feraient un rectangle sur le crème. « Accès permanent » est devenu « accès
   complet » ; l'apprenante composée est **Clara Martin** (jamais Camille ; Sophie Lambert a été
   écarté parce qu'il ne passait pas en anglais).
+- **Le second lot du 25/08 au soir** : la section MCP est passée sur **la feuille claire** aussi
+  (la démonstration reste dans la nuit parce qu'elle montre les vrais écrans du produit ; le
+  schéma se lit sur papier), fils `#d3ccbe` au repos et `#a8862f` actifs. Les verbatims sont
+  **ceux des clients, mot pour mot, jamais réécrits** : la page vend l'en-ligne, donc `Maison.tsx`
+  écarte ceux qui parlent de la salle (règle `retenu`, un texte contenant « session ») et ne
+  montre plus l'intitulé de la session sous l'auteur ; titre « Ils ont adoré le training ». La
+  section configurateur s'appelle **Tarifs / Pricing**, ancre `#pricing` (l'ancien `#composer`
+  n'existe plus). **Le bouton qui suit le visiteur est celui de l'en-tête du site** : `Header.astro`
+  accepte `ctaHref` et `ctaLabel`, et `academy.astro` y met « Ouvrir mon compte » vers `#pricing`,
+  visible à toutes les tailles. Pas de rail flottant de boutons vers chaque section : c'est le
+  sommaire animé que Paul a rejeté quatre fois le 24/08, et sur mobile il n'y a pas la place.
 - **La page canonique est celle-ci.** `/jour-30` dans l'app est un atelier qui peut diverger.
 
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)

@@ -30,6 +30,17 @@ const LOGOS: Array<{ src: string; alt: string; h: number; c: number }> = [
   { src: '/images/Training Logo/Pernod Ricard.avif', alt: 'Pernod Ricard', h: 32, c: 28 },
 ];
 
+/**
+ * Les verbatims sont ceux des clients, mot pour mot : on n'en réécrit aucun.
+ * Mais cette page vend la formation en ligne, donc on écarte ceux qui parlent
+ * de la salle (« la session a duré deux heures et demie »), et on ne montre
+ * pas l'intitulé de la session sous l'auteur. Paul, 25/08/2026 : « Ils ont
+ * adoré le training », pas des retours sur des sessions en réel.
+ */
+function retenu(t: { texte: string }) {
+  return !/\bsession\b/i.test(t.texte);
+}
+
 /** Le logo d'un verbatim, résolu dans la même table par le nom de la société. */
 function logoDe(societe: string) {
   return LOGOS.find((l) => l.alt === societe) || null;
@@ -118,9 +129,12 @@ export default function Maison({ locale, temoignages }: { locale: Locale; temoig
           </div>
         </div>
 
-        <p className="mx-auto mb-5 mt-10 max-w-[1180px] px-4 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-brume sm:px-6">{c.avisTitre}</p>
+        <div className="mx-auto mb-5 mt-12 flex max-w-[1180px] flex-wrap items-baseline gap-x-6 gap-y-1 px-4 sm:px-6">
+          <h3 className="m-0 text-[clamp(22px,2.8vw,28px)] font-medium leading-[1.2] tracking-[-0.02em] text-encre">{c.avisTitre}</h3>
+          <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-brume">{c.avisLigne}</p>
+        </div>
         <div className="j30-avis flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6 [scroll-padding-inline:16px]">
-          {temoignages.map((t) => {
+          {temoignages.filter(retenu).map((t) => {
             const logo = logoDe(t.societe);
             return (
               <figure
@@ -135,9 +149,7 @@ export default function Maison({ locale, temoignages }: { locale: Locale; temoig
                 <blockquote className="m-0 flex-1 text-[16px] leading-[1.5] text-encre">{locale === 'fr' ? `« ${t.texte} »` : `“${t.texte}”`}</blockquote>
                 <figcaption className="border-t border-lin pt-3">
                   <span className="block text-[13.5px] text-encre">{t.auteur}</span>
-                  <span className="mt-[3px] block font-ac-mono text-[10.5px] uppercase tracking-[0.1em] text-brume">
-                    {t.societe} · {t.session}
-                  </span>
+                  <span className="mt-[3px] block font-ac-mono text-[10.5px] uppercase tracking-[0.1em] text-brume">{t.societe}</span>
                 </figcaption>
               </figure>
             );

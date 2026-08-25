@@ -21,7 +21,7 @@ export default function Hero({ locale, data }: { locale: Locale; data: Jour30Dat
   const cta = 'inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton px-[26px] py-3.5 text-[15.5px] font-semibold transition duration-150';
 
   return (
-    <section className="relative overflow-hidden px-4 pb-16 pt-32 sm:px-6 lg:pb-24 lg:pt-40">
+    <section id="academy-hero" className="relative overflow-hidden px-4 pb-16 pt-32 sm:px-6 lg:pb-24 lg:pt-40">
       {/* Le site a son header fixe (72 px) et son logo : la section passe
           dessous avec son dégradé, sans bande vide ni second logo. */}
       <div
@@ -35,7 +35,7 @@ export default function Hero({ locale, data }: { locale: Locale; data: Jour30Dat
           </h1>
           <p className="mt-6 max-w-[48ch] text-[17px] leading-[1.65] text-corps-nuit">{c.sous(data.faits.lessons, prix)}</p>
           <div className="mt-8 flex flex-wrap gap-3.5">
-            <a href="#composer" className={`${cta} bg-or text-salle hover:bg-or-vif`}>
+            <a href="#pricing" className={`${cta} bg-or text-salle hover:bg-or-vif`}>
               {c.cta}
             </a>
             <a href="#compte" className={`${cta} border border-filet-nuit text-corps-nuit hover:border-brume-nuit hover:text-ivoire`}>

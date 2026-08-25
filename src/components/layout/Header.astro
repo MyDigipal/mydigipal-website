@@ -6,9 +6,14 @@ import Icon from '@/components/ui/Icon.astro';
 
 interface Props {
   lang: Language;
+  /** Le bouton principal de l'en-tête. Par défaut le calculateur ; la page
+   *  Academy y met « Ouvrir mon compte » vers ses tarifs (Paul, 25/08/2026). */
+  ctaHref?: string;
+  ctaLabel?: string;
 }
 
-const { lang } = Astro.props;
+const { lang, ctaHref = `/${lang}/calculator`, ctaLabel } = Astro.props;
+const cta = ctaLabel ?? t(lang, 'nav.quote');
 
 const currentPath = Astro.url.pathname;
 const pathWithoutLang = currentPath.replace(/^\/(en|fr)/, '');
@@ -132,8 +137,8 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
       </a>
 
       <!-- Calculator Button (primary CTA) -->
-      <Button href={`/${lang}/calculator`} variant="primary" size="sm" class="hidden sm:inline-flex">
-        {t(lang, 'nav.quote')}
+      <Button href={ctaHref} variant="primary" size="sm" class="hidden sm:inline-flex">
+        {cta}
       </Button>
 
       <!-- Language switcher - Flag only -->
@@ -234,8 +239,8 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
           >
             {t(lang, 'nav.contact')}
           </a>
-          <Button href={`/${lang}/calculator`} variant="primary" class="flex-1">
-            {t(lang, 'nav.quote')}
+          <Button href={ctaHref} variant="primary" class="flex-1">
+            {cta}
           </Button>
         </div>
         <a

@@ -6,6 +6,11 @@ import { ease, onEnter, probeClock, reducedMotion } from './motion';
 /**
  * Le MCP, expliqué : le moment fort de la page, et la seule section didactique.
  *
+ * C'est la deuxième FEUILLE CLAIRE de la page (Paul, 25/08 : « rajouter
+ * quelques trucs en fond blanc »), avec « qui enseigne » : la démonstration
+ * reste dans la nuit du produit parce qu'elle montre ses vrais écrans, le
+ * schéma, lui, se lit sur papier.
+ *
  * D'abord ce qu'on saura construire en sortant (Paul, 25/08 : la section
  * arrivait sans introduction), puis la prise : trois assistants en haut, votre
  * serveur au milieu, huit outils en bas. Les fils du haut se tirent un par un,
@@ -21,6 +26,9 @@ import { ease, onEnter, probeClock, reducedMotion } from './motion';
  * 3,5 s, la figure se montre entière.
  */
 const NS = 'http://www.w3.org/2000/svg';
+/** Les fils sur la feuille claire : lin foncé au repos, or lisible quand le fil est actif. */
+const FIL = '#d3ccbe';
+const FIL_OR = '#a8862f';
 
 export default function Mcp({ locale }: { locale: Locale }) {
   const c = jour30Copy(locale).mcp;
@@ -44,7 +52,7 @@ export default function Mcp({ locale }: { locale: Locale }) {
   const highlight = useCallback((id: string) => {
     paths.current.forEach((p) => {
       const on = p.dataset.tool === id;
-      p.setAttribute('stroke', on ? '#c8a951' : '#26324e');
+      p.setAttribute('stroke', on ? FIL_OR : FIL);
       p.setAttribute('stroke-width', on ? '1.75' : '1.25');
     });
   }, []);
@@ -60,7 +68,7 @@ export default function Mcp({ locale }: { locale: Locale }) {
     const len = path.getTotalLength();
     const d = document.createElementNS(NS, 'circle');
     d.setAttribute('r', '3');
-    d.setAttribute('fill', '#c8a951');
+    d.setAttribute('fill', FIL_OR);
     svg.current.appendChild(d);
     dot.current = d;
     const cycle = 1500 + 500;
@@ -102,7 +110,7 @@ export default function Mcp({ locale }: { locale: Locale }) {
       const p = document.createElementNS(NS, 'path');
       p.setAttribute('d', d);
       p.setAttribute('fill', 'none');
-      p.setAttribute('stroke', '#26324e');
+      p.setAttribute('stroke', FIL);
       p.setAttribute('stroke-width', '1.25');
       p.setAttribute('stroke-linecap', 'round');
       p.dataset.role = role;
@@ -223,17 +231,17 @@ export default function Mcp({ locale }: { locale: Locale }) {
   }, [actif, highlight, pulse]);
 
   const noeud = 'rounded-[12px] border px-4 py-3 text-center min-w-[104px]';
-  const quiCouleur: Record<string, string> = { vous: 'text-ivoire', serveur: 'text-or', resultat: 'text-assistant' };
+  const quiCouleur: Record<string, string> = { vous: 'text-encre', serveur: 'text-or-grave', resultat: 'text-sauge' };
 
   return (
-    <section className="border-t border-filet-nuit bg-profond px-4 py-[84px] sm:px-6">
+    <section className="border-t border-lin bg-craie px-4 py-[84px] text-mine sm:px-6">
       <div className="mx-auto max-w-[1180px]">
-        <h2 className="m-0 max-w-[20ch] text-balance text-[clamp(28px,4.4vw,46px)] font-medium leading-[1.1] tracking-[-0.025em] text-ivoire">{c.intro.titre}</h2>
-        <p className="mt-5 max-w-[60ch] text-[17px] leading-[1.65] text-corps-nuit">{c.intro.texte}</p>
+        <h2 className="m-0 max-w-[20ch] text-balance text-[clamp(28px,4.4vw,46px)] font-medium leading-[1.1] tracking-[-0.025em] text-encre">{c.intro.titre}</h2>
+        <p className="mt-5 max-w-[60ch] text-[17px] leading-[1.65] text-mine">{c.intro.texte}</p>
 
-        <div className="mt-14 border-t border-filet-nuit pt-10">
-          <h3 className="m-0 text-[clamp(22px,3vw,30px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire">{c.titre}</h3>
-          <p className="mt-3 max-w-[56ch] text-[15.5px] leading-[1.65] text-brume-nuit">{c.chapeau}</p>
+        <div className="mt-14 border-t border-lin pt-10">
+          <h3 className="m-0 text-[clamp(22px,3vw,30px)] font-medium leading-[1.15] tracking-[-0.02em] text-encre">{c.titre}</h3>
+          <p className="mt-3 max-w-[56ch] text-[15.5px] leading-[1.65] text-brume">{c.chapeau}</p>
         </div>
 
         <div ref={stage} className="relative mt-12">
@@ -241,20 +249,20 @@ export default function Mcp({ locale }: { locale: Locale }) {
 
           <div className="relative flex flex-wrap justify-center gap-3">
             {c.assistants.map((a) => (
-              <div key={a.nom} className={`j30-ai ${noeud} border-filet-nuit bg-salle-2 px-[22px] py-3.5`}>
-                <span className="block text-[16px] font-medium tracking-[-0.01em] text-ivoire">{a.nom}</span>
-                <span className="mt-[3px] block font-ac-mono text-[10px] uppercase tracking-[0.14em] text-brume-nuit">{a.editeur}</span>
+              <div key={a.nom} className={`j30-ai ${noeud} border-lin bg-papier px-[22px] py-3.5`}>
+                <span className="block text-[16px] font-medium tracking-[-0.01em] text-encre">{a.nom}</span>
+                <span className="mt-[3px] block font-ac-mono text-[10px] uppercase tracking-[0.14em] text-brume">{a.editeur}</span>
               </div>
             ))}
           </div>
-          <p className="m-0 mt-3.5 text-center font-ac-mono text-[11px] text-brume-nuit">{c.memeServeur}</p>
+          <p className="m-0 mt-3.5 text-center font-ac-mono text-[11px] text-brume">{c.memeServeur}</p>
 
           <div className="my-[70px] flex justify-center">
-            <div ref={hub} className="relative max-w-[340px] rounded-carte border border-renard/50 bg-salle-2 px-7 py-5 text-center">
+            <div ref={hub} className="relative max-w-[340px] rounded-carte border border-renard/60 bg-papier px-7 py-5 text-center">
               <span ref={halo} className="pointer-events-none absolute -inset-px rounded-carte border border-renard opacity-0" />
               <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.16em] text-renard">{c.hub.kicker}</p>
-              <p className="m-0 mt-[9px] text-[16px] leading-[1.45] text-ivoire">{c.hub.ligne}</p>
-              <p className="m-0 mt-[9px] min-h-[2.9em] font-ac-mono text-[11px] leading-[1.5] text-brume-nuit">
+              <p className="m-0 mt-[9px] text-[16px] leading-[1.45] text-encre">{c.hub.ligne}</p>
+              <p className="m-0 mt-[9px] min-h-[2.9em] font-ac-mono text-[11px] leading-[1.5] text-brume">
                 {premier.current ? c.hub.defaut(c.outils.length) : `${outil.label} · ${outil.droits}`}
               </p>
             </div>
@@ -268,7 +276,7 @@ export default function Mcp({ locale }: { locale: Locale }) {
                   key={o.id}
                   type="button"
                   className={`j30-tool ${noeud} cursor-pointer transition-[background,border-color,color] duration-[180ms] ${
-                    on ? 'border-or/45 bg-or/10 text-ivoire' : 'border-filet-nuit bg-salle-2 text-corps-nuit hover:border-brume-nuit'
+                    on ? 'border-or-grave/60 bg-or/15 text-encre' : 'border-lin bg-papier text-mine hover:border-brume'
                   }`}
                   onMouseEnter={() => setActif(o.id)}
                   onFocus={() => setActif(o.id)}
@@ -279,36 +287,36 @@ export default function Mcp({ locale }: { locale: Locale }) {
               );
             })}
           </div>
-          <p className="m-0 mt-3 text-center font-ac-mono text-[10.5px] uppercase tracking-[0.14em] text-brume-nuit">{c.survolez}</p>
+          <p className="m-0 mt-3 text-center font-ac-mono text-[10.5px] uppercase tracking-[0.14em] text-brume">{c.survolez}</p>
         </div>
 
         {/* Le panneau : ce que ça donne, en trois temps. */}
-        <div className="mt-[34px] grid grid-cols-[minmax(0,1fr)] gap-6 rounded-carte border border-filet-nuit bg-salle-2 px-6 py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] md:px-7">
+        <div className="mt-[34px] grid grid-cols-[minmax(0,1fr)] gap-6 rounded-carte border border-lin bg-papier px-6 py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] md:px-7">
           <div>
-            <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.16em] text-or">{outil.label}</p>
-            <p className="m-0 mt-2 text-[20px] font-medium leading-[1.25] text-ivoire">{outil.titre}</p>
-            <p className="m-0 mt-3 max-w-[40ch] text-[14.5px] leading-[1.6] text-corps-nuit">{outil.corps}</p>
-            <p className="m-0 mt-4 font-ac-mono text-[11px] text-brume-nuit">
+            <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.16em] text-or-grave">{outil.label}</p>
+            <p className="m-0 mt-2 text-[20px] font-medium leading-[1.25] text-encre">{outil.titre}</p>
+            <p className="m-0 mt-3 max-w-[40ch] text-[14.5px] leading-[1.6] text-mine">{outil.corps}</p>
+            <p className="m-0 mt-4 font-ac-mono text-[11px] text-brume">
               <span className="uppercase tracking-[0.12em]">{c.droits}</span> · {outil.droits}
             </p>
           </div>
-          <ol className="m-0 grid list-none gap-3 border-t border-filet-nuit p-0 pt-5 md:border-l md:border-t-0 md:pl-7 md:pt-0">
+          <ol className="m-0 grid list-none gap-3 border-t border-lin p-0 pt-5 md:border-l md:border-t-0 md:pl-7 md:pt-0">
             {outil.flux.map((e, i) => (
               <li
                 key={`${outil.id}-${e.qui}`}
                 className="grid grid-cols-[86px_1fr] items-baseline gap-3 transition-[opacity,transform] duration-300"
                 style={{ opacity: i < visibles ? 1 : 0, transform: i < visibles ? 'none' : 'translateY(6px)' }}
               >
-                <span className={`font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.12em] ${quiCouleur[e.qui] || 'text-brume-nuit'}`}>
+                <span className={`font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.12em] ${quiCouleur[e.qui] || 'text-brume'}`}>
                   {c.qui[e.qui as keyof typeof c.qui]}
                 </span>
-                <span className={`text-[14.5px] leading-[1.55] ${e.qui === 'resultat' ? 'text-ivoire' : 'text-corps-nuit'}`}>{e.texte}</span>
+                <span className={`text-[14.5px] leading-[1.55] ${e.qui === 'resultat' ? 'text-encre' : 'text-mine'}`}>{e.texte}</span>
               </li>
             ))}
           </ol>
         </div>
 
-        <p className="m-0 mt-8 max-w-[60ch] text-[15px] leading-[1.65] text-brume-nuit">{c.pied}</p>
+        <p className="m-0 mt-8 max-w-[60ch] text-[15px] leading-[1.65] text-brume">{c.pied}</p>
       </div>
     </section>
   );

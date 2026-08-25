@@ -159,11 +159,12 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     );
 
   return (
-    <section ref={section} id="composer" className="border-t border-filet-nuit px-4 pb-28 pt-[84px] sm:px-6 lg:pb-[84px]">
+    <section ref={section} id="pricing" className="scroll-mt-20 border-t border-filet-nuit px-4 pb-28 pt-[84px] sm:px-6 lg:pb-[84px]">
       <div className="mx-auto max-w-[1180px]">
         <h2 className="m-0 max-w-[20ch] text-balance text-[clamp(26px,3.8vw,42px)] font-medium leading-[1.12] tracking-[-0.025em] text-ivoire">
           {c.titre}
         </h2>
+        <p className="mt-3 max-w-[52ch] text-[17px] leading-[1.6] text-corps-nuit">{c.sousTitre}</p>
 
         <div className="mt-11 grid grid-cols-[minmax(0,1fr)] items-start gap-9 min-[900px]:grid-cols-[minmax(0,1fr)_340px]">
           <div>

@@ -138,7 +138,7 @@ export default function Retournement({
           <p className="mt-[22px] max-w-[46ch] text-[17px] leading-[1.65] text-corps-nuit">{c.texte}</p>
           <div className="mt-8 flex flex-wrap gap-3.5">
             <a
-              href="#composer"
+              href="#pricing"
               className="inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton bg-or px-[26px] py-3.5 text-[15.5px] font-semibold text-salle transition duration-150 hover:bg-or-vif"
             >
               {c.ouvrir}

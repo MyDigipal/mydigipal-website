@@ -524,7 +524,8 @@ const FR = {
       { titre: 'Automatisation et IA', texte: 'Assistants, agents et automatisations opérés en production, pas en démonstration.' },
     ],
     logosTitre: 'Nous formons leurs équipes',
-    avisTitre: '497 retours écrits, une moyenne de 9,4 sur 10',
+    avisTitre: 'Ils ont adoré le training',
+    avisLigne: '497 retours écrits, une moyenne de 9,4 sur 10',
   },
 
   produit: {
@@ -540,7 +541,8 @@ const FR = {
   },
 
   configurateur: {
-    titre: 'Le programme, et ce que vous y ajoutez.',
+    titre: 'Tarifs',
+    sousTitre: 'Le programme, et ce que vous y ajoutez.',
     programmeLigne: (lecons: number) =>
       `${lecons} leçons, trois niveaux, l’atelier, la bibliothèque, les trophées, l’attestation. Accès complet.`,
     construireLigne: (lecons: number) => `${lecons} leçons de plus. Le niveau 3 en entier, celui du serveur MCP.`,
@@ -1076,7 +1078,8 @@ const EN: Jour30Copy = {
       { titre: 'Automation and AI', texte: 'Assistants, agents and automations run in production, not in demos.' },
     ],
     logosTitre: 'We train their teams',
-    avisTitre: '497 written reviews, averaging 9.4 out of 10',
+    avisTitre: 'They loved the training',
+    avisLigne: '497 written reviews, averaging 9.4 out of 10',
   },
 
   produit: {
@@ -1092,7 +1095,8 @@ const EN: Jour30Copy = {
   },
 
   configurateur: {
-    titre: 'The programme, and what you add to it.',
+    titre: 'Pricing',
+    sousTitre: 'The programme, and what you add to it.',
     programmeLigne: (lecons: number) =>
       `${lecons} lessons, three levels, the workshop, the library, the trophies, the certificate. Full access.`,
     construireLigne: (lecons: number) => `${lecons} more lessons. Level 3 in full, the one with the MCP server.`,
