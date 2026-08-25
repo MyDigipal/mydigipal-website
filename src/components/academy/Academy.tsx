@@ -48,7 +48,7 @@ export default function Academy({ locale, initial }: { locale: Locale; initial: 
   const fin = data.etats[data.etats.length - 1];
 
   return (
-    <div data-theme="nuit" className="j30 overflow-x-clip bg-salle pt-18 text-corps-nuit">
+    <div data-theme="nuit" className="j30 overflow-x-clip bg-salle text-corps-nuit">
       <Ouverture locale={locale} />
       <Mention locale={locale} />
       <LeCompte

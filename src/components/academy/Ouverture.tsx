@@ -135,17 +135,12 @@ export default function Ouverture({ locale }: { locale: Locale }) {
   const bouton = `${mono} cursor-pointer rounded-[8px] border bg-transparent px-3.5 py-[7px] text-[11px] uppercase tracking-[0.08em] transition duration-150`;
 
   return (
-    <section className="relative flex min-h-[100dvh] flex-col justify-center px-4 pb-16 pt-20 sm:px-6">
+    <section className="relative flex min-h-[100dvh] flex-col justify-center px-4 pb-16 pt-36 sm:px-6">
+      {/* Le site a son header fixe (72 px) et son logo : pas de logo ici, et le
+          haut de section passe dessous avec le dégradé, sans bande vide. */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{ background: 'radial-gradient(60% 45% at 50% 0%, rgba(200,169,81,.10) 0%, transparent 70%)' }}
-      />
-      <img
-        src="/academy/brand/academy-logo-dark.png"
-        alt="MyDigipal Academy"
-        width={1113}
-        height={457}
-        className="absolute left-4 top-5 h-7 w-auto sm:left-6 sm:top-6"
       />
       <div className="relative mx-auto w-full max-w-[880px]">
         <h1 className="m-0 max-w-[15ch] text-balance text-[clamp(30px,5.2vw,58px)] font-medium leading-[1.08] tracking-[-0.025em] text-ivoire">
