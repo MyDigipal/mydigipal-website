@@ -270,7 +270,10 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
   Depuis le 25/08 au soir, le JSON sert **24 verbatims choisis dans l'export des 497 retours**
   (`mydigipal-academy/src/lib/academy/temoignages.ts`, avec la note), affichés en grille de
   trois colonnes dès md, en défilé au doigt en dessous ; une société sans logo s'écrit en
-  toutes lettres (GL Events, Datawords, CBTW). La
+  toutes lettres. Les trois logos qui manquaient sont entrés le 25/08 au soir dans
+  `public/images/Training Logo/` : GL Events (Wikimedia, lien donné par Paul), CBTW (temenos.com,
+  lien donné par Paul), Datawords (datawords.com ; le mot est blanc dans leur fichier, repeint en
+  encre pour la feuille claire). La
   section configurateur s'appelle **Tarifs / Pricing**, ancre `#pricing` (l'ancien `#composer`
   n'existe plus). **Le bouton qui suit le visiteur est celui de l'en-tête du site** : `Header.astro`
   accepte `ctaHref` et `ctaLabel`, et `academy.astro` y met « Ouvrir mon compte » vers `#pricing`,

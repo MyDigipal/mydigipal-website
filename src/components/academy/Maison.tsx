@@ -29,6 +29,9 @@ const LOGOS: Array<{ src: string; alt: string; h: number; c: number }> = [
   { src: '/images/Training Logo/Pierre fabre.avif', alt: 'Pierre Fabre', h: 28, c: 24 },
   { src: '/images/Training Logo/Pernod Ricard.avif', alt: 'Pernod Ricard', h: 32, c: 28 },
   { src: '/images/Training Logo/Kaufman broad.avif', alt: 'Kaufman & Broad', h: 24, c: 20 },
+  { src: '/images/Training Logo/GL events.png', alt: 'GL Events', h: 40, c: 36 },
+  { src: '/images/Training Logo/Datawords.png', alt: 'Datawords', h: 24, c: 20 },
+  { src: '/images/Training Logo/CBTW.png', alt: 'CBTW', h: 34, c: 30 },
 ];
 
 /**
