@@ -242,6 +242,13 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
   il ne réagissait pas à la demande tapée et Paul l'a jugé « pourri ». Il reste dans l'app pour
   la page `/start` du module gratuit. **La page Academy vend l'en-ligne et ne parle pas des
   sessions en direct** (c'est la page AI Training) ; `Ailleurs.tsx` les signale en une bande.
+- **La visite** (`Visite.tsx`, sous le hero) : le tableau de bord de l'app REFAIT en HTML dans sa
+  salle de nuit (pas une capture), onze éléments survolables (`data-spot`), un panneau à droite
+  (sous le menu sur mobile) qui porte le pitch au repos et la description de l'élément survolé,
+  une visite automatique toutes les 4 s jusqu'au premier geste, la réponse de l'assistant qui
+  s'écrit et le compteur de points qui monte. Chiffres du JSON, textes dans `copy.ts` (`visite`).
+  ⚠️ Dans une grille à deux colonnes, un `order-first` sans borne (`max-lg:`) place l'élément
+  dans la PREMIÈRE colonne à toutes les tailles : deux fois le même piège le 25/08.
 - **La page canonique est celle-ci.** `/jour-30` dans l'app est un atelier qui peut diverger.
 
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)
