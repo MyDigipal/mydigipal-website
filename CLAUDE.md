@@ -205,3 +205,35 @@ Le Hub MyDigipal a son propre handoff Claude Design (KPI cards, charts ECharts, 
 - Patterns transversaux : count-up easing (easeOutCubic 1400ms), reveal-on-scroll cubic-bezier, magnetic button portable
 - Patterns site-only : magnetic services grid, testimonial marquee, layered industry cards, calc inline preview
 - Patterns hub-only : KPI variants A/B/C, ECharts trend/funnel/heatmap/donut, benchmark bars, campaign tables filtered/sorted/paginated
+
+## AI Academy : la page de vente de la formation en ligne (25/08/2026)
+
+Décision de Paul du 25/08/2026 : **mydigipal.com vend, academy.mydigipal.com est l'application.**
+La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`), entrée
+« AI Academy » dans le menu IA et le pied de page. Le tunnel de paiement reste dans l'app.
+
+- **Un îlot React** `src/components/academy/Academy.tsx` (`client:load`), porté depuis
+  `mydigipal-academy/src/components/jour30/`. Concept, spécification et système visuel :
+  `mydigipal-academy/design/handoff-jour-30/` et la section 17 de son CLAUDE.md. Les composants
+  sont une COPIE : une évolution se fait dans l'app d'abord, puis se reporte ici (le script de
+  portage est dans la mémoire de session du 25/08, il ne remplace pas la relecture).
+- **Aucun chiffre n'est écrit ici.** Prix, hausse du 1er octobre, leçons, minutes, grille de
+  points, trente jours de Camille, verbatims et liens vers l'app viennent de
+  `GET https://academy.mydigipal.com/api/academy/public/jour30?lang=` : lu au build (10 s de
+  délai, puis l'instantané `src/data/academy/jour30-{fr,en}.json` prend le relais, le build ne
+  tombe jamais), puis relu dans le navigateur par l'îlot. Rafraîchir les instantanés de temps en
+  temps (`curl` de l'endpoint), ils ne servent qu'en secours.
+- **Jetons** dans `src/styles/academy.css`, importé par `global.css` : la salle de nuit de l'app
+  (`data-theme="nuit"`, `bg-salle`, `text-ivoire`, `text-brume-nuit`...), l'or, le renard. Polices
+  préfixées `font-ac-*` (Space Grotesk, JetBrains Mono, Fraunces via `@fontsource-variable`,
+  importées par la page seule) parce que le site a déjà un `--font-display`. ⚠️ Deux fichiers
+  qui ne diffèrent que par la casse (`renard.ts` / `Renard.tsx`) cassent Rollup sur Windows :
+  la silhouette est dans `silhouette.ts`.
+- **Mesure** : même conteneur GTM que l'app. `src/components/academy/track.ts` pousse
+  `select_item` et garde `gclid`/`fbclid`/`gbraid`/`wbraid` en session pour les remettre dans le
+  lien du tunnel (`withAdClickIds`), sinon la conversion renvoyée côté serveur par l'app arrive
+  sans attribution.
+- Pas de `PageLayout` sur cette page : il ajoute le bouton collant du calculateur, qui
+  flotterait par-dessus la barre de total du configurateur. `BaseLayout` + `Header` + `Footer`.
+- Images de l'app copiées dans `public/academy/` (références, exercices, marque, captures).
+
