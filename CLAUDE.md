@@ -279,6 +279,10 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
   accepte `ctaHref` et `ctaLabel`, et `academy.astro` y met « Ouvrir mon compte » vers `#pricing`,
   visible à toutes les tailles. Pas de rail flottant de boutons vers chaque section : c'est le
   sommaire animé que Paul a rejeté quatre fois le 24/08, et sur mobile il n'y a pas la place.
+- **Au-delà de 25 places, un formulaire** (`FormEquipe.tsx`) à la place du `mailto:` : il poste sur
+  `academy.mydigipal.com/api/academy/public/team-request` (lead CRM + courriel à Paul). **La ligne
+  de la hausse** devient franche et dorée à moins de seize jours de la date du JSON
+  (`hausseProche`), et disparaît d'elle-même le jour venu.
 - **La page canonique est celle-ci.** `/jour-30` dans l'app est un atelier qui peut diverger.
 
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)

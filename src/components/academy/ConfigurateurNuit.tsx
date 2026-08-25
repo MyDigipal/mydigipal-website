@@ -3,8 +3,8 @@ import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { formatPrice, nombreLocal, teamDiscount } from './offres';
 import { trackSelectItem, withAdClickIds } from './track';
+import FormEquipe from './FormEquipe';
 
-const ADRESSE_DEVIS = 'academy@mydigipal.com';
 const OPTIONS = ['construire', 'session', 'audit'] as const;
 
 /**
@@ -71,7 +71,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
   }, [extras, places, totaux.base, programme, c, locale, data.offres]);
 
   const lien = useMemo(() => {
-    if (devisSeul) return `mailto:${ADRESSE_DEVIS}?subject=${encodeURIComponent(c.devis)}`;
+    if (devisSeul) return '#equipe';
     const items = ['programme', ...OPTIONS.filter((id) => extras.has(id))];
     if (assistant) items.push(assistant);
     const q = new URLSearchParams({ items: items.join(','), lang: locale });
@@ -98,6 +98,17 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     const mois = d.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { month: 'long', timeZone: 'UTC' });
     return c.hausse(formatPrice(data.hausse.ttc_minor, locale), c.dateHausse(jour, mois));
   })();
+  // À moins de seize jours de la hausse, la ligne devient franche et datée
+  // (Paul, 25/08/2026) : c'est vrai, c'est daté, ça décide. Elle disparaît
+  // toute seule le jour de la hausse, quand le prix du JSON a changé.
+  const hausseProche = (() => {
+    const d = new Date(`${data.hausse.date}T00:00:00Z`);
+    const jours = (d.getTime() - Date.now()) / 86400000;
+    if (jours <= 0 || jours > 16) return null;
+    const veille = new Date(d.getTime() - 86400000);
+    const veilleTexte = c.dateHausse(veille.getUTCDate(), veille.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { month: 'long', timeZone: 'UTC' }));
+    return c.hausseProche(formatPrice(programme.ttc_minor, locale), veilleTexte, formatPrice(data.hausse.ttc_minor, locale));
+  })();
 
   const paliersPct = paliers.map((t) => ({ seats: t.seats, pct: Math.round(t.discount * 100) }));
   const ligne = 'flex w-full flex-wrap items-baseline gap-x-5 gap-y-3 border-b border-filet-nuit py-5 text-left';
@@ -108,9 +119,13 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     devisSeul ? (
       <>
         {!compact && <p className="m-0 text-[20px] leading-[1.4] text-ivoire">{c.devisTexte(devisAPartirDe)}</p>}
-        <a href={lien} className={`${cta} ${compact ? 'px-4 py-2.5 text-[14px]' : 'mt-[22px]'}`}>
-          {c.devis}
-        </a>
+        {compact ? (
+          <a href={lien} className={`${cta} px-4 py-2.5 text-[14px]`}>
+            {c.devis}
+          </a>
+        ) : (
+          <FormEquipe locale={locale} seats={places} base={data.urls.base} c={c.equipe} />
+        )}
       </>
     ) : compact ? (
       <>
@@ -154,7 +169,11 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
         <a href={lien} className={`${cta} mt-6`}>
           {c.ouvrir}
         </a>
-        <p className="m-0 mt-3 text-center text-[12.5px] leading-[1.5] text-brume-nuit">{hausse}</p>
+        {hausseProche ? (
+          <p className="m-0 mt-3 text-center text-[14px] font-medium leading-[1.5] text-or">{hausseProche}</p>
+        ) : (
+          <p className="m-0 mt-3 text-center text-[12.5px] leading-[1.5] text-brume-nuit">{hausse}</p>
+        )}
       </>
     );
 
