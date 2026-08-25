@@ -236,4 +236,27 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
 - Pas de `PageLayout` sur cette page : il ajoute le bouton collant du calculateur, qui
   flotterait par-dessus la barre de total du configurateur. `BaseLayout` + `Header` + `Footer`.
 - Images de l'app copiées dans `public/academy/` (références, exercices, marque, captures).
+- **Le haut de page a été refait le soir même** (direction A, choisie par Paul) : `Hero.tsx`,
+  ce qu'on vend en une phrase avec les chiffres du JSON, la capture du tableau de bord à
+  droite. Le terminal qui réécrivait un prompt (`Ouverture.tsx`, encore dans l'app) est sorti :
+  il ne réagissait pas à la demande tapée et Paul l'a jugé « pourri ». Il reste dans l'app pour
+  la page `/start` du module gratuit. **La page Academy vend l'en-ligne et ne parle pas des
+  sessions en direct** (c'est la page AI Training) ; `Ailleurs.tsx` les signale en une bande.
+- **La page canonique est celle-ci.** `/jour-30` dans l'app est un atelier qui peut diverger.
+
+## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)
+
+Paul veut vendre l'Academy en priorité, puis « refaire un petit peu » les autres pages IA.
+- **`/[lang]/ai`** doit présenter quatre solutions : l'AI Academy (en ligne), la formation en
+  présentiel ou à distance (AI Training), les solutions d'automatisation (AI Solutions), et la
+  création de contenu IA (AI Content), dont Paul doute qu'elle reste une page à part (« c'est un
+  peu des automatisations qu'on crée »). Fait le 25/08 : l'Academy est entrée en tête de la
+  liste, le bouton principal du hero mène à `/academy`, le sous-titre de la formation dit
+  « en présentiel ou à distance ». Le reste de la page est intact : hero violet à orbes,
+  chiffres « 300 % / 50+ / 100+ » non sourcés, trois cartes à dégradés. C'est le look par
+  défaut d'une IA (skill `design-taste-frontend`), à refondre, pas à retoucher.
+- **`/services/ai-training`** (vend la salle et le distanciel), **`/services/ai-solutions`**,
+  **`/services/ai-content`** : à revoir dans la foulée, avec la question de fusionner AI Content
+  dans AI Solutions. Le style de l'Academy (salle de nuit, or, Space Grotesk) n'est pas celui du
+  site ; décider avant de refondre si les pages IA adoptent une teinte commune.
 
