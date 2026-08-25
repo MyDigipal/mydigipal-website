@@ -1,0 +1,235 @@
+/* ============================================================
+   MyDigipal Academy - la page de vente « AI Academy » sur mydigipal.com
+   (décision de Paul du 25/08/2026 : mydigipal.com vend, academy.mydigipal.com
+   est l'application). Les jetons sont ceux de la SALLE DE NUIT de l'app :
+   la page et l'application doivent avoir la même teinte, un écart se verrait
+   au moment de l'inscription. Source : mydigipal-academy/src/app/globals.css.
+
+   Les noms de polices sont préfixés `ac-` parce que le site a déjà un
+   `--font-display` (Plus Jakarta Sans). Les couleurs n'ont pas de doublon.
+   ============================================================ */
+
+@theme {
+  --font-ac-grotesk: 'Space Grotesk Variable', system-ui, sans-serif;
+  --font-ac-mono: 'JetBrains Mono Variable', Consolas, monospace;
+  --font-ac-serif: 'Fraunces Variable', Georgia, serif;
+
+  --color-encre: #0f1a2e;
+  --color-or: #c8a951;
+  --color-or-vif: #dcbc66;
+  --color-or-texte: #a8862f;
+  --color-or-grave: #8a6d24;
+  --color-craie: #f7f5f0;
+  --color-papier: #ffffff;
+  --color-mine: #2a3441;
+  --color-brume: #7c8698;
+  --color-lin: #e6e1d6;
+  --color-sauge: #2e7d5b;
+  --color-sauge-soft: #e9f3ee;
+  --color-profond: #0f1728;
+  --color-renard: #d9743f;
+  --color-bronze: #b07d42;
+  --color-argent: #c0c6d2;
+  --color-platine: #e8ecf4;
+  --color-assistant: #9fd4bc;
+  --color-terminal-texte: #d5dbe6;
+
+  --radius-carte: 14px;
+  --radius-bouton: 10px;
+}
+
+/* La salle de nuit : mêmes valeurs que l'app. */
+[data-theme='nuit'] {
+  --v-salle: #0d1424;
+  --v-salle-2: #141d33;
+  --v-salle-3: #1c2742;
+  --v-filet-salle: #26324e;
+  --v-fort: #f2eee4;
+  --v-courant: #b9c1d1;
+  --v-mute: #7d879b;
+}
+
+@theme inline {
+  --color-salle: var(--v-salle);
+  --color-salle-2: var(--v-salle-2);
+  --color-salle-3: var(--v-salle-3);
+  --color-filet-nuit: var(--v-filet-salle);
+  --color-ivoire: var(--v-fort);
+  --color-corps-nuit: var(--v-courant);
+  --color-brume-nuit: var(--v-mute);
+}
+
+/* ============================================================
+   Règle qui prime sur tout le reste : L'ÉTAT DE REPOS EST L'ÉTAT VISIBLE.
+   Aucune classe `j30-pre-*` n'est écrite dans le gabarit ; elle est posée
+   par le script, après la sonde d'horloge, et seulement sur ce qui est
+   encore sous la ligne de déclenchement. Sans mouvement, la page est
+   complète. Les transitions sont portées par l'état d'arrivée.
+   ============================================================ */
+.j30 {
+  font-family: var(--font-ac-grotesk);
+  -webkit-font-smoothing: antialiased;
+}
+.j30 ::selection {
+  background: var(--color-or);
+  color: var(--v-salle);
+}
+.j30 input[type='range'] {
+  accent-color: var(--color-or);
+}
+.j30 :focus-visible {
+  outline: 2px solid var(--color-or);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.prompt-card__caret {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  background: var(--color-or);
+  vertical-align: -2px;
+  animation: caret-blink 1s steps(1) infinite;
+}
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.j30-pre-day {
+  clip-path: inset(0 100% 0 0);
+  opacity: 0.35;
+}
+.j30-in-day {
+  clip-path: inset(0 0% 0 0);
+  opacity: 1;
+  transition:
+    clip-path 850ms cubic-bezier(0.215, 0.61, 0.355, 1),
+    opacity 850ms cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+.j30-pre-titre {
+  opacity: 0;
+  letter-spacing: 0.06em;
+}
+.j30-in-titre {
+  opacity: 1;
+  letter-spacing: -0.02em;
+  transition:
+    opacity 900ms cubic-bezier(0.215, 0.61, 0.355, 1),
+    letter-spacing 900ms cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+.j30-pre-chute {
+  opacity: 0;
+  transform: translateY(-18px) scale(0.96);
+}
+.j30-in-chute {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 550ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 550ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.j30-pre-diplome .j30-feuille {
+  opacity: 0;
+  transform: perspective(1400px) rotateX(12deg) translateY(40px);
+  transform-origin: center top;
+}
+.j30-pre-diplome .j30-sceau {
+  opacity: 0;
+  transform: scale(2.1) rotate(-22deg);
+}
+.j30-pre-diplome .j30-mention {
+  opacity: 0;
+  letter-spacing: 0.4em;
+}
+.j30-in-diplome .j30-feuille {
+  opacity: 1;
+  transform: perspective(1400px) rotateX(0) translateY(0);
+  transform-origin: center top;
+  transition:
+    opacity 1000ms cubic-bezier(0.215, 0.61, 0.355, 1),
+    transform 1000ms cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+.j30-in-diplome .j30-sceau {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 500ms cubic-bezier(0.895, 0.03, 0.685, 0.22) 750ms,
+    transform 500ms cubic-bezier(0.895, 0.03, 0.685, 0.22) 750ms;
+}
+.j30-in-diplome .j30-mention {
+  opacity: 1;
+  letter-spacing: 0.18em;
+  transition:
+    opacity 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 1150ms,
+    letter-spacing 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 1150ms;
+}
+
+@keyframes j30-glisse {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.j30-piste {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: j30-glisse 42s linear infinite;
+}
+.j30-defile:hover .j30-piste {
+  animation-play-state: paused;
+}
+.j30-avis {
+  scrollbar-width: none;
+}
+.j30-avis::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .j30-pre-day,
+  .j30-in-day {
+    clip-path: none;
+    opacity: 1;
+    transition: none;
+  }
+  .j30-pre-titre,
+  .j30-in-titre {
+    opacity: 1;
+    letter-spacing: -0.02em;
+    transition: none;
+  }
+  .j30-pre-chute,
+  .j30-in-chute {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .j30-pre-diplome .j30-feuille,
+  .j30-pre-diplome .j30-sceau,
+  .j30-pre-diplome .j30-mention {
+    opacity: 1;
+    transform: none;
+    letter-spacing: 0.18em;
+    transition: none;
+  }
+  .j30-pre-diplome .j30-feuille {
+    letter-spacing: normal;
+  }
+  .j30-piste {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    transform: none;
+  }
+  .j30-copie {
+    display: none;
+  }
+  .prompt-card__caret {
+    animation: none;
+  }
+}

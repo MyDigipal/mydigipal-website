@@ -1,0 +1,63 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { type Language, languages } from '@/i18n/config';
+import Academy from '@/components/academy/Academy';
+import { jour30Copy } from '@/components/academy/copy';
+import { ENDPOINT, type Jour30Data } from '@/components/academy/data';
+import secoursFr from '@/data/academy/jour30-fr.json';
+import secoursEn from '@/data/academy/jour30-en.json';
+import '@fontsource-variable/space-grotesk';
+import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/fraunces/wght-italic.css';
+
+/**
+ * AI Academy : la page de vente de la formation en ligne, sur mydigipal.com
+ * (décision de Paul du 25/08/2026 : le site vend, academy.mydigipal.com est
+ * l'application). Le tunnel de paiement reste dans l'application.
+ *
+ * Tout ce qui est chiffré (prix, hausse, leçons, points, verbatims) est lu
+ * dans l'app au build ; si l'app ne répond pas pendant le build, l'instantané
+ * de `src/data/academy/` prend le relais et le build ne tombe jamais. Dans
+ * le navigateur, l'îlot relit le même JSON et se met à jour.
+ *
+ * Pas de PageLayout : il ajoute le bouton collant du calculateur, qui
+ * flotterait par-dessus une page qui a déjà sa propre barre de total.
+ */
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+const c = jour30Copy(lang);
+
+async function lire(): Promise<Jour30Data> {
+  try {
+    const r = await fetch(`${ENDPOINT}?lang=${lang}`, { signal: AbortSignal.timeout(10000) });
+    if (r.ok) {
+      const d = (await r.json()) as Jour30Data;
+      if (d?.etats?.length && d.lang === lang) return d;
+    }
+  } catch {
+    /* instantané */
+  }
+  return (lang === 'fr' ? secoursFr : secoursEn) as unknown as Jour30Data;
+}
+const data = await lire();
+
+// 145 à 160 caractères, la règle du site.
+const description =
+  lang === 'fr'
+    ? 'La formation IA des professionnels, vue de l’intérieur : trente jours du parcours d’une apprenante dans le vrai produit, puis votre compte à vous. Dès 290 €.'
+    : 'AI training for working professionals, seen from the inside: thirty days of one learner’s journey in the real product, then your own account. From €290.';
+---
+
+<BaseLayout lang={lang} title={c.meta.title} description={description}>
+  <Header lang={lang} />
+  <main class="flex-grow">
+    <Academy client:load locale={lang} initial={data} />
+  </main>
+  <Footer lang={lang} />
+</BaseLayout>

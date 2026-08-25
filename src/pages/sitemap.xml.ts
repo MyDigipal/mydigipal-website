@@ -63,6 +63,7 @@ export const GET: APIRoute = async () => {
 
   // Calculator
   addBilingualPage('/calculator', 0.9, 'monthly');
+  addBilingualPage('/academy', 0.9, 'weekly');
 
   // Blog index
   addBilingualPage('/blog', 0.9, 'daily');
