@@ -218,7 +218,7 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
   sont une COPIE : une évolution se fait dans l'app d'abord, puis se reporte ici (le script de
   portage est dans la mémoire de session du 25/08, il ne remplace pas la relecture).
 - **Aucun chiffre n'est écrit ici.** Prix, hausse du 1er octobre, leçons, minutes, grille de
-  points, trente jours de Camille, verbatims et liens vers l'app viennent de
+  points, trente jours de Sophie, verbatims et liens vers l'app viennent de
   `GET https://academy.mydigipal.com/api/academy/public/jour30?lang=` : lu au build (10 s de
   délai, puis l'instantané `src/data/academy/jour30-{fr,en}.json` prend le relais, le build ne
   tombe jamais), puis relu dans le navigateur par l'îlot. Rafraîchir les instantanés de temps en

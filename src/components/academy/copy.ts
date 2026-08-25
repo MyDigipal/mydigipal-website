@@ -100,7 +100,7 @@ const FR = {
     titre: 'Ce qu’il y a dedans.',
     sous: 'L’espace apprenant, tel que vous l’ouvrirez. Survolez un élément : il vous dit à quoi il sert.',
     nav: ['Parcours', 'Outils', 'Mon espace'],
-    bandeau: { kicker: 'Mon espace', titre: 'Bonjour Camille', ligne: 'Formule complète, accès permanent au parcours.' },
+    bandeau: { kicker: 'Mon espace', titre: 'Bonjour Sophie', ligne: 'Formule complète, accès permanent au parcours.' },
     cartes: {
       kicker: 'Votre parcours',
       reprendre: 'Reprendre',
@@ -329,7 +329,7 @@ const FR = {
       outils: (n: number) => `${n} outils connectés`,
     },
     rail: {
-      nom: 'Camille R.',
+      nom: 'Sophie L.',
       points: 'points',
       avant: (n: string, rang: string) => `${n} points avant ${rang}`,
       dernier: 'Dernier rang atteint',
@@ -411,7 +411,7 @@ const FR = {
     titre: 'Elle l’imprime et la pose sur le bureau de son directeur.',
     surtitre: 'Attestation d’usage professionnel de l’intelligence artificielle',
     decernee: 'décernée à',
-    nom: 'Camille Rouvière',
+    nom: 'Sophie Lambert',
     corps: (lecons: number, modules: number, exercices: number, relus: number) =>
       `pour avoir mené le parcours complet : ${lecons} leçons en ${modules} modules, ${exercices} exercices rendus dont ${relus} relus et corrigés, et la construction d’un serveur MCP en état de marche.`,
     signature: 'Paul André',
@@ -588,7 +588,7 @@ const EN: Jour30Copy = {
     titre: 'What is inside.',
     sous: 'The learner space, as you will open it. Hover an element: it tells you what it is for.',
     nav: ['Course', 'Tools', 'My space'],
-    bandeau: { kicker: 'My space', titre: 'Hello Camille', ligne: 'Complete plan, permanent access to the course.' },
+    bandeau: { kicker: 'My space', titre: 'Hello Sophie', ligne: 'Complete plan, permanent access to the course.' },
     cartes: {
       kicker: 'Your course',
       reprendre: 'Resume',
@@ -814,7 +814,7 @@ const EN: Jour30Copy = {
       outils: (n: number) => `${n} tools connected`,
     },
     rail: {
-      nom: 'Camille R.',
+      nom: 'Sophie L.',
       points: 'points',
       avant: (n: string, rang: string) => `${n} points to ${rang}`,
       dernier: 'Top rank reached',
@@ -895,7 +895,7 @@ const EN: Jour30Copy = {
     titre: 'She prints it and puts it on her director’s desk.',
     surtitre: 'Certificate of professional use of artificial intelligence',
     decernee: 'awarded to',
-    nom: 'Camille Rouvière',
+    nom: 'Sophie Lambert',
     corps: (lecons: number, modules: number, exercices: number, relus: number) =>
       `for completing the full course: ${lecons} lessons across ${modules} modules, ${exercices} exercises submitted of which ${relus} reviewed and corrected, and a working MCP server built.`,
     signature: 'Paul André',
