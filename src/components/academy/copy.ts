@@ -328,9 +328,9 @@ const FR = {
     texte:
       'La méthode ne vient pas d’une veille. Elle vient du travail quotidien de l’agence, puis elle a été corrigée session après session devant de vraies salles, jusqu’à ce qu’elle tienne.',
     photos: [
-      { src: '/references/session-la-poste-2.jpg', alt: 'Session de formation IA chez La Poste', legende: 'La Poste', w: 1400, h: 787 },
-      { src: '/references/session-leclerc.jpg', alt: 'Session de formation IA chez E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
-      { src: '/references/session-abm.jpg', alt: 'Atelier en petit groupe', legende: 'Atelier en petit groupe', w: 1200, h: 900 },
+      { src: '/academy/references/session-la-poste-2.jpg', alt: 'Session de formation IA chez La Poste', legende: 'La Poste', w: 1400, h: 787 },
+      { src: '/academy/references/session-leclerc.jpg', alt: 'Session de formation IA chez E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
+      { src: '/academy/references/session-abm.jpg', alt: 'Atelier en petit groupe', legende: 'Atelier en petit groupe', w: 1200, h: 900 },
     ],
     chiffres: [
       { valeur: '2 500+', libelle: 'professionnels formés' },
@@ -698,9 +698,9 @@ const EN: Jour30Copy = {
     texte:
       'The method does not come from reading the news. It comes from the agency’s daily work, then it was corrected session after session in front of real rooms, until it held.',
     photos: [
-      { src: '/references/session-la-poste-2.jpg', alt: 'AI training session at La Poste', legende: 'La Poste', w: 1400, h: 787 },
-      { src: '/references/session-leclerc.jpg', alt: 'AI training session at E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
-      { src: '/references/session-abm.jpg', alt: 'Small-group workshop', legende: 'Small-group workshop', w: 1200, h: 900 },
+      { src: '/academy/references/session-la-poste-2.jpg', alt: 'AI training session at La Poste', legende: 'La Poste', w: 1400, h: 787 },
+      { src: '/academy/references/session-leclerc.jpg', alt: 'AI training session at E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
+      { src: '/academy/references/session-abm.jpg', alt: 'Small-group workshop', legende: 'Small-group workshop', w: 1200, h: 900 },
     ],
     chiffres: [
       { valeur: '2,500+', libelle: 'professionals trained' },
