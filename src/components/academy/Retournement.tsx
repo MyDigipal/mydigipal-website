@@ -8,11 +8,11 @@ import Renard from './Renard';
 
 /**
  * Le retournement : le second et dernier moment d'audace de la page. Quand la
- * section entre dans l'écran, la carte de Sophie se vide sous les yeux et
+ * section entre dans l'écran, la carte de Clara se vide sous les yeux et
  * devient celle du visiteur. Les trente cases s'éteignent à rebours, le renard
  * revient à son premier état, le nom devient « Vous ».
  *
- * La carte est AUTONOME : elle porte l'état final de Sophie et le ramène à
+ * La carte est AUTONOME : elle porte l'état final de Clara et le ramène à
  * zéro. Elle fonctionne donc à toutes les largeurs, y compris quand le rail de
  * la section précédente est passé au-dessus du contenu.
  */

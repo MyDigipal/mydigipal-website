@@ -218,7 +218,7 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
   sont une COPIE : une évolution se fait dans l'app d'abord, puis se reporte ici (le script de
   portage est dans la mémoire de session du 25/08, il ne remplace pas la relecture).
 - **Aucun chiffre n'est écrit ici.** Prix, hausse du 1er octobre, leçons, minutes, grille de
-  points, trente jours de Sophie, verbatims et liens vers l'app viennent de
+  points, trente jours de Clara, verbatims et liens vers l'app viennent de
   `GET https://academy.mydigipal.com/api/academy/public/jour30?lang=` : lu au build (10 s de
   délai, puis l'instantané `src/data/academy/jour30-{fr,en}.json` prend le relais, le build ne
   tombe jamais), puis relu dans le navigateur par l'îlot. Rafraîchir les instantanés de temps en
@@ -249,6 +249,19 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
   s'écrit et le compteur de points qui monte. Chiffres du JSON, textes dans `copy.ts` (`visite`).
   ⚠️ Dans une grille à deux colonnes, un `order-first` sans borne (`max-lg:`) place l'élément
   dans la PREMIÈRE colonne à toutes les tailles : deux fois le même piège le 25/08.
+- **Le lot du 25/08 au soir** (sept retours de Paul) : `Mention.tsx` est devenu le **ruban des
+  trente jours** (trois niveaux de dix jours sur une ligne d'or, puis la mention) ; `Mcp.tsx`
+  s'ouvre sur « Ce que vous saurez construire en sortant » avant « Un MCP, c'est une prise », avec
+  **huit prises** (Gmail, Agenda, Tableur, CRM, Publicité, Documents, Slack ou Teams, Analytics)
+  et plus aucun droit sous les bulles : le panneau joue le flux en trois temps (vous / le serveur /
+  résultat) à chaque survol et dit les droits déclarés ; `Maison.tsx` + `Ailleurs.tsx` forment
+  **la feuille**, seul bloc clair de la page (craie, papier, `#efeae0`), avec les **logos en
+  couleur** pris dans `public/images/Training Logo/` : hauteurs réglées sur le GLYPHE et non sur
+  le fichier (celui de Balenciaga n'occupe que 19 % de la hauteur du sien, Gucci 67 %) et
+  `mix-blend-mode: multiply` pour les trois fichiers livrés sur fond blanc (YSL, Balenciaga,
+  E.Leclerc), qui feraient un rectangle sur le crème. « Accès permanent » est devenu « accès
+  complet » ; l'apprenante composée est **Clara Martin** (jamais Camille ; Sophie Lambert a été
+  écarté parce qu'il ne passait pas en anglais).
 - **La page canonique est celle-ci.** `/jour-30` dans l'app est un atelier qui peut diverger.
 
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)

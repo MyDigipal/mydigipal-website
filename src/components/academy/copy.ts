@@ -100,7 +100,7 @@ const FR = {
     titre: 'Ce qu’il y a dedans.',
     sous: 'L’espace apprenant, tel que vous l’ouvrirez. Survolez un élément : il vous dit à quoi il sert.',
     nav: ['Parcours', 'Outils', 'Mon espace'],
-    bandeau: { kicker: 'Mon espace', titre: 'Bonjour Sophie', ligne: 'Formule complète, accès permanent au parcours.' },
+    bandeau: { kicker: 'Mon espace', titre: 'Bonjour Clara', ligne: 'Formule complète, tout le parcours ouvert.' },
     cartes: {
       kicker: 'Votre parcours',
       reprendre: 'Reprendre',
@@ -212,8 +212,14 @@ const FR = {
 
   mention: {
     kicker: 'Compte de démonstration',
+    titre: 'Trente jours, trois niveaux, un compte qui se remplit.',
+    etapes: [
+      { jours: 'Jours 1 à 10', nom: 'Écrire une demande', texte: 'La méthode CRAFT, leçon par leçon, et le premier exercice relu par un humain.' },
+      { jours: 'Jours 11 à 20', nom: 'Se servir des outils', texte: 'L’assistant, la bibliothèque, les images, les fichiers : quoi confier, et à quoi.' },
+      { jours: 'Jours 21 à 30', nom: 'Faire faire', texte: 'Agents, automatisations, un serveur MCP en état de marche, et l’attestation.' },
+    ],
     texte:
-      'Ce qui suit est un parcours reconstitué à partir de l’espace apprenant réel. Les écrans sont ceux du produit, les règles de points sont celles du code. La personne, elle, est composée : elle a pris le programme, le complément Construire et l’assistant.',
+      'Ce qui suit est reconstitué à partir de l’espace apprenant réel : les écrans sont ceux du produit, les règles de points sont celles du code. Clara, elle, est composée : elle a pris le programme, le complément Construire et l’assistant.',
   },
 
   compte: {
@@ -329,7 +335,7 @@ const FR = {
       outils: (n: number) => `${n} outils connectés`,
     },
     rail: {
-      nom: 'Sophie L.',
+      nom: 'Clara M.',
       points: 'points',
       avant: (n: string, rang: string) => `${n} points avant ${rang}`,
       dernier: 'Dernier rang atteint',
@@ -344,10 +350,14 @@ const FR = {
   },
 
   mcp: {
+    intro: {
+      titre: 'Ce que vous saurez construire en sortant.',
+      texte:
+        'Au bout du niveau 3, vous savez brancher un assistant sur vos outils : il lit, il prépare, il écrit, et rien ne part sans votre geste. Voilà comment ça marche, et ce que ça donne, outil par outil.',
+    },
     titre: 'Un MCP, c’est une prise.',
     chapeau:
       'Le modèle sait écrire. Il ne sait rien de vos outils, et il n’a le droit d’y toucher à rien. Le serveur MCP est ce qui se branche entre les deux, et il déclare exactement ce qui est permis.',
-    /** Nommés en texte, jamais en logotypes : on ne reproduit pas les marques d’autrui. */
     assistants: [
       { nom: 'Claude', editeur: 'Anthropic' },
       { nom: 'ChatGPT', editeur: 'OpenAI' },
@@ -359,50 +369,107 @@ const FR = {
       ligne: 'La prise, et la liste de ce qui est permis.',
       defaut: (n: number) => `${n} outils déclarés, aucune action sans votre accord`,
     },
+    droits: 'Droits déclarés',
+    qui: { vous: 'Vous', serveur: 'Le serveur', resultat: 'Résultat' },
+    survolez: 'Survolez un outil',
     outils: [
       {
         id: 'gmail',
         label: 'Gmail',
-        tag: 'lecture + brouillon',
-        titre: 'Envoi de courriels',
-        corps:
-          'Le serveur a le droit de lire un dossier et de préparer un brouillon. Il n’a pas le droit d’envoyer. La relance est prête quand elle ouvre sa boîte, elle relit, elle clique.',
-        avant: 'Elle copiait la réponse du modèle, la recollait dans Gmail, corrigeait le ton.',
-        apres: 'Elle écrit une phrase. Le brouillon existe, au bon format, dans le bon fil.',
+        droits: 'lecture + brouillon',
+        titre: 'Les relances',
+        corps: 'Il lit le fil et prépare le brouillon. Il n’a pas le droit d’envoyer.',
+        flux: [
+          { qui: 'vous', texte: '« Prépare la relance de Marc sur la proposition du 3. »' },
+          { qui: 'serveur', texte: 'Lit le fil, retrouve la proposition, rédige le brouillon dans votre ton.' },
+          { qui: 'resultat', texte: 'Un brouillon dans Gmail, dans le bon fil. Vous relisez, vous envoyez.' },
+        ],
       },
       {
-        id: 'ads',
-        label: 'Publicité',
-        tag: 'lecture seule',
-        titre: 'Prospection et annonces',
-        corps:
-          'Il lit les performances des campagnes, repère les annonces qui décrochent et propose trois variantes testables. Il ne dépense rien : la mise en ligne reste un geste humain.',
-        avant: 'Un export tous les lundis, une heure de lecture, une intuition.',
-        apres: 'Trois variantes argumentées sur la table le lundi matin, elle en garde une.',
+        id: 'agenda',
+        label: 'Agenda',
+        droits: 'lecture + proposition',
+        titre: 'Les rendez-vous',
+        corps: 'Il lit les agendas et prépare l’invitation. C’est vous qui l’envoyez.',
+        flux: [
+          { qui: 'vous', texte: '« Trouve trente minutes avec Nadia la semaine prochaine. »' },
+          { qui: 'serveur', texte: 'Lit les deux agendas, propose trois créneaux, prépare l’invitation.' },
+          { qui: 'resultat', texte: 'Une invitation prête, à valider d’un clic.' },
+        ],
       },
       {
-        id: 'sheets',
+        id: 'tableur',
         label: 'Tableur',
-        tag: 'lecture + écriture',
-        titre: 'Données et tableaux',
-        corps:
-          'Il ouvre l’export brut, nettoie les colonnes, calcule les totaux et écrit le résultat dans un nouvel onglet. L’original n’est jamais modifié.',
-        avant: 'Quarante minutes de recherche-remplace et une formule qui casse.',
-        apres: 'Un onglet propre, daté, avec la liste de ce qui a été corrigé.',
+        droits: 'lecture + écriture',
+        titre: 'Les exports à nettoyer',
+        corps: 'Il ouvre l’export brut et écrit le résultat dans un nouvel onglet. L’original n’est jamais modifié.',
+        flux: [
+          { qui: 'vous', texte: '« Nettoie l’export de la semaine et sors les totaux par site. »' },
+          { qui: 'serveur', texte: 'Ouvre l’export, corrige les formats, calcule, écrit un nouvel onglet.' },
+          { qui: 'resultat', texte: 'Un onglet propre et daté, avec la liste de ce qui a été corrigé.' },
+        ],
       },
       {
         id: 'crm',
         label: 'CRM',
-        tag: 'écriture encadrée',
-        titre: 'Fiches clients',
-        corps:
-          'Le compte rendu d’appel atterrit dans la bonne fiche, anonymisé quand le dossier l’exige. Les champs qu’il peut écrire sont déclarés un par un dans la configuration.',
-        avant: 'Des notes dans un carnet, reportées le vendredi, ou jamais.',
-        apres: 'La fiche est à jour avant qu’elle ait raccroché.',
+        droits: 'écriture encadrée',
+        titre: 'Les fiches clients',
+        corps: 'Les champs qu’il peut écrire sont déclarés un par un. Le reste lui est fermé.',
+        flux: [
+          { qui: 'vous', texte: '« Note l’appel avec Dupont : relance en septembre, budget validé. »' },
+          { qui: 'serveur', texte: 'Retrouve la fiche, écrit dans les deux champs autorisés, rien d’autre.' },
+          { qui: 'resultat', texte: 'La fiche est à jour avant que vous ayez raccroché.' },
+        ],
+      },
+      {
+        id: 'pub',
+        label: 'Publicité',
+        droits: 'lecture seule',
+        titre: 'Les campagnes',
+        corps: 'Il lit les performances et propose. Il ne dépense rien : la mise en ligne reste un geste humain.',
+        flux: [
+          { qui: 'vous', texte: '« Quelles annonces décrochent depuis lundi ? »' },
+          { qui: 'serveur', texte: 'Lit les performances, isole les annonces en baisse, propose trois variantes.' },
+          { qui: 'resultat', texte: 'Trois variantes argumentées sur la table, aucune en ligne sans vous.' },
+        ],
+      },
+      {
+        id: 'documents',
+        label: 'Documents',
+        droits: 'lecture + création',
+        titre: 'Les comptes rendus',
+        corps: 'Il lit une transcription, retire ce qui identifie, rédige, et range le document au bon endroit.',
+        flux: [
+          { qui: 'vous', texte: '« Fais le compte rendu de la réunion d’hier, anonymisé. »' },
+          { qui: 'serveur', texte: 'Lit la transcription, retire les noms, rédige en trois sections.' },
+          { qui: 'resultat', texte: 'Un document dans le bon dossier, prêt à partager.' },
+        ],
+      },
+      {
+        id: 'chat',
+        label: 'Slack ou Teams',
+        droits: 'lecture + message préparé',
+        titre: 'Les points d’équipe',
+        corps: 'Il lit le fil et prépare le message. Il ne le poste pas.',
+        flux: [
+          { qui: 'vous', texte: '« Résume le fil du projet et prépare le message pour l’équipe. »' },
+          { qui: 'serveur', texte: 'Lit le fil, retient les décisions, écrit le message.' },
+          { qui: 'resultat', texte: 'Le message attend votre clic.' },
+        ],
+      },
+      {
+        id: 'analytics',
+        label: 'Analytics',
+        droits: 'lecture seule',
+        titre: 'Les chiffres du site',
+        corps: 'Il lit les données, compare, et écrit ce qui a changé. Sourcé, chiffré.',
+        flux: [
+          { qui: 'vous', texte: '« Qu’est-ce qui a changé sur le site cette semaine ? »' },
+          { qui: 'serveur', texte: 'Lit les données, compare à la semaine d’avant, écrit trois constats.' },
+          { qui: 'resultat', texte: 'Trois constats chiffrés, le lundi matin, avec leurs sources.' },
+        ],
       },
     ],
-    avant: 'Avant',
-    apres: 'Après',
     pied: 'Ce n’est pas du développement. C’est une configuration qui se lit, et c’est le sujet du dernier tiers du programme, avec les agents et les automatisations.',
   },
 
@@ -411,7 +478,7 @@ const FR = {
     titre: 'Elle l’imprime et la pose sur le bureau de son directeur.',
     surtitre: 'Attestation d’usage professionnel de l’intelligence artificielle',
     decernee: 'décernée à',
-    nom: 'Sophie Lambert',
+    nom: 'Clara Martin',
     corps: (lecons: number, modules: number, exercices: number, relus: number) =>
       `pour avoir mené le parcours complet : ${lecons} leçons en ${modules} modules, ${exercices} exercices rendus dont ${relus} relus et corrigés, et la construction d’un serveur MCP en état de marche.`,
     signature: 'Paul André',
@@ -475,7 +542,7 @@ const FR = {
   configurateur: {
     titre: 'Le programme, et ce que vous y ajoutez.',
     programmeLigne: (lecons: number) =>
-      `${lecons} leçons, trois niveaux, l’atelier, la bibliothèque, les trophées, l’attestation. Accès permanent.`,
+      `${lecons} leçons, trois niveaux, l’atelier, la bibliothèque, les trophées, l’attestation. Accès complet.`,
     construireLigne: (lecons: number) => `${lecons} leçons de plus. Le niveau 3 en entier, celui du serveur MCP.`,
     assistantTitre: 'L’assistant IA',
     assistantLigne: 'Il connaît vos leçons et répond sur vos cas. Abonnement mensuel, sans engagement.',
@@ -490,7 +557,7 @@ const FR = {
       `La remise démarre à ${paliers[0].seats} places : ${paliers.map((p) => `${p.pct} % à ${p.seats}`).join(', ')}.`,
     total: 'Votre total',
     ttc: '€ TTC',
-    unique: 'une fois, accès permanent',
+    unique: 'une fois, accès complet',
     uniquePlaces: (n: number) => `une fois, pour ${n} places`,
     mensuel: 'par mois, assistant',
     sansAbo: 'pas d’abonnement',
@@ -588,7 +655,7 @@ const EN: Jour30Copy = {
     titre: 'What is inside.',
     sous: 'The learner space, as you will open it. Hover an element: it tells you what it is for.',
     nav: ['Course', 'Tools', 'My space'],
-    bandeau: { kicker: 'My space', titre: 'Hello Sophie', ligne: 'Complete plan, permanent access to the course.' },
+    bandeau: { kicker: 'My space', titre: 'Hello Clara', ligne: 'Complete plan, the whole course open.' },
     cartes: {
       kicker: 'Your course',
       reprendre: 'Resume',
@@ -700,8 +767,14 @@ const EN: Jour30Copy = {
 
   mention: {
     kicker: 'Demonstration account',
+    titre: 'Thirty days, three levels, an account that fills up.',
+    etapes: [
+      { jours: 'Days 1 to 10', nom: 'Writing a request', texte: 'The CRAFT method, lesson by lesson, and the first exercise reviewed by a human.' },
+      { jours: 'Days 11 to 20', nom: 'Using the tools', texte: 'The assistant, the library, images, files: what to hand over, and to what.' },
+      { jours: 'Days 21 to 30', nom: 'Having it done', texte: 'Agents, automations, a working MCP server, and the certificate.' },
+    ],
     texte:
-      'What follows is a journey reconstructed from the real learner space. The screens are the product’s, the point rules are the code’s. The person is made up: she took the programme, the Build add-on and the assistant.',
+      'What follows is reconstructed from the real learner space: the screens are the product’s, the point rules are the code’s. Clara is made up: she took the programme, the Build add-on and the assistant.',
   },
 
   compte: {
@@ -814,7 +887,7 @@ const EN: Jour30Copy = {
       outils: (n: number) => `${n} tools connected`,
     },
     rail: {
-      nom: 'Sophie L.',
+      nom: 'Clara M.',
       points: 'points',
       avant: (n: string, rang: string) => `${n} points to ${rang}`,
       dernier: 'Top rank reached',
@@ -829,6 +902,11 @@ const EN: Jour30Copy = {
   },
 
   mcp: {
+    intro: {
+      titre: 'What you will be able to build when you leave.',
+      texte:
+        'By the end of level 3, you know how to plug an assistant into your tools: it reads, it prepares, it writes, and nothing leaves without your gesture. Here is how it works, and what it gives, tool by tool.',
+    },
     titre: 'An MCP is a socket.',
     chapeau:
       'The model knows how to write. It knows nothing about your tools, and it is not allowed to touch any of them. The MCP server is what plugs in between the two, and it declares exactly what is permitted.',
@@ -843,50 +921,107 @@ const EN: Jour30Copy = {
       ligne: 'The socket, and the list of what is permitted.',
       defaut: (n: number) => `${n} tools declared, no action without your consent`,
     },
+    droits: 'Declared rights',
+    qui: { vous: 'You', serveur: 'The server', resultat: 'Result' },
+    survolez: 'Hover a tool',
     outils: [
       {
         id: 'gmail',
         label: 'Gmail',
-        tag: 'read + draft',
-        titre: 'Sending emails',
-        corps:
-          'The server is allowed to read a folder and prepare a draft. It is not allowed to send. The follow-up is ready when she opens her inbox, she rereads, she clicks.',
-        avant: 'She copied the model’s answer, pasted it into Gmail, fixed the tone.',
-        apres: 'She writes one sentence. The draft exists, in the right format, in the right thread.',
+        droits: 'read + draft',
+        titre: 'Follow-ups',
+        corps: 'It reads the thread and prepares the draft. It is not allowed to send.',
+        flux: [
+          { qui: 'vous', texte: '“Prepare the follow-up to Mark on the proposal from the 3rd.”' },
+          { qui: 'serveur', texte: 'Reads the thread, finds the proposal, writes the draft in your tone.' },
+          { qui: 'resultat', texte: 'A draft in Gmail, in the right thread. You reread, you send.' },
+        ],
       },
       {
-        id: 'ads',
-        label: 'Advertising',
-        tag: 'read only',
-        titre: 'Prospecting and ads',
-        corps:
-          'It reads campaign performance, spots the ads that are slipping and proposes three testable variants. It spends nothing: going live remains a human gesture.',
-        avant: 'An export every Monday, an hour of reading, a hunch.',
-        apres: 'Three argued variants on the table on Monday morning, she keeps one.',
+        id: 'agenda',
+        label: 'Calendar',
+        droits: 'read + proposal',
+        titre: 'Meetings',
+        corps: 'It reads the calendars and prepares the invitation. You are the one who sends it.',
+        flux: [
+          { qui: 'vous', texte: '“Find thirty minutes with Nadia next week.”' },
+          { qui: 'serveur', texte: 'Reads both calendars, proposes three slots, prepares the invitation.' },
+          { qui: 'resultat', texte: 'An invitation ready, one click to confirm.' },
+        ],
       },
       {
-        id: 'sheets',
+        id: 'tableur',
         label: 'Spreadsheet',
-        tag: 'read + write',
-        titre: 'Data and tables',
-        corps:
-          'It opens the raw export, cleans the columns, computes the totals and writes the result in a new tab. The original is never modified.',
-        avant: 'Forty minutes of find-and-replace and a formula that breaks.',
-        apres: 'A clean, dated tab, with the list of what was corrected.',
+        droits: 'read + write',
+        titre: 'Exports to clean',
+        corps: 'It opens the raw export and writes the result in a new tab. The original is never modified.',
+        flux: [
+          { qui: 'vous', texte: '“Clean this week’s export and give me the totals by site.”' },
+          { qui: 'serveur', texte: 'Opens the export, fixes the formats, computes, writes a new tab.' },
+          { qui: 'resultat', texte: 'A clean, dated tab, with the list of what was corrected.' },
+        ],
       },
       {
         id: 'crm',
         label: 'CRM',
-        tag: 'scoped write',
+        droits: 'scoped write',
         titre: 'Client records',
-        corps:
-          'The call summary lands in the right record, anonymised when the file requires it. The fields it may write are declared one by one in the configuration.',
-        avant: 'Notes in a notebook, transferred on Friday, or never.',
-        apres: 'The record is up to date before she has hung up.',
+        corps: 'The fields it may write are declared one by one. The rest is closed to it.',
+        flux: [
+          { qui: 'vous', texte: '“Log the call with Dupont: follow up in September, budget approved.”' },
+          { qui: 'serveur', texte: 'Finds the record, writes the two allowed fields, nothing else.' },
+          { qui: 'resultat', texte: 'The record is up to date before you have hung up.' },
+        ],
+      },
+      {
+        id: 'pub',
+        label: 'Advertising',
+        droits: 'read only',
+        titre: 'Campaigns',
+        corps: 'It reads performance and proposes. It spends nothing: going live remains a human gesture.',
+        flux: [
+          { qui: 'vous', texte: '“Which ads have been slipping since Monday?”' },
+          { qui: 'serveur', texte: 'Reads performance, isolates the ads going down, proposes three variants.' },
+          { qui: 'resultat', texte: 'Three argued variants on the table, none live without you.' },
+        ],
+      },
+      {
+        id: 'documents',
+        label: 'Documents',
+        droits: 'read + create',
+        titre: 'Meeting minutes',
+        corps: 'It reads a transcript, removes what identifies people, writes, and files the document in the right place.',
+        flux: [
+          { qui: 'vous', texte: '“Write the minutes of yesterday’s meeting, anonymised.”' },
+          { qui: 'serveur', texte: 'Reads the transcript, removes the names, writes in three sections.' },
+          { qui: 'resultat', texte: 'A document in the right folder, ready to share.' },
+        ],
+      },
+      {
+        id: 'chat',
+        label: 'Slack or Teams',
+        droits: 'read + prepared message',
+        titre: 'Team updates',
+        corps: 'It reads the thread and prepares the message. It does not post it.',
+        flux: [
+          { qui: 'vous', texte: '“Summarise the project thread and prepare the message for the team.”' },
+          { qui: 'serveur', texte: 'Reads the thread, keeps the decisions, writes the message.' },
+          { qui: 'resultat', texte: 'The message waits for your click.' },
+        ],
+      },
+      {
+        id: 'analytics',
+        label: 'Analytics',
+        droits: 'read only',
+        titre: 'Site numbers',
+        corps: 'It reads the data, compares, and writes what changed. Sourced, with numbers.',
+        flux: [
+          { qui: 'vous', texte: '“What changed on the site this week?”' },
+          { qui: 'serveur', texte: 'Reads the data, compares with the week before, writes three findings.' },
+          { qui: 'resultat', texte: 'Three findings with numbers, on Monday morning, with their sources.' },
+        ],
       },
     ],
-    avant: 'Before',
-    apres: 'After',
     pied: 'This is not development. It is a configuration you can read, and it is the subject of the last third of the programme, along with agents and automations.',
   },
 
@@ -895,7 +1030,7 @@ const EN: Jour30Copy = {
     titre: 'She prints it and puts it on her director’s desk.',
     surtitre: 'Certificate of professional use of artificial intelligence',
     decernee: 'awarded to',
-    nom: 'Sophie Lambert',
+    nom: 'Clara Martin',
     corps: (lecons: number, modules: number, exercices: number, relus: number) =>
       `for completing the full course: ${lecons} lessons across ${modules} modules, ${exercices} exercises submitted of which ${relus} reviewed and corrected, and a working MCP server built.`,
     signature: 'Paul André',
@@ -959,7 +1094,7 @@ const EN: Jour30Copy = {
   configurateur: {
     titre: 'The programme, and what you add to it.',
     programmeLigne: (lecons: number) =>
-      `${lecons} lessons, three levels, the workshop, the library, the trophies, the certificate. Permanent access.`,
+      `${lecons} lessons, three levels, the workshop, the library, the trophies, the certificate. Full access.`,
     construireLigne: (lecons: number) => `${lecons} more lessons. Level 3 in full, the one with the MCP server.`,
     assistantTitre: 'The AI assistant',
     assistantLigne: 'It knows your lessons and answers on your own cases. Monthly subscription, no commitment.',
@@ -974,7 +1109,7 @@ const EN: Jour30Copy = {
       `The discount starts at ${paliers[0].seats} seats: ${paliers.map((p) => `${p.pct}% at ${p.seats}`).join(', ')}.`,
     total: 'Your total',
     ttc: '€ incl. VAT',
-    unique: 'once, permanent access',
+    unique: 'once, full access',
     uniquePlaces: (n: number) => `once, for ${n} seats`,
     mensuel: 'per month, assistant',
     sansAbo: 'no subscription',
