@@ -96,6 +96,120 @@ const FR = {
     ],
   },
 
+  visite: {
+    titre: 'Ce qu’il y a dedans.',
+    sous: 'L’espace apprenant, tel que vous l’ouvrirez. Survolez un élément : il vous dit à quoi il sert.',
+    nav: ['Parcours', 'Outils', 'Mon espace'],
+    bandeau: { kicker: 'Mon espace', titre: 'Bonjour Camille', ligne: 'Formule complète, accès permanent au parcours.' },
+    cartes: {
+      kicker: 'Votre parcours',
+      reprendre: 'Reprendre',
+      continuer: 'Continuer',
+      p1: {
+        titre: 'The AI Academy',
+        ligne: 'De zéro à autonome avec l’IA générative : la méthode CRAFT, les outils, les cas de votre métier.',
+        avancement: (f: number, n: number) => `${f} leçons sur ${n}`,
+      },
+      p2: {
+        titre: 'Cas d’usage avancés et MCP',
+        ligne: 'Agents, automatisations, serveurs MCP et dix-sept cas réels.',
+        avancement: (f: number, n: number) => `${f} leçons sur ${n}`,
+      },
+    },
+    rail: {
+      reprendreTitre: 'Reprendre là où vous étiez',
+      lecon: 'Une action, un verbe',
+      reste: '6 min restantes',
+      continuer: 'Continuer la leçon',
+      accesTitre: 'Accès rapides',
+      acces: {
+        atelier: 'Atelier CRAFT',
+        prompts: 'Bibliothèque de prompts',
+        cas: 'Cas d’usage',
+        notes: 'Mes notes',
+        exercices: 'Exercices et quiz',
+        assistant: 'Assistant IA',
+        profil: 'Mon profil',
+      },
+      activiteTitre: 'Votre activité',
+      lecons: 'Leçons terminées',
+    },
+    pitch: {
+      kicker: 'Ce qui le distingue',
+      titre: 'Une formation qui part du travail, pas de la veille.',
+      points: [
+        'La méthode CRAFT, enseignée en salle depuis trois ans, écrite leçon par leçon.',
+        'Des exercices sur vos propres cas, relus par un humain, pas par un script.',
+        'La partie que personne n’enseigne : brancher les outils, les agents et les serveurs MCP.',
+        'Un compte qui se remplit : points, série, trophées, attestation.',
+      ],
+      indice: 'Survolez un élément de l’écran pour le découvrir.',
+    },
+    assistant: {
+      question: 'Quelle différence entre un agent et une automatisation ?',
+      reponse:
+        'Une automatisation suit un chemin écrit d’avance : mêmes étapes, même ordre. Un agent reçoit un but et choisit ses étapes, en appelant des outils si besoin. Pour un reporting hebdomadaire, une automatisation suffit.',
+      source: 'Source : les leçons du niveau 3 sur les agents',
+    },
+    spots: (f: { lessons: number; modules: number; prompts: number; trophees: number; relectures: number; lessonsConstruire: number }) => ({
+      parcours1: {
+        kicker: 'Le programme',
+        titre: 'Tout le parcours, du premier prompt aux automatisations.',
+        texte: `${f.lessons} leçons en ${f.modules} modules, trois niveaux. Chaque leçon écrite : un plan, un exemple, un prompt à copier, et un « À vous » à rendre.`,
+      },
+      parcours2: {
+        kicker: 'Le complément Construire',
+        titre: 'Agents, automatisations, serveurs MCP.',
+        texte: `${f.lessonsConstruire} leçons de plus et dix-sept cas réels de l’agence. C’est le niveau 3, celui où l’on branche les outils les uns aux autres.`,
+      },
+      reprendre: {
+        kicker: 'Reprendre',
+        titre: 'Là où vous vous êtes arrêté.',
+        texte: 'La leçon en cours, le temps qu’il reste, un bouton. Le rail est là sur chaque écran : vous ne cherchez jamais où vous en étiez.',
+      },
+      atelier: {
+        kicker: 'L’atelier CRAFT',
+        titre: 'Cinq champs, et le prompt s’écrit sous vos yeux.',
+        texte: 'Contexte, rôle, action, format, ton : vous remplissez, il s’assemble, vous le copiez dans votre outil. Le même atelier sert à auditer un prompt déjà écrit.',
+      },
+      prompts: {
+        kicker: 'La bibliothèque',
+        titre: `${f.prompts} prompts tirés des leçons.`,
+        texte: 'Classés par module, copiables en un geste, ouverts directement dans Claude ou ChatGPT. Les vôtres s’y enregistrent aussi.',
+      },
+      cas: {
+        kicker: 'Les cas d’usage',
+        titre: 'Des situations de métier, pas des exemples de démonstration.',
+        texte: 'Un compte rendu à anonymiser, une annonce à décliner, un export à nettoyer : la demande, la réponse, et ce qui a fait la différence.',
+      },
+      notes: {
+        kicker: 'Vos notes',
+        titre: 'Prises dans la leçon, retrouvées ensemble.',
+        texte: 'Une note s’écrit sans quitter la page, et se retrouve dans un carnet, leçon par leçon.',
+      },
+      exercices: {
+        kicker: 'Les exercices et les quiz',
+        titre: 'Déposés depuis la leçon, relus par un humain.',
+        texte: `Un quiz par module, noté côté serveur. Les exercices sont relus par Paul avec le complément Construire, ${f.relectures} relectures incluses.`,
+      },
+      assistant: {
+        kicker: 'L’assistant IA',
+        titre: 'Il répond à partir de vos leçons, et cite la source.',
+        texte: 'Une question à 23 h, une réponse tirée du programme, jamais inventée : il ne connaît que ce que vous avez.',
+      },
+      points: {
+        kicker: 'Les points et la série',
+        titre: 'On paie la pratique, pas la lecture.',
+        texte: `Une leçon terminée, un exercice déposé, un quiz réussi : chacun rapporte. Cinq rangs, ${f.trophees} trophées dont quatre secrets, une série de jours avec un joker quand vous en ratez un.`,
+      },
+      profil: {
+        kicker: 'Le profil',
+        titre: 'Le calendrier, les trophées, l’attestation.',
+        texte: 'Une année de petits carrés, un par jour actif ; les trophées obtenus ; et l’attestation à imprimer quand le parcours est terminé, avec mention.',
+      },
+    }),
+  },
+
   mention: {
     kicker: 'Compte de démonstration',
     texte:
@@ -468,6 +582,120 @@ const EN: Jour30Copy = {
       { label: 'Train a team, on site or remote', href: '/en/services/ai-training' },
       { label: 'Have your agents and automations built', href: '/en/services/ai-solutions' },
     ],
+  },
+
+  visite: {
+    titre: 'What is inside.',
+    sous: 'The learner space, as you will open it. Hover an element: it tells you what it is for.',
+    nav: ['Course', 'Tools', 'My space'],
+    bandeau: { kicker: 'My space', titre: 'Hello Camille', ligne: 'Complete plan, permanent access to the course.' },
+    cartes: {
+      kicker: 'Your course',
+      reprendre: 'Resume',
+      continuer: 'Continue',
+      p1: {
+        titre: 'The AI Academy',
+        ligne: 'From zero to autonomous with generative AI: the CRAFT method, the tools, the cases of your own job.',
+        avancement: (f: number, n: number) => `${f} of ${n} lessons`,
+      },
+      p2: {
+        titre: 'Advanced Use Cases and MCP',
+        ligne: 'Agents, automations, MCP servers and seventeen real cases.',
+        avancement: (f: number, n: number) => `${f} of ${n} lessons`,
+      },
+    },
+    rail: {
+      reprendreTitre: 'Pick up where you left off',
+      lecon: 'One action, one verb',
+      reste: '6 min to go',
+      continuer: 'Continue the lesson',
+      accesTitre: 'Quick access',
+      acces: {
+        atelier: 'CRAFT workshop',
+        prompts: 'Prompt library',
+        cas: 'Use cases',
+        notes: 'My notes',
+        exercices: 'Exercises and quizzes',
+        assistant: 'AI assistant',
+        profil: 'My profile',
+      },
+      activiteTitre: 'Your activity',
+      lecons: 'Lessons completed',
+    },
+    pitch: {
+      kicker: 'What sets it apart',
+      titre: 'A course that starts from the work, not from the news.',
+      points: [
+        'The CRAFT method, taught in the room for three years, written lesson by lesson.',
+        'Exercises on your own cases, reviewed by a human, not by a script.',
+        'The part nobody teaches: wiring the tools, agents and MCP servers.',
+        'An account that fills up: points, streak, trophies, certificate.',
+      ],
+      indice: 'Hover an element of the screen to discover it.',
+    },
+    assistant: {
+      question: 'What is the difference between an agent and an automation?',
+      reponse:
+        'An automation follows a path written in advance: same steps, same order. An agent is given a goal and chooses its steps, calling tools when needed. For a weekly report, an automation is enough.',
+      source: 'Source: the level 3 lessons on agents',
+    },
+    spots: (f: { lessons: number; modules: number; prompts: number; trophees: number; relectures: number; lessonsConstruire: number }) => ({
+      parcours1: {
+        kicker: 'The programme',
+        titre: 'The whole course, from the first prompt to automations.',
+        texte: `${f.lessons} lessons across ${f.modules} modules, three levels. Every lesson written: an outline, an example, a prompt to copy, and a task to hand in.`,
+      },
+      parcours2: {
+        kicker: 'The Build add-on',
+        titre: 'Agents, automations, MCP servers.',
+        texte: `${f.lessonsConstruire} more lessons and seventeen real cases from the agency. This is level 3, where you wire the tools to one another.`,
+      },
+      reprendre: {
+        kicker: 'Resume',
+        titre: 'Right where you stopped.',
+        texte: 'The current lesson, the time left, one button. The rail is on every screen: you never look for where you were.',
+      },
+      atelier: {
+        kicker: 'The CRAFT workshop',
+        titre: 'Five fields, and the prompt writes itself in front of you.',
+        texte: 'Context, role, action, format, tone: you fill them in, it assembles, you copy it into your tool. The same workshop audits a prompt you already wrote.',
+      },
+      prompts: {
+        kicker: 'The library',
+        titre: `${f.prompts} prompts drawn from the lessons.`,
+        texte: 'Sorted by module, copied in one gesture, opened directly in Claude or ChatGPT. Your own get saved there too.',
+      },
+      cas: {
+        kicker: 'Use cases',
+        titre: 'Real work situations, not demo examples.',
+        texte: 'Minutes to anonymise, an ad to decline in variants, an export to clean: the request, the answer, and what made the difference.',
+      },
+      notes: {
+        kicker: 'Your notes',
+        titre: 'Taken in the lesson, found together.',
+        texte: 'A note is written without leaving the page, and lives in a notebook, lesson by lesson.',
+      },
+      exercices: {
+        kicker: 'Exercises and quizzes',
+        titre: 'Submitted from the lesson, reviewed by a human.',
+        texte: `One quiz per module, graded server-side. Exercises are reviewed by Paul with the Build add-on, ${f.relectures} reviews included.`,
+      },
+      assistant: {
+        kicker: 'The AI assistant',
+        titre: 'It answers from your lessons, and cites the source.',
+        texte: 'A question at 11 pm, an answer drawn from the programme, never invented: it only knows what you have.',
+      },
+      points: {
+        kicker: 'Points and streak',
+        titre: 'We reward practice, not reading.',
+        texte: `A completed lesson, a submitted exercise, a passed quiz: each one pays. Five ranks, ${f.trophees} trophies including four secret ones, a day streak with a joker when you miss one.`,
+      },
+      profil: {
+        kicker: 'The profile',
+        titre: 'The calendar, the trophies, the certificate.',
+        texte: 'A year of small squares, one per active day; the trophies earned; and the certificate to print when the course is complete, with distinction.',
+      },
+    }),
   },
 
   mention: {

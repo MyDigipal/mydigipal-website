@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ENDPOINT, type Jour30Data, type Locale } from './data';
 import { captureAdClickIds } from './track';
 import Hero from './Hero';
+import Visite from './Visite';
 import Ailleurs from './Ailleurs';
 import Mention from './Mention';
 import LeCompte from './LeCompte';
@@ -51,6 +52,7 @@ export default function Academy({ locale, initial }: { locale: Locale; initial: 
   return (
     <div data-theme="nuit" className="j30 overflow-x-clip bg-salle text-corps-nuit">
       <Hero locale={locale} data={data} />
+      <Visite locale={locale} data={data} />
       <Mention locale={locale} />
       <LeCompte
         locale={locale}
