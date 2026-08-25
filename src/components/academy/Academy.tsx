@@ -10,7 +10,6 @@ import Retournement from './Retournement';
 import Maison from './Maison';
 import Produit from './Produit';
 import ConfigurateurNuit from './ConfigurateurNuit';
-import Pied from './Pied';
 
 /**
  * La page « AI Academy » : trente jours dans un compte, puis le vôtre.
@@ -20,7 +19,10 @@ import Pied from './Pied';
  * l'app (la hausse du 1er octobre, par exemple) est juste à l'écran sans
  * reconstruire le site. La page vit dans la SALLE DE NUIT du produit
  * (`data-theme="nuit"`), sous le menu du site : un visiteur qui passe de
- * cette page à l'application ne change pas de teinte.
+ * cette page à l'application ne change pas de teinte. Pas de pied de page
+ * propre : celui du site suit, et un second en doublon faisait sale (Paul,
+ * 25/08). Les liens vers l'app (conditions, espace apprenant) vivent sous le
+ * configurateur, là où on en a besoin avant de payer.
  *
  * Concept, spécification et système visuel : mydigipal-academy,
  * `design/handoff-jour-30/` (paquet de passation de Claude Design du
@@ -75,7 +77,6 @@ export default function Academy({ locale, initial }: { locale: Locale; initial: 
       <Maison locale={locale} temoignages={data.temoignages} />
       <Produit locale={locale} />
       <ConfigurateurNuit locale={locale} data={data} />
-      <Pied locale={locale} urls={data.urls} />
     </div>
   );
 }

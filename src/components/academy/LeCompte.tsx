@@ -56,7 +56,9 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
 
   // Le rail est doublé : la colonne de droite dès lg, une barre collante en
   // haut de la colonne en dessous. Les deux jeux d'éléments reçoivent les
-  // mêmes écritures.
+  // mêmes écritures. Sur le site, le header (72 px, `h-18`) reste fixe en
+  // haut : les deux se calent SOUS lui (`top-24`, `top-18`), sinon il les
+  // recouvre (vu par Paul le 25/08 sur /en/academy).
   const pts = useRef<HTMLElement[]>([]);
   const rank = useRef<HTMLElement[]>([]);
   const bar = useRef<HTMLElement[]>([]);
@@ -260,7 +262,7 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
           {/* La barre collante, sous lg seulement : avatar, points, série. */}
           <div
             ref={barre}
-            className="sticky top-0 z-20 -mx-4 mb-6 flex items-center gap-3 border-b border-filet-nuit bg-salle/95 px-4 py-2.5 backdrop-blur transition-opacity duration-300 sm:-mx-6 sm:px-6 lg:hidden"
+            className="sticky top-18 z-20 -mx-4 mb-6 flex items-center gap-3 border-b border-filet-nuit bg-salle/95 px-4 py-2.5 backdrop-blur transition-opacity duration-300 sm:-mx-6 sm:px-6 lg:hidden"
             style={{ opacity: 0, pointerEvents: 'none' }}
           >
             <span ref={collect(ring)} className="flex h-9 w-9 flex-none items-center justify-center rounded-full border-2 border-filet-nuit bg-salle">
@@ -510,7 +512,7 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
             qui l'est. Il vient APRÈS la colonne dans le DOM : à ordre égal,
             c'est l'ordre du DOM qui place dans la grille, et un `order-first`
             sans borne l'envoyait dans la colonne de gauche à 1 280 px. */}
-        <aside ref={aside} className="grid grid-cols-[minmax(0,1fr)] gap-4 pt-4 max-lg:order-first sm:grid-cols-[repeat(auto-fit,minmax(210px,1fr))] lg:sticky lg:top-6 lg:grid-cols-1 lg:pt-0">
+        <aside ref={aside} className="grid grid-cols-[minmax(0,1fr)] gap-4 pt-4 max-lg:order-first sm:grid-cols-[repeat(auto-fit,minmax(210px,1fr))] lg:sticky lg:top-24 lg:grid-cols-1 lg:pt-0">
           <RailIdentite refs={{ collect, pts, rank, bar, next, ring, fox }} premier={premier} rangs={rangs} c={c.rail} nombre={nombre} />
           <section className={`${PANNEAU} px-5 py-[18px]`}>
             <div className="flex items-baseline justify-between">

@@ -20,7 +20,8 @@ const OPTIONS = ['construire', 'session', 'audit'] as const;
  * montant qui fait foi est recalculé par l'app, côté serveur.
  */
 export default function ConfigurateurNuit({ locale, data }: { locale: Locale; data: Jour30Data }) {
-  const c = jour30Copy(locale).configurateur;
+  const copie = jour30Copy(locale);
+  const c = copie.configurateur;
   const nombre = (n: number) => nombreLocal(n, locale);
   const offre = (id: string) => data.offres.find((o) => o.id === id);
   const programme = offre('programme')!;
@@ -252,6 +253,16 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
             <Total />
           </aside>
         </div>
+
+        {/* Les liens vers l'application, à la place d'un second pied de page :
+            conditions de vente, confidentialité, mentions, espace apprenant. */}
+        <nav className="mt-12 flex flex-wrap gap-x-6 gap-y-2 border-t border-filet-nuit pt-6 text-[13px]">
+          {copie.pied.liens.map((l) => (
+            <a key={l.cle} href={data.urls[l.cle as keyof typeof data.urls]} className="text-brume-nuit transition duration-150 hover:text-ivoire">
+              {l.label}
+            </a>
+          ))}
+        </nav>
       </div>
 
       <div
