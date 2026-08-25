@@ -78,6 +78,24 @@ const FR = {
     note: 'Cinq champs. C’est la deuxième leçon du programme.',
   },
 
+  hero: {
+    titre: 'La formation IA en ligne, tirée de trois ans à former des équipes.',
+    sous: (lecons: number, prix: string) =>
+      `${lecons} leçons à votre rythme, la méthode CRAFT, vos exercices relus par un humain, jusqu’aux agents et aux serveurs MCP. Dès ${prix} €.`,
+    cta: 'Ouvrir mon compte',
+    cta2: 'Suivre les trente jours',
+    url: 'academy.mydigipal.com/app',
+    alt: 'Le tableau de bord de l’espace apprenant',
+  },
+
+  ailleurs: {
+    titre: 'Vous préférez une salle, ou un projet à nous confier ?',
+    lignes: [
+      { label: 'Former une équipe, en présentiel ou à distance', href: '/fr/services/ai-training' },
+      { label: 'Faire construire vos agents et vos automatisations', href: '/fr/services/ai-solutions' },
+    ],
+  },
+
   mention: {
     kicker: 'Compte de démonstration',
     texte:
@@ -432,6 +450,24 @@ const EN: Jour30Copy = {
     sansAppel:
       'No model is called here. The flat answer is the symptom of a request without context, not a real run.',
     note: 'Five fields. It is the second lesson of the programme.',
+  },
+
+  hero: {
+    titre: 'The online AI course, built from three years of training teams.',
+    sous: (lecons: number, prix: string) =>
+      `${lecons} lessons at your own pace, the CRAFT method, your exercises reviewed by a human, all the way to agents and MCP servers. From €${prix}.`,
+    cta: 'Open my account',
+    cta2: 'Follow the thirty days',
+    url: 'academy.mydigipal.com/app',
+    alt: 'The learner space dashboard',
+  },
+
+  ailleurs: {
+    titre: 'Would you rather have a room, or hand us a project?',
+    lignes: [
+      { label: 'Train a team, on site or remote', href: '/en/services/ai-training' },
+      { label: 'Have your agents and automations built', href: '/en/services/ai-solutions' },
+    ],
   },
 
   mention: {

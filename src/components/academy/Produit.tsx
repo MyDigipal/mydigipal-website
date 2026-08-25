@@ -38,17 +38,17 @@ export default function Produit({ locale }: { locale: Locale }) {
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
-            <span className="ml-3 font-ac-mono text-[11px] text-brume-nuit">{c.url}</span>
+            <span className="ml-3 font-ac-mono text-[11px] text-brume-nuit">{c.url}/craft</span>
           </div>
           <div className="relative aspect-[16/10]">
-            <Capture src={CAPTURES.dashboard} alt={c.captures.dashboard} />
+            <Capture src={CAPTURES.atelier} alt={c.captures.atelier} />
           </div>
         </div>
 
         <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
           {[
             { label: c.captures.lecon, src: CAPTURES.lecon },
-            { label: c.captures.atelier, src: CAPTURES.atelier },
+            { label: c.captures.dashboard, src: CAPTURES.dashboard },
           ].map((f) => (
             <div key={f.src} className="overflow-hidden rounded-carte border border-filet-nuit bg-encre">
               <p className="m-0 border-b border-filet-nuit px-4 py-[11px] font-ac-mono text-[11px] text-brume-nuit">{f.label}</p>

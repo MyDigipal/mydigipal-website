@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ENDPOINT, type Jour30Data, type Locale } from './data';
 import { captureAdClickIds } from './track';
-import Ouverture from './Ouverture';
+import Hero from './Hero';
+import Ailleurs from './Ailleurs';
 import Mention from './Mention';
 import LeCompte from './LeCompte';
 import Mcp from './Mcp';
@@ -49,7 +50,7 @@ export default function Academy({ locale, initial }: { locale: Locale; initial: 
 
   return (
     <div data-theme="nuit" className="j30 overflow-x-clip bg-salle text-corps-nuit">
-      <Ouverture locale={locale} />
+      <Hero locale={locale} data={data} />
       <Mention locale={locale} />
       <LeCompte
         locale={locale}
@@ -75,6 +76,7 @@ export default function Academy({ locale, initial }: { locale: Locale; initial: 
       />
       <Retournement locale={locale} fin={fin} rang={data.jeu.rangs[fin.rank]} trophees={data.faits.trophees} />
       <Maison locale={locale} temoignages={data.temoignages} />
+      <Ailleurs locale={locale} />
       <Produit locale={locale} />
       <ConfigurateurNuit locale={locale} data={data} />
     </div>

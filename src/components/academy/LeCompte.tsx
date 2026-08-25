@@ -256,7 +256,7 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
   });
 
   return (
-    <section className="mx-auto max-w-[1280px] px-4 sm:px-6">
+    <section id="compte" className="mx-auto max-w-[1280px] scroll-mt-24 px-4 sm:px-6">
       <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div ref={col} className="relative pb-10 pt-4 lg:pt-[72px]">
           {/* La barre collante, sous lg seulement : avatar, points, série. */}
