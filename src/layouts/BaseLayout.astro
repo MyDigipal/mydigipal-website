@@ -67,6 +67,14 @@ const canonical = canonicalURL || Astro.url.href;
     <meta name="description" content={pageDescription} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
+    <!-- Verification de propriete du domaine par Meta.
+         Exigee par le Business Manager pour attribuer les conversions du pixel
+         a ce domaine et pour configurer les evenements prioritaires iOS. Meta
+         refuse la verification si la balise est hors du <head> ou injectee par
+         JavaScript, d'ou sa place ici, dans le HTML rendu a la construction.
+         Elle vaut aussi pour les sous-domaines, donc academy.mydigipal.com. -->
+    <meta name="facebook-domain-verification" content="bqtbjyonkiyiinmbkpsg9jngsn0zrp" />
+
     <!-- Canonical -->
     <link rel="canonical" href={canonical} />
 
