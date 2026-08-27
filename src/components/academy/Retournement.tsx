@@ -128,7 +128,7 @@ export default function Retournement({
   }, []);
 
   return (
-    <section ref={section} className="flex min-h-[80vh] items-center border-t border-filet-nuit px-4 py-20 sm:px-6">
+    <section ref={section} id="retournement" className="flex min-h-[80vh] scroll-mt-24 items-center border-t border-filet-nuit px-4 py-20 sm:px-6">
       <div className="mx-auto grid w-full max-w-[1180px] grid-cols-[minmax(0,1fr)] items-center gap-14 min-[900px]:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <div>
           <p className="m-0 mb-3.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-renard">{c.kicker}</p>
@@ -144,10 +144,10 @@ export default function Retournement({
               {c.ouvrir}
             </a>
             <a
-              href="#maison"
+              href={`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`}
               className="inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton border border-filet-nuit px-[26px] py-3.5 text-[15.5px] font-medium text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire"
             >
-              {c.enseigne}
+              {c.gratuit}
             </a>
           </div>
         </div>

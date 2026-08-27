@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 
@@ -7,6 +8,12 @@ import type { Jour30Data, Locale } from './data';
  * feuille de lecture posée dans la salle de nuit de l'app. Demande de Paul du
  * 25/08/2026 : « pas tout noir sur noir », et les logos en couleur, « ils sont
  * hyper connus ».
+ *
+ * Le 27/08/2026, sur le retour d'Alexandre retenu par Paul : la phrase
+ * d'ouverture ne parle plus de l'agence ni de facturation (la page vend
+ * l'Academy, rien d'autre), et les avis sont repliés à neuf, un bouton ouvre
+ * les autres. Vingt-quatre cartes d'affilée juste avant le tarif donnaient un
+ * air de fin de page, et des visiteurs partaient avant d'arriver aux prix.
  *
  * Les logotypes viennent du site (`/images/Training Logo/`), dans leurs
  * couleurs. Trois fichiers (YSL, Balenciaga, E.Leclerc) sont livrés sur fond
@@ -34,14 +41,14 @@ const LOGOS: Array<{ src: string; alt: string; h: number; c: number }> = [
   { src: '/images/Training Logo/CBTW.png', alt: 'CBTW', h: 34, c: 30 },
 ];
 
+/** Le nombre d'avis montrés avant le bouton : trois rangées de trois dès lg. */
+const AVIS_VISIBLES = 9;
+
 /**
  * Les verbatims sont ceux des clients, mot pour mot, choisis dans l'export des
  * 497 retours (`lib/academy/temoignages.ts` dans l'app, servi par le JSON) :
  * ceux qui parlent du contenu et de ce qu'on en fait le lendemain, pas de la
- * salle. Paul, 25/08/2026 : « Ils ont adoré le training », au moins quinze.
- */
-/**
- * L'ordre d'affichage alterne les sociétés (un tour de table, puis un
+ * salle. L'ordre d'affichage alterne les sociétés (un tour de table, puis un
  * deuxième) : servis dans l'ordre du fichier, six Kering ouvraient la grille
  * et la preuve paraissait venir d'un seul client.
  */
@@ -81,8 +88,13 @@ function Logos({ copie }: { copie?: boolean }) {
 export default function Maison({ locale, temoignages }: { locale: Locale; temoignages: Jour30Data['temoignages'] }) {
   const c = jour30Copy(locale).maison;
   const [grande, ...petites] = c.photos;
+  const [tous, setTous] = useState(false);
+  const avis = alterner(temoignages);
+  const caches = Math.max(0, avis.length - AVIS_VISIBLES);
+  const visibles = tous ? avis : avis.slice(0, AVIS_VISIBLES);
+
   return (
-    <section id="maison" className="bg-craie pt-[84px] text-mine">
+    <section id="maison" className="scroll-mt-16 bg-craie pt-[84px] text-mine">
       <div className="mx-auto max-w-[1180px] px-4 sm:px-6">
         <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-11 min-[900px]:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
           <div className="grid grid-cols-2 gap-2.5">
@@ -151,12 +163,12 @@ export default function Maison({ locale, temoignages }: { locale: Locale; temoig
           </div>
         </div>
 
-        <div className="mx-auto mb-5 mt-12 flex max-w-[1180px] flex-wrap items-baseline gap-x-6 gap-y-1 px-4 sm:px-6">
+        <div id="avis" className="mx-auto mb-5 mt-12 flex max-w-[1180px] scroll-mt-20 flex-wrap items-baseline gap-x-6 gap-y-1 px-4 sm:px-6">
           <h3 className="m-0 text-[clamp(22px,2.8vw,28px)] font-medium leading-[1.2] tracking-[-0.02em] text-encre">{c.avisTitre}</h3>
           <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-brume">{c.avisLigne}</p>
         </div>
         <div className="j30-avis flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6 [scroll-padding-inline:16px] md:mx-auto md:grid md:max-w-[1180px] md:grid-cols-2 md:items-start md:overflow-visible lg:grid-cols-3">
-          {alterner(temoignages).map((t) => {
+          {visibles.map((t) => {
             const logo = logoDe(t.societe);
             return (
               <figure
@@ -180,6 +192,18 @@ export default function Maison({ locale, temoignages }: { locale: Locale; temoig
             );
           })}
         </div>
+        {caches > 0 ? (
+          <div className="mx-auto mt-6 hidden max-w-[1180px] px-4 sm:px-6 md:block">
+            <button
+              type="button"
+              onClick={() => setTous((v) => !v)}
+              aria-expanded={tous}
+              className="inline-flex min-h-11 cursor-pointer items-center rounded-bouton border border-lin bg-craie px-5 py-2.5 text-[14.5px] font-medium text-encre transition duration-150 hover:border-or-texte"
+            >
+              {tous ? c.avisMoins : c.avisPlus(caches)}
+            </button>
+          </div>
+        ) : null}
       </div>
     </section>
   );

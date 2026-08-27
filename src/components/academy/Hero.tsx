@@ -38,7 +38,10 @@ export default function Hero({ locale, data }: { locale: Locale; data: Jour30Dat
             <a href="#pricing" className={`${cta} bg-or text-salle hover:bg-or-vif`}>
               {c.cta}
             </a>
-            <a href="#compte" className={`${cta} border border-filet-nuit text-corps-nuit hover:border-brume-nuit hover:text-ivoire`}>
+            <a
+              href={`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`}
+              className={`${cta} border border-filet-nuit text-corps-nuit hover:border-brume-nuit hover:text-ivoire`}
+            >
               {c.cta2}
             </a>
           </div>

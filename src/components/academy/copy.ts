@@ -83,7 +83,7 @@ const FR = {
     sous: (lecons: number, prix: string) =>
       `${lecons} leçons à votre rythme, la méthode CRAFT, vos exercices relus par un humain, jusqu’aux agents et aux serveurs MCP. Dès ${prix} €.`,
     cta: 'Ouvrir mon compte',
-    cta2: 'Suivre les trente jours',
+    cta2: 'Essayer le premier module, gratuit',
     url: 'academy.mydigipal.com/app',
     alt: 'Le tableau de bord de l’espace apprenant',
   },
@@ -491,11 +491,12 @@ const FR = {
 
   retournement: {
     kicker: 'Fin de la démonstration',
-    titre: 'Ce compte n’existe pas. Le vôtre est vide.',
+    titre: 'Vous avez regardé le compte de Clara se remplir. Au tour du vôtre.',
     texte:
       'Trente jours plus tard, il ressemblera à celui-là. Ce n’est pas une promesse de résultat : c’est ce que fait le produit quand on s’en sert.',
     ouvrir: 'Ouvrir mon compte',
     enseigne: 'Qui enseigne',
+    gratuit: 'Commencer par le module gratuit',
     jour30: (rang: string) => `Jour 30 · ${rang}`,
     points: 'points',
     cap: (trophees: number, total: number) => `Trente jours actifs · ${trophees} trophées sur ${total}`,
@@ -504,10 +505,17 @@ const FR = {
     capVide: 'Le premier carré s’allume à la première leçon terminée.',
   },
 
+  barre: {
+    marque: 'AI Academy',
+    aria: 'Repères de la page',
+    reperes: { n1: 'Niveau 1', n2: 'Niveau 2', n3: 'Niveau 3', avis: 'Avis', tarifs: 'Tarifs' },
+    jour: (n: number) => `Jour ${n} / 30`,
+    cta: 'Ouvrir mon compte',
+  },
   maison: {
-    titre: 'MyDigipal est une agence. Ces outils, on les facture avant de les enseigner.',
+    titre: 'Une méthode née en salle, chez Kering, La Poste ou Pierre Fabre.',
     texte:
-      'La méthode ne vient pas d’une veille. Elle vient du travail quotidien de l’agence, puis elle a été corrigée session après session devant de vraies salles, jusqu’à ce qu’elle tienne.',
+      'Paul André l’a enseignée pendant trois ans devant de vraies équipes, de la direction financière au service client, et l’a corrigée session après session jusqu’à ce qu’elle tienne. C’est cette version-là qui est en ligne.',
     photos: [
       { src: '/academy/references/session-la-poste-2.jpg', alt: 'Session de formation IA chez La Poste', legende: 'La Poste', w: 1400, h: 787 },
       { src: '/academy/references/session-leclerc.jpg', alt: 'Session de formation IA chez E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
@@ -526,6 +534,8 @@ const FR = {
     logosTitre: 'Nous formons leurs équipes',
     avisTitre: 'Ils ont adoré le training',
     avisLigne: '497 retours écrits, une moyenne de 9,4 sur 10',
+    avisPlus: (n: number) => `Voir les ${n} autres avis`,
+    avisMoins: 'Replier',
   },
 
   produit: {
@@ -655,7 +665,7 @@ const EN: Jour30Copy = {
     sous: (lecons: number, prix: string) =>
       `${lecons} lessons at your own pace, the CRAFT method, your exercises reviewed by a human, all the way to agents and MCP servers. From €${prix}.`,
     cta: 'Open my account',
-    cta2: 'Follow the thirty days',
+    cta2: 'Try the first module free',
     url: 'academy.mydigipal.com/app',
     alt: 'The learner space dashboard',
   },
@@ -1060,11 +1070,12 @@ const EN: Jour30Copy = {
 
   retournement: {
     kicker: 'End of the demonstration',
-    titre: 'This account does not exist. Yours is empty.',
+    titre: 'You have been watching Clara’s account fill up. Time to start yours.',
     texte:
       'Thirty days from now, it will look like this one. That is not a promise of results: it is what the product does when you use it.',
     ouvrir: 'Open my account',
     enseigne: 'Who teaches',
+    gratuit: 'Start with the free module',
     jour30: (rang: string) => `Day 30 · ${rang}`,
     points: 'points',
     cap: (trophees: number, total: number) => `Thirty active days · ${trophees} trophies out of ${total}`,
@@ -1073,10 +1084,17 @@ const EN: Jour30Copy = {
     capVide: 'The first square lights up with the first completed lesson.',
   },
 
+  barre: {
+    marque: 'AI Academy',
+    aria: 'Page landmarks',
+    reperes: { n1: 'Level 1', n2: 'Level 2', n3: 'Level 3', avis: 'Reviews', tarifs: 'Pricing' },
+    jour: (n: number) => `Day ${n} / 30`,
+    cta: 'Open my account',
+  },
   maison: {
-    titre: 'MyDigipal is an agency. We bill these tools before we teach them.',
+    titre: 'A method born in the room, at Kering, La Poste and Pierre Fabre.',
     texte:
-      'The method does not come from reading the news. It comes from the agency’s daily work, then it was corrected session after session in front of real rooms, until it held.',
+      'Paul André taught it for three years in front of real teams, from finance to customer service, and corrected it session after session until it held. That is the version now online.',
     photos: [
       { src: '/academy/references/session-la-poste-2.jpg', alt: 'AI training session at La Poste', legende: 'La Poste', w: 1400, h: 787 },
       { src: '/academy/references/session-leclerc.jpg', alt: 'AI training session at E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
@@ -1095,6 +1113,8 @@ const EN: Jour30Copy = {
     logosTitre: 'We train their teams',
     avisTitre: 'They loved the training',
     avisLigne: '497 written reviews, averaging 9.4 out of 10',
+    avisPlus: (n: number) => `See the ${n} other reviews`,
+    avisMoins: 'Show fewer',
   },
 
   produit: {

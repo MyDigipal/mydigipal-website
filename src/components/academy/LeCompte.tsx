@@ -292,14 +292,14 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
             aria-hidden="true"
           />
 
-          <p className="m-0 mb-2 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-brume-nuit lg:ml-7">
+          <p id="niveau-1" className="m-0 mb-2 scroll-mt-24 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-brume-nuit lg:ml-7">
             {n1.kicker} · {n1.nom}
           </p>
           <h2 className="m-0 mb-11 max-w-[20ch] text-[clamp(24px,3.4vw,34px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire lg:ml-7">
             {n1.titre}
           </h2>
 
-          <Jour label={c.jour(1)} phrase={c.j1.phrase} note={c.j1.note}>
+          <Jour n={1} label={c.jour(1)} phrase={c.j1.phrase} note={c.j1.note}>
             <div className="max-w-[620px] overflow-hidden rounded-carte border border-filet-nuit bg-encre shadow-[0_22px_48px_-30px_rgba(0,0,0,0.9)]">
               <div className="h-[3px]" style={{ background: 'linear-gradient(90deg,#c8a951,#dcbc66)' }} />
               <div className="relative flex aspect-video items-center justify-center bg-salle-2">
@@ -314,11 +314,11 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
             </div>
           </Jour>
 
-          <Jour label={c.jour(2)} phrase={c.j2.phrase}>
+          <Jour n={2} label={c.jour(2)} phrase={c.j2.phrase}>
             <Fiche lessons={faits.lessons} c={c.j2} pointsLecon={POINTS.lesson} />
           </Jour>
 
-          <Jour label={c.jour(3)} phrase={c.j3.phrase}>
+          <Jour n={3} label={c.jour(3)} phrase={c.j3.phrase}>
             <div className={`${PANNEAU} max-w-[600px] px-6 py-[22px]`}>
               <div className="flex flex-wrap items-baseline justify-between gap-2.5">
                 <p className="m-0 font-ac-mono text-[11px] font-bold uppercase tracking-[0.18em] text-brume-nuit">{c.j3.kicker}</p>
@@ -355,7 +355,7 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
             </div>
           </Jour>
 
-          <Jour label={c.jour(6)} phrase={c.j6.phrase} note={c.j6.note}>
+          <Jour n={6} label={c.jour(6)} phrase={c.j6.phrase} note={c.j6.note}>
             <div className={`${PANNEAU} flex max-w-[560px] flex-wrap items-center gap-[18px] !rounded-full py-3 pl-3.5 pr-[22px]`}>
               <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full border border-or/45 bg-or/[0.12] text-or">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -376,7 +376,7 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
             <p className="m-0 mt-3 font-ac-mono text-[12px] text-brume-nuit">{c.j6.pts(POINTS.quiz, POINTS.quiz_perfect_first)}</p>
           </Jour>
 
-          <Jour label={c.jour(9)} phrase={c.j9.phrase} dernier>
+          <Jour n={9} label={c.jour(9)} phrase={c.j9.phrase} dernier>
             <div className="max-w-[620px] rounded-r-carte border border-l-[3px] border-filet-nuit border-l-or bg-salle-2 px-[26px] py-[22px]">
               <div className="mb-3.5 flex items-center gap-3">
                 <span className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-salle-3 font-ac-mono text-[12px] font-bold text-or">PA</span>
@@ -415,9 +415,9 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
             </div>
           </div>
 
-          <Frontiere kicker={n2.kicker} nom={n2.nom} titre={n2.titre} de={etats[4].renard} a={etats[5].renard} />
+          <Frontiere id="niveau-2" kicker={n2.kicker} nom={n2.nom} titre={n2.titre} de={etats[4].renard} a={etats[5].renard} />
 
-          <Jour label={c.jour(11)} phrase={c.j11.phrase} note={c.j11.note}>
+          <Jour n={11} label={c.jour(11)} phrase={c.j11.phrase} note={c.j11.note}>
             <div className="grid max-w-[640px] gap-3">
               <div className="max-w-[80%] justify-self-end rounded-[14px_14px_4px_14px] bg-salle-3 px-[18px] py-3.5">
                 <p className="m-0 text-[14.5px] leading-[1.6] text-ivoire">{c.j11.question}</p>
@@ -429,7 +429,7 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
             </div>
           </Jour>
 
-          <Jour label={c.jour(14)} phrase={c.j14.phrase} note={c.j14.note(faits.trophees, faits.secrets)}>
+          <Jour n={14} label={c.jour(14)} phrase={c.j14.phrase} note={c.j14.note(faits.trophees, faits.secrets)}>
             {(() => {
               const t = trophee('le-marathon', 'argent');
               return (
@@ -446,7 +446,7 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
             })()}
           </Jour>
 
-          <Jour label={c.jour(17)} phrase={c.j17.phrase}>
+          <Jour n={17} label={c.jour(17)} phrase={c.j17.phrase}>
             <div className={`${PANNEAU} max-w-[640px] overflow-hidden`}>
               <div className="flex flex-wrap gap-2 border-b border-filet-nuit px-[18px] py-3.5">
                 <span className="rounded-full bg-salle-3 px-[13px] py-[5px] text-[12.5px] text-ivoire">{c.j17.tous(faits.prompts)}</span>
@@ -472,13 +472,13 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
             </div>
           </Jour>
 
-          <Jour label={c.jour(19)} phrase={c.j19.phrase} note={c.j19.note} dernier>
+          <Jour n={19} label={c.jour(19)} phrase={c.j19.phrase} note={c.j19.note} dernier>
             <Comparateur c={c.j19} />
           </Jour>
 
-          <Frontiere kicker={n3.kicker} nom={n3.nom} titre={n3.titre} de={etats[8].renard} a={etats[9].renard} />
+          <Frontiere id="niveau-3" kicker={n3.kicker} nom={n3.nom} titre={n3.titre} de={etats[8].renard} a={etats[9].renard} />
 
-          <Jour label={c.jour(22)} phrase={c.j22.phrase} note={c.j22.note}>
+          <Jour n={22} label={c.jour(22)} phrase={c.j22.phrase} note={c.j22.note}>
             <div className="relative max-w-[560px] overflow-hidden rounded-carte border border-filet-nuit bg-encre">
               <img
                 src="/academy/references/session-la-poste.jpg"
@@ -499,7 +499,7 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
             </div>
           </Jour>
 
-          <Jour label={c.jour(26)} phrase={c.j26.phrase} dernier>
+          <Jour n={26} label={c.jour(26)} phrase={c.j26.phrase} dernier>
             <div className="inline-flex items-center gap-3.5 rounded-carte border border-dashed border-renard/50 px-[22px] py-4">
               <span className="font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-renard">{c.j26.badge}</span>
               <span className="font-ac-mono text-[11px] text-brume-nuit">{c.j26.outils(t.mcp.outils.length)}</span>
@@ -621,12 +621,15 @@ function RailIdentite({
 }
 
 function Jour({
+  n,
   label,
   phrase,
   note,
   dernier,
   children,
 }: {
+  /** Le numéro du jour, lu par la barre du haut pour afficher « Jour n / 30 ». */
+  n: number;
   label: string;
   phrase: string;
   note?: string;
@@ -635,7 +638,7 @@ function Jour({
   children: ReactNode;
 }) {
   return (
-    <article className={`j30-day relative lg:pl-7 ${dernier ? 'mb-5' : 'mb-14'}`}>
+    <article className={`j30-day relative scroll-mt-24 lg:pl-7 ${dernier ? 'mb-5' : 'mb-14'}`} data-jour={n}>
       <span className="absolute -left-1 top-1.5 hidden h-[9px] w-[9px] rounded-full bg-or lg:block" />
       <p className={`${RUBRIQUE} m-0 mb-1 text-or`}>{label}</p>
       <p className="m-0 mb-[18px] max-w-[44ch] text-[19px] leading-[1.45] text-ivoire">{phrase}</p>
@@ -651,9 +654,9 @@ function Jour({
  * (voir `traverser` plus haut). Au repos il attend au bord gauche, à cheval sur
  * le filet, dans le même cercle que l'avatar du rail : c'est le même animal.
  */
-function Frontiere({ kicker, nom, titre, de, a }: { kicker: string; nom: string; titre: string; de: number; a: number }) {
+function Frontiere({ id, kicker, nom, titre, de, a }: { id: string; kicker: string; nom: string; titre: string; de: number; a: number }) {
   return (
-    <div className="j30-frontier relative mb-[52px] border-t border-filet-nuit pb-[34px] pt-[34px] lg:pl-7" data-de={de} data-a={a}>
+    <div id={id} className="j30-frontier relative mb-[52px] scroll-mt-24 border-t border-filet-nuit pb-[34px] pt-[34px] lg:pl-7" data-de={de} data-a={a}>
       <span
         className="j30-trace pointer-events-none absolute -top-px left-0 h-px w-0"
         style={{ background: 'linear-gradient(90deg, rgba(200,169,81,.35), #c8a951)' }}

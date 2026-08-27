@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
 import { type Language, languages } from '@/i18n/config';
 import Academy from '@/components/academy/Academy';
@@ -25,6 +24,9 @@ import '@fontsource-variable/fraunces/wght-italic.css';
  *
  * Pas de PageLayout : il ajoute le bouton collant du calculateur, qui
  * flotterait par-dessus une page qui a déjà sa propre barre de total.
+ * Pas de Header non plus depuis le 27/08/2026 : la page porte sa propre barre
+ * (Barre.tsx, dans l'îlot), sans les sept sorties du menu du site. Retour
+ * d'Alexandre retenu par Paul.
  */
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -55,7 +57,6 @@ const description =
 ---
 
 <BaseLayout lang={lang} title={c.meta.title} description={description}>
-  <Header lang={lang} ctaHref="#pricing" ctaLabel={lang === 'fr' ? 'Ouvrir mon compte' : 'Open my account'} />
   <main class="flex-grow">
     <Academy client:load locale={lang} initial={data} />
   </main>
