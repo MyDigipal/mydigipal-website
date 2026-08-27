@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { SYMBOLE, enDevise, prixDe, type Devise } from './data';
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { formatPrice, nombreLocal, teamDiscount } from './offres';
@@ -32,6 +33,45 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
   const [extras, setExtras] = useState<Set<string>>(new Set());
   const [assistant, setAssistant] = useState<string | null>(null);
   const [places, setPlaces] = useState(1);
+  /**
+   * La devise consultée. Demande de Paul du 27/08/2026 : un petit bouton pour
+   * passer de l'euro à la livre ou au dollar.
+   *
+   * ⚠️ Elle ne décide de rien. Au paiement, c'est le PAYS de facturation qui
+   * commande la devise, ici comme sur le serveur : 340 dollars valent 292 euros,
+   * donc un choix libre laisserait chacun prendre la moins chère. Ce sélecteur
+   * ne sert qu'à consulter les prix dans sa monnaie, et il présélectionne
+   * ensuite un pays cohérent dans le tunnel.
+   */
+  const [devise, setDevise] = useState<Devise>('EUR');
+
+  // Le choix survit à la navigation : quelqu'un qui a mis des livres ne veut pas
+  // le refaire à chaque page. Enveloppé parce que le stockage peut être refusé.
+  useEffect(() => {
+    try {
+      const v = window.localStorage.getItem('academy.devise');
+      if (v === 'EUR' || v === 'GBP' || v === 'USD') setDevise(v);
+    } catch {
+      /* stockage indisponible : on reste en euros */
+    }
+  }, []);
+
+  function choisirDevise(d: Devise) {
+    setDevise(d);
+    try {
+      window.localStorage.setItem('academy.devise', d);
+    } catch {
+      /* sans mémoire, le choix vaut pour cette page */
+    }
+  }
+
+  const sym = SYMBOLE[devise];
+  // Le serveur dit quelles devises il sait facturer ; sans lui (page servie
+  // depuis un ancien instantané), on n'en propose qu'une plutôt que d'afficher
+  // un prix qu'on ne saurait pas encaisser.
+  const DEVISES_AFFICHEES: Devise[] = data.devises?.length ? data.devises : ['EUR'];
+  const prixOffre = (o: { ttc_minor: number; prix?: Partial<Record<Devise, number>> } | undefined) =>
+    o ? prixDe(o, devise) : 0;
   const [visible, setVisible] = useState(false);
   const section = useRef<HTMLElement>(null);
 
@@ -47,28 +87,30 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
   const devisSeul = places >= devisAPartirDe;
 
   const totaux = useMemo(() => {
-    let base = programme.ttc_minor;
-    for (const id of extras) base += offre(id)?.ttc_minor || 0;
-    const mensuelBase = assistant ? offre(assistant)?.ttc_minor || 0 : 0;
+    let base = prixOffre(programme);
+    for (const id of extras) base += prixOffre(offre(id));
+    const mensuelBase = assistant ? prixOffre(offre(assistant)) : 0;
     return {
       base,
       unique: Math.round(base * places * (1 - remise)),
       mensuel: Math.round(mensuelBase * places * (1 - remise)),
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [extras, assistant, places, remise, programme, data.offres]);
+  }, [extras, assistant, places, remise, programme, data.offres, devise]);
 
   const recap = useMemo(() => {
-    const lignes: Array<{ nom: string; prix: string }> = [{ nom: programme.name, prix: `${formatPrice(programme.ttc_minor, locale)} €` }];
+    const lignes: Array<{ nom: string; prix: string }> = [
+      { nom: programme.name, prix: `${formatPrice(prixOffre(programme), locale)} ${sym}` },
+    ];
     for (const id of OPTIONS) {
       if (!extras.has(id)) continue;
       const o = offre(id)!;
-      lignes.push({ nom: o.name, prix: `${formatPrice(o.ttc_minor, locale)} €` });
+      lignes.push({ nom: o.name, prix: `${formatPrice(prixOffre(o), locale)} ${sym}` });
     }
-    if (places > 1) lignes.push({ nom: c.placesRecap(places), prix: `${formatPrice(totaux.base * places, locale)} €` });
+    if (places > 1) lignes.push({ nom: c.placesRecap(places), prix: `${formatPrice(totaux.base * places, locale)} ${sym}` });
     return lignes;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [extras, places, totaux.base, programme, c, locale, data.offres]);
+  }, [extras, places, totaux.base, programme, c, locale, data.offres, devise, sym]);
 
   const lien = useMemo(() => {
     if (devisSeul) return '#equipe';
@@ -76,8 +118,12 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     if (assistant) items.push(assistant);
     const q = new URLSearchParams({ items: items.join(','), lang: locale });
     if (places > 1) q.set('seats', String(places));
+    // La devise consultée voyage jusqu'au tunnel pour qu'il présélectionne un
+    // pays cohérent : sans elle, quelqu'un qui a lu des dollars retomberait sur
+    // des euros à la caisse, c'est-à-dire le prix qui change en cours de route.
+    if (devise !== 'EUR') q.set('devise', devise);
     return withAdClickIds(`${data.urls.checkout}?${q.toString()}`);
-  }, [extras, assistant, places, devisSeul, c.devis, locale, data.urls.checkout]);
+  }, [extras, assistant, places, devisSeul, c.devis, locale, data.urls.checkout, devise]);
 
   function basculer(id: string) {
     setExtras((s) => {
@@ -86,17 +132,22 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
       else {
         n.add(id);
         const o = offre(id);
-        if (o) trackSelectItem({ tier: o.id, tierName: o.name, value: o.ttc_minor / 100, currency: 'EUR' });
+        if (o) trackSelectItem({ tier: o.id, tierName: o.name, value: prixDe(o, devise) / 100, currency: devise });
       }
       return n;
     });
   }
 
+  // Le prix annoncé pour le 1er octobre suit la devise consultée : annoncer une
+  // hausse en euros à quelqu'un qui lit des dollars ferait deux prix différents
+  // pour la même date.
+  const prixHausse = data.hausse.prix?.[devise] ?? data.hausse.ttc_minor;
+
   const hausse = (() => {
     const d = new Date(`${data.hausse.date}T00:00:00Z`);
     const jour = d.getUTCDate();
     const mois = d.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { month: 'long', timeZone: 'UTC' });
-    return c.hausse(formatPrice(data.hausse.ttc_minor, locale), c.dateHausse(jour, mois));
+    return enDevise(c.hausse(formatPrice(prixHausse, locale), c.dateHausse(jour, mois)), devise);
   })();
   // À moins de seize jours de la hausse, la ligne devient franche et datée
   // (Paul, 25/08/2026) : c'est vrai, c'est daté, ça décide. Elle disparaît
@@ -107,7 +158,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     if (jours <= 0 || jours > 16) return null;
     const veille = new Date(d.getTime() - 86400000);
     const veilleTexte = c.dateHausse(veille.getUTCDate(), veille.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { month: 'long', timeZone: 'UTC' }));
-    return c.hausseProche(formatPrice(programme.ttc_minor, locale), veilleTexte, formatPrice(data.hausse.ttc_minor, locale));
+    return enDevise(c.hausseProche(formatPrice(prixOffre(programme), locale), veilleTexte, formatPrice(prixHausse, locale)), devise);
   })();
 
   const paliersPct = paliers.map((t) => ({ seats: t.seats, pct: Math.round(t.discount * 100) }));
@@ -131,10 +182,10 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
       <>
         <span className="min-w-0 flex-1">
           <span className="block font-ac-mono text-[22px] font-bold leading-none tabular-nums text-or">
-            {formatPrice(totaux.unique, locale)} <span className="text-[11px] text-brume-nuit">{c.ttc}</span>
+            {formatPrice(totaux.unique, locale)} <span className="text-[11px] text-brume-nuit">{enDevise(c.ttc, devise)}</span>
           </span>
           <span className="mt-1 block truncate font-ac-mono text-[10.5px] text-brume-nuit">
-            {totaux.mensuel ? `+ ${formatPrice(totaux.mensuel, locale)} ${c.parMois}` : places > 1 ? c.uniquePlaces(places) : c.unique}
+            {totaux.mensuel ? `+ ${formatPrice(totaux.mensuel, locale)} ${enDevise(c.parMois, devise)}` : places > 1 ? c.uniquePlaces(places) : c.unique}
           </span>
         </span>
         <a href={lien} className={`${cta} px-4 py-2.5 text-[14px]`}>
@@ -145,12 +196,12 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
       <>
         <div className="flex items-baseline gap-2">
           <span className="font-ac-mono text-[38px] font-bold leading-none tabular-nums text-or">{formatPrice(totaux.unique, locale)}</span>
-          <span className="font-ac-mono text-[12px] text-brume-nuit">{c.ttc}</span>
+          <span className="font-ac-mono text-[12px] text-brume-nuit">{enDevise(c.ttc, devise)}</span>
         </div>
         <p className="m-0 mt-2 font-ac-mono text-[11.5px] text-brume-nuit">{places > 1 ? c.uniquePlaces(places) : c.unique}</p>
         <div className="mt-[18px] flex flex-wrap items-baseline gap-2.5 border-t border-filet-nuit pt-4">
           <span className={`font-ac-mono text-[22px] font-bold leading-[1.2] tabular-nums ${totaux.mensuel ? 'text-ivoire' : 'text-brume-nuit'}`}>
-            {totaux.mensuel ? `${formatPrice(totaux.mensuel, locale)} €` : '0 €'}
+            {totaux.mensuel ? `${formatPrice(totaux.mensuel, locale)} ${sym}` : `0 ${sym}`}
           </span>
           <span className="font-ac-mono text-[11.5px] leading-[1.4] text-brume-nuit">{totaux.mensuel ? c.mensuel : c.sansAbo}</span>
         </div>
@@ -183,7 +234,35 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
         <h2 className="m-0 max-w-[20ch] text-balance text-[clamp(26px,3.8vw,42px)] font-medium leading-[1.12] tracking-[-0.025em] text-ivoire">
           {c.titre}
         </h2>
-        <p className="mt-3 max-w-[52ch] text-[17px] leading-[1.6] text-corps-nuit">{c.sousTitre}</p>
+        <div className="mt-3 flex flex-wrap items-start justify-between gap-x-8 gap-y-4">
+          <p className="m-0 max-w-[52ch] text-[17px] leading-[1.6] text-corps-nuit">{c.sousTitre}</p>
+
+          {/*
+            Le sélecteur de devise. Trois codes, pas de menu déroulant : le choix
+            tient sur une ligne et se lit sans être ouvert.
+
+            Il ne change que l'affichage. La devise facturée est celle du pays
+            de facturation, décidée au tunnel puis revérifiée sur le serveur.
+          */}
+          <div role="group" aria-label={c.deviseLabel} className="flex flex-none overflow-hidden rounded-bouton border border-filet-nuit">
+            {DEVISES_AFFICHEES.map((d) => {
+              const actif = d === devise;
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => choisirDevise(d)}
+                  aria-pressed={actif}
+                  className={`cursor-pointer border-0 px-3 py-1.5 font-ac-mono text-[12.5px] font-semibold tabular-nums transition duration-150 ${
+                    actif ? 'bg-or text-salle' : 'bg-transparent text-brume-nuit hover:text-ivoire'
+                  }`}
+                >
+                  {SYMBOLE[d]} {d}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         <div className="mt-11 grid grid-cols-[minmax(0,1fr)] items-start gap-9 min-[900px]:grid-cols-[minmax(0,1fr)_340px]">
           <div>
@@ -193,7 +272,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                 <span className="block text-[17px] text-ivoire">{programme.name}</span>
                 <span className="mt-1 block text-[14px] leading-[1.55] text-brume-nuit">{c.programmeLigne(data.faits.lessons)}</span>
               </span>
-              <span className={`${prix} text-or`}>{formatPrice(programme.ttc_minor, locale)} €</span>
+              <span className={`${prix} text-or`}>{formatPrice(prixOffre(programme), locale)} {sym}</span>
             </div>
 
             {OPTIONS.map((id) => {
@@ -215,7 +294,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                       {id === 'construire' ? c.construireLigne(data.faits.lessonsConstruire) : o.tagline}
                     </span>
                   </span>
-                  <span className={`${prix} ${on ? 'text-or' : 'text-brume-nuit'}`}>+{formatPrice(o.ttc_minor, locale)} €</span>
+                  <span className={`${prix} ${on ? 'text-or' : 'text-brume-nuit'}`}>+{formatPrice(prixOffre(o), locale)} {sym}</span>
                 </button>
               );
             })}
@@ -237,7 +316,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                         on ? 'border-or/50 bg-or/[0.14] text-ivoire' : 'border-filet-nuit bg-transparent text-brume-nuit hover:border-brume-nuit'
                       }`}
                     >
-                      {o ? `${formatPrice(o.ttc_minor, locale)} €` : c.sans}
+                      {o ? `${formatPrice(prixOffre(o), locale)} ${sym}` : c.sans}
                     </button>
                   );
                 })}
