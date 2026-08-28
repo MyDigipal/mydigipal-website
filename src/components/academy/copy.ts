@@ -19,7 +19,8 @@
 // ligne, pas de libellé de rubrique au-dessus de chaque section, pas de
 // numéro de section, pas de « Métier 1 / Métier 2 ».
 
-import type { Locale } from './data';
+import type { Locale, Avis } from './data';
+import { noteLocale } from './data';
 
 // Les cinq lettres de la méthode, telles qu'elles sont enseignées. C'est du
 // vocabulaire, pas un chiffre : il peut vivre ici.
@@ -151,16 +152,16 @@ const FR = {
         'Une automatisation suit un chemin écrit d’avance : mêmes étapes, même ordre. Un agent reçoit un but et choisit ses étapes, en appelant des outils si besoin. Pour un reporting hebdomadaire, une automatisation suffit.',
       source: 'Source : les leçons du niveau 3 sur les agents',
     },
-    spots: (f: { lessons: number; modules: number; prompts: number; trophees: number; relectures: number; lessonsConstruire: number }) => ({
+    spots: (f: { lessons: number; modules: number; prompts: number; trophees: number; relectures: number; lessonsConstruire: number; lessonsProgramme?: number; lessonsComplement?: number }) => ({
       parcours1: {
         kicker: 'Le programme',
         titre: 'Tout le parcours, du premier prompt aux automatisations.',
-        texte: `${f.lessons} leçons en ${f.modules} modules, trois niveaux. Chaque leçon écrite : un plan, un exemple, un prompt à copier, et un « À vous » à rendre.`,
+        texte: `${f.lessonsProgramme ?? f.lessons} leçons en ${f.modules} modules, trois niveaux. Chaque leçon écrite : un plan, un exemple, un prompt à copier, et un « À vous » à rendre.`,
       },
       parcours2: {
         kicker: 'Le complément Construire',
         titre: 'Agents, automatisations, serveurs MCP.',
-        texte: `${f.lessonsConstruire} leçons de plus et dix-sept cas réels de l’agence. C’est le niveau 3, celui où l’on branche les outils les uns aux autres.`,
+        texte: `${f.lessonsComplement ?? f.lessonsConstruire} leçons de plus et dix-sept cas réels de l’agence. C’est le niveau 3, celui où l’on branche les outils les uns aux autres.`,
       },
       reprendre: {
         kicker: 'Reprendre',
@@ -281,9 +282,9 @@ const FR = {
       question: 'Qui relit ?',
       texte:
         'Paul André, qui enseigne cette méthode en salle depuis trois ans, chez Kering, La Poste ou E.Leclerc. Les exercices déposés arrivent chez lui, pas dans une file automatique.',
-      chiffres: [
+      chiffres: (avis: Avis) => [
         { valeur: '2 500+', libelle: 'professionnels formés' },
-        { valeur: '9,4/10', libelle: 'sur 497 retours écrits' },
+        { valeur: `${noteLocale(avis.note, 'fr')}/10`, libelle: `sur ${avis.nombre} retours écrits` },
       ],
     },
     j11: {
@@ -521,9 +522,9 @@ const FR = {
       { src: '/academy/references/session-leclerc.jpg', alt: 'Session de formation IA chez E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
       { src: '/academy/references/session-abm.jpg', alt: 'Atelier en petit groupe', legende: 'Atelier en petit groupe', w: 1200, h: 900 },
     ],
-    chiffres: [
+    chiffres: (avis: Avis) => [
       { valeur: '2 500+', libelle: 'professionnels formés' },
-      { valeur: '9,4/10', libelle: 'sur 497 retours écrits' },
+      { valeur: `${noteLocale(avis.note, 'fr')}/10`, libelle: `sur ${avis.nombre} retours écrits` },
       { valeur: '11', libelle: 'grands groupes accompagnés' },
     ],
     metiers: [
@@ -533,7 +534,7 @@ const FR = {
     ],
     logosTitre: 'Nous formons leurs équipes',
     avisTitre: 'Ils ont adoré le training',
-    avisLigne: '497 retours écrits, une moyenne de 9,4 sur 10',
+    avisLigne: (avis: Avis) => `${avis.nombre} retours écrits, une moyenne de ${noteLocale(avis.note, 'fr')} sur 10`,
     avisPlus: (n: number) => `Voir les ${n} autres avis`,
     avisMoins: 'Replier',
   },
@@ -733,16 +734,16 @@ const EN: Jour30Copy = {
         'An automation follows a path written in advance: same steps, same order. An agent is given a goal and chooses its steps, calling tools when needed. For a weekly report, an automation is enough.',
       source: 'Source: the level 3 lessons on agents',
     },
-    spots: (f: { lessons: number; modules: number; prompts: number; trophees: number; relectures: number; lessonsConstruire: number }) => ({
+    spots: (f: { lessons: number; modules: number; prompts: number; trophees: number; relectures: number; lessonsConstruire: number; lessonsProgramme?: number; lessonsComplement?: number }) => ({
       parcours1: {
         kicker: 'The programme',
         titre: 'The whole course, from the first prompt to automations.',
-        texte: `${f.lessons} lessons across ${f.modules} modules, three levels. Every lesson written: an outline, an example, a prompt to copy, and a task to hand in.`,
+        texte: `${f.lessonsProgramme ?? f.lessons} lessons across ${f.modules} modules, three levels. Every lesson written: an outline, an example, a prompt to copy, and a task to hand in.`,
       },
       parcours2: {
         kicker: 'The Build add-on',
         titre: 'Agents, automations, MCP servers.',
-        texte: `${f.lessonsConstruire} more lessons and seventeen real cases from the agency. This is level 3, where you wire the tools to one another.`,
+        texte: `${f.lessonsComplement ?? f.lessonsConstruire} more lessons and seventeen real cases from the agency. This is level 3, where you wire the tools to one another.`,
       },
       reprendre: {
         kicker: 'Resume',
@@ -863,9 +864,9 @@ const EN: Jour30Copy = {
       question: 'Who reviews?',
       texte:
         'Paul André, who has taught this method in the room for three years, at Kering, La Poste and E.Leclerc. Submitted exercises land with him, not in an automated queue.',
-      chiffres: [
+      chiffres: (avis: Avis) => [
         { valeur: '2,500+', libelle: 'professionals trained' },
-        { valeur: '9.4/10', libelle: 'across 497 written reviews' },
+        { valeur: `${noteLocale(avis.note, 'en')}/10`, libelle: `across ${avis.nombre} written reviews` },
       ],
     },
     j11: {
@@ -1100,9 +1101,9 @@ const EN: Jour30Copy = {
       { src: '/academy/references/session-leclerc.jpg', alt: 'AI training session at E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
       { src: '/academy/references/session-abm.jpg', alt: 'Small-group workshop', legende: 'Small-group workshop', w: 1200, h: 900 },
     ],
-    chiffres: [
+    chiffres: (avis: Avis) => [
       { valeur: '2,500+', libelle: 'professionals trained' },
-      { valeur: '9.4/10', libelle: 'across 497 written reviews' },
+      { valeur: `${noteLocale(avis.note, 'en')}/10`, libelle: `across ${avis.nombre} written reviews` },
       { valeur: '11', libelle: 'large groups supported' },
     ],
     metiers: [
@@ -1112,7 +1113,7 @@ const EN: Jour30Copy = {
     ],
     logosTitre: 'We train their teams',
     avisTitre: 'They loved the training',
-    avisLigne: '497 written reviews, averaging 9.4 out of 10',
+    avisLigne: (avis: Avis) => `${avis.nombre} written reviews, averaging ${noteLocale(avis.note, 'en')} out of 10`,
     avisPlus: (n: number) => `See the ${n} other reviews`,
     avisMoins: 'Show fewer',
   },

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ENDPOINT, type Jour30Data, type Locale } from './data';
+import { ENDPOINT, AVIS_REPLI, type Jour30Data, type Locale } from './data';
 import { captureAdClickIds } from './track';
 import Barre from './Barre';
 import Hero from './Hero';
@@ -32,6 +32,9 @@ import ConfigurateurNuit from './ConfigurateurNuit';
  */
 export default function Academy({ locale, initial }: { locale: Locale; initial: Jour30Data }) {
   const [data, setData] = useState(initial);
+  // La preuve chiffrée vient de l'app ; le repli ne sert qu'à un instantané
+  // ancien ou à une app injoignable.
+  const preuve = data.avis ?? AVIS_REPLI;
 
   useEffect(() => {
     captureAdClickIds();
@@ -57,6 +60,7 @@ export default function Academy({ locale, initial }: { locale: Locale; initial: 
       <Mention locale={locale} />
       <LeCompte
         locale={locale}
+        avis={preuve}
         etats={data.etats}
         faits={{
           lessons: data.faits.lessons,
@@ -78,7 +82,7 @@ export default function Academy({ locale, initial }: { locale: Locale; initial: 
         mention={data.jeu.mention}
       />
       <Retournement locale={locale} fin={fin} rang={data.jeu.rangs[fin.rank]} trophees={data.faits.trophees} />
-      <Maison locale={locale} temoignages={data.temoignages} />
+      <Maison locale={locale} temoignages={data.temoignages} avis={preuve} />
       <Produit locale={locale} />
       <ConfigurateurNuit locale={locale} data={data} />
     </div>

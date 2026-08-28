@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { jour30Copy } from './copy';
-import type { Jour30Data, Locale } from './data';
+import type { Jour30Data, Locale, Avis } from './data';
 
 /**
  * Qui enseigne : la bande photographique, les chiffres, les métiers en filets,
@@ -85,7 +85,7 @@ function Logos({ copie }: { copie?: boolean }) {
   );
 }
 
-export default function Maison({ locale, temoignages }: { locale: Locale; temoignages: Jour30Data['temoignages'] }) {
+export default function Maison({ locale, temoignages, avis: preuve }: { locale: Locale; temoignages: Jour30Data['temoignages']; avis: Avis }) {
   const c = jour30Copy(locale).maison;
   const [grande, ...petites] = c.photos;
   const [tous, setTous] = useState(false);
@@ -117,7 +117,7 @@ export default function Maison({ locale, temoignages }: { locale: Locale; temoig
             <h2 className="m-0 max-w-[20ch] text-balance text-[clamp(26px,3.6vw,38px)] font-medium leading-[1.15] tracking-[-0.02em] text-encre">{c.titre}</h2>
             <p className="mt-5 max-w-[52ch] text-[16px] leading-[1.7] text-mine">{c.texte}</p>
             <div className="mt-[30px] flex flex-wrap gap-x-10 gap-y-[22px]">
-              {c.chiffres.map((k) => (
+              {c.chiffres(preuve).map((k) => (
                 <span key={k.libelle}>
                   <b className="block font-ac-mono text-[30px] font-bold leading-none text-or-texte">{k.valeur}</b>
                   <span className="text-[13.5px] text-brume">{k.libelle}</span>
@@ -165,7 +165,7 @@ export default function Maison({ locale, temoignages }: { locale: Locale; temoig
 
         <div id="avis" className="mx-auto mb-5 mt-12 flex max-w-[1180px] scroll-mt-20 flex-wrap items-baseline gap-x-6 gap-y-1 px-4 sm:px-6">
           <h3 className="m-0 text-[clamp(22px,2.8vw,28px)] font-medium leading-[1.2] tracking-[-0.02em] text-encre">{c.avisTitre}</h3>
-          <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-brume">{c.avisLigne}</p>
+          <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-brume">{c.avisLigne(preuve)}</p>
         </div>
         <div className="j30-avis flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6 [scroll-padding-inline:16px] md:mx-auto md:grid md:max-w-[1180px] md:grid-cols-2 md:items-start md:overflow-visible lg:grid-cols-3">
           {visibles.map((t) => {

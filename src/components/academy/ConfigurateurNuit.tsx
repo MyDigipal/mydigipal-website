@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { SYMBOLE, enDevise, prixDe, type Devise } from './data';
+import { SYMBOLE, enDevise, prixDe, type Devise, leconsProgramme, leconsComplement } from './data';
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { formatPrice, nombreLocal, teamDiscount } from './offres';
@@ -270,7 +270,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
               <span className="flex h-5 w-5 flex-none items-center justify-center rounded-[5px] bg-or text-[13px] font-bold text-salle">✓</span>
               <span className="min-w-0 flex-[1_1_220px]">
                 <span className="block text-[17px] text-ivoire">{programme.name}</span>
-                <span className="mt-1 block text-[14px] leading-[1.55] text-brume-nuit">{c.programmeLigne(data.faits.lessons)}</span>
+                <span className="mt-1 block text-[14px] leading-[1.55] text-brume-nuit">{c.programmeLigne(leconsProgramme(data))}</span>
               </span>
               <span className={`${prix} text-or`}>{formatPrice(prixOffre(programme), locale)} {sym}</span>
             </div>
@@ -291,7 +291,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                   <span className="min-w-0 flex-[1_1_220px]">
                     <span className={`block text-[17px] ${on ? 'text-ivoire' : 'text-corps-nuit'}`}>{o.name}</span>
                     <span className="mt-1 block text-[14px] leading-[1.55] text-brume-nuit">
-                      {id === 'construire' ? c.construireLigne(data.faits.lessonsConstruire) : o.tagline}
+                      {id === 'construire' ? c.construireLigne(leconsComplement(data)) : o.tagline}
                     </span>
                   </span>
                   <span className={`${prix} ${on ? 'text-or' : 'text-brume-nuit'}`}>+{formatPrice(prixOffre(o), locale)} {sym}</span>

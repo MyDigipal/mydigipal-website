@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { jour30Copy, type Jour30Copy } from './copy';
 import { nombreLocal } from './offres';
-import type { EtatJour, Jour30Data, Locale, Metal, RankKey } from './data';
+import type { EtatJour, Jour30Data, Locale, Metal, RankKey, Avis } from './data';
 import { JOURS_CALENDRIER, METAL_HEX, renardPoints } from './silhouette';
 import {
   ease,
@@ -23,6 +23,8 @@ export interface FaitsCompte {
 }
 
 interface Props {
+  /** La note publique et le nombre de retours, servis par l'app. */
+  avis: Avis;
   locale: Locale;
   etats: EtatJour[];
   faits: FaitsCompte;
@@ -46,7 +48,7 @@ const PANNEAU = 'rounded-carte border border-filet-nuit bg-salle-2';
  * React : il change à chaque image de défilement, un rendu par jour serait du
  * gaspillage.
  */
-export default function LeCompte({ locale, etats, faits, jeu }: Props) {
+export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
   const { rangs, metaux, trophees: tropheeNoms, points: POINTS, metalPoints: METAL_POINTS, modulesADebloquer: MODULES_A_DEBLOQUER } = jeu;
   const t = jour30Copy(locale);
   const c = t.compte;
@@ -405,7 +407,7 @@ export default function LeCompte({ locale, etats, faits, jeu }: Props) {
                 <p className="m-0 mt-2 max-w-[56ch] text-[14.5px] leading-[1.65] text-corps-nuit">{c.preuve.texte}</p>
               </div>
               <div className="flex gap-8">
-                {c.preuve.chiffres.map((k) => (
+                {c.preuve.chiffres(avis).map((k) => (
                   <span key={k.libelle}>
                     <b className="block font-ac-mono text-[26px] font-bold leading-none text-or">{k.valeur}</b>
                     <span className="text-[12.5px] text-brume-nuit">{k.libelle}</span>

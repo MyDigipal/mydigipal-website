@@ -64,14 +64,32 @@ export function prixDe(o: { ttc_minor: number; prix?: Partial<Record<Devise, num
   return o.prix?.[devise] ?? o.ttc_minor;
 }
 
+export interface Avis {
+  note: number;
+  nombre: number;
+}
+
 export interface Jour30Data {
   lang: Locale;
   generated_at: string;
   faits: {
+    /** Le volume du parcours vendu, tous paliers confondus. */
     lessons: number;
     modules: number;
     minutes: number;
     prompts: number;
+    /**
+     * Ce que le programme seul ouvre, et ce que le complément ajoute.
+     *
+     * ⚠️ Annoncer `lessons` à un acheteur du programme serait faux : sept
+     * modules du parcours sont réservés au complément. Servis par l'app depuis
+     * le 28/08/2026, donc optionnels tant que l'instantané de secours date
+     * d'avant.
+     */
+    lessonsProgramme?: number;
+    lessonsComplement?: number;
+    heuresProgramme?: string;
+    heuresComplement?: string;
     lessonsConstruire: number;
     heures: string;
     exercices: number;
@@ -94,6 +112,14 @@ export interface Jour30Data {
   hausse: { date: string; ttc_minor: number; prix?: Partial<Record<Devise, number>> };
   /** Les devises proposées par l'app. Absente sur un instantané ancien. */
   devises?: Devise[];
+  /**
+   * La note publique et le nombre de retours, servis par l'app.
+   *
+   * Ils étaient écrits en dur six fois dans `copy.ts` : la note arbitrée par
+   * Paul vit dans `temoignages.ts` côté app, et le site la lit comme il lit les
+   * prix. Optionnelle : un instantané d'avant le 28/08/2026 ne la porte pas.
+   */
+  avis?: Avis;
   equipe: { paliers: Array<{ seats: number; discount: number }>; devisAPartirDe: number };
   temoignages: Array<{ logo?: string; societe: string; session: string; texte: string; auteur: string; note?: number }>;
   urls: { base: string; checkout: string; login: string; terms: string; privacy: string; legal: string };
@@ -113,4 +139,31 @@ export const ASSETS = '/academy';
  */
 export function enDevise(texte: string, devise: Devise): string {
   return devise === 'EUR' ? texte : texte.split('€').join(SYMBOLE[devise]);
+}
+
+/**
+ * Le repli de la preuve chiffrée, si l'instantané est ancien ou l'app injoignable.
+ * La vérité vit dans l'app (`temoignages.ts`) : ne pas la corriger ici. chiffre-libre
+ */
+export const AVIS_REPLI: Avis = { note: 9.4, nombre: 497 };
+
+/** La note telle qu'elle s'écrit dans la langue lue : 9,4 en français, 9.4 en anglais. */
+export function noteLocale(note: number, locale: Locale): string {
+  return note.toLocaleString(locale === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 1 });
+}
+
+/**
+ * Le nombre de leçons du PROGRAMME, celui qu'on annonce à qui paie 290 €.
+ *
+ * ⚠️ `faits.lessons` est le volume du parcours entier, complément inclus :
+ * l'annoncer dans une offre serait faux. Le repli sert aux instantanés d'avant
+ * le 28/08/2026, qui ne portent pas encore la ventilation.
+ */
+export function leconsProgramme(d: Jour30Data): number {
+  return d.faits.lessonsProgramme ?? d.faits.lessons;
+}
+
+/** Ce que le complément ouvre en plus : les modules réservés et le parcours avancé. */
+export function leconsComplement(d: Jour30Data): number {
+  return d.faits.lessonsComplement ?? d.faits.lessonsConstruire;
 }
