@@ -1,6 +1,6 @@
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
-import { leconsProgramme } from './data';
+import { leconsProgramme, leconsComplement } from './data';
 import { formatPrice } from './offres';
 
 /**
@@ -34,7 +34,14 @@ export default function Hero({ locale, data }: { locale: Locale; data: Jour30Dat
           <h1 className="m-0 max-w-[17ch] text-balance text-[clamp(32px,4.6vw,56px)] font-medium leading-[1.06] tracking-[-0.025em] text-ivoire">
             {c.titre}
           </h1>
-          <p className="mt-6 max-w-[48ch] text-[17px] leading-[1.65] text-corps-nuit">{c.sous(leconsProgramme(data), prix)}</p>
+          <p className="mt-6 max-w-[48ch] text-[17px] leading-[1.65] text-corps-nuit">{c.sous(data.faits.lessons, prix)}</p>
+          {/* Ce que le prix affiché ouvre vraiment : sept modules du parcours
+              relèvent du complément, et la promesse au-dessus porte le volume
+              entier. Dire les deux au même endroit est la seule façon que le
+              chiffre reste vrai. */}
+          <p className="mt-2 max-w-[48ch] font-ac-mono text-[12px] leading-[1.5] text-brume-nuit">
+            {c.repartition(leconsProgramme(data), leconsComplement(data))}
+          </p>
           <div className="mt-8 flex flex-wrap gap-3.5">
             <a href="#pricing" className={`${cta} bg-or text-salle hover:bg-or-vif`}>
               {c.cta}

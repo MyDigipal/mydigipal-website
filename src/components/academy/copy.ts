@@ -83,6 +83,15 @@ const FR = {
     titre: 'La formation IA en ligne, tirée de trois ans à former des équipes.',
     sous: (lecons: number, prix: string) =>
       `${lecons} leçons à votre rythme, la méthode CRAFT, vos exercices relus par un humain, jusqu’aux agents et aux serveurs MCP. Dès ${prix} €.`,
+    /**
+     * La répartition, dite près du prix.
+     *
+     * Le gros chiffre est celui du parcours entier (arbitrage de Paul, 28/08) :
+     * sans cette ligne, l'acheteur découvrirait le premier jour que sept
+     * modules relèvent du complément.
+     */
+    repartition: (programme: number, complement: number) =>
+      `${programme} leçons dans le programme, ${complement} de plus avec le complément Construire.`,
     cta: 'Ouvrir mon compte',
     cta2: 'Essayer le premier module, gratuit',
     url: 'academy.mydigipal.com/app',
@@ -665,6 +674,8 @@ const EN: Jour30Copy = {
     titre: 'The online AI course, built from three years of training teams.',
     sous: (lecons: number, prix: string) =>
       `${lecons} lessons at your own pace, the CRAFT method, your exercises reviewed by a human, all the way to agents and MCP servers. From €${prix}.`,
+    repartition: (programme: number, complement: number) =>
+      `${programme} lessons in the programme, ${complement} more with the Build add-on.`,
     cta: 'Open my account',
     cta2: 'Try the first module free',
     url: 'academy.mydigipal.com/app',
