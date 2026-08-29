@@ -4,6 +4,7 @@ import { nombreLocal } from './offres';
 import type { EtatJour, Jour30Data, Locale, Metal, RankKey, Avis } from './data';
 import { JOURS_CALENDRIER, METAL_HEX, renardPoints } from './silhouette';
 import {
+  after,
   ease,
   onEnter,
   probeClock,
@@ -11,6 +12,7 @@ import {
   rescueLoop,
   revealOnEnter,
   tween,
+  typeText,
   type Arret,
 } from './motion';
 
@@ -317,14 +319,13 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
           </Jour>
 
           <Jour n={2} label={c.jour(2)} phrase={c.j2.phrase}>
-            <Fiche lessons={faits.lessons} c={c.j2} pointsLecon={POINTS.lesson} />
+            <AnimationCraft lessons={faits.lessons} c={c.j2} locale={locale} pointsLecon={POINTS.lesson} />
           </Jour>
 
-          <Jour n={3} label={c.jour(3)} phrase={c.j3.phrase}>
+          <Jour n={3} label={c.jour(3)} phrase={c.j3.phrase} note={c.j3.note}>
             <div className={`${PANNEAU} max-w-[600px] px-6 py-[22px]`}>
               <div className="flex flex-wrap items-baseline justify-between gap-2.5">
                 <p className="m-0 font-ac-mono text-[11px] font-bold uppercase tracking-[0.18em] text-brume-nuit">{c.j3.kicker}</p>
-                <p className="m-0 font-ac-mono text-[11px] text-brume-nuit">{c.j3.quota(faits.relectures)}</p>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
                 {c.j3.fichiers.map((f) => (
@@ -378,23 +379,8 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
             <p className="m-0 mt-3 font-ac-mono text-[12px] text-brume-nuit">{c.j6.pts(POINTS.quiz, POINTS.quiz_perfect_first)}</p>
           </Jour>
 
-          <Jour n={9} label={c.jour(9)} phrase={c.j9.phrase} dernier>
-            <div className="max-w-[620px] rounded-r-carte border border-l-[3px] border-filet-nuit border-l-or bg-salle-2 px-[26px] py-[22px]">
-              <div className="mb-3.5 flex items-center gap-3">
-                <span className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-salle-3 font-ac-mono text-[12px] font-bold text-or">PA</span>
-                <div>
-                  <p className="m-0 text-[14px] text-ivoire">{c.j9.auteur}</p>
-                  <p className="m-0 mt-0.5 font-ac-mono text-[11px] text-brume-nuit">{c.j9.meta}</p>
-                </div>
-              </div>
-              <p className="m-0 max-w-[60ch] text-[15px] leading-[1.7] text-corps-nuit">{c.j9.texte}</p>
-              <p className="m-0 mt-4 font-ac-mono text-[11.5px] text-brume-nuit">
-                {(() => {
-                  const t = trophee('relu-et-corrige', 'or');
-                  return c.j9.trophee(t.nom, t.metal, t.pts);
-                })()}
-              </p>
-            </div>
+          <Jour n={9} label={c.jour(9)} phrase={c.j9.phrase} note={c.j9.note} dernier>
+            <ChoixOutil c={c.j9} />
           </Jour>
 
           {/* L'interruption de preuve, en négatif dans la colonne : le retour de
@@ -687,34 +673,198 @@ function Frontiere({ id, kicker, nom, titre, de, a }: { id: string; kicker: stri
   );
 }
 
-/** Le jour 2 : la fiche de leçon, une feuille claire posée sur la nuit, et son prompt copiable. */
-function Fiche({ lessons, c, pointsLecon }: { lessons: number; c: Jour30Copy['compte']['j2']; pointsLecon: number }) {
+
+/**
+ * Le jour 2 : la méthode CRAFT qui s'écrit sous les yeux.
+ *
+ * Demande de Paul du 29/08/2026 : « la première étape, c'est que Clara ouvre la
+ * formation sur comment écrire un prompt CRAFT, et là on met une animation ».
+ * C'est la promesse centrale du produit, et jusqu'ici le niveau 1 la montrait
+ * sous la forme d'une fiche de leçon déjà écrite — le résultat, pas la méthode.
+ *
+ * Les cinq champs se remplissent l'un après l'autre, puis la demande complète
+ * s'assemble en dessous : on voit que le prompt n'est pas un talent, c'est un
+ * formulaire. Sous `prefers-reduced-motion`, tout est là d'emblée.
+ */
+function AnimationCraft({
+  lessons,
+  c,
+  locale,
+  pointsLecon,
+}: {
+  lessons: number;
+  c: Jour30Copy['compte']['j2'];
+  locale: Locale;
+  pointsLecon: number;
+}) {
+  const box = useRef<HTMLDivElement>(null);
+  const [ecrits, setEcrits] = useState<string[]>(() => c.champs.map(() => ''));
+  const [assemble, setAssemble] = useState(false);
   const [copie, setCopie] = useState(false);
+  const arrets = useRef<Arret[]>([]);
+
+  // Le séparateur suit la langue : le français met une espace avant le
+  // deux-points, l'anglais non.
+  const prompt = c.champs.map((ch) => `${ch.nom}${locale === 'fr' ? ' :' : ':'} ${ch.valeur}`).join('\n');
+
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    if (reducedMotion()) {
+      setEcrits(c.champs.map((ch) => ch.valeur));
+      setAssemble(true);
+      return;
+    }
+    const stop = onEnter(el, () => {
+      c.champs.forEach((ch, i) => {
+        arrets.current.push(
+          after(i * 460, () => {
+            arrets.current.push(
+              typeText(ch.valeur, 380, (v) =>
+                setEcrits((prev) => {
+                  const n = [...prev];
+                  n[i] = v;
+                  return n;
+                })
+              )
+            );
+          })
+        );
+      });
+      arrets.current.push(after(c.champs.length * 460 + 420, () => setAssemble(true)));
+    });
+    return () => {
+      stop();
+      arrets.current.forEach((a) => a());
+      arrets.current = [];
+    };
+  }, [c, locale]);
+
   return (
-    <div className="max-w-[660px] rounded-[20px] border border-white/[0.06] bg-craie px-[30px] py-7 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.85)]">
+    <div
+      ref={box}
+      className="max-w-[660px] rounded-[20px] border border-white/[0.06] bg-craie px-[30px] py-7 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.85)]"
+    >
       <p className="m-0 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-or-grave">{c.kicker}</p>
       <h3 className="m-0 mt-2 font-ac-serif text-[26px] font-semibold leading-[1.2] text-encre">{c.titre}</h3>
-      <p className="m-0 mt-3.5 max-w-[62ch] text-[15px] leading-[1.65] text-mine">{c.corps}</p>
-      <p className="m-0 mb-2 mt-[18px] font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-or-grave">{c.promptLabel}</p>
-      <div className="relative rounded-[12px] bg-encre px-[18px] py-4">
-        <p className="m-0 whitespace-pre-wrap pr-[88px] font-ac-mono text-[12.5px] leading-[1.7] text-terminal-texte">{c.prompt}</p>
-        <button
-          type="button"
-          onClick={() => {
-            navigator.clipboard?.writeText(c.prompt).catch(() => {});
-            setCopie(true);
-            setTimeout(() => setCopie(false), 1800);
-          }}
-          className="absolute right-3 top-3 min-h-11 cursor-pointer rounded-[8px] border border-or/35 bg-or/[0.14] px-3.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.08em] text-or transition duration-150 hover:bg-or/[0.24]"
-        >
-          {copie ? c.copie : c.copier}
-        </button>
+
+      <dl className="m-0 mt-5 grid gap-2.5">
+        {c.champs.map((ch, i) => (
+          <div key={ch.lettre} className="grid grid-cols-[26px_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[26px_88px_minmax(0,1fr)]">
+            <dt
+              className={`flex h-[26px] w-[26px] items-center justify-center rounded-[7px] font-ac-mono text-[12px] font-bold transition-colors duration-300 ${
+                ecrits[i] ? 'bg-or text-encre' : 'bg-lin text-brume'
+              }`}
+            >
+              {ch.lettre}
+            </dt>
+            <dd className="m-0 hidden self-center font-ac-mono text-[11px] uppercase tracking-[0.12em] text-brume sm:block">
+              {ch.nom}
+            </dd>
+            <dd className="m-0 min-h-[1.5em] self-center text-[14px] leading-[1.55] text-mine">
+              {ecrits[i]}
+              {!!ecrits[i] && ecrits[i].length < ch.valeur.length && (
+                <span className="prompt-card__caret ml-0.5 !h-3 !w-1.5" aria-hidden="true" />
+              )}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <div className={`transition-opacity duration-500 ${assemble ? 'opacity-100' : 'opacity-0'}`}>
+        <p className="m-0 mb-2 mt-[22px] font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-or-grave">{c.assemble}</p>
+        <div className="relative rounded-[12px] bg-encre px-[18px] py-4">
+          <p className="m-0 whitespace-pre-wrap pr-[88px] font-ac-mono text-[12.5px] leading-[1.7] text-terminal-texte">{prompt}</p>
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard?.writeText(prompt).catch(() => {});
+              setCopie(true);
+              setTimeout(() => setCopie(false), 1800);
+            }}
+            className="absolute right-3 top-3 min-h-11 cursor-pointer rounded-[8px] border border-or/35 bg-or/[0.14] px-3.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.08em] text-or transition duration-150 hover:bg-or/[0.24]"
+          >
+            {copie ? c.copie : c.copier}
+          </button>
+        </div>
       </div>
+
       <div className="mt-[18px] flex flex-wrap items-center gap-x-5 gap-y-2.5 border-t border-lin pt-3.5">
         <span className="font-ac-mono text-[11px] text-brume">{c.pied(lessons)}</span>
         <span className="rounded-full bg-sauge-soft px-2.5 py-[3px] font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.06em] text-sauge">
           {c.terminee(pointsLecon)}
         </span>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Le jour 9 : le module des outils est un CHOIX, et le récit le montre.
+ *
+ * Demande de Paul du 29/08/2026 : « on voit Claude, Gemini, Copilot, et on voit
+ * qu'ils se barrent tous parce que c'est Claude qu'elle a choisie ». Les trois
+ * autres ne disparaissent pas tout à fait : ils s'effacent, comme le projecteur
+ * de la visite plus haut. Les retirer laisserait trois trous, et surtout on ne
+ * verrait plus qu'il y avait un choix — c'est justement l'argument.
+ */
+function ChoixOutil({ c }: { c: Jour30Copy['compte']['j9'] }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [phase, setPhase] = useState(0);
+  const arrets = useRef<Arret[]>([]);
+
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    if (reducedMotion()) {
+      setPhase(2);
+      return;
+    }
+    const stop = onEnter(el, () => {
+      arrets.current.push(after(900, () => setPhase(1)));
+      arrets.current.push(after(1700, () => setPhase(2)));
+    });
+    return () => {
+      stop();
+      arrets.current.forEach((a) => a());
+      arrets.current = [];
+    };
+  }, [c]);
+
+  return (
+    <div ref={box} className="max-w-[620px]">
+      <div className="flex flex-wrap gap-2.5">
+        {c.outils.map((o) => {
+          const sien = o === c.choisi;
+          const efface = phase > 0 && !sien;
+          return (
+            <span
+              key={o}
+              className={`inline-flex items-center gap-2 rounded-bouton border px-3.5 py-2 text-[13.5px] transition-[opacity,border-color,color,transform] duration-500 ${
+                efface ? 'translate-y-1 border-filet-nuit text-brume-nuit opacity-25' : 'border-filet-nuit text-corps-nuit opacity-100'
+              } ${phase > 0 && sien ? '!border-or bg-or/[0.12] !text-ivoire' : ''}`}
+            >
+              {o}
+              {phase > 0 && sien && (
+                <span className="font-ac-mono text-[10px] font-bold uppercase tracking-[0.12em] text-or">{c.choisiLabel}</span>
+              )}
+            </span>
+          );
+        })}
+      </div>
+
+      <div className={`mt-5 transition-opacity duration-500 ${phase > 1 ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="rounded-carte border border-filet-nuit bg-salle-2 px-[26px] py-[22px]">
+          <p className="m-0 font-ac-mono text-[11px] font-bold uppercase tracking-[0.18em] text-or">{c.titre}</p>
+          <ul className="m-0 mt-3.5 grid list-none gap-2.5 p-0">
+            {c.sujets.map((s) => (
+              <li key={s} className="flex gap-2.5 text-[14.5px] leading-[1.55] text-corps-nuit">
+                <span className="mt-[9px] h-1.5 w-1.5 flex-none rounded-full bg-or" aria-hidden="true" />
+                <span>{s}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
