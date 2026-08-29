@@ -239,10 +239,10 @@ export default function Mcp({ locale }: { locale: Locale }) {
         <h2 className="m-0 max-w-[20ch] text-balance text-[clamp(28px,4.4vw,46px)] font-medium leading-[1.1] tracking-[-0.025em] text-encre">{c.intro.titre}</h2>
         <p className="mt-5 max-w-[60ch] text-[17px] leading-[1.65] text-mine">{c.intro.texte}</p>
 
-        <div className="mt-14 border-t border-lin pt-10">
-          <h3 className="m-0 text-[clamp(22px,3vw,30px)] font-medium leading-[1.15] tracking-[-0.02em] text-encre">{c.titre}</h3>
-          <p className="mt-3 max-w-[56ch] text-[15.5px] leading-[1.65] text-brume">{c.chapeau}</p>
-        </div>
+        {/* Le titre « Un MCP, c'est une prise » et son chapeau vivaient ici. Ils
+            redisaient l'introduction juste au-dessus, en moins bien : le schéma
+            explique déjà ce qu'est une prise, et il l'explique mieux qu'un
+            paragraphe (Paul, 29/08/2026). */}
 
         <div ref={stage} className="relative mt-12">
           <svg ref={svg} aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full overflow-visible" />

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { SYMBOLE, enDevise, prixDe, type Devise, leconsProgramme, leconsComplement } from './data';
+import { SYMBOLE, enDevise, prixDe, type Devise, leconsProgramme, leconsComplement, leconsGratuit } from './data';
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { formatPrice, nombreLocal, teamDiscount } from './offres';
@@ -219,6 +219,14 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
         </div>
         <a href={lien} className={`${cta} mt-6`}>
           {c.ouvrir}
+        </a>
+        {/* La porte d'entree gratuite, la ou le prix vient d'etre lu : c'est le
+            seul endroit ou quelqu'un qui hesite la cherche (Paul, 29/08/2026). */}
+        <a
+          href={`${data.urls.base}${locale === 'fr' ? '/fr' : ''}/start`}
+          className="mt-3 block text-center text-[13px] leading-[1.5] text-brume-nuit underline decoration-filet-nuit underline-offset-4 transition hover:text-ivoire"
+        >
+          {c.gratuitLigne(leconsGratuit(data))}
         </a>
         {hausseProche ? (
           <p className="m-0 mt-3 text-center text-[14px] font-medium leading-[1.5] text-or">{hausseProche}</p>
