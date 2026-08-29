@@ -233,6 +233,7 @@ const FR = {
     ],
     texte:
       'Ce qui suit est reconstitué à partir de l’espace apprenant réel : les écrans sont ceux du produit, les règles de points sont celles du code. Clara, elle, est composée : elle a pris le programme, le complément Construire et l’assistant.',
+    bandeAlt: 'Une apprenante devant son espace, entourée de ses cartes de progression',
   },
 
   compte: {
@@ -633,6 +634,7 @@ const FR = {
       { titre: 'Data et mesure', texte: 'Tracking, tableaux de bord et chaînes de traitement, de la collecte à la décision.' },
       { titre: 'Automatisation et IA', texte: 'Assistants, agents et automatisations opérés en production, pas en démonstration.' },
     ],
+    visuelAlt: 'L’espace apprenant de la MyDigipal AI Academy, en situation',
     logosTitre: 'Nous formons leurs équipes',
     avisTitre: 'Ils ont adoré le training',
     avisLigne: (avis: Avis) => `${avis.nombre} retours écrits, une moyenne de ${noteLocale(avis.note, 'fr')} sur 10`,
@@ -643,6 +645,7 @@ const FR = {
   produit: {
     titre: 'Voilà ce que vous ouvrez le matin.',
     texte: 'Huit écrans, filmés dans le produit. Cliquez sur l’un d’eux pour le regarder en grand.',
+    texteMobile: 'L’espace apprenant, en situation. Les écrans filmés se regardent sur un ordinateur.',
     url: 'academy.mydigipal.com/app',
     agrandir: 'Chaque écran s’ouvre en grand, et se referme avec la touche Échap.',
     aVenir: 'Capture à venir',
@@ -906,6 +909,7 @@ const EN: Jour30Copy = {
     ],
     texte:
       'What follows is reconstructed from the real learner space: the screens are the product’s, the point rules are the code’s. Clara is made up: she took the programme, the Build add-on and the assistant.',
+    bandeAlt: 'A learner at her space, surrounded by her progress cards',
   },
 
   compte: {
@@ -1303,6 +1307,7 @@ const EN: Jour30Copy = {
       { titre: 'Data and measurement', texte: 'Tracking, dashboards and processing pipelines, from collection to decision.' },
       { titre: 'Automation and AI', texte: 'Assistants, agents and automations run in production, not in demos.' },
     ],
+    visuelAlt: 'The MyDigipal AI Academy learner space, in context',
     logosTitre: 'We train their teams',
     avisTitre: 'They loved the training',
     avisLigne: (avis: Avis) => `${avis.nombre} written reviews, averaging ${noteLocale(avis.note, 'en')} out of 10`,
@@ -1313,6 +1318,7 @@ const EN: Jour30Copy = {
   produit: {
     titre: 'This is what you open in the morning.',
     texte: 'Eight screens, filmed inside the product. Click any of them to watch it full size.',
+    texteMobile: 'The learner space, in context. The filmed screens are best watched on a computer.',
     url: 'academy.mydigipal.com/app',
     agrandir: 'Every screen opens full size, and closes with the Escape key.',
     aVenir: 'Screenshot to come',

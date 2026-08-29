@@ -39,6 +39,22 @@ export default function Mention({ locale }: { locale: Locale }) {
           ))}
         </ol>
 
+        {/* Une seule image ici, et à cet endroit précis : on vient d'annoncer
+            trente jours, la phrase suivante avoue que le compte est reconstitué.
+            L'image tient entre les deux, là où le visiteur se demande à quoi ça
+            ressemble pour de vrai. */}
+        <figure className="m-0 mt-9 overflow-hidden rounded-carte border border-filet-nuit bg-encre">
+          <img
+            src="/academy/visuels/apprenante-cartes_paysage.jpg"
+            alt={c.bandeAlt}
+            width={1600}
+            height={837}
+            loading="lazy"
+            decoding="async"
+            className="block h-full w-full object-cover"
+          />
+        </figure>
+
         <p className="m-0 mt-8 max-w-[80ch] border-t border-filet-nuit pt-5 text-[13.5px] leading-[1.6] text-brume-nuit">{c.texte}</p>
       </div>
     </section>
