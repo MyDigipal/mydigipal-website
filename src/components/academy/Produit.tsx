@@ -1,95 +1,80 @@
-import { useEffect, useRef } from 'react';
 import { jour30Copy } from './copy';
 import type { Locale } from './data';
+import { Boucle, Visionneuse, libelleDemo, useVisionneuse, type DemoKey } from './Demos';
 
 /**
- * Le produit, tel qu'il est : une grande fenêtre et quatre petites. Après une
- * page de fragments recréés depuis le code, on montre les vrais écrans.
+ * La galerie du produit : huit écrans filmés dans l'application, à des tailles
+ * différentes, et chacun s'ouvre en grand.
  *
- * Depuis le 29/08/2026 ce ne sont plus des captures mais des ENREGISTREMENTS,
- * pris par Paul dans le produit le matin même. Une capture montre un état, une
- * vidéo montre que ça marche, et c'est la seule chose qu'un visiteur cherche à
- * savoir à cet endroit de la page.
+ * Pourquoi des tailles différentes (Paul, 29/08/2026 : « faut mieux les
+ * disposer, là ça monte vraiment chacun des éléments ») : une pile de cadres
+ * identiques se lit comme une liste, et on la parcourt sans rien regarder. Un
+ * rythme irrégulier donne un ordre de lecture, et l'ordre dit ce qui compte :
+ * le quiz d'abord, parce que c'est l'écran qui montre le mieux qu'il y a un
+ * vrai produit derrière.
  *
- * Les cinq boucles sont muettes, sans contrôles, jouées en boucle : elles se
- * comportent comme des captures qui bougent. Une vidéo qui parle sans qu'on
- * l'ait demandé fait fermer l'onglet ; le son est réservé à la vidéo de
- * présentation, qu'on lance d'un clic.
- *
- * Traitement ffmpeg : coupées à dix secondes sur le geste, recadrées en 16:10
- * depuis le haut (les cinq sources avaient chacune sa taille), ramenées à
- * 1280 px, H.264 CRF 30 plus une version VP9. Les sources faisaient 55 Mo, les
- * cinq boucles en font moins de deux, ce qui est la différence entre une page
- * qui s'ouvre et une page qu'on quitte.
- *
- * `poster` porte la première image : sans lui l'emplacement reste noir pendant
- * le chargement, et sur un mobile en économie de données la vidéo ne démarre
- * jamais, donc l'image est tout ce qui reste.
+ * Toutes gardent le même rapport 16:10 : ce sont des captures d'un même écran,
+ * les déformer pour remplir une grille les rendrait fausses. Ce qui varie,
+ * c'est la LARGEUR, et la hauteur suit.
  */
-const DEMOS = ['quiz', 'assistant', 'programme', 'prompts', 'avance'] as const;
-type DemoKey = (typeof DEMOS)[number];
 
-function Demo({ nom, titre }: { nom: DemoKey; titre: string }) {
-  const base = `/academy/demos/${nom}`;
-  const ref = useRef<HTMLVideoElement>(null);
+/** Une rangée : les écrans qu'elle porte, et la part de largeur de chacun. */
+const RANGEES: Array<Array<{ nom: DemoKey; part: string }>> = [
+  [
+    { nom: 'quiz', part: 'lg:col-span-8' },
+    { nom: 'assistant', part: 'lg:col-span-4' },
+  ],
+  [
+    { nom: 'profil', part: 'lg:col-span-4' },
+    { nom: 'atelier', part: 'lg:col-span-4' },
+    { nom: 'prompts', part: 'lg:col-span-4' },
+  ],
+  [
+    { nom: 'programme', part: 'lg:col-span-7' },
+    { nom: 'avance', part: 'lg:col-span-5' },
+  ],
+  [{ nom: 'cas', part: 'lg:col-span-12' }],
+];
 
-  // ⚠️ `preload="none"` et `autoplay` se contredisent : Chrome respecte le
-  // premier et ne demarre jamais (vu en ligne le 29/08/2026, les cinq boucles
-  // figees sur leur affiche). On garde `none` pour que la page reste legere, et
-  // on demande le chargement puis la lecture quand la boucle entre dans
-  // l'ecran. Sans script, l'affiche reste : c'est l'etat de repos.
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (typeof IntersectionObserver === 'undefined') {
-      el.load();
-      void el.play().catch(() => undefined);
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entrees) => {
-        for (const e of entrees) {
-          if (e.isIntersecting) {
-            if (el.readyState === 0) el.load();
-            void el.play().catch(() => undefined);
-          } else if (!el.paused) {
-            el.pause();
-          }
-        }
-      },
-      { rootMargin: '200px 0px' }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
+function Vignette({
+  nom,
+  locale,
+  part,
+  onOuvrir,
+}: {
+  nom: DemoKey;
+  locale: Locale;
+  part: string;
+  onOuvrir: (n: DemoKey) => void;
+}) {
+  const titre = libelleDemo(nom, locale);
   return (
-    <video
-      ref={ref}
-      className="block h-full w-full object-cover object-top"
-      poster={`${base}.jpg`}
-      width={1280}
-      height={800}
-      muted
-      loop
-      playsInline
-      preload="none"
-      aria-label={titre}
+    <button
+      type="button"
+      onClick={() => onOuvrir(nom)}
+      className={`group block w-full cursor-pointer overflow-hidden rounded-carte border border-filet-nuit bg-encre text-left transition duration-150 hover:border-or-decor ${part}`}
     >
-      <source src={`${base}.webm`} type="video/webm" />
-      <source src={`${base}.mp4`} type="video/mp4" />
-    </video>
+      <div className="relative aspect-[16/10]">
+        <Boucle nom={nom} titre={titre} />
+        {/* La loupe ne s'affiche qu'au survol sur les pointeurs fins : au doigt,
+            elle masquerait une partie de l'écran filmé en permanence. */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute right-3 top-3 hidden rounded-bouton bg-salle/85 px-2.5 py-1.5 font-ac-mono text-[10.5px] uppercase tracking-[0.12em] text-ivoire opacity-0 transition duration-150 group-hover:opacity-100 lg:block"
+        >
+          +
+        </span>
+      </div>
+      <p className="m-0 border-t border-filet-nuit px-4 py-[11px] font-ac-mono text-[11px] leading-[1.45] text-brume-nuit transition duration-150 group-hover:text-corps-nuit">
+        {titre}
+      </p>
+    </button>
   );
 }
 
 export default function Produit({ locale }: { locale: Locale }) {
   const c = jour30Copy(locale).produit;
-  const petites: Array<{ nom: DemoKey; label: string }> = [
-    { nom: 'assistant', label: c.captures.assistant },
-    { nom: 'programme', label: c.captures.programme },
-    { nom: 'prompts', label: c.captures.prompts },
-    { nom: 'avance', label: c.captures.avance },
-  ];
+  const { ouvert, ouvrir, fermer } = useVisionneuse();
   return (
     <section className="border-t border-filet-nuit px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-[1180px]">
@@ -100,32 +85,20 @@ export default function Produit({ locale }: { locale: Locale }) {
           <p className="m-0 max-w-[40ch] text-[15px] leading-[1.6] text-brume-nuit">{c.texte}</p>
         </div>
 
-        <div className="mt-[34px] overflow-hidden rounded-[16px] border border-filet-nuit bg-encre shadow-[0_40px_80px_-50px_rgba(0,0,0,0.9)]">
-          <div className="flex items-center gap-2 border-b border-filet-nuit px-4 py-3">
-            <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
-            <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
-            <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
-            <span className="ml-3 font-ac-mono text-[11px] text-brume-nuit">{c.url}/quiz</span>
-          </div>
-          <div className="relative aspect-[16/10]">
-            <Demo nom="quiz" titre={c.captures.quiz} />
-          </div>
-          <p className="m-0 border-t border-filet-nuit px-4 py-[11px] font-ac-mono text-[11px] text-brume-nuit">
-            {c.captures.quiz}
-          </p>
-        </div>
-
-        <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
-          {petites.map((f) => (
-            <div key={f.nom} className="overflow-hidden rounded-carte border border-filet-nuit bg-encre">
-              <p className="m-0 border-b border-filet-nuit px-4 py-[11px] font-ac-mono text-[11px] text-brume-nuit">{f.label}</p>
-              <div className="relative aspect-[16/10]">
-                <Demo nom={f.nom} titre={f.label} />
-              </div>
+        <div className="mt-[34px] space-y-4">
+          {RANGEES.map((rangee, i) => (
+            <div key={i} className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-12">
+              {rangee.map((v) => (
+                <Vignette key={v.nom} nom={v.nom} locale={locale} part={v.part} onOuvrir={ouvrir} />
+              ))}
             </div>
           ))}
         </div>
+
+        <p className="m-0 mt-5 font-ac-mono text-[11px] text-brume-nuit">{c.agrandir}</p>
       </div>
+
+      {ouvert && <Visionneuse nom={ouvert} titre={libelleDemo(ouvert, locale)} onClose={fermer} />}
     </section>
   );
 }

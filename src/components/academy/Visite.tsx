@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Visionneuse, libelleDemo, useVisionneuse, type DemoKey } from './Demos';
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { nombreLocal } from './offres';
@@ -46,10 +47,37 @@ type SpotId =
 
 const TOUR: SpotId[] = ['parcours1', 'parcours2', 'reprendre', 'atelier', 'prompts', 'assistant', 'exercices', 'points', 'cas', 'notes', 'profil'];
 
+/**
+ * L'écran filmé qui correspond à chaque zone (Paul, 29/08/2026 : « faut mapper
+ * les endroits avec les vidéos que j'ai prises »).
+ *
+ * Le tableau de bord de cette section est REFAIT en HTML, fidèle mais recréé :
+ * il montre la disposition, pas le produit qui tourne. L'enregistrement, lui,
+ * montre le produit qui tourne. Les deux se complètent, et le lien entre eux
+ * est ici, en un seul endroit, pour qu'un écran filmé de plus n'oblige pas à
+ * fouiller le composant.
+ *
+ * `notes` n'a pas d'enregistrement : le carnet ne se démontre pas en dix
+ * secondes, et une vidéo faible dessert plus qu'une absence.
+ */
+const VIDEO_DU_SPOT: Partial<Record<SpotId, DemoKey>> = {
+  parcours1: 'programme',
+  parcours2: 'avance',
+  reprendre: 'programme',
+  atelier: 'atelier',
+  prompts: 'prompts',
+  cas: 'cas',
+  exercices: 'quiz',
+  assistant: 'assistant',
+  points: 'profil',
+  profil: 'profil',
+};
+
 export default function Visite({ locale, data }: { locale: Locale; data: Jour30Data }) {
   const t = jour30Copy(locale);
   const c = t.visite;
   const [actif, setActif] = useState<SpotId | null>(null);
+  const { ouvert, ouvrir, fermer } = useVisionneuse();
   const [touche, setTouche] = useState(false);
   const [reponse, setReponse] = useState('');
   const [pointsAffiches, setPointsAffiches] = useState(0);
@@ -276,6 +304,19 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
                     <p className={`${rubrique} m-0 text-or`}>{fiche.kicker}</p>
                     <p className="m-0 mt-2 text-[18px] font-medium leading-[1.3] text-ivoire">{fiche.titre}</p>
                     <p className="m-0 mt-3 text-[14.5px] leading-[1.65] text-corps-nuit">{fiche.texte}</p>
+                    {/* ⚠️ Un bouton, pas un clic sur la zone : au doigt, le clic
+                        sert déjà à choisir l'élément puisqu'il n'y a pas de
+                        survol. Ouvrir la vidéo sur ce même geste rendrait la
+                        découverte impossible en mobile. */}
+                    {actif && VIDEO_DU_SPOT[actif] && (
+                      <button
+                        type="button"
+                        onClick={() => ouvrir(VIDEO_DU_SPOT[actif]!)}
+                        className="mt-4 inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-bouton border border-or/50 bg-or/[0.12] px-4 font-ac-mono text-[12px] font-bold uppercase tracking-[0.1em] text-or transition duration-150 hover:bg-or/[0.2]"
+                      >
+                        {c.voirLecran}
+                      </button>
+                    )}
                     {actif === 'assistant' && (
                       <div className="mt-4 grid gap-2">
                         <div className="max-w-[92%] justify-self-end rounded-[12px_12px_4px_12px] bg-salle-3 px-3.5 py-2.5 text-[13px] leading-[1.5] text-ivoire">
@@ -318,6 +359,9 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
           </aside>
         </div>
       </div>
+
+      {ouvert && <Visionneuse nom={ouvert} titre={libelleDemo(ouvert, locale)} onClose={fermer} />}
     </section>
+  
   );
 }

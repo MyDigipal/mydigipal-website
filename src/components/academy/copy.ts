@@ -109,6 +109,7 @@ const FR = {
   visite: {
     titre: 'Ce qu’il y a dedans.',
     sous: 'L’espace apprenant, tel que vous l’ouvrirez. Survolez un élément : il vous dit à quoi il sert.',
+    voirLecran: 'Voir cet écran',
     nav: ['Parcours', 'Outils', 'Mon espace'],
     bandeau: { kicker: 'Mon espace', titre: 'Bonjour Clara', ligne: 'Formule complète, tout le parcours ouvert.' },
     cartes: {
@@ -622,15 +623,9 @@ const FR = {
 
   produit: {
     titre: 'Voilà ce que vous ouvrez le matin.',
-    texte: 'Cinq écrans, filmés dans le produit : un quiz et son explication, l’assistant, le programme, la bibliothèque de prompts et les cas avancés.',
+    texte: 'Huit écrans, filmés dans le produit. Cliquez sur l’un d’eux pour le regarder en grand.',
     url: 'academy.mydigipal.com/app',
-    captures: {
-      quiz: 'Un quiz de fin de module, et l’explication qui suit chaque réponse',
-      assistant: 'L’assistant, qui répond à partir de vos propres leçons',
-      programme: 'Le programme, module par module',
-      prompts: 'La bibliothèque de prompts',
-      avance: 'Les cas d’usage avancés, jusqu’aux serveurs MCP',
-    },
+    agrandir: 'Chaque écran s’ouvre en grand, et se referme avec la touche Échap.',
     aVenir: 'Capture à venir',
   },
 
@@ -768,6 +763,7 @@ const EN: Jour30Copy = {
   visite: {
     titre: 'What is inside.',
     sous: 'The learner space, as you will open it. Hover an element: it tells you what it is for.',
+    voirLecran: 'Watch this screen',
     nav: ['Course', 'Tools', 'My space'],
     bandeau: { kicker: 'My space', titre: 'Hello Clara', ligne: 'Complete plan, the whole course open.' },
     cartes: {
@@ -1278,15 +1274,9 @@ const EN: Jour30Copy = {
 
   produit: {
     titre: 'This is what you open in the morning.',
-    texte: 'Five screens, filmed inside the product: a quiz and its explanation, the assistant, the programme, the prompt library and the advanced cases.',
+    texte: 'Eight screens, filmed inside the product. Click any of them to watch it full size.',
     url: 'academy.mydigipal.com/app',
-    captures: {
-      quiz: 'An end-of-module quiz, and the explanation after every answer',
-      assistant: 'The assistant, answering from your own lessons',
-      programme: 'The programme, module by module',
-      prompts: 'The prompt library',
-      avance: 'The advanced use cases, all the way to MCP servers',
-    },
+    agrandir: 'Every screen opens full size, and closes with the Escape key.',
     aVenir: 'Screenshot to come',
   },
 
