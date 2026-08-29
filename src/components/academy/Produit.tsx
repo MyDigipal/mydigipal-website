@@ -13,9 +13,10 @@ import { Boucle, Visionneuse, libelleDemo, useVisionneuse, type DemoKey } from '
  * le quiz d'abord, parce que c'est l'écran qui montre le mieux qu'il y a un
  * vrai produit derrière.
  *
- * Toutes gardent le même rapport 16:10 : ce sont des captures d'un même écran,
- * les déformer pour remplir une grille les rendrait fausses. Ce qui varie,
- * c'est la LARGEUR, et la hauteur suit.
+ * Toutes gardent le même rapport (940 × 735 depuis le recadrage du 29/08 au
+ * soir) : ce sont des captures d'un même écran, les déformer pour remplir une
+ * grille les rendrait fausses. Ce qui varie, c'est la LARGEUR, et la hauteur
+ * suit.
  */
 
 /** Une rangée : les écrans qu'elle porte, et la part de largeur de chacun. */
@@ -54,7 +55,7 @@ function Vignette({
       onClick={() => onOuvrir(nom)}
       className={`group block w-full cursor-pointer overflow-hidden rounded-carte border border-filet-nuit bg-encre text-left transition duration-150 hover:border-or-decor ${part}`}
     >
-      <div className="relative aspect-[16/10]">
+      <div className="relative aspect-[940/735]">
         <Boucle nom={nom} titre={titre} locale={locale} />
         {/* La loupe ne s'affiche qu'au survol sur les pointeurs fins : au doigt,
             elle masquerait une partie de l'écran filmé en permanence. */}
@@ -100,7 +101,7 @@ export default function Produit({ locale }: { locale: Locale }) {
         </div>
 
         {/* `items-start` : sans lui, une vignette étroite s'étire à la hauteur de
-            sa voisine large et garde son cadre 16:10 au milieu, donc du vide
+            sa voisine large et garde son cadre au milieu, donc du vide
             au-dessus et en dessous. */}
         <div className="mt-[34px] space-y-4">
           {RANGEES.map((rangee, i) => (

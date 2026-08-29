@@ -15,8 +15,20 @@ import type { Locale } from './data';
  *
  * Traitement (ffmpeg, à refaire à l'identique pour tout nouvel écran) : couper
  * dix secondes SUR LE GESTE, recadrer en 16:10 depuis le haut, ramener à
- * 1280 px, H.264 CRF 30 plus une version VP9, extraire l'affiche. Les sources
- * vivent dans `Confidential/MyDigipal/Academy/Captures produit/`.
+ * 1280 px, puis `crop=940:735:0:65`, H.264 CRF 30 plus une version VP9,
+ * extraire l'affiche. Les sources vivent dans
+ * `Confidential/MyDigipal/Academy/Captures produit/`.
+ *
+ * ⚠️ Ce second recadrage (Paul, 29/08/2026 au soir) enlève le rail de droite,
+ * qui prenait le quart de la largeur pour redire ce que la page dit déjà, et
+ * les 65 px de la barre de navigation. Sans ces 65 px, le mot « Tools » se
+ * retrouverait tranché en deux au bord droit ; avec eux, on perd le logo, mais
+ * la page entière est siglée et le contenu gagne un tiers de surface.
+ *
+ * ⚠️ Le poids a presque doublé (3,5 Mo → 6,2 Mo) alors que l'image est plus
+ * petite : le rail supprimé était une zone STATIQUE, donc quasi gratuite pour
+ * le codec. Ce qui reste est la partie où ça bouge, et elle prend tout le
+ * budget. C'est le prix de la lisibilité, pas une erreur de réglage.
  */
 export const DEMOS = [
   'quiz',
@@ -229,7 +241,7 @@ export function Visionneuse({
         </div>
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video
-          className="block aspect-[16/10] h-auto w-full bg-encre"
+          className="block aspect-[940/735] h-auto w-full bg-encre"
           poster={`${base}.jpg`}
           controls
           autoPlay
@@ -285,7 +297,7 @@ export function Affiche({
       aria-label={`${legende} : ${titre}`}
       className="group mt-4 block w-full cursor-pointer overflow-hidden rounded-carte border border-filet-nuit bg-encre text-left transition duration-150 hover:border-or"
     >
-      <span className="relative block aspect-[16/10]">
+      <span className="relative block aspect-[940/735]">
         <img
           src={`${cheminDemo(nom, locale)}-v.jpg`}
           alt=""
