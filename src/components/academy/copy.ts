@@ -622,12 +622,14 @@ const FR = {
 
   produit: {
     titre: 'Voilà ce que vous ouvrez le matin.',
-    texte: 'Trois écrans du produit : le tableau de bord, une leçon avec son prompt, et l’atelier où la demande se construit.',
+    texte: 'Cinq écrans, filmés dans le produit : un quiz et son explication, l’assistant, le programme, la bibliothèque de prompts et les cas avancés.',
     url: 'academy.mydigipal.com/app',
     captures: {
-      dashboard: 'Le tableau de bord de l’espace apprenant',
-      lecon: 'Une leçon, avec son prompt',
-      atelier: 'L’atelier, champ par champ',
+      quiz: 'Un quiz de fin de module, et l’explication qui suit chaque réponse',
+      assistant: 'L’assistant, qui répond à partir de vos propres leçons',
+      programme: 'Le programme, module par module',
+      prompts: 'La bibliothèque de prompts',
+      avance: 'Les cas d’usage avancés, jusqu’aux serveurs MCP',
     },
     aVenir: 'Capture à venir',
   },
@@ -1276,12 +1278,14 @@ const EN: Jour30Copy = {
 
   produit: {
     titre: 'This is what you open in the morning.',
-    texte: 'Three screens of the product: the dashboard, a lesson with its prompt, and the workshop where the request gets built.',
+    texte: 'Five screens, filmed inside the product: a quiz and its explanation, the assistant, the programme, the prompt library and the advanced cases.',
     url: 'academy.mydigipal.com/app',
     captures: {
-      dashboard: 'The learner space dashboard',
-      lecon: 'A lesson, with its prompt',
-      atelier: 'The workshop, field by field',
+      quiz: 'An end-of-module quiz, and the explanation after every answer',
+      assistant: 'The assistant, answering from your own lessons',
+      programme: 'The programme, module by module',
+      prompts: 'The prompt library',
+      avance: 'The advanced use cases, all the way to MCP servers',
     },
     aVenir: 'Screenshot to come',
   },
