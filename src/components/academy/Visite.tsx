@@ -3,7 +3,7 @@ import { Affiche, Visionneuse, libelleDemo, useVisionneuse, type DemoKey } from 
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { nombreLocal } from './offres';
-import { after, probeClock, reducedMotion, typeText, type Arret } from './motion';
+import { after, pointeurGrossier, probeClock, reducedMotion, typeText, type Arret } from './motion';
 import { renardPoints } from './silhouette';
 
 /**
@@ -85,6 +85,10 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
   const [actif, setActif] = useState<SpotId | null>(null);
   const { ouvert, ouvrir, fermer } = useVisionneuse();
   const [touche, setTouche] = useState(false);
+  // Au doigt, tout change : le verbe de la consigne, la visite qui se joue
+  // seule, et le fait que la réponse ne soit pas à côté mais plus haut.
+  const [tactile, setTactile] = useState(false);
+  const panneau = useRef<HTMLElement>(null);
   const [reponse, setReponse] = useState('');
   const [pointsAffiches, setPointsAffiches] = useState(0);
   const arrets = useRef<Arret[]>([]);
@@ -97,17 +101,27 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
   const lecons = data.faits.lessons;
   const faites = Math.round(lecons * 0.62);
 
+  useEffect(() => setTactile(pointeurGrossier()), []);
+
   const stop = useCallback(() => {
     arrets.current.forEach((a) => a());
     arrets.current = [];
   }, []);
 
-  // La visite automatique, jusqu'au premier geste.
+  // La visite automatique, jusqu'au premier geste — et jamais au doigt.
+  //
+  // ⚠️ Sur un téléphone, le panneau est AU-DESSUS de l'écran et sa hauteur
+  // dépend de la fiche : elle passe de 130 px (« Vos notes ») à 358 px
+  // (l'assistant, qui joue une conversation). Une fiche qui tourne toute seule
+  // fait donc glisser le tableau de bord de deux cents pixels toutes les
+  // quatre secondes, sous le doigt de quelqu'un qui vise une ligne. Et elle
+  // décrit une zone qu'on ne voit pas en même temps qu'elle, donc elle
+  // n'apprend rien. Au doigt, la page attend qu'on lui demande.
   useEffect(() => {
     let tour: Arret = () => {};
-    probeClock((alive) => {
+    const arretSonde = probeClock((alive) => {
       reduce.current = !alive || reducedMotion();
-      if (reduce.current || touche) return;
+      if (reduce.current || touche || tactile) return;
       let i = 0;
       const suivant = () => {
         setActif(TOUR[i % TOUR.length]);
@@ -116,8 +130,11 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
       };
       tour = after(1500, suivant);
     });
-    return () => tour();
-  }, [touche]);
+    return () => {
+      arretSonde();
+      tour();
+    };
+  }, [touche, tactile]);
 
   // Les deux moments joués : la réponse de l'assistant, le compteur de points.
   useEffect(() => {
@@ -151,6 +168,11 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
   const choisir = (id: SpotId) => {
     setTouche(true);
     setActif(id);
+    // Au doigt seulement : la réponse est plus haut dans la page, et un
+    // visiteur qui touche une ligne sans rien voir bouger croit que rien ne
+    // s'est passé. La zone touchée garde son filet d'or, on la retrouve en
+    // redescendant.
+    if (tactile) panneau.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   /** Un élément de l'interface qui sait se décrire. */
@@ -178,7 +200,7 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
         <h2 className="m-0 max-w-[22ch] text-balance text-[clamp(26px,3.8vw,42px)] font-medium leading-[1.12] tracking-[-0.025em] text-ivoire">
           {c.titre}
         </h2>
-        <p className="mt-4 max-w-[58ch] text-[16px] leading-[1.65] text-corps-nuit">{c.sous}</p>
+        <p className="mt-4 max-w-[58ch] text-[16px] leading-[1.65] text-corps-nuit">{tactile ? c.sousTactile : c.sous}</p>
 
         <div className="mt-10 grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-8">
           {/* L'espace apprenant, refait. */}
@@ -262,7 +284,7 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
                         ['profil', c.rail.acces.profil],
                       ] as Array<[SpotId, string]>
                     ).map(([id, label]) => (
-                      <div key={id} {...spot(id, 'flex items-center gap-2.5 !rounded-none px-4 py-[7px] text-[12.5px] text-corps-nuit')}>
+                      <div key={id} {...spot(id, 'flex items-center gap-2.5 !rounded-none px-4 py-[7px] text-[12.5px] text-corps-nuit max-lg:min-h-11')}>
                         <span className="h-1.5 w-1.5 rounded-full bg-or/70" aria-hidden="true" />
                         <span className="flex-1">{label}</span>
                         <span className="font-ac-mono text-[10px] text-brume-nuit" aria-hidden="true">
@@ -305,7 +327,8 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
               fiche : sinon elle changeait sous le curseur au moment où on tendait
               la main vers le bouton de lecture. */}
           <aside
-            className="sticky top-18 z-20 max-lg:order-first lg:top-24"
+            ref={panneau}
+            className="sticky top-18 z-20 scroll-mt-[76px] max-lg:order-first lg:top-24"
             aria-live="polite"
             onMouseEnter={() => setTouche(true)}
           >
@@ -341,14 +364,12 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
                         de l'assistant, le compteur qui monte) reste collé au
                         texte qui l'annonce. Un clic ouvre la vidéo en grand.
 
-                        Sous lg, elle attend le premier geste : le panneau y est
-                        AU-DESSUS de l'écran, donc une affiche qui apparaît et
-                        disparaît au fil de la visite automatique ferait glisser
-                        le tableau de bord de deux cents pixels sous le doigt,
-                        toutes les quatre secondes, sans que personne l'ait
-                        demandé. */}
+                        ⚠️ Rien sous lg : ce sont des captures d'une interface
+                        d'ORDINATEUR, illisibles à 350 px de large, et les
+                        agrandir sur un téléphone ne les rend pas plus lisibles.
+                        Même raison que la galerie du bas de page. */}
                     {actif && VIDEO_DU_SPOT[actif] && (
-                      <div className={touche ? undefined : 'max-lg:hidden'}>
+                      <div className="max-lg:hidden">
                         <Affiche
                           nom={VIDEO_DU_SPOT[actif]!}
                           titre={libelleDemo(VIDEO_DU_SPOT[actif]!, locale)}
@@ -370,7 +391,7 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
                         </li>
                       ))}
                     </ul>
-                    <p className="m-0 mt-4 font-ac-mono text-[11px] text-brume-nuit">{c.pitch.indice}</p>
+                    <p className="m-0 mt-4 font-ac-mono text-[11px] text-brume-nuit">{tactile ? c.pitch.indiceTactile : c.pitch.indice}</p>
                   </>
                 )}
               </div>

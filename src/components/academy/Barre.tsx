@@ -109,9 +109,12 @@ export default function Barre({ locale }: { locale: Locale }) {
 
         <span ref={jourRef} className="ml-auto flex-none font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-or transition-opacity duration-300" style={{ opacity: 0 }} />
 
+        {/* Sous lg, l'appel vit en bas à droite (`AppelFlottant`), là où arrive
+            le pouce. Ici il était de toute façon tronqué dès que « Jour n / 30 »
+            s'affichait à côté : sur un écran de 390 px, les deux ne tiennent pas. */}
         <a
           href="#pricing"
-          className="inline-flex min-h-10 flex-none items-center whitespace-nowrap rounded-bouton bg-or px-4 py-2 text-[14px] font-semibold text-salle transition duration-150 hover:bg-or-vif"
+          className="hidden min-h-10 flex-none items-center whitespace-nowrap rounded-bouton bg-or px-4 py-2 text-[14px] font-semibold text-salle transition duration-150 hover:bg-or-vif lg:inline-flex"
         >
           {c.cta}
         </a>

@@ -3,7 +3,7 @@ import { SYMBOLE, enDevise, prixDe, type Devise, leconsProgramme, leconsCompleme
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { formatPrice, nombreLocal, teamDiscount } from './offres';
-import { trackSelectItem, withAdClickIds } from './track';
+import { trackSelectItem, useLienApp, withAdClickIds } from './track';
 import FormEquipe from './FormEquipe';
 
 const OPTIONS = ['construire', 'session', 'audit'] as const;
@@ -22,6 +22,9 @@ const OPTIONS = ['construire', 'session', 'audit'] as const;
  */
 export default function ConfigurateurNuit({ locale, data }: { locale: Locale; data: Jour30Data }) {
   const copie = jour30Copy(locale);
+  // Le lien gratuit garde l'identifiant de clic, comme celui du tunnel juste
+  // au-dessus : les deux sorties de cette page mènent au même achat.
+  const gratuit = useLienApp(`${data.urls.base}${locale === 'fr' ? '/fr' : ''}/start`);
   const c = copie.configurateur;
   const nombre = (n: number) => nombreLocal(n, locale);
   const offre = (id: string) => data.offres.find((o) => o.id === id);
@@ -223,7 +226,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
         {/* La porte d'entree gratuite, la ou le prix vient d'etre lu : c'est le
             seul endroit ou quelqu'un qui hesite la cherche (Paul, 29/08/2026). */}
         <a
-          href={`${data.urls.base}${locale === 'fr' ? '/fr' : ''}/start`}
+          href={gratuit}
           className="mt-3 block text-center text-[13px] leading-[1.5] text-brume-nuit underline decoration-filet-nuit underline-offset-4 transition hover:text-ivoire"
         >
           {c.gratuitLigne(leconsGratuit(data))}

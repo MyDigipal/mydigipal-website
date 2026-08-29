@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { jour30Copy } from './copy';
 import type { Locale } from './data';
-import { ease, onEnter, probeClock, reducedMotion } from './motion';
+import { ease, onEnter, pointeurGrossier, probeClock, reducedMotion } from './motion';
 
 /**
  * Le MCP, expliqué : le moment fort de la page, et la seule section didactique.
@@ -33,6 +33,10 @@ const FIL_OR = '#a8862f';
 export default function Mcp({ locale }: { locale: Locale }) {
   const c = jour30Copy(locale).mcp;
   const [actif, setActif] = useState(c.outils[0].id);
+  // « Survolez un outil » est un ordre impossible au doigt. Le verbe se relève
+  // dans un effet : le serveur ne sait pas avec quoi on désignera.
+  const [tactile, setTactile] = useState(false);
+  useEffect(() => setTactile(pointeurGrossier()), []);
   const [visibles, setVisibles] = useState(3);
   const stage = useRef<HTMLDivElement>(null);
   const svg = useRef<SVGSVGElement>(null);
@@ -287,7 +291,7 @@ export default function Mcp({ locale }: { locale: Locale }) {
               );
             })}
           </div>
-          <p className="m-0 mt-3 text-center font-ac-mono text-[10.5px] uppercase tracking-[0.14em] text-brume">{c.survolez}</p>
+          <p className="m-0 mt-3 text-center font-ac-mono text-[10.5px] uppercase tracking-[0.14em] text-brume">{tactile ? c.touchez : c.survolez}</p>
         </div>
 
         {/* Le panneau : ce que ça donne, en trois temps. */}

@@ -2,6 +2,7 @@ import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { leconsProgramme, leconsComplement, leconsGratuit } from './data';
 import { formatPrice } from './offres';
+import { useLienApp } from './track';
 
 /**
  * Le hero : ce qu'on vend, en une phrase, et le produit tel qu'il est.
@@ -20,6 +21,11 @@ export default function Hero({ locale, data }: { locale: Locale; data: Jour30Dat
   const programme = data.offres.find((o) => o.id === 'programme');
   const prix = programme ? formatPrice(programme.ttc_minor, locale) : '';
   const cta = 'inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton px-[26px] py-3.5 text-[15.5px] font-semibold transition duration-150';
+  // ⚠️ Le lien vers le module gratuit passe par `useLienApp` : sans lui,
+  // quelqu'un qui arrive d'une annonce et ouvre l'accès gratuit change de
+  // domaine en perdant son identifiant de clic, et l'achat qui suit une
+  // semaine plus tard n'est plus attribuable à cette annonce.
+  const gratuit = useLienApp(`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`);
 
   return (
     <section id="academy-hero" className="relative overflow-hidden px-4 pb-16 pt-32 sm:px-6 lg:pb-24 lg:pt-40">
@@ -47,7 +53,7 @@ export default function Hero({ locale, data }: { locale: Locale; data: Jour30Dat
               {c.cta}
             </a>
             <a
-              href={`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`}
+              href={gratuit}
               className={`${cta} border border-filet-nuit text-corps-nuit hover:border-brume-nuit hover:text-ivoire`}
             >
               {c.cta2(leconsGratuit(data))}

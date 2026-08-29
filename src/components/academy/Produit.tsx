@@ -72,11 +72,20 @@ function Vignette({
   );
 }
 
+/**
+ * ⚠️ Masquée sous lg (Paul, 29/08/2026 : « si certains trucs sont trop
+ * compliqués ou trop misleading sur mobile, enlevons-les »). Ce sont des
+ * captures d'une interface d'ORDINATEUR : à 350 px de large on ne lit aucun de
+ * leurs libellés, et on montre en plus un écran qui n'est pas celui qu'un
+ * visiteur au téléphone ouvrira. `display:none` empêche aussi l'entrée dans
+ * l'écran, donc aucune des huit vidéos n'est chargée : la page mobile est plus
+ * légère de trois écrans de défilement et de tout ce qu'ils pesaient.
+ */
 export default function Produit({ locale }: { locale: Locale }) {
   const c = jour30Copy(locale).produit;
   const { ouvert, ouvrir, fermer } = useVisionneuse();
   return (
-    <section className="border-t border-filet-nuit px-4 py-20 sm:px-6">
+    <section className="hidden border-t border-filet-nuit px-4 py-20 sm:px-6 lg:block">
       <div className="mx-auto max-w-[1180px]">
         <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
           <h2 className="m-0 max-w-[24ch] text-[clamp(24px,3.4vw,36px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire">

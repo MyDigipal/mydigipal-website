@@ -9,6 +9,13 @@
 // traverser le domaine, sinon la conversion renvoyée côté serveur au
 // provisioning arrive sans attribution. On les garde en session et on les
 // remet dans le lien du tunnel.
+//
+// ⚠️ Le module gratuit compte autant que le tunnel (29/08/2026) : quelqu'un
+// qui arrive d'une annonce, ouvre l'accès gratuit puis achète une semaine
+// plus tard doit rester attribuable à cette annonce. Les liens vers `/start`
+// passent donc par `useLienApp`, pas par une adresse écrite en dur.
+
+import { useEffect, useState } from 'react';
 
 type DataLayerEvent = Record<string, unknown>;
 
@@ -63,4 +70,28 @@ export function withAdClickIds(url: string): string {
   } catch {
     return url;
   }
+}
+
+/**
+ * Un lien vers l'application, enrichi des identifiants de clic dès que le
+ * navigateur a la main.
+ *
+ * L'adresse nue est rendue au build, puis complétée dans un effet : le premier
+ * rendu du navigateur est identique à celui du serveur, donc l'hydratation
+ * passe. Un `onClick` qui réécrirait `location.href` marcherait aussi, mais il
+ * casserait le clic du milieu et l'ouverture dans un nouvel onglet.
+ */
+export function useLienApp(url: string): string {
+  const [href, setHref] = useState(url);
+  useEffect(() => {
+    // ⚠️ La capture est refaite ici, et pas seulement dans l'effet de la page.
+    // React exécute les effets des ENFANTS avant celui du parent : au moment
+    // où ce lien se calcule, `captureAdClickIds` de la page n'a pas encore
+    // tourné et la session est vide. Le premier essai rendait donc des liens
+    // nus, alors que le gclid était bien dans l'adresse. La fonction est
+    // idempotente, l'appeler deux fois ne coûte rien.
+    captureAdClickIds();
+    setHref(withAdClickIds(url));
+  }, [url]);
+  return href;
 }

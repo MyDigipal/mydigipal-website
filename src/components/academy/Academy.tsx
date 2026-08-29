@@ -12,6 +12,7 @@ import Retournement from './Retournement';
 import Maison from './Maison';
 import Produit from './Produit';
 import ConfigurateurNuit from './ConfigurateurNuit';
+import AppelFlottant from './AppelFlottant';
 
 /**
  * La page « AI Academy » : trente jours dans un compte, puis le vôtre.
@@ -85,6 +86,7 @@ export default function Academy({ locale, initial }: { locale: Locale; initial: 
       <Maison locale={locale} temoignages={data.temoignages} avis={preuve} />
       <Produit locale={locale} />
       <ConfigurateurNuit locale={locale} data={data} />
+      <AppelFlottant locale={locale} leconsGratuites={leconsGratuit(data)} />
     </div>
   );
 }

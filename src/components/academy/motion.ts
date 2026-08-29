@@ -94,15 +94,39 @@ export function reducedMotion(): boolean {
 }
 
 /**
+ * Vrai quand le doigt est le seul moyen de désigner quelque chose.
+ *
+ * On interroge `hover`, jamais la largeur : une fenêtre étroite sur un
+ * ordinateur garde sa souris, et une tablette large ne l'a pas. Ce qui change
+ * n'est pas la place disponible, c'est le geste possible — donc c'est le geste
+ * qu'il faut mesurer.
+ *
+ * ⚠️ Toujours l'appeler dans un effet, jamais au rendu : le serveur ne connaît
+ * pas le pointeur, et répondre autre chose que le rendu du serveur au premier
+ * passage casse l'hydratation.
+ */
+export function pointeurGrossier(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches;
+}
+
+/**
  * La sonde d'horloge. AVANT de cacher quoi que ce soit, on vérifie que deux
  * images successives arrivent et que le temps avance réellement. Sinon (onglet
  * en veille, contexte de rendu figé, capture d'écran), on bascule en mode sans
  * mouvement, où chaque élément est déjà à son état final.
+ *
+ * ⚠️ Elle rend un arrêt, et il faut s'en servir dans tout effet dont les
+ * dépendances peuvent changer (29/08/2026). La sonde répond deux images plus
+ * tard : entre-temps l'effet a pu être démonté, et son rappel arme alors une
+ * animation que plus aucun nettoyage ne viendra arrêter, avec les valeurs
+ * périmées de sa fermeture. C'est ainsi que la visite du produit continuait de
+ * tourner toute seule sur un téléphone alors que le code venait justement de
+ * l'y interdire.
  */
-export function probeClock(cb: (alive: boolean) => void): void {
+export function probeClock(cb: (alive: boolean) => void): Arret {
   if (reducedMotion() || typeof requestAnimationFrame !== 'function') {
     cb(false);
-    return;
+    return () => {};
   }
   const t0 = performance.now();
   let settled = false;
@@ -119,6 +143,11 @@ export function probeClock(cb: (alive: boolean) => void): void {
       finish(performance.now() - t0 > 0.5);
     })
   );
+  // Marquer la sonde résolue suffit : `finish` ne rappellera plus.
+  return () => {
+    settled = true;
+    clearTimeout(guard);
+  };
 }
 
 /**

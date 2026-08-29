@@ -543,6 +543,12 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
               {c.rail.aucuneSerie}
             </p>
           </section>
+          {/* ⚠️ La liste est VIDE en production depuis le 28/08/2026 : le
+              parcours vendu n'ouvre plus M14 ni M15 aux points, ils sont
+              passés au complément Construire. La carte restait affichée avec
+              son seul titre, un cadre vide sur la page de vente. Elle ne se
+              rend que si elle a quelque chose à dire. */}
+          {MODULES_A_DEBLOQUER.length > 0 && (
           <section className={`${PANNEAU} px-5 py-[18px]`}>
             <p className="m-0 mb-3 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.16em] text-brume-nuit">{c.rail.aDebloquer}</p>
             {MODULES_A_DEBLOQUER.map((m, i) => (
@@ -558,6 +564,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
               </div>
             ))}
           </section>
+          )}
         </aside>
       </div>
     </section>

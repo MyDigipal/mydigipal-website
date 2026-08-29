@@ -109,6 +109,7 @@ const FR = {
   visite: {
     titre: 'Ce qu’il y a dedans.',
     sous: 'L’espace apprenant, tel que vous l’ouvrirez. Survolez un élément : il vous dit à quoi il sert.',
+    sousTactile: 'L’espace apprenant, tel que vous l’ouvrirez. Touchez un élément : il vous dit à quoi il sert.',
     voirLecran: 'Voir cet écran',
     nav: ['Parcours', 'Outils', 'Mon espace'],
     bandeau: { kicker: 'Mon espace', titre: 'Bonjour Clara', ligne: 'Formule complète, tout le parcours ouvert.' },
@@ -155,6 +156,7 @@ const FR = {
         'Un compte qui se remplit : points, série, trophées, attestation.',
       ],
       indice: 'Survolez un élément de l’écran pour le découvrir.',
+      indiceTactile: 'Touchez un élément de l’écran pour le découvrir.',
     },
     assistant: {
       question: 'Quelle différence entre un agent et une automatisation ?',
@@ -310,7 +312,7 @@ const FR = {
       phrase: 'Cinq leçons dans la journée. Quelque chose tombe qu’elle ne cherchait pas.',
       meta: (metal: string, pts: number) => `Trophée secret · ${metal}, +${pts}`,
       note: (total: number, secrets: number) =>
-        `${total} trophées, dont ${secrets} secrets : leur nom n’apparaît qu’une fois obtenus. Le meilleur métal dessine le cadre de l’avatar, à droite.`,
+        `${total} trophées, dont ${secrets} secrets : leur nom n’apparaît qu’une fois obtenus. Le meilleur métal dessine le cadre de l’avatar.`,
     },
     j17: {
       phrase: 'Elle arrête d’écrire ses prompts de zéro. Puis elle en ajoute un.',
@@ -383,6 +385,7 @@ const FR = {
     droits: 'Droits déclarés',
     qui: { vous: 'Vous', serveur: 'Le serveur', resultat: 'Résultat' },
     survolez: 'Survolez un outil',
+    touchez: 'Touchez un outil',
     outils: [
       {
         id: 'gmail',
@@ -588,6 +591,11 @@ const FR = {
     capVide: 'Le premier carré s’allume à la première leçon terminée.',
   },
 
+  flottant: {
+    aria: 'Ouvrir un compte',
+    cta: 'Ouvrir mon compte',
+    gratuit: (n: number) => `${n} leçons gratuites`,
+  },
   barre: {
     marque: 'AI Academy',
     aria: 'Repères de la page',
@@ -763,6 +771,7 @@ const EN: Jour30Copy = {
   visite: {
     titre: 'What is inside.',
     sous: 'The learner space, as you will open it. Hover an element: it tells you what it is for.',
+    sousTactile: 'The learner space, as you will open it. Tap an element: it tells you what it is for.',
     voirLecran: 'Watch this screen',
     nav: ['Course', 'Tools', 'My space'],
     bandeau: { kicker: 'My space', titre: 'Hello Clara', ligne: 'Complete plan, the whole course open.' },
@@ -809,6 +818,7 @@ const EN: Jour30Copy = {
         'An account that fills up: points, streak, trophies, certificate.',
       ],
       indice: 'Hover an element of the screen to discover it.',
+      indiceTactile: 'Tap an element of the screen to discover it.',
     },
     assistant: {
       question: 'What is the difference between an agent and an automation?',
@@ -964,7 +974,7 @@ const EN: Jour30Copy = {
       phrase: 'Five lessons in one day. Something drops that she was not looking for.',
       meta: (metal: string, pts: number) => `Secret trophy · ${metal}, +${pts}`,
       note: (total: number, secrets: number) =>
-        `${total} trophies, ${secrets} of them secret: their name only appears once earned. The best metal frames the avatar, on the right.`,
+        `${total} trophies, ${secrets} of them secret: their name only appears once earned. The best metal frames the avatar.`,
     },
     j17: {
       phrase: 'She stops writing her prompts from scratch. Then she adds one.',
@@ -1034,6 +1044,7 @@ const EN: Jour30Copy = {
     droits: 'Declared rights',
     qui: { vous: 'You', serveur: 'The server', resultat: 'Result' },
     survolez: 'Hover a tool',
+    touchez: 'Tap a tool',
     outils: [
       {
         id: 'gmail',
@@ -1239,6 +1250,11 @@ const EN: Jour30Copy = {
     capVide: 'The first square lights up with the first completed lesson.',
   },
 
+  flottant: {
+    aria: 'Open an account',
+    cta: 'Open my account',
+    gratuit: (n: number) => `${n} free lessons`,
+  },
   barre: {
     marque: 'AI Academy',
     aria: 'Page landmarks',

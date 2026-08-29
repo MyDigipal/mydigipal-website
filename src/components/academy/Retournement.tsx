@@ -4,6 +4,7 @@ import { nombreLocal } from './offres';
 import { ease, onEnter, probeClock, reducedMotion, tween } from './motion';
 import type { EtatJour, Locale } from './data';
 import { JOURS_CALENDRIER, METAL_HEX, renardPoints } from './silhouette';
+import { useLienApp } from './track';
 import Renard from './Renard';
 
 /**
@@ -34,6 +35,11 @@ export default function Retournement({
   const t = jour30Copy(locale);
   const c = t.retournement;
   const nombre = (n: number) => nombreLocal(n, locale);
+  // ⚠️ Le lien vers le module gratuit passe par `useLienApp` : sans lui,
+  // quelqu'un qui arrive d'une annonce et ouvre l'accès gratuit change de
+  // domaine en perdant son identifiant de clic, et l'achat qui suit une
+  // semaine plus tard n'est plus attribuable à cette annonce.
+  const gratuit = useLienApp(`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`);
   const section = useRef<HTMLElement>(null);
   const pts = useRef<HTMLSpanElement>(null);
   const fox = useRef<SVGPolygonElement>(null);
@@ -147,7 +153,7 @@ export default function Retournement({
               {c.ouvrir}
             </a>
             <a
-              href={`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`}
+              href={gratuit}
               className="inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton border border-filet-nuit px-[26px] py-3.5 text-[15.5px] font-medium text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire"
             >
               {c.gratuit(leconsGratuites)}
