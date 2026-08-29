@@ -21,12 +21,15 @@ export default function Retournement({
   fin,
   rang,
   trophees,
+  leconsGratuites,
 }: {
   locale: Locale;
   fin: EtatJour;
   /** Le libellé du rang final, depuis app-copy. */
   rang: string;
   trophees: number;
+  /** Ce que l'inscription gratuite ouvre, pour le second bouton. */
+  leconsGratuites: number;
 }) {
   const t = jour30Copy(locale);
   const c = t.retournement;
@@ -147,7 +150,7 @@ export default function Retournement({
               href={`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`}
               className="inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton border border-filet-nuit px-[26px] py-3.5 text-[15.5px] font-medium text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire"
             >
-              {c.gratuit}
+              {c.gratuit(leconsGratuites)}
             </a>
           </div>
         </div>

@@ -88,6 +88,9 @@ export interface Jour30Data {
      */
     lessonsProgramme?: number;
     lessonsComplement?: number;
+    /** Ce que l'inscription gratuite ouvre (deux modules depuis le 29/08/2026). */
+    lessonsGratuit?: number;
+    minutesGratuit?: number;
     heuresProgramme?: string;
     heuresComplement?: string;
     lessonsConstruire: number;
@@ -166,4 +169,14 @@ export function leconsProgramme(d: Jour30Data): number {
 /** Ce que le complément ouvre en plus : les modules réservés et le parcours avancé. */
 export function leconsComplement(d: Jour30Data): number {
   return d.faits.lessonsComplement ?? d.faits.lessonsConstruire;
+}
+
+/**
+ * Les leçons offertes par l'inscription gratuite.
+ *
+ * Le repli vaut les deux modules ouverts le 29/08/2026 ; la vérité vient de
+ * l'app, comme le reste. chiffre-libre
+ */
+export function leconsGratuit(d: Jour30Data): number {
+  return d.faits.lessonsGratuit ?? 15;
 }

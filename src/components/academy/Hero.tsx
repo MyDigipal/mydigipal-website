@@ -1,6 +1,6 @@
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
-import { leconsProgramme, leconsComplement } from './data';
+import { leconsProgramme, leconsComplement, leconsGratuit } from './data';
 import { formatPrice } from './offres';
 
 /**
@@ -50,7 +50,7 @@ export default function Hero({ locale, data }: { locale: Locale; data: Jour30Dat
               href={`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`}
               className={`${cta} border border-filet-nuit text-corps-nuit hover:border-brume-nuit hover:text-ivoire`}
             >
-              {c.cta2}
+              {c.cta2(leconsGratuit(data))}
             </a>
           </div>
         </div>
