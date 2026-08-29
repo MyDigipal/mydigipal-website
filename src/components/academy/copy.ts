@@ -92,7 +92,7 @@ const FR = {
      */
     repartition: (programme: number, complement: number) =>
       `${programme} leçons dans le programme, ${complement} de plus avec le complément Construire.`,
-    cta: 'Ouvrir mon compte',
+    cta: 'Commencer',
     cta2: (n: number) => `Essayer ${n} leçons, gratuitement`,
     url: 'academy.mydigipal.com/app',
     alt: 'Le tableau de bord de l’espace apprenant',
@@ -580,9 +580,9 @@ const FR = {
     titre: 'Vous avez regardé le compte de Clara se remplir. Au tour du vôtre.',
     texte:
       'Trente jours plus tard, il ressemblera à celui-là. Ce n’est pas une promesse de résultat : c’est ce que fait le produit quand on s’en sert.',
-    ouvrir: 'Ouvrir mon compte',
+    ouvrir: 'Commencer',
     enseigne: 'Qui enseigne',
-    gratuit: (n: number) => `Commencer par les ${n} leçons gratuites`,
+    gratuit: (n: number) => `Essayer les ${n} leçons gratuites`,
     jour30: (rang: string) => `Jour 30 · ${rang}`,
     points: 'points',
     cap: (trophees: number, total: number) => `Trente jours actifs · ${trophees} trophées sur ${total}`,
@@ -593,15 +593,17 @@ const FR = {
 
   flottant: {
     aria: 'Ouvrir un compte',
-    cta: 'Ouvrir mon compte',
+    cta: 'Commencer',
     gratuit: (n: number) => `${n} leçons gratuites`,
   },
   barre: {
     marque: 'AI Academy',
     aria: 'Repères de la page',
+    langue: 'EN',
+    langueAria: 'Read this page in English',
     reperes: { n1: 'Niveau 1', n2: 'Niveau 2', n3: 'Niveau 3', avis: 'Avis', tarifs: 'Tarifs' },
     jour: (n: number) => `Jour ${n} / 30`,
-    cta: 'Ouvrir mon compte',
+    cta: 'Commencer',
   },
   maison: {
     titre: 'Une méthode née en salle, chez Kering, La Poste ou Pierre Fabre.',
@@ -663,7 +665,7 @@ const FR = {
     sansAbo: 'pas d’abonnement',
     placesRecap: (n: number) => `× ${n} places`,
     remiseLigne: 'Remise équipe',
-    ouvrir: 'Ouvrir mon compte',
+    ouvrir: 'Commencer',
     gratuitLigne: (n: number) => `Ou commencez par les ${n} leçons gratuites`,
     devisTexte: (max: number) => `Au-delà de ${max} places, on ne calcule plus : on en parle.`,
     devis: 'Demander un devis',
@@ -754,7 +756,7 @@ const EN: Jour30Copy = {
       `${lecons} lessons at your own pace, the CRAFT method, your exercises reviewed by a human, all the way to agents and MCP servers. From €${prix}.`,
     repartition: (programme: number, complement: number) =>
       `${programme} lessons in the programme, ${complement} more with the Build add-on.`,
-    cta: 'Open my account',
+    cta: 'Get started',
     cta2: (n: number) => `Try ${n} lessons, free`,
     url: 'academy.mydigipal.com/app',
     alt: 'The learner space dashboard',
@@ -1239,9 +1241,9 @@ const EN: Jour30Copy = {
     titre: 'You have been watching Clara’s account fill up. Time to start yours.',
     texte:
       'Thirty days from now, it will look like this one. That is not a promise of results: it is what the product does when you use it.',
-    ouvrir: 'Open my account',
+    ouvrir: 'Get started',
     enseigne: 'Who teaches',
-    gratuit: (n: number) => `Start with the ${n} free lessons`,
+    gratuit: (n: number) => `Try the ${n} free lessons`,
     jour30: (rang: string) => `Day 30 · ${rang}`,
     points: 'points',
     cap: (trophees: number, total: number) => `Thirty active days · ${trophees} trophies out of ${total}`,
@@ -1252,15 +1254,17 @@ const EN: Jour30Copy = {
 
   flottant: {
     aria: 'Open an account',
-    cta: 'Open my account',
+    cta: 'Get started',
     gratuit: (n: number) => `${n} free lessons`,
   },
   barre: {
     marque: 'AI Academy',
     aria: 'Page landmarks',
+    langue: 'FR',
+    langueAria: 'Lire cette page en français',
     reperes: { n1: 'Level 1', n2: 'Level 2', n3: 'Level 3', avis: 'Reviews', tarifs: 'Pricing' },
     jour: (n: number) => `Day ${n} / 30`,
-    cta: 'Open my account',
+    cta: 'Get started',
   },
   maison: {
     titre: 'A method born in the room, at Kering, La Poste and Pierre Fabre.',
@@ -1322,7 +1326,7 @@ const EN: Jour30Copy = {
     sansAbo: 'no subscription',
     placesRecap: (n: number) => `× ${n} seats`,
     remiseLigne: 'Team discount',
-    ouvrir: 'Open my account',
+    ouvrir: 'Get started',
     gratuitLigne: (n: number) => `Or start with the ${n} free lessons`,
     devisTexte: (max: number) => `Beyond ${max} seats, we stop calculating: we talk.`,
     devis: 'Request a quote',

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { jour30Copy } from './copy';
 import type { Locale } from './data';
+import Drapeau from './Drapeau';
 
 /**
  * La barre de la page Academy, à la place du menu du site.
@@ -32,6 +33,19 @@ export default function Barre({ locale }: { locale: Locale }) {
   const fill = useRef<HTMLSpanElement>(null);
   const jourRef = useRef<HTMLSpanElement>(null);
   const [actif, setActif] = useState<string | null>(null);
+
+  // Le sélecteur de langue emmène à l'endroit où l'on se trouve, pas en haut de
+  // la page traduite : quelqu'un qui bascule depuis les tarifs veut les tarifs.
+  // Le hash est relu à chaque changement plutôt que capté au clic, pour que le
+  // lien reste un vrai lien (clic du milieu, ouverture dans un onglet).
+  const autre: Locale = locale === 'fr' ? 'en' : 'fr';
+  const [ancre, setAncre] = useState('');
+  useEffect(() => {
+    const maj = () => setAncre(window.location.hash || '');
+    maj();
+    window.addEventListener('hashchange', maj);
+    return () => window.removeEventListener('hashchange', maj);
+  }, []);
 
   useEffect(() => {
     let raf = 0;
@@ -108,6 +122,17 @@ export default function Barre({ locale }: { locale: Locale }) {
         </nav>
 
         <span ref={jourRef} className="ml-auto flex-none font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-or transition-opacity duration-300" style={{ opacity: 0 }} />
+
+        <a
+          href={`/${autre}/academy${ancre}`}
+          hrefLang={autre}
+          aria-label={c.langueAria}
+          title={c.langueAria}
+          className="flex min-h-10 flex-none items-center gap-2 rounded-bouton border border-filet-nuit px-2.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.1em] text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire"
+        >
+          <Drapeau locale={autre} />
+          {c.langue}
+        </a>
 
         {/* Sous lg, l'appel vit en bas à droite (`AppelFlottant`), là où arrive
             le pouce. Ici il était de toute façon tronqué dès que « Jour n / 30 »
