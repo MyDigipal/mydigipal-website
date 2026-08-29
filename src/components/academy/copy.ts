@@ -635,7 +635,6 @@ const FR = {
       { titre: 'Data et mesure', texte: 'Tracking, tableaux de bord et chaînes de traitement, de la collecte à la décision.' },
       { titre: 'Automatisation et IA', texte: 'Assistants, agents et automatisations opérés en production, pas en démonstration.' },
     ],
-    visuelAlt: 'L’espace apprenant de la MyDigipal AI Academy, en situation',
     logosTitre: 'Nous formons leurs équipes',
     avisTitre: 'Ils ont adoré le training',
     avisLigne: (avis: Avis) => `${avis.nombre} retours écrits, une moyenne de ${noteLocale(avis.note, 'fr')} sur 10`,
@@ -646,7 +645,6 @@ const FR = {
   produit: {
     titre: 'Voilà ce que vous ouvrez le matin.',
     texte: 'Huit écrans, filmés dans le produit. Cliquez sur l’un d’eux pour le regarder en grand.',
-    texteMobile: 'L’espace apprenant, en situation. Les écrans filmés se regardent sur un ordinateur.',
     url: 'academy.mydigipal.com/app',
     agrandir: 'Chaque écran s’ouvre en grand, et se referme avec la touche Échap.',
     aVenir: 'Capture à venir',
@@ -1310,7 +1308,6 @@ const EN: Jour30Copy = {
       { titre: 'Data and measurement', texte: 'Tracking, dashboards and processing pipelines, from collection to decision.' },
       { titre: 'Automation and AI', texte: 'Assistants, agents and automations run in production, not in demos.' },
     ],
-    visuelAlt: 'The MyDigipal AI Academy learner space, in context',
     logosTitre: 'We train their teams',
     avisTitre: 'They loved the training',
     avisLigne: (avis: Avis) => `${avis.nombre} written reviews, averaging ${noteLocale(avis.note, 'en')} out of 10`,
@@ -1321,7 +1318,6 @@ const EN: Jour30Copy = {
   produit: {
     titre: 'This is what you open in the morning.',
     texte: 'Eight screens, filmed inside the product. Click any of them to watch it full size.',
-    texteMobile: 'The learner space, in context. The filmed screens are best watched on a computer.',
     url: 'academy.mydigipal.com/app',
     agrandir: 'Every screen opens full size, and closes with the Escape key.',
     aVenir: 'Screenshot to come',

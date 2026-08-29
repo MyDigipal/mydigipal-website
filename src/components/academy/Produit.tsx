@@ -1,7 +1,6 @@
 import { jour30Copy } from './copy';
 import type { Locale } from './data';
 import { Boucle, Visionneuse, libelleDemo, useVisionneuse, type DemoKey } from './Demos';
-import Visuels from './Visuels';
 
 /**
  * La galerie du produit : huit écrans filmés dans l'application, à des tailles
@@ -74,44 +73,36 @@ function Vignette({
 }
 
 /**
- * La section est de nouveau visible sur mobile depuis le 29/08/2026 au soir,
- * mais pas avec le même contenu.
+ * ⚠️ Masquée sous lg. Ce sont des captures d'une interface d'ORDINATEUR : à
+ * 350 px de large on ne lit aucun de leurs libellés, et on montrerait un écran
+ * qui n'est pas celui qu'un visiteur au téléphone ouvrira. `display:none`
+ * empêche aussi l'entrée dans l'écran, donc aucune des huit vidéos n'est
+ * chargée sur mobile.
  *
- * ⚠️ **La galerie d'enregistrements reste masquée sous lg** : ce sont des
- * captures d'une interface d'ORDINATEUR, à 350 px on ne lit aucun libellé, et
- * on montrerait un écran qui n'est pas celui qu'un visiteur au téléphone
- * ouvrira. `display:none` empêche aussi l'entrée dans l'écran, donc aucune des
- * huit vidéos n'est chargée sur mobile.
- *
- * Les mises en scène de `Visuels`, elles, restent : ce sont des photographies,
- * elles se lisent à toute taille. La section a donc un contenu au téléphone
- * sans rien y montrer d'illisible.
+ * ⚠️ Cette section ne porte QUE les écrans filmés (Paul, 29/08/2026 au soir).
+ * Une bande de mises en scène y avait été ajoutée quelques heures plus tôt :
+ * elle faisait doublon avec ce qu'elle était censée introduire, et une
+ * douzaine d'images d'affilée se parcourt sans rien regarder. Les mises en
+ * scène qui restent sur la page sont placées là où elles disent quelque chose
+ * — Clara au premier niveau du récit, l'équipe au moment de choisir ses places.
  */
 export default function Produit({ locale }: { locale: Locale }) {
   const c = jour30Copy(locale).produit;
   const { ouvert, ouvrir, fermer } = useVisionneuse();
   return (
-    <section className="border-t border-filet-nuit px-4 py-20 sm:px-6">
+    <section className="hidden border-t border-filet-nuit px-4 py-20 sm:px-6 lg:block">
       <div className="mx-auto max-w-[1180px]">
         <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
           <h2 className="m-0 max-w-[24ch] text-[clamp(24px,3.4vw,36px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire">
             {c.titre}
           </h2>
-          {/* Deux textes : sous lg la galerie d'ecrans filmes n'est pas
-              rendue, donc annoncer « huit ecrans, cliquez dessus » designerait
-              quelque chose d'absent. */}
-          <p className="m-0 hidden max-w-[40ch] text-[15px] leading-[1.6] text-brume-nuit lg:block">{c.texte}</p>
-          <p className="m-0 max-w-[40ch] text-[15px] leading-[1.6] text-brume-nuit lg:hidden">{c.texteMobile}</p>
-        </div>
-
-        <div className="mt-[34px]">
-          <Visuels locale={locale} />
+          <p className="m-0 max-w-[40ch] text-[15px] leading-[1.6] text-brume-nuit">{c.texte}</p>
         </div>
 
         {/* `items-start` : sans lui, une vignette étroite s'étire à la hauteur de
             sa voisine large et garde son cadre 16:10 au milieu, donc du vide
             au-dessus et en dessous. */}
-        <div className="mt-4 hidden space-y-4 lg:block">
+        <div className="mt-[34px] space-y-4">
           {RANGEES.map((rangee, i) => (
             <div key={i} className="grid grid-cols-[minmax(0,1fr)] items-start gap-4 lg:grid-cols-12">
               {rangee.map((v) => (
@@ -121,7 +112,7 @@ export default function Produit({ locale }: { locale: Locale }) {
           ))}
         </div>
 
-        <p className="m-0 mt-5 hidden font-ac-mono text-[11px] text-brume-nuit lg:block">{c.agrandir}</p>
+        <p className="m-0 mt-5 font-ac-mono text-[11px] text-brume-nuit">{c.agrandir}</p>
       </div>
 
       {ouvert && <Visionneuse nom={ouvert} titre={libelleDemo(ouvert, locale)} locale={locale} onClose={fermer} />}
