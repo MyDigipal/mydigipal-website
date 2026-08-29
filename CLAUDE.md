@@ -284,6 +284,21 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
   de la hausse** devient franche et dorée à moins de seize jours de la date du JSON
   (`hausseProche`), et disparaît d'elle-même le jour venu.
 - **La page canonique est celle-ci.** `/jour-30` dans l'app est un atelier qui peut diverger.
+- **Le lot du 27/08** (retours d'Alexandre, tranchés par Paul, commit `77166d8`) : la page **n'a plus
+  le `Header` du site** ; elle porte sa propre barre, `Barre.tsx`, dans l'îlot (logo blanc, cinq
+  repères cliquables Niveau 1 / 2 / 3 / Avis / Tarifs, ligne de progression jusqu'à `#pricing`,
+  « Jour n / 30 » lu sur les `data-jour` des articles du récit et masqué après `#maison`, bouton
+  d'achat ; repères cachés sous md). Ancres : `#niveau-1` (en-tête du premier niveau), `#niveau-2`
+  et `#niveau-3` (les `Frontiere`, qui prennent un `id`), `#retournement`, `#maison`, `#avis`,
+  `#pricing`. `Maison.tsx` replie les avis à neuf (`AVIS_VISIBLES`) avec un bouton `avisPlus` /
+  `avisMoins`, et son titre ne parle plus d'agence ni de facturation (« Une méthode née en salle,
+  chez Kering, La Poste ou Pierre Fabre »). `Ailleurs.tsx` n'est plus rendu sur la page (le fichier
+  reste). Le second bouton du hero et du retournement mène au **module gratuit**
+  `academy.mydigipal.com{/fr}/start`, rouvert dans l'app le même soir. Retournement :
+  « Vous avez regardé le compte de Clara se remplir. Au tour du vôtre. » Écartés, avec Paul : le
+  diplôme « validé OpenAI », un bloc promo en haut de page, les avis à la place de la capture du
+  hero. ⚠️ La note du 25/08 « pas de rail flottant vers chaque section » visait un sommaire animé
+  au milieu de la page ; la barre fine du haut est un autre objet, validée par Paul.
 
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)
 
