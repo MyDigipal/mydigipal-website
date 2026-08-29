@@ -85,11 +85,11 @@ export default function Produit({ locale }: { locale: Locale }) {
           <p className="m-0 max-w-[40ch] text-[15px] leading-[1.6] text-brume-nuit">{c.texte}</p>
         </div>
 
+        {/* `items-start` : sans lui, une vignette étroite s'étire à la hauteur de
+            sa voisine large et garde son cadre 16:10 au milieu, donc du vide
+            au-dessus et en dessous. */}
         <div className="mt-[34px] space-y-4">
           {RANGEES.map((rangee, i) => (
-            {/* `items-start` : sans lui, une vignette étroite s'étire à la hauteur de
-                sa voisine large et garde son cadre 16:10 au milieu, donc du vide
-                au-dessus et en dessous. */}
             <div key={i} className="grid grid-cols-[minmax(0,1fr)] items-start gap-4 lg:grid-cols-12">
               {rangee.map((v) => (
                 <Vignette key={v.nom} nom={v.nom} locale={locale} part={v.part} onOuvrir={ouvrir} />
