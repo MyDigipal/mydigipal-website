@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { jour30Copy } from './copy';
 import type { Locale } from './data';
 
@@ -30,13 +31,45 @@ type DemoKey = (typeof DEMOS)[number];
 
 function Demo({ nom, titre }: { nom: DemoKey; titre: string }) {
   const base = `/academy/demos/${nom}`;
+  const ref = useRef<HTMLVideoElement>(null);
+
+  // ⚠️ `preload="none"` et `autoplay` se contredisent : Chrome respecte le
+  // premier et ne demarre jamais (vu en ligne le 29/08/2026, les cinq boucles
+  // figees sur leur affiche). On garde `none` pour que la page reste legere, et
+  // on demande le chargement puis la lecture quand la boucle entre dans
+  // l'ecran. Sans script, l'affiche reste : c'est l'etat de repos.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      el.load();
+      void el.play().catch(() => undefined);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entrees) => {
+        for (const e of entrees) {
+          if (e.isIntersecting) {
+            if (el.readyState === 0) el.load();
+            void el.play().catch(() => undefined);
+          } else if (!el.paused) {
+            el.pause();
+          }
+        }
+      },
+      { rootMargin: '200px 0px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <video
+      ref={ref}
       className="block h-full w-full object-cover object-top"
       poster={`${base}.jpg`}
       width={1280}
       height={800}
-      autoPlay
       muted
       loop
       playsInline
