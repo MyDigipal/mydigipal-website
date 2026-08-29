@@ -324,7 +324,7 @@ const FR = {
     },
     j19: {
       phrase: 'On lui demande le visuel en trois formats. Pour hier.',
-      tirez: 'Tirez la poignée',
+      tirez: 'Faites glisser : à gauche le visuel fourni, à droite ce que donne un recadrage automatique.',
       fourni: 'Fourni',
       recadre: 'Recadré, détouré',
       comparer: 'Comparer les deux visuels',
@@ -978,7 +978,7 @@ const EN: Jour30Copy = {
     },
     j19: {
       phrase: 'She is asked for the visual in three formats. For yesterday.',
-      tirez: 'Drag the handle',
+      tirez: 'Drag across: the supplied visual on the left, what an automatic crop gives on the right.',
       fourni: 'Provided',
       recadre: 'Cropped, cut out',
       comparer: 'Compare the two visuals',

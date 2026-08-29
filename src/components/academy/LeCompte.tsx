@@ -743,20 +743,33 @@ function Comparateur({ c }: { c: Jour30Copy['compte']['j19'] }) {
     [set]
   );
 
+  // ⚠️ Le relachement se perd sans capture de pointeur : si le doigt ou la
+  // souris sort du cadre, de la fenetre ou passe sur une image, le `pointerup`
+  // part ailleurs et `drag` reste vrai. La poignee suivait alors le curseur
+  // sans qu'on appuie, ce qui donne l'impression d'un composant casse (Paul,
+  // 29/08/2026). `setPointerCapture` amarre les trois evenements a la boite.
   useEffect(() => {
+    const b = box.current;
+    if (!b) return;
     const move = (e: PointerEvent) => {
       if (!drag.current) return;
       fromEvent(e);
       if (e.cancelable) e.preventDefault();
     };
-    const up = () => {
+    const stop = () => {
       drag.current = false;
     };
-    window.addEventListener('pointermove', move, { passive: false });
-    window.addEventListener('pointerup', up);
+    b.addEventListener('pointermove', move, { passive: false });
+    b.addEventListener('pointerup', stop);
+    b.addEventListener('pointercancel', stop);
+    b.addEventListener('lostpointercapture', stop);
+    window.addEventListener('blur', stop);
     return () => {
-      window.removeEventListener('pointermove', move);
-      window.removeEventListener('pointerup', up);
+      b.removeEventListener('pointermove', move);
+      b.removeEventListener('pointerup', stop);
+      b.removeEventListener('pointercancel', stop);
+      b.removeEventListener('lostpointercapture', stop);
+      window.removeEventListener('blur', stop);
     };
   }, [fromEvent]);
 
@@ -770,6 +783,12 @@ function Comparateur({ c }: { c: Jour30Copy['compte']['j19'] }) {
         className="relative max-w-[560px] touch-pan-y select-none overflow-hidden rounded-carte border border-filet-nuit bg-salle"
         onPointerDown={(e) => {
           drag.current = true;
+          // La boite garde le pointeur jusqu'au relachement, ou qu'il aille.
+          try {
+            e.currentTarget.setPointerCapture(e.pointerId);
+          } catch {
+            /* un navigateur qui refuse la capture garde l'ancien comportement */
+          }
           fromEvent(e);
         }}
       >
