@@ -299,9 +299,37 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
           <p id="niveau-1" className="m-0 mb-2 scroll-mt-24 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-brume-nuit lg:ml-7">
             {n1.kicker} · {n1.nom}
           </p>
-          <h2 className="m-0 mb-11 max-w-[20ch] text-[clamp(24px,3.4vw,34px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire lg:ml-7">
-            {n1.titre}
-          </h2>
+          {/* Clara est nommée soixante fois dans ce récit et on ne la voyait
+              jamais. Un seul portrait, ici, à l'ouverture du premier niveau :
+              le personnage s'installe et les trente jours qui suivent ont un
+              visage. Pas d'autre portrait plus bas — il en faudrait un par
+              niveau, et le récit deviendrait un album.
+
+              ⚠️ Le ruban juste au-dessus dit que Clara est composée. Ce visage
+              est généré : il illustre un personnage annoncé comme tel, il ne
+              témoigne pas. Ne jamais lui accoler une citation. */}
+          <div className="mb-11 grid grid-cols-[minmax(0,1fr)] items-center gap-6 lg:ml-7 lg:grid-cols-[minmax(0,1fr)_200px]">
+            <h2 className="m-0 max-w-[20ch] text-[clamp(24px,3.4vw,34px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire">
+              {n1.titre}
+            </h2>
+            {/* Deux cadrages plutôt qu'un masquage : au téléphone, un portrait
+                4:5 coûterait deux cent cinquante pixels de hauteur sur une page
+                qui en fait déjà vingt et un mille, et Clara resterait sans
+                visage là où on vend le plus. Le 16:9 tient en cent quatre-vingts
+                pixels, et `objectPosition` garde le regard dans le cadre. */}
+            <figure className="m-0 aspect-[16/9] overflow-hidden rounded-carte border border-filet-nuit bg-encre lg:aspect-[4/5]">
+              <img
+                src="/academy/visuels/apprenante-regard_4-5.jpg"
+                alt={c.claraAlt}
+                width={900}
+                height={1124}
+                loading="lazy"
+                decoding="async"
+                className="block h-full w-full object-cover"
+                style={{ objectPosition: '50% 32%' }}
+              />
+            </figure>
+          </div>
 
           <Jour n={1} label={c.jour(1)} phrase={c.j1.phrase} note={c.j1.note}>
             <div className="max-w-[620px] overflow-hidden rounded-carte border border-filet-nuit bg-encre shadow-[0_22px_48px_-30px_rgba(0,0,0,0.9)]">

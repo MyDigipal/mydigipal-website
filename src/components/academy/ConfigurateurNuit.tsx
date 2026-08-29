@@ -355,6 +355,25 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                 className="mt-4 w-full"
               />
               <p className="m-0 mt-2.5 font-ac-mono text-[11.5px] text-brume-nuit">{remise ? c.remise(Math.round(remise * 100)) : c.remiseInfo(paliersPct)}</p>
+
+              {/* L'image n'apparaît qu'à partir de la deuxième place : elle ne
+                  décore pas la ligne, elle accompagne un choix qu'on vient de
+                  faire. Quelqu'un qui achète pour lui n'a rien à faire d'une
+                  photo d'équipe. */}
+              {places > 1 && (
+                <figure className="m-0 mt-5 overflow-hidden rounded-carte border border-filet-nuit bg-encre">
+                  <img
+                    src="/academy/visuels/equipe-trois_carre.jpg"
+                    alt={c.equipeAlt}
+                    width={1000}
+                    height={1000}
+                    loading="lazy"
+                    decoding="async"
+                    className="block h-full w-full object-cover"
+                    style={{ aspectRatio: '16 / 9', objectPosition: '50% 42%' }}
+                  />
+                </figure>
+              )}
             </div>
           </div>
 

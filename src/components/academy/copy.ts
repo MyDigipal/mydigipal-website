@@ -243,6 +243,7 @@ const FR = {
       { kicker: 'Niveau 3', nom: 'Faire faire', titre: 'Elle branche les outils les uns aux autres.' },
     ],
     jour: (n: number) => `Jour ${n}`,
+    claraAlt: 'Clara, l’apprenante dont ce récit suit les trente jours',
     j1: {
       phrase: 'Elle ouvre son compte. Paul l’accueille, en face caméra.',
       badge: 'Bienvenue',
@@ -666,6 +667,7 @@ const FR = {
     places: 'Combien de places',
     placesLabel: (n: number, max: number) => (n >= max ? `${max} et plus` : `${n} place${n > 1 ? 's' : ''}`),
     remise: (pct: number) => `Remise équipe de ${pct} %, appliquée à tout le panier.`,
+    equipeAlt: 'Trois collègues devant le même écran',
     remiseInfo: (paliers: Array<{ seats: number; pct: number }>) =>
       `La remise démarre à ${paliers[0].seats} places : ${paliers.map((p) => `${p.pct} % à ${p.seats}`).join(', ')}.`,
     total: 'Votre total',
@@ -919,6 +921,7 @@ const EN: Jour30Copy = {
       { kicker: 'Level 3', nom: 'Having it done', titre: 'She wires the tools to one another.' },
     ],
     jour: (n: number) => `Day ${n}`,
+    claraAlt: 'Clara, the learner whose thirty days this story follows',
     j1: {
       phrase: 'She opens her account. Paul welcomes her, on camera.',
       badge: 'Welcome',
@@ -1339,6 +1342,7 @@ const EN: Jour30Copy = {
     places: 'How many seats',
     placesLabel: (n: number, max: number) => (n >= max ? `${max} and more` : `${n} seat${n > 1 ? 's' : ''}`),
     remise: (pct: number) => `Team discount of ${pct}%, applied to the whole basket.`,
+    equipeAlt: 'Three colleagues in front of the same screen',
     remiseInfo: (paliers: Array<{ seats: number; pct: number }>) =>
       `The discount starts at ${paliers[0].seats} seats: ${paliers.map((p) => `${p.pct}% at ${p.seats}`).join(', ')}.`,
     total: 'Your total',

@@ -30,6 +30,10 @@ const BANDE: Array<{ nom: string; ratio: string; part: string; petit: string }> 
   { nom: 'portable-bureau_carre', ratio: 'aspect-square', part: 'lg:col-span-3', petit: 'col-span-1' },
   { nom: 'portable-bureau_paysage', ratio: 'aspect-[1734/907]', part: 'lg:col-span-7', petit: 'col-span-2' },
   { nom: 'cartes-neutres_carre', ratio: 'aspect-square', part: 'lg:col-span-5', petit: 'col-span-2' },
+  { nom: 'apprenante-soir_4-5', ratio: 'aspect-[1122/1402]', part: 'lg:col-span-3', petit: 'col-span-1' },
+  { nom: 'cartes-riches_carre', ratio: 'aspect-square', part: 'lg:col-span-3', petit: 'col-span-1' },
+  { nom: 'bureau-plongee_carre', ratio: 'aspect-square', part: 'lg:col-span-3', petit: 'col-span-1' },
+  { nom: 'apprenante-bibliotheque_4-5', ratio: 'aspect-[1122/1402]', part: 'lg:col-span-3', petit: 'col-span-1' },
 ];
 
 export default function Visuels({ locale }: { locale: Locale }) {
