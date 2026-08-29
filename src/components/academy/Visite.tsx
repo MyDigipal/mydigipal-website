@@ -374,6 +374,7 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
                           nom={VIDEO_DU_SPOT[actif]!}
                           titre={libelleDemo(VIDEO_DU_SPOT[actif]!, locale)}
                           legende={c.voirLecran}
+                          locale={locale}
                           onOuvrir={ouvrir}
                         />
                       </div>
@@ -400,7 +401,7 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
         </div>
       </div>
 
-      {ouvert && <Visionneuse nom={ouvert} titre={libelleDemo(ouvert, locale)} onClose={fermer} />}
+      {ouvert && <Visionneuse nom={ouvert} titre={libelleDemo(ouvert, locale)} locale={locale} onClose={fermer} />}
     </section>
   
   );

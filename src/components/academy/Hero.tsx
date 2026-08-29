@@ -3,6 +3,7 @@ import type { Jour30Data, Locale } from './data';
 import { leconsProgramme, leconsComplement, leconsGratuit } from './data';
 import { formatPrice } from './offres';
 import { useLienApp } from './track';
+import { cheminCapture } from './Demos';
 
 /**
  * Le hero : ce qu'on vend, en une phrase, et le produit tel qu'il est.
@@ -70,7 +71,7 @@ export default function Hero({ locale, data }: { locale: Locale; data: Jour30Dat
           </div>
           <div className="relative aspect-[16/10]">
             <img
-              src="/academy/captures/tableau-de-bord.jpg"
+              src={cheminCapture('tableau-de-bord', locale)}
               alt={c.alt}
               width={1204}
               height={753}

@@ -72,6 +72,42 @@ export function libelleDemo(nom: DemoKey, locale: Locale): string {
 }
 
 /**
+ * Les écrans dont il existe une version filmée en français, dans
+ * `public/academy/demos/fr/`. Les autres sont servis en anglais.
+ *
+ * ⚠️ Une liste explicite, et pas une tentative de chargement : une balise
+ * `<source>` ne se replie PAS sur un 404, elle ne se replie que sur un type
+ * que le navigateur ne sait pas lire. Un fichier français manquant donnerait
+ * donc un cadre noir, pas la version anglaise. On sait ce qu'on a enregistré,
+ * on l'écrit ici.
+ *
+ * Ajouter une langue à un écran, c'est : trois fichiers (`.mp4`, `.webm`,
+ * `.jpg`) plus la vignette `-v.jpg` dans `demos/fr/`, traités exactement comme
+ * les anglais (la recette est dans la section 32 du CLAUDE.md de l'app), et une
+ * entrée ici. Écran par écran : rien n'oblige à tout refaire d'un coup.
+ */
+export const DEMOS_FR = new Set<DemoKey>([]);
+
+/** Le chemin d'un écran, dans la langue lue quand il y existe. */
+export function cheminDemo(nom: DemoKey, locale: Locale): string {
+  return locale === 'fr' && DEMOS_FR.has(nom) ? `/academy/demos/fr/${nom}` : `/academy/demos/${nom}`;
+}
+
+/**
+ * Les captures fixes du hero, même principe. Elles montrent l'interface de
+ * l'application, qui est bilingue : une capture anglaise sur la page française
+ * n'est pas une traduction manquante, c'est une capture prise dans la mauvaise
+ * langue. Elle se refait, elle ne se retouche pas.
+ */
+export const CAPTURES_FR = new Set<string>([]);
+
+export function cheminCapture(nom: string, locale: Locale): string {
+  return locale === 'fr' && CAPTURES_FR.has(nom)
+    ? `/academy/captures/fr/${nom}.jpg`
+    : `/academy/captures/${nom}.jpg`;
+}
+
+/**
  * Une boucle. `preload="none"` et `autoplay` se contredisent (Chrome respecte
  * le premier et ne démarre jamais), donc la lecture se demande à l'entrée dans
  * l'écran et se met en pause à la sortie : la page reste légère et rien ne
@@ -80,14 +116,16 @@ export function libelleDemo(nom: DemoKey, locale: Locale): string {
 export function Boucle({
   nom,
   titre,
+  locale,
   className = '',
 }: {
   nom: DemoKey;
   titre: string;
+  locale: Locale;
   className?: string;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
-  const base = `/academy/demos/${nom}`;
+  const base = cheminDemo(nom, locale);
 
   useEffect(() => {
     const el = ref.current;
@@ -144,13 +182,15 @@ export function Boucle({
 export function Visionneuse({
   nom,
   titre,
+  locale,
   onClose,
 }: {
   nom: DemoKey;
   titre: string;
+  locale: Locale;
   onClose: () => void;
 }) {
-  const base = `/academy/demos/${nom}`;
+  const base = cheminDemo(nom, locale);
   useEffect(() => {
     const auTouche = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -229,11 +269,13 @@ export function Affiche({
   nom,
   titre,
   legende,
+  locale,
   onOuvrir,
 }: {
   nom: DemoKey;
   titre: string;
   legende: string;
+  locale: Locale;
   onOuvrir: (n: DemoKey) => void;
 }) {
   return (
@@ -245,7 +287,7 @@ export function Affiche({
     >
       <span className="relative block aspect-[16/10]">
         <img
-          src={`/academy/demos/${nom}-v.jpg`}
+          src={`${cheminDemo(nom, locale)}-v.jpg`}
           alt=""
           width={600}
           height={375}

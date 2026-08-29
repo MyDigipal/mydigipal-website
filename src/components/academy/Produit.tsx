@@ -55,7 +55,7 @@ function Vignette({
       className={`group block w-full cursor-pointer overflow-hidden rounded-carte border border-filet-nuit bg-encre text-left transition duration-150 hover:border-or-decor ${part}`}
     >
       <div className="relative aspect-[16/10]">
-        <Boucle nom={nom} titre={titre} />
+        <Boucle nom={nom} titre={titre} locale={locale} />
         {/* La loupe ne s'affiche qu'au survol sur les pointeurs fins : au doigt,
             elle masquerait une partie de l'écran filmé en permanence. */}
         <span
@@ -110,7 +110,7 @@ export default function Produit({ locale }: { locale: Locale }) {
         <p className="m-0 mt-5 font-ac-mono text-[11px] text-brume-nuit">{c.agrandir}</p>
       </div>
 
-      {ouvert && <Visionneuse nom={ouvert} titre={libelleDemo(ouvert, locale)} onClose={fermer} />}
+      {ouvert && <Visionneuse nom={ouvert} titre={libelleDemo(ouvert, locale)} locale={locale} onClose={fermer} />}
     </section>
   );
 }
