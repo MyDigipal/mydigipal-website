@@ -792,9 +792,9 @@ function Comparateur({ c }: { c: Jour30Copy['compte']['j19'] }) {
           fromEvent(e);
         }}
       >
-        <img src="/academy/exercices/visuel-carre.png" alt={c.altAvant} loading="lazy" width={1080} height={1080} className="block aspect-square h-auto w-full object-cover" />
+        <img src="/academy/exercices/visuel-carre.jpg" alt={c.altAvant} loading="lazy" width={1080} height={1080} className="block aspect-square h-auto w-full object-cover" />
         <div ref={top} className="absolute inset-0" style={{ clipPath: 'inset(0 0 0 50%)' }}>
-          <img src="/academy/exercices/visuel-carre-retouche-auto.png" alt={c.altApres} loading="lazy" width={1080} height={1080} className="block h-full w-full object-cover" />
+          <img src="/academy/exercices/visuel-carre-retouche-auto.jpg" alt={c.altApres} loading="lazy" width={1080} height={1080} className="block h-full w-full object-cover" />
         </div>
         <div ref={line} className="pointer-events-none absolute bottom-0 top-0 w-px bg-or" style={{ left: '50%' }}>
           <span className="absolute left-1/2 top-1/2 flex h-[34px] w-[34px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-or bg-salle text-or">
