@@ -212,3 +212,57 @@ export function useVisionneuse() {
   const fermer = useCallback(() => setOuvert(null), []);
   return { ouvert, ouvrir: setOuvert, fermer };
 }
+
+/**
+ * L'affiche d'un écran filmé : l'image, un bouton de lecture, et ce qu'on va
+ * voir. Elle sert dans le panneau de la visite (Paul, 29/08/2026 : « ce que je
+ * préférais, c'est qu'il y ait un petit thumbnail de la vidéo qui apparaisse,
+ * avec un bouton Play »).
+ *
+ * Une image et non une boucle : le panneau change d'écran à chaque survol, et
+ * pendant la visite automatique il en traverse huit. Huit vidéos qui se
+ * chargent pour être vues deux secondes, ce serait trois mégaoctets pour rien.
+ * L'image dédiée en fait vingt-cinq kilooctets, et la vidéo se charge quand
+ * quelqu'un demande à la regarder.
+ */
+export function Affiche({
+  nom,
+  titre,
+  legende,
+  onOuvrir,
+}: {
+  nom: DemoKey;
+  titre: string;
+  legende: string;
+  onOuvrir: (n: DemoKey) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onOuvrir(nom)}
+      aria-label={`${legende} : ${titre}`}
+      className="group mt-4 block w-full cursor-pointer overflow-hidden rounded-carte border border-filet-nuit bg-encre text-left transition duration-150 hover:border-or"
+    >
+      <span className="relative block aspect-[16/10]">
+        <img
+          src={`/academy/demos/${nom}-v.jpg`}
+          alt=""
+          width={600}
+          height={375}
+          className="block h-full w-full object-cover object-top"
+        />
+        {/* Le voile fait ressortir le bouton sur une capture claire, et se
+            lève au survol : l'écran se dévoile avant même le clic. */}
+        <span className="absolute inset-0 bg-salle/40 transition duration-200 group-hover:bg-salle/10" />
+        <span className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-or text-salle shadow-[0_12px_30px_-12px_rgba(0,0,0,0.9)] transition duration-200 group-hover:scale-110">
+          <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+            <path d="M8 5.4v13.2L19 12z" fill="currentColor" />
+          </svg>
+        </span>
+      </span>
+      <span className="block border-t border-filet-nuit px-3.5 py-2.5 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.12em] text-brume-nuit transition duration-150 group-hover:text-or">
+        {legende}
+      </span>
+    </button>
+  );
+}

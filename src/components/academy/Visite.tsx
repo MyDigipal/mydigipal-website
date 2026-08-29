@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Visionneuse, libelleDemo, useVisionneuse, type DemoKey } from './Demos';
+import { Affiche, Visionneuse, libelleDemo, useVisionneuse, type DemoKey } from './Demos';
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { nombreLocal } from './offres';
@@ -28,6 +28,12 @@ import { renardPoints } from './silhouette';
  * quatre secondes, jusqu'au premier geste du visiteur. Pas de fenêtre qui
  * s'ouvre par-dessus : un panneau à position fixe se lit, une bulle qui
  * saute d'un point à l'autre se subit.
+ *
+ * ⚠️ La fiche RESTE (Paul, 29/08/2026) : elle ne change qu'au survol d'un
+ * autre élément. Le panneau porte une affiche cliquable, donc la souris doit
+ * pouvoir quitter la zone décrite pour venir la chercher. Tant que sortir de
+ * l'écran remettait le pitch, l'affiche disparaissait au moment précis où on
+ * allait la toucher.
  *
  * Deux moments jouent quelque chose : l'assistant (une question, une réponse
  * qui s'écrit, sa source) et les points (le compteur qui monte).
@@ -178,7 +184,6 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
           {/* L'espace apprenant, refait. */}
           <div
             className="overflow-hidden rounded-[16px] border border-filet-nuit bg-salle shadow-[0_40px_80px_-50px_rgba(0,0,0,0.9)]"
-            onMouseLeave={() => setActif(null)}
           >
             <div className="flex items-center gap-4 border-b border-filet-nuit px-4 py-3 sm:px-6">
               <span className="font-ac-grotesk text-[13px] font-semibold tracking-[-0.01em] text-ivoire">
@@ -296,7 +301,14 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
               vient APRÈS l'écran dans le DOM : à ordre égal c'est l'ordre du DOM qui
               place dans la grille, et un `order-first` sans borne l'envoyait dans la
               colonne de gauche à 1 280 px (le même piège que le rail, la veille). */}
-          <aside className="sticky top-18 z-20 max-lg:order-first lg:top-24" aria-live="polite">
+          {/* Venir dans le panneau arrête la visite automatique sans toucher à la
+              fiche : sinon elle changeait sous le curseur au moment où on tendait
+              la main vers le bouton de lecture. */}
+          <aside
+            className="sticky top-18 z-20 max-lg:order-first lg:top-24"
+            aria-live="polite"
+            onMouseEnter={() => setTouche(true)}
+          >
             <div className={`${carte} border-or/[0.28] p-5 lg:p-6`}>
               <div key={actif || 'pitch'} className="j30-panneau">
                 {fiche ? (
@@ -304,19 +316,6 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
                     <p className={`${rubrique} m-0 text-or`}>{fiche.kicker}</p>
                     <p className="m-0 mt-2 text-[18px] font-medium leading-[1.3] text-ivoire">{fiche.titre}</p>
                     <p className="m-0 mt-3 text-[14.5px] leading-[1.65] text-corps-nuit">{fiche.texte}</p>
-                    {/* ⚠️ Un bouton, pas un clic sur la zone : au doigt, le clic
-                        sert déjà à choisir l'élément puisqu'il n'y a pas de
-                        survol. Ouvrir la vidéo sur ce même geste rendrait la
-                        découverte impossible en mobile. */}
-                    {actif && VIDEO_DU_SPOT[actif] && (
-                      <button
-                        type="button"
-                        onClick={() => ouvrir(VIDEO_DU_SPOT[actif]!)}
-                        className="mt-4 inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-bouton border border-or/50 bg-or/[0.12] px-4 font-ac-mono text-[12px] font-bold uppercase tracking-[0.1em] text-or transition duration-150 hover:bg-or/[0.2]"
-                      >
-                        {c.voirLecran}
-                      </button>
-                    )}
                     {actif === 'assistant' && (
                       <div className="mt-4 grid gap-2">
                         <div className="max-w-[92%] justify-self-end rounded-[12px_12px_4px_12px] bg-salle-3 px-3.5 py-2.5 text-[13px] leading-[1.5] text-ivoire">
@@ -337,6 +336,26 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
                       <p className="m-0 mt-4 font-ac-mono text-[34px] font-bold leading-none tabular-nums text-or">
                         {nombre(pointsAffiches)} <span className="text-[11px] font-normal uppercase tracking-[0.14em] text-brume-nuit">{t.compte.rail.points}</span>
                       </p>
+                    )}
+                    {/* L'affiche vient en dernier : ce qui se joue (la réponse
+                        de l'assistant, le compteur qui monte) reste collé au
+                        texte qui l'annonce. Un clic ouvre la vidéo en grand.
+
+                        Sous lg, elle attend le premier geste : le panneau y est
+                        AU-DESSUS de l'écran, donc une affiche qui apparaît et
+                        disparaît au fil de la visite automatique ferait glisser
+                        le tableau de bord de deux cents pixels sous le doigt,
+                        toutes les quatre secondes, sans que personne l'ait
+                        demandé. */}
+                    {actif && VIDEO_DU_SPOT[actif] && (
+                      <div className={touche ? undefined : 'max-lg:hidden'}>
+                        <Affiche
+                          nom={VIDEO_DU_SPOT[actif]!}
+                          titre={libelleDemo(VIDEO_DU_SPOT[actif]!, locale)}
+                          legende={c.voirLecran}
+                          onOuvrir={ouvrir}
+                        />
+                      </div>
                     )}
                   </>
                 ) : (
