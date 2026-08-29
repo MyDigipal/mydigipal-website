@@ -698,7 +698,7 @@ function Fiche({ lessons, c, pointsLecon }: { lessons: number; c: Jour30Copy['co
             setCopie(true);
             setTimeout(() => setCopie(false), 1800);
           }}
-          className="absolute right-3 top-3 cursor-pointer rounded-[8px] border border-or/35 bg-or/[0.14] px-3 py-1.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.08em] text-or transition duration-150 hover:bg-or/[0.24]"
+          className="absolute right-3 top-3 min-h-11 cursor-pointer rounded-[8px] border border-or/35 bg-or/[0.14] px-3.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.08em] text-or transition duration-150 hover:bg-or/[0.24]"
         >
           {copie ? c.copie : c.copier}
         </button>

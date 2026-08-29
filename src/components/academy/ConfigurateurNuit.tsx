@@ -261,7 +261,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                   type="button"
                   onClick={() => choisirDevise(d)}
                   aria-pressed={actif}
-                  className={`cursor-pointer border-0 px-3 py-1.5 font-ac-mono text-[12.5px] font-semibold tabular-nums transition duration-150 ${
+                  className={`min-h-11 cursor-pointer border-0 px-3.5 font-ac-mono text-[12.5px] font-semibold tabular-nums transition duration-150 ${
                     actif ? 'bg-or text-salle' : 'bg-transparent text-brume-nuit hover:text-ivoire'
                   }`}
                 >
