@@ -248,6 +248,7 @@ const FR = {
       phrase: 'Elle ouvre son compte. Paul l’accueille, en face caméra.',
       badge: 'Bienvenue',
       attente: 'Le mot d’accueil',
+      alt: 'Paul accueille Clara en visioconférence, au premier jour de son parcours',
       note: 'Un mot d’accueil au premier jour, puis une vidéo d’ouverture par module : à quoi il sert, et ce qu’on saura faire en sortant.',
     },
     j2: {
@@ -924,6 +925,7 @@ const EN: Jour30Copy = {
       phrase: 'She opens her account. Paul welcomes her, on camera.',
       badge: 'Welcome',
       attente: 'The welcome note',
+      alt: 'Paul welcomes Clara over video, on the first day of her path',
       note: 'A welcome note on day one, then one opening video per module: what it is for, and what you will be able to do at the end.',
     },
     j2: {

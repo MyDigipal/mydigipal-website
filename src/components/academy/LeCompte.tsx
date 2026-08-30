@@ -332,18 +332,32 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
           </div>
 
           <Jour n={1} label={c.jour(1)} phrase={c.j1.phrase} note={c.j1.note}>
-            <div className="max-w-[620px] overflow-hidden rounded-carte border border-filet-nuit bg-encre shadow-[0_22px_48px_-30px_rgba(0,0,0,0.9)]">
+            {/* La scène de la rencontre, à la place du lecteur vide qui attendait
+                la vidéo d'accueil (Paul, 30/08/2026). Pas de bouton de lecture
+                par-dessus : il ne lancerait rien, et l'image en porte déjà un,
+                sur la carte « Welcome video » qu'elle montre.
+
+                ⚠️ Le visage à gauche est généré, ce n'est pas celui de Paul
+                André. La page le nomme plus bas, avec de vraies photos de
+                sessions : ces deux endroits ne montrent pas le même homme. */}
+            <figure className="m-0 max-w-[620px] overflow-hidden rounded-carte border border-filet-nuit bg-encre shadow-[0_22px_48px_-30px_rgba(0,0,0,0.9)]">
               <div className="h-[3px]" style={{ background: 'linear-gradient(90deg,#c8a951,#dcbc66)' }} />
-              <div className="relative flex aspect-video items-center justify-center bg-salle-2">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full border border-or/45 bg-or/10 text-or">
-                  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-                    <path d="M9 7.5l7 4.5-7 4.5z" fill="currentColor" />
-                  </svg>
-                </span>
-                <span className="absolute left-4 top-3.5 font-ac-mono text-[10.5px] uppercase tracking-[0.16em] text-ivoire">{c.j1.badge}</span>
-                <span className="absolute bottom-3.5 left-4 font-ac-mono text-[10.5px] tracking-[0.06em] text-brume-nuit">{c.j1.attente}</span>
+              <div className="relative aspect-video">
+                <img
+                  src="/academy/visuels/rencontre_jour1.jpg"
+                  alt={c.j1.alt}
+                  width={1400}
+                  height={788}
+                  loading="lazy"
+                  decoding="async"
+                  className="block h-full w-full object-cover"
+                />
               </div>
-            </div>
+              <figcaption className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-filet-nuit px-4 py-2.5">
+                <span className="font-ac-mono text-[10.5px] uppercase tracking-[0.16em] text-or">{c.j1.badge}</span>
+                <span className="font-ac-mono text-[10.5px] tracking-[0.06em] text-brume-nuit">{c.j1.attente}</span>
+              </figcaption>
+            </figure>
           </Jour>
 
           <Jour n={2} label={c.jour(2)} phrase={c.j2.phrase}>
