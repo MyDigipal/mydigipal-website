@@ -9,8 +9,10 @@ Disallow: /api/
 Disallow: /_astro/
 Disallow: /admin/
 
-# Client reports dropped in the assets folder are not site content.
-# Pattern rule on purpose: naming the files here would publish their paths.
+# Safety net: client reports were once dropped in the assets folder and served
+# publicly. They now live outside the build, in docs/client-reports/. This rule
+# stays so a report copied back here is never crawled. Pattern rule on purpose:
+# naming the files would publish their paths.
 Disallow: /images/*.html$
 
 # Block URL parameters (duplicate content prevention)

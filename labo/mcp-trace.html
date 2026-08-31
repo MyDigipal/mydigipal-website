@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="fr" data-theme="nuit">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Labo - le cablage MCP qui se trace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mono: 'JetBrains Mono', Consolas, monospace;
+    --serif: 'Fraunces', Georgia, serif;
+    --grotesk: 'Space Grotesk', system-ui, sans-serif;
+    --or: #c8a951;
+    --or-vif: #dcbc66;
+    --encre: #0f1a2e;
+    --salle: #0d1424;
+    --salle-2: #141d33;
+    --salle-3: #1c2742;
+    --filet: #26324e;
+    --ivoire: #f2eee4;
+    --corps: #b9c1d1;
+    --brume-nuit: #7d879b;
+    --sauge: #9fd4bc;
+    --assistant: #9fd4bc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--salle);
+    color: var(--corps);
+    font-family: var(--grotesk);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  .enveloppe { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  header.tete { border-bottom: 1px solid var(--filet); padding: 40px 0 30px; }
+  .kicker {
+    margin: 0; font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--or);
+  }
+  h1 {
+    margin: 10px 0 0; font-family: var(--serif); font-size: clamp(26px, 4vw, 40px);
+    font-weight: 600; line-height: 1.12; color: var(--ivoire);
+  }
+  .chapeau { margin: 12px 0 0; max-width: 64ch; font-size: 15.5px; line-height: 1.6; }
+  .liens { margin: 20px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .liens a {
+    border: 1px solid var(--filet); border-radius: 8px; padding: 7px 13px;
+    font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--brume-nuit); text-decoration: none; transition: 0.15s;
+  }
+  .liens a:hover { border-color: var(--or); color: var(--ivoire); }
+  .liens a[aria-current] { border-color: var(--or); color: var(--or); background: rgba(200,169,81,0.12); }
+
+  section.essai { border-top: 1px solid var(--filet); padding: 80px 0 90px; }
+  .etiquette {
+    display: inline-flex; align-items: center; gap: 10px; margin: 0 0 6px;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .etiquette.avant { color: var(--brume-nuit); }
+  .etiquette.apres { color: var(--or); }
+  .etiquette span.puce { display: inline-block; width: 22px; height: 1px; background: currentColor; }
+  h2 {
+    margin: 0 0 8px; font-family: var(--serif); font-size: clamp(22px, 3vw, 30px);
+    font-weight: 600; line-height: 1.15; color: var(--ivoire);
+  }
+  .quoi-regarder { margin: 0 0 30px; max-width: 62ch; font-size: 14.5px; line-height: 1.6; color: var(--brume-nuit); }
+
+  .cadre {
+    border: 1px solid var(--filet); border-radius: 16px;
+    background: linear-gradient(180deg, var(--salle-2), var(--salle));
+    padding: 26px 22px;
+  }
+  svg.schema { display: block; width: 100%; height: auto; }
+  .fil { fill: none; stroke: var(--filet); stroke-width: 1.4; }
+  .fil.haut { stroke: rgba(159, 212, 188, 0.4); }
+  .boite { transition: opacity 0.25s; }
+  .boite rect { fill: var(--salle-3); stroke: var(--filet); stroke-width: 1; }
+  .boite text { font-family: var(--mono); font-size: 10.5px; fill: var(--corps); }
+  .boite.allume rect { stroke: var(--or); fill: rgba(200, 169, 81, 0.1); }
+  .boite.allume text { fill: var(--ivoire); }
+  .assistant rect { stroke: rgba(159, 212, 188, 0.45); }
+  .assistant text { fill: var(--assistant); }
+  .hub rect { fill: rgba(200, 169, 81, 0.09); stroke: var(--or); stroke-width: 1.4; }
+  .hub text.t { font-family: var(--mono); font-size: 12px; font-weight: 700; fill: var(--or); }
+  .hub text.s { font-family: var(--mono); font-size: 10px; fill: var(--brume-nuit); }
+  .droits { font-family: var(--mono); font-size: 8.5px; fill: var(--brume-nuit); }
+
+  .piste {
+    margin: 22px 0 0; display: flex; align-items: center; gap: 14px;
+    font-family: var(--mono); font-size: 11px; color: var(--brume-nuit);
+  }
+  .rail { position: relative; flex: 1; height: 3px; border-radius: 999px; background: var(--filet); overflow: hidden; }
+  .rail i { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--or); border-radius: 999px; }
+  .pourcent { width: 42px; text-align: right; color: var(--or); font-weight: 700; }
+
+  .zone-course { height: calc(var(--course, 180vh) + 80vh); }
+  .colle { position: sticky; top: 5vh; }
+
+  .reglages {
+    position: fixed; right: 18px; bottom: 18px; z-index: 40; width: 262px;
+    border-radius: 14px; border: 1px solid var(--filet);
+    background: rgba(13, 20, 36, 0.94); backdrop-filter: blur(10px);
+    padding: 16px 18px 18px; box-shadow: 0 24px 60px -20px rgba(0,0,0,0.8);
+    font-family: var(--mono); font-size: 11.5px; color: var(--corps);
+  }
+  .reglages h4 {
+    margin: 0 0 14px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--or);
+  }
+  .reglage { margin-bottom: 14px; }
+  .reglage label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 7px; color: var(--brume-nuit); }
+  .reglage label b { color: var(--ivoire); font-weight: 700; }
+  input[type="range"] { width: 100%; height: 18px; margin: 0; accent-color: var(--or); cursor: pointer; }
+  .boutons { display: flex; flex-wrap: wrap; gap: 6px; }
+  .boutons button {
+    flex: 1 1 auto; min-height: 30px; border-radius: 8px; border: 1px solid var(--filet);
+    background: transparent; color: var(--brume-nuit); font-family: var(--mono);
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    cursor: pointer; transition: 0.15s;
+  }
+  .boutons button:hover { border-color: var(--or); color: var(--ivoire); }
+  .boutons button[aria-pressed="true"] { border-color: var(--or); background: rgba(200,169,81,0.16); color: var(--or); }
+  .replier {
+    position: absolute; top: 12px; right: 14px; border: 0; background: transparent;
+    color: var(--brume-nuit); font-family: var(--mono); font-size: 15px; line-height: 1;
+    cursor: pointer; padding: 2px 4px;
+  }
+  .reglages.replie { width: auto; padding: 10px 14px; }
+  .reglages.replie > *:not(.replier):not(h4) { display: none; }
+  .reglages.replie h4 { margin: 0; padding-right: 18px; }
+  @media (max-width: 700px) { .reglages { left: 12px; right: 12px; bottom: 12px; width: auto; } }
+
+  footer.fin { border-top: 1px solid var(--filet); padding: 56px 0 120px; }
+  footer.fin ul { margin: 14px 0 0; padding-left: 20px; }
+  footer.fin li { margin-bottom: 10px; font-size: 14.5px; line-height: 1.6; }
+  code {
+    font-family: var(--mono); font-size: 0.92em; background: var(--salle-2);
+    border: 1px solid var(--filet); border-radius: 5px; padding: 1px 5px; color: var(--ivoire);
+  }
+  .respire { height: 26vh; }
+</style>
+</head>
+<body>
+
+<header class="tete">
+  <div class="enveloppe">
+    <p class="kicker">Labo · essai 2 sur 3</p>
+    <h1>Le cablage MCP se trace.</h1>
+    <p class="chapeau">
+      La section « Un MCP, c'est une prise » de la page de vente. Aujourd'hui les
+      quatorze fils sont deja dessines quand la section arrive, et une impulsion
+      les parcourt une fois. En bas, ils se TRACENT : le branchement se fait sous
+      les yeux, au rythme du doigt.
+    </p>
+    <p class="liens">
+      <a href="./craft-scrub.html">Essai 1 · CRAFT</a>
+      <a href="./mcp-trace.html" aria-current="page">Essai 2 · MCP</a>
+      <a href="./plan-eclate.html">Essai 3 · Plan eclate</a>
+    </p>
+  </div>
+</header>
+
+<div class="respire"></div>
+
+<section class="essai" id="avant">
+  <div class="enveloppe">
+    <p class="etiquette avant"><span class="puce"></span> Aujourd'hui</p>
+    <h2>Tout est deja branche.</h2>
+    <p class="quoi-regarder">
+      Les fils existent avant qu'on les regarde. Une impulsion les parcourt a
+      l'entree, puis plus rien. Le schema montre un resultat, il ne montre pas
+      qu'on a branche quelque chose.
+    </p>
+    <div class="cadre"><svg class="schema" id="svg-avant" viewBox="0 0 900 560" role="img" aria-label="Schema du cablage MCP"></svg></div>
+  </div>
+</section>
+
+<div class="respire"></div>
+
+<section class="essai" id="apres">
+  <div class="enveloppe">
+    <p class="etiquette apres"><span class="puce"></span> Avec le trace</p>
+    <h2>On branche, prise par prise.</h2>
+    <p class="quoi-regarder">
+      Les assistants d'abord, puis le serveur, puis les quatorze outils, chacun
+      s'allumant quand son fil l'atteint. C'est l'argument de la section, joue
+      au lieu d'etre affirme.
+    </p>
+  </div>
+  <div class="zone-course" id="zone-course">
+    <div class="colle">
+      <div class="enveloppe">
+        <div class="cadre"><svg class="schema" id="svg-apres" viewBox="0 0 900 560" role="img" aria-label="Schema du cablage MCP"></svg></div>
+        <div class="piste">
+          <span>course</span>
+          <span class="rail"><i id="jauge"></i></span>
+          <span class="pourcent" id="pourcent">0 %</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="fin">
+  <div class="enveloppe">
+    <p class="etiquette avant"><span class="puce"></span> Ou ca sert ailleurs</p>
+    <h2>Le meme composant, quatre endroits.</h2>
+    <ul>
+      <li><b>Les 24 chaines des cas MCP</b> (dans l'application, <code>CaseChain.tsx</code>) : outils a gauche, IA au centre, barriere humaine en or, sorties a droite. Meme structure, meme trace.</li>
+      <li><b>Les 30 schemas de lecon</b> (<code>LessonSchema.tsx</code>) : ils apparaissent en cascade d'opacite. Sur un schema qui explique un flux, voir le trait avancer EST l'explication.</li>
+      <li><b>Le diplome</b> de la page de vente : le cadre et le paraphe se tracent.</li>
+      <li><b>La traversee du renard</b>, deja tracee a la main : le filet dore qui s'allume derriere lui est exactement un <code>draw</code>.</li>
+    </ul>
+    <p class="quoi-regarder" style="margin-top:22px">
+      Sans JavaScript ou sous <code>prefers-reduced-motion</code>, le schema est
+      entierement dessine : l'etat de repos reste l'etat visible.
+    </p>
+  </div>
+</footer>
+
+<aside class="reglages" id="reglages">
+  <button class="replier" id="replier" type="button" title="Replier">−</button>
+  <h4>Reglages</h4>
+  <div class="reglage">
+    <label for="course">Course <b id="course-v">1,8 ecran</b></label>
+    <input type="range" id="course" min="80" max="320" step="10" value="180">
+  </div>
+  <div class="reglage">
+    <label for="chevauche">Chevauchement des fils <b id="chevauche-v">55 %</b></label>
+    <input type="range" id="chevauche" min="0" max="100" step="5" value="55">
+  </div>
+  <div class="reglage">
+    <label>Ordre</label>
+    <div class="boutons" id="ordre">
+      <button type="button" data-v="first" aria-pressed="true">Gauche à droite</button>
+      <button type="button" data-v="center" aria-pressed="false">Du centre</button>
+      <button type="button" data-v="random" aria-pressed="false">Au hasard</button>
+    </div>
+  </div>
+  <div class="reglage">
+    <label>Lissage</label>
+    <div class="boutons" id="lissage">
+      <button type="button" data-v="sec" aria-pressed="false">Sec</button>
+      <button type="button" data-v="doux" aria-pressed="true">Doux</button>
+      <button type="button" data-v="tres" aria-pressed="false">Tres doux</button>
+    </div>
+  </div>
+</aside>
+
+<script type="module">
+import { createTimeline, onScroll, stagger, svg } from 'https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.esm.min.js';
+
+/* Les quatorze outils de la page de vente (copy.ts, mcp.outils). */
+const OUTILS = [
+  ['Gmail', 'lecture + brouillon'],
+  ['Agenda', 'lecture + proposition'],
+  ['Tableur', 'lecture + écriture'],
+  ['CRM', 'écriture encadrée'],
+  ['Publicité', 'lecture seule'],
+  ['Documents', 'lecture + création'],
+  ['Slack ou Teams', 'message préparé'],
+  ['Analytics', 'lecture seule'],
+  ['Visio', 'transcriptions'],
+  ['Comptabilité', 'brouillon seul'],
+  ['Fichiers', 'lecture + rangement'],
+  ['Entrepôt', 'lecture seule'],
+  ['Support', 'brouillon + base'],
+  ['Site web', 'préproduction'],
+];
+const ASSISTANTS = ['Claude', 'ChatGPT', 'Kimi'];
+const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Le schéma. Trois assistants en haut, le serveur au milieu, les outils en
+   bas sur deux rangées de sept. Les positions sont calculées, pas dessinées à
+   la main : ajouter un outil ne demande aucun repositionnement.
+   ══════════════════════════════════════════════════════════════════════════ */
+function batirSchema(hote) {
+  hote.innerHTML = '';
+  const el = (n, a = {}) => {
+    const e = document.createElementNS(NS, n);
+    for (const [k, v] of Object.entries(a)) e.setAttribute(k, String(v));
+    return e;
+  };
+  const boite = (x, y, w, h, classe) => {
+    const g = el('g', { class: `boite ${classe}`, transform: `translate(${x} ${y})` });
+    g.appendChild(el('rect', { width: w, height: h, rx: 9 }));
+    return g;
+  };
+  const texte = (t, x, y, classe = '', ancre = 'middle') => {
+    const e = el('text', { x, y, 'text-anchor': ancre, class: classe });
+    e.textContent = t;
+    return e;
+  };
+
+  const filsHaut = el('g'), filsBas = el('g'), boites = el('g');
+  hote.append(filsHaut, filsBas, boites);
+
+  // Le serveur, au centre.
+  const HUB = { x: 320, y: 232, w: 260, h: 62 };
+  const hub = boite(HUB.x, HUB.y, HUB.w, HUB.h, 'hub');
+  hub.appendChild(texte('SERVEUR MCP', HUB.w / 2, 26, 't'));
+  hub.appendChild(texte('14 outils déclarés, rien sans votre accord', HUB.w / 2, 44, 's'));
+
+  // Les assistants.
+  const aW = 150, aH = 44, aY = 40;
+  const assistants = ASSISTANTS.map((nom, i) => {
+    const x = 450 - (ASSISTANTS.length * (aW + 26) - 26) / 2 + i * (aW + 26);
+    const g = boite(x, aY, aW, aH, 'assistant');
+    g.appendChild(texte(nom, aW / 2, 27));
+    boites.appendChild(g);
+    // Le fil de l'assistant vers le haut du serveur.
+    const d = `M ${x + aW / 2} ${aY + aH} C ${x + aW / 2} ${aY + aH + 60}, ${HUB.x + HUB.w / 2} ${HUB.y - 60}, ${HUB.x + HUB.w / 2} ${HUB.y}`;
+    filsHaut.appendChild(el('path', { d, class: 'fil haut' }));
+    return g;
+  });
+
+  boites.appendChild(hub);
+
+  // Les outils, deux rangées de sept.
+  const oW = 112, oH = 46, parRang = 7, gap = 12;
+  const largeurRang = parRang * oW + (parRang - 1) * gap;
+  const outils = OUTILS.map(([label, droits], i) => {
+    const rang = Math.floor(i / parRang);
+    const col = i % parRang;
+    const x = 450 - largeurRang / 2 + col * (oW + gap);
+    const y = 396 + rang * (oH + 26);
+    const g = boite(x, y, oW, oH, 'outil');
+    g.appendChild(texte(label.length > 13 ? label.slice(0, 12) + '…' : label, oW / 2, 20));
+    g.appendChild(texte(droits.length > 18 ? droits.slice(0, 17) + '…' : droits, oW / 2, 34, 'droits'));
+    boites.appendChild(g);
+    const d = `M ${HUB.x + HUB.w / 2} ${HUB.y + HUB.h} C ${HUB.x + HUB.w / 2} ${HUB.y + HUB.h + 70}, ${x + oW / 2} ${y - 70}, ${x + oW / 2} ${y}`;
+    filsBas.appendChild(el('path', { d, class: 'fil' }));
+    return g;
+  });
+
+  return {
+    hub,
+    assistants,
+    outils,
+    filsHaut: [...filsHaut.querySelectorAll('path')],
+    filsBas: [...filsBas.querySelectorAll('path')],
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   AVANT - tout est dessiné, une impulsion parcourt les fils à l'entrée.
+   ══════════════════════════════════════════════════════════════════════════ */
+const vueAvant = batirSchema(document.getElementById('svg-avant'));
+vueAvant.assistants.forEach((a) => a.classList.add('allume'));
+vueAvant.outils.forEach((o) => o.classList.add('allume'));
+vueAvant.hub.classList.add('allume');
+
+if (!REDUIT) {
+  const io = new IntersectionObserver((e) => {
+    if (!e.some((x) => x.isIntersecting)) return;
+    io.disconnect();
+    // Une impulsion sur chaque fil du bas, échelonnée : le comportement actuel.
+    createTimeline({ defaults: { ease: 'inOut(2)' } }).add(
+      vueAvant.filsBas,
+      {
+        stroke: ['#26324e', '#c8a951', '#26324e'],
+        strokeWidth: [1.4, 2.2, 1.4],
+        duration: 900,
+      },
+      stagger(55)
+    );
+  }, { rootMargin: '0px 0px -20% 0px' });
+  io.observe(document.getElementById('svg-avant'));
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   APRES - le tracé. `createDrawable` transforme chaque chemin en cible dont la
+   propriété `draw` va de "0 0" (rien) à "0 1" (tout le tracé).
+   ══════════════════════════════════════════════════════════════════════════ */
+const vueApres = batirSchema(document.getElementById('svg-apres'));
+const jauge = document.getElementById('jauge');
+const pourcent = document.getElementById('pourcent');
+const zoneCourse = document.getElementById('zone-course');
+
+const LISSAGE = { sec: true, doux: 0.2, tres: 0.06 };
+const reglages = { course: 180, chevauche: 55, ordre: 'first', lissage: 'doux' };
+let courant = null;
+
+function repos() {
+  [...vueApres.filsHaut, ...vueApres.filsBas].forEach((p) => {
+    p.style.strokeDasharray = '';
+    p.style.strokeDashoffset = '';
+    p.style.opacity = '';
+  });
+  vueApres.hub.classList.remove('allume');
+  vueApres.assistants.forEach((a) => a.classList.remove('allume'));
+  vueApres.outils.forEach((o) => o.classList.remove('allume'));
+}
+
+function toutAllumer() {
+  vueApres.hub.classList.add('allume');
+  vueApres.assistants.forEach((a) => a.classList.add('allume'));
+  vueApres.outils.forEach((o) => o.classList.add('allume'));
+}
+
+function monter() {
+  if (courant) {
+    courant.revert?.();
+    courant = null;
+  }
+  repos();
+
+  if (REDUIT) {
+    toutAllumer();
+    jauge.style.width = '100%';
+    pourcent.textContent = '100 %';
+    return;
+  }
+
+  const hauts = svg.createDrawable(vueApres.filsHaut);
+  const bas = svg.createDrawable(vueApres.filsBas);
+  // L'état de départ : rien de tracé.
+  [...hauts, ...bas].forEach((p) => { p.draw = '0 0'; });
+
+  const tl = createTimeline({
+    defaults: { ease: 'inOut(2)' },
+    autoplay: onScroll({
+      target: zoneCourse,
+      enter: { target: 'top', container: 'top+=5vh' },
+      leave: { target: `top+=${reglages.course}vh`, container: 'top+=5vh' },
+      sync: LISSAGE[reglages.lissage],
+      onUpdate: (o) => {
+        const p = Math.round(o.progress * 100);
+        jauge.style.width = `${p}%`;
+        pourcent.textContent = `${p} %`;
+      },
+    }),
+  });
+
+  // 1. Les assistants s'allument, leurs fils descendent vers le serveur.
+  tl.add(vueApres.assistants, {
+    opacity: [0.25, 1],
+    duration: 60,
+    onBegin: () => vueApres.assistants.forEach((a) => a.classList.add('allume')),
+  }, 0);
+  tl.add(hauts, { draw: '0 1', duration: 90 }, stagger(18, { start: 20 }));
+
+  // 2. Le serveur s'allume quand les trois fils l'ont atteint.
+  tl.add(vueApres.hub, {
+    opacity: [0.4, 1],
+    duration: 50,
+    onBegin: () => vueApres.hub.classList.add('allume'),
+  }, 140);
+
+  // 3. Les quatorze fils du bas, en cascade. Le chevauchement dit s'ils se
+  //    tracent l'un après l'autre ou tous ensemble.
+  const pas = 22 * (1 - reglages.chevauche / 100) + 4;
+  tl.add(bas, { draw: '0 1', duration: 110 }, stagger(pas, { start: 190, from: reglages.ordre }));
+
+  // 4. Chaque outil s'allume quand SON fil l'a atteint : le fil arrive par le
+  //    bas, donc l'allumage suit le même décalage, décalé de la durée du tracé.
+  vueApres.outils.forEach((o, i) => {
+    const ordre = reglages.ordre === 'center'
+      ? Math.abs(i - (OUTILS.length - 1) / 2)
+      : reglages.ordre === 'random'
+        ? (i * 7919) % OUTILS.length
+        : i;
+    tl.add(o, {
+      opacity: [0.3, 1],
+      duration: 40,
+      onBegin: () => o.classList.add('allume'),
+      onBeforeUpdate: () => {},
+    }, 190 + ordre * pas + 95);
+  });
+
+  courant = tl;
+}
+
+zoneCourse.style.setProperty('--course', `${reglages.course}vh`);
+monter();
+
+/* --------------------------------------------------------------- réglages */
+const cours = document.getElementById('course');
+const coursV = document.getElementById('course-v');
+cours.addEventListener('input', () => {
+  reglages.course = +cours.value;
+  coursV.textContent = `${(reglages.course / 100).toFixed(1).replace('.', ',')} écran`;
+  zoneCourse.style.setProperty('--course', `${reglages.course}vh`);
+  monter();
+});
+
+const chev = document.getElementById('chevauche');
+const chevV = document.getElementById('chevauche-v');
+chev.addEventListener('input', () => {
+  reglages.chevauche = +chev.value;
+  chevV.textContent = `${reglages.chevauche} %`;
+  monter();
+});
+
+function groupe(id, appliquer) {
+  const hote = document.getElementById(id);
+  hote.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    [...hote.querySelectorAll('button')].forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    appliquer(b.dataset.v);
+    monter();
+  });
+}
+groupe('ordre', (v) => { reglages.ordre = v; });
+groupe('lissage', (v) => { reglages.lissage = v; });
+
+const panneau = document.getElementById('reglages');
+document.getElementById('replier').addEventListener('click', () => {
+  const replie = panneau.classList.toggle('replie');
+  document.getElementById('replier').textContent = replie ? '+' : '−';
+});
+</script>
+</body>
+</html>
