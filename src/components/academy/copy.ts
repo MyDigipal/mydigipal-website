@@ -1333,7 +1333,7 @@ const EN: Jour30Copy = {
     titre: 'Pricing',
     sousTitre: 'Two programmes, and what you add to them.',
     programmeLigne: (lecons: number) =>
-      `${lecons} lessons, three levels, the workshop, the library, the trophies, the certificate. Full access.`,
+      `${lecons} lessons, three levels, the workshop, the library, the trophies, the certificate.`,
     construireLigne: (lecons: number) => `${lecons} lessons in their own course, up to a working MCP server.`,
     assistantTitre: 'The AI assistant',
     assistantLigne: 'It knows your lessons and answers on your own cases. Monthly subscription, no commitment.',
