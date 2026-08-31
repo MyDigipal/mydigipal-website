@@ -6,12 +6,13 @@
     "dev": "tinacms dev -c \"astro dev\"",
     "dev:astro": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
-    "build:tina": "tinacms build && astro build",
+    "build": "astro build && node scripts/check-seo.mjs",
+    "build:tina": "tinacms build && astro build && node scripts/check-seo.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "tina": "tinacms dev -c \"astro dev\"",
-    "tina:build": "tinacms build"
+    "tina:build": "tinacms build",
+    "check:seo": "node scripts/check-seo.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.4",
