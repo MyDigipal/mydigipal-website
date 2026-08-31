@@ -1,0 +1,182 @@
+---
+import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const translations = {
+  en: {
+    badge: "Before / after",
+    headline: "What This Looks Like In Your Business",
+    subheadline: "Four tasks your team still does by hand today, and what is left of them once a system takes over.",
+    beforeLabel: "Today, by hand",
+    afterLabel: "Once automated",
+    humanLabel: "Still done by a human",
+    footnote: "Durations are orders of magnitude, to be adjusted to your volume and your tools. Every setup starts by looking at how you actually work.",
+    tasks: [
+      {
+        icon: "mail",
+        title: "Sorting and qualifying inbound requests",
+        time: "roughly 3 to 5 hours a week",
+        before: "Someone opens every message, works out whether it is a prospect, a client or cold outreach, then forwards it to the right person. Anything landing on Friday evening waits until Monday.",
+        after: "Every request is read, summarised, sorted by type and by urgency, then pushed into the CRM and flagged to the right person within minutes.",
+        human: "Deciding what to answer once a request is qualified, and settling the edge cases the system flags.",
+      },
+      {
+        icon: "mic",
+        title: "Meeting notes and follow-ups",
+        time: "roughly 2 to 4 hours a week",
+        before: "Notes are written up after the fact, the summary is drafted by hand, then the actions are copied into the project tool. Usually the next day, once the details have already blurred.",
+        after: "The summary is drafted from the recording, decisions and actions are extracted with an owner and a due date, and the tasks are created in the tool the team already uses.",
+        human: "Reading the summary before it goes out, and correcting whatever was misheard.",
+      },
+      {
+        icon: "file-text",
+        title: "Chasing quotes with no reply",
+        time: "roughly 1 to 2 hours a week, when it happens at all",
+        before: "You have to remember who never came back, reopen the quote, dig through the thread for context, then write something that does not read like a template. Chasing always comes last.",
+        after: "Quotes with no reply surface on their own at the right moment, with a follow-up already drafted from the context of the deal, ready to send or to edit.",
+        human: "Reading the draft, tailoring it to the client, and deciding when to stop chasing.",
+      },
+      {
+        icon: "bar-chart-2",
+        title: "Putting the monthly report together",
+        time: "roughly 2 hours a week, bunched at month end",
+        before: "Export each platform, paste the tables together, format the whole thing, rewrite the same commentary. The file is ready a week after the month has closed.",
+        after: "The data is pulled together on its own, notable swings are picked out, and the report arrives pre-filled with a first draft of the commentary on what moved.",
+        human: "Explaining why it moved, deciding what changes next month, and telling the client.",
+      },
+    ],
+  },
+  fr: {
+    badge: "Avant / après",
+    headline: "À quoi ça ressemble chez vous",
+    subheadline: "Quatre tâches que vos équipes font encore à la main aujourd'hui, et ce qu'il en reste une fois qu'un système s'en occupe.",
+    beforeLabel: "Aujourd'hui, à la main",
+    afterLabel: "Une fois automatisé",
+    humanLabel: "Ce qui reste à un humain",
+    footnote: "Les durées sont des ordres de grandeur, à ajuster selon votre volume et vos outils. Chaque mise en place commence par regarder comment vous travaillez vraiment.",
+    tasks: [
+      {
+        icon: "mail",
+        title: "Le tri et la qualification des demandes entrantes",
+        time: "environ 3 à 5 heures par semaine",
+        before: "Quelqu'un ouvre chaque message, devine s'il s'agit d'un prospect, d'un client ou d'un démarchage, puis le transfère à la bonne personne. Ce qui arrive le vendredi soir attend le lundi.",
+        after: "Chaque demande est lue, résumée, classée par type et par urgence, puis déposée dans le CRM et signalée à la bonne personne en quelques minutes.",
+        human: "Décider quoi répondre une fois la demande qualifiée, et arbitrer les cas ambigus que le système signale.",
+      },
+      {
+        icon: "mic",
+        title: "Les comptes rendus de réunion et leur suivi",
+        time: "environ 2 à 4 heures par semaine",
+        before: "On reprend ses notes après coup, on rédige le compte rendu à la main, puis on recopie les actions dans l'outil de gestion. Souvent le lendemain, quand les détails ont déjà bougé.",
+        after: "Le compte rendu est rédigé à partir de l'enregistrement, les décisions et les actions en sont extraites avec un responsable et une échéance, et les tâches sont créées dans l'outil que l'équipe utilise déjà.",
+        human: "Relire le compte rendu avant l'envoi, et corriger ce qui a été mal compris.",
+      },
+      {
+        icon: "file-text",
+        title: "La relance des devis en attente",
+        time: "environ 1 à 2 heures par semaine, quand elles sont faites",
+        before: "Il faut se souvenir de qui n'a pas répondu, rouvrir le devis, retrouver le contexte de l'échange, puis écrire un message qui ne sente pas le copier-coller. La relance passe toujours après le reste.",
+        after: "Les devis sans réponse remontent d'eux-mêmes au bon moment, avec une relance déjà écrite à partir du contexte du dossier, prête à envoyer ou à retoucher.",
+        human: "Lire le brouillon, l'ajuster au client, et décider quand on arrête de relancer.",
+      },
+      {
+        icon: "bar-chart-2",
+        title: "La préparation du reporting mensuel",
+        time: "environ 2 heures par semaine, concentrées en fin de mois",
+        before: "On exporte chaque plateforme, on recolle les tableaux, on remet en forme, on réécrit les mêmes commentaires. Le fichier est prêt une semaine après la fin du mois.",
+        after: "Les données sont rassemblées toutes seules, les écarts notables sont repérés, et le rapport arrive pré-rempli avec un premier jet de commentaire sur ce qui a bougé.",
+        human: "Expliquer pourquoi ça a bougé, trancher ce qu'on change le mois suivant, et le dire au client.",
+      },
+    ],
+  }
+};
+
+const t = translations[lang] || translations.en;
+---
+
+<section class="py-24 bg-white overflow-hidden">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 bg-indigo-50 text-indigo-600 border border-indigo-100">
+        <Icon name="clock" size={16} />
+        {t.badge}
+      </span>
+      <h2 class="text-3xl lg:text-5xl font-bold text-slate-900 mb-4">{t.headline}</h2>
+      <p class="text-xl text-slate-600">{t.subheadline}</p>
+    </div>
+
+    <!-- Tasks -->
+    <div class="space-y-6 max-w-6xl mx-auto">
+      {t.tasks.map((task, index) => (
+        <div
+          class="ba-card bg-white rounded-3xl p-6 lg:p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:border-indigo-200 transition-all duration-500"
+          style={`animation-delay: ${index * 100}ms`}
+        >
+          {/* Card header */}
+          <div class="flex flex-wrap items-center gap-4 mb-6">
+            <div class="w-12 h-12 shrink-0 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center">
+              <Icon name={task.icon} size={24} />
+            </div>
+            <h3 class="text-lg lg:text-xl font-bold text-slate-900 flex-1 min-w-[12rem]">{task.title}</h3>
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+              <Icon name="clock" size={14} />
+              {task.time}
+            </span>
+          </div>
+
+          {/* Avant, flèche, après */}
+          <div class="grid md:grid-cols-[1fr_auto_1fr] gap-4 items-stretch">
+            <div class="rounded-2xl bg-slate-50 border border-slate-100 p-5">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">{t.beforeLabel}</span>
+              </div>
+              <p class="text-slate-600 text-sm lg:text-base">{task.before}</p>
+            </div>
+
+            <div class="flex items-center justify-center text-indigo-400">
+              <Icon name="arrow-right" size={24} class="rotate-90 md:rotate-0" />
+            </div>
+
+            <div class="rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 p-5">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                <span class="text-xs font-semibold uppercase tracking-wider text-indigo-600">{t.afterLabel}</span>
+              </div>
+              <p class="text-slate-700 text-sm lg:text-base mb-4">{task.after}</p>
+              <div class="pt-4 border-t border-indigo-100">
+                <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">{t.humanLabel}</span>
+                <p class="text-slate-600 text-sm">{task.human}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Footnote -->
+    <p class="text-center text-sm text-slate-500 max-w-2xl mx-auto mt-10">{t.footnote}</p>
+  </div>
+</section>
+
+<style>
+  .ba-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
