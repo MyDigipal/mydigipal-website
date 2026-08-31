@@ -91,7 +91,7 @@ const FR = {
      * modules relèvent du complément.
      */
     repartition: (programme: number, complement: number) =>
-      `${programme} leçons dans le programme, ${complement} de plus avec le complément Construire.`,
+      `${programme} leçons dans la méthode, ${complement} de plus avec les automatisations.`,
     cta: 'Commencer',
     cta2: (n: number) => `Essayer ${n} leçons, gratuitement`,
     url: 'academy.mydigipal.com/app',
@@ -171,9 +171,9 @@ const FR = {
         texte: `${f.lessonsProgramme ?? f.lessons} leçons en ${f.modules} modules, trois niveaux. Chaque leçon écrite : un plan, un exemple, un prompt à copier, et un « À vous » à rendre.`,
       },
       parcours2: {
-        kicker: 'Le complément Construire',
+        kicker: 'Les automatisations',
         titre: 'Agents, automatisations, serveurs MCP.',
-        texte: `${f.lessonsComplement ?? f.lessonsConstruire} leçons de plus et dix-sept cas réels de l’agence. C’est le niveau 3, celui où l’on branche les outils les uns aux autres.`,
+        texte: `${f.lessonsComplement ?? f.lessonsConstruire} leçons de plus et dix-sept cas réels de l’agence. C’est là qu’on branche les outils les uns aux autres.`,
       },
       reprendre: {
         kicker: 'Reprendre',
@@ -203,7 +203,7 @@ const FR = {
       exercices: {
         kicker: 'Les exercices et les quiz',
         titre: 'Déposés depuis la leçon, relus par un humain.',
-        texte: `Un quiz par module, noté côté serveur. Les exercices sont relus par Paul avec le complément Construire, ${f.relectures} relectures incluses.`,
+        texte: `Un quiz par module, noté côté serveur. Les exercices sont relus par Paul avec les automatisations, ${f.relectures} relectures incluses.`,
       },
       assistant: {
         kicker: 'L’assistant IA',
@@ -232,7 +232,7 @@ const FR = {
       { jours: 'Jours 21 à 30', nom: 'Faire faire', texte: 'Agents, automatisations, un serveur MCP en état de marche, et l’attestation.' },
     ],
     texte:
-      'Ce qui suit est reconstitué à partir de l’espace apprenant réel : les écrans sont ceux du produit, les règles de points sont celles du code. Clara, elle, est composée : elle a pris le programme, le complément Construire et l’assistant.',
+      'Ce qui suit est reconstitué à partir de l’espace apprenant réel : les écrans sont ceux du produit, les règles de points sont celles du code. Clara, elle, est composée : elle a pris la méthode, les automatisations et l’assistant.',
     bandeAlt: 'Une apprenante devant son espace, entourée de ses cartes de progression',
   },
 
@@ -674,8 +674,8 @@ const FR = {
     deviseLabel: 'Devise affichée',
     dejaProgrammeAide: 'Décochez-le si vous ne voulez que l’autre : les deux programmes sont indépendants et s’achètent séparément.',
     dejaAcquis: 'Non retenu',
-    panierVide: 'Choisissez au moins un complément.',
-    remiseCode: (code: string, pct: number) => `Code ${code} : −${pct} % sur le programme et Construire`,
+    panierVide: 'Choisissez au moins un programme.',
+    remiseCode: (code: string, pct: number) => `Code ${code} : −${pct} % sur la méthode et les automatisations`,
     unique: 'une fois, accès complet',
     uniquePlaces: (n: number) => `une fois, pour ${n} places`,
     mensuel: 'par mois, assistant',
@@ -772,7 +772,7 @@ const EN: Jour30Copy = {
     sous: (lecons: number, prix: string) =>
       `${lecons} lessons at your own pace, the CRAFT method, your exercises reviewed by a human, all the way to agents and MCP servers. From €${prix}.`,
     repartition: (programme: number, complement: number) =>
-      `${programme} lessons in the programme, ${complement} more with the Build add-on.`,
+      `${programme} lessons in the method, ${complement} more with Automations.`,
     cta: 'Get started',
     cta2: (n: number) => `Try ${n} lessons, free`,
     url: 'academy.mydigipal.com/app',
@@ -852,9 +852,9 @@ const EN: Jour30Copy = {
         texte: `${f.lessonsProgramme ?? f.lessons} lessons across ${f.modules} modules, three levels. Every lesson written: an outline, an example, a prompt to copy, and a task to hand in.`,
       },
       parcours2: {
-        kicker: 'The Build add-on',
+        kicker: 'Automations',
         titre: 'Agents, automations, MCP servers.',
-        texte: `${f.lessonsComplement ?? f.lessonsConstruire} more lessons and seventeen real cases from the agency. This is level 3, where you wire the tools to one another.`,
+        texte: `${f.lessonsComplement ?? f.lessonsConstruire} more lessons and seventeen real cases from the agency. This is where you wire the tools to one another.`,
       },
       reprendre: {
         kicker: 'Resume',
@@ -884,7 +884,7 @@ const EN: Jour30Copy = {
       exercices: {
         kicker: 'Exercises and quizzes',
         titre: 'Submitted from the lesson, reviewed by a human.',
-        texte: `One quiz per module, graded server-side. Exercises are reviewed by Paul with the Build add-on, ${f.relectures} reviews included.`,
+        texte: `One quiz per module, graded server-side. Exercises are reviewed by Paul with Automations, ${f.relectures} reviews included.`,
       },
       assistant: {
         kicker: 'The AI assistant',
@@ -913,7 +913,7 @@ const EN: Jour30Copy = {
       { jours: 'Days 21 to 30', nom: 'Having it done', texte: 'Agents, automations, a working MCP server, and the certificate.' },
     ],
     texte:
-      'What follows is reconstructed from the real learner space: the screens are the product’s, the point rules are the code’s. Clara is made up: she took the programme, the Build add-on and the assistant.',
+      'What follows is reconstructed from the real learner space: the screens are the product’s, the point rules are the code’s. Clara is made up: she took the method, Automations and the assistant.',
     bandeAlt: 'A learner at her space, surrounded by her progress cards',
   },
 
@@ -1352,8 +1352,8 @@ const EN: Jour30Copy = {
     deviseLabel: 'Displayed currency',
     dejaProgrammeAide: 'Untick it if you only want the other one: the two programmes are independent and sold separately.',
     dejaAcquis: 'Not included',
-    panierVide: 'Pick at least one add-on.',
-    remiseCode: (code: string, pct: number) => `Code ${code}: −${pct}% on the programme and Build`,
+    panierVide: 'Pick at least one course.',
+    remiseCode: (code: string, pct: number) => `Code ${code}: −${pct}% on the method and Automations`,
     unique: 'once, full access',
     uniquePlaces: (n: number) => `once, for ${n} seats`,
     mensuel: 'per month, assistant',
