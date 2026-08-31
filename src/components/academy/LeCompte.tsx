@@ -573,7 +573,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
           </section>
           {/* ⚠️ La liste est VIDE en production depuis le 28/08/2026 : le
               parcours vendu n'ouvre plus M14 ni M15 aux points, ils sont
-              passés au complément Construire. La carte restait affichée avec
+              passés aux Automatisations. La carte restait affichée avec
               son seul titre, un cadre vide sur la page de vente. Elle ne se
               rend que si elle a quelque chose à dire. */}
           {MODULES_A_DEBLOQUER.length > 0 && (
