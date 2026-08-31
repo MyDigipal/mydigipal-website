@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { SYMBOLE, enDevise, prixDe, type Devise, leconsProgramme, leconsComplement, leconsGratuit } from './data';
+import { SYMBOLE, enDevise, prixDe, type Devise, leconsProgramme, leconsGratuit } from './data';
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { formatPrice, nombreLocal, teamDiscount } from './offres';
@@ -421,7 +421,12 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                   <span className="min-w-0 flex-[1_1_220px]">
                     <span className={`block text-[17px] ${on ? 'text-ivoire' : 'text-corps-nuit'}`}>{o.name}</span>
                     <span className="mt-1 block text-[14px] leading-[1.55] text-brume-nuit">
-                      {id === 'construire' ? c.construireLigne(leconsComplement(data)) : o.tagline}
+                      {/* ⚠️ `leconsConstruire` et non `leconsComplement` : depuis que les
+                          deux programmes s'achètent séparément, 92 est ce qu'ils
+                          ouvrent EN PLUS pour qui a déjà la méthode, et 48 ce qu'ils
+                          contiennent en propre. Sur une ligne d'achat, c'est le second
+                          qui est vrai dans tous les cas. */}
+                      {id === 'construire' ? c.construireLigne(data.faits.lessonsConstruire) : o.tagline}
                     </span>
                   </span>
                   <span className={`${prix} ${on ? 'text-or' : 'text-brume-nuit'}`}>+{formatPrice(prixOffre(o), locale)} {sym}</span>

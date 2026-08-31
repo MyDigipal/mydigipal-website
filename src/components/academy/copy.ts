@@ -91,7 +91,7 @@ const FR = {
      * modules relèvent du complément.
      */
     repartition: (programme: number, complement: number) =>
-      `${programme} leçons dans la méthode, ${complement} de plus avec les automatisations.`,
+      `${programme} leçons dans la méthode, ${complement} de plus si vous prenez aussi les automatisations.`,
     cta: 'Commencer',
     cta2: (n: number) => `Essayer ${n} leçons, gratuitement`,
     url: 'academy.mydigipal.com/app',
@@ -173,7 +173,7 @@ const FR = {
       parcours2: {
         kicker: 'Les automatisations',
         titre: 'Agents, automatisations, serveurs MCP.',
-        texte: `${f.lessonsComplement ?? f.lessonsConstruire} leçons de plus et dix-sept cas réels de l’agence. C’est là qu’on branche les outils les uns aux autres.`,
+        texte: `${f.lessonsConstruire} leçons dans leur propre parcours et dix-sept cas réels de l’agence. C’est là qu’on branche les outils les uns aux autres.`,
       },
       reprendre: {
         kicker: 'Reprendre',
@@ -656,7 +656,7 @@ const FR = {
     sousTitre: 'Le programme, et ce que vous y ajoutez.',
     programmeLigne: (lecons: number) =>
       `${lecons} leçons, trois niveaux, l’atelier, la bibliothèque, les trophées, l’attestation. Accès complet.`,
-    construireLigne: (lecons: number) => `${lecons} leçons de plus. Le niveau 3 en entier, celui du serveur MCP.`,
+    construireLigne: (lecons: number) => `${lecons} leçons dans leur propre parcours, jusqu’au serveur MCP en état de marche.`,
     assistantTitre: 'L’assistant IA',
     assistantLigne: 'Il connaît vos leçons et répond sur vos cas. Abonnement mensuel, sans engagement.',
     sans: 'Sans',
@@ -772,7 +772,7 @@ const EN: Jour30Copy = {
     sous: (lecons: number, prix: string) =>
       `${lecons} lessons at your own pace, the CRAFT method, your exercises reviewed by a human, all the way to agents and MCP servers. From €${prix}.`,
     repartition: (programme: number, complement: number) =>
-      `${programme} lessons in the method, ${complement} more with Automations.`,
+      `${programme} lessons in the method, ${complement} more if you take Automations too.`,
     cta: 'Get started',
     cta2: (n: number) => `Try ${n} lessons, free`,
     url: 'academy.mydigipal.com/app',
@@ -854,7 +854,7 @@ const EN: Jour30Copy = {
       parcours2: {
         kicker: 'Automations',
         titre: 'Agents, automations, MCP servers.',
-        texte: `${f.lessonsComplement ?? f.lessonsConstruire} more lessons and seventeen real cases from the agency. This is where you wire the tools to one another.`,
+        texte: `${f.lessonsConstruire} lessons in their own course and seventeen real cases from the agency. This is where you wire the tools to one another.`,
       },
       reprendre: {
         kicker: 'Resume',
@@ -1334,7 +1334,7 @@ const EN: Jour30Copy = {
     sousTitre: 'The programme, and what you add to it.',
     programmeLigne: (lecons: number) =>
       `${lecons} lessons, three levels, the workshop, the library, the trophies, the certificate. Full access.`,
-    construireLigne: (lecons: number) => `${lecons} more lessons. Level 3 in full, the one with the MCP server.`,
+    construireLigne: (lecons: number) => `${lecons} lessons in their own course, up to a working MCP server.`,
     assistantTitre: 'The AI assistant',
     assistantLigne: 'It knows your lessons and answers on your own cases. Monthly subscription, no commitment.',
     sans: 'None',
