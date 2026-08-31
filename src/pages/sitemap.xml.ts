@@ -117,7 +117,9 @@ export const GET: APIRoute = async () => {
   // BLOG POSTS (from content collection)
   // ==================
   try {
-    const posts = await getCollection('blog', ({ id }) => id.startsWith('en/'));
+    // draft:true = article non publie : [slug].astro ne genere pas sa page,
+    // donc l'annoncer dans le sitemap revient a soumettre un 404 a Google.
+    const posts = await getCollection('blog', ({ id, data }) => id.startsWith('en/') && !data.draft);
     for (const post of posts) {
       const slug = post.id.replace('en/', '');
       const images: ImageInfo[] = [];
