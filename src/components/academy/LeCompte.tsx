@@ -960,7 +960,19 @@ function AnimationCraft({
       const N = c.champs.length;
       let pending = false;
       const poser = () => {
-        const p = apparition(el, 1, 0.32);
+        /**
+         * Le haut de la carte collée ne bouge plus (13vh) : on ne peut donc pas
+         * mesurer la carte, c'est le CONTENEUR de course qui donne l'avancement.
+         *
+         * Et les bornes ne sont pas les mêmes selon qu'on colle ou non. Collé,
+         * la course part du moment où la carte se fixe ; sinon (sous lg, où le
+         * collage est désactivé) elle part de l'entrée du bloc à l'écran. Les
+         * mêmes bornes dans les deux cas écrivaient le premier champ avant que
+         * la carte soit visible.
+         */
+        const parent = el.parentElement;
+        const colle = !!parent && parent !== el && parent.offsetHeight > el.offsetHeight * 1.3;
+        const p = colle ? apparition(parent, 0.24, -0.86) : apparition(el, 1, 0.32);
         const largeur = 1 / (N * 0.72 + 0.5);
         setEcrits((prev) => {
           let change = false;
@@ -1020,9 +1032,24 @@ function AnimationCraft({
   }, [c, locale, scrub]);
 
   return (
+    /**
+     * En mode scrub, le bloc porte une DISTANCE de course et la carte s'y colle.
+     *
+     * ⚠️ Sans ce collage, la course ne fait que 612 px de défilement (mesuré en
+     * production le 31/08/2026) : deux tours de molette, pendant lesquels la
+     * carte de 607 px traverse l'écran. L'écriture se termine avant qu'on ait pu
+     * la regarder, et l'effet est indiscernable de l'ancien. Avec, on retrouve
+     * les 1 260 px de la page de labo, carte immobile.
+     *
+     * Sous `lg` seulement : sur un écran de 844 px, coller une carte de 607 px
+     * ne laisse plus rien voir autour.
+     */
+    <div className={scrub ? 'lg:min-h-[168vh]' : undefined}>
     <div
       ref={box}
-      className="max-w-[660px] rounded-[20px] border border-white/[0.06] bg-craie px-[30px] py-7 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.85)]"
+      className={`max-w-[660px] rounded-[20px] border border-white/[0.06] bg-craie px-[30px] py-7 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.85)] ${
+        scrub ? 'lg:sticky lg:top-[13vh]' : ''
+      }`}
     >
       <p className="m-0 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-or-grave">{c.kicker}</p>
       <h3 className="m-0 mt-2 font-ac-serif text-[26px] font-semibold leading-[1.2] text-encre">{c.titre}</h3>
@@ -1050,7 +1077,19 @@ function AnimationCraft({
         ))}
       </dl>
 
-      <div className={`transition-opacity duration-500 ${assemble ? 'opacity-100' : 'opacity-0'}`}>
+      {/* ⚠️ En mode scrub, le bloc S'OUVRE au lieu d'occuper la place en
+          transparent : collée à l'écran pendant 900 px, la carte gardait un
+          trou de 250 px au milieu, qui se lit comme un défaut de mise en page
+          et non comme une attente (vu à l'écran le 31/08/2026). Hors scrub, la
+          carte défile vite et le comportement d'origine est conservé.
+          La fraction se pose en style : `fr` n'est pas une unité admise dans
+          `calc()`, donc `calc(var(--x) * 1fr)` est une déclaration invalide,
+          ignorée en silence. */}
+      <div
+        className={`transition-opacity duration-500 ${assemble ? 'opacity-100' : 'opacity-0'}`}
+        style={scrub ? { display: 'grid', gridTemplateRows: assemble ? '1fr' : '0fr', overflow: 'hidden', transition: 'grid-template-rows .45s, opacity .45s' } : undefined}
+      >
+        <div style={scrub ? { minHeight: 0 } : undefined}>
         <p className="m-0 mb-2 mt-[22px] font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-or-grave">{c.assemble}</p>
         <div className="relative rounded-[12px] bg-encre px-[18px] py-4">
           <p className="m-0 whitespace-pre-wrap pr-[88px] font-ac-mono text-[12.5px] leading-[1.7] text-terminal-texte">{prompt}</p>
@@ -1066,6 +1105,7 @@ function AnimationCraft({
             {copie ? c.copie : c.copier}
           </button>
         </div>
+        </div>
       </div>
 
       <div className="mt-[18px] flex flex-wrap items-center gap-x-5 gap-y-2.5 border-t border-lin pt-3.5">
@@ -1074,6 +1114,7 @@ function AnimationCraft({
           {c.terminee(pointsLecon)}
         </span>
       </div>
+    </div>
     </div>
   );
 }
