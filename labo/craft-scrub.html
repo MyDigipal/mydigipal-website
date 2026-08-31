@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="fr" data-theme="nuit">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Labo - le module CRAFT, avant et apres</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Les jetons reels de la page de vente (src/styles/academy.css). */
+  :root {
+    --mono: 'JetBrains Mono', Consolas, monospace;
+    --serif: 'Fraunces', Georgia, serif;
+    --grotesk: 'Space Grotesk', system-ui, sans-serif;
+
+    --encre: #0f1a2e;
+    --or: #c8a951;
+    --or-grave: #8a6d24;
+    --craie: #f7f5f0;
+    --mine: #2a3441;
+    --brume: #646c7a;
+    --lin: #e6e1d6;
+    --sauge: #2e7d5b;
+    --sauge-soft: #e9f3ee;
+    --terminal-texte: #d5dbe6;
+
+    --salle: #0d1424;
+    --salle-2: #141d33;
+    --salle-3: #1c2742;
+    --filet: #26324e;
+    --ivoire: #f2eee4;
+    --corps: #b9c1d1;
+    --brume-nuit: #7d879b;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body {
+    margin: 0;
+    background: var(--salle);
+    color: var(--corps);
+    font-family: var(--grotesk);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  .enveloppe { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------------------------------------------------------- l'en-tete */
+  header.tete {
+    border-bottom: 1px solid var(--filet);
+    padding: 40px 0 30px;
+    background: var(--salle);
+  }
+  .kicker {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--or);
+  }
+  h1 {
+    margin: 10px 0 0;
+    font-family: var(--serif);
+    font-size: clamp(26px, 4vw, 40px);
+    font-weight: 600;
+    line-height: 1.12;
+    color: var(--ivoire);
+  }
+  .chapeau { margin: 12px 0 0; max-width: 62ch; font-size: 15.5px; line-height: 1.6; }
+  .consigne {
+    margin: 22px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--brume-nuit);
+  }
+  .consigne b { color: var(--or); font-weight: 700; }
+
+  /* ---------------------------------------------------------- les sections */
+  section.essai {
+    border-top: 1px solid var(--filet);
+    padding: 90px 0 110px;
+  }
+  .etiquette {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .etiquette.avant { color: var(--brume-nuit); }
+  .etiquette.apres { color: var(--or); }
+  .etiquette span.puce {
+    display: inline-block;
+    width: 22px;
+    height: 1px;
+    background: currentColor;
+  }
+  h2 {
+    margin: 0 0 8px;
+    font-family: var(--serif);
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--ivoire);
+  }
+  .quoi-regarder {
+    margin: 0 0 34px;
+    max-width: 60ch;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--brume-nuit);
+  }
+
+  /* ---------------------------------------------- la carte CRAFT (identique aux deux) */
+  .carte {
+    max-width: 660px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--craie);
+    padding: 28px 30px;
+    box-shadow: 0 30px 60px -40px rgba(0, 0, 0, 0.85);
+  }
+  .carte .k {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--or-grave);
+  }
+  .carte h3 {
+    margin: 8px 0 0;
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--encre);
+  }
+  .champs { margin: 20px 0 0; display: grid; gap: 10px; }
+  .champ {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+  }
+  @media (min-width: 640px) { .champ { grid-template-columns: 26px 88px minmax(0, 1fr); } }
+  .lettre {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: var(--lin);
+    color: var(--brume);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .champ.vivant .lettre { background: var(--or); color: var(--encre); }
+  .nom {
+    display: none;
+    align-self: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brume);
+  }
+  @media (min-width: 640px) { .nom { display: block; } }
+  .valeur {
+    align-self: center;
+    min-height: 1.5em;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--mine);
+  }
+  .curseur {
+    display: inline-block;
+    width: 6px;
+    height: 12px;
+    margin-left: 2px;
+    background: var(--or);
+    vertical-align: baseline;
+    animation: clignote 1s steps(2) infinite;
+  }
+  @keyframes clignote { 50% { opacity: 0; } }
+
+  /* Le bloc assemblé s'OUVRE au lieu d'occuper la place en transparent : un
+     trou de 250 px au milieu de la carte se lit comme un défaut de mise en
+     page, pas comme une attente. `--ouv` va de 0 à 1, la ligne de grille
+     suit. */
+  .assemble {
+    display: grid;
+    grid-template-rows: 0fr;   /* la valeur reelle est posee par le script */
+    opacity: 0;
+    overflow: hidden;
+    transition: none;
+  }
+  .assemble > div.dedans { min-height: 0; }
+  .assemble .k { margin: 22px 0 8px; }
+  .terminal {
+    position: relative;
+    border-radius: 12px;
+    background: var(--encre);
+    padding: 16px 18px;
+  }
+  .terminal p {
+    margin: 0;
+    padding-right: 88px;
+    white-space: pre-wrap;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--terminal-texte);
+  }
+  .pied {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 20px;
+    border-top: 1px solid var(--lin);
+    padding-top: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--brume);
+  }
+  .badge {
+    border-radius: 999px;
+    background: var(--sauge-soft);
+    padding: 3px 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--sauge);
+  }
+
+  /* ------------------------------------------------------- la piste de scrub */
+  .piste {
+    margin: 26px 0 0;
+    max-width: 660px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--brume-nuit);
+  }
+  .rail {
+    position: relative;
+    flex: 1;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--filet);
+    overflow: hidden;
+  }
+  .rail i {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0%;
+    background: var(--or);
+    border-radius: 999px;
+  }
+  .pourcent { width: 42px; text-align: right; color: var(--or); font-weight: 700; }
+
+  /* ------------------------------------------------------- le panneau de reglages */
+  .reglages {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 40;
+    width: 268px;
+    border-radius: 14px;
+    border: 1px solid var(--filet);
+    background: rgba(13, 20, 36, 0.94);
+    backdrop-filter: blur(10px);
+    padding: 16px 18px 18px;
+    box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.8);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--corps);
+  }
+  .reglages h4 {
+    margin: 0 0 14px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--or);
+  }
+  .reglage { margin-bottom: 15px; }
+  .reglage:last-of-type { margin-bottom: 8px; }
+  .reglage label {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 7px;
+    color: var(--brume-nuit);
+  }
+  .reglage label b { color: var(--ivoire); font-weight: 700; }
+  input[type="range"] {
+    width: 100%;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--or);
+    cursor: pointer;
+  }
+  .boutons { display: flex; flex-wrap: wrap; gap: 6px; }
+  .boutons button {
+    flex: 1 1 auto;
+    min-height: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--filet);
+    background: transparent;
+    color: var(--brume-nuit);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.15s;
+  }
+  .boutons button:hover { border-color: var(--or); color: var(--ivoire); }
+  .boutons button[aria-pressed="true"] {
+    border-color: var(--or);
+    background: rgba(200, 169, 81, 0.16);
+    color: var(--or);
+  }
+  .reglages .note { margin: 10px 0 0; font-size: 10.5px; line-height: 1.5; color: var(--brume-nuit); }
+  .replier {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    border: 0;
+    background: transparent;
+    color: var(--brume-nuit);
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+  }
+  .reglages.replie { width: auto; padding: 10px 14px; }
+  .reglages.replie > *:not(.replier):not(h4) { display: none; }
+  .reglages.replie h4 { margin: 0; padding-right: 18px; }
+
+  @media (max-width: 700px) {
+    .reglages { left: 12px; right: 12px; bottom: 12px; width: auto; }
+  }
+
+  /* La zone de course : c'est elle qui donne au scroll la distance necessaire,
+     et la carte y reste collee. Sans ce collage, la carte sortait de l'ecran
+     avant la fin de son animation, et le prompt assemble n'apparaissait
+     jamais (mesure du 31/08). */
+  .zone-course {
+    height: calc(var(--course, 140vh) + 90vh);
+  }
+  .colle {
+    position: sticky;
+    top: 7vh;
+  }
+
+  footer.fin {
+    border-top: 1px solid var(--filet);
+    padding: 60px 0 140px;
+  }
+  footer.fin ul { margin: 16px 0 0; padding-left: 20px; }
+  footer.fin li { margin-bottom: 10px; font-size: 14.5px; line-height: 1.6; }
+  code {
+    font-family: var(--mono);
+    font-size: 0.92em;
+    background: var(--salle-2);
+    border: 1px solid var(--filet);
+    border-radius: 5px;
+    padding: 1px 5px;
+    color: var(--ivoire);
+  }
+  .avert {
+    margin: 26px 0 0;
+    border-left: 2px solid var(--or);
+    padding: 2px 0 2px 16px;
+    max-width: 68ch;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--brume-nuit);
+  }
+  .respire { height: 30vh; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .curseur { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="tete">
+  <div class="enveloppe">
+    <p class="kicker">Labo · anime.js v4</p>
+    <h1>Le module CRAFT, avant et apres.</h1>
+    <p class="chapeau">
+      Le meme bloc, deux fois. En haut le comportement actuel de la page de vente :
+      l'animation se declenche quand le bloc entre dans l'ecran, et se joue toute seule.
+      En bas, la position du scroll pilote l'ecriture.
+    </p>
+    <p class="consigne">
+      <span><b>1.</b> Descendez lentement</span>
+      <span><b>2.</b> Arretez-vous au milieu du second bloc</span>
+      <span><b>3.</b> Remontez</span>
+    </p>
+  </div>
+</header>
+
+<div class="respire"></div>
+
+<!-- ═══════════════════════════════════════════════════════ AVANT -->
+<section class="essai" id="avant">
+  <div class="enveloppe">
+    <p class="etiquette avant"><span class="puce"></span> Aujourd'hui</p>
+    <h2>L'animation se joue seule.</h2>
+    <p class="quoi-regarder">
+      Elle part quand le bloc atteint 80 % de la hauteur de l'ecran, dure environ
+      deux secondes et demie, puis c'est fini. Si vous remontez et redescendez, rien
+      ne rejoue. Si vous lisez plus lentement qu'elle, elle vous attend deja a la fin.
+    </p>
+    <div class="carte" id="carte-avant"></div>
+  </div>
+</section>
+
+<div class="respire"></div>
+
+<!-- ═══════════════════════════════════════════════════════ APRES -->
+<section class="essai" id="apres">
+  <div class="enveloppe">
+    <p class="etiquette apres"><span class="puce"></span> Avec le scrub</p>
+    <h2>Le scroll ecrit la demande.</h2>
+    <p class="quoi-regarder">
+      Aucune duree : l'etat de l'animation est la position du scroll. Vous vous
+      arretez, elle s'arrete. Vous remontez, elle se dé-ecrit. La carte reste
+      collee au haut de l'ecran le temps de la course, comme la turbine de leur
+      site : sinon elle sortirait de l'ecran avant d'avoir fini.
+    </p>
+  </div>
+  <div class="zone-course" id="zone-course">
+    <div class="colle">
+      <div class="enveloppe">
+        <div class="carte" id="carte-apres"></div>
+        <div class="piste">
+          <span>course</span>
+          <span class="rail"><i id="jauge"></i></span>
+          <span class="pourcent" id="pourcent">0 %</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="fin">
+  <div class="enveloppe">
+    <p class="etiquette avant"><span class="puce"></span> Ce que ca change</p>
+    <h2>Trois choses, et une seule est visuelle.</h2>
+    <ul>
+      <li><b>Le lecteur mene.</b> Quelqu'un qui lit vite voit tout tout de suite ; quelqu'un qui prend son temps voit la demande s'ecrire a son rythme. Personne n'attend, personne ne rate.</li>
+      <li><b>Le retour arriere existe.</b> C'est le geste naturel de « attends, montre-moi encore » et aujourd'hui il ne donne rien.</li>
+      <li><b>Le mouvement dit quelque chose.</b> Ici il dit : cinq champs, dans cet ordre, et le prompt en sort. C'est la promesse du produit, jouee au doigt.</li>
+    </ul>
+    <p class="avert">
+      Sans JavaScript, ou sous <code>prefers-reduced-motion</code>, la carte s'affiche
+      entierement remplie : l'etat de repos reste l'etat visible. C'est la regle de la
+      page de vente et le scrub ne la change pas.
+    </p>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════ les reglages -->
+<aside class="reglages" id="reglages">
+  <button class="replier" id="replier" type="button" title="Replier">−</button>
+  <h4>Reglages</h4>
+
+  <div class="reglage">
+    <label for="course">Course <b id="course-v">1,4 ecran</b></label>
+    <input type="range" id="course" min="40" max="260" step="10" value="140">
+  </div>
+
+  <div class="reglage">
+    <label for="decalage">Decalage des champs <b id="decalage-v">65 %</b></label>
+    <input type="range" id="decalage" min="0" max="100" step="5" value="65">
+  </div>
+
+  <div class="reglage">
+    <label>Lissage</label>
+    <div class="boutons" id="lissage">
+      <button type="button" data-v="sec" aria-pressed="false">Sec</button>
+      <button type="button" data-v="doux" aria-pressed="true">Doux</button>
+      <button type="button" data-v="tres" aria-pressed="false">Tres doux</button>
+    </div>
+  </div>
+
+  <div class="reglage">
+    <label>Reperes</label>
+    <div class="boutons" id="reperes">
+      <button type="button" data-v="off" aria-pressed="true">Cachés</button>
+      <button type="button" data-v="on" aria-pressed="false">Montrés</button>
+    </div>
+  </div>
+
+  <p class="note">Les reglages s'appliquent au bloc du bas. Ils se reappliquent a chaud.</p>
+</aside>
+
+<script type="module">
+import { createTimeline, onScroll, utils } from 'https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.esm.min.js';
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Le contenu : les vrais champs de la page de vente (copy.ts, compte.j2 FR).
+   ══════════════════════════════════════════════════════════════════════════ */
+const CHAMPS = [
+  { lettre: 'C', nom: 'Contexte', valeur: 'je suis chargée de compte chez un prestataire multi-sites' },
+  { lettre: 'R', nom: 'Rôle', valeur: 'tu es analyste : tu tries et tu comptes, tu ne commentes pas' },
+  { lettre: 'A', nom: 'Action', valeur: 'classe chaque réclamation dans un seul motif' },
+  { lettre: 'F', nom: 'Format', valeur: 'un tableau croisé, motifs en lignes, sites en colonnes, avec les totaux' },
+  { lettre: 'T', nom: 'Ton', valeur: 'factuel, ni introduction ni conclusion' },
+];
+const PROMPT = CHAMPS.map((c) => `${c.nom} : ${c.valeur}`).join('\n');
+const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* La carte, construite une fois et partagée par les deux blocs. */
+function batirCarte(hote) {
+  hote.innerHTML = `
+    <p class="k">La méthode CRAFT</p>
+    <h3>Cinq champs, dans cet ordre</h3>
+    <div class="champs">
+      ${CHAMPS.map((c, i) => `
+        <div class="champ" data-i="${i}">
+          <span class="lettre">${c.lettre}</span>
+          <span class="nom">${c.nom}</span>
+          <span class="valeur"></span>
+        </div>`).join('')}
+    </div>
+    <div class="assemble">
+      <div class="dedans">
+        <p class="k">La demande, assemblée</p>
+        <div class="terminal"><p>${PROMPT.replace(/</g, '&lt;')}</p></div>
+      </div>
+    </div>
+    <div class="pied">
+      <span>130 leçons écrites : plan, exemple, prompt</span>
+      <span class="badge">Terminée, +10</span>
+    </div>`;
+  return {
+    champs: [...hote.querySelectorAll('.champ')],
+    valeurs: [...hote.querySelectorAll('.valeur')],
+    assemble: hote.querySelector('.assemble'),
+  };
+}
+
+/**
+ * Écrire n caractères du champ i. Le curseur n'apparaît que pendant la frappe :
+ * un curseur sur un champ fini ferait croire que l'écriture continue.
+ */
+function ecrire(vue, i, n) {
+  const total = CHAMPS[i].valeur.length;
+  const k = Math.max(0, Math.min(total, Math.round(n)));
+  const texte = CHAMPS[i].valeur.slice(0, k);
+  const enCours = k > 0 && k < total;
+  vue.valeurs[i].innerHTML = texte + (enCours ? '<span class="curseur"></span>' : '');
+  vue.champs[i].classList.toggle('vivant', k > 0);
+}
+
+function remplirTout(vue) {
+  CHAMPS.forEach((c, i) => ecrire(vue, i, c.valeur.length));
+  ouvrir(vue, 1);
+}
+
+/**
+ * L'ouverture du bloc assemblé, de 0 (fermé) à 1 (ouvert).
+ *
+ * ⚠️ La fraction se pose EN JS, pas par une variable CSS dans un `calc()` :
+ * `fr` n'est pas une unité admise dans `calc()`, donc `calc(var(--ouv) * 1fr)`
+ * est une déclaration invalide, silencieusement ignorée. La grille gardait sa
+ * hauteur automatique et le trou de 246 px restait (mesuré le 31/08/2026).
+ */
+function ouvrir(vue, v) {
+  vue.assemble.style.gridTemplateRows = `${v}fr`;
+  vue.assemble.style.opacity = String(v);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   BLOC 1 - le comportement actuel : IntersectionObserver, puis des minuteries.
+   Reproduction fidèle de `AnimationCraft` (LeCompte.tsx) : 460 ms entre les
+   champs, 380 ms de frappe par champ, puis le prompt en fondu.
+   ══════════════════════════════════════════════════════════════════════════ */
+const vueAvant = batirCarte(document.getElementById('carte-avant'));
+
+if (REDUIT) {
+  remplirTout(vueAvant);
+} else {
+  const io = new IntersectionObserver((entrees) => {
+    if (!entrees.some((e) => e.isIntersecting)) return;
+    io.disconnect();
+    CHAMPS.forEach((c, i) => {
+      setTimeout(() => {
+        const t0 = performance.now();
+        const boucle = () => {
+          const p = Math.min(1, (performance.now() - t0) / 380);
+          ecrire(vueAvant, i, p * c.valeur.length);
+          if (p < 1) requestAnimationFrame(boucle);
+        };
+        requestAnimationFrame(boucle);
+      }, i * 460);
+    });
+    // L'ouverture garde sa transition de 500 ms : c'est le comportement actuel.
+    setTimeout(() => {
+      vueAvant.assemble.style.transition = 'grid-template-rows 0.5s, opacity 0.5s';
+      ouvrir(vueAvant, 1);
+    }, CHAMPS.length * 460 + 420);
+  }, { rootMargin: '0px 0px -20% 0px' });
+  io.observe(document.getElementById('carte-avant'));
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   BLOC 2 - le scrub. Une timeline anime.js dont l'autoplay EST l'observateur
+   de scroll : `progress` ne vient plus d'une horloge mais de la position.
+
+   La durée de chaque tween ne fixe donc plus un temps mais une PART de la
+   course : ce qui compte est leur rapport entre eux, et `course` (réglage)
+   dit combien de hauteur d'écran couvre la timeline entière.
+   ══════════════════════════════════════════════════════════════════════════ */
+const vueApres = batirCarte(document.getElementById('carte-apres'));
+const jauge = document.getElementById('jauge');
+const pourcent = document.getElementById('pourcent');
+const sectionApres = document.getElementById('apres');
+const zoneCourse = document.getElementById('zone-course');
+
+const LISSAGE = { sec: true, doux: 0.2, tres: 0.06 };
+const reglages = { course: 140, decalage: 65, lissage: 'doux', reperes: false };
+let courant = null;
+
+function monter() {
+  if (courant) {
+    courant.revert?.();
+    courant = null;
+  }
+  // Repartir d'une carte vide : un réglage changé en cours de course laissait
+  // sinon les champs à demi écrits, sans plus personne pour les finir.
+  CHAMPS.forEach((_, i) => ecrire(vueApres, i, 0));
+  ouvrir(vueApres, 0);
+  if (REDUIT) {
+    remplirTout(vueApres);
+    jauge.style.width = '100%';
+    pourcent.textContent = '100 %';
+    return;
+  }
+
+  // Un compteur par champ. La timeline anime ces nombres, pas le DOM :
+  // écrire du texte n'est pas une propriété interpolable.
+  const compteurs = CHAMPS.map(() => ({ n: 0 }));
+  const etatAssemble = { v: 0 };
+
+  const tl = createTimeline({
+    defaults: { ease: 'linear' },
+    autoplay: onScroll({
+      // ⚠️ La cible est la ZONE DE COURSE, pas la carte : c'est elle qui porte
+      // la distance de scroll, et la carte y reste collée. Caler l'observateur
+      // sur la carte donnait une course plus longue que le scroll disponible,
+      // donc la progression plafonnait à 85 % et le prompt assemblé
+      // n'apparaissait jamais (mesuré le 31/08/2026).
+      target: zoneCourse,
+      // Du moment où la zone se colle, jusqu'à `course` plus loin.
+      enter: { target: 'top', container: 'top+=7vh' },
+      leave: { target: `top+=${reglages.course}vh`, container: 'top+=7vh' },
+      sync: LISSAGE[reglages.lissage],
+      debug: reglages.reperes,
+      onUpdate: (o) => {
+        const p = Math.round(o.progress * 100);
+        jauge.style.width = `${p}%`;
+        pourcent.textContent = `${p} %`;
+      },
+    }),
+  });
+
+  // Le décalage : 0 = les cinq champs s'écrivent ensemble, 100 % = strictement
+  // l'un après l'autre. Entre les deux, ils se chevauchent.
+  const part = 100;
+  const chevauche = part * (reglages.decalage / 100);
+  CHAMPS.forEach((c, i) => {
+    tl.add(
+      compteurs[i],
+      {
+        n: c.valeur.length,
+        duration: part,
+        onUpdate: () => ecrire(vueApres, i, compteurs[i].n),
+      },
+      i * chevauche
+    );
+  });
+
+  // Le prompt assemblé arrive après le dernier champ, sur un cinquième de la course.
+  tl.add(
+    etatAssemble,
+    {
+      v: 1,
+      duration: part * 0.5,
+      onUpdate: () => ouvrir(vueApres, etatAssemble.v),
+    },
+    (CHAMPS.length - 1) * chevauche + part
+  );
+
+  courant = tl;
+}
+
+zoneCourse.style.setProperty('--course', `${reglages.course}vh`);
+monter();
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Les réglages. Chaque changement remonte la timeline à chaud : anime.js n'a
+   pas d'API pour changer les seuils d'un observateur en place, et la reconstruire
+   coûte moins d'une milliseconde.
+   ══════════════════════════════════════════════════════════════════════════ */
+const cours = document.getElementById('course');
+const coursV = document.getElementById('course-v');
+cours.addEventListener('input', () => {
+  reglages.course = +cours.value;
+  coursV.textContent = `${(reglages.course / 100).toFixed(1).replace('.', ',')} écran`;
+  // La zone doit être assez haute pour que la course soit parcourable.
+  zoneCourse.style.setProperty('--course', `${reglages.course}vh`);
+  monter();
+});
+
+const dec = document.getElementById('decalage');
+const decV = document.getElementById('decalage-v');
+dec.addEventListener('input', () => {
+  reglages.decalage = +dec.value;
+  decV.textContent = `${reglages.decalage} %`;
+  monter();
+});
+
+function groupe(id, appliquer) {
+  const hote = document.getElementById(id);
+  hote.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    [...hote.querySelectorAll('button')].forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    appliquer(b.dataset.v);
+    monter();
+  });
+}
+groupe('lissage', (v) => { reglages.lissage = v; });
+groupe('reperes', (v) => { reglages.reperes = v === 'on'; });
+
+const panneau = document.getElementById('reglages');
+document.getElementById('replier').addEventListener('click', () => {
+  const replie = panneau.classList.toggle('replie');
+  document.getElementById('replier').textContent = replie ? '+' : '−';
+});
+
+/* Le poids réel, écrit dans la console pour ne pas l'inventer. */
+console.log('[labo] anime.js v4.5.0 · bundle complet 115 Ko brut, 40 Ko gzip · MIT');
+console.log('[labo] utils disponible :', typeof utils.clamp === 'function');
+</script>
+</body>
+</html>
