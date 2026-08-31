@@ -112,19 +112,19 @@ const FR = {
     sousTactile: 'L’espace apprenant, tel que vous l’ouvrirez. Touchez un élément : il vous dit à quoi il sert.',
     voirLecran: 'Voir cet écran',
     nav: ['Parcours', 'Outils', 'Mon espace'],
-    bandeau: { kicker: 'Mon espace', titre: 'Bonjour Clara', ligne: 'Formule complète, tout le parcours ouvert.' },
+    bandeau: { kicker: 'Mon espace', titre: 'Bonjour Clara', ligne: 'Les deux programmes, tout le parcours ouvert.' },
     cartes: {
       kicker: 'Votre parcours',
       reprendre: 'Reprendre',
       continuer: 'Continuer',
       p1: {
-        titre: 'The AI Academy',
+        titre: 'La méthode',
         ligne: 'De zéro à autonome avec l’IA générative : la méthode CRAFT, les outils, les cas de votre métier.',
         avancement: (f: number, n: number) => `${f} leçons sur ${n}`,
       },
       p2: {
-        titre: 'Cas d’usage avancés et MCP',
-        ligne: 'Agents, automatisations, serveurs MCP et dix-sept cas réels.',
+        titre: 'Les automatisations',
+        ligne: 'Agents, chaînes MCP, serveurs, et dix-sept cas réels.',
         avancement: (f: number, n: number) => `${f} leçons sur ${n}`,
       },
     },
@@ -166,8 +166,8 @@ const FR = {
     },
     spots: (f: { lessons: number; modules: number; prompts: number; trophees: number; relectures: number; lessonsConstruire: number; lessonsProgramme?: number; lessonsComplement?: number }) => ({
       parcours1: {
-        kicker: 'Le programme',
-        titre: 'Tout le parcours, du premier prompt aux automatisations.',
+        kicker: 'La méthode',
+        titre: 'Tout le parcours, du premier prompt aux cas de votre métier.',
         texte: `${f.lessonsProgramme ?? f.lessons} leçons en ${f.modules} modules, trois niveaux. Chaque leçon écrite : un plan, un exemple, un prompt à copier, et un « À vous » à rendre.`,
       },
       parcours2: {
@@ -653,15 +653,15 @@ const FR = {
 
   configurateur: {
     titre: 'Tarifs',
-    sousTitre: 'Le programme, et ce que vous y ajoutez.',
+    sousTitre: 'Deux programmes, et ce que vous y ajoutez.',
     programmeLigne: (lecons: number) =>
-      `${lecons} leçons, trois niveaux, l’atelier, la bibliothèque, les trophées, l’attestation. Accès complet.`,
+      `${lecons} leçons, trois niveaux, l’atelier, la bibliothèque, les trophées, l’attestation.`,
     construireLigne: (lecons: number) => `${lecons} leçons dans leur propre parcours, jusqu’au serveur MCP en état de marche.`,
     assistantTitre: 'L’assistant IA',
     assistantLigne: 'Il connaît vos leçons et répond sur vos cas. Abonnement mensuel, sans engagement.',
     sans: 'Sans',
     parMois: '€ par mois',
-    assistantSans: 'Le programme fonctionne sans. On l’ajoute quand les questions arrivent.',
+    assistantSans: 'Les deux fonctionnent sans lui. On l’ajoute quand les questions arrivent.',
     assistantAvec: (q: string) => `${q} questions par mois, sans engagement.`,
     places: 'Combien de places',
     placesLabel: (n: number, max: number) => (n >= max ? `${max} et plus` : `${n} place${n > 1 ? 's' : ''}`),
@@ -676,7 +676,7 @@ const FR = {
     dejaAcquis: 'Non retenu',
     panierVide: 'Choisissez au moins un programme.',
     remiseCode: (code: string, pct: number) => `Code ${code} : −${pct} % sur la méthode et les automatisations`,
-    unique: 'une fois, accès complet',
+    unique: 'une fois',
     uniquePlaces: (n: number) => `une fois, pour ${n} places`,
     mensuel: 'par mois, assistant',
     sansAbo: 'pas d’abonnement',
@@ -700,7 +700,7 @@ const FR = {
       merci: 'Bien reçu. Paul vous répond sous un jour ouvré, avec une proposition chiffrée.',
       erreur: 'La demande n’est pas partie. Réessayez, ou écrivez à academy@mydigipal.com.',
     },
-    hausse: (prix: string, date: string) => `Le programme passe à ${prix} € le ${date}.`,
+    hausse: (prix: string, date: string) => `La méthode passe à ${prix} € le ${date}.`,
     /** La date de la hausse, écrite en toutes lettres. */
     dateHausse: (jour: number, mois: string) => `${jour === 1 ? '1er' : jour} ${mois}`,
   },
@@ -793,19 +793,19 @@ const EN: Jour30Copy = {
     sousTactile: 'The learner space, as you will open it. Tap an element: it tells you what it is for.',
     voirLecran: 'Watch this screen',
     nav: ['Course', 'Tools', 'My space'],
-    bandeau: { kicker: 'My space', titre: 'Hello Clara', ligne: 'Complete plan, the whole course open.' },
+    bandeau: { kicker: 'My space', titre: 'Hello Clara', ligne: 'Both programmes, the whole course open.' },
     cartes: {
       kicker: 'Your course',
       reprendre: 'Resume',
       continuer: 'Continue',
       p1: {
-        titre: 'The AI Academy',
+        titre: 'The method',
         ligne: 'From zero to autonomous with generative AI: the CRAFT method, the tools, the cases of your own job.',
         avancement: (f: number, n: number) => `${f} of ${n} lessons`,
       },
       p2: {
-        titre: 'Advanced Use Cases and MCP',
-        ligne: 'Agents, automations, MCP servers and seventeen real cases.',
+        titre: 'Automations',
+        ligne: 'Agents, MCP chains, servers, and seventeen real cases.',
         avancement: (f: number, n: number) => `${f} of ${n} lessons`,
       },
     },
@@ -847,8 +847,8 @@ const EN: Jour30Copy = {
     },
     spots: (f: { lessons: number; modules: number; prompts: number; trophees: number; relectures: number; lessonsConstruire: number; lessonsProgramme?: number; lessonsComplement?: number }) => ({
       parcours1: {
-        kicker: 'The programme',
-        titre: 'The whole course, from the first prompt to automations.',
+        kicker: 'The method',
+        titre: 'The whole course, from the first prompt to the cases of your job.',
         texte: `${f.lessonsProgramme ?? f.lessons} lessons across ${f.modules} modules, three levels. Every lesson written: an outline, an example, a prompt to copy, and a task to hand in.`,
       },
       parcours2: {
@@ -1331,7 +1331,7 @@ const EN: Jour30Copy = {
 
   configurateur: {
     titre: 'Pricing',
-    sousTitre: 'The programme, and what you add to it.',
+    sousTitre: 'Two programmes, and what you add to them.',
     programmeLigne: (lecons: number) =>
       `${lecons} lessons, three levels, the workshop, the library, the trophies, the certificate. Full access.`,
     construireLigne: (lecons: number) => `${lecons} lessons in their own course, up to a working MCP server.`,
@@ -1339,7 +1339,7 @@ const EN: Jour30Copy = {
     assistantLigne: 'It knows your lessons and answers on your own cases. Monthly subscription, no commitment.',
     sans: 'None',
     parMois: '€ per month',
-    assistantSans: 'The programme works without it. Add it when the questions come.',
+    assistantSans: 'Both work without it. Add it when the questions come.',
     assistantAvec: (q: string) => `${q} questions per month, no commitment.`,
     places: 'How many seats',
     placesLabel: (n: number, max: number) => (n >= max ? `${max} and more` : `${n} seat${n > 1 ? 's' : ''}`),
@@ -1354,7 +1354,7 @@ const EN: Jour30Copy = {
     dejaAcquis: 'Not included',
     panierVide: 'Pick at least one course.',
     remiseCode: (code: string, pct: number) => `Code ${code}: −${pct}% on the method and Automations`,
-    unique: 'once, full access',
+    unique: 'once',
     uniquePlaces: (n: number) => `once, for ${n} seats`,
     mensuel: 'per month, assistant',
     sansAbo: 'no subscription',
@@ -1377,7 +1377,7 @@ const EN: Jour30Copy = {
       merci: 'Received. Paul replies within one working day, with a priced proposal.',
       erreur: 'The request did not go through. Try again, or write to academy@mydigipal.com.',
     },
-    hausse: (prix: string, date: string) => `The programme goes up to €${prix} on ${date}.`,
+    hausse: (prix: string, date: string) => `The method goes up to €${prix} on ${date}.`,
     dateHausse: (jour: number, mois: string) => `${jour} ${mois}`,
   },
 

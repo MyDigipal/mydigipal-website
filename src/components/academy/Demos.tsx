@@ -62,8 +62,8 @@ export const LIBELLES: Record<DemoKey, { fr: string; en: string }> = {
     en: 'The CRAFT workshop: the prompt writes itself as you fill it in',
   },
   programme: {
-    fr: 'Le programme, module par module',
-    en: 'The programme, module by module',
+    fr: 'Le parcours, module par module',
+    en: 'The course, module by module',
   },
   avance: {
     fr: 'Les cas d’usage avancés, jusqu’aux serveurs MCP',
