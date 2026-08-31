@@ -63,10 +63,31 @@ Metrics: ...". Six fiches sur huit étaient dans ce cas avant le 04/08/2026. Le
 template lit `seo.title` / `seo.description` en priorité, avec fallback sur le
 champ `title` racine (qui sert au H1 et ne doit pas bouger).
 
-### Vérifier avant de conclure
-`node scripts/audit-metas.py` lit le `dist/` et sort les titres hors 50-60, les
-descriptions hors 145-160, les doublons EN/FR et les H1 manquants. Le lancer après
-build plutôt que se fier aux sources : c'est le HTML généré que Google voit.
+### Le build refuse une faute SEO (depuis le 01/09/2026)
+`scripts/check-seo.mjs` tourne à la fin de `npm run build` **et** de `build:tina`
+(c'est ce dernier que Render exécute). Il lit le `dist/` et **casse le build** sur :
+une URL du sitemap sans page générée, un document servi depuis `/images` ou
+`/videos`, un llms.txt vide, un robots.txt sans sitemap déclaré, un titre hors
+50-60, une description hors 145-160, un doublon de titre ou de description, une
+page sans H1. Il ignore `/admin`, `/test`, `/404`, `*/merci` et tout ce qui porte
+`noindex`.
+
+Donc une méta hors norme se voit **avant le commit**, plus à l'audit suivant.
+Déploiement urgent malgré une faute : `SEO_CHECK=warn npm run build`.
+`node scripts/audit-metas.py` reste disponible pour une passe manuelle.
+
+### llms.txt est généré, pas écrit
+`src/pages/llms.txt.ts`, sur le modèle de `sitemap.xml.ts` : les services, les
+études de cas et les 20 derniers articles viennent des collections à chaque build.
+Il n'y a plus de `public/llms.txt` (deux fichiers pour une même route, c'est le
+retour du problème). Ce qui ne se déduit d'aucune collection - présentation,
+Academy, coordonnées - est écrit en dur dans ce fichier et se modifie là.
+`robots.txt` reste statique dans `public/` : son contenu ne dépend pas du contenu.
+
+### Aucun document client dans `public/`
+Quatre bilans Google Ads clients y ont été servis publiquement jusqu'au 31/08/2026.
+Ils vivent dans `docs/client-reports/`, hors du build. `check-seo.mjs` échoue si un
+HTML réapparaît sous `/images` ou `/videos`.
 
 ### Redirections
 Elles ne se configurent PAS dans `render.yaml` : le service Render n'est rattaché à
