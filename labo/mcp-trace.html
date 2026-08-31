@@ -159,7 +159,7 @@
     <p class="liens">
       <a href="./craft-scrub.html">Essai 1 · CRAFT</a>
       <a href="./mcp-trace.html" aria-current="page">Essai 2 · MCP</a>
-      <a href="./plan-eclate.html">Essai 3 · Plan eclate</a>
+      <a href="./cadran-parcours.html">Essai 3 · Cadran</a>
     </p>
   </div>
 </header>
@@ -222,7 +222,7 @@
   </div>
 </footer>
 
-<aside class="reglages" id="reglages">
+<aside class="reglages replie" id="reglages">
   <button class="replier" id="replier" type="button" title="Replier">−</button>
   <h4>Reglages</h4>
   <div class="reglage">
@@ -256,20 +256,20 @@ import { createTimeline, onScroll, stagger, svg } from 'https://cdn.jsdelivr.net
 
 /* Les quatorze outils de la page de vente (copy.ts, mcp.outils). */
 const OUTILS = [
-  ['Gmail', 'lecture + brouillon'],
-  ['Agenda', 'lecture + proposition'],
-  ['Tableur', 'lecture + écriture'],
-  ['CRM', 'écriture encadrée'],
-  ['Publicité', 'lecture seule'],
-  ['Documents', 'lecture + création'],
-  ['Slack ou Teams', 'message préparé'],
-  ['Analytics', 'lecture seule'],
-  ['Visio', 'transcriptions'],
-  ['Comptabilité', 'brouillon seul'],
-  ['Fichiers', 'lecture + rangement'],
-  ['Entrepôt', 'lecture seule'],
-  ['Support', 'brouillon + base'],
-  ['Site web', 'préproduction'],
+  ['Gmail', 'brouillon'],
+  ['Agenda', 'proposition'],
+  ['Tableur', 'écriture'],
+  ['CRM', 'encadrée'],
+  ['Publicité', 'lecture'],
+  ['Documents', 'création'],
+  ['Slack', 'préparé'],
+  ['Analytics', 'lecture'],
+  ['Visio', 'transcription'],
+  ['Comptabilité', 'brouillon'],
+  ['Fichiers', 'rangement'],
+  ['Entrepôt', 'lecture'],
+  ['Support', 'brouillon'],
+  ['Site web', 'préprod'],
 ];
 const ASSISTANTS = ['Claude', 'ChatGPT', 'Kimi'];
 const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -512,6 +512,7 @@ groupe('ordre', (v) => { reglages.ordre = v; });
 groupe('lissage', (v) => { reglages.lissage = v; });
 
 const panneau = document.getElementById('reglages');
+document.getElementById('replier').textContent = '+';
 document.getElementById('replier').addEventListener('click', () => {
   const replie = panneau.classList.toggle('replie');
   document.getElementById('replier').textContent = replie ? '+' : '−';

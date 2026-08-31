@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="fr" data-theme="nuit">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Labo - le cadran du parcours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mono: 'JetBrains Mono', Consolas, monospace;
+    --serif: 'Fraunces', Georgia, serif;
+    --grotesk: 'Space Grotesk', system-ui, sans-serif;
+    --or: #c8a951;
+    --encre: #0f1a2e;
+    --craie: #f7f5f0;
+    --mine: #2a3441;
+    --brume: #646c7a;
+    --lin: #e6e1d6;
+    --salle: #0d1424;
+    --salle-2: #141d33;
+    --salle-3: #1c2742;
+    --filet: #26324e;
+    --ivoire: #f2eee4;
+    --corps: #b9c1d1;
+    --brume-nuit: #7d879b;
+    --assistant: #9fd4bc;
+    --renard: #d9743f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--salle); color: var(--corps);
+    font-family: var(--grotesk); -webkit-font-smoothing: antialiased; overflow-x: clip;
+  }
+  .enveloppe { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  header.tete { border-bottom: 1px solid var(--filet); padding: 40px 0 30px; }
+  .kicker {
+    margin: 0; font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--or);
+  }
+  h1 {
+    margin: 10px 0 0; font-family: var(--serif); font-size: clamp(26px, 4vw, 40px);
+    font-weight: 600; line-height: 1.12; color: var(--ivoire);
+  }
+  .chapeau { margin: 12px 0 0; max-width: 64ch; font-size: 15.5px; line-height: 1.6; }
+  .liens { margin: 20px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .liens a {
+    border: 1px solid var(--filet); border-radius: 8px; padding: 7px 13px;
+    font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--brume-nuit); text-decoration: none; transition: 0.15s;
+  }
+  .liens a:hover { border-color: var(--or); color: var(--ivoire); }
+  .liens a[aria-current] { border-color: var(--or); color: var(--or); background: rgba(200,169,81,0.12); }
+
+  .etiquette {
+    display: inline-flex; align-items: center; gap: 10px; margin: 0 0 6px;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--or);
+  }
+  .etiquette span.puce { display: inline-block; width: 22px; height: 1px; background: currentColor; }
+  h2 {
+    margin: 0 0 8px; font-family: var(--serif); font-size: clamp(22px, 3vw, 30px);
+    font-weight: 600; line-height: 1.15; color: var(--ivoire);
+  }
+  .quoi-regarder { margin: 0 0 26px; max-width: 62ch; font-size: 14.5px; line-height: 1.6; color: var(--brume-nuit); }
+  section.essai { border-top: 1px solid var(--filet); padding: 70px 0 0; }
+
+  /* --------------------------------------------------- le duo cadran + carte */
+  .zone-course { height: calc(var(--course, 400vh) + 60vh); }
+  .colle {
+    position: sticky; top: 0;
+    min-height: 92vh;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .duo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+    align-items: center;
+  }
+  @media (min-width: 1000px) {
+    .duo.cote { grid-template-columns: minmax(0, 420px) minmax(0, 1fr); }
+  }
+  .duo.centre { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .duo.centre .volet-carte { display: none; }
+
+  svg.cadran { display: block; width: 100%; height: auto; max-width: 460px; margin: 0 auto; }
+  .graduation { stroke: var(--filet); stroke-width: 1.4; }
+  .graduation.jour { stroke: var(--brume-nuit); stroke-width: 1.8; }
+  .graduation.atteint { stroke: var(--or); }
+  .secteur { fill: none; stroke-width: 5; stroke-linecap: butt; opacity: 0.4; }
+  .secteur.n1 { stroke: var(--or); }
+  .secteur.n2 { stroke: var(--assistant); }
+  .secteur.n3 { stroke: var(--renard); }
+  /* Le parcouru passe PAR-DESSUS les secteurs, plus epais et plus clair :
+     sans cet ecart, on ne voyait pas ou l'on en etait dans le niveau 1, dont
+     le secteur est deja dore. */
+  .parcouru { fill: none; stroke: #f0dca0; stroke-width: 2.4; stroke-linecap: round; }
+  .aiguille line { stroke: var(--or); stroke-width: 2; }
+  .aiguille circle { fill: var(--or); }
+  text.jourNum {
+    font-family: var(--serif); font-size: 62px; font-weight: 600;
+    fill: var(--ivoire); text-anchor: middle;
+  }
+  text.jourSur { font-family: var(--mono); font-size: 12px; fill: var(--brume-nuit); text-anchor: middle; }
+  text.niveauNom {
+    font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em;
+    text-anchor: middle; fill: var(--or);
+  }
+  /* La phrase au centre : c'est elle qui montre le probleme de place. */
+  .phraseCentre {
+    font-family: var(--grotesk); font-size: 12.5px; fill: var(--corps);
+    text-anchor: middle; display: none;
+  }
+  .duo.centre .phraseCentre { display: block; }
+
+  /* La carte du jour, a cote. */
+  .volet-carte { min-width: 0; }
+  .carte {
+    border-radius: 18px; border: 1px solid var(--filet);
+    background: linear-gradient(180deg, var(--salle-2), var(--salle));
+    padding: 24px 26px;
+  }
+  .carte .rub {
+    margin: 0; font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--or);
+  }
+  .carte h3 {
+    margin: 10px 0 0; font-family: var(--serif); font-size: clamp(19px, 2.4vw, 25px);
+    font-weight: 600; line-height: 1.25; color: var(--ivoire);
+  }
+  .carte .note {
+    margin: 14px 0 0; padding-top: 13px; border-top: 1px solid var(--filet);
+    font-family: var(--mono); font-size: 11.5px; line-height: 1.6; color: var(--brume-nuit);
+  }
+  .carte .niv {
+    display: inline-block; margin-top: 16px; border-radius: 999px;
+    border: 1px solid rgba(200,169,81,0.35); background: rgba(200,169,81,0.12);
+    padding: 4px 12px; font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--or);
+  }
+
+  .piste {
+    margin: 24px auto 0; max-width: 900px; display: flex; align-items: center; gap: 14px;
+    font-family: var(--mono); font-size: 11px; color: var(--brume-nuit);
+  }
+  .rail { position: relative; flex: 1; height: 3px; border-radius: 999px; background: var(--filet); overflow: hidden; }
+  .rail i { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--or); border-radius: 999px; }
+  .pourcent { width: 42px; text-align: right; color: var(--or); font-weight: 700; }
+
+  .reglages {
+    position: fixed; right: 18px; bottom: 18px; z-index: 40; width: 264px;
+    border-radius: 14px; border: 1px solid var(--filet);
+    background: rgba(13, 20, 36, 0.94); backdrop-filter: blur(10px);
+    padding: 16px 18px 18px; box-shadow: 0 24px 60px -20px rgba(0,0,0,0.8);
+    font-family: var(--mono); font-size: 11.5px; color: var(--corps);
+  }
+  .reglages h4 {
+    margin: 0 0 14px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--or);
+  }
+  .reglage { margin-bottom: 14px; }
+  .reglage label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 7px; color: var(--brume-nuit); }
+  .reglage label b { color: var(--ivoire); font-weight: 700; }
+  input[type="range"] { width: 100%; height: 18px; margin: 0; accent-color: var(--or); cursor: pointer; }
+  .boutons { display: flex; flex-wrap: wrap; gap: 6px; }
+  .boutons button {
+    flex: 1 1 auto; min-height: 30px; border-radius: 8px; border: 1px solid var(--filet);
+    background: transparent; color: var(--brume-nuit); font-family: var(--mono);
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    cursor: pointer; transition: 0.15s;
+  }
+  .boutons button:hover { border-color: var(--or); color: var(--ivoire); }
+  .boutons button[aria-pressed="true"] { border-color: var(--or); background: rgba(200,169,81,0.16); color: var(--or); }
+  .replier {
+    position: absolute; top: 12px; right: 14px; border: 0; background: transparent;
+    color: var(--brume-nuit); font-family: var(--mono); font-size: 15px; line-height: 1;
+    cursor: pointer; padding: 2px 4px;
+  }
+  .reglages.replie { width: auto; padding: 10px 14px; }
+  .reglages.replie > *:not(.replier):not(h4) { display: none; }
+  .reglages.replie h4 { margin: 0; padding-right: 18px; }
+  @media (max-width: 760px) { .reglages { left: 12px; right: 12px; bottom: 12px; width: auto; } }
+
+  footer.fin { border-top: 1px solid var(--filet); padding: 56px 0 120px; margin-top: 60px; }
+  footer.fin ul { margin: 14px 0 0; padding-left: 20px; }
+  footer.fin li { margin-bottom: 11px; font-size: 14.5px; line-height: 1.6; }
+  footer.fin li b { color: var(--ivoire); }
+  code {
+    font-family: var(--mono); font-size: 0.92em; background: var(--salle-2);
+    border: 1px solid var(--filet); border-radius: 5px; padding: 1px 5px; color: var(--ivoire);
+  }
+  .respire { height: 20vh; }
+</style>
+</head>
+<body>
+
+<header class="tete">
+  <div class="enveloppe">
+    <p class="kicker">Labo · essai 3</p>
+    <h1>Le cadran, pour les trente jours de Clara.</h1>
+    <p class="chapeau">
+      Aujourd'hui les onze jours sont onze blocs empiles, sur cinq ecrans de
+      defilement. Ici, un seul cadran gradue en trente jours : le scroll fait
+      avancer l'aiguille, et le jour change. Le bouton « contenu » du panneau
+      bascule entre la carte a cote et la phrase au centre du cadran : c'est la
+      comparaison qui compte.
+    </p>
+    <p class="liens">
+      <a href="./craft-scrub.html">Essai 1 · CRAFT</a>
+      <a href="./mcp-trace.html">Essai 2 · MCP</a>
+      <a href="./cadran-parcours.html" aria-current="page">Essai 3 · Cadran</a>
+    </p>
+  </div>
+</header>
+
+<div class="respire"></div>
+
+<section class="essai" id="apres">
+  <div class="enveloppe">
+    <p class="etiquette"><span class="puce"></span> Un instrument, pas une liste</p>
+    <h2>Trente jours sur un cadran.</h2>
+    <p class="quoi-regarder">
+      L'arc n'est pas ferme : il a un debut et une fin, comme le parcours. Les
+      trois secteurs sont les trois niveaux, les graduations les trente jours, et
+      les onze traits longs sont les jours que le recit raconte.
+    </p>
+  </div>
+  <div class="zone-course" id="zone-course">
+    <div class="colle">
+      <div class="enveloppe">
+        <div class="duo cote" id="duo">
+          <div>
+            <svg class="cadran" id="cadran" viewBox="0 0 460 440" role="img" aria-label="Cadran des trente jours du parcours"></svg>
+          </div>
+          <div class="volet-carte">
+            <div class="carte">
+              <p class="rub" id="c-rub">Jour 1</p>
+              <h3 id="c-phrase">Elle ouvre son compte.</h3>
+              <p class="note" id="c-note"></p>
+              <span class="niv" id="c-niv">Niveau 1</span>
+            </div>
+          </div>
+        </div>
+        <div class="piste">
+          <span>course</span>
+          <span class="rail"><i id="jauge"></i></span>
+          <span class="pourcent" id="pourcent">0 %</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="fin">
+  <div class="enveloppe">
+    <p class="etiquette"><span class="puce"></span> Mon avis, apres l'avoir construit</p>
+    <h2>Bon comme repère, risqué comme contenant.</h2>
+    <ul>
+      <li><b>Ce qu'il apporte.</b> Onze blocs empiles deviennent une seule section. On voit d'un coup ou on en est dans les trente jours, ce que la liste ne dit jamais. Et le geste est celui que vous venez de valider : le scroll pilote.</li>
+      <li><b>Ce qu'il coute, en mode « au centre ».</b> Basculez le bouton : la phrase du jour tient, mais la carte CRAFT (660 par 618 pixels), le depot d'exercice, le quiz, le choix d'outil ne tiennent pas dans un disque de 230 pixels de rayon. Chez anime.js le centre du cadran contient des cercles verts, pas une interface avec du texte.</li>
+      <li><b>Sur telephone</b>, le cadran fait 350 pixels de large, donc 190 de zone centrale utile. Le mode « au centre » y est inutilisable ; le mode « a cote » se replie proprement, cadran au-dessus, carte en dessous.</li>
+      <li><b>Ma recommandation.</b> Le cadran comme instrument de progression, colle a cote des cartes qui defilent. On garde la preuve lisible, on gagne l'allure. Et le meme cadran servirait le rail de jeu, qui est deja une progression vers un seuil.</li>
+    </ul>
+    <p class="quoi-regarder" style="margin-top:24px">
+      Sans JavaScript ou sous <code>prefers-reduced-motion</code>, le cadran est
+      dessine au dernier jour et les onze cartes se lisent en liste, comme
+      aujourd'hui.
+    </p>
+  </div>
+</footer>
+
+<aside class="reglages replie" id="reglages">
+  <button class="replier" id="replier" type="button" title="Deplier">+</button>
+  <h4>Reglages</h4>
+  <div class="reglage">
+    <label>Contenu</label>
+    <div class="boutons" id="contenu">
+      <button type="button" data-v="cote" aria-pressed="true">A côté</button>
+      <button type="button" data-v="centre" aria-pressed="false">Au centre</button>
+    </div>
+  </div>
+  <div class="reglage">
+    <label for="course">Course <b id="course-v">4,0 ecrans</b></label>
+    <input type="range" id="course" min="150" max="700" step="25" value="400">
+  </div>
+  <div class="reglage">
+    <label for="ouverture">Ouverture de l'arc <b id="ouverture-v">270°</b></label>
+    <input type="range" id="ouverture" min="180" max="360" step="10" value="270">
+  </div>
+  <div class="reglage">
+    <label>Lissage</label>
+    <div class="boutons" id="lissage">
+      <button type="button" data-v="sec" aria-pressed="false">Sec</button>
+      <button type="button" data-v="doux" aria-pressed="true">Doux</button>
+      <button type="button" data-v="tres" aria-pressed="false">Tres doux</button>
+    </div>
+  </div>
+</aside>
+
+<script type="module">
+import { createTimeline, onScroll, svg, utils } from 'https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.esm.min.js';
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Les onze jours que le récit raconte (LeCompte.tsx) et leurs phrases réelles
+   (copy.ts). Le jour 30 ferme le parcours.
+   ══════════════════════════════════════════════════════════════════════════ */
+const JOURS = [
+  [1, 'Elle ouvre son compte. Paul l’accueille, en face caméra.', 'Le mot d’accueil'],
+  [2, 'Elle apprend la méthode. Cinq champs, et la demande s’écrit toute seule.', 'La méthode CRAFT'],
+  [3, 'Elle rend un exercice, sur ses propres données.', 'Dépôt d’exercice'],
+  [6, 'Le quiz du module 2. Sans faute, au premier essai.', 'Quiz'],
+  [9, 'Elle choisit son outil. Le parcours ne garde que celui-là.', 'Le choix de l’outil'],
+  [11, 'Question à 23 h. L’assistant répond, et il cite la leçon.', 'L’assistant'],
+  [14, 'Cinq leçons dans la journée. Quelque chose tombe qu’elle ne cherchait pas.', 'Trophées'],
+  [17, 'Elle arrête d’écrire ses prompts de zéro. Puis elle en ajoute un.', 'Bibliothèque'],
+  [19, 'On lui demande le visuel en trois formats. Pour hier.', 'Image et vidéo'],
+  [22, 'Trente minutes en visio. Préparées : il a lu ses exercices avant.', 'La session'],
+  [26, 'Elle construit son premier serveur MCP. Et là, il faut s’arrêter deux minutes.', 'Le serveur MCP'],
+  [30, 'Son compte est plein. Au tour du vôtre.', 'Attestation'],
+];
+const NIVEAUX = [
+  { nom: 'Écrire une demande', de: 1, a: 10 },
+  { nom: 'Se servir des outils', de: 11, a: 21 },
+  { nom: 'Faire faire', de: 22, a: 30 },
+];
+const TOTAL = 30;
+const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS = 'http://www.w3.org/2000/svg';
+
+const CX = 230, CY = 220, R = 168;
+
+/* La géométrie de l'arc. `ouv` est l'ouverture en degrés ; l'arc est CENTRÉ en
+   haut et ne se ferme pas, parce qu'un cercle fermé dirait « ça recommence »
+   alors que le parcours a une fin. */
+function angle(t, ouv) {
+  const debut = 90 + (360 - ouv) / 2;   // 90° = bas en SVG ; on s'écarte du bas
+  return (debut + t * ouv) * (Math.PI / 180);
+}
+function pt(t, r, ouv) {
+  const a = angle(t, ouv);
+  return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+}
+function arc(t0, t1, r, ouv) {
+  const [x0, y0] = pt(t0, r, ouv);
+  const [x1, y1] = pt(t1, r, ouv);
+  const grand = (t1 - t0) * ouv > 180 ? 1 : 0;
+  return `M ${x0.toFixed(1)} ${y0.toFixed(1)} A ${r} ${r} 0 ${grand} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+}
+
+const el = (n, a = {}) => {
+  const e = document.createElementNS(NS, n);
+  for (const [k, v] of Object.entries(a)) e.setAttribute(k, String(v));
+  return e;
+};
+
+const hote = document.getElementById('cadran');
+let vue = null;
+
+function batir(ouv) {
+  hote.innerHTML = '';
+  const gSecteurs = el('g'), gGrad = el('g'), gParcouru = el('g'), gAig = el('g', { class: 'aiguille' }), gTexte = el('g');
+  hote.append(gSecteurs, gGrad, gParcouru, gAig, gTexte);
+
+  // Les trois niveaux, en secteurs pâles.
+  NIVEAUX.forEach((n, i) => {
+    const t0 = (n.de - 1) / TOTAL, t1 = n.a / TOTAL;
+    gSecteurs.appendChild(el('path', { d: arc(t0, t1, R, ouv), class: `secteur n${i + 1}` }));
+  });
+
+  // Les trente graduations. Les onze jours du récit portent un trait long.
+  const grads = [];
+  for (let j = 1; j <= TOTAL; j++) {
+    const t = (j - 0.5) / TOTAL;
+    const raconte = JOURS.some(([n]) => n === j);
+    const [x0, y0] = pt(t, R - (raconte ? 15 : 9), ouv);
+    const [x1, y1] = pt(t, R + (raconte ? 13 : 8), ouv);
+    const g = el('line', { x1: x0.toFixed(1), y1: y0.toFixed(1), x2: x1.toFixed(1), y2: y1.toFixed(1), class: `graduation${raconte ? ' jour' : ''}` });
+    gGrad.appendChild(g);
+    grads.push({ jour: j, el: g });
+  }
+
+  // L'arc parcouru, tracé par anime.js.
+  const parcouru = el('path', { d: arc(0, 1, R, ouv), class: 'parcouru' });
+  gParcouru.appendChild(parcouru);
+
+  // Le curseur, pose SUR l'arc. Une aiguille partant du centre traversait le
+  // numero du jour, qui est l'element le plus lu du cadran.
+  const aigLigne = el('line', { x1: CX, y1: CY - R + 11, x2: CX, y2: CY - R - 11 });
+  aigLigne.setAttribute('stroke-width', '3');
+  const aigPoint = el('circle', { cx: CX, cy: CY - R, r: 5 });
+  gAig.append(aigLigne, aigPoint);
+
+  // Le centre.
+  const niveauNom = el('text', { x: CX, y: CY - 58, class: 'niveauNom' });
+  const num = el('text', { x: CX, y: CY + 14, class: 'jourNum' });
+  const sur = el('text', { x: CX, y: CY + 38, class: 'jourSur' });
+  sur.textContent = `sur ${TOTAL}`;
+  gTexte.append(niveauNom, num, sur);
+
+  // La phrase au centre, en mode « au centre » : trois lignes au plus, sinon
+  // elle sort du disque. C'est la limite qu'on vient mesurer.
+  const phrase = el('text', { x: CX, y: CY + 68, class: 'phraseCentre' });
+  gTexte.appendChild(phrase);
+
+  return { grads, parcouru, aigLigne, aigPoint, num, sur, niveauNom, phrase, ouv };
+}
+
+/* ------------------------------------------------------------- l'affichage */
+const rub = document.getElementById('c-rub');
+const cPhrase = document.getElementById('c-phrase');
+const cNote = document.getElementById('c-note');
+const cNiv = document.getElementById('c-niv');
+const jauge = document.getElementById('jauge');
+const pourcent = document.getElementById('pourcent');
+const duo = document.getElementById('duo');
+
+function niveauDe(j) {
+  return NIVEAUX.findIndex((n) => j >= n.de && j <= n.a);
+}
+
+/** Poser l'état du cadran pour une position `t` de 0 à 1 sur les trente jours. */
+function poser(t) {
+  const v = vue;
+  const jour = Math.max(1, Math.min(TOTAL, Math.round(t * TOTAL)));
+  // Le jour raconté le plus proche en dessous : c'est lui qui donne le contenu.
+  let idx = 0;
+  for (let i = 0; i < JOURS.length; i++) if (JOURS[i][0] <= jour) idx = i;
+  const [n, phrase, badge] = JOURS[idx];
+  const ni = niveauDe(n);
+
+  v.num.textContent = String(n);
+  v.niveauNom.textContent = NIVEAUX[ni].nom.toUpperCase();
+  v.grads.forEach((g) => g.el.classList.toggle('atteint', g.jour <= jour));
+
+  // Le curseur : un segment court, perpendiculaire a l'arc, plus un point.
+  const a = angle(Math.max(0.001, t), v.ouv);
+  const co = Math.cos(a), si = Math.sin(a);
+  v.aigLigne.setAttribute('x1', (CX + (R - 11) * co).toFixed(1));
+  v.aigLigne.setAttribute('y1', (CY + (R - 11) * si).toFixed(1));
+  v.aigLigne.setAttribute('x2', (CX + (R + 11) * co).toFixed(1));
+  v.aigLigne.setAttribute('y2', (CY + (R + 11) * si).toFixed(1));
+  v.aigPoint.setAttribute('cx', (CX + R * co).toFixed(1));
+  v.aigPoint.setAttribute('cy', (CY + R * si).toFixed(1));
+
+  // Le contenu, dans les deux modes.
+  rub.textContent = `Jour ${n}`;
+  cPhrase.textContent = phrase;
+  cNote.textContent = badge;
+  cNiv.textContent = `Niveau ${ni + 1} · ${NIVEAUX[ni].nom}`;
+  // Au centre, on coupe : trois lignes au plus.
+  v.phrase.textContent = phrase.length > 52 ? phrase.slice(0, 50) + '…' : phrase;
+}
+
+/* ------------------------------------------------------------- le scrub */
+const LISSAGE = { sec: true, doux: 0.22, tres: 0.07 };
+const reglages = { course: 400, ouverture: 270, lissage: 'doux', contenu: 'cote' };
+const zoneCourse = document.getElementById('zone-course');
+let courant = null;
+
+function monter() {
+  if (courant) { courant.revert?.(); courant = null; }
+  vue = batir(reglages.ouverture);
+
+  if (REDUIT) {
+    poser(1);
+    utils.set(vue.parcouru, {});
+    jauge.style.width = '100%';
+    pourcent.textContent = '100 %';
+    return;
+  }
+
+  const [trace] = svg.createDrawable(vue.parcouru);
+  trace.draw = '0 0';
+  const etat = { t: 0 };
+  poser(0.001);
+
+  const tl = createTimeline({
+    defaults: { ease: 'linear' },
+    autoplay: onScroll({
+      target: zoneCourse,
+      enter: { target: 'top', container: 'top' },
+      leave: { target: `top+=${reglages.course}vh`, container: 'top' },
+      sync: LISSAGE[reglages.lissage],
+      onUpdate: (o) => {
+        const p = Math.round(o.progress * 100);
+        jauge.style.width = `${p}%`;
+        pourcent.textContent = `${p} %`;
+      },
+    }),
+  });
+
+  // Une seule piste : l'arc se trace et l'aiguille suit, sur toute la course.
+  tl.add(trace, { draw: '0 1', duration: 100 }, 0);
+  tl.add(etat, { t: 1, duration: 100, onUpdate: () => poser(etat.t) }, 0);
+
+  courant = tl;
+}
+
+zoneCourse.style.setProperty('--course', `${reglages.course}vh`);
+monter();
+
+/* ------------------------------------------------------------- réglages */
+const cours = document.getElementById('course');
+const coursV = document.getElementById('course-v');
+cours.addEventListener('input', () => {
+  reglages.course = +cours.value;
+  coursV.textContent = `${(reglages.course / 100).toFixed(1).replace('.', ',')} écrans`;
+  zoneCourse.style.setProperty('--course', `${reglages.course}vh`);
+  monter();
+});
+
+const ouv = document.getElementById('ouverture');
+const ouvV = document.getElementById('ouverture-v');
+ouv.addEventListener('input', () => {
+  reglages.ouverture = +ouv.value;
+  ouvV.textContent = `${reglages.ouverture}°`;
+  monter();
+});
+
+function groupe(id, appliquer) {
+  const h = document.getElementById(id);
+  h.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    [...h.querySelectorAll('button')].forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    appliquer(b.dataset.v);
+  });
+}
+groupe('lissage', (v) => { reglages.lissage = v; monter(); });
+groupe('contenu', (v) => {
+  reglages.contenu = v;
+  duo.classList.toggle('cote', v === 'cote');
+  duo.classList.toggle('centre', v === 'centre');
+});
+
+const panneau = document.getElementById('reglages');
+document.getElementById('replier').addEventListener('click', () => {
+  const replie = panneau.classList.toggle('replie');
+  document.getElementById('replier').textContent = replie ? '+' : '−';
+});
+</script>
+</body>
+</html>
