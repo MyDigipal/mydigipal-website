@@ -11,6 +11,18 @@
 | Hosting | **Render** (auto-deploy GitHub via `render.yaml`) - Cloudflare = DNS proxy/CDN devant uniquement |
 | Déploiement | `git push origin main` → Render webhook → build → publish (~2-3 min) |
 
+### PIÈGE : supprimer un fichier ne le retire pas du site
+Render publie de façon **incrémentale** et ne supprime pas les fichiers disparus
+du build. Vérifié le 01/09/2026 : quatre HTML sortis de `public/`, commit poussé,
+déploiement live, et ils répondaient toujours 200 **sur l'origine Render**, pas
+seulement dans le cache Cloudflare.
+
+Remède : redéployer en vidant le cache de build. `mcp__mcp-gateway__render_deploy`
+avec `clearCache: "clear"` sur `srv-d53carkhg0os738p2q50` (404 en 90 secondes), ou
+dans le dashboard **Manual Deploy** → **Clear build cache & deploy**. Le tool MCP
+renvoie `Unexpected end of JSON input` alors qu'il a bien créé le déploiement : ne
+pas relancer, vérifier avec `render_list_deploys` (il porte `trigger: "api"`).
+
 ### Tailwind 4 setup
 - Theme tokens en CSS-natif via `@theme {}` dans `src/styles/global.css` (drop legacy `tailwind.config.mjs`)
 - Vite plugin direct (`@tailwindcss/vite`), pas d'intégration `@astrojs/tailwind` (deprecated en T4)
@@ -160,6 +172,17 @@ s'ouvre. Sans l'ancre, la section s'ouvre hors écran et le clic paraît sans ef
 - Le contenu est un switch géant `isXxxService` par slug, qui rend les bons composants de `src/components/sections/`
 - Les MDX dans `src/content/services/{lang}/` ne portent que la copy du hero (title, badge, headline, metrics, testimonial, seo)
 - Les sections riches (WhyXxx, XxxProcess, etc.) sont des composants .astro autonomes
+
+### AI Solutions : la section avant/après (31/08/2026)
+`AIBeforeAfter.astro` s'intercale entre `WhyAISolutions` et `AIUseCases` dans le
+bloc `isAISolutionsService`. Quatre tâches concrètes en avant/après (demandes
+entrantes, comptes rendus, relance des devis, reporting mensuel), avec le temps
+hebdomadaire en ordre de grandeur et ce qui reste à un humain. Aucun chiffre de
+résultat client, aucun nom de client, par construction.
+
+Fond **blanc** : `WhyAISolutions` est en `bg-slate-950` (sombre) et non en blanc,
+et `AIUseCases` en `bg-slate-50`. Le blanc est le seul fond qui tranche des deux.
+Commit `e206566`.
 
 ### Convention de réutilisation entre pages services
 - Même idée visuelle sur 2 pages services + copy légèrement différente → prop `variant` sur un composant partagé (voir `MarketingStackGrid.astro` avec `variant: 'training' | 'solutions'`)
