@@ -22,10 +22,15 @@ import '@fontsource-variable/fraunces/wght-italic.css';
  * de `src/data/academy/` prend le relais et le build ne tombe jamais. Dans
  * le navigateur, l'îlot relit le même JSON et se met à jour.
  *
- * `scrub` (31/08/2026, demande de Paul) : la position du scroll pilote les
- * animations au lieu de les déclencher. Voir `components/academy/scrub.ts` et
- * la section 38 du CLAUDE.md. L'atelier `/{lang}/labo-30` sert désormais aux
- * essais SUIVANTS, plus à celui-là.
+ * ⚠️ Le mode `scrub` a été posé ici le 31/08/2026 puis RETIRÉ le jour même.
+ * La raison n'est pas le code, qui marche : sans collage, la course du prompt
+ * CRAFT ne fait que 612 px de défilement contre 1 260 px dans la page de labo,
+ * donc l'effet est indiscernable de l'ancien à vitesse de lecture normale. Il
+ * se travaille dans `/{lang}/labo-30` jusqu'à ce qu'il se voie, et il revient
+ * ici ensuite : `scrub` sur `<Academy>`, un seul mot.
+ *
+ * La leçon, elle, est de méthode : ne pas porter sur la page de vente ce qui
+ * n'a pas encore fait la preuve de son effet ailleurs.
  *
  * Pas de PageLayout : il ajoute le bouton collant du calculateur, qui
  * flotterait par-dessus une page qui a déjà sa propre barre de total.
@@ -63,7 +68,7 @@ const description =
 
 <BaseLayout lang={lang} title={c.meta.title} description={description}>
   <main class="flex-grow">
-    <Academy client:load locale={lang} initial={data} scrub />
+    <Academy client:load locale={lang} initial={data} />
   </main>
   <Footer lang={lang} />
 </BaseLayout>
