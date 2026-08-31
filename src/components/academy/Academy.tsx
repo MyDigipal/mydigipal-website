@@ -82,7 +82,7 @@ export default function Academy({
         }}
         jeu={data.jeu}
       />
-      <Mcp locale={locale} />
+      <Mcp locale={locale} scrub={scrub} />
       <Diplome
         locale={locale}
         lessons={data.faits.lessons}

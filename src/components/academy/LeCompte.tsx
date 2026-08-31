@@ -3,7 +3,7 @@ import { jour30Copy, type Jour30Copy } from './copy';
 import { nombreLocal } from './offres';
 import type { EtatJour, Jour30Data, Locale, Metal, RankKey, Avis } from './data';
 import { JOURS_CALENDRIER, METAL_HEX, renardPoints } from './silhouette';
-import { apparition, bam, melange, melangerEtat, positionContinue } from './scrub';
+import { apparition, bam, fenetre, melange, melangerEtat, positionContinue } from './scrub';
 import {
   after,
   ease,
@@ -200,8 +200,14 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
       courseBar.current.forEach((b) => (b.style.width = `${(avance * 100).toFixed(1)}%`));
       coursePct.current.forEach((e) => (e.textContent = `${Math.round(avance * 100)} %`));
 
-      // Le « bam » : une fois, au bout.
-      if (avance > 0.995 && bamHote.current && !bamHote.current.dataset.bam) {
+      /**
+       * Le « bam » : une fois, au bout. Le seuil est à 98 % et non à 99,5 % :
+       * la position du scroll n'atteint pas toujours le pixel exact du bas de
+       * la colonne, et l'avancement se bloquait à 99 % avec le sceau qui ne
+       * tombait jamais (mesuré le 31/08/2026 sur /fr/academy). 98 %, c'est le
+       * jour 29 sur 30 : on y est.
+       */
+      if (avance > 0.98 && bamHote.current && !bamHote.current.dataset.bam) {
         void bam(bamHote.current);
       }
 
@@ -212,6 +218,21 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
         el.style.transform = `translate3d(0,${((1 - a) * 26).toFixed(1)}px,0)`;
       });
     } else {
+      /**
+       * ⚠️ Effacer ce que le mode scrub a pu écrire. `sync()` tourne une
+       * première fois AVANT que `probeClock` ait répondu (la sonde attend deux
+       * images), donc avec `reduce.current` encore à false : en mouvement
+       * réduit, ce premier passage posait 12 % d'opacité sur les onze blocs, et
+       * plus personne ne les remettait. La section entière était illisible pour
+       * qui désactive les animations (mesuré le 31/08/2026, `reducedMotion` de
+       * Playwright).
+       */
+      if (scrub) {
+        days.forEach((el) => {
+          if (el.style.opacity) el.style.opacity = '';
+          if (el.style.transform) el.style.transform = '';
+        });
+      }
       let idx = 0;
       for (let i = 0; i < days.length; i += 1) if (days[i].getBoundingClientRect().top < line) idx = i;
       if (idx !== lastIdx.current) {
@@ -456,7 +477,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
           </Jour>
 
           <Jour n={2} label={c.jour(2)} phrase={c.j2.phrase}>
-            <AnimationCraft lessons={faits.lessons} c={c.j2} locale={locale} pointsLecon={POINTS.lesson} />
+            <AnimationCraft scrub={scrub} lessons={faits.lessons} c={c.j2} locale={locale} pointsLecon={POINTS.lesson} />
           </Jour>
 
           <Jour n={3} label={c.jour(3)} phrase={c.j3.phrase} note={c.j3.note}>
@@ -896,11 +917,14 @@ function AnimationCraft({
   c,
   locale,
   pointsLecon,
+  scrub = false,
 }: {
   lessons: number;
   c: Jour30Copy['compte']['j2'];
   locale: Locale;
   pointsLecon: number;
+  /** Le mode scrub : l'écriture suit la position du bloc dans l'écran. */
+  scrub?: boolean;
 }) {
   const box = useRef<HTMLDivElement>(null);
   const [ecrits, setEcrits] = useState<string[]>(() => c.champs.map(() => ''));
@@ -920,6 +944,56 @@ function AnimationCraft({
       setAssemble(true);
       return;
     }
+    if (scrub) {
+      /**
+       * L'écriture suit le bloc pendant qu'il traverse l'écran. Pas de collage
+       * ici, contrairement à la page de labo : dans la colonne du récit, coller
+       * la carte décalerait les dix autres jours. La course va donc du moment où
+       * le bloc entre par le bas jusqu'à ce qu'il atteigne le tiers haut, ce qui
+       * laisse environ deux tiers d'écran de défilement.
+       *
+       * Chaque champ a sa FENÊTRE dans cette course, et les fenêtres se
+       * chevauchent d'un tiers : à l'écran, cinq champs strictement l'un après
+       * l'autre paraissent mécaniques, et tous ensemble ne montrent plus l'ordre
+       * — or l'ordre est justement ce que CRAFT enseigne.
+       */
+      const N = c.champs.length;
+      let pending = false;
+      const poser = () => {
+        const p = apparition(el, 1, 0.32);
+        const largeur = 1 / (N * 0.72 + 0.5);
+        setEcrits((prev) => {
+          let change = false;
+          const n = prev.slice();
+          c.champs.forEach((ch, i) => {
+            const a = fenetre(p, i * largeur * 0.72, i * largeur * 0.72 + largeur);
+            const v = ch.valeur.slice(0, Math.round(a * ch.valeur.length));
+            if (v !== n[i]) {
+              n[i] = v;
+              change = true;
+            }
+          });
+          return change ? n : prev;
+        });
+        setAssemble(p >= 0.93);
+      };
+      const onScroll = () => {
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(() => {
+          pending = false;
+          poser();
+        });
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      poser();
+      return () => {
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('resize', onScroll);
+      };
+    }
+
     const stop = onEnter(el, () => {
       c.champs.forEach((ch, i) => {
         arrets.current.push(
@@ -943,7 +1017,7 @@ function AnimationCraft({
       arrets.current.forEach((a) => a());
       arrets.current = [];
     };
-  }, [c, locale]);
+  }, [c, locale, scrub]);
 
   return (
     <div

@@ -102,6 +102,19 @@ export function apparition(el: HTMLElement, entree = 0.92, fin = 0.62): number {
 }
 
 /**
+ * La progression LOCALE dans une fenêtre de la course globale.
+ *
+ * `fenetre(0.5, 0.4, 0.8)` rend 0.25 : à mi-course, on est au quart de la
+ * fenêtre qui va de 40 % à 80 %. C'est ce qui remplace les `delay` et les
+ * `duration` d'une animation à durée fixe : chaque élément reçoit sa part de la
+ * course au lieu de sa part du temps.
+ */
+export function fenetre(p: number, debut: number, fin: number): number {
+  if (fin <= debut) return p >= fin ? 1 : 0;
+  return Math.max(0, Math.min(1, (p - debut) / (fin - debut)));
+}
+
+/**
  * Le « bam » de certification : ce qui se passe quand le parcours atteint 100 %.
  *
  * Demande de Paul du 31/08/2026. Trois gestes en même temps, tous sur

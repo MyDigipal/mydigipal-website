@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { jour30Copy } from './copy';
 import type { Locale } from './data';
 import { ease, onEnter, pointeurGrossier, probeClock, reducedMotion } from './motion';
+import { apparition, fenetre } from './scrub';
 
 /**
  * Le MCP, expliqué : le moment fort de la page, et la seule section didactique.
@@ -30,7 +31,7 @@ const NS = 'http://www.w3.org/2000/svg';
 const FIL = '#d3ccbe';
 const FIL_OR = '#a8862f';
 
-export default function Mcp({ locale }: { locale: Locale }) {
+export default function Mcp({ locale, scrub = false }: { locale: Locale; scrub?: boolean }) {
   const c = jour30Copy(locale).mcp;
   const [actif, setActif] = useState(c.outils[0].id);
   // « Survolez un outil » est un ordre impossible au doigt. Le verbe se relève
@@ -178,6 +179,51 @@ export default function Mcp({ locale }: { locale: Locale }) {
     };
   }, [pulse, showWires]);
 
+  /**
+   * Le branchement PILOTÉ PAR LE SCROLL (31/08/2026).
+   *
+   * `connect` fait la même chose en trois secondes, tout seul, une seule fois :
+   * quelqu'un qui lit lentement arrive après la fin, et remonter ne rejoue rien.
+   * Ici la position de la section dans l'écran donne l'avancement, et chaque fil
+   * reçoit sa fenêtre de course au lieu d'un `delay`.
+   *
+   * L'ordre raconte l'argument de la section : les assistants se relient au
+   * serveur d'abord (0 à 32 % de la course), le halo marque le passage, puis les
+   * quatorze outils se branchent l'un après l'autre (38 à 100 %).
+   */
+  const scrubWires = useCallback(() => {
+    const st = stage.current;
+    if (!st || !paths.current.length) return;
+    const p = apparition(st, 1, 0.34);
+    const ins = paths.current.filter((x) => x.dataset.role === 'in');
+    const outs = paths.current.filter((x) => x.dataset.role === 'out');
+
+    const poser = (x: SVGPathElement, avance: number) => {
+      const len = x.getTotalLength();
+      // ⚠️ `strokeDasharray` est posé par `wire()` ; on ne touche qu'à l'offset,
+      // sinon un `wire()` déclenché par un ResizeObserver écraserait le trait.
+      x.style.strokeDashoffset = String(len * (1 - avance));
+    };
+
+    const pas = ins.length > 1 ? 0.32 / ins.length : 0.32;
+    ins.forEach((x, i) => poser(x, fenetre(p, i * pas * 0.6, i * pas * 0.6 + pas)));
+
+    const debut = 0.38;
+    const largeur = (1 - debut) / Math.max(1, outs.length);
+    outs.forEach((x, i) => poser(x, fenetre(p, debut + i * largeur * 0.72, debut + i * largeur * 0.72 + largeur * 1.6)));
+
+    if (halo.current) {
+      // Le halo ne fait qu'un aller-retour, au moment où les entrées arrivent.
+      const h = fenetre(p, 0.3, 0.44);
+      halo.current.style.opacity = String(h < 0.5 ? h * 2 : (1 - h) * 2);
+    }
+    // La pulsation d'usage n'a de sens qu'une fois tout branché.
+    if (p > 0.995 && !wired.current) {
+      wired.current = true;
+      pulse();
+    }
+  }, [pulse]);
+
   useEffect(() => {
     wire();
     const st = stage.current;
@@ -191,6 +237,26 @@ export default function Mcp({ locale }: { locale: Locale }) {
     probeClock((alive) => {
       reduce.current = !alive || reducedMotion();
       if (!st || reduce.current) return;
+      if (scrub) {
+        // Le scroll pilote : pas d'entrée à jouer, une écoute passive suffit.
+        let pending = false;
+        const onScroll = () => {
+          if (pending) return;
+          pending = true;
+          requestAnimationFrame(() => {
+            pending = false;
+            scrubWires();
+          });
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        scrubWires();
+        arrets.push(() => {
+          window.removeEventListener('scroll', onScroll);
+          window.removeEventListener('resize', onScroll);
+        });
+        return;
+      }
       arrets.push(
         onEnter(
           st,
