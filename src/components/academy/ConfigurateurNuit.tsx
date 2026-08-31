@@ -3,7 +3,7 @@ import { SYMBOLE, enDevise, prixDe, type Devise, leconsProgramme, leconsCompleme
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { formatPrice, nombreLocal, teamDiscount } from './offres';
-import { trackSelectItem, useLienApp, withAdClickIds } from './track';
+import { paramGarde, trackSelectItem, useLienApp, withAdClickIds } from './track';
 import FormEquipe from './FormEquipe';
 
 const OPTIONS = ['construire', 'session', 'audit'] as const;
@@ -34,6 +34,21 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
   const devisAPartirDe = data.equipe.devisAPartirDe;
 
   const [extras, setExtras] = useState<Set<string>>(new Set());
+  /**
+   * Le programme est-il dans le panier ?
+   *
+   * Demande de Paul du 31/08/2026 : quelqu'un qui a déjà payé les 290 € ne
+   * pouvait pas acheter le seul complément Construire, le configurateur mettant
+   * toujours le programme en tête du panier. Une case explicite plutôt qu'une
+   * ligne décochable : « j'ai déjà le programme » nomme la situation, alors
+   * qu'une case vide au milieu d'une liste se décoche par accident.
+   *
+   * ⚠️ Le serveur revérifie l'accès sur l'email de la commande
+   * (`ownsMainCourse`) : cocher cette case sans avoir le programme fait refuser
+   * la commande, avec le message de `buildOrder`. Le prix affiché ici est donc
+   * un devis, pas un droit.
+   */
+  const [avecProgramme, setAvecProgramme] = useState(true);
   const [assistant, setAssistant] = useState<string | null>(null);
   const [places, setPlaces] = useState(1);
   /**
@@ -89,8 +104,24 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
   const remise = teamDiscount(places, paliers);
   const devisSeul = places >= devisAPartirDe;
 
+  /**
+   * Le code promo arrivé avec le visiteur, et ce qu'il donne sur CE panier.
+   *
+   * ⚠️ Sans ça, un membre du Club Protéine lisait 480 € sur la page de vente et
+   * découvrait 240 € au tunnel : le prix change en cours de route, et surtout
+   * l'argument des 50 % disparaît au moment où il décide (31/08/2026).
+   *
+   * Le calcul vient de l'application, pas d'ici : elle seule sait sur quels
+   * articles le code porte. Deux calculs pour un seul montant finissent
+   * toujours par diverger — c'est le défaut corrigé deux jours plus tôt sur la
+   * TVA.
+   */
+  const [code, setCode] = useState<string | null>(null);
+  const [promo, setPromo] = useState<{ total: number; remise: number } | null>(null);
+  useEffect(() => setCode(paramGarde('coupon')), []);
+
   const totaux = useMemo(() => {
-    let base = prixOffre(programme);
+    let base = avecProgramme ? prixOffre(programme) : 0;
     for (const id of extras) base += prixOffre(offre(id));
     const mensuelBase = assistant ? prixOffre(offre(assistant)) : 0;
     return {
@@ -99,12 +130,12 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
       mensuel: Math.round(mensuelBase * places * (1 - remise)),
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [extras, assistant, places, remise, programme, data.offres, devise]);
+  }, [extras, assistant, places, remise, programme, data.offres, devise, avecProgramme]);
 
   const recap = useMemo(() => {
-    const lignes: Array<{ nom: string; prix: string }> = [
-      { nom: programme.name, prix: `${formatPrice(prixOffre(programme), locale)} ${sym}` },
-    ];
+    const lignes: Array<{ nom: string; prix: string }> = avecProgramme
+      ? [{ nom: programme.name, prix: `${formatPrice(prixOffre(programme), locale)} ${sym}` }]
+      : [];
     for (const id of OPTIONS) {
       if (!extras.has(id)) continue;
       const o = offre(id)!;
@@ -113,11 +144,11 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     if (places > 1) lignes.push({ nom: c.placesRecap(places), prix: `${formatPrice(totaux.base * places, locale)} ${sym}` });
     return lignes;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [extras, places, totaux.base, programme, c, locale, data.offres, devise, sym]);
+  }, [extras, places, totaux.base, programme, c, locale, data.offres, devise, sym, avecProgramme]);
 
   const lien = useMemo(() => {
     if (devisSeul) return '#equipe';
-    const items = ['programme', ...OPTIONS.filter((id) => extras.has(id))];
+    const items = [...(avecProgramme ? ['programme'] : []), ...OPTIONS.filter((id) => extras.has(id))];
     if (assistant) items.push(assistant);
     const q = new URLSearchParams({ items: items.join(','), lang: locale });
     if (places > 1) q.set('seats', String(places));
@@ -126,7 +157,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     // des euros à la caisse, c'est-à-dire le prix qui change en cours de route.
     if (devise !== 'EUR') q.set('devise', devise);
     return withAdClickIds(`${data.urls.checkout}?${q.toString()}`);
-  }, [extras, assistant, places, devisSeul, c.devis, locale, data.urls.checkout, devise]);
+  }, [extras, assistant, places, devisSeul, c.devis, locale, data.urls.checkout, devise, avecProgramme]);
 
   function basculer(id: string) {
     setExtras((s) => {
@@ -164,6 +195,38 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     return enDevise(c.hausseProche(formatPrice(prixOffre(programme), locale), veilleTexte, formatPrice(prixHausse, locale)), devise);
   })();
 
+  // La vérification, à chaque changement de panier. Annulable : quelqu'un qui
+  // coche trois cases d'affilée ne doit pas voir clignoter trois réponses.
+  useEffect(() => {
+    if (!code || devisSeul) {
+      setPromo(null);
+      return;
+    }
+    const items = [...(avecProgramme ? ['programme'] : []), ...OPTIONS.filter((id) => extras.has(id))];
+    if (!items.length) {
+      setPromo(null);
+      return;
+    }
+    const ctrl = new AbortController();
+    const q = new URLSearchParams({
+      code,
+      total: String(totaux.unique),
+      devise,
+      items: items.join(','),
+      seats: String(places),
+    });
+    fetch(`${data.urls.base}/api/academy/public/coupon?${q.toString()}`, { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.valid && d.discount_minor > 0) setPromo({ total: d.total_minor, remise: d.discount_minor });
+        else setPromo(null);
+      })
+      .catch(() => {
+        /* code injoignable : on montre le prix plein, le tunnel fera foi */
+      });
+    return () => ctrl.abort();
+  }, [code, devisSeul, avecProgramme, extras, totaux.unique, devise, places, data.urls.base]);
+
   const paliersPct = paliers.map((t) => ({ seats: t.seats, pct: Math.round(t.discount * 100) }));
   const ligne = 'flex w-full flex-wrap items-baseline gap-x-5 gap-y-3 border-b border-filet-nuit py-5 text-left';
   const prix = 'font-ac-mono text-[17px] font-bold';
@@ -185,7 +248,9 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
       <>
         <span className="min-w-0 flex-1">
           <span className="block font-ac-mono text-[22px] font-bold leading-none tabular-nums text-or">
-            {formatPrice(totaux.unique, locale)} <span className="text-[11px] text-brume-nuit">{enDevise(c.ttc, devise)}</span>
+            {promo && <s className="mr-1.5 text-[14px] font-normal text-brume-nuit">{formatPrice(totaux.unique, locale)}</s>}
+            {formatPrice(promo ? promo.total : totaux.unique, locale)}{' '}
+            <span className="text-[11px] text-brume-nuit">{enDevise(c.ttc, devise)}</span>
           </span>
           <span className="mt-1 block truncate font-ac-mono text-[10.5px] text-brume-nuit">
             {totaux.mensuel ? `+ ${formatPrice(totaux.mensuel, locale)} ${enDevise(c.parMois, devise)}` : places > 1 ? c.uniquePlaces(places) : c.unique}
@@ -198,9 +263,23 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     ) : (
       <>
         <div className="flex items-baseline gap-2">
-          <span className="font-ac-mono text-[38px] font-bold leading-none tabular-nums text-or">{formatPrice(totaux.unique, locale)}</span>
+          {promo && (
+            <s className="font-ac-mono text-[20px] font-normal leading-none tabular-nums text-brume-nuit">
+              {formatPrice(totaux.unique, locale)}
+            </s>
+          )}
+          <span className="font-ac-mono text-[38px] font-bold leading-none tabular-nums text-or">
+            {formatPrice(promo ? promo.total : totaux.unique, locale)}
+          </span>
           <span className="font-ac-mono text-[12px] text-brume-nuit">{enDevise(c.ttc, devise)}</span>
         </div>
+        {/* Le code et ce qu'il porte, dit en toutes lettres : une remise dont on
+            ne sait pas d'où elle vient inquiète autant qu'elle réjouit. */}
+        {promo && code && (
+          <p className="m-0 mt-2 font-ac-mono text-[11.5px] font-bold text-or">
+            {c.remiseCode(code.toUpperCase(), Math.round((promo.remise / (totaux.unique || 1)) * 100))}
+          </p>
+        )}
         <p className="m-0 mt-2 font-ac-mono text-[11.5px] text-brume-nuit">{places > 1 ? c.uniquePlaces(places) : c.unique}</p>
         <div className="mt-[18px] flex flex-wrap items-baseline gap-2.5 border-t border-filet-nuit pt-4">
           <span className={`font-ac-mono text-[22px] font-bold leading-[1.2] tabular-nums ${totaux.mensuel ? 'text-ivoire' : 'text-brume-nuit'}`}>
@@ -277,14 +356,33 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
 
         <div className="mt-11 grid grid-cols-[minmax(0,1fr)] items-start gap-9 min-[900px]:grid-cols-[minmax(0,1fr)_340px]">
           <div>
-            <div className={`${ligne} border-t`}>
-              <span className="flex h-5 w-5 flex-none items-center justify-center rounded-[5px] bg-or text-[13px] font-bold text-salle">✓</span>
-              <span className="min-w-0 flex-[1_1_220px]">
-                <span className="block text-[17px] text-ivoire">{programme.name}</span>
-                <span className="mt-1 block text-[14px] leading-[1.55] text-brume-nuit">{c.programmeLigne(leconsProgramme(data))}</span>
+            {/* Le programme se décoche : voir `avecProgramme` plus haut. La ligne
+                garde son bord supérieur et sa place en tête, elle ne devient pas
+                une option parmi les autres — c'est la formule, les autres sont
+                des compléments. */}
+            <button
+              type="button"
+              onClick={() => setAvecProgramme((v) => !v)}
+              aria-pressed={avecProgramme}
+              className={`${ligne} cursor-pointer border-0 border-t bg-transparent text-left`}
+            >
+              <span
+                className={`flex h-5 w-5 flex-none items-center justify-center rounded-[5px] border text-[13px] font-bold text-salle ${
+                  avecProgramme ? 'border-or bg-or' : 'border-filet-nuit bg-transparent'
+                }`}
+              >
+                {avecProgramme ? '✓' : ''}
               </span>
-              <span className={`${prix} text-or`}>{formatPrice(prixOffre(programme), locale)} {sym}</span>
-            </div>
+              <span className="min-w-0 flex-[1_1_220px]">
+                <span className={`block text-[17px] ${avecProgramme ? 'text-ivoire' : 'text-brume-nuit'}`}>{programme.name}</span>
+                <span className="mt-1 block text-[14px] leading-[1.55] text-brume-nuit">
+                  {avecProgramme ? c.programmeLigne(leconsProgramme(data)) : c.dejaProgrammeAide}
+                </span>
+              </span>
+              <span className={`${prix} ${avecProgramme ? 'text-or' : 'text-brume-nuit'}`}>
+                {avecProgramme ? `${formatPrice(prixOffre(programme), locale)} ${sym}` : c.dejaAcquis}
+              </span>
+            </button>
 
             {OPTIONS.map((id) => {
               const o = offre(id);

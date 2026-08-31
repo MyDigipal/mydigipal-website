@@ -38,7 +38,13 @@ export function trackSelectItem(item: { tier: string; tierName: string; value: n
   });
 }
 
-const CLES = ['gclid', 'fbclid', 'gbraid', 'wbraid'] as const;
+// `coupon` voyage avec les identifiants de clic depuis le 31/08/2026 : les
+// membres du Club Protéine arrivent sur `mydigipal.com/fr/academy?coupon=…`
+// plutôt que sur le tunnel, pour lire la page avant d'acheter, et le code doit
+// se retrouver dans le tunnel sans qu'ils aient à le recopier. Le mécanisme est
+// exactement celui d'un gclid : capté à l'arrivée, gardé en session, réinjecté
+// dans les liens vers l'application.
+const CLES = ['gclid', 'fbclid', 'gbraid', 'wbraid', 'coupon'] as const;
 const STOCK = 'academy_ad_ids';
 
 /** À l'arrivée : on range les identifiants de clic présents dans l'URL. */
@@ -54,6 +60,24 @@ export function captureAdClickIds(): void {
     if (Object.keys(found).length) sessionStorage.setItem(STOCK, JSON.stringify(found));
   } catch {
     /* stockage indisponible : on continue sans */
+  }
+}
+
+/**
+ * Un paramètre capté à l'arrivée, relu plus tard. Sert au code promo : la page
+ * de vente doit pouvoir montrer le prix remisé, et pas seulement le passer au
+ * tunnel.
+ */
+export function paramGarde(cle: string): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const q = new URLSearchParams(window.location.search).get(cle);
+    if (q) return q;
+    const raw = sessionStorage.getItem(STOCK);
+    if (!raw) return null;
+    return (JSON.parse(raw) as Record<string, string>)[cle] || null;
+  } catch {
+    return null;
   }
 }
 
