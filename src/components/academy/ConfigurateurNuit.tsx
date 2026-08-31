@@ -3,7 +3,7 @@ import { SYMBOLE, enDevise, prixDe, type Devise, leconsProgramme, leconsCompleme
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { formatPrice, nombreLocal, teamDiscount } from './offres';
-import { paramGarde, trackSelectItem, useLienApp, withAdClickIds } from './track';
+import { paramGarde, trackSelectItem, useLienApp } from './track';
 import FormEquipe from './FormEquipe';
 
 const OPTIONS = ['construire', 'session', 'audit'] as const;
@@ -37,16 +37,14 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
   /**
    * Le programme est-il dans le panier ?
    *
-   * Demande de Paul du 31/08/2026 : quelqu'un qui a déjà payé les 290 € ne
-   * pouvait pas acheter le seul complément Construire, le configurateur mettant
-   * toujours le programme en tête du panier. Une case explicite plutôt qu'une
-   * ligne décochable : « j'ai déjà le programme » nomme la situation, alors
-   * qu'une case vide au milieu d'une liste se décoche par accident.
+   * Demande de Paul du 31/08/2026, précisée le même soir : les deux programmes
+   * sont **distincts**. On n'achète pas un socle et son extension, on achète
+   * des modules. Quelqu'un peut donc ne prendre que Construire, et il n'aura
+   * accès qu'à Construire — le parcours vendu lui reste fermé, faute
+   * d'inscription.
    *
-   * ⚠️ Le serveur revérifie l'accès sur l'email de la commande
-   * (`ownsMainCourse`) : cocher cette case sans avoir le programme fait refuser
-   * la commande, avec le message de `buildOrder`. Le prix affiché ici est donc
-   * un devis, pas un droit.
+   * D'où une case, et non un préalable : le programme est en tête parce qu'il
+   * est le plus vendu, pas parce qu'il faut le prendre.
    */
   const [avecProgramme, setAvecProgramme] = useState(true);
   const [assistant, setAssistant] = useState<string | null>(null);
@@ -146,8 +144,28 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extras, places, totaux.base, programme, c, locale, data.offres, devise, sym, avecProgramme]);
 
-  const lien = useMemo(() => {
-    if (devisSeul) return '#equipe';
+  /**
+   * L'adresse du tunnel, avant enrichissement.
+   *
+   * ⚠️ Elle ne passe PLUS par `withAdClickIds` pendant le rendu (corrigé le
+   * 31/08/2026). C'était une course perdue d'avance : `captureAdClickIds()` ne
+   * tourne que dans un effet, donc au premier rendu la session est encore vide,
+   * et ce `useMemo` ne se recalculait jamais ensuite puisque ses dépendances
+   * n'avaient pas bougé. Résultat mesuré : un membre du Club Protéine qui
+   * suivait le lien de la slide et cliquait « Commencer » tout de suite arrivait
+   * au tunnel SANS son code, et lisait 290 € au lieu de 145. Il fallait
+   * naviguer une seconde fois pour que ça marche — ce que personne ne fait.
+   *
+   * `useLienApp` est le mécanisme qui marchait déjà pour les liens vers
+   * `/start` : il capte puis lit dans un effet, et garde l'adresse en state,
+   * donc elle se recalcule après.
+   *
+   * ⚠️ Elle vise TOUJOURS le tunnel, même quand on est au-delà du seuil de
+   * devis : le hook ne peut pas être appelé conditionnellement, et coller des
+   * paramètres sur l'ancre `#equipe` en ferait une URL absolue. Le choix se
+   * fait après, à l'usage.
+   */
+  const lienBrut = useMemo(() => {
     const items = [...(avecProgramme ? ['programme'] : []), ...OPTIONS.filter((id) => extras.has(id))];
     if (assistant) items.push(assistant);
     const q = new URLSearchParams({ items: items.join(','), lang: locale });
@@ -156,8 +174,11 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     // pays cohérent : sans elle, quelqu'un qui a lu des dollars retomberait sur
     // des euros à la caisse, c'est-à-dire le prix qui change en cours de route.
     if (devise !== 'EUR') q.set('devise', devise);
-    return withAdClickIds(`${data.urls.checkout}?${q.toString()}`);
-  }, [extras, assistant, places, devisSeul, c.devis, locale, data.urls.checkout, devise, avecProgramme]);
+    return `${data.urls.checkout}?${q.toString()}`;
+  }, [extras, assistant, places, locale, data.urls.checkout, devise, avecProgramme]);
+
+  const lienEnrichi = useLienApp(lienBrut);
+  const lien = devisSeul ? '#equipe' : lienEnrichi;
 
   function basculer(id: string) {
     setExtras((s) => {
