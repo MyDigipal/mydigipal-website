@@ -1,0 +1,65 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { type Language, languages } from '@/i18n/config';
+import Academy from '@/components/academy/Academy';
+import { ENDPOINT, type Jour30Data } from '@/components/academy/data';
+import secoursFr from '@/data/academy/jour30-fr.json';
+import secoursEn from '@/data/academy/jour30-en.json';
+import '@fontsource-variable/space-grotesk';
+import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/fraunces/wght-italic.css';
+
+/**
+ * L'atelier de la page de vente : la MÊME page, avec le mode `scrub` de la
+ * section du compte (voir `components/academy/scrub.ts`).
+ *
+ * Elle existe pour comparer à l'identique. Le contenu, le design et les chiffres
+ * sont ceux de `/{lang}/academy` : seule la mécanique d'animation change, donc
+ * ce qu'on juge ici est bien l'animation et rien d'autre.
+ *
+ * ⚠️ `noindex, nofollow` : deux URL avec le même contenu se feraient concurrence
+ * dans la recherche, et celle-ci n'est pas destinée aux visiteurs. Elle est
+ * aussi absente du sitemap, qui ne liste que les pages indexables.
+ *
+ * À retirer quand la décision est prise, dans un sens ou dans l'autre.
+ */
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+async function lire(): Promise<Jour30Data> {
+  try {
+    const r = await fetch(`${ENDPOINT}?lang=${lang}`, { signal: AbortSignal.timeout(10000) });
+    if (r.ok) {
+      const d = (await r.json()) as Jour30Data;
+      if (d?.etats?.length && d.lang === lang) return d;
+    }
+  } catch {
+    /* instantané */
+  }
+  return (lang === 'fr' ? secoursFr : secoursEn) as unknown as Jour30Data;
+}
+const data = await lire();
+
+const titre = lang === 'fr' ? 'Atelier · Jour 30 en scrub' : 'Lab · Day 30 scrubbed';
+---
+
+<BaseLayout lang={lang} title={titre} description={titre} noindex={true}>
+  <main class="flex-grow">
+    <div
+      class="mx-auto max-w-[1280px] px-4 pt-6 sm:px-6"
+      style="font-family:var(--font-ac-mono);font-size:11.5px;color:#7d879b"
+    >
+      <p style="margin:0 0 8px">
+        <b style="color:#c8a951;letter-spacing:.16em;text-transform:uppercase">Atelier</b>
+        &nbsp;·&nbsp; mode scrub. La page réelle est
+        <a href={`/${lang}/academy`} style="color:#f2eee4;border-bottom:1px solid #26324e">ici</a>,
+        pour comparer.
+      </p>
+    </div>
+    <Academy client:load locale={lang} initial={data} scrub />
+  </main>
+</BaseLayout>

@@ -3,6 +3,7 @@ import { jour30Copy, type Jour30Copy } from './copy';
 import { nombreLocal } from './offres';
 import type { EtatJour, Jour30Data, Locale, Metal, RankKey, Avis } from './data';
 import { JOURS_CALENDRIER, METAL_HEX, renardPoints } from './silhouette';
+import { apparition, bam, melange, melangerEtat, positionContinue } from './scrub';
 import {
   after,
   ease,
@@ -31,6 +32,16 @@ interface Props {
   etats: EtatJour[];
   faits: FaitsCompte;
   jeu: Jour30Data['jeu'];
+  /**
+   * Le mode « la position du scroll EST l'animation » (31/08/2026).
+   *
+   * Absente, la section se comporte exactement comme avant : les points sautent
+   * d'un palier au suivant quand un bloc franchit la ligne de lecture, et les
+   * blocs apparaissent en tout-ou-rien. Présente, tout devient continu, une
+   * barre d'avancement du parcours s'ajoute au rail, et l'attestation se scelle
+   * à 100 %.
+   */
+  scrub?: boolean;
 }
 
 const RUBRIQUE = 'font-ac-mono text-[11px] font-bold uppercase tracking-[0.18em]';
@@ -50,7 +61,7 @@ const PANNEAU = 'rounded-carte border border-filet-nuit bg-salle-2';
  * React : il change à chaque image de défilement, un rendu par jour serait du
  * gaspillage.
  */
-export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
+export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = false }: Props) {
   const { rangs, metaux, trophees: tropheeNoms, points: POINTS, metalPoints: METAL_POINTS, modulesADebloquer: MODULES_A_DEBLOQUER } = jeu;
   const t = jour30Copy(locale);
   const c = t.compte;
@@ -79,6 +90,11 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
     (n: T | null) => {
       if (n && !list.current.includes(n)) list.current.push(n);
     };
+
+  // Le mode scrub : l'avancement du parcours, et le sceau qui le clôt.
+  const courseBar = useRef<HTMLElement[]>([]);
+  const coursePct = useRef<HTMLElement[]>([]);
+  const bamHote = useRef<HTMLDivElement>(null);
 
   const aside = useRef<HTMLElement>(null);
   const barre = useRef<HTMLDivElement>(null);
@@ -138,12 +154,71 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
     if (!days.length) return;
     const vh = window.innerHeight;
     const line = vh * 0.72;
-    let idx = 0;
-    for (let i = 0; i < days.length; i += 1) if (days[i].getBoundingClientRect().top < line) idx = i;
-    if (idx !== lastIdx.current) {
-      const animate = lastIdx.current !== undefined && Math.abs(idx - lastIdx.current) === 1;
-      lastIdx.current = idx;
-      apply(etats[Math.min(idx, etats.length - 1)], animate);
+
+    if (scrub && !reduce.current) {
+      /**
+       * La position continue : le rail suit le doigt au lieu d'attendre le
+       * prochain bloc. Aucune animation de compteur ici, et c'est voulu — deux
+       * mouvements sur le même nombre (le tween de 700 ms et le scroll) se
+       * battraient, et le nombre partirait dans le mauvais sens dès qu'on
+       * remonte.
+       */
+      /**
+       * DOUZE états (jours 1, 2, 3, 6, 9, 11, 14, 17, 19, 22, 26, 30) pour ONZE
+       * blocs : le douzième, le jour 30, n'a pas de bloc dans cette section. Il
+       * est atteint en arrivant au BAS de la colonne, là où le récit passe la
+       * main au visiteur (« au tour du vôtre »). D'où cette queue de course.
+       *
+       * ⚠️ Ne pas chercher le jour 30 dans `.j30-chute` : cette classe désigne
+       * la chute d'un bloc au sens de la pointe finale, et elle ne sert qu'une
+       * fois, sur le trophée secret du jour 14. La prendre pour la fin du récit
+       * faisait sauter l'avancement à 100 % dès le jour 14, avec le sceau et les
+       * 4 915 points d'un coup (mesuré le 31/08/2026).
+       */
+      let pos = positionContinue(days, 0.72);
+      if (pos >= days.length - 1 && days.length > 1) {
+        const hautDernier = days[days.length - 1].getBoundingClientRect().top;
+        const basColonne = column.getBoundingClientRect().bottom;
+        const reste = basColonne - hautDernier;
+        if (reste > 0) {
+          pos = days.length - 1 + Math.max(0, Math.min(1, (line - hautDernier) / reste));
+        }
+      }
+      const i = Math.min(Math.floor(pos), etats.length - 1);
+      const suivant = etats[i + 1];
+      apply(melangerEtat(etats[i], suivant, pos - i), false);
+
+      /**
+       * L'avancement suit le JOUR, pas l'index du bloc. Les onze jours racontés
+       * ne sont pas régulièrement espacés (1, 2, 3, 6, 9, 11, 14, 17, 19, 22,
+       * 26, 30) : compter les blocs donnerait 45 % au jour 9, alors que le
+       * parcours n'en est qu'à 30 %.
+       */
+      const dernierJour = etats[etats.length - 1].jour;
+      const jourCourant = melange(etats[i].jour, (suivant ?? etats[i]).jour, pos - i);
+      const avance = Math.max(0, Math.min(1, jourCourant / Math.max(1, dernierJour)));
+      courseBar.current.forEach((b) => (b.style.width = `${(avance * 100).toFixed(1)}%`));
+      coursePct.current.forEach((e) => (e.textContent = `${Math.round(avance * 100)} %`));
+
+      // Le « bam » : une fois, au bout.
+      if (avance > 0.995 && bamHote.current && !bamHote.current.dataset.bam) {
+        void bam(bamHote.current);
+      }
+
+      // Chaque bloc apparaît à mesure qu'il monte, au lieu de basculer d'un coup.
+      days.forEach((el) => {
+        const a = apparition(el, 0.94, 0.66);
+        el.style.opacity = String(0.12 + 0.88 * a);
+        el.style.transform = `translate3d(0,${((1 - a) * 26).toFixed(1)}px,0)`;
+      });
+    } else {
+      let idx = 0;
+      for (let i = 0; i < days.length; i += 1) if (days[i].getBoundingClientRect().top < line) idx = i;
+      if (idx !== lastIdx.current) {
+        const animate = lastIdx.current !== undefined && Math.abs(idx - lastIdx.current) === 1;
+        lastIdx.current = idx;
+        apply(etats[Math.min(idx, etats.length - 1)], animate);
+      }
     }
     // Le trait d'or du rail suit le défilement : de « haut de colonne à 60 % »
     // à « bas de colonne à 70 % », comme le scrub du prototype.
@@ -152,7 +227,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
       const p = Math.max(0, Math.min(1, (vh * 0.6 - r.top) / Math.max(1, r.height - vh * 0.1)));
       rail.current.style.height = `${p * 100}%`;
     }
-  }, [apply, etats]);
+  }, [apply, etats, scrub]);
 
   /**
    * La traversée : à chaque frontière de niveau, le renard part du bord gauche
@@ -228,10 +303,16 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
         column.querySelectorAll<HTMLElement>('.j30-frontier').forEach((el) => traverser(el, true));
         return;
       }
-      column.querySelectorAll<HTMLElement>('.j30-day').forEach((el) => arrets.push(revealOnEnter(el, 'j30-pre-day', 'j30-in-day', 0.8)));
+      // ⚠️ En mode scrub, ce sont les styles écrits par `sync()` qui portent
+      // l'apparition des jours : poser les classes en plus ferait deux
+      // mécanismes sur la même opacité, et le dernier écrit gagnerait.
+      if (!scrub) {
+        column.querySelectorAll<HTMLElement>('.j30-day').forEach((el) => arrets.push(revealOnEnter(el, 'j30-pre-day', 'j30-in-day', 0.8)));
+      }
       column.querySelectorAll<HTMLElement>('.j30-frontier h2').forEach((el) => arrets.push(revealOnEnter(el, 'j30-pre-titre', 'j30-in-titre', 0.82)));
       column.querySelectorAll<HTMLElement>('.j30-chute').forEach((el) => arrets.push(revealOnEnter(el, 'j30-pre-chute', 'j30-in-chute', 0.82)));
       column.querySelectorAll<HTMLElement>('.j30-frontier').forEach((el) => arrets.push(onEnter(el, () => traverser(el), '-25%')));
+      if (scrub) sync();
       arrets.push(
         rescueLoop([
           ['j30-pre-day', 'j30-in-day'],
@@ -249,7 +330,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
       arrets.forEach((a) => a());
       arrets = [];
     };
-  }, [sync, traverser]);
+  }, [sync, traverser, scrub]);
 
   const premier = etats[0];
   const [n1, n2, n3] = c.niveaux;
@@ -286,6 +367,20 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
               </span>
               <span className="block font-ac-mono text-[10px] uppercase tracking-[0.14em] text-brume-nuit">{c.rail.points}</span>
             </span>
+            {scrub && (
+              <span className="flex-none text-right">
+                <span ref={collect(coursePct)} className="block font-ac-mono text-[15px] font-bold tabular-nums leading-none text-or">
+                  0 %
+                </span>
+                <span className="mt-0.5 block h-[3px] w-14 overflow-hidden rounded-[2px] bg-filet-nuit">
+                  <span
+                    ref={collect(courseBar)}
+                    className="block h-full rounded-[2px]"
+                    style={{ width: '0%', background: 'linear-gradient(90deg,#8a6d24,#c8a951 60%,#f0dca0)' }}
+                  />
+                </span>
+              </span>
+            )}
           </div>
 
           <div className="absolute bottom-0 left-0 top-0 hidden w-px bg-filet-nuit lg:block" aria-hidden="true" />
@@ -543,6 +638,74 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
             c'est l'ordre du DOM qui place dans la grille, et un `order-first`
             sans borne l'envoyait dans la colonne de gauche à 1 280 px. */}
         <aside ref={aside} className="grid grid-cols-[minmax(0,1fr)] gap-4 pt-4 max-lg:order-first sm:grid-cols-[repeat(auto-fit,minmax(210px,1fr))] lg:sticky lg:top-24 lg:grid-cols-1 lg:pt-0">
+          {/* L'avancement du parcours, en mode scrub seulement (31/08/2026).
+              Le rail disait le rang et les points, jamais « combien il reste ».
+              Demande de Paul : une barre qui va jusqu'à 100 %, et un sceau
+              quand on y arrive. */}
+          {scrub && (
+            <section ref={bamHote} className={`${PANNEAU} relative overflow-hidden px-5 py-[18px]`}>
+              <div className="flex items-baseline justify-between gap-3">
+                <span className={`${RUBRIQUE} text-brume-nuit`}>{c.avancement.titre}</span>
+                <span ref={collect(coursePct)} className="font-ac-mono text-[15px] font-bold tabular-nums text-or">
+                  0 %
+                </span>
+              </div>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-[3px] bg-filet-nuit">
+                <span
+                  ref={collect(courseBar)}
+                  className="block h-full rounded-[3px]"
+                  style={{ width: '0%', background: 'linear-gradient(90deg,#8a6d24,#c8a951 60%,#f0dca0)' }}
+                />
+              </div>
+              <p className="m-0 mt-2.5 font-ac-mono text-[10.5px] leading-[1.55] text-brume-nuit">
+                {c.avancement.ligne}
+              </p>
+
+              {/* Le sceau, dans ses deux états. Il occupe la place en permanence
+                  pour que la carte ne saute pas de hauteur au moment du « bam ».
+                  ⚠️ Avant le bam, l'anneau est en POINTILLÉS et porte son
+                  libellé « à obtenir » : un anneau plein et vide, sans texte à
+                  côté, se lisait comme un défaut de chargement (vu à l'écran le
+                  31/08/2026). */}
+              <div className="mt-4 flex items-center gap-3 border-t border-filet-nuit pt-3.5">
+                <span className="relative flex h-11 w-11 flex-none items-center justify-center">
+                  <span
+                    className="j30-bam-eclat absolute inset-0 rounded-full"
+                    style={{ opacity: 0, background: 'radial-gradient(circle,rgba(200,169,81,.55),transparent 70%)' }}
+                    aria-hidden="true"
+                  />
+                  <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true" className="absolute inset-0">
+                    <circle
+                      className="j30-bam-anneau"
+                      cx="22"
+                      cy="22"
+                      r="20"
+                      fill="none"
+                      stroke="#7d879b"
+                      strokeWidth="1.4"
+                      strokeDasharray="3 5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="j30-bam-sceau relative flex h-7 w-7 items-center justify-center rounded-full bg-or/[0.16]" style={{ opacity: 0 }}>
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#c8a951" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M5 12.5l4.5 4.5L19 7.5" />
+                    </svg>
+                  </span>
+                </span>
+                <span className="relative min-w-0 flex-1">
+                  <span className="j30-bam-avant block">
+                    <span className="block text-[13px] leading-tight text-brume-nuit">{c.avancement.aObtenir}</span>
+                    <span className="mt-0.5 block font-ac-mono text-[10.5px] text-brume-nuit/70">{c.avancement.sceauNote}</span>
+                  </span>
+                  <span className="j30-bam-texte absolute inset-0 block" style={{ opacity: 0 }}>
+                    <span className="block text-[13.5px] leading-tight text-ivoire">{c.avancement.sceau}</span>
+                    <span className="mt-0.5 block font-ac-mono text-[10.5px] text-or">{c.avancement.sceauNote}</span>
+                  </span>
+                </span>
+              </div>
+            </section>
+          )}
           <RailIdentite refs={{ collect, pts, rank, bar, next, ring, fox }} premier={premier} rangs={rangs} c={c.rail} nombre={nombre} />
           <section className={`${PANNEAU} px-5 py-[18px]`}>
             <div className="flex items-baseline justify-between">
