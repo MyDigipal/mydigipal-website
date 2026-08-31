@@ -65,7 +65,10 @@ const canonical = canonicalURL || Astro.url.href;
     <title>{pageTitle}</title>
     <meta name="title" content={pageTitle} />
     <meta name="description" content={pageDescription} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {/* follow, pas nofollow : ces pages (404, remerciement apres formulaire) ne
+        doivent pas etre indexees, mais leurs liens vers le reste du site doivent
+        rester suivis. Un nofollow y coupe la transmission du maillage interne. */}
+    {noindex && <meta name="robots" content="noindex, follow" />}
 
     <!-- Verification de propriete du domaine par Meta.
          Exigee par le Business Manager pour attribuer les conversions du pixel
