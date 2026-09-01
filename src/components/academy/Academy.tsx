@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ENDPOINT, AVIS_REPLI, leconsGratuit, type Jour30Data, type Locale } from './data';
+import { ENDPOINT, AVIS_REPLI, leconsGratuit, type Jour30Data, type Locale, temoignagesPublics } from './data';
 import { captureAdClickIds } from './track';
 import Barre from './Barre';
 import Hero from './Hero';
@@ -93,7 +93,7 @@ export default function Academy({
         mention={data.jeu.mention}
       />
       <Retournement locale={locale} fin={fin} rang={data.jeu.rangs[fin.rank]} trophees={data.faits.trophees} leconsGratuites={leconsGratuit(data)} />
-      <Maison locale={locale} temoignages={data.temoignages} avis={preuve} />
+      <Maison locale={locale} temoignages={temoignagesPublics(data.temoignages)} avis={preuve} />
       <Produit locale={locale} />
       <ConfigurateurNuit locale={locale} data={data} />
       <AppelFlottant locale={locale} leconsGratuites={leconsGratuit(data)} />

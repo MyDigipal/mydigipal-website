@@ -312,7 +312,7 @@ const FR = {
     preuve: {
       question: 'Qui enseigne ?',
       texte:
-        'Paul André, qui enseigne cette méthode en salle depuis trois ans, chez Kering, La Poste ou E.Leclerc. Chaque leçon est écrite à partir de ce qui a marché devant de vraies équipes.',
+        'Paul André, qui enseigne cette méthode en salle depuis trois ans, chez La Poste, Pierre Fabre ou E.Leclerc. Chaque leçon est écrite à partir de ce qui a marché devant de vraies équipes.',
       chiffres: (avis: Avis) => [
         { valeur: '2 500+', libelle: 'professionnels formés' },
         { valeur: `${noteLocale(avis.note, 'fr')}/10`, libelle: `sur ${avis.nombre} retours écrits` },
@@ -625,7 +625,7 @@ const FR = {
     cta: 'Commencer',
   },
   maison: {
-    titre: 'Une méthode née en salle, chez Kering, La Poste ou Pierre Fabre.',
+    titre: 'Une méthode née en salle, chez La Poste, Pierre Fabre ou La Redoute.',
     texte:
       'Paul André l’a enseignée pendant trois ans devant de vraies équipes, de la direction financière au service client, et l’a corrigée session après session jusqu’à ce qu’elle tienne. C’est cette version-là qui est en ligne.',
     photos: [
@@ -1000,7 +1000,7 @@ const EN: Jour30Copy = {
     preuve: {
       question: 'Who teaches?',
       texte:
-        'Paul André, who has taught this method in the room for three years, at Kering, La Poste and E.Leclerc. Every lesson is written from what worked in front of real teams.',
+        'Paul André, who has taught this method in the room for three years, at La Poste, Pierre Fabre and E.Leclerc. Every lesson is written from what worked in front of real teams.',
       chiffres: (avis: Avis) => [
         { valeur: '2,500+', libelle: 'professionals trained' },
         { valeur: `${noteLocale(avis.note, 'en')}/10`, libelle: `across ${avis.nombre} written reviews` },
@@ -1310,7 +1310,7 @@ const EN: Jour30Copy = {
     cta: 'Get started',
   },
   maison: {
-    titre: 'A method born in the room, at Kering, La Poste and Pierre Fabre.',
+    titre: 'A method born in the room, at La Poste, Pierre Fabre and La Redoute.',
     texte:
       'Paul André taught it for three years in front of real teams, from finance to customer service, and corrected it session after session until it held. That is the version now online.',
     photos: [
