@@ -302,7 +302,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
           {/* Clara est nommée soixante fois dans ce récit et on ne la voyait
               jamais. Un seul portrait, ici, à l'ouverture du premier niveau :
               le personnage s'installe et les trente jours qui suivent ont un
-              visage. Pas d'autre portrait plus bas — il en faudrait un par
+              visage. Pas d'autre portrait plus bas, sinon il en faudrait un par
               niveau, et le récit deviendrait un album.
 
               ⚠️ Le ruban juste au-dessus dit que Clara est composée. Ce visage
@@ -875,7 +875,7 @@ function Frontiere({ id, kicker, nom, titre, de, a }: { id: string; kicker: stri
  * Demande de Paul du 29/08/2026 : « la première étape, c'est que Clara ouvre la
  * formation sur comment écrire un prompt CRAFT, et là on met une animation ».
  * C'est la promesse centrale du produit, et jusqu'ici le niveau 1 la montrait
- * sous la forme d'une fiche de leçon déjà écrite — le résultat, pas la méthode.
+ * sous la forme d'une fiche de leçon déjà écrite, donc le résultat et pas la méthode.
  *
  * Les cinq champs se remplissent l'un après l'autre, puis la demande complète
  * s'assemble en dessous : on voit que le prompt n'est pas un talent, c'est un
@@ -1001,7 +1001,7 @@ function AnimationCraft({
  * qu'ils se barrent tous parce que c'est Claude qu'elle a choisie ». Les trois
  * autres ne disparaissent pas tout à fait : ils s'effacent, comme le projecteur
  * de la visite plus haut. Les retirer laisserait trois trous, et surtout on ne
- * verrait plus qu'il y avait un choix — c'est justement l'argument.
+ * verrait plus qu'il y avait un choix, or c'est justement l'argument.
  */
 function ChoixOutil({ c }: { c: Jour30Copy['compte']['j9'] }) {
   const box = useRef<HTMLDivElement>(null);
