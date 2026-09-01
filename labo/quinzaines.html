@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="fr" data-theme="nuit">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Labo - les deux quinzaines du récit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mono: 'JetBrains Mono', Consolas, monospace;
+    --serif: 'Fraunces', Georgia, serif;
+    --grotesk: 'Space Grotesk', system-ui, sans-serif;
+    --or: #c8a951; --salle: #0d1424; --salle-2: #141d33; --salle-3: #1c2742;
+    --filet: #26324e; --ivoire: #f2eee4; --corps: #b9c1d1; --brume: #7d879b;
+    --assistant: #9fd4bc; --renard: #d9743f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--salle); color: var(--corps); font-family: var(--grotesk); -webkit-font-smoothing: antialiased; }
+  .env { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--filet); padding: 38px 0 28px; }
+  .kick { margin: 0; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--or); }
+  h1 { margin: 10px 0 0; font-family: var(--serif); font-size: clamp(26px, 4vw, 38px); font-weight: 600; line-height: 1.14; color: var(--ivoire); }
+  .chap { margin: 12px 0 0; max-width: 66ch; font-size: 15.5px; line-height: 1.6; }
+  .liens { margin: 20px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .liens a { border: 1px solid var(--filet); border-radius: 8px; padding: 7px 13px; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--brume); text-decoration: none; }
+  .liens a[aria-current] { border-color: var(--or); color: var(--or); background: rgba(200,169,81,.12); }
+  section { padding: 58px 0 0; }
+  h2 { margin: 0 0 8px; font-family: var(--serif); font-size: clamp(21px, 2.8vw, 28px); font-weight: 600; color: var(--ivoire); }
+  .sous { margin: 0 0 26px; max-width: 68ch; font-size: 14.5px; line-height: 1.6; color: var(--brume); }
+
+  .duo { display: grid; gap: 18px; grid-template-columns: minmax(0,1fr); }
+  @media (min-width: 900px) { .duo { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  .quinz { border: 1px solid var(--filet); border-radius: 16px; background: linear-gradient(180deg, var(--salle-2), var(--salle)); padding: 22px 22px 20px; }
+  .quinz h3 { margin: 0; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--or); }
+  .quinz .nom { margin: 8px 0 0; font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--ivoire); }
+  .quinz .jours { margin: 3px 0 16px; font-family: var(--mono); font-size: 11.5px; color: var(--brume); }
+  .bloc { display: flex; align-items: flex-start; gap: 11px; border-top: 1px solid var(--filet); padding: 11px 0; font-size: 14px; line-height: 1.45; }
+  .bloc:last-child { border-bottom: 1px solid var(--filet); }
+  .bloc .j { flex: none; width: 44px; font-family: var(--mono); font-size: 11.5px; font-weight: 700; color: var(--or); padding-top: 2px; }
+  .bloc .quoi { flex: 1; min-width: 0; color: var(--ivoire); }
+  .bloc .tag { flex: none; font-family: var(--mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; padding-top: 3px; }
+  .tag.m { color: var(--brume); }
+  .tag.a { color: var(--assistant); }
+  .tag.t { color: var(--renard); }
+  .manque { border-top: 1px dashed var(--filet); padding: 13px 0; display: flex; gap: 11px; align-items: flex-start; }
+  .manque .j { flex: none; width: 44px; font-family: var(--mono); font-size: 11.5px; color: var(--filet); padding-top: 2px; }
+  .manque .quoi { flex: 1; font-size: 14px; line-height: 1.45; color: var(--brume); font-style: italic; }
+  .compte { margin: 16px 0 0; font-family: var(--mono); font-size: 11.5px; color: var(--brume); }
+  .compte b { color: var(--ivoire); }
+
+  .bilan { margin-top: 54px; border-top: 1px solid var(--filet); padding-top: 34px; }
+  .bilan ul { margin: 14px 0 0; padding-left: 20px; }
+  .bilan li { margin-bottom: 11px; font-size: 14.5px; line-height: 1.6; }
+  .bilan li b { color: var(--ivoire); }
+  .choix { margin: 26px 0 0; display: grid; gap: 14px; grid-template-columns: minmax(0,1fr); }
+  @media (min-width: 820px) { .choix { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  .opt { border: 1px solid var(--filet); border-radius: 13px; padding: 18px 20px; }
+  .opt.reco { border-color: rgba(200,169,81,.45); }
+  .opt h4 { margin: 0 0 8px; font-size: 16px; font-weight: 600; color: var(--ivoire); }
+  .opt p { margin: 0 0 6px; font-size: 13.5px; line-height: 1.55; color: var(--brume); }
+  .opt .cout { margin-top: 10px; font-family: var(--mono); font-size: 11px; color: var(--or); }
+  footer { padding: 46px 0 120px; }
+  code { font-family: var(--mono); font-size: .92em; background: var(--salle-2); border: 1px solid var(--filet); border-radius: 5px; padding: 1px 5px; color: var(--ivoire); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="env">
+    <p class="kick">Labo · le récit en deux quinzaines</p>
+    <h1>Ce que la division en deux quinzaines révèle.</h1>
+    <p class="chap">
+      Demande du 01/09 : la méthode sur les deux premières semaines, les
+      automatisations sur les deux dernières, pour que le récit montre la
+      division commerciale. En posant les onze moments existants sur cette
+      grille, un déséquilibre apparaît, et il ne vient pas de l'affichage.
+    </p>
+    <p class="liens">
+      <a href="./quinzaines.html" aria-current="page">Les quinzaines</a>
+      <a href="./tarifs.html">Tarifs</a>
+      <a href="./craft-scrub.html">Essai 1 · CRAFT</a>
+      <a href="./mcp-trace.html">Essai 2 · MCP</a>
+    </p>
+  </div>
+</header>
+
+<section>
+  <div class="env">
+    <h2>Les onze moments, posés sur les deux quinzaines.</h2>
+    <p class="sous">
+      L'étiquette de droite dit de quel produit chaque moment parle réellement,
+      d'après son contenu et non d'après sa place.
+    </p>
+
+    <div class="duo">
+      <div class="quinz">
+        <h3>Quinzaine 1</h3>
+        <p class="nom">La méthode</p>
+        <p class="jours">jours 1 à 15</p>
+        <div class="bloc"><span class="j">J1</span><span class="quoi">Accueil, le mot de Paul</span><span class="tag m">méthode</span></div>
+        <div class="bloc"><span class="j">J2</span><span class="quoi">La méthode CRAFT, cinq champs</span><span class="tag m">méthode</span></div>
+        <div class="bloc"><span class="j">J3</span><span class="quoi">Un exercice sur ses données</span><span class="tag m">méthode</span></div>
+        <div class="bloc"><span class="j">J6</span><span class="quoi">Le quiz du module 2</span><span class="tag m">méthode</span></div>
+        <div class="bloc"><span class="j">J9</span><span class="quoi">Le choix de son outil</span><span class="tag m">méthode</span></div>
+        <div class="bloc"><span class="j">J11</span><span class="quoi">L'assistant répond à 23 h</span><span class="tag m">méthode</span></div>
+        <div class="bloc"><span class="j">J14</span><span class="quoi">Cinq leçons, un trophée</span><span class="tag m">méthode</span></div>
+        <p class="compte"><b>7 moments</b>, tous de la méthode. La quinzaine tient.</p>
+      </div>
+
+      <div class="quinz">
+        <h3>Quinzaine 2</h3>
+        <p class="nom">Les automatisations</p>
+        <p class="jours">jours 16 à 30</p>
+        <div class="bloc"><span class="j">J17</span><span class="quoi">La bibliothèque de prompts</span><span class="tag m">méthode</span></div>
+        <div class="bloc"><span class="j">J19</span><span class="quoi">L'image en trois formats</span><span class="tag m">méthode</span></div>
+        <div class="bloc"><span class="j">J22</span><span class="quoi">Trente minutes avec Paul</span><span class="tag t">transversal</span></div>
+        <div class="bloc"><span class="j">J26</span><span class="quoi">Son premier serveur MCP</span><span class="tag a">automatisations</span></div>
+        <p class="compte"><b>4 moments</b>, dont <b>un seul</b> parle vraiment des automatisations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="env">
+    <h2>Ce qui manquerait pour que la seconde quinzaine tienne debout.</h2>
+    <p class="sous">
+      Quatre moments à écrire, dans le même format que les onze autres. Ils
+      existent déjà comme contenu dans le produit : ce sont les leçons de M14 et
+      les cas MCP, jamais racontés dans le récit.
+    </p>
+    <div class="quinz" style="max-width:640px">
+      <h3>À écrire</h3>
+      <p class="nom">Quinzaine 2, les trous</p>
+      <p class="jours">le contenu existe, le récit ne le montre pas</p>
+      <div class="manque"><span class="j">J18</span><span class="quoi">Elle branche son premier outil : le serveur lit son agenda, et ne fait rien d'autre.</span></div>
+      <div class="manque"><span class="j">J21</span><span class="quoi">La chaîne qui prépare ses relances du lundi. Elle relit, elle envoie.</span></div>
+      <div class="manque"><span class="j">J24</span><span class="quoi">Un agent qui surveille. Ce qu'il a le droit de faire, et ce qu'il doit demander.</span></div>
+      <div class="manque"><span class="j">J28</span><span class="quoi">Le temps gagné, compté sur une semaine réelle.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="bilan">
+  <div class="env">
+    <h2>Mon avis, et ce que je te propose de trancher.</h2>
+    <ul>
+      <li><b>Le déséquilibre n'est pas un défaut de mise en page.</b> Sur onze moments, neuf racontent la méthode. C'est le reflet du produit (78 leçons contre 48), mais aussi de la façon dont le récit a été écrit en août, quand les automatisations n'étaient qu'un complément.</li>
+      <li><b>Couper à quinze jours sans rien écrire ferait dire au récit une chose fausse</b> : la bibliothèque de prompts et l'image en trois formats sont de la méthode, et ils se retrouveraient dans la quinzaine des automatisations.</li>
+      <li><b>Le contenu, lui, existe.</b> Les leçons d'agents et de serveurs MCP sont écrites, les 24 cas d'usage avancés aussi. Ce qui manque, ce sont quatre moments de récit qui les montrent.</li>
+    </ul>
+
+    <div class="choix">
+      <div class="opt reco">
+        <h4>A. Écrire les quatre moments manquants</h4>
+        <p>Le récit passe à quinze moments, sept dans la première quinzaine et huit dans la seconde. La division commerciale devient visible et vraie.</p>
+        <p>Chaque moment demande un visuel, comme les onze autres : c'est ce qui coûte, pas le texte.</p>
+        <p class="cout">Un vrai chantier de contenu. La structure du code, elle, est prête.</p>
+      </div>
+      <div class="opt">
+        <h4>B. Garder trois niveaux, renommer les deux premiers</h4>
+        <p>Niveaux 1 et 2 deviennent « La méthode », le niveau 3 « Les automatisations ». Le récit ne change pas, seules les frontières changent de nom.</p>
+        <p>Honnête et immédiat, mais la promesse « deux semaines chacune » ne serait pas tenue : la seconde partie garderait deux moments sur onze.</p>
+        <p class="cout">Une heure. Aucun contenu à écrire.</p>
+      </div>
+    </div>
+
+    <p class="sous" style="margin-top:26px">
+      ⚠️ Un point technique dans les deux cas : les points par jour viennent de
+      <code>jour30-story.ts</code> dans l'application, qui les calcule à partir
+      des gestes de chaque journée. Renuméroter les jours ou en ajouter demande
+      d'y toucher, sinon le rail affichera les points d'un autre jour.
+    </p>
+  </div>
+</section>
+
+<footer><div class="env"></div></footer>
+</body>
+</html>
