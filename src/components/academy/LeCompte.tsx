@@ -252,7 +252,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
   }, [sync, traverser]);
 
   const premier = etats[0];
-  const [n1, n2, n3] = c.niveaux;
+  const [q1, q2] = c.quinzaines;
   const trophee = (key: string, metal: Metal) => ({
     nom: tropheeNoms[key] || key,
     metal: metaux[metal].toLowerCase(),
@@ -296,8 +296,8 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
             aria-hidden="true"
           />
 
-          <p id="niveau-1" className="m-0 mb-2 scroll-mt-24 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-brume-nuit lg:ml-7">
-            {n1.kicker} · {n1.nom}
+          <p id="quinzaine-1" className="m-0 mb-2 scroll-mt-24 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-or lg:ml-7">
+            {q1.kicker} · {q1.nom}
           </p>
           {/* Clara est nommée soixante fois dans ce récit et on ne la voyait
               jamais. Un seul portrait, ici, à l'ouverture du premier niveau :
@@ -310,7 +310,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
               témoigne pas. Ne jamais lui accoler une citation. */}
           <div className="mb-11 grid grid-cols-[minmax(0,1fr)] items-center gap-6 lg:ml-7 lg:grid-cols-[minmax(0,1fr)_200px]">
             <h2 className="m-0 max-w-[20ch] text-[clamp(24px,3.4vw,34px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire">
-              {n1.titre}
+              {q1.titre}
             </h2>
             {/* Deux cadrages plutôt qu'un masquage : au téléphone, un portrait
                 4:5 coûterait deux cent cinquante pixels de hauteur sur une page
@@ -421,7 +421,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
             <p className="m-0 mt-3 font-ac-mono text-[12px] text-brume-nuit">{c.j6.pts(POINTS.quiz, POINTS.quiz_perfect_first)}</p>
           </Jour>
 
-          <Jour n={9} label={c.jour(9)} phrase={c.j9.phrase} note={c.j9.note} dernier>
+          <Jour n={9} label={c.jour(9)} phrase={c.j9.phrase} note={c.j9.note}>
             <ChoixOutil c={c.j9} />
           </Jour>
 
@@ -445,8 +445,6 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
             </div>
           </div>
 
-          <Frontiere id="niveau-2" kicker={n2.kicker} nom={n2.nom} titre={n2.titre} de={etats[4].renard} a={etats[5].renard} />
-
           <Jour n={11} label={c.jour(11)} phrase={c.j11.phrase} note={c.j11.note}>
             <div className="grid max-w-[640px] gap-3">
               <div className="max-w-[80%] justify-self-end rounded-[14px_14px_4px_14px] bg-salle-3 px-[18px] py-3.5">
@@ -455,6 +453,32 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
               <div className="max-w-[88%] rounded-[14px_14px_14px_4px] border border-filet-nuit bg-salle-2 px-[18px] py-4">
                 <p className="m-0 text-[14.5px] leading-[1.7] text-corps-nuit">{c.j11.reponse}</p>
                 <p className="m-0 mt-3 font-ac-mono text-[11px] text-brume-nuit">{c.j11.source}</p>
+              </div>
+            </div>
+          </Jour>
+
+          <Jour n={12} label={c.jour(12)} phrase={c.j12.phrase}>
+            <div className={`${PANNEAU} max-w-[640px] overflow-hidden`}>
+              <div className="flex flex-wrap gap-2 border-b border-filet-nuit px-[18px] py-3.5">
+                <span className="rounded-full bg-salle-3 px-[13px] py-[5px] text-[12.5px] text-ivoire">{c.j12.tous(faits.prompts)}</span>
+                {c.j12.onglets.map((o) => (
+                  <span key={o} className="rounded-full border border-filet-nuit px-[13px] py-[5px] text-[12.5px] text-brume-nuit">
+                    {o}
+                  </span>
+                ))}
+              </div>
+              {c.j12.lignes.map((l) => (
+                <div key={l} className="flex justify-between gap-4 border-b border-filet-nuit px-[18px] py-[13px]">
+                  <span className="text-[14px] text-corps-nuit">{l}</span>
+                  <span className="font-ac-mono text-[11px] text-brume-nuit">{c.j12.copier}</span>
+                </div>
+              ))}
+              <div className="flex justify-between gap-4 bg-or/[0.07] px-[18px] py-[13px]">
+                <span className="text-[14px] text-ivoire">
+                  {c.j12.lesien.texte}
+                  <span className="ml-2 font-ac-mono text-[10.5px] uppercase tracking-[0.08em] text-or">{c.j12.lesien.tag}</span>
+                </span>
+                <span className="font-ac-mono text-[11px] text-or">{c.j12.copier}</span>
               </div>
             </div>
           </Jour>
@@ -476,39 +500,87 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
             })()}
           </Jour>
 
-          <Jour n={17} label={c.jour(17)} phrase={c.j17.phrase}>
-            <div className={`${PANNEAU} max-w-[640px] overflow-hidden`}>
-              <div className="flex flex-wrap gap-2 border-b border-filet-nuit px-[18px] py-3.5">
-                <span className="rounded-full bg-salle-3 px-[13px] py-[5px] text-[12.5px] text-ivoire">{c.j17.tous(faits.prompts)}</span>
-                {c.j17.onglets.map((o) => (
-                  <span key={o} className="rounded-full border border-filet-nuit px-[13px] py-[5px] text-[12.5px] text-brume-nuit">
-                    {o}
-                  </span>
-                ))}
+          <Jour n={15} label={c.jour(15)} phrase={c.j15.phrase} note={c.j15.note} dernier>
+            <Comparateur c={c.j15} />
+          </Jour>
+
+          {/* L'unique frontière du récit : la méthode est apprise, les
+              automatisations commencent. `etats[8]` est le jour 15 et
+              `etats[9]` le jour 18 : le renard se transforme de la forme du
+              dernier jour de la première quinzaine à celle du premier jour de
+              la seconde. ⚠️ Ces deux indices suivent la table `ETAPES` de
+              `jour30-story.ts` : ajouter un moment sans les corriger fait
+              traverser le renard entre deux mauvaises formes. */}
+          <Frontiere id="quinzaine-2" kicker={q2.kicker} nom={q2.nom} titre={q2.titre} de={etats[8].renard} a={etats[9].renard} />
+
+          {/* Le premier serveur branché. Ce qu'on montre n'est pas la prise,
+              c'est le RÉGLAGE de la prise : deux droits ouverts en lecture, deux
+              fermés en écriture. C'est la réponse à la seule question que se pose
+              quelqu'un à qui on parle d'automatisation, et elle arrive avant
+              qu'il l'ait posée. Des interrupteurs et non des cases à cocher :
+              une case dit « j'ai lu », un interrupteur dit « c'est ouvert ». */}
+          <Jour n={18} ton="avance" label={c.jour(18)} phrase={c.j18.phrase} note={c.j18.note}>
+            <div className={`${PANNEAU} max-w-[540px] overflow-hidden`}>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-filet-nuit px-[18px] py-3.5">
+                <span className="h-[7px] w-[7px] flex-none rounded-full bg-avance" aria-hidden="true" />
+                <span className="font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-avance">{c.j18.kicker}</span>
+                <span className="ml-auto text-[13.5px] text-ivoire">{c.j18.serveur}</span>
               </div>
-              {c.j17.lignes.map((l) => (
-                <div key={l} className="flex justify-between gap-4 border-b border-filet-nuit px-[18px] py-[13px]">
-                  <span className="text-[14px] text-corps-nuit">{l}</span>
-                  <span className="font-ac-mono text-[11px] text-brume-nuit">{c.j17.copier}</span>
+              {c.j18.droits.map((d) => (
+                <div key={d.texte} className="flex items-center gap-3.5 border-b border-filet-nuit px-[18px] py-3 last:border-b-0">
+                  <span
+                    className={`relative h-[18px] w-[32px] flex-none rounded-full ${d.ouvert ? 'bg-avance/25' : 'bg-salle-3'}`}
+                    aria-hidden="true"
+                  >
+                    <span
+                      className={`absolute top-[3px] h-3 w-3 rounded-full ${d.ouvert ? 'left-[17px] bg-avance' : 'left-[3px] bg-brume-nuit'}`}
+                    />
+                  </span>
+                  <span className={`text-[14px] leading-[1.5] ${d.ouvert ? 'text-corps-nuit' : 'text-brume-nuit'}`}>{d.texte}</span>
                 </div>
               ))}
-              <div className="flex justify-between gap-4 bg-or/[0.07] px-[18px] py-[13px]">
-                <span className="text-[14px] text-ivoire">
-                  {c.j17.lesien.texte}
-                  <span className="ml-2 font-ac-mono text-[10.5px] uppercase tracking-[0.08em] text-or">{c.j17.lesien.tag}</span>
+            </div>
+          </Jour>
+
+          {/* La chaîne du lundi, dessinée comme le produit la dessine : les outils
+              à gauche, la rédaction au centre, le point d'arrêt humain EN OR, les
+              sorties à droite. C'est le schéma des vingt-quatre cas MCP de
+              l'espace apprenant, pas une illustration inventée pour la page.
+
+              ⚠️ L'or garde ici son sens : dans une chaîne, l'or est l'endroit où
+              la personne intervient. Le bleu est la machine. Les deux couleurs
+              du ruban disent la même chose à une autre échelle. */}
+          <Jour n={21} ton="avance" label={c.jour(21)} phrase={c.j21.phrase} note={c.j21.note}>
+            <div className={`${PANNEAU} max-w-[680px] p-5`}>
+              <p className="m-0 mb-4 font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-avance">{c.j21.kicker}</p>
+              <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-2.5 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)]">
+                <div className="grid gap-1.5">
+                  {c.j21.sources.map((o) => (
+                    <span key={o} className="rounded-[8px] border border-filet-nuit px-3 py-[7px] text-center text-[13px] text-corps-nuit">
+                      {o}
+                    </span>
+                  ))}
+                </div>
+                <Fleche />
+                <span className="rounded-[8px] border border-avance/45 bg-avance/[0.08] px-3 py-3 text-center text-[13.5px] text-ivoire">
+                  {c.j21.ia}
                 </span>
-                <span className="font-ac-mono text-[11px] text-or">{c.j17.copier}</span>
+                <Fleche />
+                <div className="grid gap-1.5">
+                  <span className="rounded-[8px] border border-or/50 bg-or/[0.09] px-3 py-[7px] text-center text-[13px] text-ivoire">
+                    {c.j21.barriere}
+                  </span>
+                  {c.j21.sorties.map((o) => (
+                    <span key={o} className="rounded-[8px] border border-filet-nuit px-3 py-[7px] text-center text-[13px] text-brume-nuit">
+                      {o}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </Jour>
 
-          <Jour n={19} label={c.jour(19)} phrase={c.j19.phrase} note={c.j19.note} dernier>
-            <Comparateur c={c.j19} />
-          </Jour>
-
-          <Frontiere id="niveau-3" kicker={n3.kicker} nom={n3.nom} titre={n3.titre} de={etats[8].renard} a={etats[9].renard} />
-
-          <Jour n={22} label={c.jour(22)} phrase={c.j22.phrase} note={c.j22.note}>
+          <Jour n={22} ton="avance" label={c.jour(22)} phrase={c.j22.phrase} note={c.j22.note}>
             <div className="relative max-w-[560px] overflow-hidden rounded-carte border border-filet-nuit bg-encre">
               <img
                 src="/academy/references/session-la-poste.jpg"
@@ -529,10 +601,67 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
             </div>
           </Jour>
 
-          <Jour n={26} label={c.jour(26)} phrase={c.j26.phrase} dernier>
-            <div className="inline-flex items-center gap-3.5 rounded-carte border border-dashed border-renard/50 px-[22px] py-4">
-              <span className="font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-renard">{c.j26.badge}</span>
+          {/* Le journal de l'agent : trois lignes horodatées, dont une qui
+              s'arrête. C'est la seule façon de montrer un agent sans mentir : on
+              ne voit pas un agent travailler, on lit ce qu'il a fait. La ligne
+              en attente porte le même or que la barrière du jour 21. */}
+          <Jour n={24} ton="avance" label={c.jour(24)} phrase={c.j24.phrase} note={c.j24.note}>
+            <div className={`${PANNEAU} max-w-[620px] overflow-hidden`}>
+              <p className="m-0 border-b border-filet-nuit px-[18px] py-3.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-avance">
+                {c.j24.kicker}
+              </p>
+              {c.j24.lignes.map((l) => (
+                <div
+                  key={l.h}
+                  className={`flex flex-wrap items-baseline gap-x-3.5 gap-y-1 border-b border-filet-nuit px-[18px] py-3 last:border-b-0 ${
+                    l.accord ? 'border-l-2 border-l-or bg-or/[0.07]' : ''
+                  }`}
+                >
+                  <span className="font-ac-mono text-[11px] tabular-nums text-brume-nuit">{l.h}</span>
+                  <span className={`text-[14px] leading-[1.5] ${l.accord ? 'text-ivoire' : 'text-corps-nuit'}`}>{l.texte}</span>
+                  {l.accord ? (
+                    <span className="ml-auto font-ac-mono text-[10.5px] uppercase tracking-[0.08em] text-or">{c.j24.attend}</span>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </Jour>
+
+          <Jour n={26} ton="avance" label={c.jour(26)} phrase={c.j26.phrase}>
+            <div className="inline-flex items-center gap-3.5 rounded-carte border border-dashed border-avance/50 px-[22px] py-4">
+              <span className="font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-avance">{c.j26.badge}</span>
               <span className="font-ac-mono text-[11px] text-brume-nuit">{c.j26.outils(t.mcp.outils.length)}</span>
+            </div>
+          </Jour>
+
+          {/* Le relevé, et surtout : SON relevé. Aucune barre proportionnelle
+              ici, alors qu'elle rendrait le tableau plus spectaculaire ; elle
+              demanderait de doubler chaque durée d'une valeur en minutes, et
+              deux écritures d'un même chiffre finissent toujours par diverger.
+              La note dit que ces heures sont celles de Clara et pas une moyenne :
+              c'est la seule chose qui autorise à les afficher. */}
+          <Jour n={28} ton="avance" label={c.jour(28)} phrase={c.j28.phrase} note={c.j28.note} dernier>
+            <div className={`${PANNEAU} max-w-[620px] overflow-hidden`}>
+              <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-baseline gap-x-5 border-b border-filet-nuit px-[18px] py-3">
+                <span className="font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-avance">{c.j28.kicker}</span>
+                <span className="font-ac-mono text-[10.5px] uppercase tracking-[0.08em] text-brume-nuit">{c.j28.colonnes[0]}</span>
+                <span className="font-ac-mono text-[10.5px] uppercase tracking-[0.08em] text-avance">{c.j28.colonnes[1]}</span>
+              </div>
+              {c.j28.taches.map((ta) => (
+                <div
+                  key={ta.nom}
+                  className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-baseline gap-x-5 border-b border-filet-nuit px-[18px] py-[11px]"
+                >
+                  <span className="text-[14px] leading-[1.5] text-corps-nuit">{ta.nom}</span>
+                  <span className="font-ac-mono text-[13px] tabular-nums text-brume-nuit line-through">{ta.avant}</span>
+                  <span className="font-ac-mono text-[13px] tabular-nums text-ivoire">{ta.apres}</span>
+                </div>
+              ))}
+              <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-baseline gap-x-5 bg-avance/[0.08] px-[18px] py-3.5">
+                <span className="text-[14px] font-medium text-ivoire">{c.j28.total}</span>
+                <span className="font-ac-mono text-[13px] tabular-nums text-brume-nuit line-through">{c.j28.totalAvant}</span>
+                <span className="font-ac-mono text-[15px] font-bold tabular-nums text-avance">{c.j28.totalApres}</span>
+              </div>
             </div>
           </Jour>
         </div>
@@ -657,12 +786,26 @@ function RailIdentite({
   );
 }
 
+/**
+ * Le connecteur d'une chaîne : un chevron qui pivote quand la chaîne passe à la
+ * verticale, sous sm. Un caractère « fleche droite » aurait continué de pointer
+ * à droite dans une colonne.
+ */
+function Fleche() {
+  return (
+    <span className="mx-auto font-ac-mono text-[15px] leading-none text-brume-nuit sm:mx-0" aria-hidden="true">
+      <span className="inline-block rotate-90 sm:rotate-0">→</span>
+    </span>
+  );
+}
+
 function Jour({
   n,
   label,
   phrase,
   note,
   dernier,
+  ton,
   children,
 }: {
   /** Le numéro du jour, lu par la barre du haut pour afficher « Jour n / 30 ». */
@@ -672,12 +815,20 @@ function Jour({
   note?: string;
   /** Dernier jour avant une frontière ou la fin : marge réduite. */
   dernier?: boolean;
+  /**
+   * Le code couleur des deux quinzaines : rien (l'or) pour La méthode,
+   * `avance` (le bleu) pour Les automatisations. C'est le même code que le
+   * ruban d'annonce et que la grille de prix, et il ne s'explique nulle part :
+   * on l'apprend en lisant le récit, on le reconnaît en arrivant aux tarifs.
+   */
+  ton?: 'avance';
   children: ReactNode;
 }) {
+  const bleu = ton === 'avance';
   return (
     <article className={`j30-day relative scroll-mt-24 lg:pl-7 ${dernier ? 'mb-5' : 'mb-14'}`} data-jour={n}>
-      <span className="absolute -left-1 top-1.5 hidden h-[9px] w-[9px] rounded-full bg-or lg:block" />
-      <p className={`${RUBRIQUE} m-0 mb-1 text-or`}>{label}</p>
+      <span className={`absolute -left-1 top-1.5 hidden h-[9px] w-[9px] rounded-full lg:block ${bleu ? 'bg-avance' : 'bg-or'}`} />
+      <p className={`${RUBRIQUE} m-0 mb-1 ${bleu ? 'text-avance' : 'text-or'}`}>{label}</p>
       <p className="m-0 mb-[18px] max-w-[44ch] text-[19px] leading-[1.45] text-ivoire">{phrase}</p>
       {children}
       {note ? <p className="m-0 mt-3.5 max-w-[50ch] text-[14.5px] leading-[1.6] text-brume-nuit">{note}</p> : null}
@@ -686,8 +837,10 @@ function Jour({
 }
 
 /**
- * Une frontière de niveau : le filet, le libellé en orange (la seule place de
- * l'orange hors du renard), le titre, et le renard qui la traverse à l'entrée
+ * La frontière des deux quinzaines : le filet, le libellé dans la couleur de ce
+ * qu'elle ouvre (le bleu des automatisations, depuis le 01/09/2026 ; il était
+ * orange, mais le code couleur passe avant la signature), le titre, et le renard
+ * qui la traverse à l'entrée
  * (voir `traverser` plus haut). Au repos il attend au bord gauche, à cheval sur
  * le filet, dans le même cercle que l'avatar du rail : c'est le même animal.
  */
@@ -696,7 +849,7 @@ function Frontiere({ id, kicker, nom, titre, de, a }: { id: string; kicker: stri
     <div id={id} className="j30-frontier relative mb-[52px] scroll-mt-24 border-t border-filet-nuit pb-[34px] pt-[34px] lg:pl-7" data-de={de} data-a={a}>
       <span
         className="j30-trace pointer-events-none absolute -top-px left-0 h-px w-0"
-        style={{ background: 'linear-gradient(90deg, rgba(200,169,81,.35), #c8a951)' }}
+        style={{ background: 'linear-gradient(90deg, rgba(127,196,221,.35), #7fc4dd)' }}
         aria-hidden="true"
       />
       <span
@@ -707,7 +860,7 @@ function Frontiere({ id, kicker, nom, titre, de, a }: { id: string; kicker: stri
           <polygon points={renardPoints(de)} fill="#d9743f" />
         </svg>
       </span>
-      <p className="m-0 mb-1.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-renard">
+      <p className="m-0 mb-1.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-avance">
         {kicker} · {nom}
       </p>
       <h2 className="m-0 max-w-[22ch] text-[clamp(24px,3.4vw,34px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire">{titre}</h2>
@@ -918,7 +1071,7 @@ function ChoixOutil({ c }: { c: Jour30Copy['compte']['j9'] }) {
  * dans le clip-path et dans la poignée ; le curseur natif reste branché
  * dessus, donc la comparaison se fait aussi au clavier.
  */
-function Comparateur({ c }: { c: Jour30Copy['compte']['j19'] }) {
+function Comparateur({ c }: { c: Jour30Copy['compte']['j15'] }) {
   const box = useRef<HTMLDivElement>(null);
   const top = useRef<HTMLDivElement>(null);
   const line = useRef<HTMLDivElement>(null);

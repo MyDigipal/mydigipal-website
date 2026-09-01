@@ -225,22 +225,31 @@ const FR = {
 
   mention: {
     kicker: 'Compte de démonstration',
-    titre: 'Trente jours, trois niveaux, un compte qui se remplit.',
+    titre: 'Trente jours, deux quinzaines, un compte qui se remplit.',
     etapes: [
-      { jours: 'Jours 1 à 10', nom: 'Écrire une demande', texte: 'La méthode CRAFT, leçon par leçon, le module de votre outil, et les premiers exercices.' },
-      { jours: 'Jours 11 à 20', nom: 'Se servir des outils', texte: 'L’assistant, la bibliothèque, les images, les fichiers : quoi confier, et à quoi.' },
-      { jours: 'Jours 21 à 30', nom: 'Faire faire', texte: 'Agents, automatisations, un serveur MCP en état de marche, et l’attestation.' },
+      {
+        jours: 'Jours 1 à 15',
+        nom: 'La méthode',
+        texte: 'CRAFT leçon par leçon, le module de votre outil, la bibliothèque de prompts, les premiers exercices rendus.',
+        ton: 'or' as const,
+      },
+      {
+        jours: 'Jours 16 à 30',
+        nom: 'Les automatisations',
+        texte: 'Les serveurs MCP, les agents, les chaînes qui tournent toutes seules, et l’attestation.',
+        ton: 'avance' as const,
+      },
     ],
+    legende: 'L’or, c’est La méthode. Le bleu, ce sont Les automatisations. Les deux couleurs se retrouvent plus bas, dans les tarifs.',
     texte:
       'Ce qui suit est reconstitué à partir de l’espace apprenant réel : les écrans sont ceux du produit, les règles de points sont celles du code. Clara, elle, est composée : elle a pris la méthode, les automatisations et l’assistant.',
     bandeAlt: 'Une apprenante devant son espace, entourée de ses cartes de progression',
   },
 
   compte: {
-    niveaux: [
-      { kicker: 'Niveau 1', nom: 'Écrire une demande', titre: 'Dix jours pour se lancer dans l’intelligence artificielle.' },
-      { kicker: 'Niveau 2', nom: 'Se servir des outils', titre: 'Elle ne demande plus. Elle sait quoi confier, et à quoi.' },
-      { kicker: 'Niveau 3', nom: 'Faire faire', titre: 'Elle branche les outils les uns aux autres.' },
+    quinzaines: [
+      { kicker: 'Quinzaine 1', nom: 'La méthode', titre: 'Quinze jours pour se lancer dans l’intelligence artificielle.' },
+      { kicker: 'Quinzaine 2', nom: 'Les automatisations', titre: 'Elle arrête de faire. Elle fait faire.' },
     ],
     jour: (n: number) => `Jour ${n}`,
     claraAlt: 'Clara, l’apprenante dont ce récit suit les trente jours',
@@ -326,7 +335,7 @@ const FR = {
       note: (total: number, secrets: number) =>
         `${total} trophées, dont ${secrets} secrets : leur nom n’apparaît qu’une fois obtenus. Le meilleur métal dessine le cadre de l’avatar.`,
     },
-    j17: {
+    j12: {
       phrase: 'Elle arrête d’écrire ses prompts de zéro. Puis elle en ajoute un.',
       tous: (n: number) => `Tous · ${n}`,
       onglets: ['Module 2', 'Module 3', 'Module 4'],
@@ -337,7 +346,7 @@ const FR = {
       lesien: { texte: 'Compte rendu anonymisé, format imposé', tag: 'le sien' },
       copier: 'Copier',
     },
-    j19: {
+    j15: {
       phrase: 'On lui demande le visuel en trois formats. Pour hier.',
       tirez: 'Faites glisser : à gauche la photo envoyée par le client, à droite le visuel prêt à publier.',
       fourni: 'La photo reçue',
@@ -347,6 +356,27 @@ const FR = {
       altApres: 'Le même vélo détouré, recadré et habillé aux couleurs de la marque',
       note: 'Quatre formats, un fond retiré, une déclinaison verticale. Vingt minutes, pas une demi-journée de retouche.',
     },
+    j18: {
+      phrase: 'Elle branche son premier serveur. Il lit son agenda, et rien d’autre.',
+      kicker: 'Serveur connecté',
+      serveur: 'Agenda Google',
+      droits: [
+        { texte: 'Lire les rendez-vous des sept prochains jours', ouvert: true },
+        { texte: 'Lire les participants et les pièces jointes', ouvert: true },
+        { texte: 'Créer ou déplacer un rendez-vous', ouvert: false },
+        { texte: 'Écrire à un participant', ouvert: false },
+      ],
+      note: 'Un serveur MCP se branche prise par prise, et chaque prise se règle en lecture ou en écriture. Ouvrir l’écriture est une décision, pas un réglage par défaut.',
+    },
+    j21: {
+      phrase: 'Lundi, huit heures. Ses relances sont écrites. Elle les relit, elle envoie.',
+      kicker: 'Chaîne · Relances du lundi',
+      sources: ['Facturier', 'Boîte mail', 'Agenda'],
+      ia: 'Rédige',
+      barriere: 'Elle relit',
+      sorties: ['Quatre relances', 'Un cas à trancher'],
+      note: 'La chaîne prépare, elle n’envoie rien. Le point d’arrêt est écrit dans la chaîne elle-même : rien ne part sans qu’elle ait cliqué.',
+    },
     j22: {
       phrase: 'Trente minutes en visio. Préparées : il a lu ses exercices avant.',
       direct: 'En direct',
@@ -354,10 +384,36 @@ const FR = {
       alt: 'Session de formation MyDigipal',
       note: 'Elle repart avec un document écrit après l’appel, pas avec des notes.',
     },
+    j24: {
+      phrase: 'Un agent surveille ses livraisons. Il agit dans son couloir, il demande pour le reste.',
+      kicker: 'Agent · Livraisons',
+      lignes: [
+        { h: '06:12', texte: 'Trois retards repérés. Clients prévenus.', accord: false },
+        { h: '06:13', texte: 'Créneau reprogrammé pour deux d’entre eux.', accord: false },
+        { h: '06:14', texte: 'Geste commercial sur le troisième.', accord: true },
+      ],
+      attend: 'En attente de votre accord',
+      note: 'Le couloir de l’agent s’écrit avant de le lancer : ce qu’il fait seul, ce qu’il propose, et le montant au-delà duquel il s’arrête.',
+    },
     j26: {
       phrase: 'Elle construit son premier serveur MCP. Et là, il faut s’arrêter deux minutes.',
       badge: 'Serveur MCP, en ligne',
       outils: (n: number) => `${n} outils connectés`,
+    },
+    j28: {
+      phrase: 'Elle compte. Pas une promesse : son relevé, sur sa semaine.',
+      kicker: 'Mon relevé de la semaine',
+      colonnes: ['Avant', 'Après'],
+      taches: [
+        { nom: 'Relances clients du lundi', avant: '1 h 30', apres: '15 min' },
+        { nom: 'Comptes rendus de réunion', avant: '2 h', apres: '20 min' },
+        { nom: 'Visuels et déclinaisons', avant: '3 h', apres: '45 min' },
+        { nom: 'Tri des réclamations', avant: '1 h', apres: '10 min' },
+      ],
+      total: 'Sur la semaine',
+      totalAvant: '7 h 30',
+      totalApres: '1 h 30',
+      note: 'C’est l’exercice du dernier module : on mesure sur ses propres tâches avant de conclure quoi que ce soit. Ces heures sont celles de Clara, pas une moyenne.',
     },
     rail: {
       nom: 'Clara M.',
@@ -939,22 +995,31 @@ const EN: Jour30Copy = {
 
   mention: {
     kicker: 'Demonstration account',
-    titre: 'Thirty days, three levels, an account that fills up.',
+    titre: 'Thirty days, two fortnights, an account that fills up.',
     etapes: [
-      { jours: 'Days 1 to 10', nom: 'Writing a request', texte: 'The CRAFT method, lesson by lesson, your tool’s module, and the first exercises.' },
-      { jours: 'Days 11 to 20', nom: 'Using the tools', texte: 'The assistant, the library, images, files: what to hand over, and to what.' },
-      { jours: 'Days 21 to 30', nom: 'Having it done', texte: 'Agents, automations, a working MCP server, and the certificate.' },
+      {
+        jours: 'Days 1 to 15',
+        nom: 'The method',
+        texte: 'CRAFT lesson by lesson, your tool’s module, the prompt library, and the first exercises handed in.',
+        ton: 'or' as const,
+      },
+      {
+        jours: 'Days 16 to 30',
+        nom: 'Automations',
+        texte: 'MCP servers, agents, the chains that run on their own, and the certificate.',
+        ton: 'avance' as const,
+      },
     ],
+    legende: 'Gold is The method. Blue is Automations. Both colours come back further down, in the pricing.',
     texte:
       'What follows is reconstructed from the real learner space: the screens are the product’s, the point rules are the code’s. Clara is made up: she took the method, Automations and the assistant.',
     bandeAlt: 'A learner at her space, surrounded by her progress cards',
   },
 
   compte: {
-    niveaux: [
-      { kicker: 'Level 1', nom: 'Writing a request', titre: 'Ten days to get started with artificial intelligence.' },
-      { kicker: 'Level 2', nom: 'Using the tools', titre: 'She no longer asks. She knows what to hand over, and to what.' },
-      { kicker: 'Level 3', nom: 'Having it done', titre: 'She wires the tools to one another.' },
+    quinzaines: [
+      { kicker: 'Fortnight 1', nom: 'The method', titre: 'Fifteen days to get started with artificial intelligence.' },
+      { kicker: 'Fortnight 2', nom: 'Automations', titre: 'She stops doing. She has it done.' },
     ],
     jour: (n: number) => `Day ${n}`,
     claraAlt: 'Clara, the learner whose thirty days this story follows',
@@ -1040,7 +1105,7 @@ const EN: Jour30Copy = {
       note: (total: number, secrets: number) =>
         `${total} trophies, ${secrets} of them secret: their name only appears once earned. The best metal frames the avatar.`,
     },
-    j17: {
+    j12: {
       phrase: 'She stops writing her prompts from scratch. Then she adds one.',
       tous: (n: number) => `All · ${n}`,
       onglets: ['Module 2', 'Module 3', 'Module 4'],
@@ -1048,7 +1113,7 @@ const EN: Jour30Copy = {
       lesien: { texte: 'Anonymised minutes, fixed format', tag: 'hers' },
       copier: 'Copy',
     },
-    j19: {
+    j15: {
       phrase: 'She is asked for the visual in three formats. For yesterday.',
       tirez: 'Drag across: the photo the client sent on the left, the visual ready to publish on the right.',
       fourni: 'As received',
@@ -1058,6 +1123,27 @@ const EN: Jour30Copy = {
       altApres: 'The same bicycle cut out, cropped and dressed in the brand colours',
       note: 'Four formats, one background removed, one vertical version. Twenty minutes, not half a day of retouching.',
     },
+    j18: {
+      phrase: 'She plugs in her first server. It reads her calendar, and nothing else.',
+      kicker: 'Server connected',
+      serveur: 'Google Calendar',
+      droits: [
+        { texte: 'Read the next seven days of meetings', ouvert: true },
+        { texte: 'Read attendees and attachments', ouvert: true },
+        { texte: 'Create or move a meeting', ouvert: false },
+        { texte: 'Write to an attendee', ouvert: false },
+      ],
+      note: 'An MCP server is plugged in socket by socket, and each socket is set to read or to write. Opening write access is a decision, not a default.',
+    },
+    j21: {
+      phrase: 'Monday, eight in the morning. Her follow-ups are written. She reads them, she sends.',
+      kicker: 'Chain · Monday follow-ups',
+      sources: ['Invoicing', 'Inbox', 'Calendar'],
+      ia: 'Drafts',
+      barriere: 'She reads',
+      sorties: ['Four follow-ups', 'One call to make'],
+      note: 'The chain prepares, it sends nothing. The stop is written into the chain itself: nothing goes out until she has clicked.',
+    },
     j22: {
       phrase: 'Thirty minutes on a call. Prepared: he read her exercises beforehand.',
       direct: 'Live',
@@ -1065,10 +1151,36 @@ const EN: Jour30Copy = {
       alt: 'MyDigipal training session',
       note: 'She leaves with a written document after the call, not with notes.',
     },
+    j24: {
+      phrase: 'An agent watches her deliveries. It acts inside its lane, and asks for the rest.',
+      kicker: 'Agent · Deliveries',
+      lignes: [
+        { h: '06:12', texte: 'Three delays spotted. Customers notified.', accord: false },
+        { h: '06:13', texte: 'New slot booked for two of them.', accord: false },
+        { h: '06:14', texte: 'Goodwill gesture on the third.', accord: true },
+      ],
+      attend: 'Waiting for your approval',
+      note: 'The agent’s lane is written before it is started: what it does alone, what it proposes, and the amount above which it stops.',
+    },
     j26: {
       phrase: 'She builds her first MCP server. And here, we need to stop for two minutes.',
       badge: 'MCP server, online',
       outils: (n: number) => `${n} tools connected`,
+    },
+    j28: {
+      phrase: 'She counts. Not a promise: her own log, over her own week.',
+      kicker: 'My log for the week',
+      colonnes: ['Before', 'After'],
+      taches: [
+        { nom: 'Monday customer follow-ups', avant: '1 h 30', apres: '15 min' },
+        { nom: 'Meeting minutes', avant: '2 h', apres: '20 min' },
+        { nom: 'Visuals and variants', avant: '3 h', apres: '45 min' },
+        { nom: 'Sorting complaints', avant: '1 h', apres: '10 min' },
+      ],
+      total: 'Over the week',
+      totalAvant: '7 h 30',
+      totalApres: '1 h 30',
+      note: 'This is the last module’s exercise: you measure on your own tasks before concluding anything. These hours are Clara’s, not an average.',
     },
     rail: {
       nom: 'Clara M.',
