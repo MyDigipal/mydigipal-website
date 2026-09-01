@@ -259,7 +259,13 @@ export default function Mcp({ locale }: { locale: Locale }) {
               </div>
             ))}
           </div>
-          <p className="m-0 mt-3.5 text-center font-ac-mono text-[11px] text-brume">{c.memeServeur}</p>
+          {/* Sur téléphone, les trois fils qui descendent des assistants vers la
+              prise traversent cette phrase (vu sur capture le 01/09/2026). Le
+              fond craie et la largeur au contenu la posent PAR-DESSUS les fils,
+              qui passent derrière : le texte reste lisible sans déplacer le
+              schéma. `relative` la fait entrer dans l'ordre d'empilement, sans
+              quoi le SVG absolu se dessine au-dessus d'elle. */}
+          <p className="relative mx-auto mb-0 mt-3.5 w-fit bg-craie px-2 text-center font-ac-mono text-[11px] text-brume">{c.memeServeur}</p>
 
           <div className="my-[70px] flex justify-center">
             <div ref={hub} className="relative max-w-[340px] rounded-carte border border-renard/60 bg-papier px-7 py-5 text-center">

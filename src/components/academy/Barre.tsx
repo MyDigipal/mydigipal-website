@@ -20,10 +20,13 @@ import Drapeau from './Drapeau';
  * trame), comme le rail du récit : rien n'est mis en cache, la page peut
  * changer de hauteur (replis, images) sans casser la lecture.
  */
-const REPERES: Array<{ id: string; cle: 'n1' | 'n2' | 'n3' | 'avis' | 'tarifs' }> = [
-  { id: 'niveau-1', cle: 'n1' },
-  { id: 'niveau-2', cle: 'n2' },
-  { id: 'niveau-3', cle: 'n3' },
+// ⚠️ Les identifiants suivent ceux de LeCompte : `quinzaine-1` et `quinzaine-2`
+// depuis le 01/09/2026. Les trois « niveau-n » ont survécu ici un soir entier
+// après le passage en deux quinzaines : trois repères pointaient vers des ancres
+// absentes, sans aucune erreur. Changer un id de section, c'est changer ici.
+const REPERES: Array<{ id: string; cle: 'q1' | 'q2' | 'avis' | 'tarifs' }> = [
+  { id: 'quinzaine-1', cle: 'q1' },
+  { id: 'quinzaine-2', cle: 'q2' },
   { id: 'maison', cle: 'avis' },
   { id: 'pricing', cle: 'tarifs' },
 ];

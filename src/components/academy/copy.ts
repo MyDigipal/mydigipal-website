@@ -162,13 +162,13 @@ const FR = {
       question: 'Quelle différence entre un agent et une automatisation ?',
       reponse:
         'Une automatisation suit un chemin écrit d’avance : mêmes étapes, même ordre. Un agent reçoit un but et choisit ses étapes, en appelant des outils si besoin. Pour un reporting hebdomadaire, une automatisation suffit.',
-      source: 'Source : les leçons du niveau 3 sur les agents',
+      source: 'Source : les leçons du module Agents et automatisations',
     },
     spots: (f: { lessons: number; modules: number; prompts: number; trophees: number; relectures: number; lessonsConstruire: number; lessonsProgramme?: number; lessonsComplement?: number }) => ({
       parcours1: {
         kicker: 'La méthode',
         titre: 'Tout le parcours, du premier prompt aux cas de votre métier.',
-        texte: `${f.lessonsProgramme ?? f.lessons} leçons en ${f.modules} modules, trois niveaux. Chaque leçon écrite : un plan, un exemple, un prompt à copier, et un « À vous » à rendre.`,
+        texte: `${f.lessonsProgramme ?? f.lessons} leçons en ${f.modules} modules, trois étapes. Chaque leçon écrite : un plan, un exemple, un prompt à copier, et un « À vous » à rendre.`,
       },
       parcours2: {
         kicker: 'Les automatisations',
@@ -434,7 +434,7 @@ const FR = {
     intro: {
       titre: 'Ce que vous saurez construire en sortant.',
       texte:
-        'Au bout du niveau 3, vous savez brancher un assistant sur vos outils : il lit, il prépare, il écrit, et rien ne part sans votre geste. Voilà comment ça marche, et ce que ça donne, outil par outil.',
+        'Au bout de la seconde quinzaine, vous savez brancher un assistant sur vos outils : il lit, il prépare, il écrit, et rien ne part sans votre geste. Voilà comment ça marche, et ce que ça donne, outil par outil.',
     },
     titre: 'Un MCP, c’est une prise.',
     chapeau:
@@ -669,7 +669,7 @@ const FR = {
     aria: 'Repères de la page',
     langue: 'EN',
     langueAria: 'Read this page in English',
-    reperes: { n1: 'Niveau 1', n2: 'Niveau 2', n3: 'Niveau 3', avis: 'Avis', tarifs: 'Tarifs' },
+    reperes: { q1: 'Quinzaine 1', q2: 'Quinzaine 2', avis: 'Avis', tarifs: 'Tarifs' },
     jour: (n: number) => `Jour ${n} / 30`,
     cta: 'Commencer',
   },
@@ -723,7 +723,7 @@ const FR = {
      * divergeraient du produit à la première leçon ajoutée.
      */
     contenuMethode: (f: { lecons: number; prompts: number; trophees: number }) => [
-      `${f.lecons} leçons écrites, en trois niveaux`,
+      `${f.lecons} leçons écrites, en trois étapes`,
       'L’atelier CRAFT : construire un prompt, et auditer les vôtres',
       `La bibliothèque de ${f.prompts} prompts, prêts à copier`,
       'Les quiz de fin de module et les exercices sur vos données',
@@ -744,7 +744,7 @@ const FR = {
     addonsLigne: 'Ni l’un ni l’autre n’est nécessaire pour suivre le parcours.',
     dejaComprise: 'Comprise dans la formule',
     programmeLigne: (lecons: number) =>
-      `${lecons} leçons, trois niveaux, l’atelier, la bibliothèque, les trophées, l’attestation.`,
+      `${lecons} leçons, trois étapes, l’atelier, la bibliothèque, les trophées, l’attestation.`,
     construireLigne: (lecons: number) => `${lecons} leçons dans leur propre parcours, jusqu’au serveur MCP en état de marche.`,
     assistantTitre: 'L’assistant IA',
     assistantLigne: 'Il connaît vos leçons et répond sur vos cas. Abonnement mensuel, sans engagement.',
@@ -932,13 +932,13 @@ const EN: Jour30Copy = {
       question: 'What is the difference between an agent and an automation?',
       reponse:
         'An automation follows a path written in advance: same steps, same order. An agent is given a goal and chooses its steps, calling tools when needed. For a weekly report, an automation is enough.',
-      source: 'Source: the level 3 lessons on agents',
+      source: 'Source: the Agents and automations module',
     },
     spots: (f: { lessons: number; modules: number; prompts: number; trophees: number; relectures: number; lessonsConstruire: number; lessonsProgramme?: number; lessonsComplement?: number }) => ({
       parcours1: {
         kicker: 'The method',
         titre: 'The whole course, from the first prompt to the cases of your job.',
-        texte: `${f.lessonsProgramme ?? f.lessons} lessons across ${f.modules} modules, three levels. Every lesson written: an outline, an example, a prompt to copy, and a task to hand in.`,
+        texte: `${f.lessonsProgramme ?? f.lessons} lessons across ${f.modules} modules, three stages. Every lesson written: an outline, an example, a prompt to copy, and a task to hand in.`,
       },
       parcours2: {
         kicker: 'Automations',
@@ -1201,7 +1201,7 @@ const EN: Jour30Copy = {
     intro: {
       titre: 'What you will be able to build when you leave.',
       texte:
-        'By the end of level 3, you know how to plug an assistant into your tools: it reads, it prepares, it writes, and nothing leaves without your gesture. Here is how it works, and what it gives, tool by tool.',
+        'By the end of the second fortnight, you know how to plug an assistant into your tools: it reads, it prepares, it writes, and nothing leaves without your gesture. Here is how it works, and what it gives, tool by tool.',
     },
     titre: 'An MCP is a socket.',
     chapeau:
@@ -1436,7 +1436,7 @@ const EN: Jour30Copy = {
     aria: 'Page landmarks',
     langue: 'FR',
     langueAria: 'Lire cette page en français',
-    reperes: { n1: 'Level 1', n2: 'Level 2', n3: 'Level 3', avis: 'Reviews', tarifs: 'Pricing' },
+    reperes: { q1: 'Fortnight 1', q2: 'Fortnight 2', avis: 'Reviews', tarifs: 'Pricing' },
     jour: (n: number) => `Day ${n} / 30`,
     cta: 'Get started',
   },
@@ -1483,7 +1483,7 @@ const EN: Jour30Copy = {
       `The method, plus ${n} lessons on agents, MCP chains and cases wired end to end.`,
     assistantInclus: (q: string) => `The AI assistant included, about ${q} questions a month.`,
     contenuMethode: (f: { lecons: number; prompts: number; trophees: number }) => [
-      `${f.lecons} written lessons, across three levels`,
+      `${f.lecons} written lessons, across three stages`,
       'The CRAFT workshop: build a prompt, and audit your own',
       `The library of ${f.prompts} prompts, ready to copy`,
       'End-of-module quizzes and exercises on your own data',
@@ -1504,7 +1504,7 @@ const EN: Jour30Copy = {
     addonsLigne: 'Neither one is needed to follow the course.',
     dejaComprise: 'Included in your plan',
     programmeLigne: (lecons: number) =>
-      `${lecons} lessons, three levels, the workshop, the library, the trophies, the certificate.`,
+      `${lecons} lessons, three stages, the workshop, the library, the trophies, the certificate.`,
     construireLigne: (lecons: number) => `${lecons} lessons in their own course, up to a working MCP server.`,
     assistantTitre: 'The AI assistant',
     assistantLigne: 'It knows your lessons and answers on your own cases. Monthly subscription, no commitment.',

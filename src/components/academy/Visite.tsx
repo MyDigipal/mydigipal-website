@@ -210,7 +210,7 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
             <div className="flex items-center gap-4 border-b border-filet-nuit px-4 py-3 sm:px-6">
               <span className="font-ac-grotesk text-[13px] font-semibold tracking-[-0.01em] text-ivoire">
                 mydigipal<span className="text-or">.</span>
-                <span className="ml-1.5 font-ac-mono text-[8.5px] font-bold uppercase tracking-[0.2em] text-brume-nuit">academy</span>
+                <span className="ml-1.5 font-ac-mono text-[9.5px] font-bold uppercase tracking-[0.2em] text-brume-nuit">academy</span>
               </span>
               <nav className="ml-auto hidden gap-5 font-ac-grotesk text-[12.5px] text-corps-nuit sm:flex" aria-hidden="true">
                 {c.nav.map((n) => (

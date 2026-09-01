@@ -69,14 +69,20 @@ export default function Hero({ locale, data }: { locale: Locale; data: Jour30Dat
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
             <span className="ml-3 font-ac-mono text-[11px] text-brume-nuit">{c.url}</span>
           </div>
-          <div className="relative aspect-[16/10]">
+          {/* Au téléphone, la capture d'une interface d'ordinateur réduite à
+              358 px ne se lit pas (Paul, 01/09/2026 : « sur téléphone, c'était
+              pas ouf »). Plutôt que la réduire, on la CADRE : un rapport 4:5,
+              l'image couvre la hauteur et montre son coin haut gauche, la
+              colonne du parcours, deux fois plus grand qu'avant. Dès sm, le
+              16:10 entier revient. */}
+          <div className="relative aspect-[4/5] sm:aspect-[16/10]">
             <img
               src={cheminCapture('tableau-de-bord', locale)}
               alt={c.alt}
               width={1204}
               height={753}
               fetchPriority="high"
-              className="block h-full w-full object-cover object-top"
+              className="block h-full w-full object-cover object-left-top sm:object-top"
             />
           </div>
         </div>
