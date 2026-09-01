@@ -688,7 +688,20 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
                   libellé « à obtenir » : un anneau plein et vide, sans texte à
                   côté, se lisait comme un défaut de chargement (vu à l'écran le
                   31/08/2026). */}
-              <div className="mt-4 flex items-center gap-3 border-t border-filet-nuit pt-3.5">
+              {/* ⚠️ Le sceau ne prend AUCUNE place avant d'être obtenu (Paul,
+                  01/09/2026 : « il faudra, limite, retirer l'attestation
+                  obtenue »). Mesure : le rail faisait 609 px pour un sticky qui
+                  commence à 96 px du haut, donc il dépassait dès 700 px de
+                  fenêtre utile — et le bandeau cookies en prend 60 de plus. Ce
+                  bloc pesait 65 px à lui seul.
+                  Il s'ouvre au « bam », ce qui rend le moment plus fort :
+                  l'attestation ARRIVE au lieu d'attendre en pointillés. */}
+              <div
+                className="grid overflow-hidden"
+                style={{ gridTemplateRows: '0fr', transition: 'grid-template-rows .5s cubic-bezier(0.22,1,0.36,1)' }}
+                data-sceau-piste
+              >
+              <div className="flex items-center gap-3 border-t border-filet-nuit pt-3.5" style={{ minHeight: 0 }}>
                 <span className="relative flex h-11 w-11 flex-none items-center justify-center">
                   <span
                     className="j30-bam-eclat absolute inset-0 rounded-full"
@@ -715,15 +728,12 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
                   </span>
                 </span>
                 <span className="relative min-w-0 flex-1">
-                  <span className="j30-bam-avant block">
-                    <span className="block text-[13px] leading-tight text-brume-nuit">{c.avancement.aObtenir}</span>
-                    <span className="mt-0.5 block font-ac-mono text-[10.5px] text-brume-nuit/70">{c.avancement.sceauNote}</span>
-                  </span>
                   <span className="j30-bam-texte absolute inset-0 block" style={{ opacity: 0 }}>
                     <span className="block text-[13.5px] leading-tight text-ivoire">{c.avancement.sceau}</span>
                     <span className="mt-0.5 block font-ac-mono text-[10.5px] text-or">{c.avancement.sceauNote}</span>
                   </span>
                 </span>
+              </div>
               </div>
             </section>
           )}

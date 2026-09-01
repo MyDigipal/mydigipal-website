@@ -127,7 +127,10 @@ export async function bam(hote: HTMLElement): Promise<void> {
   const sceau = hote.querySelector<HTMLElement>('.j30-bam-sceau');
   const eclat = hote.querySelector<HTMLElement>('.j30-bam-eclat');
   const texte = hote.querySelector<HTMLElement>('.j30-bam-texte');
-  const avant = hote.querySelector<HTMLElement>('.j30-bam-avant');
+  // La piste du sceau : fermée (0fr) tant que l'attestation n'est pas obtenue,
+  // pour ne pas peser 65 px dans un rail collant qui déborde déjà sur les
+  // petits écrans.
+  const piste = hote.querySelector<HTMLElement>('[data-sceau-piste]');
 
   const { animate, svg, createSpring } = await chargerMoteur();
 
@@ -156,9 +159,7 @@ export async function bam(hote: HTMLElement): Promise<void> {
       ease: 'out(3)',
     });
   }
-  if (avant) {
-    animate(avant, { opacity: [{ to: 1, duration: 0 }, { to: 0, duration: 300 }], ease: 'out(2)' });
-  }
+  if (piste) piste.style.gridTemplateRows = '1fr';
   if (texte) {
     animate(texte, {
       opacity: [{ to: 0, duration: 0 }, { to: 1, duration: 460 }],
