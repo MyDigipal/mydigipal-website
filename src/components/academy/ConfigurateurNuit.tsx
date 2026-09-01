@@ -478,25 +478,50 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                             prompts: data.faits.prompts,
                             trophees: data.faits.trophees,
                           })
-                      ).map((l) => (
-                        <span key={l} className="mt-2 flex items-start gap-2.5 first:mt-0">
-                          <svg
-                            viewBox="0 0 24 24"
-                            width="14"
-                            height="14"
-                            fill="none"
-                            stroke={on ? '#c8a951' : '#7d879b'}
-                            strokeWidth="2.6"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            aria-hidden="true"
-                            className="mt-[3px] flex-none"
-                          >
-                            <path d="M5 12.5l4.5 4.5L19 7.5" />
-                          </svg>
-                          <span className={`text-[13.5px] leading-[1.5] ${on ? 'text-corps-nuit' : 'text-brume-nuit'}`}>{l}</span>
-                        </span>
-                      ))}
+                      ).map((l, i) => {
+                        /**
+                         * Le code couleur des deux produits (01/09/2026).
+                         *
+                         * L'OR pour la méthode, le CYAN pour les
+                         * automatisations. Dans la carte avancée, la première
+                         * ligne (« tout ce que contient la méthode ») garde donc
+                         * l'or : elle parle de l'autre produit. Les suivantes
+                         * sont cyan, sauf la session, qui n'appartient ni à l'un
+                         * ni à l'autre et reste neutre.
+                         *
+                         * ⚠️ Le cyan est celui de la NUIT (`avance`) : sur une
+                         * surface claire il faudrait `avance-texte`, mesuré à
+                         * part. Voir `academy.css`.
+                         */
+                        const sonProduit = !av ? 'methode' : i === 0 ? 'methode' : /session|Paul/.test(l) ? 'neutre' : 'avance';
+                        const teinte =
+                          !on
+                            ? '#7d879b'
+                            : sonProduit === 'avance'
+                              ? '#7fc4dd'
+                              : sonProduit === 'neutre'
+                                ? '#b9c1d1'
+                                : '#c8a951';
+                        return (
+                          <span key={l} className="mt-2 flex items-start gap-2.5 first:mt-0">
+                            <svg
+                              viewBox="0 0 24 24"
+                              width="14"
+                              height="14"
+                              fill="none"
+                              stroke={teinte}
+                              strokeWidth="2.6"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                              className="mt-[3px] flex-none"
+                            >
+                              <path d="M5 12.5l4.5 4.5L19 7.5" />
+                            </svg>
+                            <span className={`text-[13.5px] leading-[1.5] ${on ? 'text-corps-nuit' : 'text-brume-nuit'}`}>{l}</span>
+                          </span>
+                        );
+                      })}
                     </span>
                     <span className="mt-3.5 block border-t border-filet-nuit pt-3 text-[13.5px] leading-[1.5] text-assistant">
                       {c.assistantInclus(nombre(questions))}
@@ -505,6 +530,22 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                 );
               })}
             </div>
+
+            {/*
+              La légende. Sans elle, deux couleurs de coches ne sont qu'une
+              fantaisie : c'est elle qui fait le lien avec le récit des trente
+              jours, où les mêmes couleurs séparent les deux quinzaines.
+            */}
+            <p className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 font-ac-mono text-[11px] text-brume-nuit">
+              <span className="flex items-center gap-2">
+                <span className="inline-block h-2 w-2 rounded-full bg-or" aria-hidden="true" />
+                {c.legendeMethode}
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="inline-block h-2 w-2 rounded-full bg-avance" aria-hidden="true" />
+                {c.legendeAvance}
+              </span>
+            </p>
 
             {/* LES ADD-ONS, dans leur propre bloc, après le choix. */}
             <div className="mt-9 border-t border-filet-nuit pt-7">
