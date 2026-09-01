@@ -82,7 +82,7 @@ const FR = {
   hero: {
     titre: 'La formation IA en ligne, tirée de trois ans à former des équipes.',
     sous: (lecons: number, prix: string) =>
-      `${lecons} leçons à votre rythme, la méthode CRAFT, vos exercices relus par un humain, jusqu’aux agents et aux serveurs MCP. Dès ${prix} €.`,
+      `${lecons} leçons à votre rythme, la méthode CRAFT, des exercices sur vos propres cas, jusqu’aux agents et aux serveurs MCP. Dès ${prix} €.`,
     /**
      * La répartition, dite près du prix.
      *
@@ -151,7 +151,7 @@ const FR = {
       titre: 'Une formation qui part du travail, pas de la veille.',
       points: [
         'La méthode CRAFT, enseignée en salle depuis trois ans, écrite leçon par leçon.',
-        'Des exercices sur vos propres cas, relus par un humain, pas par un script.',
+        'Des exercices sur vos propres cas, pas des quiz de culture générale.',
         'La partie que personne n’enseigne : brancher les outils, les agents et les serveurs MCP.',
         'Un compte qui se remplit : points, série, trophées, attestation.',
       ],
@@ -202,7 +202,7 @@ const FR = {
       },
       exercices: {
         kicker: 'Les exercices et les quiz',
-        titre: 'Déposés depuis la leçon, relus par un humain.',
+        titre: 'Déposés depuis la leçon, sur vos propres données.',
         texte: `Un quiz par module, noté côté serveur. Les exercices sont relus par Paul avec les automatisations, ${f.relectures} relectures incluses.`,
       },
       assistant: {
@@ -859,7 +859,7 @@ const EN: Jour30Copy = {
   hero: {
     titre: 'The online AI course, built from three years of training teams.',
     sous: (lecons: number, prix: string) =>
-      `${lecons} lessons at your own pace, the CRAFT method, your exercises reviewed by a human, all the way to agents and MCP servers. From €${prix}.`,
+      `${lecons} lessons at your own pace, the CRAFT method, exercises on your own cases, all the way to agents and MCP servers. From €${prix}.`,
     repartition: (programme: number, complement: number) =>
       `${programme} lessons in the method, ${complement} more if you take Automations too.`,
     cta: 'Get started',
@@ -921,7 +921,7 @@ const EN: Jour30Copy = {
       titre: 'A course that starts from the work, not from the news.',
       points: [
         'The CRAFT method, taught in the room for three years, written lesson by lesson.',
-        'Exercises on your own cases, reviewed by a human, not by a script.',
+        'Exercises on your own cases, not general-knowledge quizzes.',
         'The part nobody teaches: wiring the tools, agents and MCP servers.',
         'An account that fills up: points, streak, trophies, certificate.',
       ],
@@ -972,7 +972,7 @@ const EN: Jour30Copy = {
       },
       exercices: {
         kicker: 'Exercises and quizzes',
-        titre: 'Submitted from the lesson, reviewed by a human.',
+        titre: 'Submitted from the lesson, on your own data.',
         texte: `One quiz per module, graded server-side. Exercises are reviewed by Paul with Automations, ${f.relectures} reviews included.`,
       },
       assistant: {
