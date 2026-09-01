@@ -659,9 +659,32 @@ const FR = {
     avanceeLigne: (n: number) =>
       `La méthode, plus ${n} leçons d’agents, de chaînes MCP et de cas montés de bout en bout.`,
     assistantInclus: (q: string) => `L’assistant IA compris, environ ${q} questions par mois.`,
+    /**
+     * Ce que chaque formule contient, ligne par ligne.
+     *
+     * ⚠️ Chaque nombre vient des faits servis par l'API : les leçons, les
+     * prompts, les trophées, les relectures. Aucun n'est écrit ici, sinon ils
+     * divergeraient du produit à la première leçon ajoutée.
+     */
+    contenuMethode: (f: { lecons: number; prompts: number; trophees: number }) => [
+      `${f.lecons} leçons écrites, en trois niveaux`,
+      'L’atelier CRAFT : construire un prompt, et auditer les vôtres',
+      `La bibliothèque de ${f.prompts} prompts, prêts à copier`,
+      'Les quiz de fin de module et les exercices sur vos données',
+      `Votre profil : points, rangs, série de jours, ${f.trophees} trophées`,
+      'L’attestation d’usage professionnel de l’IA',
+    ],
+    contenuAvancee: (f: { lecons: number; relectures: number }) => [
+      'Tout ce que contient la méthode',
+      `${f.lecons} leçons de plus : agents, serveurs MCP, chaînes d’automatisation`,
+      'Les cas d’usage avancés, montés de bout en bout',
+      `${f.relectures} exercices relus, avec un retour écrit sur vos cas`,
+      'Une session de trente minutes avec Paul, sur votre cas',
+    ],
     parMoisCourt: 'par mois',
     addonsRub: 'En plus, quand vous voulez',
     addonsLigne: 'Ni l’un ni l’autre n’est nécessaire pour suivre le parcours.',
+    dejaComprise: 'Comprise dans la formule',
     programmeLigne: (lecons: number) =>
       `${lecons} leçons, trois niveaux, l’atelier, la bibliothèque, les trophées, l’attestation.`,
     construireLigne: (lecons: number) => `${lecons} leçons dans leur propre parcours, jusqu’au serveur MCP en état de marche.`,
@@ -1345,9 +1368,25 @@ const EN: Jour30Copy = {
     avanceeLigne: (n: number) =>
       `The method, plus ${n} lessons on agents, MCP chains and cases wired end to end.`,
     assistantInclus: (q: string) => `The AI assistant included, about ${q} questions a month.`,
+    contenuMethode: (f: { lecons: number; prompts: number; trophees: number }) => [
+      `${f.lecons} written lessons, across three levels`,
+      'The CRAFT workshop: build a prompt, and audit your own',
+      `The library of ${f.prompts} prompts, ready to copy`,
+      'End-of-module quizzes and exercises on your own data',
+      `Your profile: points, ranks, day streak, ${f.trophees} trophies`,
+      'The certificate of professional AI use',
+    ],
+    contenuAvancee: (f: { lecons: number; relectures: number }) => [
+      'Everything the method contains',
+      `${f.lecons} more lessons: agents, MCP servers, automation chains`,
+      'The advanced use cases, wired end to end',
+      `${f.relectures} exercises reviewed, with written feedback on your own cases`,
+      'A thirty-minute session with Paul, on your case',
+    ],
     parMoisCourt: 'per month',
     addonsRub: 'Whenever you want, on top',
     addonsLigne: 'Neither one is needed to follow the course.',
+    dejaComprise: 'Included in your plan',
     programmeLigne: (lecons: number) =>
       `${lecons} lessons, three levels, the workshop, the library, the trophies, the certificate.`,
     construireLigne: (lecons: number) => `${lecons} lessons in their own course, up to a working MCP server.`,

@@ -203,8 +203,15 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     setAvancee(av);
     setExtras((prev) => {
       const n = new Set(prev);
-      if (av) n.add('construire');
-      else n.delete('construire');
+      if (av) {
+        n.add('construire');
+        // ⚠️ La session est COMPRISE dans l'avancée (Paul, 01/09) : la laisser
+        // cochée en add-on la ferait payer deux fois, et l'afficher à 99 € à
+        // côté d'une formule qui l'inclut donnerait le sentiment d'un piège.
+        n.delete('session');
+      } else {
+        n.delete('construire');
+      }
       return n;
     });
   }
@@ -454,10 +461,44 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                         {sym} {c.parMoisCourt}
                       </span>
                     </span>
-                    <span className="mt-3.5 block text-[14px] leading-[1.55] text-brume-nuit">
-                      {av ? c.avanceeLigne(data.faits.lessonsConstruire) : c.programmeLigne(leconsProgramme(data))}
+                    {/*
+                      La checklist, demandee par Paul le 01/09 : « il faut
+                      vraiment qu'on voie bien ce qu'ils vont avoir, en mode
+                      productiviste ». Une ligne de resume ne disait pas ce qu'on
+                      achete ; six lignes cochees le disent.
+                    */}
+                    <span className="mt-4 block border-t border-filet-nuit pt-3.5">
+                      {(av
+                        ? c.contenuAvancee({
+                            lecons: data.faits.lessonsConstruire,
+                            relectures: data.faits.relectures,
+                          })
+                        : c.contenuMethode({
+                            lecons: leconsProgramme(data),
+                            prompts: data.faits.prompts,
+                            trophees: data.faits.trophees,
+                          })
+                      ).map((l) => (
+                        <span key={l} className="mt-2 flex items-start gap-2.5 first:mt-0">
+                          <svg
+                            viewBox="0 0 24 24"
+                            width="14"
+                            height="14"
+                            fill="none"
+                            stroke={on ? '#c8a951' : '#7d879b'}
+                            strokeWidth="2.6"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                            className="mt-[3px] flex-none"
+                          >
+                            <path d="M5 12.5l4.5 4.5L19 7.5" />
+                          </svg>
+                          <span className={`text-[13.5px] leading-[1.5] ${on ? 'text-corps-nuit' : 'text-brume-nuit'}`}>{l}</span>
+                        </span>
+                      ))}
                     </span>
-                    <span className="mt-2.5 block text-[13.5px] leading-[1.5] text-assistant">
+                    <span className="mt-3.5 block border-t border-filet-nuit pt-3 text-[13.5px] leading-[1.5] text-assistant">
                       {c.assistantInclus(nombre(questions))}
                     </span>
                   </button>
@@ -475,8 +516,19 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
               const o = offre(id);
               if (!o) return null;
               const on = extras.has(id);
+              // La session est comprise dans l'avancée : on la montre, éteinte,
+              // plutôt que de la faire disparaître — sinon on croit l'avoir
+              // perdue en changeant de formule.
+              const comprise = id === 'session' && avancee;
               return (
-                <button key={id} type="button" onClick={() => basculer(id)} aria-pressed={on} className={`${ligne} cursor-pointer border-0 border-b bg-transparent`}>
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => !comprise && basculer(id)}
+                  aria-pressed={on}
+                  aria-disabled={comprise}
+                  className={`${ligne} border-0 border-b bg-transparent ${comprise ? 'cursor-default opacity-60' : 'cursor-pointer'}`}
+                >
                   <span
                     className={`flex h-5 w-5 flex-none items-center justify-center rounded-[5px] border text-[13px] font-bold text-salle ${
                       on ? 'border-or bg-or' : 'border-filet-nuit bg-transparent'
@@ -488,7 +540,9 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                     <span className={`block text-[17px] ${on ? 'text-ivoire' : 'text-corps-nuit'}`}>{o.name}</span>
                     <span className="mt-1 block text-[14px] leading-[1.55] text-brume-nuit">{o.tagline}</span>
                   </span>
-                  <span className={`${prix} ${on ? 'text-or' : 'text-brume-nuit'}`}>+{formatPrice(prixOffre(o), locale)} {sym}</span>
+                  <span className={`${prix} ${comprise ? 'text-assistant' : on ? 'text-or' : 'text-brume-nuit'}`}>
+                    {comprise ? c.dejaComprise : `+${formatPrice(prixOffre(o), locale)} ${sym}`}
+                  </span>
                 </button>
               );
             })}
