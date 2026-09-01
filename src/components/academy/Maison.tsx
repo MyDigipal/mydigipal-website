@@ -24,11 +24,15 @@ import type { Jour30Data, Locale, Avis } from './data';
  * une même surface optique (`h` dans le défilé, `c` dans les cartes).
  *
  * ⚠️ Kering et Chanel sont RETIRÉS depuis le 01/09/2026 (décision de Paul après
- * le call OnTrain), et avec eux Gucci, Yves Saint Laurent et Balenciaga : ces
- * trois marques appartiennent au groupe Kering, donc les garder n'aurait
- * protégé de rien. Ne pas les remettre.
+ * le call OnTrain), et EUX SEULS. J'avais aussi retiré Gucci, Yves Saint
+ * Laurent et Balenciaga au motif qu'elles appartiennent au groupe Kering ;
+ * Paul a tranché le contraire le même jour : « pas besoin, c'est juste Kering
+ * et Chanel ». Les maisons se citent, le groupe non.
  */
 const LOGOS: Array<{ src: string; alt: string; h: number; c: number }> = [
+  { src: '/images/Training Logo/Gucci.avif', alt: 'Gucci', h: 54, c: 44 },
+  { src: '/images/Training Logo/Yves saint laurent.avif', alt: 'Yves Saint Laurent', h: 58, c: 46 },
+  { src: '/images/Training Logo/Balenciaga-logo.jpg', alt: 'Balenciaga', h: 70, c: 60 },
   { src: '/images/Training Logo/Moet_Hennessy_Logo.png', alt: 'Moët Hennessy', h: 17, c: 15 },
   { src: '/images/Training Logo/La poste.png', alt: 'La Poste', h: 38, c: 34 },
   { src: '/images/Training Logo/Leclerc.png', alt: 'E.Leclerc', h: 26, c: 22 },

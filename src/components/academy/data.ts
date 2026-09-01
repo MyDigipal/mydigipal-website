@@ -148,8 +148,10 @@ export function enDevise(texte: string, devise: Devise): string {
  * Les marques dont aucun verbatim, aucun logo et aucun nom ne doit paraître.
  *
  * Décision de Paul du 01/09/2026, après son call avec OnTrain : Kering et
- * Chanel sortent de la page de vente. Les trois autres sont des maisons du
- * GROUPE Kering, donc les garder n'aurait protégé de rien.
+ * Chanel sortent de la page de vente, et elles seules. J'y avais ajouté Gucci,
+ * Yves Saint Laurent et Balenciaga parce qu'elles appartiennent au groupe
+ * Kering ; Paul a tranché le contraire le même jour. Les maisons se citent, le
+ * groupe non.
  *
  * ⚠️ Ce filtre est une CEINTURE, pas la source. La source est `temoignages.ts`
  * dans l'app, et c'est là qu'ils ont été retirés. Mais la page se construit en
@@ -157,7 +159,7 @@ export function enDevise(texte: string, devise: Devise): string {
  * décidait de ce qui s'affichait, et un verbatim remis un jour dans l'app
  * reviendrait tout seul sur la page de vente.
  */
-const MARQUES_INTERDITES = ['kering', 'chanel', 'gucci', 'saint laurent', 'balenciaga'];
+const MARQUES_INTERDITES = ['kering', 'chanel'];
 
 /** Écarter les verbatims des marques interdites, quelle que soit leur source. */
 export function temoignagesPublics<T extends { societe?: string; logo?: string }>(liste: T[]): T[] {
