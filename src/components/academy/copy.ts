@@ -119,7 +119,7 @@ const FR = {
       continuer: 'Continuer',
       p1: {
         titre: 'La méthode',
-        ligne: 'De zéro à autonome avec l’IA générative : la méthode CRAFT, les outils, les cas de votre métier.',
+        ligne: 'De zéro à autonome avec l’IA générative : la méthode CRAFT, les outils, le travail écrit de tous les jours.',
         avancement: (f: number, n: number) => `${f} leçons sur ${n}`,
       },
       p2: {
@@ -889,7 +889,7 @@ const EN: Jour30Copy = {
       continuer: 'Continue',
       p1: {
         titre: 'The method',
-        ligne: 'From zero to autonomous with generative AI: the CRAFT method, the tools, the cases of your own job.',
+        ligne: 'From zero to autonomous with generative AI: the CRAFT method, the tools, your everyday written work.',
         avancement: (f: number, n: number) => `${f} of ${n} lessons`,
       },
       p2: {
