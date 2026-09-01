@@ -45,6 +45,21 @@ interface Props {
 }
 
 const RUBRIQUE = 'font-ac-mono text-[11px] font-bold uppercase tracking-[0.18em]';
+
+/**
+ * Les repères du bandeau de progression.
+ *
+ * ⚠️ Les jours racontés ne sont PAS régulièrement espacés, et les bornes de
+ * niveau viennent du récit, pas d'une division en trois : le niveau 1 court
+ * jusqu'au jour 10, le 2 jusqu'au 21, le 3 jusqu'au bout.
+ */
+const DERNIER_JOUR = 30;
+const JOURS_RACONTES = [1, 2, 3, 6, 9, 11, 14, 17, 19, 22, 26, 30];
+const NIVEAUX_JOURS = [
+  { de: 1, a: 10 },
+  { de: 11, a: 21 },
+  { de: 22, a: 30 },
+];
 const PANNEAU = 'rounded-carte border border-filet-nuit bg-salle-2';
 
 /**
@@ -90,6 +105,12 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
     (n: T | null) => {
       if (n && !list.current.includes(n)) list.current.push(n);
     };
+
+  // Le bandeau de progression, collé sous la barre du site.
+  const bJour = useRef<HTMLElement[]>([]);
+  const bNiveau = useRef<HTMLElement[]>([]);
+  const bCurseur = useRef<HTMLElement[]>([]);
+  const bGrads = useRef<HTMLElement[]>([]);
 
   // Le mode scrub : l'avancement du parcours, et le sceau qui le clôt.
   const courseBar = useRef<HTMLElement[]>([]);
@@ -147,6 +168,9 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
     [c, rangs, nombre, MODULES_A_DEBLOQUER]
   );
 
+  /** Écrire le même texte dans tous les exemplaires d'un repère. */
+  const texteDe = (els: HTMLElement[], t: string) => els.forEach((e) => (e.textContent = t));
+
   const sync = useCallback(() => {
     const column = col.current;
     if (!column) return;
@@ -199,6 +223,20 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
       const avance = Math.max(0, Math.min(1, jourCourant / Math.max(1, dernierJour)));
       courseBar.current.forEach((b) => (b.style.width = `${(avance * 100).toFixed(1)}%`));
       coursePct.current.forEach((e) => (e.textContent = `${Math.round(avance * 100)} %`));
+
+      // Le bandeau : le jour, le niveau, le curseur sur la règle.
+      const jourCourantArrondi = Math.max(1, Math.round(jourCourant));
+      texteDe(bJour.current, String(jourCourantArrondi));
+      const niv = NIVEAUX_JOURS.findIndex((n) => jourCourantArrondi >= n.de && jourCourantArrondi <= n.a);
+      texteDe(bNiveau.current, [n1, n2, n3][niv < 0 ? 0 : niv]?.nom || '');
+      bCurseur.current.forEach((el) => {
+        el.style.left = `${(avance * 100).toFixed(2)}%`;
+      });
+      bGrads.current.forEach((el) => {
+        const j = Number(el.dataset.j || 0);
+        el.style.background = j <= jourCourantArrondi ? 'var(--color-or)' : 'var(--v-filet-salle)';
+        el.style.opacity = j <= jourCourantArrondi ? '1' : '0.75';
+      });
 
       /**
        * Le « bam » : une fois, au bout. Le seuil est à 98 % et non à 99,5 % :
@@ -363,6 +401,66 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
 
   return (
     <section id="compte" className="mx-auto max-w-[1280px] scroll-mt-24 px-4 sm:px-6">
+      {/**
+        * Le bandeau de progression (01/09/2026). Le « cadran » de l'essai 3,
+        * déplié en règle et réduit à un bandeau : Paul a choisi que le contenu
+        * domine et que le repère reste discret.
+        *
+        * ⚠️ Il se colle SOUS la barre du site (`top-16`, elle fait 64 px), et il
+        * ne vit que dans cette section : un repère de progression qui suivrait
+        * jusqu'au pied de page dirait « vous en êtes à 100 % » devant les tarifs.
+        */}
+      {scrub && (
+        <div data-bandeau-jours className="sticky top-16 z-30 -mx-4 mb-6 border-b border-filet-nuit bg-salle/92 px-4 backdrop-blur sm:-mx-6 sm:px-6">
+          <div className="flex h-12 items-center gap-3 sm:gap-5">
+            <span className="flex-none font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-or">
+              {c.jour(0).replace(/\s*0\s*/, ' ').trim()}&nbsp;
+              <span ref={collect(bJour)} className="tabular-nums">1</span>
+              <span className="text-brume-nuit"> / {DERNIER_JOUR}</span>
+            </span>
+
+            {/* La règle des trente jours. Les onze jours racontés portent un
+                trait plus haut : ce sont les seuls sur lesquels on s'arrête. */}
+            <span className="relative flex h-6 min-w-0 flex-1 items-center gap-px" aria-hidden="true">
+              {Array.from({ length: DERNIER_JOUR }, (_, i) => {
+                const j = i + 1;
+                const raconte = JOURS_RACONTES.includes(j);
+                return (
+                  <span
+                    key={j}
+                    ref={collect(bGrads)}
+                    data-j={j}
+                    className={`block flex-1 rounded-[1px] ${raconte ? 'h-3' : 'h-1.5'}`}
+                    style={{ background: 'var(--v-filet-salle)', opacity: 0.75 }}
+                  />
+                );
+              })}
+              <span
+                ref={collect(bCurseur)}
+                className="pointer-events-none absolute top-0 h-6 w-px bg-or"
+                style={{ left: '0%' }}
+              >
+                <span className="absolute -left-[3px] -top-[3px] block h-[7px] w-[7px] rounded-full bg-or" />
+              </span>
+            </span>
+
+            <span
+              ref={collect(bNiveau)}
+              className="hidden flex-none font-ac-mono text-[10.5px] uppercase tracking-[0.14em] text-brume-nuit sm:block"
+            >
+              {n1.nom}
+            </span>
+            <span className="flex-none text-right">
+              <span ref={collect(pts)} className="font-ac-mono text-[13px] font-bold tabular-nums text-ivoire">
+                {nombre(premier.points)}
+              </span>
+              <span className="ml-1 font-ac-mono text-[10px] uppercase tracking-[0.12em] text-brume-nuit">
+                {c.rail.points}
+              </span>
+            </span>
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div ref={col} className="relative pb-10 pt-4 lg:pt-[72px]">
           {/* La barre collante, sous lg seulement : avatar, points, série. */}
