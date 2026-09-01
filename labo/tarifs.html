@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="fr" data-theme="nuit">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Labo - la grille de prix au mois</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mono: 'JetBrains Mono', Consolas, monospace;
+    --serif: 'Fraunces', Georgia, serif;
+    --grotesk: 'Space Grotesk', system-ui, sans-serif;
+    --or: #c8a951;
+    --or-vif: #dcbc66;
+    --encre: #0f1a2e;
+    --salle: #0d1424;
+    --salle-2: #141d33;
+    --salle-3: #1c2742;
+    --filet: #26324e;
+    --ivoire: #f2eee4;
+    --corps: #b9c1d1;
+    --brume-nuit: #7d879b;
+    --sauge: #9fd4bc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--salle); color: var(--corps);
+    font-family: var(--grotesk); -webkit-font-smoothing: antialiased; overflow-x: clip;
+  }
+  .env { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  header.tete { border-bottom: 1px solid var(--filet); padding: 38px 0 28px; }
+  .kick { margin: 0; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--or); }
+  h1 { margin: 10px 0 0; font-family: var(--serif); font-size: clamp(26px, 4vw, 40px); font-weight: 600; line-height: 1.12; color: var(--ivoire); }
+  .chap { margin: 12px 0 0; max-width: 60ch; font-size: 15.5px; line-height: 1.6; }
+  .liens { margin: 20px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .liens a {
+    border: 1px solid var(--filet); border-radius: 8px; padding: 7px 13px;
+    font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--brume-nuit); text-decoration: none; transition: .15s;
+  }
+  .liens a:hover { border-color: var(--or); color: var(--ivoire); }
+  .liens a[aria-current] { border-color: var(--or); color: var(--or); background: rgba(200,169,81,.12); }
+
+  section { padding: 64px 0 0; }
+  .titre-bloc { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px; }
+  h2 { margin: 0; font-family: var(--serif); font-size: clamp(24px, 3.2vw, 34px); font-weight: 600; line-height: 1.15; color: var(--ivoire); }
+  .sous { margin: 8px 0 0; font-size: 15px; color: var(--brume-nuit); }
+
+  /* Le sélecteur de devise : trois boutons, un seul actif. */
+  .devises { display: inline-flex; overflow: hidden; border: 1px solid var(--filet); border-radius: 10px; }
+  .devises button {
+    min-height: 40px; border: 0; background: transparent; color: var(--brume-nuit);
+    font-family: var(--mono); font-size: 12px; font-weight: 700; padding: 0 16px; cursor: pointer; transition: .15s;
+  }
+  .devises button[aria-pressed="true"] { background: var(--or); color: var(--salle); }
+
+  /* DEUX formules, pas trois : c'est le choix, et il se compare d'un regard. */
+  .formules {
+    margin: 34px 0 0; display: grid; gap: 18px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 900px) { .formules { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  .formule {
+    position: relative; display: flex; flex-direction: column;
+    border: 1px solid var(--filet); border-radius: 18px;
+    background: linear-gradient(180deg, var(--salle-2), var(--salle));
+    padding: 28px 28px 26px;
+  }
+  .formule.avancee { border-color: rgba(200,169,81,.45); }
+  .formule .repere {
+    position: absolute; top: -1px; right: 22px;
+    border-radius: 0 0 7px 7px; background: var(--or); color: var(--salle);
+    font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; padding: 4px 10px;
+  }
+  .formule h3 { margin: 0; font-family: var(--serif); font-size: 25px; font-weight: 600; color: var(--ivoire); }
+  .formule .quoi { margin: 7px 0 0; min-height: 2.9em; font-size: 14px; line-height: 1.55; color: var(--brume-nuit); }
+  .prix { margin: 20px 0 0; display: flex; align-items: baseline; gap: 9px; }
+  .prix b { font-family: var(--mono); font-size: 42px; font-weight: 700; line-height: 1; color: var(--ivoire); font-variant-numeric: tabular-nums; }
+  .prix span { font-family: var(--mono); font-size: 12px; color: var(--brume-nuit); }
+  .parmois { margin: 5px 0 0; font-family: var(--mono); font-size: 11.5px; color: var(--or); }
+
+  .lignes { margin: 22px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--filet); }
+  .lignes li {
+    display: flex; gap: 11px; align-items: flex-start;
+    padding: 11px 0; border-bottom: 1px solid var(--filet);
+    font-size: 14px; line-height: 1.5;
+  }
+  .lignes li:last-child { border-bottom: 0; }
+  .lignes svg { flex: none; margin-top: 3px; }
+  .lignes b { color: var(--ivoire); font-weight: 600; }
+  .lignes .neuf { color: var(--sauge); }
+
+  .cta {
+    margin-top: 22px; display: block; min-height: 48px; border: 0; border-radius: 11px;
+    background: var(--or); color: var(--salle); font-family: var(--grotesk);
+    font-size: 15px; font-weight: 600; cursor: pointer; transition: .15s;
+  }
+  .cta:hover { background: var(--or-vif); }
+  .formule:not(.avancee) .cta { background: transparent; border: 1px solid var(--or); color: var(--or); }
+  .formule:not(.avancee) .cta:hover { background: rgba(200,169,81,.14); }
+
+  .apres-formules {
+    margin: 18px 0 0; display: flex; flex-wrap: wrap; gap: 8px 24px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--brume-nuit);
+  }
+  .apres-formules a { color: var(--ivoire); border-bottom: 1px solid var(--filet); text-decoration: none; }
+
+  /* Les add-ons : un bloc SÉPARÉ, après le choix. C'est tout l'objet du changement. */
+  .addons { margin-top: 58px; border-top: 1px solid var(--filet); padding-top: 34px; }
+  .addons .rub { margin: 0 0 4px; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--brume-nuit); }
+  .addons h2 { font-size: clamp(21px, 2.6vw, 27px); }
+  .liste-addons { margin: 24px 0 0; display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 760px) { .liste-addons { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .addon {
+    display: flex; align-items: flex-start; gap: 14px;
+    border: 1px solid var(--filet); border-radius: 14px; background: var(--salle-2); padding: 18px 20px;
+  }
+  .addon .txt { min-width: 0; flex: 1; }
+  .addon h4 { margin: 0; font-size: 15.5px; font-weight: 600; color: var(--ivoire); }
+  .addon p { margin: 5px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--brume-nuit); }
+  .addon .p { flex: none; font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--or); }
+
+  footer.fin { border-top: 1px solid var(--filet); margin-top: 62px; padding: 44px 0 120px; }
+  footer.fin ul { margin: 14px 0 0; padding-left: 20px; }
+  footer.fin li { margin-bottom: 10px; font-size: 14.5px; line-height: 1.6; }
+  footer.fin li b { color: var(--ivoire); }
+  code { font-family: var(--mono); font-size: .92em; background: var(--salle-2); border: 1px solid var(--filet); border-radius: 5px; padding: 1px 5px; color: var(--ivoire); }
+  .avant-apres { margin: 26px 0 0; display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 860px) { .avant-apres { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .col { border: 1px solid var(--filet); border-radius: 12px; padding: 18px 20px; }
+  .col.avant { opacity: .72; }
+  .col h5 { margin: 0 0 10px; font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--brume-nuit); }
+  .col.apres h5 { color: var(--or); }
+  .col ol { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.65; }
+</style>
+</head>
+<body>
+
+<header class="tete">
+  <div class="env">
+    <p class="kick">Labo · la grille de prix</p>
+    <h1>Un mois d'accès. Deux formules. Le reste s'ajoute.</h1>
+    <p class="chap">
+      Ce que le call OnTrain a fait changer : on n'achetait pas la même chose au
+      même endroit. Ici les deux formules sont le CHOIX, et les add-ons ne se
+      présentent qu'après.
+    </p>
+    <p class="liens">
+      <a href="./tarifs.html" aria-current="page">Tarifs</a>
+      <a href="./craft-scrub.html">Essai 1 · CRAFT</a>
+      <a href="./mcp-trace.html">Essai 2 · MCP</a>
+      <a href="./cadran-parcours.html">Essai 3 · Cadran</a>
+    </p>
+  </div>
+</header>
+
+<section>
+  <div class="env">
+    <div class="titre-bloc">
+      <div>
+        <h2>Tarifs</h2>
+        <p class="sous">Un mois d'accès, renouvelable. L'assistant IA est compris.</p>
+      </div>
+      <div class="devises" id="devises" role="group" aria-label="Devise">
+        <button type="button" data-d="EUR" aria-pressed="true">€ EUR</button>
+        <button type="button" data-d="GBP" aria-pressed="false">£ GBP</button>
+        <button type="button" data-d="USD" aria-pressed="false">$ USD</button>
+      </div>
+    </div>
+
+    <div class="formules">
+      <!-- LA METHODE -->
+      <article class="formule">
+        <h3>La méthode</h3>
+        <p class="quoi">CRAFT, le parcours de votre outil, et les cas de votre métier.</p>
+        <div class="prix"><b data-prix="programme">290</b><span data-dev>€ TTC</span></div>
+        <p class="parmois">par mois</p>
+        <ul class="lignes">
+          <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#c8a951" stroke-width="2.4" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>78 leçons</b> écrites, trois niveaux, 7 h 52</span></li>
+          <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#c8a951" stroke-width="2.4" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>L'atelier CRAFT, la bibliothèque de 241 prompts</span></li>
+          <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#c8a951" stroke-width="2.4" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Les quiz, les exercices, les trophées, l'attestation</span></li>
+          <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9fd4bc" stroke-width="2.4" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span class="neuf"><b>L'assistant IA compris</b>, 250 questions par mois</span></li>
+        </ul>
+        <button class="cta" type="button">Commencer</button>
+      </article>
+
+      <!-- LA METHODE AVANCEE -->
+      <article class="formule avancee">
+        <span class="repere">tout le parcours</span>
+        <h3>La méthode avancée</h3>
+        <p class="quoi">La méthode, plus les agents, les chaînes MCP et vos cas montés de bout en bout.</p>
+        <div class="prix"><b data-prix="avancee">480</b><span data-dev>€ TTC</span></div>
+        <p class="parmois">par mois</p>
+        <ul class="lignes">
+          <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#c8a951" stroke-width="2.4" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Tout ce que contient la méthode</b></span></li>
+          <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#c8a951" stroke-width="2.4" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>48 leçons de plus</b> : agents, serveurs MCP, chaînes</span></li>
+          <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#c8a951" stroke-width="2.4" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Les 24 cas d'usage avancés, et trois exercices relus</span></li>
+          <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9fd4bc" stroke-width="2.4" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span class="neuf"><b>L'assistant IA compris</b>, 500 questions par mois</span></li>
+        </ul>
+        <button class="cta" type="button">Commencer</button>
+      </article>
+    </div>
+
+    <p class="apres-formules">
+      <span>À partir de <b style="color:var(--ivoire)" data-prix="programme">290</b><span data-dev>&nbsp;€</span> le mois.</span>
+      <span>Remise équipe : −10 % à 3 places, −15 % à 5, −25 % à 10.</span>
+      <span><a href="#">Ou commencez par les 15 leçons gratuites</a></span>
+    </p>
+
+    <!-- LES ADD-ONS, apres le choix -->
+    <div class="addons">
+      <p class="rub">En plus, quand vous voulez</p>
+      <h2>Deux façons d'aller plus loin.</h2>
+      <p class="sous">Ni l'une ni l'autre n'est nécessaire pour suivre le parcours.</p>
+      <div class="liste-addons">
+        <div class="addon">
+          <div class="txt">
+            <h4>Une session avec Paul</h4>
+            <p>Trente minutes sur votre cas, préparées avant et suivies d'un document.</p>
+          </div>
+          <span class="p">+<span data-prix="session">99</span><span data-dev>&nbsp;€</span></span>
+        </div>
+        <div class="addon">
+          <div class="txt">
+            <h4>L'audit flash</h4>
+            <p>Votre site, votre référencement et vos publicités, vus de l'extérieur.</p>
+          </div>
+          <span class="p">+<span data-prix="audit">75</span><span data-dev>&nbsp;€</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="fin">
+  <div class="env">
+    <p class="kick">Ce qui change</p>
+    <h2>Le même contenu, une décision au lieu de six.</h2>
+
+    <div class="avant-apres">
+      <div class="col avant">
+        <h5>Avant</h5>
+        <ol>
+          <li>La méthode, 290 € — case à cocher</li>
+          <li>Les automatisations, +190 € — case à cocher</li>
+          <li>Une session avec Paul, +99 € — case à cocher</li>
+          <li>L'audit flash, +75 € — case à cocher</li>
+          <li>L'assistant IA : Sans / 15 / 30 / 45 / 70 € — cinq boutons</li>
+          <li>Un total qui se recalcule à droite</li>
+        </ol>
+      </div>
+      <div class="col apres">
+        <h5>Après</h5>
+        <ol>
+          <li>La méthode, 290 € par mois — ou</li>
+          <li>La méthode avancée, 480 € par mois</li>
+          <li>Deux add-ons, présentés après, dans leur propre bloc</li>
+          <li>L'assistant n'est plus un choix : il est compris</li>
+        </ol>
+      </div>
+    </div>
+
+    <ul>
+      <li><b>« À partir de 290 € »</b> devient vrai et utilisable partout dans les supports de vente : c'est le prix d'entrée, plus une somme à composer.</li>
+      <li><b>L'assistant disparaît comme produit</b> et revient comme argument : 250 questions comprises dans la méthode, 500 dans l'avancée. Sa grille de quatre forfaits n'est plus montrée.</li>
+      <li><b>480 €, pas 400</b> : c'est bien 290 plus 190, et non un prix de bouquet remisé.</li>
+    </ul>
+
+    <p class="sous" style="margin-top:26px;max-width:66ch">
+      ⚠️ Ce qui n'est pas encore fait et que cette page suppose : <b style="color:var(--ivoire)">l'accès
+      s'arrête à trente jours</b>. Rien n'expire aujourd'hui dans le produit. La grille ne peut pas
+      partir en production avant ce mécanisme, sinon on vend un mois et on livre un accès sans fin.
+      Les CGV (<code>legal-copy.ts</code>, article 5) disent encore « six mois d'accès ».
+    </p>
+  </div>
+</footer>
+
+<script>
+/* Les prix réels, dans les trois devises, lus dans l'API publique le 01/09/2026.
+   L'avancée est la SOMME de la méthode et des automatisations : 290 + 190. */
+const PRIX = {
+  EUR: { programme: 290, construire: 190, avancee: 480, session: 99, audit: 75, symbole: '€' },
+  GBP: { programme: 250, construire: 165, avancee: 415, session: 89, audit: 65, symbole: '£' },
+  USD: { programme: 340, construire: 220, avancee: 560, session: 119, audit: 89, symbole: '$' },
+};
+
+const groupe = document.getElementById('devises');
+function poser(d) {
+  const p = PRIX[d];
+  document.querySelectorAll('[data-prix]').forEach((el) => {
+    const v = p[el.dataset.prix];
+    if (v != null) el.textContent = String(v);
+  });
+  document.querySelectorAll('[data-dev]').forEach((el) => {
+    el.innerHTML = el.textContent.includes('TTC') ? `${p.symbole} TTC` : `&nbsp;${p.symbole}`;
+  });
+}
+groupe.addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  [...groupe.querySelectorAll('button')].forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  poser(b.dataset.d);
+});
+poser('EUR');
+</script>
+</body>
+</html>

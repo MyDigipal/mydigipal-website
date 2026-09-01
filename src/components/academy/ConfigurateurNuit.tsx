@@ -6,7 +6,13 @@ import { formatPrice, nombreLocal, teamDiscount } from './offres';
 import { paramGarde, trackSelectItem, useLienApp } from './track';
 import FormEquipe from './FormEquipe';
 
-const OPTIONS = ['construire', 'session', 'audit'] as const;
+/**
+ * Les add-ons, et eux seuls (01/09/2026). `construire` en est sorti : il ne se
+ * coche plus, il fait partie de la formule avancée. C'est tout l'objet du
+ * changement demandé après le call OnTrain — on n'achetait pas la même chose au
+ * même endroit.
+ */
+const OPTIONS = ['session', 'audit'] as const;
 
 /**
  * Le configurateur, version nuit : un outil, pas des cartes de prix. Lignes à
@@ -47,7 +53,16 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
    * est le plus vendu, pas parce qu'il faut le prendre.
    */
   const [avecProgramme, setAvecProgramme] = useState(true);
-  const [assistant, setAssistant] = useState<string | null>(null);
+  /**
+   * ⚠️ L'assistant n'est plus un choix : il est compris dans les deux formules
+   * (250 questions avec la méthode, 500 avec l'avancée). L'état reste à null et
+   * ne change plus, ce qui laisse le calcul du total et le lien du tunnel
+   * exactement comme ils étaient — la ligne mensuelle vaut simplement zéro.
+   */
+  const [assistant] = useState<string | null>(null);
+
+  /** La formule choisie. `avancee` ajoute les automatisations à la méthode. */
+  const [avancee, setAvancee] = useState(false);
   const [places, setPlaces] = useState(1);
   /**
    * La devise consultée. Demande de Paul du 27/08/2026 : un petit bouton pour
@@ -179,6 +194,20 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
 
   const lienEnrichi = useLienApp(lienBrut);
   const lien = devisSeul ? '#equipe' : lienEnrichi;
+
+  /**
+   * Choisir une formule. Une seule des deux à la fois : c'est un choix, pas une
+   * addition, et c'est ce qui fait passer de six décisions à deux.
+   */
+  function choisirFormule(av: boolean) {
+    setAvancee(av);
+    setExtras((prev) => {
+      const n = new Set(prev);
+      if (av) n.add('construire');
+      else n.delete('construire');
+      return n;
+    });
+  }
 
   function basculer(id: string) {
     setExtras((s) => {
@@ -377,33 +406,70 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
 
         <div className="mt-11 grid grid-cols-[minmax(0,1fr)] items-start gap-9 min-[900px]:grid-cols-[minmax(0,1fr)_340px]">
           <div>
-            {/* Le programme se décoche : voir `avecProgramme` plus haut. La ligne
-                garde son bord supérieur et sa place en tête, elle ne devient pas
-                une option parmi les autres — c'est la formule, les autres sont
-                des compléments. */}
-            <button
-              type="button"
-              onClick={() => setAvecProgramme((v) => !v)}
-              aria-pressed={avecProgramme}
-              className={`${ligne} cursor-pointer border-0 border-t bg-transparent text-left`}
-            >
-              <span
-                className={`flex h-5 w-5 flex-none items-center justify-center rounded-[5px] border text-[13px] font-bold text-salle ${
-                  avecProgramme ? 'border-or bg-or' : 'border-filet-nuit bg-transparent'
-                }`}
-              >
-                {avecProgramme ? '✓' : ''}
-              </span>
-              <span className="min-w-0 flex-[1_1_220px]">
-                <span className={`block text-[17px] ${avecProgramme ? 'text-ivoire' : 'text-brume-nuit'}`}>{programme.name}</span>
-                <span className="mt-1 block text-[14px] leading-[1.55] text-brume-nuit">
-                  {avecProgramme ? c.programmeLigne(leconsProgramme(data)) : c.dejaProgrammeAide}
-                </span>
-              </span>
-              <span className={`${prix} ${avecProgramme ? 'text-or' : 'text-brume-nuit'}`}>
-                {avecProgramme ? `${formatPrice(prixOffre(programme), locale)} ${sym}` : c.dejaAcquis}
-              </span>
-            </button>
+            {/*
+              LES DEUX FORMULES (01/09/2026, après le call OnTrain).
+
+              Avant : six cases à cocher, dont la méthode, les automatisations,
+              deux services et cinq boutons d'assistant, toutes au même niveau.
+              On n'y voyait plus ce qu'on achetait et ce qu'on ajoutait.
+
+              Maintenant : un choix entre deux formules, et les add-ons dans leur
+              propre bloc, après. Deux décisions au lieu de six.
+            */}
+            <p className="m-0 mb-3 font-ac-mono text-[11px] font-bold uppercase tracking-[0.18em] text-brume-nuit">{c.formuleRub}</p>
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-3.5 min-[720px]:grid-cols-2">
+              {[false, true].map((av) => {
+                const on = avancee === av;
+                const prixTtc = av
+                  ? prixOffre(programme) + prixOffre(offre('construire'))
+                  : prixOffre(programme);
+                const questions = av ? 500 : 250;
+                return (
+                  <button
+                    key={String(av)}
+                    type="button"
+                    onClick={() => choisirFormule(av)}
+                    aria-pressed={on}
+                    className={`flex cursor-pointer flex-col rounded-carte border bg-transparent p-5 text-left transition-[border-color,background] duration-150 ${
+                      on ? 'border-or/55 bg-or/[0.07]' : 'border-filet-nuit hover:border-brume-nuit'
+                    }`}
+                  >
+                    <span className="flex items-start gap-2.5">
+                      <span
+                        className={`mt-0.5 flex h-5 w-5 flex-none items-center justify-center rounded-full border text-[12px] font-bold text-salle ${
+                          on ? 'border-or bg-or' : 'border-filet-nuit bg-transparent'
+                        }`}
+                      >
+                        {on ? '✓' : ''}
+                      </span>
+                      <span className={`text-[18px] leading-tight ${on ? 'text-ivoire' : 'text-corps-nuit'}`}>
+                        {av ? c.avanceeNom : programme.name}
+                      </span>
+                    </span>
+                    <span className="mt-3 flex items-baseline gap-2">
+                      <span className={`font-ac-mono text-[30px] font-bold tabular-nums leading-none ${on ? 'text-or' : 'text-brume-nuit'}`}>
+                        {formatPrice(prixTtc, locale)}
+                      </span>
+                      <span className="font-ac-mono text-[12px] text-brume-nuit">
+                        {sym} {c.parMoisCourt}
+                      </span>
+                    </span>
+                    <span className="mt-3.5 block text-[14px] leading-[1.55] text-brume-nuit">
+                      {av ? c.avanceeLigne(data.faits.lessonsConstruire) : c.programmeLigne(leconsProgramme(data))}
+                    </span>
+                    <span className="mt-2.5 block text-[13.5px] leading-[1.5] text-assistant">
+                      {c.assistantInclus(nombre(questions))}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* LES ADD-ONS, dans leur propre bloc, après le choix. */}
+            <div className="mt-9 border-t border-filet-nuit pt-7">
+              <p className="m-0 font-ac-mono text-[11px] font-bold uppercase tracking-[0.18em] text-brume-nuit">{c.addonsRub}</p>
+              <p className="m-0 mt-1.5 text-[14px] leading-[1.55] text-brume-nuit">{c.addonsLigne}</p>
+            </div>
 
             {OPTIONS.map((id) => {
               const o = offre(id);
@@ -420,46 +486,12 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                   </span>
                   <span className="min-w-0 flex-[1_1_220px]">
                     <span className={`block text-[17px] ${on ? 'text-ivoire' : 'text-corps-nuit'}`}>{o.name}</span>
-                    <span className="mt-1 block text-[14px] leading-[1.55] text-brume-nuit">
-                      {/* ⚠️ `leconsConstruire` et non `leconsComplement` : depuis que les
-                          deux programmes s'achètent séparément, 92 est ce qu'ils
-                          ouvrent EN PLUS pour qui a déjà la méthode, et 48 ce qu'ils
-                          contiennent en propre. Sur une ligne d'achat, c'est le second
-                          qui est vrai dans tous les cas. */}
-                      {id === 'construire' ? c.construireLigne(data.faits.lessonsConstruire) : o.tagline}
-                    </span>
+                    <span className="mt-1 block text-[14px] leading-[1.55] text-brume-nuit">{o.tagline}</span>
                   </span>
                   <span className={`${prix} ${on ? 'text-or' : 'text-brume-nuit'}`}>+{formatPrice(prixOffre(o), locale)} {sym}</span>
                 </button>
               );
             })}
-
-            <div className="border-b border-filet-nuit py-6">
-              <p className="m-0 mb-1 text-[17px] text-ivoire">{c.assistantTitre}</p>
-              <p className="m-0 mb-4 max-w-[56ch] text-[14px] leading-[1.55] text-brume-nuit">{c.assistantLigne}</p>
-              <div className="flex flex-wrap gap-2">
-                {[null, ...assistants.map((t) => t.id)].map((id) => {
-                  const on = assistant === id;
-                  const o = id ? offre(id) : null;
-                  return (
-                    <button
-                      key={id || 'sans'}
-                      type="button"
-                      aria-pressed={on}
-                      onClick={() => setAssistant(id)}
-                      className={`cursor-pointer rounded-full border px-4 py-[9px] text-[13.5px] transition-[background,border-color] duration-150 ${
-                        on ? 'border-or/50 bg-or/[0.14] text-ivoire' : 'border-filet-nuit bg-transparent text-brume-nuit hover:border-brume-nuit'
-                      }`}
-                    >
-                      {o ? `${formatPrice(prixOffre(o), locale)} ${sym}` : c.sans}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="m-0 mt-3 font-ac-mono text-[11.5px] text-brume-nuit">
-                {assistant ? c.assistantAvec(nombre(offre(assistant)?.monthly_questions || 0)) : c.assistantSans}
-              </p>
-            </div>
 
             <div className="py-6">
               <div className="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2.5">
