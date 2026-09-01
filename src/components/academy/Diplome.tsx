@@ -69,12 +69,12 @@ export default function Diplome({
 
   const filet = 'block h-px w-[clamp(28px,6vw,64px)] bg-or/60';
 
+  // `data-jour={30}` sur la section : la barre du haut lit les repères de jour
+  // dans le DOM pour afficher « Jour n / 30 ». Sans celui-ci elle restait à
+  // « Jour 28 » pendant tout le diplôme, qui titre lui-même « Jour 30 » (vu au
+  // téléphone le 01/09/2026).
   return (
-    {/* `data-jour={30}` : la barre du haut lit les repères de jour dans le DOM
-          pour afficher « Jour n / 30 ». Sans celui-ci, elle restait à « Jour 28 »
-          pendant tout le diplôme, qui titre lui-même « Jour 30 » (vu au téléphone
-          le 01/09/2026). */}
-      <section className="relative overflow-hidden border-t border-filet-nuit px-4 pb-[100px] pt-[92px] text-center sm:px-6" data-jour={30}>
+    <section className="relative overflow-hidden border-t border-filet-nuit px-4 pb-[100px] pt-[92px] text-center sm:px-6" data-jour={30}>
       <div
         className="pointer-events-none absolute inset-0"
         style={{ background: 'radial-gradient(52% 42% at 50% 62%, rgba(200,169,81,.09) 0%, transparent 72%)' }}
