@@ -31,16 +31,7 @@ import AppelFlottant from './AppelFlottant';
  * `design/handoff-jour-30/` (paquet de passation de Claude Design du
  * 25/08/2026) et la section 17 de son CLAUDE.md.
  */
-export default function Academy({
-  locale,
-  initial,
-  scrub = false,
-}: {
-  locale: Locale;
-  initial: Jour30Data;
-  /** Le mode scrub de la section du compte. Voir `scrub.ts`. */
-  scrub?: boolean;
-}) {
+export default function Academy({ locale, initial }: { locale: Locale; initial: Jour30Data }) {
   const [data, setData] = useState(initial);
   // La preuve chiffrée vient de l'app ; le repli ne sert qu'à un instantané
   // ancien ou à une app injoignable.
@@ -69,7 +60,6 @@ export default function Academy({
       <Visite locale={locale} data={data} />
       <Mention locale={locale} />
       <LeCompte
-        scrub={scrub}
         locale={locale}
         avis={preuve}
         etats={data.etats}
@@ -82,7 +72,7 @@ export default function Academy({
         }}
         jeu={data.jeu}
       />
-      <Mcp locale={locale} scrub={scrub} />
+      <Mcp locale={locale} />
       <Diplome
         locale={locale}
         lessons={data.faits.lessons}

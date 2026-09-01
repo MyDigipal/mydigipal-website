@@ -60,22 +60,12 @@ export default function Barre({ locale }: { locale: Locale }) {
       const p = Math.max(0, Math.min(1, window.scrollY / Math.max(1, finTop - 80)));
       if (fill.current) fill.current.style.transform = `scaleX(${p})`;
 
-      /**
-       * Le jour en cours : le dernier repère de jour passé sous la barre, et
-       * rien une fois le récit fini (dès que « qui enseigne » est passé).
-       *
-       * ⚠️ Rien non plus quand la section du compte porte son propre bandeau de
-       * progression (mode scrub, 01/09/2026). Les deux ne comptent pas de la
-       * même façon : ici c'est le dernier repère passé sous 120 px, là-bas c'est
-       * la position continue à 72 % de la fenêtre. Ils affichaient donc « Jour 6
-       * / 30 » et « Jour 9 / 30 » à quarante pixels l'un de l'autre, ce qui fait
-       * douter des deux. Le bandeau gagne : il suit le contenu qu'on lit.
-       */
+      // Le jour en cours : le dernier repère de jour passé sous la barre, et
+      // rien une fois le récit fini (dès que « qui enseigne » est passé).
       let jour = 0;
       const maison = document.getElementById('maison');
       const recitFini = !!maison && maison.getBoundingClientRect().top <= 120;
-      const bandeau = document.querySelector('[data-bandeau-jours]');
-      if (!recitFini && !bandeau) {
+      if (!recitFini) {
         for (const el of jours()) {
           if (el.getBoundingClientRect().top <= 120) jour = Number(el.dataset.jour) || jour;
           else break;

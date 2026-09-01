@@ -22,15 +22,17 @@ import '@fontsource-variable/fraunces/wght-italic.css';
  * de `src/data/academy/` prend le relais et le build ne tombe jamais. Dans
  * le navigateur, l'îlot relit le même JSON et se met à jour.
  *
- * ⚠️ Le mode `scrub` a été posé ici le 31/08/2026 puis RETIRÉ le jour même.
- * La raison n'est pas le code, qui marche : sans collage, la course du prompt
- * CRAFT ne fait que 612 px de défilement contre 1 260 px dans la page de labo,
- * donc l'effet est indiscernable de l'ancien à vitesse de lecture normale. Il
- * se travaille dans `/{lang}/labo-30` jusqu'à ce qu'il se voie, et il revient
- * ici ensuite : `scrub` sur `<Academy>`, un seul mot.
+ * ⚠️ Un mode « scrub » (la position du scroll pilotant les animations) a été
+ * posé ici le 31/08/2026, retiré le jour même, puis ABANDONNÉ le 01/09 : Paul a
+ * jugé le résultat « bizarre » dans la page, alors que les maquettes autonomes
+ * qui l'avaient précédé lui plaisaient. Elles restent dans `labo/*.html`.
  *
- * La leçon, elle, est de méthode : ne pas porter sur la page de vente ce qui
- * n'a pas encore fait la preuve de son effet ailleurs.
+ * La leçon est de méthode, et elle vaut au-delà de ce cas : une maquette
+ * autonome est libre de sa mise en page, donc elle produit un effet que la même
+ * idée ne produit plus dans une page qui a déjà onze blocs, un rail collant, une
+ * barre en haut et un bandeau en bas. Mesurer la place AVANT de promettre
+ * l'effet, et ne rien porter sur la page de vente qui n'ait fait sa preuve
+ * ailleurs.
  *
  * Pas de PageLayout : il ajoute le bouton collant du calculateur, qui
  * flotterait par-dessus une page qui a déjà sa propre barre de total.

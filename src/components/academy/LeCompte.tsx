@@ -3,7 +3,6 @@ import { jour30Copy, type Jour30Copy } from './copy';
 import { nombreLocal } from './offres';
 import type { EtatJour, Jour30Data, Locale, Metal, RankKey, Avis } from './data';
 import { JOURS_CALENDRIER, METAL_HEX, renardPoints } from './silhouette';
-import { apparition, bam, fenetre, melange, melangerEtat, positionContinue } from './scrub';
 import {
   after,
   ease,
@@ -32,34 +31,9 @@ interface Props {
   etats: EtatJour[];
   faits: FaitsCompte;
   jeu: Jour30Data['jeu'];
-  /**
-   * Le mode « la position du scroll EST l'animation » (31/08/2026).
-   *
-   * Absente, la section se comporte exactement comme avant : les points sautent
-   * d'un palier au suivant quand un bloc franchit la ligne de lecture, et les
-   * blocs apparaissent en tout-ou-rien. Présente, tout devient continu, une
-   * barre d'avancement du parcours s'ajoute au rail, et l'attestation se scelle
-   * à 100 %.
-   */
-  scrub?: boolean;
 }
 
 const RUBRIQUE = 'font-ac-mono text-[11px] font-bold uppercase tracking-[0.18em]';
-
-/**
- * Les repères du bandeau de progression.
- *
- * ⚠️ Les jours racontés ne sont PAS régulièrement espacés, et les bornes de
- * niveau viennent du récit, pas d'une division en trois : le niveau 1 court
- * jusqu'au jour 10, le 2 jusqu'au 21, le 3 jusqu'au bout.
- */
-const DERNIER_JOUR = 30;
-const JOURS_RACONTES = [1, 2, 3, 6, 9, 11, 14, 17, 19, 22, 26, 30];
-const NIVEAUX_JOURS = [
-  { de: 1, a: 10 },
-  { de: 11, a: 21 },
-  { de: 22, a: 30 },
-];
 const PANNEAU = 'rounded-carte border border-filet-nuit bg-salle-2';
 
 /**
@@ -76,7 +50,7 @@ const PANNEAU = 'rounded-carte border border-filet-nuit bg-salle-2';
  * React : il change à chaque image de défilement, un rendu par jour serait du
  * gaspillage.
  */
-export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = false }: Props) {
+export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
   const { rangs, metaux, trophees: tropheeNoms, points: POINTS, metalPoints: METAL_POINTS, modulesADebloquer: MODULES_A_DEBLOQUER } = jeu;
   const t = jour30Copy(locale);
   const c = t.compte;
@@ -105,17 +79,6 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
     (n: T | null) => {
       if (n && !list.current.includes(n)) list.current.push(n);
     };
-
-  // Le bandeau de progression, collé sous la barre du site.
-  const bJour = useRef<HTMLElement[]>([]);
-  const bNiveau = useRef<HTMLElement[]>([]);
-  const bCurseur = useRef<HTMLElement[]>([]);
-  const bGrads = useRef<HTMLElement[]>([]);
-
-  // Le mode scrub : l'avancement du parcours, et le sceau qui le clôt.
-  const courseBar = useRef<HTMLElement[]>([]);
-  const coursePct = useRef<HTMLElement[]>([]);
-  const bamHote = useRef<HTMLDivElement>(null);
 
   const aside = useRef<HTMLElement>(null);
   const barre = useRef<HTMLDivElement>(null);
@@ -168,9 +131,6 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
     [c, rangs, nombre, MODULES_A_DEBLOQUER]
   );
 
-  /** Écrire le même texte dans tous les exemplaires d'un repère. */
-  const texteDe = (els: HTMLElement[], t: string) => els.forEach((e) => (e.textContent = t));
-
   const sync = useCallback(() => {
     const column = col.current;
     if (!column) return;
@@ -178,106 +138,12 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
     if (!days.length) return;
     const vh = window.innerHeight;
     const line = vh * 0.72;
-
-    if (scrub && !reduce.current) {
-      /**
-       * La position continue : le rail suit le doigt au lieu d'attendre le
-       * prochain bloc. Aucune animation de compteur ici, et c'est voulu — deux
-       * mouvements sur le même nombre (le tween de 700 ms et le scroll) se
-       * battraient, et le nombre partirait dans le mauvais sens dès qu'on
-       * remonte.
-       */
-      /**
-       * DOUZE états (jours 1, 2, 3, 6, 9, 11, 14, 17, 19, 22, 26, 30) pour ONZE
-       * blocs : le douzième, le jour 30, n'a pas de bloc dans cette section. Il
-       * est atteint en arrivant au BAS de la colonne, là où le récit passe la
-       * main au visiteur (« au tour du vôtre »). D'où cette queue de course.
-       *
-       * ⚠️ Ne pas chercher le jour 30 dans `.j30-chute` : cette classe désigne
-       * la chute d'un bloc au sens de la pointe finale, et elle ne sert qu'une
-       * fois, sur le trophée secret du jour 14. La prendre pour la fin du récit
-       * faisait sauter l'avancement à 100 % dès le jour 14, avec le sceau et les
-       * 4 915 points d'un coup (mesuré le 31/08/2026).
-       */
-      let pos = positionContinue(days, 0.72);
-      if (pos >= days.length - 1 && days.length > 1) {
-        const hautDernier = days[days.length - 1].getBoundingClientRect().top;
-        const basColonne = column.getBoundingClientRect().bottom;
-        const reste = basColonne - hautDernier;
-        if (reste > 0) {
-          pos = days.length - 1 + Math.max(0, Math.min(1, (line - hautDernier) / reste));
-        }
-      }
-      const i = Math.min(Math.floor(pos), etats.length - 1);
-      const suivant = etats[i + 1];
-      apply(melangerEtat(etats[i], suivant, pos - i), false);
-
-      /**
-       * L'avancement suit le JOUR, pas l'index du bloc. Les onze jours racontés
-       * ne sont pas régulièrement espacés (1, 2, 3, 6, 9, 11, 14, 17, 19, 22,
-       * 26, 30) : compter les blocs donnerait 45 % au jour 9, alors que le
-       * parcours n'en est qu'à 30 %.
-       */
-      const dernierJour = etats[etats.length - 1].jour;
-      const jourCourant = melange(etats[i].jour, (suivant ?? etats[i]).jour, pos - i);
-      const avance = Math.max(0, Math.min(1, jourCourant / Math.max(1, dernierJour)));
-      courseBar.current.forEach((b) => (b.style.width = `${(avance * 100).toFixed(1)}%`));
-      coursePct.current.forEach((e) => (e.textContent = `${Math.round(avance * 100)} %`));
-
-      // Le bandeau : le jour, le niveau, le curseur sur la règle.
-      const jourCourantArrondi = Math.max(1, Math.round(jourCourant));
-      texteDe(bJour.current, String(jourCourantArrondi));
-      const niv = NIVEAUX_JOURS.findIndex((n) => jourCourantArrondi >= n.de && jourCourantArrondi <= n.a);
-      texteDe(bNiveau.current, [n1, n2, n3][niv < 0 ? 0 : niv]?.nom || '');
-      bCurseur.current.forEach((el) => {
-        el.style.left = `${(avance * 100).toFixed(2)}%`;
-      });
-      bGrads.current.forEach((el) => {
-        const j = Number(el.dataset.j || 0);
-        el.style.background = j <= jourCourantArrondi ? 'var(--color-or)' : 'var(--v-filet-salle)';
-        el.style.opacity = j <= jourCourantArrondi ? '1' : '0.75';
-      });
-
-      /**
-       * Le « bam » : une fois, au bout. Le seuil est à 98 % et non à 99,5 % :
-       * la position du scroll n'atteint pas toujours le pixel exact du bas de
-       * la colonne, et l'avancement se bloquait à 99 % avec le sceau qui ne
-       * tombait jamais (mesuré le 31/08/2026 sur /fr/academy). 98 %, c'est le
-       * jour 29 sur 30 : on y est.
-       */
-      if (avance > 0.98 && bamHote.current && !bamHote.current.dataset.bam) {
-        void bam(bamHote.current);
-      }
-
-      // Chaque bloc apparaît à mesure qu'il monte, au lieu de basculer d'un coup.
-      days.forEach((el) => {
-        const a = apparition(el, 0.94, 0.66);
-        el.style.opacity = String(0.12 + 0.88 * a);
-        el.style.transform = `translate3d(0,${((1 - a) * 26).toFixed(1)}px,0)`;
-      });
-    } else {
-      /**
-       * ⚠️ Effacer ce que le mode scrub a pu écrire. `sync()` tourne une
-       * première fois AVANT que `probeClock` ait répondu (la sonde attend deux
-       * images), donc avec `reduce.current` encore à false : en mouvement
-       * réduit, ce premier passage posait 12 % d'opacité sur les onze blocs, et
-       * plus personne ne les remettait. La section entière était illisible pour
-       * qui désactive les animations (mesuré le 31/08/2026, `reducedMotion` de
-       * Playwright).
-       */
-      if (scrub) {
-        days.forEach((el) => {
-          if (el.style.opacity) el.style.opacity = '';
-          if (el.style.transform) el.style.transform = '';
-        });
-      }
-      let idx = 0;
-      for (let i = 0; i < days.length; i += 1) if (days[i].getBoundingClientRect().top < line) idx = i;
-      if (idx !== lastIdx.current) {
-        const animate = lastIdx.current !== undefined && Math.abs(idx - lastIdx.current) === 1;
-        lastIdx.current = idx;
-        apply(etats[Math.min(idx, etats.length - 1)], animate);
-      }
+    let idx = 0;
+    for (let i = 0; i < days.length; i += 1) if (days[i].getBoundingClientRect().top < line) idx = i;
+    if (idx !== lastIdx.current) {
+      const animate = lastIdx.current !== undefined && Math.abs(idx - lastIdx.current) === 1;
+      lastIdx.current = idx;
+      apply(etats[Math.min(idx, etats.length - 1)], animate);
     }
     // Le trait d'or du rail suit le défilement : de « haut de colonne à 60 % »
     // à « bas de colonne à 70 % », comme le scrub du prototype.
@@ -286,7 +152,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
       const p = Math.max(0, Math.min(1, (vh * 0.6 - r.top) / Math.max(1, r.height - vh * 0.1)));
       rail.current.style.height = `${p * 100}%`;
     }
-  }, [apply, etats, scrub]);
+  }, [apply, etats]);
 
   /**
    * La traversée : à chaque frontière de niveau, le renard part du bord gauche
@@ -362,16 +228,10 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
         column.querySelectorAll<HTMLElement>('.j30-frontier').forEach((el) => traverser(el, true));
         return;
       }
-      // ⚠️ En mode scrub, ce sont les styles écrits par `sync()` qui portent
-      // l'apparition des jours : poser les classes en plus ferait deux
-      // mécanismes sur la même opacité, et le dernier écrit gagnerait.
-      if (!scrub) {
-        column.querySelectorAll<HTMLElement>('.j30-day').forEach((el) => arrets.push(revealOnEnter(el, 'j30-pre-day', 'j30-in-day', 0.8)));
-      }
+      column.querySelectorAll<HTMLElement>('.j30-day').forEach((el) => arrets.push(revealOnEnter(el, 'j30-pre-day', 'j30-in-day', 0.8)));
       column.querySelectorAll<HTMLElement>('.j30-frontier h2').forEach((el) => arrets.push(revealOnEnter(el, 'j30-pre-titre', 'j30-in-titre', 0.82)));
       column.querySelectorAll<HTMLElement>('.j30-chute').forEach((el) => arrets.push(revealOnEnter(el, 'j30-pre-chute', 'j30-in-chute', 0.82)));
       column.querySelectorAll<HTMLElement>('.j30-frontier').forEach((el) => arrets.push(onEnter(el, () => traverser(el), '-25%')));
-      if (scrub) sync();
       arrets.push(
         rescueLoop([
           ['j30-pre-day', 'j30-in-day'],
@@ -389,7 +249,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
       arrets.forEach((a) => a());
       arrets = [];
     };
-  }, [sync, traverser, scrub]);
+  }, [sync, traverser]);
 
   const premier = etats[0];
   const [n1, n2, n3] = c.niveaux;
@@ -401,66 +261,6 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
 
   return (
     <section id="compte" className="mx-auto max-w-[1280px] scroll-mt-24 px-4 sm:px-6">
-      {/**
-        * Le bandeau de progression (01/09/2026). Le « cadran » de l'essai 3,
-        * déplié en règle et réduit à un bandeau : Paul a choisi que le contenu
-        * domine et que le repère reste discret.
-        *
-        * ⚠️ Il se colle SOUS la barre du site (`top-16`, elle fait 64 px), et il
-        * ne vit que dans cette section : un repère de progression qui suivrait
-        * jusqu'au pied de page dirait « vous en êtes à 100 % » devant les tarifs.
-        */}
-      {scrub && (
-        <div data-bandeau-jours className="sticky top-16 z-30 -mx-4 mb-6 border-b border-filet-nuit bg-salle/92 px-4 backdrop-blur sm:-mx-6 sm:px-6">
-          <div className="flex h-12 items-center gap-3 sm:gap-5">
-            <span className="flex-none font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-or">
-              {c.jour(0).replace(/\s*0\s*/, ' ').trim()}&nbsp;
-              <span ref={collect(bJour)} className="tabular-nums">1</span>
-              <span className="text-brume-nuit"> / {DERNIER_JOUR}</span>
-            </span>
-
-            {/* La règle des trente jours. Les onze jours racontés portent un
-                trait plus haut : ce sont les seuls sur lesquels on s'arrête. */}
-            <span className="relative flex h-6 min-w-0 flex-1 items-center gap-px" aria-hidden="true">
-              {Array.from({ length: DERNIER_JOUR }, (_, i) => {
-                const j = i + 1;
-                const raconte = JOURS_RACONTES.includes(j);
-                return (
-                  <span
-                    key={j}
-                    ref={collect(bGrads)}
-                    data-j={j}
-                    className={`block flex-1 rounded-[1px] ${raconte ? 'h-3' : 'h-1.5'}`}
-                    style={{ background: 'var(--v-filet-salle)', opacity: 0.75 }}
-                  />
-                );
-              })}
-              <span
-                ref={collect(bCurseur)}
-                className="pointer-events-none absolute top-0 h-6 w-px bg-or"
-                style={{ left: '0%' }}
-              >
-                <span className="absolute -left-[3px] -top-[3px] block h-[7px] w-[7px] rounded-full bg-or" />
-              </span>
-            </span>
-
-            <span
-              ref={collect(bNiveau)}
-              className="hidden flex-none font-ac-mono text-[10.5px] uppercase tracking-[0.14em] text-brume-nuit sm:block"
-            >
-              {n1.nom}
-            </span>
-            <span className="flex-none text-right">
-              <span ref={collect(pts)} className="font-ac-mono text-[13px] font-bold tabular-nums text-ivoire">
-                {nombre(premier.points)}
-              </span>
-              <span className="ml-1 font-ac-mono text-[10px] uppercase tracking-[0.12em] text-brume-nuit">
-                {c.rail.points}
-              </span>
-            </span>
-          </div>
-        </div>
-      )}
       <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div ref={col} className="relative pb-10 pt-4 lg:pt-[72px]">
           {/* La barre collante, sous lg seulement : avatar, points, série. */}
@@ -486,20 +286,6 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
               </span>
               <span className="block font-ac-mono text-[10px] uppercase tracking-[0.14em] text-brume-nuit">{c.rail.points}</span>
             </span>
-            {scrub && (
-              <span className="flex-none text-right">
-                <span ref={collect(coursePct)} className="block font-ac-mono text-[15px] font-bold tabular-nums leading-none text-or">
-                  0 %
-                </span>
-                <span className="mt-0.5 block h-[3px] w-14 overflow-hidden rounded-[2px] bg-filet-nuit">
-                  <span
-                    ref={collect(courseBar)}
-                    className="block h-full rounded-[2px]"
-                    style={{ width: '0%', background: 'linear-gradient(90deg,#8a6d24,#c8a951 60%,#f0dca0)' }}
-                  />
-                </span>
-              </span>
-            )}
           </div>
 
           <div className="absolute bottom-0 left-0 top-0 hidden w-px bg-filet-nuit lg:block" aria-hidden="true" />
@@ -575,7 +361,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
           </Jour>
 
           <Jour n={2} label={c.jour(2)} phrase={c.j2.phrase}>
-            <AnimationCraft scrub={scrub} lessons={faits.lessons} c={c.j2} locale={locale} pointsLecon={POINTS.lesson} />
+            <AnimationCraft lessons={faits.lessons} c={c.j2} locale={locale} pointsLecon={POINTS.lesson} />
           </Jour>
 
           <Jour n={3} label={c.jour(3)} phrase={c.j3.phrase} note={c.j3.note}>
@@ -757,84 +543,6 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, scrub = fals
             c'est l'ordre du DOM qui place dans la grille, et un `order-first`
             sans borne l'envoyait dans la colonne de gauche à 1 280 px. */}
         <aside ref={aside} className="grid grid-cols-[minmax(0,1fr)] gap-4 pt-4 max-lg:order-first sm:grid-cols-[repeat(auto-fit,minmax(210px,1fr))] lg:sticky lg:top-24 lg:grid-cols-1 lg:pt-0">
-          {/* L'avancement du parcours, en mode scrub seulement (31/08/2026).
-              Le rail disait le rang et les points, jamais « combien il reste ».
-              Demande de Paul : une barre qui va jusqu'à 100 %, et un sceau
-              quand on y arrive. */}
-          {scrub && (
-            <section ref={bamHote} className={`${PANNEAU} relative overflow-hidden px-5 py-[18px]`}>
-              <div className="flex items-baseline justify-between gap-3">
-                <span className={`${RUBRIQUE} text-brume-nuit`}>{c.avancement.titre}</span>
-                <span ref={collect(coursePct)} className="font-ac-mono text-[15px] font-bold tabular-nums text-or">
-                  0 %
-                </span>
-              </div>
-              <div className="mt-3 h-1.5 overflow-hidden rounded-[3px] bg-filet-nuit">
-                <span
-                  ref={collect(courseBar)}
-                  className="block h-full rounded-[3px]"
-                  style={{ width: '0%', background: 'linear-gradient(90deg,#8a6d24,#c8a951 60%,#f0dca0)' }}
-                />
-              </div>
-              <p className="m-0 mt-2.5 font-ac-mono text-[10.5px] leading-[1.55] text-brume-nuit">
-                {c.avancement.ligne}
-              </p>
-
-              {/* Le sceau, dans ses deux états. Il occupe la place en permanence
-                  pour que la carte ne saute pas de hauteur au moment du « bam ».
-                  ⚠️ Avant le bam, l'anneau est en POINTILLÉS et porte son
-                  libellé « à obtenir » : un anneau plein et vide, sans texte à
-                  côté, se lisait comme un défaut de chargement (vu à l'écran le
-                  31/08/2026). */}
-              {/* ⚠️ Le sceau ne prend AUCUNE place avant d'être obtenu (Paul,
-                  01/09/2026 : « il faudra, limite, retirer l'attestation
-                  obtenue »). Mesure : le rail faisait 609 px pour un sticky qui
-                  commence à 96 px du haut, donc il dépassait dès 700 px de
-                  fenêtre utile — et le bandeau cookies en prend 60 de plus. Ce
-                  bloc pesait 65 px à lui seul.
-                  Il s'ouvre au « bam », ce qui rend le moment plus fort :
-                  l'attestation ARRIVE au lieu d'attendre en pointillés. */}
-              <div
-                className="grid overflow-hidden"
-                style={{ gridTemplateRows: '0fr', transition: 'grid-template-rows .5s cubic-bezier(0.22,1,0.36,1)' }}
-                data-sceau-piste
-              >
-              <div className="flex items-center gap-3 border-t border-filet-nuit pt-3.5" style={{ minHeight: 0 }}>
-                <span className="relative flex h-11 w-11 flex-none items-center justify-center">
-                  <span
-                    className="j30-bam-eclat absolute inset-0 rounded-full"
-                    style={{ opacity: 0, background: 'radial-gradient(circle,rgba(200,169,81,.55),transparent 70%)' }}
-                    aria-hidden="true"
-                  />
-                  <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true" className="absolute inset-0">
-                    <circle
-                      className="j30-bam-anneau"
-                      cx="22"
-                      cy="22"
-                      r="20"
-                      fill="none"
-                      stroke="#7d879b"
-                      strokeWidth="1.4"
-                      strokeDasharray="3 5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <span className="j30-bam-sceau relative flex h-7 w-7 items-center justify-center rounded-full bg-or/[0.16]" style={{ opacity: 0 }}>
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#c8a951" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M5 12.5l4.5 4.5L19 7.5" />
-                    </svg>
-                  </span>
-                </span>
-                <span className="relative min-w-0 flex-1">
-                  <span className="j30-bam-texte absolute inset-0 block" style={{ opacity: 0 }}>
-                    <span className="block text-[13.5px] leading-tight text-ivoire">{c.avancement.sceau}</span>
-                    <span className="mt-0.5 block font-ac-mono text-[10.5px] text-or">{c.avancement.sceauNote}</span>
-                  </span>
-                </span>
-              </div>
-              </div>
-            </section>
-          )}
           <RailIdentite refs={{ collect, pts, rank, bar, next, ring, fox }} premier={premier} rangs={rangs} c={c.rail} nombre={nombre} />
           <section className={`${PANNEAU} px-5 py-[18px]`}>
             <div className="flex items-baseline justify-between">
@@ -1025,14 +733,11 @@ function AnimationCraft({
   c,
   locale,
   pointsLecon,
-  scrub = false,
 }: {
   lessons: number;
   c: Jour30Copy['compte']['j2'];
   locale: Locale;
   pointsLecon: number;
-  /** Le mode scrub : l'écriture suit la position du bloc dans l'écran. */
-  scrub?: boolean;
 }) {
   const box = useRef<HTMLDivElement>(null);
   const [ecrits, setEcrits] = useState<string[]>(() => c.champs.map(() => ''));
@@ -1052,68 +757,6 @@ function AnimationCraft({
       setAssemble(true);
       return;
     }
-    if (scrub) {
-      /**
-       * L'écriture suit le bloc pendant qu'il traverse l'écran. Pas de collage
-       * ici, contrairement à la page de labo : dans la colonne du récit, coller
-       * la carte décalerait les dix autres jours. La course va donc du moment où
-       * le bloc entre par le bas jusqu'à ce qu'il atteigne le tiers haut, ce qui
-       * laisse environ deux tiers d'écran de défilement.
-       *
-       * Chaque champ a sa FENÊTRE dans cette course, et les fenêtres se
-       * chevauchent d'un tiers : à l'écran, cinq champs strictement l'un après
-       * l'autre paraissent mécaniques, et tous ensemble ne montrent plus l'ordre
-       * — or l'ordre est justement ce que CRAFT enseigne.
-       */
-      const N = c.champs.length;
-      let pending = false;
-      const poser = () => {
-        /**
-         * Le haut de la carte collée ne bouge plus (13vh) : on ne peut donc pas
-         * mesurer la carte, c'est le CONTENEUR de course qui donne l'avancement.
-         *
-         * Et les bornes ne sont pas les mêmes selon qu'on colle ou non. Collé,
-         * la course part du moment où la carte se fixe ; sinon (sous lg, où le
-         * collage est désactivé) elle part de l'entrée du bloc à l'écran. Les
-         * mêmes bornes dans les deux cas écrivaient le premier champ avant que
-         * la carte soit visible.
-         */
-        const parent = el.parentElement;
-        const colle = !!parent && parent !== el && parent.offsetHeight > el.offsetHeight * 1.3;
-        const p = colle ? apparition(parent, 0.24, -0.86) : apparition(el, 1, 0.32);
-        const largeur = 1 / (N * 0.72 + 0.5);
-        setEcrits((prev) => {
-          let change = false;
-          const n = prev.slice();
-          c.champs.forEach((ch, i) => {
-            const a = fenetre(p, i * largeur * 0.72, i * largeur * 0.72 + largeur);
-            const v = ch.valeur.slice(0, Math.round(a * ch.valeur.length));
-            if (v !== n[i]) {
-              n[i] = v;
-              change = true;
-            }
-          });
-          return change ? n : prev;
-        });
-        setAssemble(p >= 0.93);
-      };
-      const onScroll = () => {
-        if (pending) return;
-        pending = true;
-        requestAnimationFrame(() => {
-          pending = false;
-          poser();
-        });
-      };
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll);
-      poser();
-      return () => {
-        window.removeEventListener('scroll', onScroll);
-        window.removeEventListener('resize', onScroll);
-      };
-    }
-
     const stop = onEnter(el, () => {
       c.champs.forEach((ch, i) => {
         arrets.current.push(
@@ -1137,27 +780,12 @@ function AnimationCraft({
       arrets.current.forEach((a) => a());
       arrets.current = [];
     };
-  }, [c, locale, scrub]);
+  }, [c, locale]);
 
   return (
-    /**
-     * En mode scrub, le bloc porte une DISTANCE de course et la carte s'y colle.
-     *
-     * ⚠️ Sans ce collage, la course ne fait que 612 px de défilement (mesuré en
-     * production le 31/08/2026) : deux tours de molette, pendant lesquels la
-     * carte de 607 px traverse l'écran. L'écriture se termine avant qu'on ait pu
-     * la regarder, et l'effet est indiscernable de l'ancien. Avec, on retrouve
-     * les 1 260 px de la page de labo, carte immobile.
-     *
-     * Sous `lg` seulement : sur un écran de 844 px, coller une carte de 607 px
-     * ne laisse plus rien voir autour.
-     */
-    <div className={scrub ? 'lg:min-h-[168vh]' : undefined}>
     <div
       ref={box}
-      className={`max-w-[660px] rounded-[20px] border border-white/[0.06] bg-craie px-[30px] py-7 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.85)] ${
-        scrub ? 'lg:sticky lg:top-[13vh]' : ''
-      }`}
+      className="max-w-[660px] rounded-[20px] border border-white/[0.06] bg-craie px-[30px] py-7 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.85)]"
     >
       <p className="m-0 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-or-grave">{c.kicker}</p>
       <h3 className="m-0 mt-2 font-ac-serif text-[26px] font-semibold leading-[1.2] text-encre">{c.titre}</h3>
@@ -1185,19 +813,7 @@ function AnimationCraft({
         ))}
       </dl>
 
-      {/* ⚠️ En mode scrub, le bloc S'OUVRE au lieu d'occuper la place en
-          transparent : collée à l'écran pendant 900 px, la carte gardait un
-          trou de 250 px au milieu, qui se lit comme un défaut de mise en page
-          et non comme une attente (vu à l'écran le 31/08/2026). Hors scrub, la
-          carte défile vite et le comportement d'origine est conservé.
-          La fraction se pose en style : `fr` n'est pas une unité admise dans
-          `calc()`, donc `calc(var(--x) * 1fr)` est une déclaration invalide,
-          ignorée en silence. */}
-      <div
-        className={`transition-opacity duration-500 ${assemble ? 'opacity-100' : 'opacity-0'}`}
-        style={scrub ? { display: 'grid', gridTemplateRows: assemble ? '1fr' : '0fr', overflow: 'hidden', transition: 'grid-template-rows .45s, opacity .45s' } : undefined}
-      >
-        <div style={scrub ? { minHeight: 0 } : undefined}>
+      <div className={`transition-opacity duration-500 ${assemble ? 'opacity-100' : 'opacity-0'}`}>
         <p className="m-0 mb-2 mt-[22px] font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-or-grave">{c.assemble}</p>
         <div className="relative rounded-[12px] bg-encre px-[18px] py-4">
           <p className="m-0 whitespace-pre-wrap pr-[88px] font-ac-mono text-[12.5px] leading-[1.7] text-terminal-texte">{prompt}</p>
@@ -1213,7 +829,6 @@ function AnimationCraft({
             {copie ? c.copie : c.copier}
           </button>
         </div>
-        </div>
       </div>
 
       <div className="mt-[18px] flex flex-wrap items-center gap-x-5 gap-y-2.5 border-t border-lin pt-3.5">
@@ -1222,7 +837,6 @@ function AnimationCraft({
           {c.terminee(pointsLecon)}
         </span>
       </div>
-    </div>
     </div>
   );
 }

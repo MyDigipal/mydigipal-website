@@ -237,13 +237,6 @@ const FR = {
   },
 
   compte: {
-    avancement: {
-      titre: 'Avancement',
-      ligne: 'Le parcours de Clara, du premier jour à l’attestation.',
-      sceau: 'Attestation obtenue',
-      aObtenir: 'Attestation, au jour 30',
-      sceauNote: 'Usage professionnel de l’intelligence artificielle',
-    },
     niveaux: [
       { kicker: 'Niveau 1', nom: 'Écrire une demande', titre: 'Dix jours pour se lancer dans l’intelligence artificielle.' },
       { kicker: 'Niveau 2', nom: 'Se servir des outils', titre: 'Elle ne demande plus. Elle sait quoi confier, et à quoi.' },
@@ -925,13 +918,6 @@ const EN: Jour30Copy = {
   },
 
   compte: {
-    avancement: {
-      titre: 'Progress',
-      ligne: 'Clara’s course, from the first day to the certificate.',
-      sceau: 'Certificate earned',
-      aObtenir: 'Certificate, on day 30',
-      sceauNote: 'Professional use of artificial intelligence',
-    },
     niveaux: [
       { kicker: 'Level 1', nom: 'Writing a request', titre: 'Ten days to get started with artificial intelligence.' },
       { kicker: 'Level 2', nom: 'Using the tools', titre: 'She no longer asks. She knows what to hand over, and to what.' },
