@@ -32,9 +32,9 @@ const craft = (key: keyof typeof CRAFT.fr, locale: Locale) => CRAFT[locale][key]
 
 const FR = {
   meta: {
-    title: 'Trente jours dans un compte MyDigipal Academy',
+    title: 'Formation IA en ligne : cours professionnels',
     description:
-      'La formation IA des professionnels, montrée depuis l’intérieur : trente jours du parcours d’une apprenante, dans l’espace réel du produit, avec les règles de points du code.',
+      'La formation IA en ligne des professionnels : des cours courts, une méthode, des exercices sur vos propres dossiers, et deux modules à essayer gratuitement.',
   },
 
   ouverture: {
@@ -107,7 +107,7 @@ const FR = {
   },
 
   visite: {
-    titre: 'Ce qu’il y a dedans.',
+    titre: 'Ce qu’il y a dans la formation.',
     sous: 'L’espace apprenant, tel que vous l’ouvrirez. Survolez un élément : il vous dit à quoi il sert.',
     sousTactile: 'L’espace apprenant, tel que vous l’ouvrirez. Touchez un élément : il vous dit à quoi il sert.',
     voirLecran: 'Voir cet écran',
@@ -430,6 +430,55 @@ const FR = {
     },
   },
 
+  outils: {
+    kicker: 'Le module de votre outil',
+    titre: 'Un cours par outil, celui que vous utilisez déjà.',
+    chapeau:
+      'ChatGPT, Claude, Copilot ou Gemini : la formation en couvre quatre, écrits séparément. Vous suivez celui de l’outil que vous avez sous la main, et vous en ouvrez un autre le jour où votre entreprise change d’avis.',
+    cartes: [
+      {
+        nom: 'ChatGPT',
+        editeur: 'OpenAI',
+        phrase: 'Le plus répandu, et celui dont on tire le moins quand on s’arrête à la première réponse.',
+        points: [
+          'Les projets et la mémoire : ce qu’il garde d’une conversation à l’autre',
+          'Les fichiers et les images : ce qu’on peut lui donner, et sous quelle forme',
+          'La recherche et le mode raisonnement : quand les activer, quand s’en passer',
+        ],
+      },
+      {
+        nom: 'Claude',
+        editeur: 'Anthropic',
+        phrase: 'Le plus à l’aise sur les documents longs et sur le ton d’un texte à réécrire.',
+        points: [
+          'Les projets : donner un contexte une fois, le retrouver à chaque demande',
+          'Les connecteurs : le brancher sur vos outils, et ce que ça change',
+          'Les tâches planifiées : un travail qui tourne sans vous, avec votre accord',
+        ],
+      },
+      {
+        nom: 'Copilot',
+        editeur: 'Microsoft',
+        phrase: 'Celui que votre société vous a donné, et qui reste souvent au résumé de réunion.',
+        points: [
+          'Dans Word, Excel, Outlook et Teams : ce qu’il voit de vos fichiers',
+          'Ce qu’il faut lui écrire pour que le brouillon soit utilisable du premier coup',
+          'Ses limites, et par quoi les remplacer quand on les touche',
+        ],
+      },
+      {
+        nom: 'Gemini',
+        editeur: 'Google',
+        phrase: 'Celui qui vit dans vos documents et vos mails, sans qu’on pense à l’ouvrir.',
+        points: [
+          'Dans Docs, Gmail et Sheets : le demander là où le travail se fait',
+          'Gemini Notebook : lui donner vos sources, et l’interroger dessus',
+          'La recherche approfondie : lire son plan avant de la lancer',
+        ],
+      },
+    ],
+    note: 'Les captures des leçons sont prises dans les vraies interfaces, et refaites quand elles changent.',
+  },
   mcp: {
     intro: {
       titre: 'Ce que vous saurez construire en sortant.',
@@ -810,9 +859,9 @@ export type Jour30Copy = typeof FR;
 
 const EN: Jour30Copy = {
   meta: {
-    title: 'Thirty days inside a MyDigipal Academy account',
+    title: 'Online AI course and training for professionals',
     description:
-      'AI training for working professionals, shown from the inside: thirty days of one learner’s journey, in the real product, with the point rules of the code.',
+      'Online AI training for working professionals: short lessons, a method, exercises on your own files, and two modules to try for free.',
   },
 
   ouverture: {
@@ -877,7 +926,7 @@ const EN: Jour30Copy = {
   },
 
   visite: {
-    titre: 'What is inside.',
+    titre: 'What is inside the course.',
     sous: 'The learner space, as you will open it. Hover an element: it tells you what it is for.',
     sousTactile: 'The learner space, as you will open it. Tap an element: it tells you what it is for.',
     voirLecran: 'Watch this screen',
@@ -1197,6 +1246,55 @@ const EN: Jour30Copy = {
     },
   },
 
+  outils: {
+    kicker: 'Your tool’s module',
+    titre: 'One course per tool, the one you already use.',
+    chapeau:
+      'ChatGPT, Claude, Copilot or Gemini: the training covers all four, written separately. You follow the one for the tool you have at hand, and you open another the day your company changes its mind.',
+    cartes: [
+      {
+        nom: 'ChatGPT',
+        editeur: 'OpenAI',
+        phrase: 'The most widely used, and the one you get least out of if you stop at the first answer.',
+        points: [
+          'Projects and memory: what it keeps from one conversation to the next',
+          'Files and images: what you can hand it, and in which form',
+          'Search and reasoning modes: when to switch them on, when to skip them',
+        ],
+      },
+      {
+        nom: 'Claude',
+        editeur: 'Anthropic',
+        phrase: 'The most comfortable with long documents and with the tone of a text to rewrite.',
+        points: [
+          'Projects: give the context once, find it again on every request',
+          'Connectors: plugging it into your tools, and what that changes',
+          'Scheduled tasks: work that runs without you, with your approval',
+        ],
+      },
+      {
+        nom: 'Copilot',
+        editeur: 'Microsoft',
+        phrase: 'The one your company handed you, and which often stops at the meeting summary.',
+        points: [
+          'Inside Word, Excel, Outlook and Teams: what it sees of your files',
+          'What to write so the draft is usable on the first try',
+          'Its limits, and what to replace them with when you hit them',
+        ],
+      },
+      {
+        nom: 'Gemini',
+        editeur: 'Google',
+        phrase: 'The one living inside your documents and your mail, without you thinking to open it.',
+        points: [
+          'Inside Docs, Gmail and Sheets: asking where the work happens',
+          'Gemini Notebook: give it your sources, then question them',
+          'Deep research: read its plan before you run it',
+        ],
+      },
+    ],
+    note: 'Lesson screenshots are taken in the real interfaces, and redone when those change.',
+  },
   mcp: {
     intro: {
       titre: 'What you will be able to build when you leave.',

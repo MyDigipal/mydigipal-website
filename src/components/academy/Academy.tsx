@@ -6,6 +6,7 @@ import Hero from './Hero';
 import Visite from './Visite';
 import Mention from './Mention';
 import LeCompte from './LeCompte';
+import Outils from './Outils';
 import Mcp from './Mcp';
 import Diplome from './Diplome';
 import Retournement from './Retournement';
@@ -72,6 +73,7 @@ export default function Academy({ locale, initial }: { locale: Locale; initial: 
         }}
         jeu={data.jeu}
       />
+      <Outils locale={locale} />
       <Mcp locale={locale} />
       <Diplome
         locale={locale}
