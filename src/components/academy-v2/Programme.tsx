@@ -100,7 +100,7 @@ export default function Programme({
                   <p className="mb-4 mt-1 max-w-[62ch] text-[14px] leading-[1.6] text-brume">
                     {e.chapeau[locale]}
                   </p>
-                  <div className="grid grid-cols-[repeat(auto-fill,minmax(168px,1fr))] gap-2.5">
+                  <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2.5">
                     {mods.map((m) => (
                       <button
                         key={m.id}
@@ -155,7 +155,26 @@ export default function Programme({
             })}
           </div>
 
-          <aside className="sticky top-24 self-start rounded-carte border border-lin bg-papier p-5">
+          <aside
+            className={`rounded-carte border border-lin bg-papier p-5 lg:sticky lg:top-24 lg:self-start lg:block ${
+              actif ? "fixed inset-x-3 bottom-3 z-50 max-h-[72vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,.45)] lg:static lg:inset-auto lg:max-h-none lg:shadow-none" : "hidden lg:block"
+            }`}
+          >
+            {actif && (
+              <button
+                type="button"
+                onClick={() => {
+                  setActif(null);
+                  setFige(null);
+                }}
+                aria-label={c.fermer}
+                className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-lin text-brume lg:hidden"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            )}
             {!actif ? (
               <div className="text-[14px] leading-[1.6] text-brume">
                 <span className="mb-3 block text-lin">

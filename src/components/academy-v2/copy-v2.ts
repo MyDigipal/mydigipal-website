@@ -52,6 +52,7 @@ const FR = {
     videTactile: 'Touchez un module pour voir ce qu’il contient.',
     deLecons: 'de leçons',
     voirEcran: 'Voir l’écran',
+    fermer: 'Fermer',
     paliers: {
       free: 'Offert',
       essentials: 'Compris',
@@ -190,6 +191,7 @@ const EN: typeof FR = {
     videTactile: 'Touch a module to see what it holds.',
     deLecons: 'of lessons',
     voirEcran: 'See the screen',
+    fermer: 'Close',
     paliers: { free: 'Free', essentials: 'Included', pro: 'Automations' },
     paliersLong: {
       free: 'Free, no card needed',
