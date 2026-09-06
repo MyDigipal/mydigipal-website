@@ -24,7 +24,6 @@ import Mcp from '../academy/Mcp';
 import Diplome from '../academy/Diplome';
 import Retournement from '../academy/Retournement';
 import Maison from '../academy/Maison';
-import Produit from '../academy/Produit';
 import AppelFlottant from '../academy/AppelFlottant';
 import { copyV2 } from './copy-v2';
 import { MODULES } from './modules';
@@ -128,6 +127,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
           relectures: data.faits.relectures,
         }}
         jeu={data.jeu}
+        frise
       />
 
       <Diplome
@@ -150,8 +150,6 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
 
       {/* Qui enseigne : les logos clients et les verbatims. */}
       <Maison locale={locale} temoignages={temoignagesPublics(data.temoignages)} avis={avis} />
-
-      <Produit locale={locale} />
 
       <Tarifs
         locale={locale}

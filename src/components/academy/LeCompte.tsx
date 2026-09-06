@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { jour30Copy, type Jour30Copy } from './copy';
 import { nombreLocal } from './offres';
 import type { EtatJour, Jour30Data, Locale, Metal, RankKey, Avis } from './data';
@@ -31,7 +31,25 @@ interface Props {
   etats: EtatJour[];
   faits: FaitsCompte;
   jeu: Jour30Data['jeu'];
+  /**
+   * La FRISE : chaque jour se réduit à son titre et ne s'ouvre qu'au clic.
+   *
+   * Demandée par Paul le 06/09/2026 pour la seconde page de vente, où le récit
+   * pesait 7 853 px sur 21 235. Fermé, on lit ce que Clara fait jour après
+   * jour ; ouvert, on retrouve la carte, le comparateur ou le panneau du jour,
+   * inchangés.
+   *
+   * ⚠️ Chaque jour reste dans le flux, seul son CONTENU se replie : les blocs
+   * `[data-jour]` restent donc mesurables, et le rail de progression comme la
+   * barre du haut continuent de fonctionner sans rien savoir de la frise.
+   *
+   * Absente, la page se comporte exactement comme avant.
+   */
+  frise?: boolean;
 }
+
+/** Le mode frise, transmis aux quinze blocs de jour sans les toucher un à un. */
+const FriseCtx = createContext(false);
 
 const RUBRIQUE = 'font-ac-mono text-[11px] font-bold uppercase tracking-[0.18em]';
 const PANNEAU = 'rounded-carte border border-filet-nuit bg-salle-2';
@@ -50,7 +68,7 @@ const PANNEAU = 'rounded-carte border border-filet-nuit bg-salle-2';
  * React : il change à chaque image de défilement, un rendu par jour serait du
  * gaspillage.
  */
-export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
+export default function LeCompte({ locale, etats, faits, jeu, avis, frise }: Props) {
   const { rangs, metaux, trophees: tropheeNoms, points: POINTS, metalPoints: METAL_POINTS, modulesADebloquer: MODULES_A_DEBLOQUER } = jeu;
   const t = jour30Copy(locale);
   const c = t.compte;
@@ -260,6 +278,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
   });
 
   return (
+    <FriseCtx.Provider value={!!frise}>
     <section id="compte" className="mx-auto max-w-[1280px] scroll-mt-24 px-4 sm:px-6">
       <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div ref={col} className="relative pb-10 pt-4 lg:pt-[72px]">
@@ -725,6 +744,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis }: Props) {
         </aside>
       </div>
     </section>
+    </FriseCtx.Provider>
   );
 }
 
@@ -825,13 +845,68 @@ function Jour({
   children: ReactNode;
 }) {
   const bleu = ton === 'avance';
+  const frise = useContext(FriseCtx);
+  const [ouvert, setOuvert] = useState(false);
+
+  if (!frise) {
+    return (
+      <article className={`j30-day relative scroll-mt-24 lg:pl-7 ${dernier ? 'mb-5' : 'mb-14'}`} data-jour={n}>
+        <span className={`absolute -left-1 top-1.5 hidden h-[9px] w-[9px] rounded-full lg:block ${bleu ? 'bg-avance' : 'bg-or'}`} />
+        <p className={`${RUBRIQUE} m-0 mb-1 ${bleu ? 'text-avance' : 'text-or'}`}>{label}</p>
+        <p className="m-0 mb-[18px] max-w-[44ch] text-[19px] leading-[1.45] text-ivoire">{phrase}</p>
+        {children}
+        {note ? <p className="m-0 mt-3.5 max-w-[50ch] text-[14.5px] leading-[1.6] text-brume-nuit">{note}</p> : null}
+      </article>
+    );
+  }
+
+  // En frise : le jour tient sur une ligne, et n'ouvre son contenu qu'au clic.
+  // La pastille passe au plein quand c'est ouvert, ce qui donne à la colonne
+  // l'allure d'une frise dont on a déplié une étape.
   return (
-    <article className={`j30-day relative scroll-mt-24 lg:pl-7 ${dernier ? 'mb-5' : 'mb-14'}`} data-jour={n}>
-      <span className={`absolute -left-1 top-1.5 hidden h-[9px] w-[9px] rounded-full lg:block ${bleu ? 'bg-avance' : 'bg-or'}`} />
-      <p className={`${RUBRIQUE} m-0 mb-1 ${bleu ? 'text-avance' : 'text-or'}`}>{label}</p>
-      <p className="m-0 mb-[18px] max-w-[44ch] text-[19px] leading-[1.45] text-ivoire">{phrase}</p>
-      {children}
-      {note ? <p className="m-0 mt-3.5 max-w-[50ch] text-[14.5px] leading-[1.6] text-brume-nuit">{note}</p> : null}
+    <article
+      className={`j30-day relative scroll-mt-24 border-t border-filet-nuit lg:pl-7 ${ouvert ? 'mb-3' : 'mb-0'}`}
+      data-jour={n}
+    >
+      <span
+        className={`absolute -left-1 top-[22px] hidden h-[9px] w-[9px] rounded-full lg:block ${
+          ouvert ? (bleu ? 'bg-avance' : 'bg-or') : 'border border-filet-nuit bg-salle'
+        }`}
+      />
+      <button
+        type="button"
+        aria-expanded={ouvert}
+        onClick={() => setOuvert((o) => !o)}
+        className="flex w-full items-baseline gap-4 border-0 bg-transparent py-3.5 text-left"
+      >
+        <span className={`${RUBRIQUE} flex-none basis-[68px] ${bleu ? 'text-avance' : 'text-or'}`}>{label}</span>
+        <span className="flex-1 text-[16.5px] leading-[1.45] text-ivoire">{phrase}</span>
+        <svg
+          className={`mt-1 flex-none transition duration-200 ${ouvert ? 'rotate-180' : ''} ${bleu ? 'text-avance' : 'text-or'}`}
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+      <div
+        className="grid transition-[grid-template-rows] duration-300 ease-out"
+        style={{ gridTemplateRows: ouvert ? '1fr' : '0fr' }}
+      >
+        <div className="overflow-hidden">
+          <div className="pb-5 pt-1">
+            {children}
+            {note ? <p className="m-0 mt-3.5 max-w-[50ch] text-[14.5px] leading-[1.6] text-brume-nuit">{note}</p> : null}
+          </div>
+        </div>
+      </div>
     </article>
   );
 }
