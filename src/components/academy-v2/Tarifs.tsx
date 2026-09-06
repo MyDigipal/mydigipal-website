@@ -37,7 +37,7 @@ export default function Tarifs({
   locale,
   prixProgrammeMinor,
   prixAvanceMinor,
-  hausse,
+  hausseMinor,
   paliersEquipe,
   devisAPartirDe,
   leconsProgramme,
@@ -53,7 +53,7 @@ export default function Tarifs({
   locale: Locale;
   prixProgrammeMinor: number;
   prixAvanceMinor: number;
-  hausse: string;
+  hausseMinor: number;
   paliersEquipe: Array<{ seats: number; discount: number }>;
   devisAPartirDe: number;
   leconsProgramme: number;
@@ -226,7 +226,7 @@ export default function Tarifs({
           {c.titre(euro(prixProgrammeMinor))}
         </h2>
         <p className="mt-4 max-w-[62ch] text-[16px] leading-[1.65] text-brume-nuit">
-          {c.chapeau(hausse)}
+          {c.chapeau(euro(hausseMinor))}
         </p>
 
         {/* Les licences. Une par défaut : la page vend d'abord à une personne,

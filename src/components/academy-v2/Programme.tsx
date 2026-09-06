@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { pointeurGrossier } from '../academy/motion';
 import Glyphe from './Glyphe';
-import { ETAPES, MODULES, minutesDe, modulesDe, type Module } from './modules';
+import { ETAPES, MODULES, minutesDe, modulesDe, nombreSuivi, type Module } from './modules';
 import { copyV2, type Locale } from './copy-v2';
 import { Boucle, estDemo, Visionneuse, type Demo } from './Video';
 
@@ -148,7 +148,7 @@ export default function Programme({
                     ))}
                   </div>
                   <p className="mt-2.5 font-ac-mono text-[12px] text-brume">
-                    {mods.length} modules · {duree(minutesDe(e.id), locale)}
+                    {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id), locale)}
                   </p>
                 </div>
               );

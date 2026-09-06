@@ -31,7 +31,23 @@ const REPERES: Array<{ id: string; cle: 'q1' | 'q2' | 'avis' | 'tarifs' }> = [
   { id: 'pricing', cle: 'tarifs' },
 ];
 
-export default function Barre({ locale }: { locale: Locale }) {
+/**
+ * ⚠️ Les trois props ci-dessous sont OPTIONNELLES et n'existent que pour la
+ * seconde page de vente (`/{lang}/academy-v2`), qui a d'autres sections et
+ * d'autres ancres. Sans elles, la barre se comporte exactement comme avant :
+ * la page en ligne n'est pas concernée.
+ */
+export default function Barre({
+  locale,
+  reperes,
+  chemin = 'academy',
+  ancreCta = 'pricing',
+}: {
+  locale: Locale;
+  reperes?: Array<{ id: string; libelle: string }>;
+  chemin?: string;
+  ancreCta?: string;
+}) {
   const c = jour30Copy(locale).barre;
   const fill = useRef<HTMLSpanElement>(null);
   const jourRef = useRef<HTMLSpanElement>(null);
@@ -53,12 +69,13 @@ export default function Barre({ locale }: { locale: Locale }) {
   useEffect(() => {
     let raf = 0;
     const jours = () => Array.from(document.querySelectorAll<HTMLElement>('[data-jour]'));
-    const cibles = () => REPERES.map((r) => document.getElementById(r.id));
+    const ids = reperes ? reperes.map((r) => r.id) : REPERES.map((r) => r.id);
+    const cibles = () => ids.map((id) => document.getElementById(id));
 
     const mesure = () => {
       raf = 0;
       const doc = document.documentElement;
-      const fin = document.getElementById('pricing');
+      const fin = document.getElementById(ancreCta);
       const finTop = fin ? fin.getBoundingClientRect().top + window.scrollY : doc.scrollHeight - window.innerHeight;
       const p = Math.max(0, Math.min(1, window.scrollY / Math.max(1, finTop - 80)));
       if (fill.current) fill.current.style.transform = `scaleX(${p})`;
@@ -97,7 +114,7 @@ export default function Barre({ locale }: { locale: Locale }) {
       window.removeEventListener('resize', onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [c]);
+  }, [c, reperes, ancreCta]);
 
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-filet-nuit bg-salle/92 backdrop-blur" data-theme="nuit">
@@ -108,7 +125,7 @@ export default function Barre({ locale }: { locale: Locale }) {
         </a>
 
         <nav className="j30-barre-reperes -mx-1 hidden min-w-0 flex-1 items-center gap-1 overflow-x-auto px-1 md:flex" aria-label={c.aria}>
-          {REPERES.map((r) => {
+          {(reperes ?? REPERES.map((r) => ({ id: r.id, libelle: c.reperes[r.cle] }))).map((r) => {
             const on = actif === r.id;
             return (
               <a
@@ -118,7 +135,7 @@ export default function Barre({ locale }: { locale: Locale }) {
                   on ? 'border-or bg-or text-salle' : 'border-filet-nuit text-corps-nuit hover:border-brume-nuit hover:text-ivoire'
                 }`}
               >
-                {c.reperes[r.cle]}
+                {r.libelle}
               </a>
             );
           })}
@@ -127,7 +144,7 @@ export default function Barre({ locale }: { locale: Locale }) {
         <span ref={jourRef} className="ml-auto flex-none font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-or transition-opacity duration-300" style={{ opacity: 0 }} />
 
         <a
-          href={`/${autre}/academy${ancre}`}
+          href={`/${autre}/${chemin}${ancre}`}
           hrefLang={autre}
           aria-label={c.langueAria}
           title={c.langueAria}
@@ -141,7 +158,7 @@ export default function Barre({ locale }: { locale: Locale }) {
             le pouce. Ici il était de toute façon tronqué dès que « Jour n / 30 »
             s'affichait à côté : sur un écran de 390 px, les deux ne tiennent pas. */}
         <a
-          href="#pricing"
+          href={`#${ancreCta}`}
           className="hidden min-h-10 flex-none items-center whitespace-nowrap rounded-bouton bg-or px-4 py-2 text-[14px] font-semibold text-salle transition duration-150 hover:bg-or-vif lg:inline-flex"
         >
           {c.cta}

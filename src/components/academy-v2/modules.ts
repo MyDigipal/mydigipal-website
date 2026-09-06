@@ -316,6 +316,17 @@ export function modulesDe(etape: EtapeId): Module[] {
 }
 
 /**
+ * Le nombre de modules qu'on SUIT dans une étape : les quatre outils forment un
+ * groupe au choix et comptent donc pour un seul. Sans cela, « Débuter »
+ * annonçait sept modules pour quatre réellement suivis, et la somme des étapes
+ * ne retombait plus sur le total du parcours.
+ */
+export function nombreSuivi(etape: EtapeId): number {
+  const mods = modulesDe(etape);
+  return mods.filter((m) => !m.auChoix).length + (mods.some((m) => m.auChoix) ? 1 : 0);
+}
+
+/**
  * Minutes d'une étape. Les quatre modules outils comptent pour un seul, celui
  * que l'apprenant garde : les additionner ferait annoncer une durée que
  * personne ne suit.
