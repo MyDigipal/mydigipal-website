@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Labo - La page de vente, v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>:root {
+  --salle:#0d1424; --salle-2:#141d33; --salle-3:#1c2742; --filet:#26324e;
+  --ivoire:#f2eee4; --corps:#b9c1d1; --mute:#7d879b;
+  --or:#c8a951; --or-vif:#dcbc66; --or-grave:#8a6d24;
+  --craie:#f7f5f0; --papier:#fff; --encre:#0f1a2e; --lin:#e6e1d6; --brume:#646c7a;
+  --avance:#7fc4dd; --avance-texte:#4c7685; --sauge:#2e7d5b; --renard:#d9743f;
+  --r-carte:14px; --r-bouton:10px;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  margin:0; background:var(--salle); color:var(--corps);
+  font:16px/1.65 'Space Grotesk',system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:0 28px; }
+h1,h2,h3,h4 { color:var(--ivoire); margin:0 0 .5em; line-height:1.15; font-weight:600;
+              letter-spacing:-.01em; }
+h1 { font-size:clamp(30px,4.4vw,50px); }
+h2 { font-size:clamp(24px,3vw,34px); }
+h3 { font-size:20px; } h4 { font-size:17px; }
+p { margin:0 0 1em; }
+.kicker { font:500 11px/1 'JetBrains Mono',monospace; letter-spacing:.16em;
+          text-transform:uppercase; color:var(--or); margin-bottom:12px; }
+.section { padding:88px 0; border-top:1px solid var(--filet); scroll-margin-top:78px; }
+.chapeau { color:var(--mute); max-width:66ch; font-size:16.5px; }
+.clair { background:var(--craie); color:var(--encre); }
+.clair h2,.clair h3,.clair h4 { color:var(--encre); }
+.clair .chapeau { color:var(--brume); }
+.clair .kicker { color:var(--or-grave); }
+
+/* ------------------------------------------------------------ la barre */
+.barre { position:sticky; top:0; z-index:40; background:rgba(13,20,36,.92);
+         backdrop-filter:blur(10px); border-bottom:1px solid var(--filet); }
+.barre-in { display:flex; align-items:center; gap:18px; padding:14px 0; flex-wrap:wrap; }
+.logo { font-weight:700; color:var(--ivoire); font-size:16px; }
+.logo em { font-style:normal; color:var(--mute); font-weight:500;
+           font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.14em; }
+.nav { display:flex; gap:7px; flex-wrap:wrap; }
+.nav a { font:500 11px/1 'JetBrains Mono',monospace; letter-spacing:.11em; text-transform:uppercase;
+         color:var(--corps); text-decoration:none; padding:9px 14px; border:1px solid var(--filet);
+         border-radius:999px; transition:.15s; }
+.nav a:hover,.nav a:focus-visible { color:var(--encre); background:var(--or); border-color:var(--or);
+                                    outline:none; }
+.cta { margin-left:auto; background:var(--or); color:var(--encre); font-weight:600; font-size:14px;
+       padding:11px 19px; border-radius:var(--r-bouton); text-decoration:none; white-space:nowrap; }
+.cta:hover { background:var(--or-vif); }
+.explique { height:0; overflow:hidden; transition:height .2s ease; background:var(--salle-3);
+            border-top:1px solid transparent; }
+.barre.ouvert .explique { height:50px; border-top-color:var(--filet); }
+.explique p { margin:0; padding:15px 0; font-size:14px; color:var(--corps); }
+.explique b { color:var(--ivoire); }
+
+/* ------------------------------------------------------------ le hero */
+.hero { padding:76px 0 64px; }
+.hero h1 { max-width:19ch; }
+.hero .sous { font-size:18px; color:var(--corps); max-width:56ch; }
+.hero-actions { display:flex; gap:12px; flex-wrap:wrap; margin:30px 0 34px; }
+.b-or { background:var(--or); color:var(--encre); font-weight:600; font-size:15px; padding:13px 22px;
+        border-radius:var(--r-bouton); text-decoration:none; }
+.b-or:hover { background:var(--or-vif); }
+.b-vide { border:1px solid var(--filet); color:var(--ivoire); font-weight:500; font-size:15px;
+          padding:13px 22px; border-radius:var(--r-bouton); text-decoration:none; }
+.b-vide:hover { border-color:var(--or); color:var(--or); }
+.faits { display:flex; gap:40px; flex-wrap:wrap; padding-top:26px; border-top:1px solid var(--filet); }
+.fait b { display:block; font-size:26px; color:var(--ivoire); font-weight:600; line-height:1.1; }
+.fait span { font-size:12.5px; color:var(--mute); }
+
+/* --------------------------------------------------- le programme */
+.prog-grille { display:grid; grid-template-columns:minmax(0,1fr); gap:28px; margin-top:34px; }
+@media (min-width:980px) { .prog-grille { grid-template-columns:minmax(0,1fr) 340px; gap:38px; } }
+.etape { margin-bottom:34px; }
+.etape-tete { display:flex; align-items:baseline; gap:12px; margin-bottom:4px; }
+.etape-tete h4 { margin:0; font:600 13px/1 'JetBrains Mono',monospace; letter-spacing:.14em;
+                 text-transform:uppercase; }
+.etape-jours { font:400 12px/1 'JetBrains Mono',monospace; color:var(--brume); }
+.etape-blurb { font-size:14px; color:var(--brume); max-width:62ch; margin:0 0 16px; }
+.etape-total { font:400 12px/1 'JetBrains Mono',monospace; color:var(--brume); margin:10px 0 0; }
+.mgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:10px; }
+.mtile { display:flex; flex-direction:column; align-items:flex-start; gap:10px; text-align:left;
+         background:var(--papier); border:1px solid var(--lin); border-radius:var(--r-carte);
+         padding:14px; cursor:pointer; font:inherit; color:var(--encre); min-height:132px;
+         transition:transform .16s, box-shadow .16s, border-color .16s; }
+.mtile:hover,.mtile.actif { transform:translateY(-3px); border-color:var(--teinte);
+         box-shadow:0 8px 22px rgba(15,26,46,.11); }
+.mtile:focus-visible { outline:2px solid var(--teinte); outline-offset:2px; }
+.mtile-chip { display:grid; place-items:center; width:36px; height:36px; border-radius:11px;
+              color:var(--teinte); background:color-mix(in srgb, var(--teinte) 12%, transparent); }
+.mtile-titre { font-size:14px; font-weight:500; line-height:1.35; }
+.mtile-bas { margin-top:auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.mtile-duree { font:400 11px/1 'JetBrains Mono',monospace; color:var(--brume); }
+.badge { font:500 9.5px/1 'JetBrains Mono',monospace; letter-spacing:.09em; text-transform:uppercase;
+         border-radius:999px; padding:4px 8px; display:inline-block; }
+.p-inclus { color:var(--sauge); background:rgba(46,125,91,.10); }
+.p-auto { color:var(--avance-texte); background:rgba(76,118,133,.13); }
+.p-free { color:var(--renard); background:rgba(217,116,63,.12); }
+.panneau { position:sticky; top:92px; align-self:start; background:var(--papier);
+           border:1px solid var(--lin); border-radius:var(--r-carte); padding:22px; min-height:300px; }
+.p-vide { color:var(--brume); font-size:14px; }
+.p-vide-pic { display:block; color:var(--lin); margin-bottom:12px; }
+.p-chip { display:grid; place-items:center; width:44px; height:44px; border-radius:12px;
+          margin-bottom:14px; }
+.panneau h4 { margin:10px 0 8px; font-size:18px; }
+.panneau p { font-size:14px; color:#41505f; }
+.p-meta { font:400 12px/1 'JetBrains Mono',monospace; color:var(--brume); margin-bottom:14px; }
+.p-video { border-radius:11px; border:1px solid var(--lin); background:var(--craie);
+           aspect-ratio:16/10; display:grid; place-items:center; color:var(--brume); font-size:12.5px; }
+
+/* --------------------------------------------------- la pratique */
+.pratique { display:grid; grid-template-columns:minmax(0,1fr); gap:16px; margin-top:34px; }
+@media (min-width:860px) { .pratique { grid-template-columns:repeat(3,1fr); } }
+.pcarte { background:var(--salle-2); border:1px solid var(--filet); border-radius:var(--r-carte);
+          padding:24px; }
+.pcarte h4 { margin-bottom:8px; }
+.pcarte p { font-size:14.5px; color:var(--mute); margin:0; }
+.pcarte .pc-num { font:600 12px/1 'JetBrains Mono',monospace; color:var(--or); letter-spacing:.12em;
+                  text-transform:uppercase; display:block; margin-bottom:12px; }
+.terminal { margin-top:18px; background:var(--salle); border:1px solid var(--filet);
+            border-radius:10px; padding:14px; font:400 12.5px/1.7 'JetBrains Mono',monospace;
+            color:#d5dbe6; }
+.terminal i { color:var(--or); font-style:normal; }
+
+/* --------------------------------------------------- les outils */
+.outils { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px;
+          margin-top:28px; }
+.outil { background:var(--papier); border:1px solid var(--lin); border-radius:var(--r-carte);
+         padding:18px; display:flex; flex-direction:column; gap:9px; }
+.outil-chip { display:grid; place-items:center; width:38px; height:38px; border-radius:11px;
+              color:var(--teinte); background:color-mix(in srgb, var(--teinte) 12%, transparent); }
+.outil b { color:var(--encre); font-size:15px; }
+.outil-duree { font:400 12px/1 'JetBrains Mono',monospace; color:var(--brume); }
+
+/* --------------------------------------------------- le MCP */
+.mcp { margin-top:34px; text-align:center; }
+.mcp-haut { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.mcp-ia { background:var(--papier); border:1px solid var(--lin); border-radius:11px;
+          padding:11px 20px; font-weight:600; color:var(--encre); font-size:14.5px; }
+.mcp-liaison { font:400 12.5px/1 'JetBrains Mono',monospace; color:var(--brume); margin:16px 0; }
+.mcp-serveur { max-width:430px; margin:0 auto 22px; background:var(--papier);
+               border:1px solid var(--renard); border-radius:var(--r-carte); padding:20px;
+               transition:border-color .2s; }
+.mcp-kicker { display:block; font:500 10px/1 'JetBrains Mono',monospace; letter-spacing:.14em;
+              text-transform:uppercase; color:var(--renard); margin-bottom:10px; }
+.mcp-serveur b { display:block; color:var(--encre); font-size:17px; font-weight:600; min-height:1.2em; }
+.mcp-droit { display:block; margin-top:8px; font:400 12.5px/1 'JetBrains Mono',monospace;
+             color:var(--brume); }
+.prises { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; max-width:900px;
+          margin:0 auto; }
+.prise { background:var(--papier); border:1px solid var(--lin); border-radius:10px; padding:10px 15px;
+         font:inherit; font-size:14px; color:var(--encre); cursor:pointer; transition:.15s; }
+.prise:hover,.prise.actif { border-color:var(--renard); background:rgba(217,116,63,.07); }
+.mcp-aide { font:400 11px/1 'JetBrains Mono',monospace; letter-spacing:.12em; text-transform:uppercase;
+            color:var(--brume); margin-top:18px; }
+
+/* --------------------------------------------------- le trajet en trois */
+.phases { display:flex; flex-direction:column; gap:12px; margin-top:34px; }
+.phase { background:var(--salle-2); border:1px solid var(--filet); border-radius:var(--r-carte);
+         overflow:hidden; transition:border-color .2s, background .2s; }
+.phase.ouverte { border-color:var(--or); background:var(--salle-3); }
+.phase-tete { width:100%; display:flex; align-items:center; gap:18px; padding:20px 22px;
+              background:none; border:0; cursor:pointer; font:inherit; color:inherit; text-align:left; }
+.phase-bulle { flex:0 0 46px; height:46px; border-radius:50%; display:grid; place-items:center;
+               border:1px solid var(--filet); background:var(--salle);
+               font:600 16px 'Space Grotesk',sans-serif; color:var(--mute); transition:.25s; }
+.phase.ouverte .phase-bulle { border-color:var(--or); color:var(--or); transform:scale(1.06); }
+.phase-mots { flex:1; min-width:0; }
+.phase-titre { display:block; color:var(--ivoire); font-size:19px; font-weight:600; }
+.phase-jours { display:block; font:400 12px/1.6 'JetBrains Mono',monospace; color:var(--mute); }
+.phase-etat { text-align:right; }
+.phase-etat b { display:block; color:var(--or); font-size:19px; font-weight:600;
+                font-variant-numeric:tabular-nums; }
+.phase-etat i { font-style:normal; font:400 10.5px/1 'JetBrains Mono',monospace; color:var(--mute);
+                letter-spacing:.1em; text-transform:uppercase; }
+.phase-chev { color:var(--mute); flex:0 0 18px; transition:transform .25s; }
+.phase.ouverte .phase-chev { transform:rotate(180deg); color:var(--or); }
+.phase-corps { display:grid; grid-template-rows:0fr; transition:grid-template-rows .34s ease; }
+.phase.ouverte .phase-corps { grid-template-rows:1fr; }
+.phase-inner { overflow:hidden; }
+.phase-blurb { padding:0 22px; color:var(--mute); font-size:14.5px; max-width:70ch; }
+.jours { list-style:none; margin:0; padding:0 22px 22px; }
+.jour { display:flex; align-items:baseline; gap:16px; padding:13px 0;
+        border-top:1px solid var(--filet); opacity:0; transform:translateY(8px); }
+.phase.ouverte .jour { animation:monte .38s ease forwards; }
+.phase.ouverte .jour:nth-child(1) { animation-delay:.04s; }
+.phase.ouverte .jour:nth-child(2) { animation-delay:.10s; }
+.phase.ouverte .jour:nth-child(3) { animation-delay:.16s; }
+.phase.ouverte .jour:nth-child(4) { animation-delay:.22s; }
+.phase.ouverte .jour:nth-child(5) { animation-delay:.28s; }
+.phase.ouverte .jour:nth-child(6) { animation-delay:.34s; }
+@keyframes monte { to { opacity:1; transform:none; } }
+.jour-num { flex:0 0 66px; font:500 11px/1.4 'JetBrains Mono',monospace; letter-spacing:.08em;
+            text-transform:uppercase; color:var(--or); }
+.jour-texte { flex:1; color:var(--ivoire); font-size:15px; }
+.jour-jeu { flex:0 0 158px; text-align:right; font:400 11.5px/1.4 'JetBrains Mono',monospace;
+            color:var(--mute); white-space:nowrap; }
+.jour-jeu b { color:var(--corps); }
+@media (max-width:700px) {
+  .phase-etat { display:none; }
+  .jour { flex-wrap:wrap; gap:6px; }
+  .jour-jeu { flex:1 0 100%; text-align:left; }
+}
+
+/* --------------------------------------------------- preuves, ecrans, prix */
+.avis { display:grid; grid-template-columns:minmax(0,1fr); gap:14px; margin-top:30px; }
+@media (min-width:820px) { .avis { grid-template-columns:repeat(3,1fr); } }
+.avis blockquote { margin:0; background:var(--salle-2); border:1px solid var(--filet);
+                   border-radius:var(--r-carte); padding:22px; font-size:14.5px; color:var(--corps); }
+.avis cite { display:block; margin-top:12px; font-style:normal; font:500 12px/1 'JetBrains Mono',
+             monospace; color:var(--mute); }
+.ecrans { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px;
+          margin-top:30px; }
+.ecran { aspect-ratio:16/10; border:1px solid var(--filet); border-radius:var(--r-carte);
+         background:var(--salle-2); display:grid; place-items:center; color:var(--mute);
+         font-size:13px; }
+.prix { display:grid; grid-template-columns:minmax(0,1fr); gap:16px; margin-top:34px; }
+@media (min-width:820px) { .prix { grid-template-columns:1fr 1fr; } }
+.offre { background:var(--salle-2); border:1px solid var(--filet); border-radius:var(--r-carte);
+         padding:28px; }
+.offre.principale { border-color:var(--or); }
+.offre.auto { border-color:var(--avance); }
+.offre h3 { margin-bottom:4px; }
+.offre .tag { font:500 10.5px/1 'JetBrains Mono',monospace; letter-spacing:.12em;
+              text-transform:uppercase; color:var(--or); }
+.offre.auto .tag { color:var(--avance); }
+.montant { font-size:38px; color:var(--ivoire); font-weight:600; margin:14px 0 2px;
+           font-variant-numeric:tabular-nums; }
+.montant small { font-size:15px; color:var(--mute); font-weight:400; }
+.duree-off { font:400 12.5px/1 'JetBrains Mono',monospace; color:var(--or); margin-bottom:16px; }
+.offre.auto .duree-off { color:var(--avance); }
+.offre ul { list-style:none; margin:0 0 20px; padding:0; }
+.offre li { padding:7px 0 7px 22px; position:relative; font-size:14.5px; }
+.offre li::before { content:''; position:absolute; left:0; top:15px; width:9px; height:2px;
+                    background:var(--or); }
+.offre.auto li::before { background:var(--avance); }
+.rappel { margin-top:22px; font-size:13.5px; color:var(--mute); }
+
+/* --------------------------------------------------- notes de labo */
+.labo { background:var(--salle-3); border-left:3px solid var(--or); border-radius:0 12px 12px 0;
+        padding:16px 20px; margin:26px 0; font-size:14px; }
+.labo b { color:var(--ivoire); }
+.labo code { font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--or-vif); }
+.pied { padding:60px 0 90px; color:var(--mute); font-size:13.5px; }
+
+@media (prefers-reduced-motion:reduce) {
+  * { animation-duration:.001ms !important; transition-duration:.001ms !important; }
+  html { scroll-behavior:auto; }
+  .jour { opacity:1; transform:none; }
+}
+</style>
+</head>
+<body>
+
+<header class="barre" id="barre">
+  <div class="wrap barre-in">
+    <span class="logo">mydigipal. <em>AI ACADEMY</em></span>
+    <nav class="nav">
+      <a href="#programme" data-ex="<b>122 leçons, 16 modules, 12 h 28.</b> Ce que vous apprenez, module par module, et ce que chacun vous fait produire.">Le programme</a>
+      <a href="#pratique" data-ex="<b>L'atelier, 18 exercices, les quiz.</b> On écrit ses propres demandes, on rend un travail, on se fait corriger.">La pratique</a>
+      <a href="#trajet" data-ex="<b>Trente jours dans un compte.</b> Ce qu'une apprenante fait, jour après jour, jusqu'à l'attestation.">Le trajet</a>
+      <a href="#tarifs" data-ex="<b>290 € pour 30 jours.</b> L'assistant compris. Les automatisations en complément.">Les tarifs</a>
+    </nav>
+    <a class="cta" href="#tarifs">Commencer</a>
+  </div>
+  <div class="explique"><div class="wrap"><p id="ex">&nbsp;</p></div></div>
+</header>
+
+<div class="wrap">
+  <div class="labo" style="margin-top:26px">
+    <b>Page de labo, 6 septembre 2026.</b> La page de vente reprise avec la structure proposée :
+    le programme décrit avant le récit, le trajet de Clara en trois phases dépliables, une barre
+    qui explique, la photo retirée, la phrase du MCP remplacée par la permission réelle, et
+    « pour 30 jours » partout. Contenu et chiffres relevés en production le 6 septembre
+    (<code>admin/content</code> et <code>public/jour30</code>). Rien ici n'est en ligne.
+  </div>
+</div>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="kicker">Formation IA en ligne</div>
+    <h1>Apprendre à travailler avec l'IA, en trente jours.</h1>
+    <p class="sous">122 leçons, 16 modules, 12 h 28 de formation. La méthode
+      d'abord, votre outil ensuite, et vos propres dossiers pour s'entraîner. Née de trois ans de
+      formation en salle chez La Poste, Pierre Fabre et La Redoute.</p>
+    <div class="hero-actions">
+      <a class="b-or" href="#tarifs">Commencer &mdash; 290 €</a>
+      <a class="b-vide" href="#programme">15 leçons offertes</a>
+    </div>
+    <div class="faits">
+      <div class="fait"><b>122</b><span>leçons</span></div>
+      <div class="fait"><b>248</b><span>prompts prêts</span></div>
+      <div class="fait"><b>18</b><span>exercices</span></div>
+      <div class="fait"><b>9,4/10</b><span>sur 497 retours</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section clair" id="programme">
+  <div class="wrap">
+    <div class="kicker">Le programme</div>
+    <h2>Ce que vous apprenez, module par module</h2>
+    <p class="chapeau">Trois étapes, 16 modules, 12 h 28. Vous choisissez un outil au
+      module 4 et le parcours ne garde que celui-là. Survolez un module pour voir ce qu'il contient.</p>
+    <div class="prog-grille"><div class="prog-col"><div class="etape"><div class="etape-tete"><h4>Débuter</h4><span class="etape-jours">Jours 1 à 9</span></div><p class="etape-blurb">Comprendre ce qu'on manipule, apprendre la méthode, ouvrir son outil et faire sa première vraie demande.</p><div class="mgrid"><button class="mtile" type="button" data-mod="M0" data-titre="Bienvenue et diagnostic" data-texte="Où vous en êtes, ce que vous voulez gagner, et comment le parcours se lit. Le diagnostic de départ, auquel on revient à la fin pour mesurer l'écart." data-teinte="#1d6b4f" data-palier="free" data-duree="38 min" style="--teinte:#1d6b4f"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.4 3.6h7.2v16.8H5.4z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M12.6 3.6H5.4v16.8h7.2"/> <path d="M12.6 2.8v18.4"/> <circle cx="10.4" cy="12" r=".9" fill="currentColor" stroke="none"/> <path d="M15.4 12h5.2m0 0-2.6-2.6m2.6 2.6-2.6 2.6"/></svg></span><span class="mtile-titre">Bienvenue et diagnostic</span><span class="mtile-bas"><span class="mtile-duree">38 min</span><span class="badge p-free">Offert</span></span></button><button class="mtile" type="button" data-mod="M1" data-titre="Comprendre l'IA générative" data-texte="Ce que la machine fait quand elle répond. Le vocabulaire, les limites, et pourquoi elle se trompe avec assurance." data-teinte="#2f5d8a" data-palier="essentials" data-duree="1 h 05" style="--teinte:#2f5d8a"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.2 4.4c-2.6 0-4.6 1.6-4.6 3.7 0 .5.1 1 .3 1.4-.9.6-1.5 1.5-1.5 2.6 0 1 .5 1.9 1.3 2.5-.1.3-.2.7-.2 1 0 1.9 1.8 3.4 4.1 3.4h.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M11.2 4.4c-2.6 0-4.6 1.6-4.6 3.7 0 .5.1 1 .3 1.4-.9.6-1.5 1.5-1.5 2.6 0 1 .5 1.9 1.3 2.5-.1.3-.2.7-.2 1 0 1.9 1.8 3.4 4.1 3.4h.6"/> <path d="M12.8 4.4c2.6 0 4.6 1.6 4.6 3.7 0 .5-.1 1-.3 1.4.9.6 1.5 1.5 1.5 2.6 0 1-.5 1.9-1.3 2.5.1.3.2.7.2 1 0 1.9-1.8 3.4-4.1 3.4h-.6"/> <path d="M12 4.4v15.2"/> <path d="M9.4 9.2c.9.5 1.6 1.4 1.6 2.6M14.6 13.4c-.9-.5-1.6-1.4-1.6-2.6"/></svg></span><span class="mtile-titre">Comprendre l'IA générative</span><span class="mtile-bas"><span class="mtile-duree">1 h 05</span></span></button><button class="mtile" type="button" data-mod="M2" data-titre="La méthode CRAFT" data-texte="Les cinq pièces d'une demande qui marche : contexte, rôle, action, format, ton. Le module le plus long du parcours, et l'atelier où on l'écrit." data-teinte="#a8862f" data-palier="essentials" data-duree="1 h 37" style="--teinte:#a8862f"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="4.4" rx="1.2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="4" y="4" width="16" height="4.4" rx="1.2"/> <rect x="4" y="9.8" width="16" height="4.4" rx="1.2"/> <rect x="4" y="15.6" width="11" height="4.4" rx="1.2"/> <path d="M7.2 6.2h1.6M7.2 12h1.6M7.2 17.8h1.6"/></svg></span><span class="mtile-titre">La méthode CRAFT</span><span class="mtile-bas"><span class="mtile-duree">1 h 37</span></span></button><button class="mtile" type="button" data-mod="M4x" data-titre="Votre outil" data-texte="Un parcours complet sur l'outil que vous utilisez déjà. Copilot, Gemini, Claude ou ChatGPT : vous en choisissez un, le parcours ne garde que celui-là." data-teinte="#8a4b2a" data-palier="essentials" data-duree="52 min" style="--teinte:#8a4b2a"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.6h9.4L19 8.2v12.2H5z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M5 3.6h9.4L19 8.2v12.2H5z"/> <path d="M14.2 3.8v4.4H18.8"/> <path d="M7.6 12.4h8.8M7.6 15.4h8.8M7.6 18h5.4"/></svg></span><span class="mtile-titre">Votre outil</span><span class="mtile-bas"><span class="mtile-duree">52 min</span></span></button></div><p class="etape-total">4 modules, 4 h 12</p></div><div class="etape"><div class="etape-tete"><h4>Maîtriser</h4><span class="etape-jours">Jours 10 à 20</span></div><p class="etape-blurb">Aller plus loin dans la demande, juger ce qui sort, protéger ses données, et faire son vrai travail avec.</p><div class="mgrid"><button class="mtile" type="button" data-mod="M3" data-titre="Prompting avancé" data-texte="Faire produire un plan avant le texte, découper une tâche longue, reprendre une réponse qui rate." data-teinte="#5b4a7a" data-palier="essentials" data-duree="57 min" style="--teinte:#5b4a7a"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.4 8.4 4.3-8.4 4.3-8.4-4.3z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m12 3.4 8.4 4.3-8.4 4.3-8.4-4.3z"/> <path d="m4.6 12 7.4 3.8 7.4-3.8"/> <path d="m4.6 16.3 7.4 3.8 7.4-3.8"/></svg></span><span class="mtile-titre">Prompting avancé</span><span class="mtile-bas"><span class="mtile-duree">57 min</span></span></button><button class="mtile" type="button" data-mod="M9" data-titre="Juger une réponse" data-texte="Reconnaître ce qui est faux, vérifier une source, et savoir quand une réponse ne se corrige pas." data-teinte="#2f5d8a" data-palier="essentials" data-duree="36 min" style="--teinte:#2f5d8a"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.4v13.2M7 18.6h10" stroke-width="1.6"/> <path d="m4 11 2.8-5.2L9.6 11z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m4 11 2.8-5.2L9.6 11a2.8 2.8 0 0 1-5.6 0Z"/> <path d="m14.4 11 2.8-5.2L20 11z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m14.4 11 2.8-5.2L20 11a2.8 2.8 0 0 1-5.6 0Z"/> <path d="M6.8 5.8h10.4"/></svg></span><span class="mtile-titre">Juger une réponse</span><span class="mtile-bas"><span class="mtile-duree">36 min</span></span></button><button class="mtile" type="button" data-mod="M10" data-titre="Vos données et le cadre d'usage" data-texte="Ce qui ne sort pas de l'entreprise, ce qu'on peut coller dans une conversation, et la règle qu'on écrit pour l'équipe." data-teinte="#1d6b4f" data-palier="essentials" data-duree="36 min" style="--teinte:#1d6b4f"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.4l7 2.6v5.4c0 4-2.9 7.4-7 8.8-4.1-1.4-7-4.8-7-8.8V6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M12 3.4l7 2.6v5.4c0 4-2.9 7.4-7 8.8-4.1-1.4-7-4.8-7-8.8V6z"/> <path d="m8.8 11.8 2.2 2.2 4.2-4.4"/></svg></span><span class="mtile-titre">Vos données et le cadre d'usage</span><span class="mtile-bas"><span class="mtile-duree">36 min</span></span></button><button class="mtile" type="button" data-mod="M16" data-titre="Écrire, traduire, résumer" data-texte="Le plan avant le document long, le résumé qui sert à décider, la réécriture qui garde le sens. Offert avec le premier module." data-teinte="#2b6b5e" data-palier="free" data-duree="37 min" style="--teinte:#2b6b5e"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.4-4.4L16.2 4.8a2 2 0 0 1 2.8 2.8L8.4 18.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M4 20l1.4-4.4L16.2 4.8a2 2 0 0 1 2.8 2.8L8.4 18.6z"/> <path d="m14.6 6.4 3 3"/> <path d="M4 20h6"/></svg></span><span class="mtile-titre">Écrire, traduire, résumer</span><span class="mtile-bas"><span class="mtile-duree">37 min</span><span class="badge p-free">Offert</span></span></button><button class="mtile" type="button" data-mod="M5" data-titre="Au-delà du texte : image, vidéo, audio" data-texte="Ce qu'on produit soi-même, ce qu'on confie encore à un professionnel, et le visuel décliné en trois formats." data-teinte="#8a3550" data-palier="pro" data-duree="53 min" style="--teinte:#8a3550"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.4" y="4.8" width="17.2" height="14.4" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.4" y="4.8" width="17.2" height="14.4" rx="2"/> <circle cx="8.4" cy="9.6" r="1.5"/> <path d="m3.8 16.6 4.6-4.2 3.4 3 3-2.6 5.4 4.6"/></svg></span><span class="mtile-titre">Au-delà du texte : image, vidéo, audio</span><span class="mtile-bas"><span class="mtile-duree">53 min</span><span class="badge p-auto">Automatisations</span></span></button><button class="mtile" type="button" data-mod="M6" data-titre="Cas d'usage métier" data-texte="Les cas de votre poste, montés pas à pas, avec le prompt et le résultat obtenu." data-teinte="#7a5b1e" data-palier="pro" data-duree="56 min" style="--teinte:#7a5b1e"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="7.6" width="17.6" height="11.6" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.2" y="7.6" width="17.6" height="11.6" rx="2"/> <path d="M9 7.6V6a1.6 1.6 0 0 1 1.6-1.6h2.8A1.6 1.6 0 0 1 15 6v1.6"/> <path d="M3.2 12.6h17.6"/> <path d="M10.6 12.6h2.8"/></svg></span><span class="mtile-titre">Cas d'usage métier</span><span class="mtile-bas"><span class="mtile-duree">56 min</span><span class="badge p-auto">Automatisations</span></span></button><button class="mtile" type="button" data-mod="M11" data-titre="Les chiffres et les tableurs" data-texte="Faire lire un tableau, produire une formule, vérifier un calcul qu'on ne referait pas à la main." data-teinte="#1f6d72" data-palier="pro" data-duree="56 min" style="--teinte:#1f6d72"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.6" y="3.6" width="7.2" height="7.2" rx="1.4" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.6" y="3.6" width="7.2" height="7.2" rx="1.4"/> <rect x="13.2" y="3.6" width="7.2" height="7.2" rx="1.4"/> <rect x="3.6" y="13.2" width="7.2" height="7.2" rx="1.4"/> <rect x="13.2" y="13.2" width="7.2" height="7.2" rx="1.4"/> <path d="M6.4 7.2h1.6M16 7.2h1.6M6.4 16.8h1.6M16 16.8h1.6"/></svg></span><span class="mtile-titre">Les chiffres et les tableurs</span><span class="mtile-bas"><span class="mtile-duree">56 min</span><span class="badge p-auto">Automatisations</span></span></button><button class="mtile" type="button" data-mod="M12" data-titre="Réunions, comptes rendus et messages" data-texte="Du transcript au compte rendu, du compte rendu aux tâches, et les messages qui suivent." data-teinte="#5b4a7a" data-palier="pro" data-duree="54 min" style="--teinte:#5b4a7a"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.4" y="3.6" width="15.2" height="16.8" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="4.4" y="3.6" width="15.2" height="16.8" rx="2"/> <path d="M8 8.2h8M8 12h8M8 15.8h4.6"/></svg></span><span class="mtile-titre">Réunions, comptes rendus et messages</span><span class="mtile-bas"><span class="mtile-duree">54 min</span><span class="badge p-auto">Automatisations</span></span></button><button class="mtile" type="button" data-mod="M17" data-titre="Recherche et veille sérieuses" data-texte="Chercher sans se faire raconter d'histoires, recouper deux sources, monter une veille qui tient dans la durée." data-teinte="#3a4a6b" data-palier="essentials" data-duree="25 min" style="--teinte:#3a4a6b"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.4" fill="currentColor" fill-opacity=".16" stroke="none"/> <circle cx="12" cy="12" r="8.4"/> <circle cx="12" cy="12" r="4.6"/> <path d="M12 12 18 6.6"/> <circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/> <circle cx="16.6" cy="8.4" r="1.4" fill="currentColor" stroke="none"/></svg></span><span class="mtile-titre">Recherche et veille sérieuses</span><span class="mtile-bas"><span class="mtile-duree">25 min</span></span></button><button class="mtile" type="button" data-mod="M19" data-titre="Présenter et convaincre" data-texte="L'argumentaire, la présentation, et la note d'une page qui porte la décision." data-teinte="#a8862f" data-palier="pro" data-duree="25 min" style="--teinte:#a8862f"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.4 20v-6.4h7.2V20z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M8.4 20v-6.4h7.2V20z"/> <path d="M3 20h18"/> <circle cx="12" cy="6.4" r="2.6"/> <path d="M9.6 13.6c0-2 1.1-3.2 2.4-3.2s2.4 1.2 2.4 3.2"/> <path d="M5.6 20v-3.4h2.8M18.4 20v-3.4h-2.8"/></svg></span><span class="mtile-titre">Présenter et convaincre</span><span class="mtile-bas"><span class="mtile-duree">25 min</span><span class="badge p-auto">Automatisations</span></span></button></div><p class="etape-total">10 modules, 7 h 15</p></div><div class="etape"><div class="etape-tete"><h4>Mettre en œuvre</h4><span class="etape-jours">Jours 21 à 30</span></div><p class="etape-blurb">Installer les usages qui comptent, brancher ses outils, et cadrer une équipe qui s'en sert.</p><div class="mgrid"><button class="mtile" type="button" data-mod="M18" data-titre="Manager une équipe qui utilise l'IA" data-texte="La règle d'équipe, ce qu'on autorise, ce qu'on relit, et comment on suit sans surveiller." data-teinte="#8a3550" data-palier="pro" data-duree="32 min" style="--teinte:#8a3550"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8.4" cy="7.6" r="3.2" fill="currentColor" fill-opacity=".16" stroke="none"/> <circle cx="8.4" cy="7.6" r="3.2"/> <path d="M2.8 19.4c0-3.2 2.4-5.4 5.6-5.4s5.6 2.2 5.6 5.4"/> <circle cx="17" cy="10" r="2.6"/> <path d="M15.4 15c2.8 0 5.2 1.9 5.2 4.4"/></svg></span><span class="mtile-titre">Manager une équipe qui utilise l'IA</span><span class="mtile-bas"><span class="mtile-duree">32 min</span><span class="badge p-auto">Automatisations</span></span></button><button class="mtile" type="button" data-mod="M8" data-titre="Passer à l'action" data-texte="Choisir les trois usages qui comptent pour vous, les installer dans la semaine, et mesurer ce qu'ils rendent." data-teinte="#3f5a34" data-palier="essentials" data-duree="32 min" style="--teinte:#3f5a34"><span class="mtile-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4.6h11.8l-2.6 3.6 2.6 3.6H6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M6 4.6h11.8l-2.6 3.6 2.6 3.6H6"/> <path d="M6 3.4v17.2"/></svg></span><span class="mtile-titre">Passer à l'action</span><span class="mtile-bas"><span class="mtile-duree">32 min</span></span></button></div><p class="etape-total">2 modules, 1 h 04</p></div></div><aside class="panneau" id="panneau"><div class="p-vide" id="p-vide"><span class="p-vide-pic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.6" y="3.6" width="7.2" height="7.2" rx="1.4" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.6" y="3.6" width="7.2" height="7.2" rx="1.4"/> <rect x="13.2" y="3.6" width="7.2" height="7.2" rx="1.4"/> <rect x="3.6" y="13.2" width="7.2" height="7.2" rx="1.4"/> <rect x="13.2" y="13.2" width="7.2" height="7.2" rx="1.4"/> <path d="M6.4 7.2h1.6M16 7.2h1.6M6.4 16.8h1.6M16 16.8h1.6"/></svg></span>Survolez un module pour voir ce qu'il contient. Cliquez pour le garder à l'écran.</div><div id="p-plein" hidden><div class="p-chip" id="p-chip"></div><span class="badge" id="p-badge"></span><h4 id="p-titre"></h4><p id="p-texte"></p><div class="p-meta"><span id="p-duree"></span></div><div class="p-video"><span>l'écran filmé du module</span></div></div></aside></div>
+    <p class="chapeau" style="margin-top:26px">« Bienvenue et diagnostic » et « Écrire, traduire, résumer » sont offerts, soit
+      15 leçons et 75 minutes, sans carte bancaire.
+      6 modules s'ouvrent avec Les automatisations.</p>
+  </div>
+</section>
+
+<section class="section" id="pratique">
+  <div class="wrap">
+    <div class="kicker">La pratique</div>
+    <h2>On n'apprend pas l'IA en lisant</h2>
+    <p class="chapeau">Chaque leçon se termine par un « À vous ». Ce que vous écrivez est gardé,
+      et vous pouvez le faire relire.</p>
+    <div class="pratique">
+      <div class="pcarte">
+        <span class="pc-num">01 &middot; l'atelier</span>
+        <h4>Vous écrivez vos demandes</h4>
+        <p>Les cinq champs de CRAFT, et le prompt s'assemble sous vos yeux. On part d'un exemple
+          complet, jamais d'une page blanche.</p>
+        <div class="terminal">
+          <i>Contexte</i> &middot; je suis responsable marketing dans une PME<br>
+          <i>Rôle</i> &middot; agis comme un rédacteur B2B<br>
+          <i>Action</i> &middot; rédige trois objets d'email<br>
+          <i>Format</i> &middot; une liste, 60 caractères maximum<br>
+          <i>Ton</i> &middot; direct, sans superlatif
+        </div>
+      </div>
+      <div class="pcarte">
+        <span class="pc-num">02 &middot; les exercices</span>
+        <h4>Vous rendez un travail</h4>
+        <p>18 exercices sur vos propres dossiers, pas sur un cas d'école. Jusqu'à
+          3 d'entre eux sont relus et vous reviennent annotés.</p>
+      </div>
+      <div class="pcarte">
+        <span class="pc-num">03 &middot; les quiz</span>
+        <h4>Vous vérifiez</h4>
+        <p>Un quiz par module, corrigé côté serveur, avec le renvoi vers la leçon quand vous vous
+          trompez. 28 trophées à débloquer en chemin.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section clair">
+  <div class="wrap">
+    <div class="kicker">Votre outil</div>
+    <h2>Un parcours par outil, celui que vous avez déjà</h2>
+    <p class="chapeau">Au module 4, vous choisissez. Le parcours garde le vôtre et écarte les trois
+      autres : vous n'apprenez pas une interface que vous n'ouvrirez jamais.</p>
+    <div class="outils"><div class="outil" style="--teinte:#3a4a6b"><span class="outil-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2"/> <path d="M3.4 9.2h17.2M9.4 9.2v10.4"/> <path d="m13 13 4.4 1.6-1.8.8-.8 1.8z" fill="currentColor" stroke="none"/></svg></span><b>Microsoft Copilot</b><span class="outil-duree">49 min</span></div><div class="outil" style="--teinte:#1f6d72"><span class="outil-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="6.4" width="13.4" height="9.6" rx="1.8" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="2.6" y="6.4" width="13.4" height="9.6" rx="1.8"/> <path d="m2.6 7.6 6.7 4.4 6.7-4.4"/> <path d="M13.6 11.6h5.8a1.6 1.6 0 0 1 1.6 1.6v6.6a1.6 1.6 0 0 1-1.6 1.6h-5.4"/> <path d="M15.8 15.4h3.2M15.8 18h2"/></svg></span><b>Google Gemini</b><span class="outil-duree">45 min</span></div><div class="outil" style="--teinte:#8a4b2a"><span class="outil-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.6h9.4L19 8.2v12.2H5z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M5 3.6h9.4L19 8.2v12.2H5z"/> <path d="M14.2 3.8v4.4H18.8"/> <path d="M7.6 12.4h8.8M7.6 15.4h8.8M7.6 18h5.4"/></svg></span><b>Claude</b><span class="outil-duree">1 h 15</span></div><div class="outil" style="--teinte:#2b6b5e"><span class="outil-chip"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.4 5.6h12.2v8.2H8.2l-4.8 3.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M3.4 5.6h12.2v8.2H8.2l-4.8 3.6z"/> <path d="M18 9.4h2.6v8.2h-3.4l-3.6 2.8v-2.8h-1.4"/> <path d="M6.4 9.8h6.2"/></svg></span><b>ChatGPT</b><span class="outil-duree">40 min</span></div></div>
+  </div>
+</section>
+
+<section class="section clair" style="border-top:1px solid var(--lin)">
+  <div class="wrap">
+    <div class="kicker">Les automatisations</div>
+    <h2>Brancher l'IA sur vos outils</h2>
+    <p class="chapeau">Un serveur MCP est une prise : il donne à l'assistant l'accès à un outil,
+      et seulement ce que vous autorisez. Touchez un outil pour voir ce qu'il obtient exactement.</p>
+    <div class="mcp"><div class="mcp-haut"><span class="mcp-ia">Claude</span><span class="mcp-ia">ChatGPT</span><span class="mcp-ia">Gemini</span></div><p class="mcp-liaison">Celui que vous utilisez déjà. Le serveur ne change pas.</p><div class="mcp-serveur" id="mcp-serveur"><span class="mcp-kicker">Votre serveur MCP</span><b id="mcp-titre">Choisissez un outil ci-dessous</b><span class="mcp-droit" id="mcp-droit">il ne verra que ce que vous autorisez</span></div><div class="prises"><button class="prise" type="button" data-nom="Gmail" data-fait="lit vos messages, prépare les réponses" data-droit="lecture + brouillon">Gmail</button><button class="prise" type="button" data-nom="Agenda" data-fait="lit vos disponibilités, pose les rendez-vous" data-droit="lecture + écriture">Agenda</button><button class="prise" type="button" data-nom="Tableur" data-fait="lit vos feuilles, écrit les colonnes calculées" data-droit="lecture + écriture">Tableur</button><button class="prise" type="button" data-nom="CRM" data-fait="lit les fiches, met à jour les étapes" data-droit="lecture + écriture">CRM</button><button class="prise" type="button" data-nom="Publicité" data-fait="lit les dépenses et les résultats" data-droit="lecture seule">Publicité</button><button class="prise" type="button" data-nom="Documents" data-fait="lit vos documents, en crée de nouveaux" data-droit="lecture + création">Documents</button><button class="prise" type="button" data-nom="Slack ou Teams" data-fait="lit les fils, poste les récapitulatifs" data-droit="lecture + publication">Slack ou Teams</button><button class="prise" type="button" data-nom="Analytics" data-fait="lit le trafic et les conversions" data-droit="lecture seule">Analytics</button><button class="prise" type="button" data-nom="Visio" data-fait="lit les transcriptions de réunion" data-droit="lecture seule">Visio</button><button class="prise" type="button" data-nom="Comptabilité" data-fait="lit les factures, prépare les relances" data-droit="lecture + brouillon">Comptabilité</button><button class="prise" type="button" data-nom="Fichiers" data-fait="range, renomme, retrouve" data-droit="lecture + écriture">Fichiers</button><button class="prise" type="button" data-nom="Entrepôt" data-fait="interroge vos données" data-droit="lecture seule">Entrepôt</button><button class="prise" type="button" data-nom="Support" data-fait="lit les tickets, propose les réponses" data-droit="lecture + brouillon">Support</button><button class="prise" type="button" data-nom="Site web" data-fait="publie les pages validées" data-droit="publication">Site web</button></div><p class="mcp-aide">Touchez un outil</p></div>
+  </div>
+</section>
+
+<section class="section" id="trajet">
+  <div class="wrap">
+    <div class="kicker">La démonstration</div>
+    <h2>Trente jours dans un compte</h2>
+    <p class="chapeau">Clara Martin est une apprenante composée. Son compte se remplit selon le
+      barème réel du produit. Ouvrez une phase pour voir ce qu'elle fait, jour après jour.</p>
+    <div class="phases" id="phases"><div class="phase" data-phase="debuter" data-points="940" data-rang="Méthode"><button class="phase-tete" type="button" aria-expanded="false"><span class="phase-bulle"><span class="phase-num">1</span></span><span class="phase-mots"><span class="phase-titre">Débuter</span><span class="phase-jours">Jours 1 à 9 &middot; 5 moments</span></span><span class="phase-etat"><b class="phase-pts">940</b><i>points au bout</i></span><svg class="phase-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="phase-corps"><div class="phase-inner"><p class="phase-blurb">Comprendre ce qu'on manipule, apprendre la méthode, ouvrir son outil et faire sa première vraie demande.</p><ol class="jours"><li class="jour"><span class="jour-num">Jour 1</span><span class="jour-texte">Elle ouvre son compte. Paul l'accueille, en vidéo.</span><span class="jour-jeu"><b>75</b> pts &middot; Découverte</span></li><li class="jour"><span class="jour-num">Jour 2</span><span class="jour-texte">Elle apprend la méthode. Cinq champs, et la demande s'écrit toute seule.</span><span class="jour-jeu"><b>140</b> pts &middot; Découverte</span></li><li class="jour"><span class="jour-num">Jour 3</span><span class="jour-texte">Elle rend un exercice, sur ses propres données.</span><span class="jour-jeu"><b>255</b> pts &middot; Pratique</span></li><li class="jour"><span class="jour-num">Jour 6</span><span class="jour-texte">Le quiz du module CRAFT. Sans faute, du premier coup.</span><span class="jour-jeu"><b>535</b> pts &middot; Pratique</span></li><li class="jour"><span class="jour-num">Jour 9</span><span class="jour-texte">Elle choisit son outil. Le parcours ne garde que celui-là.</span><span class="jour-jeu"><b>940</b> pts &middot; Méthode</span></li></ol></div></div></div><div class="phase" data-phase="maitriser" data-points="2310" data-rang="Maîtrise"><button class="phase-tete" type="button" aria-expanded="false"><span class="phase-bulle"><span class="phase-num">2</span></span><span class="phase-mots"><span class="phase-titre">Maîtriser</span><span class="phase-jours">Jours 10 à 20 &middot; 5 moments</span></span><span class="phase-etat"><b class="phase-pts">2 310</b><i>points au bout</i></span><svg class="phase-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="phase-corps"><div class="phase-inner"><p class="phase-blurb">Aller plus loin dans la demande, juger ce qui sort, protéger ses données, et faire son vrai travail avec.</p><ol class="jours"><li class="jour"><span class="jour-num">Jour 11</span><span class="jour-texte">Une question à 23 h. L'assistant répond, et cite la leçon.</span><span class="jour-jeu"><b>1 130</b> pts &middot; Méthode</span></li><li class="jour"><span class="jour-num">Jour 12</span><span class="jour-texte">Elle cesse d'écrire ses prompts de zéro. Puis elle en ajoute un.</span><span class="jour-jeu"><b>1 440</b> pts &middot; Méthode</span></li><li class="jour"><span class="jour-num">Jour 14</span><span class="jour-texte">Cinq leçons dans la journée. Un trophée tombe qu'elle ne cherchait pas.</span><span class="jour-jeu"><b>1 970</b> pts &middot; Maîtrise</span></li><li class="jour"><span class="jour-num">Jour 15</span><span class="jour-texte">On lui demande le visuel en trois formats. Pour hier.</span><span class="jour-jeu"><b>2 200</b> pts &middot; Maîtrise</span></li><li class="jour"><span class="jour-num">Jour 18</span><span class="jour-texte">Elle branche son premier serveur. Il lit son agenda, et rien d'autre.</span><span class="jour-jeu"><b>2 310</b> pts &middot; Maîtrise</span></li></ol></div></div></div><div class="phase" data-phase="agir" data-points="4835" data-rang="Référent"><button class="phase-tete" type="button" aria-expanded="false"><span class="phase-bulle"><span class="phase-num">3</span></span><span class="phase-mots"><span class="phase-titre">Mettre en œuvre</span><span class="phase-jours">Jours 21 à 30 &middot; 6 moments</span></span><span class="phase-etat"><b class="phase-pts">4 835</b><i>points au bout</i></span><svg class="phase-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="phase-corps"><div class="phase-inner"><p class="phase-blurb">Installer les usages qui comptent, brancher ses outils, et cadrer une équipe qui s'en sert.</p><ol class="jours"><li class="jour"><span class="jour-num">Jour 21</span><span class="jour-texte">Lundi, huit heures. Ses relances sont écrites. Elle les lit, elle envoie.</span><span class="jour-jeu"><b>2 385</b> pts &middot; Maîtrise</span></li><li class="jour"><span class="jour-num">Jour 22</span><span class="jour-texte">Trente minutes en visio. Préparé : il a lu ses exercices avant.</span><span class="jour-jeu"><b>2 650</b> pts &middot; Maîtrise</span></li><li class="jour"><span class="jour-num">Jour 24</span><span class="jour-texte">Un agent surveille ses livraisons. Il agit dans son couloir, et demande le reste.</span><span class="jour-jeu"><b>2 705</b> pts &middot; Maîtrise</span></li><li class="jour"><span class="jour-num">Jour 26</span><span class="jour-texte">Elle monte son premier serveur MCP.</span><span class="jour-jeu"><b>2 935</b> pts &middot; Maîtrise</span></li><li class="jour"><span class="jour-num">Jour 28</span><span class="jour-texte">Elle compte. Pas une promesse : son relevé, sur sa semaine.</span><span class="jour-jeu"><b>2 985</b> pts &middot; Maîtrise</span></li><li class="jour"><span class="jour-num">Jour 30</span><span class="jour-texte">L'attestation. Elle l'imprime et la pose sur le bureau de sa direction.</span><span class="jour-jeu"><b>4 835</b> pts &middot; Référent</span></li></ol></div></div></div></div>
+    <div class="labo">
+      <b>Ce qui change par rapport à la page en ligne.</b> Le récit occupe 7 853 px aujourd'hui,
+      soit 37 % de la page. Les trois phases fermées tiennent en 250 px, et une seule s'ouvre à la
+      fois. Elles reprennent les trois étapes du programme juste au-dessus, donc le visiteur
+      retrouve le même découpage à deux endroits.
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="kicker">Au bout</div>
+    <h2>L'attestation, et ce qui tourne sans vous</h2>
+    <p class="chapeau">Au jour 30, une attestation nominative, et deux ou trois automatisations qui
+      tournent le lundi matin sans que vous ouvriez quoi que ce soit.</p>
+    <div class="ecrans">
+      <div class="ecran">l'attestation</div>
+      <div class="ecran">le profil et les trophées</div>
+      <div class="ecran">la chaîne du lundi</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="kicker">Qui enseigne</div>
+    <h2>Une méthode née dans la salle</h2>
+    <p class="chapeau">Trois ans d'ateliers en petit groupe chez La Poste, Pierre Fabre, La Redoute,
+      E.Leclerc, GL Events. La note publique est de 9,4 sur 10, sur 497 retours.</p>
+    <div class="avis">
+      <blockquote>Le passage sur la structuration des demandes a changé ma façon de travailler dès
+        le lendemain.<cite>Responsable marketing, La Poste</cite></blockquote>
+      <blockquote>Concret, applicable tout de suite. On repart avec des prompts qui marchent sur nos
+        propres dossiers.<cite>Chef de projet, Pierre Fabre</cite></blockquote>
+      <blockquote>La meilleure formation IA que j'aie suivie, et de loin la plus
+        opérationnelle.<cite>Directrice digitale, La Redoute</cite></blockquote>
+    </div>
+    <div class="labo">
+      <b>La photo.</b> Elle faisait 1 178 &times; 616 px, la plus grande de la page, et le visage
+      était généré. Elle est remplacée par les captures réelles du produit, et le portrait revient
+      en petit format à côté d'un verbatim.
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="kicker">Le produit</div>
+    <h2>Ce que vous ouvrez le matin</h2>
+    <p class="chapeau">Quatre écrans filmés dans le produit, au lieu de huit : les autres vivent
+      maintenant dans le panneau du programme, là où on se pose la question.</p>
+    <div class="ecrans">
+      <div class="ecran">le tableau de bord</div>
+      <div class="ecran">une leçon</div>
+      <div class="ecran">l'atelier CRAFT</div>
+      <div class="ecran">la bibliothèque de prompts</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="tarifs">
+  <div class="wrap">
+    <div class="kicker">Les tarifs</div>
+    <h2>290 € pour 30 jours</h2>
+    <p class="chapeau">L'assistant IA est compris dans les deux formules. Au 1er octobre, le prix
+      passe à 450 €.</p>
+    <div class="prix">
+      <div class="offre principale">
+        <span class="tag">La méthode</span>
+        <h3>Le parcours complet</h3>
+        <div class="montant">290 €<small> TTC</small></div>
+        <div class="duree-off">pour 30 jours</div>
+        <ul>
+          <li>78 leçons, 7 h 52 de formation</li>
+          <li>Le parcours de l'outil que vous choisissez</li>
+          <li>L'atelier, les 18 exercices, les quiz</li>
+          <li>3 exercices relus et annotés</li>
+          <li>L'assistant IA, environ 250 questions sur 30 jours</li>
+        </ul>
+        <a class="b-or" href="#">Commencer</a>
+      </div>
+      <div class="offre auto">
+        <span class="tag">Les automatisations</span>
+        <h3>Le complément</h3>
+        <div class="montant">+190 €<small> TTC</small></div>
+        <div class="duree-off">pour 30 jours</div>
+        <ul>
+          <li>Les 6 modules réservés du programme</li>
+          <li>Le parcours des automatisations : agents, MCP, chaînes</li>
+          <li>Les cas d'usage avancés et leur montage pas à pas</li>
+          <li>L'assistant IA, environ 500 questions sur 30 jours</li>
+        </ul>
+        <a class="b-vide" href="#">Ajouter</a>
+      </div>
+    </div>
+    <p class="rappel">Les 15 leçons offertes s'ouvrent sans carte bancaire.
+      Une session avec Paul et l'audit flash s'achètent à part.</p>
+    <div class="labo">
+      <b>« Pour 30 jours », partout.</b> Les quatre mentions relevées sur la page en ligne disaient
+      <code>One month of access</code>, <code>€ per month</code>,
+      <code>250 questions a month</code> et <code>for one month</code>. « Par mois » laisse croire
+      à un abonnement reconductible, ce que la vente au mois n'est pas.
+    </div>
+  </div>
+</section>
+
+<div class="wrap pied">
+  Maquette autonome, hors du site et hors du build. Le report vers la page réelle se fait sur ton
+  mot, et dans les deux langues.
+</div>
+
+<script>(function () {
+  'use strict';
+  var doux = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------------------------------------------------------- la barre
+  var barre = document.getElementById('barre');
+  var ex = document.getElementById('ex');
+  barre.querySelectorAll('.nav a').forEach(function (a) {
+    ['mouseenter', 'focus'].forEach(function (ev) {
+      a.addEventListener(ev, function () {
+        ex.innerHTML = a.getAttribute('data-ex');
+        barre.classList.add('ouvert');
+      });
+    });
+  });
+  barre.addEventListener('mouseleave', function () { barre.classList.remove('ouvert'); });
+
+  // ------------------------------------------------------- le programme
+  var vide = document.getElementById('p-vide');
+  var plein = document.getElementById('p-plein');
+  var chip = document.getElementById('p-chip');
+  var badge = document.getElementById('p-badge');
+  var titre = document.getElementById('p-titre');
+  var texte = document.getElementById('p-texte');
+  var dureeEl = document.getElementById('p-duree');
+  var LIB = {
+    free: ['Offert', 'p-free'],
+    essentials: ['Compris dans La méthode', 'p-inclus'],
+    pro: ['Avec les Automatisations', 'p-auto']
+  };
+  var fige = null;
+
+  function montre(b) {
+    var teinte = b.getAttribute('data-teinte');
+    var palier = b.getAttribute('data-palier');
+    vide.hidden = true;
+    plein.hidden = false;
+    chip.innerHTML = b.querySelector('.mtile-chip').innerHTML;
+    chip.style.color = teinte;
+    chip.style.background = 'color-mix(in srgb, ' + teinte + ' 12%, transparent)';
+    badge.textContent = LIB[palier][0];
+    badge.className = 'badge ' + LIB[palier][1];
+    titre.textContent = b.getAttribute('data-titre');
+    texte.textContent = b.getAttribute('data-texte');
+    dureeEl.textContent = b.getAttribute('data-duree') + ' de leçons';
+    document.querySelectorAll('.mtile').forEach(function (o) { o.classList.remove('actif'); });
+    b.classList.add('actif');
+  }
+
+  document.querySelectorAll('.mtile').forEach(function (b) {
+    b.addEventListener('mouseenter', function () { if (!fige) montre(b); });
+    b.addEventListener('focus', function () { if (!fige) montre(b); });
+    b.addEventListener('click', function () {
+      if (fige === b) { fige = null; } else { fige = b; montre(b); }
+    });
+  });
+
+  // -------------------------------------------------------------- le MCP
+  var mcpTitre = document.getElementById('mcp-titre');
+  var mcpDroit = document.getElementById('mcp-droit');
+  document.querySelectorAll('.prise').forEach(function (p) {
+    ['mouseenter', 'focus', 'click'].forEach(function (ev) {
+      p.addEventListener(ev, function () {
+        // La phrase generique se repetait a chaque survol. Elle dit maintenant
+        // ce que le serveur fait vraiment avec CET outil, et ce qu'il n'a pas
+        // le droit de faire.
+        mcpTitre.textContent = p.getAttribute('data-nom') + ' : ' + p.getAttribute('data-fait');
+        mcpDroit.textContent = p.getAttribute('data-droit') + ' — rien d’autre';
+        document.querySelectorAll('.prise').forEach(function (o) { o.classList.remove('actif'); });
+        p.classList.add('actif');
+      });
+    });
+  });
+
+  // ------------------------------------------------- le trajet en trois
+  // Le compteur monte pendant l'ouverture : c'est le vrai bareme du jeu, donc
+  // il montre une progression reelle et pas une decoration.
+  function compte(el, vers, ms) {
+    if (doux) { el.textContent = format(vers); return; }
+    var depart = performance.now();
+    var de = 0;
+    function trame(t) {
+      var p = Math.min(1, (t - depart) / ms);
+      var adouci = 1 - Math.pow(1 - p, 3);
+      el.textContent = format(Math.round(de + (vers - de) * adouci));
+      if (p < 1) requestAnimationFrame(trame);
+    }
+    requestAnimationFrame(trame);
+  }
+  function format(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+
+  document.querySelectorAll('.phase').forEach(function (ph) {
+    var tete = ph.querySelector('.phase-tete');
+    var pts = ph.querySelector('.phase-pts');
+    var cible = parseInt(ph.getAttribute('data-points'), 10);
+    tete.addEventListener('click', function () {
+      var ouvre = !ph.classList.contains('ouverte');
+      // Une seule phase ouverte a la fois : trois listes ouvertes redonnent la
+      // colonne interminable qu'on vient de replier.
+      document.querySelectorAll('.phase').forEach(function (o) {
+        o.classList.remove('ouverte');
+        o.querySelector('.phase-tete').setAttribute('aria-expanded', 'false');
+      });
+      if (ouvre) {
+        ph.classList.add('ouverte');
+        tete.setAttribute('aria-expanded', 'true');
+        compte(pts, cible, 620);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
