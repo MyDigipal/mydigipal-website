@@ -125,7 +125,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
 
       {/* La pratique : le tableau de bord qu'on visite au survol. Il existait
           déjà, et il vaut mieux que les trois cartes que j'avais écrites. */}
-      <Visite locale={locale} data={data} />
+      <Visite locale={locale} data={data} titre={c.preuves.visiteTitre} />
 
       <Outils locale={locale} />
 

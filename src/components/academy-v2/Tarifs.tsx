@@ -76,6 +76,12 @@ export default function Tarifs({
   const fr = locale === 'fr';
 
   const remise = useMemo(() => teamDiscount(places, paliersEquipe), [places, paliersEquipe]);
+  // Le palier réellement franchi, pour que le libellé dise « à partir de 10 »
+  // quand la remise est celle de dix places, et non toujours « de trois ».
+  const seuilAtteint = useMemo(() => {
+    const franchis = paliersEquipe.filter((p) => places >= p.seats);
+    return franchis.length ? franchis[franchis.length - 1].seats : 0;
+  }, [places, paliersEquipe]);
   // ⚠️ Le tunnel lit `items` et `seats` dans l'URL (voir la section 15 du
   // CLAUDE.md de l'app) : sans eux, les deux boutons menaient au même panier et
   // le choix de l'acheteur était perdu entre la page et la caisse.
@@ -177,7 +183,7 @@ export default function Tarifs({
       onFocus={() => setSurvol(l)}
       onClick={() => setSurvol(l)}
       tabIndex={0}
-      className={`relative cursor-default py-2 pl-6 text-[14.5px] leading-[1.55] transition before:absolute before:left-0 before:top-[15px] before:h-0.5 before:w-2.5 ${
+      className={`relative cursor-default py-2 pl-6 text-[15.5px] leading-[1.55] transition before:absolute before:left-0 before:top-[15px] before:h-0.5 before:w-2.5 ${
         or ? 'before:bg-or' : 'before:bg-avance'
       } ${survol === l ? 'text-ivoire' : 'text-corps-nuit'} focus-visible:outline focus-visible:outline-2 focus-visible:outline-or`}
     >
@@ -233,7 +239,7 @@ export default function Tarifs({
         <h2 className="mt-3 text-[clamp(26px,3.2vw,38px)] font-medium leading-[1.1] tracking-[-0.02em] text-ivoire">
           {c.titre(euro(prixProgrammeMinor))}
         </h2>
-        <p className="mt-4 max-w-[62ch] text-[16px] leading-[1.65] text-brume-nuit">
+        <p className="mt-4 max-w-[62ch] text-[17.5px] leading-[1.65] text-brume-nuit">
           {c.chapeau(euro(hausseMinor))}
         </p>
 
@@ -261,8 +267,8 @@ export default function Tarifs({
             ))}
           </div>
           {remise > 0 && !devis && (
-            <span className="font-ac-mono text-[12px] text-sauge">
-              −{Math.round(remise * 100)} % {c.remiseEquipe}
+            <span className="font-ac-mono text-[12.5px] text-sauge-nuit">
+              −{Math.round(remise * 100)} % · {c.remiseEquipe(seuilAtteint)}
             </span>
           )}
         </div>
@@ -280,24 +286,24 @@ export default function Tarifs({
           {/* Le cadre qui se remplit au survol d'une ligne, avec l'écran qui va
               avec. Masqué sous lg : au doigt il n'y a pas de survol, et le
               toucher d'une ligne le remplirait sous le pouce, hors de vue. */}
-          <aside className="sticky top-24 hidden self-start rounded-carte border border-filet-nuit bg-salle-3 p-5 lg:block">
+          <aside className="hidden flex-col rounded-carte border border-filet-nuit bg-salle-3 p-5 lg:flex">
             {!survol ? (
               <p className="m-0 font-ac-mono text-[12px] uppercase leading-[1.7] tracking-[.1em] text-brume-nuit">
                 {tactile ? c.survolTactile : c.survol}
               </p>
             ) : (
-              <div>
+              <div className="flex min-h-0 flex-1 flex-col">
                 {estDemo(survol.demo) && (
                   <Boucle
                     nom={survol.demo}
-                    className="mb-3.5 aspect-[16/10] rounded-[11px] border border-filet-nuit"
+                    className="mb-4 min-h-[200px] flex-1 rounded-[11px] border border-filet-nuit"
                     vignette
                   />
                 )}
-                <h4 className="mb-2 text-[15px] font-medium leading-[1.3] text-ivoire">
+                <h4 className="mb-2 text-[16px] font-medium leading-[1.3] text-ivoire">
                   {survol.texte}
                 </h4>
-                <p className="m-0 text-[13.5px] leading-[1.6] text-brume-nuit">{survol.detail}</p>
+                <p className="m-0 text-[14.5px] leading-[1.6] text-brume-nuit">{survol.detail}</p>
               </div>
             )}
           </aside>
@@ -311,10 +317,10 @@ export default function Tarifs({
             <span className="font-ac-mono text-[10.5px] uppercase tracking-[.12em] text-renard">
               {c.gratuitTag}
             </span>
-            <p className="m-0 mt-1 text-[16px] leading-[1.5] text-ivoire">
+            <p className="m-0 mt-1 text-[17px] leading-[1.5] text-ivoire">
               {c.gratuitTitre(leconsGratuit)}
             </p>
-            <p className="m-0 mt-1 text-[14px] leading-[1.55] text-brume-nuit">{c.gratuitTexte}</p>
+            <p className="m-0 mt-1 text-[15px] leading-[1.55] text-brume-nuit">{c.gratuitTexte}</p>
           </div>
           <a
             href={lienGratuit}

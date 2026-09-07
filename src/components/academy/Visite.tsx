@@ -79,7 +79,16 @@ const VIDEO_DU_SPOT: Partial<Record<SpotId, DemoKey>> = {
   profil: 'profil',
 };
 
-export default function Visite({ locale, data }: { locale: Locale; data: Jour30Data }) {
+export default function Visite({
+  locale,
+  data,
+  titre,
+}: {
+  locale: Locale;
+  data: Jour30Data;
+  /** Titre de remplacement, pour la seconde page de vente. */
+  titre?: string;
+}) {
   const t = jour30Copy(locale);
   const c = t.visite;
   const [actif, setActif] = useState<SpotId | null>(null);
@@ -198,7 +207,7 @@ export default function Visite({ locale, data }: { locale: Locale; data: Jour30D
     <section id="visite" className="border-t border-filet-nuit px-4 pb-20 pt-[84px] sm:px-6">
       <div className="mx-auto max-w-[1280px]">
         <h2 className="m-0 max-w-[22ch] text-balance text-[clamp(26px,3.8vw,42px)] font-medium leading-[1.12] tracking-[-0.025em] text-ivoire">
-          {c.titre}
+          {titre ?? c.titre}
         </h2>
         <p className="mt-4 max-w-[58ch] text-[16px] leading-[1.65] text-corps-nuit">{tactile ? c.sousTactile : c.sous}</p>
 

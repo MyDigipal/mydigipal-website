@@ -67,7 +67,7 @@ export default function Programme({
   };
 
   const teintePalier: Record<Module['palier'], string> = {
-    free: 'text-renard bg-[rgba(217,116,63,.12)]',
+    free: 'text-renard-texte bg-[rgba(217,116,63,.12)]',
     essentials: 'text-sauge bg-[rgba(46,125,91,.10)]',
     pro: 'text-avance-texte bg-[rgba(76,118,133,.13)]',
   };
@@ -81,7 +81,7 @@ export default function Programme({
         <h2 className="mt-3 max-w-[20ch] text-[clamp(26px,3.2vw,38px)] font-medium leading-[1.1] tracking-[-0.02em] text-encre">
           {c.titre}
         </h2>
-        <p className="mt-4 max-w-[64ch] text-[16px] leading-[1.65] text-brume">
+        <p className="mt-4 max-w-[64ch] text-[17.5px] leading-[1.65] text-brume">
           {c.chapeau(modules, heures)}
         </p>
 
@@ -97,7 +97,7 @@ export default function Programme({
                     </h3>
                     <span className="font-ac-mono text-[12px] text-brume">{e.jours[locale]}</span>
                   </div>
-                  <p className="mb-4 mt-1 max-w-[62ch] text-[14px] leading-[1.6] text-brume">
+                  <p className="mb-4 mt-1 max-w-[62ch] text-[15.5px] leading-[1.6] text-brume">
                     {e.chapeau[locale]}
                   </p>
                   <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2.5">
@@ -124,22 +124,22 @@ export default function Programme({
                         >
                           <Glyphe nom={m.glyphe} taille={20} />
                         </span>
-                        <span className="text-[14px] font-medium leading-[1.35] text-encre">
+                        <span className="text-[15px] font-medium leading-[1.35] text-encre">
                           {m.titre[locale]}
                         </span>
                         <span className="mt-auto flex flex-wrap items-center gap-2">
-                          <span className="font-ac-mono text-[11px] text-brume">
+                          <span className="font-ac-mono text-[12px] text-brume">
                             {duree(m.minutes, locale)}
                           </span>
                           {m.palier !== 'essentials' && (
                             <span
-                              className={`inline-block rounded-full px-2 py-1 font-ac-mono text-[9.5px] uppercase tracking-[.09em] ${teintePalier[m.palier]}`}
+                              className={`inline-block rounded-full px-2 py-1 font-ac-mono text-[10.5px] uppercase tracking-[.09em] ${teintePalier[m.palier]}`}
                             >
                               {c.paliers[m.palier]}
                             </span>
                           )}
                           {m.auChoix && (
-                            <span className="font-ac-mono text-[9.5px] uppercase tracking-[.09em] text-brume">
+                            <span className="font-ac-mono text-[10.5px] uppercase tracking-[.09em] text-brume">
                               {c.auChoix}
                             </span>
                           )}
@@ -147,7 +147,7 @@ export default function Programme({
                       </button>
                     ))}
                   </div>
-                  <p className="mt-2.5 font-ac-mono text-[12px] text-brume">
+                  <p className="mt-2.5 font-ac-mono text-[12.5px] text-brume">
                     {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id), locale)}
                   </p>
                 </div>
@@ -201,7 +201,7 @@ export default function Programme({
                 <h4 className="mb-2 mt-2.5 text-[18px] font-medium leading-[1.25] text-encre">
                   {actif.titre[locale]}
                 </h4>
-                <p className="mb-3 text-[14px] leading-[1.6] text-[#41505f]">
+                <p className="mb-3 text-[15px] leading-[1.6] text-[#41505f]">
                   {actif.texte[locale]}
                 </p>
                 <p className="mb-3.5 font-ac-mono text-[12px] text-brume">
@@ -224,7 +224,7 @@ export default function Programme({
           </aside>
         </div>
 
-        <p className="mt-7 max-w-[70ch] text-[15px] leading-[1.65] text-brume">
+        <p className="mt-7 max-w-[70ch] text-[16px] leading-[1.65] text-brume">
           {c.pied(leconsGratuit, minutesGratuit, nbAuto)}
         </p>
       </div>

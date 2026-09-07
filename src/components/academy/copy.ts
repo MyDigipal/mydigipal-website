@@ -82,7 +82,7 @@ const FR = {
   hero: {
     titre: 'La formation IA en ligne, tirée de trois ans à former des équipes.',
     sous: (lecons: number, prix: string) =>
-      `${lecons} leçons à votre rythme, la méthode CRAFT, des exercices sur vos propres cas, jusqu’aux agents et aux serveurs MCP. Dès ${prix} €.`,
+      `${lecons} leçons à votre rythme, la méthode de prompting, des exercices sur vos propres cas, jusqu’aux agents et aux serveurs MCP. Dès ${prix} €.`,
     /**
      * La répartition, dite près du prix.
      *
@@ -119,7 +119,7 @@ const FR = {
       continuer: 'Continuer',
       p1: {
         titre: 'La méthode',
-        ligne: 'De zéro à autonome avec l’IA générative : la méthode CRAFT, les outils, le travail écrit de tous les jours.',
+        ligne: 'De zéro à autonome avec l’IA générative : la méthode de prompting, les outils, le travail écrit de tous les jours.',
         avancement: (f: number, n: number) => `${f} leçons sur ${n}`,
       },
       p2: {
@@ -150,7 +150,7 @@ const FR = {
       kicker: 'Ce qui le distingue',
       titre: 'Une formation qui part du travail, pas de la veille.',
       points: [
-        'La méthode CRAFT, enseignée en salle depuis trois ans, écrite leçon par leçon.',
+        'La méthode de prompting, enseignée en salle depuis trois ans, écrite leçon par leçon.',
         'Des exercices sur vos propres cas, pas des quiz de culture générale.',
         'La partie que personne n’enseigne : brancher les outils, les agents et les serveurs MCP.',
         'Un compte qui se remplit : points, série, trophées, attestation.',
@@ -969,7 +969,7 @@ const EN: Jour30Copy = {
       kicker: 'What sets it apart',
       titre: 'A course that starts from the work, not from the news.',
       points: [
-        'The CRAFT method, taught in the room for three years, written lesson by lesson.',
+        'The prompting method, taught face-to-face for three years, written lesson by lesson.',
         'Exercises on your own cases, not general-knowledge quizzes.',
         'The part nobody teaches: wiring the tools, agents and MCP servers.',
         'An account that fills up: points, streak, trophies, certificate.',
@@ -1133,7 +1133,7 @@ const EN: Jour30Copy = {
     preuve: {
       question: 'Who teaches?',
       texte:
-        'Paul André, who has taught this method in the room for three years, at La Poste, Pierre Fabre and E.Leclerc. Every lesson is written from what worked in front of real teams.',
+        'Paul André, who has taught this method in person for three years, at La Poste, Pierre Fabre and E.Leclerc. Every lesson is written from what worked in front of real teams.',
       chiffres: (avis: Avis) => [
         { valeur: '2,500+', libelle: 'professionals trained' },
         { valeur: `${noteLocale(avis.note, 'en')}/10`, libelle: `across ${avis.nombre} written reviews` },
@@ -1539,7 +1539,7 @@ const EN: Jour30Copy = {
     cta: 'Get started',
   },
   maison: {
-    titre: 'A method born in the room, at La Poste, Pierre Fabre and La Redoute.',
+    titre: 'A method shaped in the training room, at La Poste, Pierre Fabre and La Redoute.',
     texte:
       'Paul André taught it for three years in front of real teams, from finance to customer service, and corrected it session after session until it held. That is the version now online.',
     photos: [

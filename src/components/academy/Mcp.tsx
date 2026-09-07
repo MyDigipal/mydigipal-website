@@ -354,7 +354,7 @@ export default function Mcp({
           <div className="my-[70px] flex justify-center">
             <div ref={hub} className="relative max-w-[340px] rounded-carte border border-renard/60 bg-papier px-7 py-5 text-center">
               <span ref={halo} className="pointer-events-none absolute -inset-px rounded-carte border border-renard opacity-0" />
-              <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.16em] text-renard">{c.hub.kicker}</p>
+              <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.16em] text-renard-texte">{c.hub.kicker}</p>
               {/* ⚠️ Cette ligne était FIXE : « La prise, et la liste de ce qui
                   est permis », répétée à chaque survol, donc elle n'apprenait
                   rien (Paul, 06/09/2026, redit le 07). Elle dit maintenant ce

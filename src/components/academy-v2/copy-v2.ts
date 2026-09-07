@@ -138,6 +138,10 @@ const FR = {
       `Trois ans d’ateliers en petit groupe chez La Poste, Pierre Fabre, La Redoute, E.Leclerc et GL Events. La note publique est de ${note} sur 10, sur ${retours} retours.`,
     casTitre: 'Trois formations, trois résultats',
     domainesTitre: 'Domaines couverts',
+    // ⚠️ Cette section montre le tableau de bord ; son titre d'origine,
+    // « Ce qu'il y a dans la formation », redisait celui du programme juste
+    // au-dessus (relevé le 07/09).
+    visiteTitre: 'L’espace que vous ouvrez chaque matin.',
     tousLesAvis: 'Tous les retours',
   },
   tarifs: {
@@ -154,7 +158,7 @@ const FR = {
     licences: 'Licences',
     places: (n: number) => `${n} licences`,
     parPlace: 'par licence',
-    remiseEquipe: 'à partir de trois licences',
+    remiseEquipe: (seuil: number) => `remise à partir de ${seuil} licences`,
     devis: (n: number) =>
       `À partir de ${n} licences, on établit un devis : écrivez-nous et nous revenons sous deux jours ouvrés.`,
     survol: 'Survolez une ligne pour voir l’écran',
@@ -287,6 +291,7 @@ const EN: typeof FR = {
       `Three years of small-group workshops at La Poste, Pierre Fabre, La Redoute, E.Leclerc and GL Events. The public score is ${note} out of 10, across ${retours} reviews.`,
     casTitre: 'Three sessions, three outcomes',
     domainesTitre: 'Fields covered',
+    visiteTitre: 'The space you open every morning.',
     tousLesAvis: 'All reviews',
   },
   tarifs: {
@@ -303,7 +308,7 @@ const EN: typeof FR = {
     licences: 'Licences',
     places: (n) => `${n} licences`,
     parPlace: 'per licence',
-    remiseEquipe: 'from three licences',
+    remiseEquipe: (seuil) => `discount from ${seuil} licences`,
     devis: (n) =>
       `From ${n} licences we prepare a quote: write to us and we come back within two working days.`,
     survol: 'Hover a line to see the screen',
