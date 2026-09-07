@@ -48,6 +48,17 @@ export default function Programme({
   const [actif, setActif] = useState<Module | null>(null);
   const [fige, setFige] = useState<string | null>(null);
   const [grand, setGrand] = useState<Demo | null>(null);
+  /**
+   * L'étape dépliée, sous lg uniquement (Paul, 07/09 : « on devrait mettre
+   * Getting started, Getting good et Putting it to work en dépliable ; si la
+   * personne clique dessus ça déplie, sinon ne pas le faire »).
+   *
+   * ⚠️ Fermé au premier rendu, des deux côtés : la largeur ne se connaît pas
+   * au rendu serveur, et un état initial qui en dépendrait donnerait une
+   * hydratation qui ne colle pas. C'est le CSS qui rouvre tout dès lg.
+   * Une seule à la fois, comme le repli des modules dans l'application.
+   */
+  const [deplie, setDeplie] = useState<string | null>(null);
   // ⚠️ Dans un effet, jamais au rendu : le serveur n'a pas de pointeur, et
   // un rendu qui en suppose un donne une hydratation qui ne colle pas.
   const [tactile, setTactile] = useState(false);
@@ -89,18 +100,47 @@ export default function Programme({
           <div>
             {ETAPES.map((e) => {
               const mods = modulesDe(e.id);
+              const ouverte = deplie === e.id;
               return (
                 <div key={e.id} className="mb-9 last:mb-0">
-                  <div className="flex flex-wrap items-baseline gap-3">
+                  {/* L'en-tête est un bouton sous lg, et rien du tout au-dessus :
+                      `lg:pointer-events-none` le rend inerte plutôt que de rendre
+                      deux balises différentes selon la largeur, ce que le rendu
+                      serveur ne saurait pas trancher. */}
+                  <button
+                    type="button"
+                    onClick={() => setDeplie(ouverte ? null : e.id)}
+                    aria-expanded={ouverte}
+                    aria-controls={`etape-${e.id}`}
+                    className="-mx-1 flex w-full cursor-pointer items-baseline gap-3 rounded-[8px] border-0 bg-transparent px-1 py-1 text-left lg:pointer-events-none lg:m-0 lg:cursor-default lg:p-0"
+                  >
                     <h3 className="m-0 font-ac-mono text-[13px] font-semibold uppercase tracking-[.14em] text-encre">
                       {e.titre[locale]}
                     </h3>
                     <span className="font-ac-mono text-[12px] text-brume">{e.jours[locale]}</span>
-                  </div>
-                  <p className="mb-4 mt-1 max-w-[62ch] text-[15.5px] leading-[1.6] text-brume">
+                    <span
+                      className={`ml-auto self-center text-brume transition-transform duration-200 lg:hidden ${ouverte ? 'rotate-180' : ''}`}
+                      aria-hidden="true"
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </span>
+                  </button>
+                  <p className="mb-2 mt-1 max-w-[62ch] text-[15.5px] leading-[1.6] text-brume">
                     {e.chapeau[locale]}
                   </p>
-                  <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2.5">
+                  {/* Le compte et la durée restent visibles quand l'étape est
+                      repliée : c'est ce qui garde la section informative même
+                      fermée, et cette section n'existe que pour dire ce que la
+                      formation contient. */}
+                  <p className="mb-4 font-ac-mono text-[12.5px] text-brume lg:hidden">
+                    {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id), locale)}
+                  </p>
+                  <div
+                    id={`etape-${e.id}`}
+                    className={`grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2.5 lg:grid ${ouverte ? 'grid' : 'hidden'}`}
+                  >
                     {mods.map((m) => (
                       <button
                         key={m.id}
@@ -147,7 +187,7 @@ export default function Programme({
                       </button>
                     ))}
                   </div>
-                  <p className="mt-2.5 font-ac-mono text-[12.5px] text-brume">
+                  <p className="mt-2.5 hidden font-ac-mono text-[12.5px] text-brume lg:block">
                     {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id), locale)}
                   </p>
                 </div>
