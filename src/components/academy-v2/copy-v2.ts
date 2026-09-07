@@ -108,7 +108,11 @@ const FR = {
   },
   mcp: {
     kicker: 'Les automatisations',
-    titre: 'Brancher l’IA sur vos outils',
+    // Paul, 07/09 : « change le titre en The end goal. C'est le résultat
+    // final : que vous ayez des agents qui bossent sur tous les fronts. »
+    titre: 'Le but final : des agents qui travaillent sur tous les fronts',
+    texte:
+      'Au bout du parcours, vos outils sont branchés et vos chaînes tournent sans vous. Un serveur MCP est la prise : il donne à l’assistant l’accès à un outil, et seulement ce que vous autorisez.',
     chapeau:
       'Un serveur MCP est une prise : il donne à l’assistant l’accès à un outil, et seulement ce que vous autorisez. Touchez un outil pour voir ce qu’il obtient exactement.',
     serveur: 'Votre serveur MCP',
@@ -145,8 +149,13 @@ const FR = {
       `À partir de ${n} licences, on établit un devis : écrivez-nous et nous revenons sous deux jours ouvrés.`,
     survol: 'Survolez une ligne pour voir l’écran',
     survolTactile: 'Touchez une ligne pour voir l’écran',
-    rappel: (lecons: number) =>
-      `Les ${lecons} leçons offertes s’ouvrent sans carte bancaire, et l’assistant IA est compris dans les deux formules.`,
+    rappel: () =>
+      'L’assistant IA est compris dans les deux formules. Les prix sont en euros, toutes taxes comprises.',
+    gratuitTag: 'Essayer d’abord',
+    gratuitTitre: (lecons: number) => `${lecons} leçons offertes, sans carte bancaire`,
+    gratuitTexte:
+      'Deux modules entiers : la prise en main, puis écrire, traduire et résumer. Vous jugez sur pièce avant de payer.',
+    gratuitCta: 'Ouvrir l’accès gratuit',
   },
 };
 
@@ -243,7 +252,9 @@ const EN: typeof FR = {
   },
   mcp: {
     kicker: 'Automations',
-    titre: 'Plug AI into your tools',
+    titre: 'The end goal: agents working on every front',
+    texte:
+      'By the end of the path your tools are plugged in and your chains run without you. An MCP server is the socket: it gives the assistant access to one tool, and only what you allow.',
     chapeau:
       'An MCP server is a socket: it gives the assistant access to one tool, and only what you allow. Touch a tool to see exactly what it gets.',
     serveur: 'Your MCP server',
@@ -280,8 +291,13 @@ const EN: typeof FR = {
       `From ${n} licences we prepare a quote: write to us and we come back within two working days.`,
     survol: 'Hover a line to see the screen',
     survolTactile: 'Touch a line to see the screen',
-    rappel: (lecons) =>
-      `The ${lecons} free lessons open without a card, and the AI assistant is included in both.`,
+    rappel: () =>
+      'The AI assistant is included in both. Prices are in euros, all taxes included.',
+    gratuitTag: 'Try first',
+    gratuitTitre: (lecons) => `${lecons} free lessons, no card needed`,
+    gratuitTexte:
+      'Two full modules: getting started, then writing, translating and summarising. You judge for yourself before paying.',
+    gratuitCta: 'Open free access',
   },
 };
 

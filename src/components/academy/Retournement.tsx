@@ -23,6 +23,7 @@ export default function Retournement({
   rang,
   trophees,
   leconsGratuites,
+  ancreTarifs = 'pricing',
 }: {
   locale: Locale;
   fin: EtatJour;
@@ -31,6 +32,12 @@ export default function Retournement({
   trophees: number;
   /** Ce que l'inscription gratuite ouvre, pour le second bouton. */
   leconsGratuites: number;
+  /**
+   * L'ancre de la grille de prix. `pricing` sur la page en ligne, `tarifs` sur
+   * la seconde : le bouton pointait sur une ancre absente et ne menait nulle
+   * part (Paul, 07/09/2026).
+   */
+  ancreTarifs?: string;
 }) {
   const t = jour30Copy(locale);
   const c = t.retournement;
@@ -147,7 +154,7 @@ export default function Retournement({
           <p className="mt-[22px] max-w-[46ch] text-[17px] leading-[1.65] text-corps-nuit">{c.texte}</p>
           <div className="mt-8 flex flex-wrap gap-3.5">
             <a
-              href="#pricing"
+              href={`#${ancreTarifs}`}
               className="inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton bg-or px-[26px] py-3.5 text-[15.5px] font-semibold text-salle transition duration-150 hover:bg-or-vif"
             >
               {c.ouvrir}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { pointeurGrossier } from '../academy/motion';
 import { formatPrice, teamDiscount } from '../academy/offres';
 import { copyV2, type Locale } from './copy-v2';
+import { useLienApp } from '../academy/track';
 import { Boucle, estDemo, type Demo } from './Video';
 
 /**
@@ -48,7 +49,7 @@ export default function Tarifs({
   relectures,
   leconsGratuit,
   modulesAuto,
-  lienApp,
+  lienGratuit,
 }: {
   locale: Locale;
   prixProgrammeMinor: number;
@@ -64,7 +65,8 @@ export default function Tarifs({
   relectures: number;
   leconsGratuit: number;
   modulesAuto: number;
-  lienApp: string;
+  /** Le module gratuit, déjà enrichi des identifiants de clic. */
+  lienGratuit: string;
 }) {
   const c = copyV2(locale).tarifs;
   const [survol, setSurvol] = useState<Ligne | null>(null);
@@ -74,6 +76,12 @@ export default function Tarifs({
   const fr = locale === 'fr';
 
   const remise = useMemo(() => teamDiscount(places, paliersEquipe), [places, paliersEquipe]);
+  // ⚠️ Le tunnel lit `items` et `seats` dans l'URL (voir la section 15 du
+  // CLAUDE.md de l'app) : sans eux, les deux boutons menaient au même panier et
+  // le choix de l'acheteur était perdu entre la page et la caisse.
+  const base = 'https://academy.mydigipal.com/checkout';
+  const lienMethode = useLienApp(`${base}?items=programme&seats=${places}&lang=${locale}`);
+  const lienAvancee = useLienApp(`${base}?items=programme,construire&seats=${places}&lang=${locale}`);
   const total = (minor: number) => Math.round(minor * places * (1 - remise));
   const euro = (minor: number) => `${formatPrice(minor, locale)} €`;
   const devis = places >= devisAPartirDe;
@@ -206,7 +214,7 @@ export default function Tarifs({
       )}
       <ul className="m-0 mb-5 mt-3 list-none p-0">{lignes.map((l) => rendreLigne(l, or))}</ul>
       <a
-        href={lienApp}
+        href={or ? lienMethode : lienAvancee}
         className={`inline-flex min-h-11 items-center rounded-bouton px-6 text-[15px] font-semibold transition ${
           or
             ? 'bg-or text-salle hover:bg-or-vif'
@@ -295,7 +303,28 @@ export default function Tarifs({
           </aside>
         </div>
 
-        <p className="mt-6 text-[14px] leading-[1.6] text-brume-nuit">{c.rappel(leconsGratuit)}</p>
+        {/* La troisième porte : essayer sans payer. Dans la teinte du renard,
+            distincte de l'or de La méthode et du bleu des Automatisations, pour
+            qu'on voie d'un coup d'œil que ce n'est pas une troisième formule. */}
+        <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-carte border border-renard/45 bg-[rgba(217,116,63,.07)] px-6 py-5">
+          <div className="min-w-0 flex-1">
+            <span className="font-ac-mono text-[10.5px] uppercase tracking-[.12em] text-renard">
+              {c.gratuitTag}
+            </span>
+            <p className="m-0 mt-1 text-[16px] leading-[1.5] text-ivoire">
+              {c.gratuitTitre(leconsGratuit)}
+            </p>
+            <p className="m-0 mt-1 text-[14px] leading-[1.55] text-brume-nuit">{c.gratuitTexte}</p>
+          </div>
+          <a
+            href={lienGratuit}
+            className="inline-flex min-h-11 flex-none items-center rounded-bouton border border-renard px-5 text-[15px] font-medium text-renard transition hover:bg-renard hover:text-salle"
+          >
+            {c.gratuitCta}
+          </a>
+        </div>
+
+        <p className="mt-5 text-[14px] leading-[1.6] text-brume-nuit">{c.rappel()}</p>
       </div>
     </section>
   );

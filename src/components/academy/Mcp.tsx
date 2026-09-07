@@ -30,7 +30,16 @@ const NS = 'http://www.w3.org/2000/svg';
 const FIL = '#d3ccbe';
 const FIL_OR = '#a8862f';
 
-export default function Mcp({ locale }: { locale: Locale }) {
+export default function Mcp({
+  locale,
+  titre,
+  texte,
+}: {
+  locale: Locale;
+  /** Titre de remplacement, pour la seconde page de vente. */
+  titre?: string;
+  texte?: string;
+}) {
   const c = jour30Copy(locale).mcp;
   const [actif, setActif] = useState(c.outils[0].id);
   // « Survolez un outil » est un ordre impossible au doigt. Le verbe se relève
@@ -240,8 +249,8 @@ export default function Mcp({ locale }: { locale: Locale }) {
   return (
     <section className="border-t border-lin bg-craie px-4 py-[84px] text-mine sm:px-6">
       <div className="mx-auto max-w-[1180px]">
-        <h2 className="m-0 max-w-[20ch] text-balance text-[clamp(28px,4.4vw,46px)] font-medium leading-[1.1] tracking-[-0.025em] text-encre">{c.intro.titre}</h2>
-        <p className="mt-5 max-w-[60ch] text-[17px] leading-[1.65] text-mine">{c.intro.texte}</p>
+        <h2 className="m-0 max-w-[20ch] text-balance text-[clamp(28px,4.4vw,46px)] font-medium leading-[1.1] tracking-[-0.025em] text-encre">{titre ?? c.intro.titre}</h2>
+        <p className="mt-5 max-w-[60ch] text-[17px] leading-[1.65] text-mine">{texte ?? c.intro.texte}</p>
 
         {/* Le titre « Un MCP, c'est une prise » et son chapeau vivaient ici. Ils
             redisaient l'introduction juste au-dessus, en moins bien : le schéma

@@ -57,7 +57,9 @@ import Tarifs from './Tarifs';
 export default function AcademyV2({ locale, initial }: { locale: Locale; initial: Jour30Data }) {
   const [data, setData] = useState(initial);
   const c = copyV2(locale);
-  const app = useLienApp('https://academy.mydigipal.com/checkout');
+  const gratuit = useLienApp(
+    `https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`,
+  );
 
   useEffect(() => {
     captureAdClickIds();
@@ -111,7 +113,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
       <Outils locale={locale} />
 
       {/* Le câblage MCP animé, tel quel. */}
-      <Mcp locale={locale} />
+      <Mcp locale={locale} titre={c.mcp.titre} texte={c.mcp.texte} />
 
       <Mention locale={locale} />
 
@@ -146,6 +148,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         rang={data.jeu.rangs[fin.rank]}
         trophees={data.faits.trophees}
         leconsGratuites={leconsGratuit(data)}
+        ancreTarifs="tarifs"
       />
 
       {/* Qui enseigne : les logos clients et les verbatims. */}
@@ -166,7 +169,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         relectures={data.faits.relectures}
         leconsGratuit={leconsGratuit(data)}
         modulesAuto={nbAuto}
-        lienApp={app}
+        lienGratuit={gratuit}
       />
 
       <AppelFlottant locale={locale} leconsGratuites={leconsGratuit(data)} />
