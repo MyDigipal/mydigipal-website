@@ -26,14 +26,31 @@ import { useLienApp } from './track';
  * en clair. Dans les tarifs, la barre de total est déjà collée en bas et il
  * lui passerait dessus.
  */
-export default function AppelFlottant({ locale, leconsGratuites }: { locale: Locale; leconsGratuites: number }) {
+export default function AppelFlottant({
+  locale,
+  leconsGratuites,
+  ancreTarifs = 'pricing',
+  libelleGratuit,
+}: {
+  locale: Locale;
+  leconsGratuites: number;
+  /**
+   * L'ancre de la grille de prix. Elle sert deux fois : la destination du
+   * bouton, et la zone où le bouton doit s'effacer. Sur la seconde page de
+   * vente elle s'appelle `tarifs`, et sans cette prop le bouton ne menait
+   * nulle part ET restait affiché par-dessus la grille.
+   */
+  ancreTarifs?: string;
+  /** Libellé du lien gratuit, pour y annoncer la durée. */
+  libelleGratuit?: string;
+}) {
   const c = jour30Copy(locale).flottant;
   const [visible, setVisible] = useState(false);
   const boite = useRef<HTMLDivElement>(null);
   const gratuit = useLienApp(`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`);
 
   useEffect(() => {
-    const zones = ['academy-hero', 'pricing'].map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    const zones = ['academy-hero', ancreTarifs].map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     if (!zones.length || typeof IntersectionObserver === 'undefined') {
       setVisible(true);
       return;
@@ -54,7 +71,7 @@ export default function AppelFlottant({ locale, leconsGratuites }: { locale: Loc
     );
     zones.forEach((z) => io.observe(z));
     return () => io.disconnect();
-  }, []);
+  }, [ancreTarifs]);
 
   return (
     <div
@@ -72,10 +89,10 @@ export default function AppelFlottant({ locale, leconsGratuites }: { locale: Loc
         href={gratuit}
         className="inline-flex min-h-9 items-center rounded-bouton border border-or/45 bg-salle/95 px-3 text-[12.5px] font-medium text-or backdrop-blur"
       >
-        {c.gratuit(leconsGratuites)}
+        {libelleGratuit ?? c.gratuit(leconsGratuites)}
       </a>
       <a
-        href="#pricing"
+        href={`#${ancreTarifs}`}
         className="inline-flex min-h-12 items-center rounded-bouton bg-or px-4 text-[14.5px] font-semibold text-salle shadow-[0_14px_34px_-12px_rgba(0,0,0,0.85)]"
       >
         {c.cta}

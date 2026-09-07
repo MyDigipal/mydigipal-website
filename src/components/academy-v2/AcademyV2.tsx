@@ -104,7 +104,15 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         ]}
       />
 
-      <Hero locale={locale} data={data} />
+      {/* ⚠️ Le bouton du hero pointait sur #pricing, ancre absente de cette
+          page : il ne menait nulle part. Même défaut que le retournement et
+          l'appel flottant (relevé le 07/09). */}
+      <Hero
+        locale={locale}
+        data={data}
+        ancreTarifs="tarifs"
+        cta2={c.tarifs.gratuitCourt(leconsGratuit(data))}
+      />
 
       {/* La section qui manquait, et la raison d'être de cette page. */}
       <Programme
@@ -164,6 +172,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         trophees={data.faits.trophees}
         leconsGratuites={leconsGratuit(data)}
         ancreTarifs="tarifs"
+        libelleGratuit={c.tarifs.gratuitCourt(leconsGratuit(data))}
       />
 
       {/* Qui enseigne : les logos clients et les verbatims. */}
@@ -187,7 +196,12 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         lienGratuit={gratuit}
       />
 
-      <AppelFlottant locale={locale} leconsGratuites={leconsGratuit(data)} />
+      <AppelFlottant
+        locale={locale}
+        leconsGratuites={leconsGratuit(data)}
+        ancreTarifs="tarifs"
+        libelleGratuit={c.tarifs.gratuitCourt(leconsGratuit(data))}
+      />
     </div>
   );
 }

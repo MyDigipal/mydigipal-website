@@ -17,7 +17,19 @@ import { cheminCapture } from './Demos';
  *
  * Le chiffre de leçons et le prix viennent du JSON de l'app, jamais d'ici.
  */
-export default function Hero({ locale, data }: { locale: Locale; data: Jour30Data }) {
+export default function Hero({
+  locale,
+  data,
+  ancreTarifs = 'pricing',
+  cta2,
+}: {
+  locale: Locale;
+  data: Jour30Data;
+  /** L'ancre de la grille de prix : `tarifs` sur la seconde page de vente. */
+  ancreTarifs?: string;
+  /** Libellé du second bouton, pour y annoncer la durée de l'accès gratuit. */
+  cta2?: string;
+}) {
   const c = jour30Copy(locale).hero;
   const programme = data.offres.find((o) => o.id === 'programme');
   const prix = programme ? formatPrice(programme.ttc_minor, locale) : '';
@@ -50,14 +62,14 @@ export default function Hero({ locale, data }: { locale: Locale; data: Jour30Dat
             {c.repartition(leconsProgramme(data), leconsComplement(data))}
           </p>
           <div className="mt-8 flex flex-wrap gap-3.5">
-            <a href="#pricing" className={`${cta} bg-or text-salle hover:bg-or-vif`}>
+            <a href={`#${ancreTarifs}`} className={`${cta} bg-or text-salle hover:bg-or-vif`}>
               {c.cta}
             </a>
             <a
               href={gratuit}
               className={`${cta} border border-filet-nuit text-corps-nuit hover:border-brume-nuit hover:text-ivoire`}
             >
-              {c.cta2(leconsGratuit(data))}
+              {cta2 ?? c.cta2(leconsGratuit(data))}
             </a>
           </div>
         </div>

@@ -166,6 +166,10 @@ const FR = {
     gratuitTexte:
       'Deux modules entiers, sans carte bancaire : la prise en main, puis écrire, traduire et résumer. Quarante-huit heures pour juger sur pièce avant de payer.',
     gratuitCta: 'Ouvrir l’accès gratuit',
+    // ⚠️ La durée se dit PARTOUT où l'accès gratuit est proposé : le hero,
+    // le retournement, le bouton flottant et la grille. Trois de ces quatre
+    // endroits l'annonçaient sans durée (relevé le 07/09).
+    gratuitCourt: (lecons: number) => `${lecons} leçons, 48 h d’essai`,
   },
 };
 
@@ -311,6 +315,7 @@ const EN: typeof FR = {
     gratuitTexte:
       'Two full modules, no card needed: getting started, then writing, translating and summarising. Forty-eight hours to judge for yourself before paying.',
     gratuitCta: 'Open free access',
+    gratuitCourt: (lecons) => `${lecons} lessons, 48h trial`,
   },
 };
 

@@ -24,6 +24,7 @@ export default function Retournement({
   trophees,
   leconsGratuites,
   ancreTarifs = 'pricing',
+  libelleGratuit,
 }: {
   locale: Locale;
   fin: EtatJour;
@@ -38,6 +39,8 @@ export default function Retournement({
    * part (Paul, 07/09/2026).
    */
   ancreTarifs?: string;
+  /** Libellé du lien gratuit, pour y annoncer la durée. */
+  libelleGratuit?: string;
 }) {
   const t = jour30Copy(locale);
   const c = t.retournement;
@@ -163,7 +166,7 @@ export default function Retournement({
               href={gratuit}
               className="inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton border border-filet-nuit px-[26px] py-3.5 text-[15.5px] font-medium text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire"
             >
-              {c.gratuit(leconsGratuites)}
+              {libelleGratuit ?? c.gratuit(leconsGratuites)}
             </a>
           </div>
         </div>
