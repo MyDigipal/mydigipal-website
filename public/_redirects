@@ -152,6 +152,13 @@ https://www.mydigipal.com/* https://mydigipal.com/:splat 301!
 # ========================
 # La seconde formule a pris l'URL historique /{lang}/academy. L'adresse
 # provisoire a circulé (elle a été montrée pour relecture) : on la redirige
-# plutot que de la laisser en 404 ou, pire, servir deux pages identiques.
+# plutôt que de la laisser en 404 ou, pire, servir deux pages identiques.
+#
+# ⚠️ INACTIF, comme tout ce fichier sur ce site : vérifié en production le
+# 07/09/2026, ces deux lignes rendaient un 404. Render ne lit ni ce fichier
+# (format Netlify) ni les `routes` de render.yaml, parce que le service a été
+# configuré à la main hors Blueprint. Le renvoi est fait en attendant par la
+# page `src/pages/[lang]/academy-v2.astro`. Pour une vraie 301, saisir la règle
+# dans le dashboard Render, onglet Redirects and Rewrites, puis supprimer la page.
 /en/academy-v2 /en/academy 301
 /fr/academy-v2 /fr/academy 301

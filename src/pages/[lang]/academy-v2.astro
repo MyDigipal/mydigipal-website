@@ -1,0 +1,47 @@
+---
+import { type Language, languages } from '@/i18n/config';
+
+/**
+ * `/{lang}/academy-v2` : l'adresse de travail de la seconde formule, gardée
+ * vivante parce qu'elle a été partagée pendant la validation (Alexandre l'a
+ * reçue). Depuis la bascule du 07/09/2026, la page vit à `/{lang}/academy`.
+ *
+ * ⚠️ Pourquoi une page et non une vraie 301. Sur ce site, les redirections
+ * n'obéissent NI à `public/_redirects` (format Netlify) NI aux `routes` de
+ * `render.yaml` : le service Render a été configuré à la main et n'est pas
+ * rattaché à un Blueprint, donc les seules redirections actives sont celles
+ * saisies dans son dashboard, onglet « Redirects and Rewrites ». La 301 que
+ * j'avais écrite dans `_redirects` rendait un 404, vérifié en production.
+ *
+ * Toucher les routes du service par l'API remplacerait la liste ENTIÈRE et
+ * emporterait toutes les redirections Webflow historiques : hors de question
+ * pour deux adresses. Cette page fait donc le renvoi côté client. C'est
+ * mauvais pour le référencement, ce qui est sans conséquence ici : elle est
+ * en `noindex` et n'a jamais été indexée. Pour une vraie 301, ajouter la
+ * règle dans le dashboard Render, puis supprimer ce fichier.
+ */
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+const cible = `/${lang}/academy`;
+---
+
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirection</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href={`https://mydigipal.com${cible}`} />
+    <meta http-equiv="refresh" content={`0; url=${cible}`} />
+  </head>
+  <body>
+    <p>
+      Cette page a déménagé : <a href={cible}>{cible}</a>
+    </p>
+    <script is:inline define:vars={{ cible }}>
+      window.location.replace(cible);
+    </script>
+  </body>
+</html>
