@@ -198,7 +198,6 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         }
         hausseMinor={data.hausse ? prixDe(data.hausse, devise) : 0}
         paliersEquipe={data.equipe?.paliers ?? []}
-        devisAPartirDe={data.equipe?.devisAPartirDe ?? 25}
         leconsProgramme={leconsProgramme(data)}
         heuresProgramme={data.faits.heuresProgramme ?? data.faits.heures}
         leconsTotal={data.faits.lessons}

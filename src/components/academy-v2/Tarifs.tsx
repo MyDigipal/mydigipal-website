@@ -4,6 +4,8 @@ import { formatPrice, teamDiscount } from '../academy/offres';
 import { SYMBOLE, type Devise } from '../academy/data';
 import { copyV2, type Locale } from './copy-v2';
 import { useLienApp } from '../academy/track';
+import FormEquipe from '../academy/FormEquipe';
+import { jour30Copy } from '../academy/copy';
 import { Boucle, estDemo, type Demo } from './Video';
 
 /**
@@ -33,7 +35,7 @@ interface Ligne {
   demo?: Demo;
 }
 
-const PLACES = [1, 2, 3, 5, 10, 20];
+const PLACES = [1, 2, 3, 5, 10];
 
 export default function Tarifs({
   locale,
@@ -42,7 +44,6 @@ export default function Tarifs({
   hausseMinor,
   devise,
   paliersEquipe,
-  devisAPartirDe,
   leconsProgramme,
   heuresProgramme,
   leconsTotal,
@@ -60,7 +61,6 @@ export default function Tarifs({
   /** La devise choisie dans la barre. Le symbole se pose APRÈS le montant. */
   devise: Devise;
   paliersEquipe: Array<{ seats: number; discount: number }>;
-  devisAPartirDe: number;
   leconsProgramme: number;
   heuresProgramme: string;
   leconsTotal: number;
@@ -76,10 +76,13 @@ export default function Tarifs({
   const [survol, setSurvol] = useState<Ligne | null>(null);
   const [tactile, setTactile] = useState(false);
   const [places, setPlaces] = useState(1);
+  const [devis, setDevis] = useState(false);
   useEffect(() => setTactile(pointeurGrossier()), []);
   const fr = locale === 'fr';
 
   const remise = useMemo(() => teamDiscount(places, paliersEquipe), [places, paliersEquipe]);
+  /** Le prix d'UNE licence, remise déduite. C'est lui qu'on met en grand. */
+  const parLicence = (minor: number) => Math.round(minor * (1 - remise));
   // Le palier réellement franchi, pour que le libellé dise « à partir de 10 »
   // quand la remise est celle de dix places, et non toujours « de trois ».
   const seuilAtteint = useMemo(() => {
@@ -94,7 +97,6 @@ export default function Tarifs({
   const lienAvancee = useLienApp(`${base}?items=programme,construire&seats=${places}&lang=${locale}`);
   const total = (minor: number) => Math.round(minor * places * (1 - remise));
   const montant = (minor: number) => `${formatPrice(minor, locale)} ${SYMBOLE[devise]}`;
-  const devis = places >= devisAPartirDe;
 
   const methode: Ligne[] = [
     {
@@ -209,17 +211,23 @@ export default function Tarifs({
         {titre}
       </span>
       <h3 className="mb-1 mt-1 text-[20px] font-medium text-ivoire">{sous}</h3>
-      <div className="mt-3.5 text-[38px] font-semibold tabular-nums leading-none text-ivoire">
-        {montant(total(minor))}
+      <div className="mt-3.5 flex items-baseline gap-2.5">
+        <span className="text-[38px] font-semibold tabular-nums leading-none text-ivoire">
+          {montant(parLicence(minor))}
+        </span>
+        {remise > 0 && (
+          <span className="font-ac-mono text-[15px] tabular-nums text-brume-nuit line-through">
+            {montant(minor)}
+          </span>
+        )}
       </div>
-      <div className={`mb-1 mt-1.5 font-ac-mono text-[12.5px] ${or ? 'text-or' : 'text-avance'}`}>
+      <div className={`mt-1.5 font-ac-mono text-[12.5px] ${or ? 'text-or' : 'text-avance'}`}>
         {c.duree}
-        {places > 1 ? ` · ${c.places(places)}` : ''}
+        {places > 1 ? ` · ${c.parPlace}` : ''}
       </div>
       {places > 1 && (
-        <div className="mb-3 font-ac-mono text-[12px] text-brume-nuit">
-          {montant(minor)} {c.parPlace}
-          {remise > 0 ? ` · −${Math.round(remise * 100)} %` : ''}
+        <div className="mb-3 mt-2 font-ac-mono text-[13px] text-corps-nuit">
+          {c.total(montant(total(minor)), places)}
         </div>
       )}
       <ul className="m-0 mb-5 mt-3 list-none p-0">{lignes.map((l) => rendreLigne(l, or))}</ul>
@@ -259,7 +267,10 @@ export default function Tarifs({
               <button
                 key={n}
                 type="button"
-                onClick={() => setPlaces(n)}
+                onClick={() => {
+                  setPlaces(n);
+                  setDevis(false);
+                }}
                 className={`min-h-11 min-w-11 rounded-bouton border px-3 font-ac-mono text-[13px] tabular-nums transition ${
                   places === n
                     ? 'border-or bg-or text-salle'
@@ -269,18 +280,44 @@ export default function Tarifs({
                 {n}
               </button>
             ))}
+            {/* Au-delà de dix licences, on ne vend pas en libre-service : le
+                « + » ouvre la conversation plutôt qu'un onzième bouton. */}
+            <button
+              type="button"
+              onClick={() => setDevis((v) => !v)}
+              aria-expanded={devis}
+              className={`min-h-11 min-w-11 rounded-bouton border px-3 font-ac-mono text-[15px] transition ${
+                devis ? 'border-or bg-or text-salle' : 'border-filet-nuit text-corps-nuit hover:border-or hover:text-or'
+              }`}
+              title={c.plusDeLicences}
+            >
+              +
+            </button>
           </div>
           {remise > 0 && !devis && (
-            <span className="font-ac-mono text-[12.5px] text-sauge-nuit">
-              −{Math.round(remise * 100)} % · {c.remiseEquipe(seuilAtteint)}
+            <span className="inline-flex items-center gap-2 rounded-full border border-sauge-nuit/45 bg-[rgba(95,188,143,.12)] px-3.5 py-1.5 font-ac-mono text-[13px] font-bold text-sauge-nuit">
+              −{Math.round(remise * 100)} %
+              <span className="font-normal text-corps-nuit">{c.remiseEquipe(seuilAtteint)}</span>
             </span>
           )}
         </div>
 
         {devis ? (
-          <p className="mt-4 max-w-[62ch] text-[15px] leading-[1.6] text-brume-nuit">
-            {c.devis(devisAPartirDe)}
-          </p>
+          <div className="mt-5 rounded-carte border border-or/45 bg-salle-2 p-6">
+            <p className="m-0 font-ac-mono text-[10.5px] uppercase tracking-[.12em] text-or">
+              {c.plusDeLicences}
+            </p>
+            <p className="m-0 mb-1 mt-2 text-[18px] leading-[1.35] text-ivoire">{c.devisTitre}</p>
+            <p className="m-0 mb-5 max-w-[62ch] text-[15px] leading-[1.6] text-brume-nuit">
+              {c.devisTexte}
+            </p>
+            <FormEquipe
+              locale={locale}
+              seats={20}
+              base="https://academy.mydigipal.com"
+              c={jour30Copy(locale).configurateur.equipe}
+            />
+          </div>
         ) : null}
 
         <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[1fr_1fr_320px]">

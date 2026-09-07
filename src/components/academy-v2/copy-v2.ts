@@ -158,9 +158,12 @@ const FR = {
     licences: 'Licences',
     places: (n: number) => `${n} licences`,
     parPlace: 'par licence',
+    total: (montant: string, places: number) => `${montant} au total pour ${places} licences`,
     remiseEquipe: (seuil: number) => `remise à partir de ${seuil} licences`,
-    devis: (n: number) =>
-      `À partir de ${n} licences, on établit un devis : écrivez-nous et nous revenons sous deux jours ouvrés.`,
+    plusDeLicences: 'Plus de dix licences',
+    devisTitre: 'On préfère en discuter avec vous.',
+    devisTexte:
+      'Au-delà de dix licences, le prix se construit avec vous : les accès, le rythme, l’accompagnement de l’équipe. Dites-nous ce que vous cherchez, Paul vous répond sous un jour ouvré.',
     survol: 'Survolez une ligne pour voir l’écran',
     survolTactile: 'Touchez une ligne pour voir l’écran',
     rappel: () =>
@@ -308,9 +311,12 @@ const EN: typeof FR = {
     licences: 'Licences',
     places: (n) => `${n} licences`,
     parPlace: 'per licence',
+    total: (montant, places) => `${montant} in total for ${places} licences`,
     remiseEquipe: (seuil) => `discount from ${seuil} licences`,
-    devis: (n) =>
-      `From ${n} licences we prepare a quote: write to us and we come back within two working days.`,
+    plusDeLicences: 'More than ten licences',
+    devisTitre: 'We would rather talk it through with you.',
+    devisTexte:
+      'Beyond ten licences the price is built with you: the seats, the pace, the support your team needs. Tell us what you are looking for, Paul answers within one working day.',
     survol: 'Hover a line to see the screen',
     survolTactile: 'Touch a line to see the screen',
     rappel: () =>
