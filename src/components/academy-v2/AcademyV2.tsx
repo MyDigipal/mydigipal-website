@@ -31,6 +31,7 @@ import Maison from '../academy/Maison';
 import AppelFlottant from '../academy/AppelFlottant';
 import { copyV2 } from './copy-v2';
 import { ETAPES, MODULES, modulesDe } from './modules';
+import Profil from './Profil';
 import Programme from './Programme';
 import Tarifs from './Tarifs';
 
@@ -164,6 +165,10 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         titreQuinzaine2={c.trajet.quinzaine2}
       />
 
+      {/* L'attestation à gauche, le compte de Clara à droite (Paul, 07/09).
+          La carte n'apparaît que si l'app a servi `parcours` : sur un
+          instantané de secours antérieur, l'attestation reprend sa forme
+          d'origine plutôt que de montrer une colonne vide. */}
       <Diplome
         locale={locale}
         lessons={data.faits.lessons}
@@ -174,6 +179,18 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         mention={data.jeu.mention}
         domaines={domaines}
         domainesTitre={c.preuves.domainesTitre}
+        aside={
+          data.parcours && fin ? (
+            <Profil
+              locale={locale}
+              parcours={data.parcours}
+              fin={fin}
+              jeu={data.jeu}
+              copy={c.preuves.profil}
+              totalTrophees={data.faits.trophees}
+            />
+          ) : undefined
+        }
       />
 
       <Retournement

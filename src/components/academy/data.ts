@@ -100,6 +100,23 @@ export interface Jour30Data {
     trophees: number;
     secrets: number;
   };
+  /**
+   * Ce que l'apprenante du récit a fait de ses trente jours, servi par l'app
+   * depuis le 07/09/2026 et sommé là-bas depuis les gestes du récit.
+   *
+   * ⚠️ Optionnel : l'instantané de secours ne le portera qu'après le prochain
+   * build, et la carte de profil doit disparaître proprement plutôt que de
+   * faire tomber la page. Aucun de ces nombres ne s'écrit à la main ici.
+   */
+  parcours?: {
+    depots: number;
+    quiz: number;
+    pratiques: number;
+    relectures: number;
+    /** Les sessions de quinze minutes que ses points lui ont gagnées. */
+    sessions: number;
+    trophees: Array<{ key: string; nom: string; metal: Metal | null }>;
+  };
   etats: EtatJour[];
   jeu: {
     rangs: Record<RankKey, string>;

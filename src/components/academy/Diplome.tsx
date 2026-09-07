@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import { jour30Copy } from './copy';
 import type { Locale } from './data';
 import { onEnter, probeClock, reducedMotion, rescueLoop } from './motion';
@@ -28,6 +28,7 @@ export default function Diplome({
   mention,
   domaines,
   domainesTitre,
+  aside,
 }: {
   locale: Locale;
   lessons: number;
@@ -44,6 +45,17 @@ export default function Diplome({
    */
   domaines?: Array<{ titre: string; modules: string[] }>;
   domainesTitre?: string;
+  /**
+   * La carte de profil, posée À DROITE du document (Paul, 07/09/2026).
+   *
+   * ⚠️ Elle change aussi la TAILLE de l'attestation : mesurée ce jour-là, la
+   * feuille faisait 977 x 1225, soit un ratio de 0,80 - un format PORTRAIT,
+   * alors que l'en-tête de ce fichier annonce « au format paysage ». Ce sont
+   * les domaines couverts, ajoutés le matin même, qui l'avaient fait basculer
+   * sans que personne ne la remesure. Avec cette prop, les marges et les
+   * échelles se resserrent d'un cran pour la ramener au paysage.
+   */
+  aside?: React.ReactNode;
 }) {
   const c = jour30Copy(locale).diplome;
   const wrap = useRef<HTMLDivElement>(null);
@@ -92,31 +104,38 @@ export default function Diplome({
         {c.titre}
       </h2>
 
-      <div ref={wrap} className="relative mx-auto mt-[46px] max-w-[820px]">
+      <div
+        ref={wrap}
+        className={
+          aside
+            ? 'relative mx-auto mt-[42px] grid max-w-[1080px] grid-cols-[minmax(0,1fr)] items-start gap-6 text-left lg:grid-cols-[minmax(0,1fr)_296px] lg:gap-7'
+            : 'relative mx-auto mt-[46px] max-w-[820px]'
+        }
+      >
         <div
-          className="j30-feuille relative rounded-[6px] p-3.5 shadow-[0_50px_90px_-40px_rgba(0,0,0,0.85),inset_0_2px_0_rgba(255,255,255,0.4)]"
+          className={`j30-feuille relative rounded-[6px] shadow-[0_50px_90px_-40px_rgba(0,0,0,0.85),inset_0_2px_0_rgba(255,255,255,0.4)] ${aside ? 'p-2.5 text-center' : 'p-3.5'}`}
           style={{ background: 'linear-gradient(160deg,#faf8f3 0%,#f4f1e8 100%)' }}
         >
           <div className="rounded-[3px] border-[1.5px] border-or p-1">
-            <div className="rounded-[2px] border-[0.5px] border-or/55 px-[clamp(22px,4vw,56px)] py-[clamp(26px,4.4vw,48px)]">
+            <div className={`rounded-[2px] border-[0.5px] border-or/55 ${aside ? 'px-[clamp(18px,2.6vw,34px)] py-[clamp(20px,2.8vw,30px)]' : 'px-[clamp(22px,4vw,56px)] py-[clamp(26px,4.4vw,48px)]'}`}>
               <div className="flex items-center justify-center gap-3.5">
                 <span className={filet} />
-                <img src="/academy/brand/academy-logo.png" alt={c.logoAlt} width={1113} height={457} className="h-[30px] w-auto" />
+                <img src="/academy/brand/academy-logo.png" alt={c.logoAlt} width={1113} height={457} className={aside ? 'h-[24px] w-auto' : 'h-[30px] w-auto'} />
                 <span className={filet} />
               </div>
 
-              <p className="mt-[26px] font-ac-mono text-[clamp(9.5px,1.2vw,11px)] font-bold uppercase tracking-[0.34em] text-or-grave">
+              <p className={`font-ac-mono font-bold uppercase tracking-[0.34em] text-or-grave ${aside ? 'mt-[18px] text-[clamp(8.5px,0.85vw,9.5px)]' : 'mt-[26px] text-[clamp(9.5px,1.2vw,11px)]'}`}>
                 {c.surtitre}
               </p>
 
-              <p className="mt-6 font-ac-serif text-[14px] italic leading-[1.6] text-[#5a6472]">{c.decernee}</p>
-              <p className="mt-1.5 font-ac-serif text-[clamp(32px,6vw,54px)] font-semibold leading-[1.05] tracking-[-0.015em] text-encre">
+              <p className={`font-ac-serif italic leading-[1.6] text-[#5a6472] ${aside ? 'mt-4 text-[12.5px]' : 'mt-6 text-[14px]'}`}>{c.decernee}</p>
+              <p className={`mt-1.5 font-ac-serif font-semibold leading-[1.05] tracking-[-0.015em] text-encre ${aside ? 'text-[clamp(26px,3.4vw,40px)]' : 'text-[clamp(32px,6vw,54px)]'}`}>
                 {c.nom}
               </p>
 
-              <div className="mx-auto my-[26px] h-px w-16 bg-or/70" />
+              <div className={`mx-auto h-px w-16 bg-or/70 ${aside ? 'my-[18px]' : 'my-[26px]'}`} />
 
-              <p className="mx-auto max-w-[52ch] text-[clamp(14px,1.6vw,15.5px)] leading-[1.7] text-mine">
+              <p className={`mx-auto leading-[1.7] text-mine ${aside ? 'max-w-[46ch] text-[clamp(12.5px,1.15vw,13.5px)]' : 'max-w-[52ch] text-[clamp(14px,1.6vw,15.5px)]'}`}>
                 {c.corps(lessons, modules, exercices, relus)}
               </p>
 
@@ -126,33 +145,56 @@ export default function Diplome({
                   bureau de direction. Trois colonnes, une par étape du
                   parcours, dans la même sobriété que le reste. */}
               {domaines && domaines.length > 0 ? (
-                <div className="mx-auto mt-[30px] max-w-[62ch] border-t border-[#e2dccc] pt-[26px]">
+                <div className={`mx-auto max-w-[62ch] border-t border-[#e2dccc] ${aside ? 'mt-[20px] pt-[18px]' : 'mt-[30px] pt-[26px]'}`}>
                   <p className="m-0 mb-4 font-ac-mono text-[clamp(8.5px,1.1vw,10px)] font-bold uppercase tracking-[0.28em] text-or-grave">
                     {domainesTitre}
                   </p>
-                  <div className="grid grid-cols-[minmax(0,1fr)] gap-x-8 gap-y-5 text-left sm:grid-cols-3">
-                    {domaines.map((d) => (
-                      <div key={d.titre}>
-                        <p className="m-0 font-ac-mono text-[clamp(8.5px,1.05vw,9.5px)] font-bold uppercase tracking-[0.16em] text-[#8a6d24]">
-                          {d.titre}
-                        </p>
-                        <ul className="m-0 mt-2 list-none p-0">
-                          {d.modules.map((m) => (
-                            <li
-                              key={m}
-                              className="relative py-[3px] pl-3 text-[clamp(11px,1.3vw,12.5px)] leading-[1.45] text-mine before:absolute before:left-0 before:top-[10px] before:h-[3px] before:w-[3px] before:rounded-full before:bg-or"
-                            >
-                              {m}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
+                  {/* ⚠️ Deux mises en forme, et c'est une question de hauteur.
+                      Mesuré le 07/09 : en trois colonnes de listes à puces, ce
+                      bloc pesait 368 px sur les 887 de la feuille, soit 41 %,
+                      parce que des colonnes de 230 px coupent chaque titre de
+                      module en deux lignes. À côté de la carte de profil, les
+                      modules coulent donc en une ligne par étape, titre à
+                      gauche : c'est aussi la forme qu'un vrai diplôme donne à
+                      ses domaines. Sans la carte, la page garde ses colonnes. */}
+                  {aside ? (
+                    <div className="grid grid-cols-[minmax(0,1fr)] gap-y-3 text-left sm:grid-cols-[104px_minmax(0,1fr)] sm:gap-x-5 sm:gap-y-2.5">
+                      {domaines.map((d) => (
+                        <Fragment key={d.titre}>
+                          <p className="m-0 font-ac-mono text-[9px] font-bold uppercase leading-[1.5] tracking-[0.14em] text-[#8a6d24]">
+                            {d.titre}
+                          </p>
+                          <p className="m-0 text-[11.5px] leading-[1.55] text-mine">
+                            {d.modules.join(' · ')}
+                          </p>
+                        </Fragment>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-[minmax(0,1fr)] gap-x-8 gap-y-5 text-left sm:grid-cols-3">
+                      {domaines.map((d) => (
+                        <div key={d.titre}>
+                          <p className="m-0 font-ac-mono text-[clamp(8.5px,1.05vw,9.5px)] font-bold uppercase tracking-[0.16em] text-[#8a6d24]">
+                            {d.titre}
+                          </p>
+                          <ul className="m-0 mt-2 list-none p-0">
+                            {d.modules.map((m) => (
+                              <li
+                                key={m}
+                                className="relative py-[3px] pl-3 text-[clamp(11px,1.3vw,12.5px)] leading-[1.45] text-mine before:absolute before:left-0 before:top-[10px] before:h-[3px] before:w-[3px] before:rounded-full before:bg-or"
+                              >
+                                {m}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : null}
 
-              <div className="j30-mention mt-[26px] inline-flex items-center gap-2.5 rounded-full border border-or bg-[#f6ecd3] px-5 py-2">
+              <div className={`j30-mention inline-flex items-center gap-2.5 rounded-full border border-or bg-[#f6ecd3] ${aside ? 'mt-[18px] px-4 py-1.5' : 'mt-[26px] px-5 py-2'}`}>
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#8a6d24" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M12 3l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-3-5.3 3 1.1-6L3.4 9.3l6-.8z" />
                 </svg>
@@ -161,7 +203,7 @@ export default function Diplome({
                 </span>
               </div>
 
-              <div className="mt-[clamp(30px,4vw,44px)] grid grid-cols-[minmax(0,1fr)] items-end justify-items-center gap-6 sm:grid-cols-[1fr_auto_1fr] sm:justify-items-stretch sm:gap-5">
+              <div className={`grid grid-cols-[minmax(0,1fr)] items-end justify-items-center gap-6 sm:grid-cols-[1fr_auto_1fr] sm:justify-items-stretch sm:gap-5 ${aside ? 'mt-[clamp(20px,2.4vw,28px)]' : 'mt-[clamp(30px,4vw,44px)]'}`}>
                 <div className="text-center sm:text-left">
                   <p className="m-0 font-ac-serif text-[22px] italic leading-none text-encre">{c.signature}</p>
                   <div className="mx-auto my-2 h-px w-40 bg-[#d8d2c4] sm:mx-0 sm:w-auto" />
@@ -187,6 +229,8 @@ export default function Diplome({
             </div>
           </div>
         </div>
+
+        {aside}
       </div>
 
       <p className="relative mx-auto mt-7 max-w-[52ch] text-[15px] leading-[1.65] text-brume-nuit">{c.note}</p>

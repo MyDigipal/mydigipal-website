@@ -143,6 +143,22 @@ const FR = {
     // au-dessus (relevé le 07/09).
     visiteTitre: 'L’espace que vous ouvrez chaque matin.',
     tousLesAvis: 'Tous les retours',
+    // La carte de profil, à côté de l'attestation. Aucun nombre ici : ils
+    // arrivent tous de l'app, par `parcours` et par le dernier état du récit.
+    profil: {
+      kicker: 'Son compte au jour 30',
+      nom: 'Clara Martin',
+      points: 'points',
+      serie: (n: number) => `${n} jours d’affilée`,
+      trophees: (obtenus: number, total: number) => `${obtenus} trophées sur ${total}`,
+      faits: {
+        depots: 'exercices déposés',
+        quiz: 'quiz réussis',
+        relectures: 'exercices relus et annotés',
+        session: 'session de quinze minutes, gagnée aux points',
+      },
+      pied: 'Les points viennent de ce qu’on fait, pas de ce qu’on lit.',
+    },
   },
   tarifs: {
     kicker: 'Les tarifs',
@@ -289,13 +305,27 @@ const EN: typeof FR = {
   },
   preuves: {
     kicker: 'Who teaches',
-    titre: 'A method born in the room',
+    titre: 'A method shaped in the training room',
     chapeau: (note, retours) =>
       `Three years of small-group workshops at La Poste, Pierre Fabre, La Redoute, E.Leclerc and GL Events. The public score is ${note} out of 10, across ${retours} reviews.`,
     casTitre: 'Three sessions, three outcomes',
     domainesTitre: 'Fields covered',
     visiteTitre: 'The space you open every morning.',
     tousLesAvis: 'All reviews',
+    profil: {
+      kicker: 'Her account on day 30',
+      nom: 'Clara Martin',
+      points: 'points',
+      serie: (n) => `${n} days in a row`,
+      trophees: (obtenus, total) => `${obtenus} trophies out of ${total}`,
+      faits: {
+        depots: 'exercises submitted',
+        quiz: 'quizzes passed',
+        relectures: 'exercises reviewed and annotated',
+        session: 'fifteen-minute session, earned on points',
+      },
+      pied: 'Points come from what you do, not from what you read.',
+    },
   },
   tarifs: {
     kicker: 'Pricing',
