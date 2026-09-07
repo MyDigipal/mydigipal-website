@@ -236,7 +236,7 @@ export default function Tarifs({
         className={`inline-flex min-h-11 items-center rounded-bouton px-6 text-[15px] font-semibold transition ${
           or
             ? 'bg-or text-salle hover:bg-or-vif'
-            : 'border border-filet-nuit font-medium text-ivoire hover:border-avance hover:text-avance'
+            : 'bg-avance text-salle hover:bg-[#a2dcef]'
         }`}
       >
         {c.commencer}
@@ -353,7 +353,7 @@ export default function Tarifs({
         {/* La troisième porte : essayer sans payer. Dans la teinte du renard,
             distincte de l'or de La méthode et du bleu des Automatisations, pour
             qu'on voie d'un coup d'œil que ce n'est pas une troisième formule. */}
-        <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-carte border border-renard/45 bg-[rgba(217,116,63,.07)] px-6 py-5">
+        <div className="mt-4 flex flex-col gap-4 rounded-carte border border-renard/45 bg-[rgba(217,116,63,.07)] px-6 py-6 sm:flex-row sm:items-center sm:gap-x-8">
           <div className="min-w-0 flex-1">
             <span className="font-ac-mono text-[10.5px] uppercase tracking-[.12em] text-renard">
               {c.gratuitTag}
@@ -365,7 +365,7 @@ export default function Tarifs({
           </div>
           <a
             href={lienGratuit}
-            className="inline-flex min-h-11 flex-none items-center rounded-bouton border border-renard px-5 text-[15px] font-medium text-renard transition hover:bg-renard hover:text-salle"
+            className="inline-flex min-h-11 flex-none items-center justify-center rounded-bouton border border-renard px-5 text-[15px] font-medium text-renard transition hover:bg-renard hover:text-salle max-sm:w-full"
           >
             {c.gratuitCta}
           </a>

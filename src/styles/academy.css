@@ -270,3 +270,45 @@
     animation: none;
   }
 }
+
+/* ============================================================
+   La bande de logos au doigt : rangée, pas défilante
+   ============================================================ */
+@media (max-width: 639px) {
+  .j30-piste {
+    animation: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px 22px;
+    width: 100%;
+    transform: none;
+  }
+  /* ⚠️ La piste n'a qu'UN enfant visible : le bloc qui porte les treize
+     logos. C'est donc LUI qui doit s'enrouler, pas elle. Mesuré le 07/09 :
+     `flex-wrap` sur la piste seule ne servait à rien, l'enfant restait une
+     ligne de 728 px dans un écran de 375. Et comme il débordait à droite,
+     les logos hors champ n'entraient jamais dans l'écran, donc le chargement
+     différé ne les demandait pas : six sur treize s'affichaient. */
+  .j30-piste > div:not(.j30-copie) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    gap: 18px 22px;
+    padding-right: 0;
+  }
+  .j30-copie {
+    display: none;
+  }
+  /* Les hauteurs sont posées en style inline sur chaque logo, une par marque.
+     `max-height` suffit à les ramener toutes sous le même plafond, la largeur
+     restant en `auto` : le rapport est préservé.
+
+     ⚠️ NE PAS écrire `height: auto !important` ici. Les logos sont en
+     chargement différé : sans hauteur, leur boîte mesure zéro, le navigateur
+     ne les croit jamais entrés dans l'écran et ne les charge pas. Mesuré le
+     07/09 : 21 logos sur 26 restaient vides. */
+  .j30-piste img {
+    max-height: 21px;
+  }
+}

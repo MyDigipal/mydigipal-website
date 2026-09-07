@@ -337,7 +337,7 @@ export default function Visite({
               la main vers le bouton de lecture. */}
           <aside
             ref={panneau}
-            className="sticky top-18 z-20 scroll-mt-[76px] max-lg:order-first lg:top-24"
+            className="z-20 scroll-mt-[76px] max-lg:order-first lg:sticky lg:top-24"
             aria-live="polite"
             onMouseEnter={() => setTouche(true)}
           >

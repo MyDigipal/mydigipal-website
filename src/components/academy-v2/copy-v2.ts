@@ -14,7 +14,7 @@ const FR = {
   meta: {
     titre: 'Formation IA en ligne : le programme complet',
     description:
-      'Le programme de la formation IA MyDigipal, module par module : la méthode de prompting, votre outil, les automatisations et les serveurs MCP. Deux modules offerts.',
+      'Le programme de la formation IA MyDigipal, module par module : la méthode de prompting, le parcours de votre outil, les automatisations. Deux modules offerts.',
   },
   barre: {
     programme: 'Le programme',
@@ -182,9 +182,9 @@ const FR = {
 
 const EN: typeof FR = {
   meta: {
-    titre: 'Online AI course: the full programme',
+    titre: 'Online AI training course: the full programme',
     description:
-      'The MyDigipal AI course programme, module by module: the prompting method, your tool, automations and MCP servers. Two modules free.',
+      'The MyDigipal AI course programme, module by module: the prompting method, the path for your own tool, automations and MCP servers. Two free modules.',
   },
   barre: {
     programme: 'The programme',

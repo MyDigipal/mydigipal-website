@@ -102,7 +102,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
     <div data-theme="nuit" className="j30 overflow-x-clip bg-salle text-corps-nuit">
       <Barre
         locale={locale}
-        chemin="academy-v2"
+        chemin="academy"
         ancreCta="tarifs"
         devise={devise}
         surDevise={setDevise}

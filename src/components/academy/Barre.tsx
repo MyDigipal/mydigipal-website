@@ -134,7 +134,7 @@ export default function Barre({
           <span className="hidden font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-brume-nuit sm:inline">{c.marque}</span>
         </a>
 
-        <nav className="j30-barre-reperes -mx-1 hidden min-w-0 flex-1 items-center gap-1 overflow-x-auto px-1 md:flex" aria-label={c.aria}>
+        <nav className="j30-barre-reperes -mx-1 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto px-1" aria-label={c.aria}>
           {(reperes ?? REPERES.map((r) => ({ id: r.id, libelle: c.reperes[r.cle] }))).map((r) => {
             const on = actif === r.id;
             return (
@@ -151,10 +151,10 @@ export default function Barre({
           })}
         </nav>
 
-        <span ref={jourRef} className="ml-auto flex-none font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-or transition-opacity duration-300" style={{ opacity: 0 }} />
+        <span ref={jourRef} className="ml-auto hidden flex-none font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-or transition-opacity duration-300 md:block" style={{ opacity: 0 }} />
 
         {devise && surDevise ? (
-          <div className="flex flex-none items-center overflow-hidden rounded-bouton border border-filet-nuit">
+          <div className="hidden flex-none items-center overflow-hidden rounded-bouton border border-filet-nuit md:flex">
             {(['EUR', 'GBP', 'USD'] as Devise[]).map((d) => (
               <button
                 key={d}
@@ -177,10 +177,10 @@ export default function Barre({
           hrefLang={autre}
           aria-label={c.langueAria}
           title={c.langueAria}
-          className="flex min-h-10 flex-none items-center gap-2 rounded-bouton border border-filet-nuit px-2.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.1em] text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire"
+          className="flex min-h-10 flex-none items-center gap-2 rounded-bouton border border-filet-nuit px-2.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.1em] text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire max-md:ml-auto"
         >
           <Drapeau locale={autre} />
-          {c.langue}
+          <span className="hidden md:inline">{c.langue}</span>
         </a>
 
         {/* Sous lg, l'appel vit en bas à droite (`AppelFlottant`), là où arrive
