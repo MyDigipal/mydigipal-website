@@ -56,6 +56,8 @@ export default function Mcp({
   const reduce = useRef(false);
   const dot = useRef<SVGCircleElement | null>(null);
   const pulseRaf = useRef(0);
+  const ambRaf = useRef(0);
+  const ambPoints = useRef<SVGCircleElement[]>([]);
   const actifRef = useRef(actif);
   actifRef.current = actif;
   const premier = useRef(true);
@@ -97,6 +99,74 @@ export default function Mcp({
       pulseRaf.current = requestAnimationFrame(step);
     };
     pulseRaf.current = requestAnimationFrame(step);
+  }, []);
+
+  /**
+   * La circulation d'ambiance.
+   *
+   * `pulse` ne fait courir un point que sur le fil de l'outil ACTIF : les seize
+   * autres restaient figés une fois tracés, et la figure paraissait morte
+   * (Paul, 07/09 : « c'est juste un truc qui est plat »). Six points circulent
+   * donc en permanence sur des fils tirés au sort, chacun avec sa durée et son
+   * décalage, et chacun change de fil à la fin de son passage : le réseau a
+   * l'air de travailler sans que rien ne clignote.
+   *
+   * ⚠️ Six points, pas dix-sept : `getPointAtLength` coûte cher et il est
+   * appelé à chaque image. Six suffisent à donner le mouvement sur une figure
+   * de dix-sept fils, parce qu'ils ne sont jamais aux mêmes endroits.
+   */
+  const ambiance = useCallback(() => {
+    cancelAnimationFrame(ambRaf.current);
+    ambPoints.current.forEach((d) => d.remove());
+    ambPoints.current = [];
+    if (reduce.current || !svg.current || !paths.current.length) return;
+
+    const N = Math.min(6, paths.current.length);
+    const etats = Array.from({ length: N }, (_, i) => ({
+      fil: paths.current[Math.floor(Math.random() * paths.current.length)],
+      duree: 2600 + Math.random() * 1800,
+      depart: -Math.random() * 3000,
+      point: (() => {
+        const d = document.createElementNS(NS, 'circle');
+        d.setAttribute('r', '2.4');
+        d.setAttribute('fill', FIL_OR);
+        d.setAttribute('opacity', '0');
+        svg.current!.appendChild(d);
+        ambPoints.current.push(d);
+        return d;
+      })(),
+      i,
+    }));
+
+    let t0 = 0;
+    const step = (now: number) => {
+      if (!t0) t0 = now;
+      for (const e of etats) {
+        const ecoule = now - t0 - e.depart;
+        if (ecoule < 0) continue;
+        const brut = (ecoule % (e.duree + 260)) / e.duree;
+        if (brut > 1) {
+          // Entre deux passages, le point se tait et change de fil.
+          e.point.setAttribute('opacity', '0');
+          continue;
+        }
+        // Le point qui vient de boucler repart sur un autre fil.
+        if (brut < 0.02 && Math.random() < 0.35) {
+          e.fil = paths.current[Math.floor(Math.random() * paths.current.length)];
+        }
+        const len = e.fil.getTotalLength();
+        if (!len) continue;
+        const q = e.fil.getPointAtLength(len * brut);
+        e.point.setAttribute('cx', String(q.x));
+        e.point.setAttribute('cy', String(q.y));
+        // Fondu aux deux bouts : un point qui apparaît net sur un nœud donne
+        // l'impression d'un défaut d'affichage.
+        const a = brut < 0.15 ? brut / 0.15 : brut > 0.85 ? (1 - brut) / 0.15 : 1;
+        e.point.setAttribute('opacity', String(a * 0.7));
+      }
+      ambRaf.current = requestAnimationFrame(step);
+    };
+    ambRaf.current = requestAnimationFrame(step);
   }, []);
 
   const wire = useCallback(() => {
@@ -206,6 +276,8 @@ export default function Mcp({
           () => {
             const off = connect();
             if (off) arrets.push(off);
+            // Le réseau se met à circuler une fois les fils tirés.
+            window.setTimeout(() => ambiance(), 2200);
           },
           '-25%'
         )
@@ -215,6 +287,9 @@ export default function Mcp({
       arrets.forEach((a) => a());
       arrets = [];
       cancelAnimationFrame(pulseRaf.current);
+      cancelAnimationFrame(ambRaf.current);
+      ambPoints.current.forEach((d) => d.remove());
+      ambPoints.current = [];
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -280,7 +355,15 @@ export default function Mcp({
             <div ref={hub} className="relative max-w-[340px] rounded-carte border border-renard/60 bg-papier px-7 py-5 text-center">
               <span ref={halo} className="pointer-events-none absolute -inset-px rounded-carte border border-renard opacity-0" />
               <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.16em] text-renard">{c.hub.kicker}</p>
-              <p className="m-0 mt-[9px] text-[16px] leading-[1.45] text-encre">{c.hub.ligne}</p>
+              {/* ⚠️ Cette ligne était FIXE : « La prise, et la liste de ce qui
+                  est permis », répétée à chaque survol, donc elle n'apprenait
+                  rien (Paul, 06/09/2026, redit le 07). Elle dit maintenant ce
+                  que le serveur fait vraiment avec l'outil survolé, et ce
+                  qu'il n'a pas le droit de faire : c'est la seule question
+                  que se pose quelqu'un à qui on parle d'automatisation. */}
+              <p className="m-0 mt-[9px] min-h-[3.2em] text-[16px] leading-[1.45] text-encre">
+                {premier.current ? c.hub.ligne : outil.corps}
+              </p>
               <p className="m-0 mt-[9px] min-h-[2.9em] font-ac-mono text-[11px] leading-[1.5] text-brume">
                 {premier.current ? c.hub.defaut(c.outils.length) : `${outil.label} · ${outil.droits}`}
               </p>
