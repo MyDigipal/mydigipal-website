@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { pointeurGrossier } from '../academy/motion';
 import { formatPrice, teamDiscount } from '../academy/offres';
+import { SYMBOLE, type Devise } from '../academy/data';
 import { copyV2, type Locale } from './copy-v2';
 import { useLienApp } from '../academy/track';
 import { Boucle, estDemo, type Demo } from './Video';
@@ -39,6 +40,7 @@ export default function Tarifs({
   prixProgrammeMinor,
   prixAvanceMinor,
   hausseMinor,
+  devise,
   paliersEquipe,
   devisAPartirDe,
   leconsProgramme,
@@ -55,6 +57,8 @@ export default function Tarifs({
   prixProgrammeMinor: number;
   prixAvanceMinor: number;
   hausseMinor: number;
+  /** La devise choisie dans la barre. Le symbole se pose APRÈS le montant. */
+  devise: Devise;
   paliersEquipe: Array<{ seats: number; discount: number }>;
   devisAPartirDe: number;
   leconsProgramme: number;
@@ -89,7 +93,7 @@ export default function Tarifs({
   const lienMethode = useLienApp(`${base}?items=programme&seats=${places}&lang=${locale}`);
   const lienAvancee = useLienApp(`${base}?items=programme,construire&seats=${places}&lang=${locale}`);
   const total = (minor: number) => Math.round(minor * places * (1 - remise));
-  const euro = (minor: number) => `${formatPrice(minor, locale)} €`;
+  const montant = (minor: number) => `${formatPrice(minor, locale)} ${SYMBOLE[devise]}`;
   const devis = places >= devisAPartirDe;
 
   const methode: Ligne[] = [
@@ -206,7 +210,7 @@ export default function Tarifs({
       </span>
       <h3 className="mb-1 mt-1 text-[20px] font-medium text-ivoire">{sous}</h3>
       <div className="mt-3.5 text-[38px] font-semibold tabular-nums leading-none text-ivoire">
-        {euro(total(minor))}
+        {montant(total(minor))}
       </div>
       <div className={`mb-1 mt-1.5 font-ac-mono text-[12.5px] ${or ? 'text-or' : 'text-avance'}`}>
         {c.duree}
@@ -214,7 +218,7 @@ export default function Tarifs({
       </div>
       {places > 1 && (
         <div className="mb-3 font-ac-mono text-[12px] text-brume-nuit">
-          {euro(minor)} {c.parPlace}
+          {montant(minor)} {c.parPlace}
           {remise > 0 ? ` · −${Math.round(remise * 100)} %` : ''}
         </div>
       )}
@@ -237,10 +241,10 @@ export default function Tarifs({
       <div className="mx-auto max-w-[1180px]">
         <div className="font-ac-mono text-[11px] uppercase tracking-[.16em] text-or">{c.kicker}</div>
         <h2 className="mt-3 text-[clamp(26px,3.2vw,38px)] font-medium leading-[1.1] tracking-[-0.02em] text-ivoire">
-          {c.titre(euro(prixProgrammeMinor))}
+          {c.titre(montant(prixProgrammeMinor))}
         </h2>
         <p className="mt-4 max-w-[62ch] text-[17.5px] leading-[1.65] text-brume-nuit">
-          {c.chapeau(euro(hausseMinor))}
+          {c.chapeau(montant(hausseMinor))}
         </p>
 
         {/* Les licences. Une par défaut : la page vend d'abord à une personne,

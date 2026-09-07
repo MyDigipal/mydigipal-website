@@ -22,6 +22,7 @@ export default function Hero({
   data,
   ancreTarifs = 'pricing',
   cta2,
+  prixAffiche,
 }: {
   locale: Locale;
   data: Jour30Data;
@@ -29,10 +30,17 @@ export default function Hero({
   ancreTarifs?: string;
   /** Libellé du second bouton, pour y annoncer la durée de l'accès gratuit. */
   cta2?: string;
+  /**
+   * Le prix déjà formaté avec son symbole, quand la page laisse choisir la
+   * devise. Sans lui, le hero affiche l'euro comme avant.
+   */
+  prixAffiche?: string;
 }) {
   const c = jour30Copy(locale).hero;
   const programme = data.offres.find((o) => o.id === 'programme');
-  const prix = programme ? formatPrice(programme.ttc_minor, locale) : '';
+  // ⚠️ Le symbole est DANS la valeur : la copie ne l'ajoute plus, sinon une
+  // devise choisie donnerait « 250 £ € ».
+  const prix = prixAffiche ?? (programme ? `${formatPrice(programme.ttc_minor, locale)} €` : '');
   const cta = 'inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton px-[26px] py-3.5 text-[15.5px] font-semibold transition duration-150';
   // ⚠️ Le lien vers le module gratuit passe par `useLienApp` : sans lui,
   // quelqu'un qui arrive d'une annonce et ouvre l'accès gratuit change de

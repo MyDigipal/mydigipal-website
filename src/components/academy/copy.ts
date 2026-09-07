@@ -82,7 +82,7 @@ const FR = {
   hero: {
     titre: 'La formation IA en ligne, tirée de trois ans à former des équipes.',
     sous: (lecons: number, prix: string) =>
-      `${lecons} leçons à votre rythme, la méthode de prompting, des exercices sur vos propres cas, jusqu’aux agents et aux serveurs MCP. Dès ${prix} €.`,
+      `${lecons} leçons à votre rythme, la méthode de prompting, des exercices sur vos propres cas, jusqu’aux agents et aux serveurs MCP. Dès ${prix}.`,
     /**
      * La répartition, dite près du prix.
      *
@@ -908,7 +908,7 @@ const EN: Jour30Copy = {
   hero: {
     titre: 'The online AI course, built from three years of training teams.',
     sous: (lecons: number, prix: string) =>
-      `${lecons} lessons at your own pace, the CRAFT method, exercises on your own cases, all the way to agents and MCP servers. From €${prix}.`,
+      `${lecons} lessons at your own pace, the prompting method, exercises on your own cases, all the way to agents and MCP servers. From ${prix}.`,
     repartition: (programme: number, complement: number) =>
       `${programme} lessons in the method, ${complement} more if you take Automations too.`,
     cta: 'Get started',
@@ -1633,7 +1633,7 @@ const EN: Jour30Copy = {
     gratuitLigne: (n: number) => `Or start with the ${n} free lessons`,
     devisTexte: (max: number) => `Beyond ${max} seats, we stop calculating: we talk.`,
     devis: 'Request a quote',
-    hausseProche: (prix: string, veille: string, apres: string) => `€${prix} until ${veille}, €${apres} afterwards.`,
+    hausseProche: (prix: string, veille: string, apres: string) => `${prix} € until ${veille}, ${apres} € afterwards.`,
     equipe: {
       titre: 'Your request',
       societe: 'Company',
@@ -1646,7 +1646,7 @@ const EN: Jour30Copy = {
       merci: 'Received. Paul replies within one working day, with a priced proposal.',
       erreur: 'The request did not go through. Try again, or write to academy@mydigipal.com.',
     },
-    hausse: (prix: string, date: string) => `The method goes up to €${prix} on ${date}.`,
+    hausse: (prix: string, date: string) => `The method goes up to ${prix} € on ${date}.`,
     dateHausse: (jour: number, mois: string) => `${jour} ${mois}`,
   },
 

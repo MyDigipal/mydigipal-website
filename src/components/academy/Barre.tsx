@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { jour30Copy } from './copy';
 import type { Locale } from './data';
 import Drapeau from './Drapeau';
+import { SYMBOLE, type Devise } from './data';
 
 /**
  * La barre de la page Academy, à la place du menu du site.
@@ -42,11 +43,20 @@ export default function Barre({
   reperes,
   chemin = 'academy',
   ancreCta = 'pricing',
+  devise,
+  surDevise,
 }: {
   locale: Locale;
   reperes?: Array<{ id: string; libelle: string }>;
   chemin?: string;
   ancreCta?: string;
+  /**
+   * La devise affichée, et de quoi en changer. Posé à côté du drapeau : c'est
+   * là qu'on cherche ce qui dépend du pays (Paul, 07/09/2026). Sans ces deux
+   * props, aucun sélecteur ne s'affiche.
+   */
+  devise?: Devise;
+  surDevise?: (d: Devise) => void;
 }) {
   const c = jour30Copy(locale).barre;
   const fill = useRef<HTMLSpanElement>(null);
@@ -142,6 +152,25 @@ export default function Barre({
         </nav>
 
         <span ref={jourRef} className="ml-auto flex-none font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-or transition-opacity duration-300" style={{ opacity: 0 }} />
+
+        {devise && surDevise ? (
+          <div className="flex flex-none items-center overflow-hidden rounded-bouton border border-filet-nuit">
+            {(['EUR', 'GBP', 'USD'] as Devise[]).map((d) => (
+              <button
+                key={d}
+                type="button"
+                onClick={() => surDevise(d)}
+                aria-pressed={d === devise}
+                aria-label={d}
+                className={`min-h-10 cursor-pointer border-0 px-2.5 font-ac-mono text-[12px] font-bold transition duration-150 ${
+                  d === devise ? 'bg-or text-salle' : 'bg-transparent text-corps-nuit hover:text-ivoire'
+                }`}
+              >
+                {SYMBOLE[d]}
+              </button>
+            ))}
+          </div>
+        ) : null}
 
         <a
           href={`/${autre}/${chemin}${ancre}`}

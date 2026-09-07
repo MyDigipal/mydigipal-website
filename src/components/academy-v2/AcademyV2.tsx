@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react';
 import {
   AVIS_REPLI,
   ENDPOINT,
+  SYMBOLE,
+  prixDe,
+  type Devise,
   leconsGratuit,
   leconsProgramme,
   temoignagesPublics,
   type Jour30Data,
   type Locale,
 } from '../academy/data';
+import { formatPrice } from '../academy/offres';
 import { captureAdClickIds, useLienApp } from '../academy/track';
 // ⚠️ Les sections viennent de la page EXISTANTE, elles ne sont pas réécrites.
 // Le câblage MCP animé, le récit avec ses cartes et son rail, les logos
@@ -56,6 +60,10 @@ import Tarifs from './Tarifs';
  */
 export default function AcademyV2({ locale, initial }: { locale: Locale; initial: Jour30Data }) {
   const [data, setData] = useState(initial);
+  // La devise du visiteur. L'euro par défaut : c'est la monnaie du prix
+  // annoncé partout ailleurs, et un prix qui change entre la page et la caisse
+  // est ce qui se remarque le plus mal.
+  const [devise, setDevise] = useState<Devise>('EUR');
   const c = copyV2(locale);
   const gratuit = useLienApp(
     `https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`,
@@ -96,6 +104,8 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         locale={locale}
         chemin="academy-v2"
         ancreCta="tarifs"
+        devise={devise}
+        surDevise={setDevise}
         reperes={[
           { id: 'programme', libelle: c.barre.programme },
           { id: 'outils', libelle: c.barre.outils },
@@ -112,6 +122,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         data={data}
         ancreTarifs="tarifs"
         cta2={c.tarifs.gratuitCourt(leconsGratuit(data))}
+        prixAffiche={`${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, devise), locale)} ${SYMBOLE[devise]}`}
       />
 
       {/* La section qui manquait, et la raison d'être de cette page. */}
@@ -180,9 +191,12 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
 
       <Tarifs
         locale={locale}
-        prixProgrammeMinor={programme?.ttc_minor ?? 0}
-        prixAvanceMinor={(programme?.ttc_minor ?? 0) + (construire?.ttc_minor ?? 0)}
-        hausseMinor={data.hausse?.ttc_minor ?? 0}
+        devise={devise}
+        prixProgrammeMinor={programme ? prixDe(programme, devise) : 0}
+        prixAvanceMinor={
+          (programme ? prixDe(programme, devise) : 0) + (construire ? prixDe(construire, devise) : 0)
+        }
+        hausseMinor={data.hausse ? prixDe(data.hausse, devise) : 0}
         paliersEquipe={data.equipe?.paliers ?? []}
         devisAPartirDe={data.equipe?.devisAPartirDe ?? 25}
         leconsProgramme={leconsProgramme(data)}
