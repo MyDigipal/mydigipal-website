@@ -115,7 +115,9 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
       {/* Le câblage MCP animé, tel quel. */}
       <Mcp locale={locale} titre={c.mcp.titre} texte={c.mcp.texte} />
 
-      <Mention locale={locale} />
+      {/* Le ruban sans sa grande photo : elle descend à la frontière de la
+          quinzaine 2, pour qu'il y ait une image par quinzaine. */}
+      <Mention locale={locale} sansPhoto />
 
       <LeCompte
         locale={locale}
@@ -130,6 +132,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         }}
         jeu={data.jeu}
         frise
+        photoQuinzaine2="/academy/visuels/apprenante-cartes_paysage.jpg"
       />
 
       <Diplome

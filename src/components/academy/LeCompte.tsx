@@ -46,6 +46,8 @@ interface Props {
    * Absente, la page se comporte exactement comme avant.
    */
   frise?: boolean;
+  /** L'image posée à la frontière de la quinzaine 2. */
+  photoQuinzaine2?: string;
 }
 
 /** Le mode frise, transmis aux quinze blocs de jour sans les toucher un à un. */
@@ -68,7 +70,7 @@ const PANNEAU = 'rounded-carte border border-filet-nuit bg-salle-2';
  * React : il change à chaque image de défilement, un rendu par jour serait du
  * gaspillage.
  */
-export default function LeCompte({ locale, etats, faits, jeu, avis, frise }: Props) {
+export default function LeCompte({ locale, etats, faits, jeu, avis, frise, photoQuinzaine2 }: Props) {
   const { rangs, metaux, trophees: tropheeNoms, points: POINTS, metalPoints: METAL_POINTS, modulesADebloquer: MODULES_A_DEBLOQUER } = jeu;
   const t = jour30Copy(locale);
   const c = t.compte;
@@ -530,7 +532,16 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, frise }: Pro
               la seconde. ⚠️ Ces deux indices suivent la table `ETAPES` de
               `jour30-story.ts` : ajouter un moment sans les corriger fait
               traverser le renard entre deux mauvaises formes. */}
-          <Frontiere id="quinzaine-2" kicker={q2.kicker} nom={q2.nom} titre={q2.titre} de={etats[8].renard} a={etats[9].renard} />
+          <Frontiere
+            id="quinzaine-2"
+            kicker={q2.kicker}
+            nom={q2.nom}
+            titre={q2.titre}
+            de={etats[8].renard}
+            a={etats[9].renard}
+            photo={photoQuinzaine2}
+            photoAlt={c.claraAlt}
+          />
 
           {/* Le premier serveur branché. Ce qu'on montre n'est pas la prise,
               c'est le RÉGLAGE de la prise : deux droits ouverts en lecture, deux
@@ -919,7 +930,32 @@ function Jour({
  * (voir `traverser` plus haut). Au repos il attend au bord gauche, à cheval sur
  * le filet, dans le même cercle que l'avatar du rail : c'est le même animal.
  */
-function Frontiere({ id, kicker, nom, titre, de, a }: { id: string; kicker: string; nom: string; titre: string; de: number; a: number }) {
+function Frontiere({
+  id,
+  kicker,
+  nom,
+  titre,
+  de,
+  a,
+  photo,
+  photoAlt,
+}: {
+  id: string;
+  kicker: string;
+  nom: string;
+  titre: string;
+  de: number;
+  a: number;
+  /**
+   * L'image de la quinzaine. La seconde page de vente déplace ici la grande
+   * photo qui vivait dans le ruban d'annonce : une image par quinzaine, plutôt
+   * que deux au même endroit (Paul, 07/09/2026). Elle est en vis-à-vis du
+   * titre et non pleine largeur, parce qu'elle faisait 1 178 px de large et que
+   * c'était sa première critique.
+   */
+  photo?: string;
+  photoAlt?: string;
+}) {
   return (
     <div id={id} className="j30-frontier relative mb-[52px] scroll-mt-24 border-t border-filet-nuit pb-[34px] pt-[34px] lg:pl-7" data-de={de} data-a={a}>
       <span
@@ -938,7 +974,24 @@ function Frontiere({ id, kicker, nom, titre, de, a }: { id: string; kicker: stri
       <p className="m-0 mb-1.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-avance">
         {kicker} · {nom}
       </p>
-      <h2 className="m-0 max-w-[22ch] text-[clamp(24px,3.4vw,34px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire">{titre}</h2>
+      {photo ? (
+        <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-10">
+          <h2 className="m-0 max-w-[22ch] text-[clamp(24px,3.4vw,34px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire">{titre}</h2>
+          <figure className="m-0 overflow-hidden rounded-carte border border-filet-nuit bg-encre">
+            <img
+              src={photo}
+              alt={photoAlt ?? ''}
+              width={1600}
+              height={837}
+              loading="lazy"
+              decoding="async"
+              className="block h-full w-full object-cover"
+            />
+          </figure>
+        </div>
+      ) : (
+        <h2 className="m-0 max-w-[22ch] text-[clamp(24px,3.4vw,34px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire">{titre}</h2>
+      )}
     </div>
   );
 }

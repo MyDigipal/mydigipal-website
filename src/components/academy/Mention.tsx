@@ -23,7 +23,18 @@ import type { Locale } from './data';
  * Demande de Paul du 25/08/2026 : « un petit ruban pour expliquer comment ça
  * va se passer ».
  */
-export default function Mention({ locale }: { locale: Locale }) {
+export default function Mention({
+  locale,
+  sansPhoto,
+}: {
+  locale: Locale;
+  /**
+   * Retire la grande photo du ruban. La seconde page de vente la déplace à la
+   * frontière de la quinzaine 2, pour avoir une image par quinzaine plutôt que
+   * deux au même endroit (Paul, 07/09/2026).
+   */
+  sansPhoto?: boolean;
+}) {
   const c = jour30Copy(locale).mention;
   return (
     <section className="border-y border-filet-nuit bg-profond px-4 py-12 sm:px-6">
@@ -93,6 +104,7 @@ export default function Mention({ locale }: { locale: Locale }) {
             trente jours, la phrase suivante avoue que le compte est reconstitué.
             L'image tient entre les deux, là où le visiteur se demande à quoi ça
             ressemble pour de vrai. */}
+        {!sansPhoto && (
         <figure className="m-0 mt-9 overflow-hidden rounded-carte border border-filet-nuit bg-encre">
           <img
             src="/academy/visuels/apprenante-cartes_paysage.jpg"
@@ -104,6 +116,7 @@ export default function Mention({ locale }: { locale: Locale }) {
             className="block h-full w-full object-cover"
           />
         </figure>
+        )}
 
         <p className="m-0 mt-8 max-w-[80ch] border-t border-filet-nuit pt-5 text-[13.5px] leading-[1.6] text-brume-nuit">{c.texte}</p>
       </div>
