@@ -18,16 +18,18 @@ const FR = {
   },
   barre: {
     programme: 'Le programme',
-    // « La pratique » ne disait pas ce qu'on trouve derrière (Paul, 07/09) :
-    // l'entrée mène aux quatre parcours outils, elle les nomme.
-    outils: 'Les outils',
+    // ⚠️ Cette entrée a changé DEUX fois le 07/09. Elle disait « La pratique »,
+    // qui ne disait pas ce qu'on trouve derrière ; elle a nommé « Les outils »,
+    // et la section des quatre parcours outils a été retirée dans la foulée
+    // (Paul : « on n'a pas besoin d'une section entière pour parler des
+    // différents outils »). Elle mène désormais à la visite de l'espace
+    // apprenant, qui est ce qu'on achète.
+    academie: 'L’Académie',
     trajet: 'Le trajet',
     tarifs: 'Les tarifs',
     cta: 'Commencer',
     exProgramme: (lecons: number, modules: number, heures: string) =>
       `${lecons} leçons, ${modules} modules, ${heures}. Ce que vous apprenez, et ce que chaque module vous fait produire.`,
-    exOutils:
-      'Copilot, Gemini, Claude ou ChatGPT : un parcours complet sur celui que vous utilisez déjà.',
     exTrajet: 'Trente jours dans un compte, jour après jour, jusqu’à l’attestation.',
     exTarifs: (prix: string) =>
       `${prix} pour 30 jours, l'assistant compris. Les automatisations en complément.`,
@@ -193,6 +195,22 @@ const FR = {
     // le retournement, le bouton flottant et la grille. Trois de ces quatre
     // endroits l'annonçaient sans durée (relevé le 07/09).
     gratuitCourt: (lecons: number) => `${lecons} leçons, 48 h d’essai`,
+
+    /**
+     * Le code promo (07/09/2026, option B retenue par Paul dans le labo
+     * `labo/tarifs-code-promo.html`).
+     *
+     * ⚠️ Le pourcentage, les montants et la date de fin viennent tous de
+     * l'application : rien de tout cela ne s'écrit ici. Une remise recopiée à
+     * la main survit à la fin du code et promet un prix qui n'existe plus.
+     */
+    codePastille: (pct: number) => `−${pct} %`,
+    codeNom: (code: string) => `code ${code}`,
+    codeBandeau: (pct: number, portee: string, fin: string | null) =>
+      `Votre code est actif : ${pct} % ${portee}${fin ? `, jusqu’au ${fin}` : ''}. Il s’applique tout seul au paiement.`,
+    codePortee: { deux: 'sur les deux formules', methode: 'sur la méthode', avancee: 'sur la méthode avancée' },
+    economie: (montant: string, places: number) =>
+      places > 1 ? `Vous économisez ${montant} au total` : `Vous économisez ${montant}`,
   },
 };
 
@@ -204,14 +222,12 @@ const EN: typeof FR = {
   },
   barre: {
     programme: 'The programme',
-    outils: 'The tools',
+    academie: 'The Academy',
     trajet: 'The path',
     tarifs: 'Pricing',
     cta: 'Get started',
     exProgramme: (lecons, modules, heures) =>
       `${lecons} lessons, ${modules} modules, ${heures}. What you learn, and what each module makes you produce.`,
-    exOutils:
-      'Copilot, Gemini, Claude or ChatGPT: a full path on the one you already use.',
     exTrajet: 'Thirty days inside an account, day by day, up to the certificate.',
     exTarifs: (prix) => `${prix} for 30 days, assistant included. Automations as an add-on.`,
   },
@@ -357,6 +373,13 @@ const EN: typeof FR = {
       'Two full modules, no card needed: getting started, then writing, translating and summarising. Forty-eight hours to judge for yourself before paying.',
     gratuitCta: 'Open free access',
     gratuitCourt: (lecons) => `${lecons} lessons, 48h trial`,
+
+    codePastille: (pct) => `−${pct}%`,
+    codeNom: (code) => `code ${code}`,
+    codeBandeau: (pct, portee, fin) =>
+      `Your code is active: ${pct}% ${portee}${fin ? `, until ${fin}` : ''}. It applies on its own at checkout.`,
+    codePortee: { deux: 'on both plans', methode: 'on the method', avancee: 'on the advanced method' },
+    economie: (montant, places) => (places > 1 ? `You save ${montant} in total` : `You save ${montant}`),
   },
 };
 

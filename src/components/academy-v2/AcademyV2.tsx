@@ -23,7 +23,6 @@ import Hero from '../academy/Hero';
 import Visite from '../academy/Visite';
 import Mention from '../academy/Mention';
 import LeCompte from '../academy/LeCompte';
-import Outils from '../academy/Outils';
 import Mcp from '../academy/Mcp';
 import Diplome from '../academy/Diplome';
 import Retournement from '../academy/Retournement';
@@ -109,7 +108,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         surDevise={setDevise}
         reperes={[
           { id: 'programme', libelle: c.barre.programme },
-          { id: 'outils', libelle: c.barre.outils },
+          { id: 'visite', libelle: c.barre.academie },
           { id: 'compte', libelle: c.barre.trajet },
           { id: 'tarifs', libelle: c.barre.tarifs },
         ]}
@@ -135,11 +134,15 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         minutesGratuit={data.faits.minutesGratuit ?? 0}
       />
 
-      {/* La pratique : le tableau de bord qu'on visite au survol. Il existait
-          déjà, et il vaut mieux que les trois cartes que j'avais écrites. */}
-      <Visite locale={locale} data={data} titre={c.preuves.visiteTitre} />
+      {/* L'espace apprenant, qu'on visite au survol. C'est la cible de l'entrée
+          « L'Académie » du menu : ce qu'on ouvre après avoir acheté.
 
-      <Outils locale={locale} />
+          ⚠️ La section des quatre parcours outils (`Outils`) était ici et a été
+          retirée le 07/09 (Paul : « on n'a pas besoin d'une section entière
+          pour parler des différents outils »). Le composant reste dans
+          `academy/` : la première page de vente s'en sert toujours, et les
+          quatre parcours sont de toute façon nommés dans Le programme. */}
+      <Visite locale={locale} data={data} titre={c.preuves.visiteTitre} />
 
       {/* Le câblage MCP animé, tel quel. */}
       <Mcp locale={locale} titre={c.mcp.titre} texte={c.mcp.texte} />
