@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le code promo dans les tarifs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* Les vraies valeurs de src/styles/academy.css, pas des approximations. */
+  :root{
+    --or:#c8a951; --or-vif:#dcbc66; --avance:#7fc4dd; --sauge:#5fbc8f;
+    --salle:#0d1424; --salle-2:#141d33; --salle-3:#1c2742; --filet:#26324e;
+    --ivoire:#f2eee4; --corps:#b9c1d1; --brume:#7d879b;
+    --mono:'JetBrains Mono',Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--salle);color:var(--corps);
+       font-family:'Space Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.5}
+  .page{max-width:1180px;margin:0 auto;padding:36px 24px 110px}
+  h1{font-size:29px;font-weight:500;letter-spacing:-.02em;color:var(--ivoire);margin:0 0 6px}
+  .intro{color:var(--brume);font-size:14.5px;margin:0 0 10px;max-width:82ch;line-height:1.65}
+  .intro b{color:var(--ivoire);font-weight:600}
+  h2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+     color:var(--or);margin:52px 0 6px;font-weight:700}
+  .note{color:var(--brume);font-size:13.5px;margin:0 0 20px;max-width:84ch;line-height:1.65}
+  .cadre{border:1px solid var(--filet);border-radius:16px;padding:26px;background:var(--salle)}
+
+  /* --- la section tarifs, telle qu'elle est en ligne --- */
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--or)}
+  .titre{margin:12px 0 0;font-size:34px;font-weight:500;line-height:1.1;letter-spacing:-.02em;color:var(--ivoire)}
+  .chapeau{margin:14px 0 0;max-width:62ch;font-size:17.5px;line-height:1.65;color:var(--brume)}
+  .licences{margin-top:26px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .lab{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--brume)}
+  .plots{display:flex;flex-wrap:wrap;gap:6px}
+  .plot{min-height:38px;min-width:38px;border-radius:10px;border:1px solid var(--filet);background:none;
+        padding:0 12px;font-family:var(--mono);font-size:13px;color:var(--corps);cursor:pointer}
+  .plot.on{border-color:var(--or);background:var(--or);color:var(--salle)}
+  .pastille{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px;
+            font-family:var(--mono);font-size:13px;font-weight:700}
+  .pastille span{font-weight:400;color:var(--corps)}
+  .p-equipe{border:1px solid rgba(95,188,143,.45);background:rgba(95,188,143,.12);color:var(--sauge)}
+  .p-code{border:1px solid rgba(200,169,81,.5);background:rgba(200,169,81,.12);color:var(--or)}
+
+  .grille{margin-top:24px;display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+  @media(min-width:960px){.grille{grid-template-columns:1fr 1fr}}
+  .carte{border-radius:16px;border:1px solid var(--or);background:var(--salle-2);padding:28px}
+  .carte.b{border-color:var(--avance)}
+  .rub{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--or)}
+  .carte.b .rub{color:var(--avance)}
+  .carte h3{margin:4px 0 4px;font-size:20px;font-weight:500;color:var(--ivoire)}
+  .prixligne{margin-top:14px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .prix{font-size:38px;font-weight:600;line-height:1;color:var(--ivoire);font-variant-numeric:tabular-nums}
+  .barre{font-family:var(--mono);font-size:15px;color:var(--brume);text-decoration:line-through}
+  .duree{margin-top:6px;font-family:var(--mono);font-size:12.5px;color:var(--or)}
+  .carte.b .duree{color:var(--avance)}
+  .puces{margin:14px 0 20px;padding:0;list-style:none}
+  .puces li{position:relative;padding:8px 0 8px 24px;font-size:15.5px;line-height:1.55;color:var(--corps)}
+  .puces li::before{content:'';position:absolute;left:0;top:15px;height:2px;width:10px;background:var(--or)}
+  .carte.b .puces li::before{background:var(--avance)}
+  .cta{display:inline-flex;min-height:44px;align-items:center;border-radius:10px;padding:0 24px;
+       font-size:15px;font-weight:600;text-decoration:none;background:var(--or);color:var(--salle)}
+  .carte.b .cta{background:var(--avance)}
+  .eco{margin-top:12px;font-family:var(--mono);font-size:12.5px;color:var(--sauge)}
+  .bandeau{margin-top:22px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;
+           border:1px solid rgba(200,169,81,.42);border-radius:12px;background:rgba(200,169,81,.09);padding:14px 18px}
+  .bandeau .fort{color:var(--or);font-family:var(--mono);font-size:13px;font-weight:700}
+  .bandeau .txt{font-size:14.5px;color:var(--corps)}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Le code promo dans les tarifs</h1>
+  <p class="intro">
+    Quelqu'un du Club Protéine arrive par <b>mydigipal.com/fr/academy?coupon=PROTEINE30</b>. Aujourd'hui,
+    la page lui annonce <b>290 €</b> et <b>480 €</b> : rien ne dit que son code est actif. Il ne
+    découvre <b>203 €</b> qu'à la page de paiement. Le code voyage bien, la vente n'est pas perdue,
+    mais l'argument est invisible au moment où il compte.
+  </p>
+  <p class="intro">
+    Ce n'était pas le cas avant : l'ancienne page interrogeait le code et barrait le prix plein.
+    La refonte des tarifs du 1er septembre ne l'a pas repris. Deux façons de le remettre, ci-dessous.
+    Rien n'est déployé.
+  </p>
+
+  <h2>Aujourd'hui</h2>
+  <p class="note">Le code est capté, il part avec les liens vers le tunnel, et la page n'en dit rien.</p>
+  <div class="cadre">
+    <div class="kicker">Les tarifs</div>
+    <h2 class="titre" style="margin-top:12px;color:var(--ivoire);font-family:inherit;letter-spacing:-.02em;text-transform:none">290 € pour 30 jours</h2>
+    <p class="chapeau">L'assistant IA est compris dans les deux formules. Au 1er octobre, le prix passe à 450 €.</p>
+    <div class="licences">
+      <span class="lab">Licences</span>
+      <div class="plots"><button class="plot on">1</button><button class="plot">2</button><button class="plot">3</button><button class="plot">5</button><button class="plot">10</button><button class="plot">+</button></div>
+    </div>
+    <div class="grille">
+      <div class="carte">
+        <span class="rub">La méthode</span>
+        <h3>Le parcours complet</h3>
+        <div class="prixligne"><span class="prix">290 €</span></div>
+        <div class="duree">pour 30 jours</div>
+        <ul class="puces"><li>78 leçons, 7 h 52 de formation</li><li>L'assistant IA, environ 250 questions</li></ul>
+        <a class="cta" href="#">Commencer</a>
+      </div>
+      <div class="carte b">
+        <span class="rub">La méthode avancée</span>
+        <h3>Avec les automatisations</h3>
+        <div class="prixligne"><span class="prix">480 €</span></div>
+        <div class="duree">pour 30 jours</div>
+        <ul class="puces"><li>122 leçons en tout, 10 modules de plus</li><li>L'assistant IA, environ 500 questions</li></ul>
+        <a class="cta" href="#">Commencer</a>
+      </div>
+    </div>
+  </div>
+
+  <h2>A — la pastille, comme la remise d'équipe</h2>
+  <p class="note">
+    Le code prend la même forme que la remise d'équipe, sur la même ligne, en or au lieu du vert : la page
+    a déjà ce vocabulaire, elle n'en apprend pas un second. Le prix plein est barré dans chaque carte,
+    exactement comme il l'est déjà quand on prend plusieurs licences.
+    <b style="color:var(--ivoire)">C'est la reprise à l'identique de ce qui existait avant la refonte.</b>
+  </p>
+  <div class="cadre">
+    <div class="kicker">Les tarifs</div>
+    <h2 class="titre" style="margin-top:12px;color:var(--ivoire);font-family:inherit;letter-spacing:-.02em;text-transform:none">290 € pour 30 jours</h2>
+    <p class="chapeau">L'assistant IA est compris dans les deux formules. Au 1er octobre, le prix passe à 450 €.</p>
+    <div class="licences">
+      <span class="lab">Licences</span>
+      <div class="plots"><button class="plot on">1</button><button class="plot">2</button><button class="plot">3</button><button class="plot">5</button><button class="plot">10</button><button class="plot">+</button></div>
+      <span class="pastille p-code">−30 % <span>code PROTEINE30</span></span>
+    </div>
+    <div class="grille">
+      <div class="carte">
+        <span class="rub">La méthode</span>
+        <h3>Le parcours complet</h3>
+        <div class="prixligne"><span class="prix">203 €</span><span class="barre">290 €</span></div>
+        <div class="duree">pour 30 jours</div>
+        <ul class="puces"><li>78 leçons, 7 h 52 de formation</li><li>L'assistant IA, environ 250 questions</li></ul>
+        <a class="cta" href="#">Commencer</a>
+      </div>
+      <div class="carte b">
+        <span class="rub">La méthode avancée</span>
+        <h3>Avec les automatisations</h3>
+        <div class="prixligne"><span class="prix">336 €</span><span class="barre">480 €</span></div>
+        <div class="duree">pour 30 jours</div>
+        <ul class="puces"><li>122 leçons en tout, 10 modules de plus</li><li>L'assistant IA, environ 500 questions</li></ul>
+        <a class="cta" href="#">Commencer</a>
+      </div>
+    </div>
+  </div>
+
+  <h2>B — la pastille, plus une phrase qui dit d'où vient le code</h2>
+  <p class="note">
+    Même chose, avec un bandeau au-dessus des cartes. Une remise dont on ne sait pas d'où elle vient
+    inquiète autant qu'elle réjouit, surtout à 30 % : le bandeau nomme la séance et la date de fin, ce
+    qui répond aussi à « est-ce que j'ai le temps d'y réfléchir ». Il coûte une ligne de plus, et il ne
+    s'affiche que si un code est actif.
+  </p>
+  <div class="cadre">
+    <div class="kicker">Les tarifs</div>
+    <h2 class="titre" style="margin-top:12px;color:var(--ivoire);font-family:inherit;letter-spacing:-.02em;text-transform:none">290 € pour 30 jours</h2>
+    <p class="chapeau">L'assistant IA est compris dans les deux formules. Au 1er octobre, le prix passe à 450 €.</p>
+    <div class="licences">
+      <span class="lab">Licences</span>
+      <div class="plots"><button class="plot on">1</button><button class="plot">2</button><button class="plot">3</button><button class="plot">5</button><button class="plot">10</button><button class="plot">+</button></div>
+      <span class="pastille p-code">−30 % <span>code PROTEINE30</span></span>
+    </div>
+    <div class="bandeau">
+      <span class="fort">PROTEINE30</span>
+      <span class="txt">Votre code est actif : 30 % sur les deux formules, jusqu'au 30 septembre. Il s'applique tout seul au paiement.</span>
+    </div>
+    <div class="grille">
+      <div class="carte">
+        <span class="rub">La méthode</span>
+        <h3>Le parcours complet</h3>
+        <div class="prixligne"><span class="prix">203 €</span><span class="barre">290 €</span></div>
+        <div class="duree">pour 30 jours</div>
+        <ul class="puces"><li>78 leçons, 7 h 52 de formation</li><li>L'assistant IA, environ 250 questions</li></ul>
+        <a class="cta" href="#">Commencer</a>
+        <div class="eco">Vous économisez 87 €</div>
+      </div>
+      <div class="carte b">
+        <span class="rub">La méthode avancée</span>
+        <h3>Avec les automatisations</h3>
+        <div class="prixligne"><span class="prix">336 €</span><span class="barre">480 €</span></div>
+        <div class="duree">pour 30 jours</div>
+        <ul class="puces"><li>122 leçons en tout, 10 modules de plus</li><li>L'assistant IA, environ 500 questions</li></ul>
+        <a class="cta" href="#">Commencer</a>
+        <div class="eco">Vous économisez 144 €</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Ce que ça coûte à construire</h2>
+  <p class="note">
+    Peu de chose : la section des tarifs barre <b style="color:var(--ivoire)">déjà</b> le prix plein
+    quand on prend plusieurs licences. Il s'agit d'ajouter au calcul un second facteur de remise, lu
+    sur la route publique du code, et la pastille. Une trentaine de lignes, un seul fichier, et les
+    deux langues. Le montant affiché continue de venir de l'application, jamais d'un calcul refait
+    dans la page : deux calculs pour un seul prix finissent toujours par diverger.
+  </p>
+</div>
+</body>
+</html>

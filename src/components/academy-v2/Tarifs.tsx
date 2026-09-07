@@ -3,7 +3,7 @@ import { pointeurGrossier } from '../academy/motion';
 import { formatPrice, teamDiscount } from '../academy/offres';
 import { SYMBOLE, type Devise } from '../academy/data';
 import { copyV2, type Locale } from './copy-v2';
-import { useLienApp } from '../academy/track';
+import { useLienApp, paramGarde } from '../academy/track';
 import FormEquipe from '../academy/FormEquipe';
 import { jour30Copy } from '../academy/copy';
 import { Boucle, estDemo, type Demo } from './Video';
@@ -33,6 +33,12 @@ interface Ligne {
   texte: string;
   detail: string;
   demo?: Demo;
+}
+
+/** Ce que l'application répond sur un panier : le total remisé et l'économie. */
+interface Remise {
+  total: number;
+  economie: number;
 }
 
 const PLACES = [1, 2, 3, 5, 10];
@@ -97,6 +103,86 @@ export default function Tarifs({
   const lienAvancee = useLienApp(`${base}?items=programme,construire&seats=${places}&lang=${locale}`);
   const total = (minor: number) => Math.round(minor * places * (1 - remise));
   const montant = (minor: number) => `${formatPrice(minor, locale)} ${SYMBOLE[devise]}`;
+
+  /**
+   * LE CODE PROMO (07/09/2026, option B retenue par Paul dans le labo).
+   *
+   * ⚠️ Ce que ça répare : le code voyageait bien jusqu'au tunnel, mais la page
+   * annonçait le prix plein. Quelqu'un du Club Protéine lisait 290 € et ne
+   * découvrait 203 € qu'à la caisse, c'est-à-dire au moment où il avait déjà
+   * décidé de ne pas acheter. L'ancienne page de vente le disait ; la refonte
+   * des tarifs du 01/09 ne l'avait pas repris.
+   *
+   * ⚠️ LE MONTANT REMISÉ VIENT DE L'APPLICATION, jamais d'un calcul refait ici.
+   * Un code peut ne porter que sur une partie du panier (PROTEINE30 ne solde ni
+   * la session avec Paul ni l'audit flash), et deux calculs pour un seul prix
+   * finissent toujours par diverger. On interroge donc une fois par formule.
+   */
+  const [code, setCode] = useState<string | null>(null);
+  useEffect(() => setCode(paramGarde('coupon')), []);
+  const [promo, setPromo] = useState<{
+    methode: Remise | null;
+    avancee: Remise | null;
+    fin: string | null;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!code || devis) {
+      setPromo(null);
+      return;
+    }
+    const ctrl = new AbortController();
+    const demande = (items: string, minor: number): Promise<[Remise | null, string | null]> => {
+      const q = new URLSearchParams({
+        code,
+        total: String(total(minor)),
+        devise,
+        items,
+        seats: String(places),
+      });
+      return fetch(`https://academy.mydigipal.com/api/academy/public/coupon?${q.toString()}`, {
+        signal: ctrl.signal,
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) =>
+          d?.valid && d.discount_minor > 0
+            ? ([{ total: d.total_minor, economie: d.discount_minor }, d.expires_at || null] as [Remise, string | null])
+            : ([null, null] as [null, null]),
+        );
+    };
+    Promise.all([demande('programme', prixProgrammeMinor), demande('programme,construire', prixAvanceMinor)])
+      .then(([[m, finM], [a, finA]]) =>
+        setPromo(m || a ? { methode: m, avancee: a, fin: finM || finA } : null),
+      )
+      .catch(() => {
+        /* code injoignable : on montre le prix plein, le tunnel fera foi */
+      });
+    return () => ctrl.abort();
+  }, [code, devis, places, devise, remise, prixProgrammeMinor, prixAvanceMinor]);
+
+  /** Le pourcentage annoncé, lu sur la remise réelle et jamais écrit à la main. */
+  const pctPromo = useMemo(() => {
+    const r = promo?.methode || promo?.avancee;
+    if (!r) return 0;
+    const plein = r.total + r.economie;
+    return plein > 0 ? Math.round((r.economie / plein) * 100) : 0;
+  }, [promo]);
+
+  /** Ce que le code couvre vraiment, déduit des deux réponses. */
+  const porteePromo = promo?.methode && promo?.avancee
+    ? c.codePortee.deux
+    : promo?.methode
+      ? c.codePortee.methode
+      : c.codePortee.avancee;
+
+  // La date de fin dans la langue lue. Absente si le code n'expire pas.
+  const finPromo = useMemo(() => {
+    if (!promo?.fin) return null;
+    const d = new Date(promo.fin);
+    return Number.isNaN(d.getTime())
+      ? null
+      : d.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'long' });
+  }, [promo, locale]);
 
   const methode: Ligne[] = [
     {
@@ -203,6 +289,8 @@ export default function Tarifs({
     minor: number,
     lignes: Ligne[],
     or: boolean,
+    // La remise du code sur CETTE formule, telle que l'application la calcule.
+    rp: Remise | null = null,
   ) => (
     <div className={`rounded-carte border bg-salle-2 p-7 ${or ? 'border-or' : 'border-avance'}`}>
       <span
@@ -211,11 +299,14 @@ export default function Tarifs({
         {titre}
       </span>
       <h3 className="mb-1 mt-1 text-[20px] font-medium text-ivoire">{sous}</h3>
-      <div className="mt-3.5 flex items-baseline gap-2.5">
+      <div className="mt-3.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
         <span className="text-[38px] font-semibold tabular-nums leading-none text-ivoire">
-          {montant(parLicence(minor))}
+          {/* Le grand chiffre est le prix d'UNE licence, toutes remises
+              déduites. Avec un code, il vient du total renvoyé par
+              l'application, divisé par le nombre de licences. */}
+          {montant(rp ? Math.round(rp.total / places) : parLicence(minor))}
         </span>
-        {remise > 0 && (
+        {(remise > 0 || rp) && (
           <span className="font-ac-mono text-[15px] tabular-nums text-brume-nuit line-through">
             {montant(minor)}
           </span>
@@ -241,6 +332,13 @@ export default function Tarifs({
       >
         {c.commencer}
       </a>
+      {/* Ce qu'on gagne, en clair. Un prix barré dit qu'il y a une remise ; ce
+          chiffre-là dit combien, ce qui n'est pas la même information. */}
+      {rp && (
+        <div className="mt-3 font-ac-mono text-[12.5px] text-sauge-nuit">
+          {c.economie(montant(rp.economie), places)}
+        </div>
+      )}
     </div>
   );
 
@@ -300,6 +398,15 @@ export default function Tarifs({
               <span className="font-normal text-corps-nuit">{c.remiseEquipe(seuilAtteint)}</span>
             </span>
           )}
+          {/* La pastille du code prend la forme de celle de la remise d'équipe,
+              en or plutôt qu'en vert : la page a déjà ce vocabulaire, elle n'en
+              apprend pas un second. */}
+          {promo && pctPromo > 0 && !devis && (
+            <span className="inline-flex items-center gap-2 rounded-full border border-or/50 bg-[rgba(200,169,81,.12)] px-3.5 py-1.5 font-ac-mono text-[13px] font-bold text-or">
+              {c.codePastille(pctPromo)}
+              <span className="font-normal text-corps-nuit">{c.codeNom((code || '').toUpperCase())}</span>
+            </span>
+          )}
         </div>
 
         {devis ? (
@@ -320,9 +427,22 @@ export default function Tarifs({
           </div>
         ) : null}
 
+        {/* Le bandeau qui dit d'où vient la remise. Une réduction de trente pour
+            cent dont on ignore l'origine inquiète autant qu'elle réjouit ; celle-ci
+            se nomme, dit sa portée et sa date de fin, et rassure sur le fait qu'il
+            n'y a rien à saisir. Il n'existe que si un code est actif. */}
+        {promo && pctPromo > 0 && !devis && (
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-carte border border-or/[0.42] bg-[rgba(200,169,81,.09)] px-[18px] py-3.5">
+            <span className="font-ac-mono text-[13px] font-bold text-or">{(code || '').toUpperCase()}</span>
+            <span className="text-[14.5px] leading-[1.5] text-corps-nuit">
+              {c.codeBandeau(pctPromo, porteePromo, finPromo)}
+            </span>
+          </div>
+        )}
+
         <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[1fr_1fr_320px]">
-          {carte(c.methode, c.methodeSous, prixProgrammeMinor, methode, true)}
-          {carte(c.auto, c.autoSous, prixAvanceMinor, avancee, false)}
+          {carte(c.methode, c.methodeSous, prixProgrammeMinor, methode, true, promo?.methode ?? null)}
+          {carte(c.auto, c.autoSous, prixAvanceMinor, avancee, false, promo?.avancee ?? null)}
 
           {/* Le cadre qui se remplit au survol d'une ligne, avec l'écran qui va
               avec. Masqué sous lg : au doigt il n'y a pas de survol, et le
