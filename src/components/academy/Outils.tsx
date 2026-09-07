@@ -28,7 +28,7 @@ import type { Locale } from './data';
 export default function Outils({ locale }: { locale: Locale }) {
   const c = jour30Copy(locale).outils;
   return (
-    <section className="border-t border-filet-nuit bg-salle px-4 py-16 sm:px-6 sm:py-20">
+    <section id="outils" className="scroll-mt-20 border-t border-filet-nuit bg-salle px-4 py-16 sm:px-6 sm:py-20">
       <div className="mx-auto max-w-[1180px]">
         <p className="m-0 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-or">{c.kicker}</p>
         <h2 className="m-0 mt-3 max-w-[24ch] text-[clamp(24px,3.4vw,34px)] font-medium leading-[1.15] tracking-[-0.02em] text-ivoire">

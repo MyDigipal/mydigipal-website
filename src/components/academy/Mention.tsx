@@ -26,8 +26,11 @@ import type { Locale } from './data';
 export default function Mention({
   locale,
   sansPhoto,
+  titre,
 }: {
   locale: Locale;
+  /** Titre de remplacement, pour la seconde page de vente. */
+  titre?: string;
   /**
    * Retire la grande photo du ruban. La seconde page de vente la déplace à la
    * frontière de la quinzaine 2, pour avoir une image par quinzaine plutôt que
@@ -41,7 +44,7 @@ export default function Mention({
       <div className="mx-auto max-w-[1180px]">
         <div className="flex flex-wrap items-baseline gap-x-8 gap-y-2">
           <p className="m-0 font-ac-mono text-[11px] font-bold uppercase tracking-[0.2em] text-or">{c.kicker}</p>
-          <h2 className="m-0 text-[clamp(22px,3vw,30px)] font-medium leading-[1.2] tracking-[-0.02em] text-ivoire">{c.titre}</h2>
+          <h2 className="m-0 text-[clamp(22px,3vw,30px)] font-medium leading-[1.2] tracking-[-0.02em] text-ivoire">{titre ?? c.titre}</h2>
         </div>
 
         {/* Le ruban : une ligne, deux arrêts. Sur mobile, la ligne devient

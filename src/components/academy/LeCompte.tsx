@@ -48,6 +48,8 @@ interface Props {
   frise?: boolean;
   /** L'image posée à la frontière de la quinzaine 2. */
   photoQuinzaine2?: string;
+  /** Titre de remplacement pour la frontière de la quinzaine 2. */
+  titreQuinzaine2?: string;
 }
 
 /** Le mode frise, transmis aux quinze blocs de jour sans les toucher un à un. */
@@ -70,7 +72,7 @@ const PANNEAU = 'rounded-carte border border-filet-nuit bg-salle-2';
  * React : il change à chaque image de défilement, un rendu par jour serait du
  * gaspillage.
  */
-export default function LeCompte({ locale, etats, faits, jeu, avis, frise, photoQuinzaine2 }: Props) {
+export default function LeCompte({ locale, etats, faits, jeu, avis, frise, photoQuinzaine2, titreQuinzaine2 }: Props) {
   const { rangs, metaux, trophees: tropheeNoms, points: POINTS, metalPoints: METAL_POINTS, modulesADebloquer: MODULES_A_DEBLOQUER } = jeu;
   const t = jour30Copy(locale);
   const c = t.compte;
@@ -536,7 +538,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, frise, photo
             id="quinzaine-2"
             kicker={q2.kicker}
             nom={q2.nom}
-            titre={q2.titre}
+            titre={titreQuinzaine2 ?? q2.titre}
             de={etats[8].renard}
             a={etats[9].renard}
             photo={photoQuinzaine2}

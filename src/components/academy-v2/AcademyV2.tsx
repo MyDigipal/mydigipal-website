@@ -26,7 +26,7 @@ import Retournement from '../academy/Retournement';
 import Maison from '../academy/Maison';
 import AppelFlottant from '../academy/AppelFlottant';
 import { copyV2 } from './copy-v2';
-import { MODULES } from './modules';
+import { ETAPES, MODULES, modulesDe } from './modules';
 import Programme from './Programme';
 import Tarifs from './Tarifs';
 
@@ -80,6 +80,15 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
   const programme = data.offres.find((o) => o.id === 'programme');
   const construire = data.offres.find((o) => o.id === 'construire');
   const nbAuto = MODULES.filter((m) => m.palier === 'pro').length;
+  // Les domaines de l'attestation : une colonne par étape, et les modules
+  // nommés. Les quatre modules outils comptent pour une seule ligne, puisque
+  // l'apprenant n'en suit qu'un.
+  const domaines = ETAPES.map((e) => ({
+    titre: e.titre[locale],
+    modules: modulesDe(e.id)
+      .filter((m) => !m.auChoix || m.id === 'M4C')
+      .map((m) => (m.auChoix ? (locale === 'fr' ? 'Le parcours de votre outil' : 'Your tool’s path') : m.titre[locale])),
+  }));
 
   return (
     <div data-theme="nuit" className="j30 overflow-x-clip bg-salle text-corps-nuit">
@@ -89,7 +98,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         ancreCta="tarifs"
         reperes={[
           { id: 'programme', libelle: c.barre.programme },
-          { id: 'visite', libelle: c.barre.pratique },
+          { id: 'outils', libelle: c.barre.outils },
           { id: 'compte', libelle: c.barre.trajet },
           { id: 'tarifs', libelle: c.barre.tarifs },
         ]}
@@ -117,7 +126,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
 
       {/* Le ruban sans sa grande photo : elle descend à la frontière de la
           quinzaine 2, pour qu'il y ait une image par quinzaine. */}
-      <Mention locale={locale} sansPhoto />
+      <Mention locale={locale} sansPhoto titre={c.trajet.ruban} />
 
       <LeCompte
         locale={locale}
@@ -133,6 +142,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         jeu={data.jeu}
         frise
         photoQuinzaine2="/academy/visuels/apprenante-cartes_paysage.jpg"
+        titreQuinzaine2={c.trajet.quinzaine2}
       />
 
       <Diplome
@@ -143,6 +153,8 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         relus={data.faits.relectures}
         heures={data.faits.heures}
         mention={data.jeu.mention}
+        domaines={domaines}
+        domainesTitre={c.preuves.domainesTitre}
       />
 
       <Retournement

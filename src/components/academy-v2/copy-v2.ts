@@ -18,14 +18,16 @@ const FR = {
   },
   barre: {
     programme: 'Le programme',
-    pratique: 'La pratique',
+    // « La pratique » ne disait pas ce qu'on trouve derrière (Paul, 07/09) :
+    // l'entrée mène aux quatre parcours outils, elle les nomme.
+    outils: 'Les outils',
     trajet: 'Le trajet',
     tarifs: 'Les tarifs',
     cta: 'Commencer',
     exProgramme: (lecons: number, modules: number, heures: string) =>
       `${lecons} leçons, ${modules} modules, ${heures}. Ce que vous apprenez, et ce que chaque module vous fait produire.`,
-    exPratique: (exercices: number) =>
-      `L'atelier, ${exercices} exercices sur vos dossiers, les quiz. On écrit, on rend, on se fait corriger.`,
+    exOutils:
+      'Copilot, Gemini, Claude ou ChatGPT : un parcours complet sur celui que vous utilisez déjà.',
     exTrajet: 'Trente jours dans un compte, jour après jour, jusqu’à l’attestation.',
     exTarifs: (prix: string) =>
       `${prix} pour 30 jours, l'assistant compris. Les automatisations en complément.`,
@@ -100,6 +102,13 @@ const FR = {
   trajet: {
     kicker: 'La démonstration',
     titre: 'Trente jours dans un compte',
+    // ⚠️ « Trente jours, deux quinzaines, un compte qui se remplit » parlait en
+    // jargon interne : « quinzaine » est notre découpage, pas le sien, et « un
+    // compte qui se remplit » ne dit pas ce qu'on y gagne (Paul, 07/09).
+    ruban: 'Trente jours, vus de l’intérieur d’un compte.',
+    // ⚠️ « Elle arrête de faire. Elle fait faire. » : la formule était sèche et
+    // ne disait ni le moyen ni le moment. Celle-ci dit les deux.
+    quinzaine2: 'Elle branche ses outils. Le lundi matin, le travail est déjà fait.',
     chapeau:
       'Clara Martin est une apprenante composée. Son compte se remplit selon le barème réel du produit. Ouvrez une phase pour voir ce qu’elle fait, jour après jour.',
     pointsAuBout: 'points au bout',
@@ -128,6 +137,7 @@ const FR = {
     chapeau: (note: string, retours: number) =>
       `Trois ans d’ateliers en petit groupe chez La Poste, Pierre Fabre, La Redoute, E.Leclerc et GL Events. La note publique est de ${note} sur 10, sur ${retours} retours.`,
     casTitre: 'Trois formations, trois résultats',
+    domainesTitre: 'Domaines couverts',
     tousLesAvis: 'Tous les retours',
   },
   tarifs: {
@@ -152,9 +162,9 @@ const FR = {
     rappel: () =>
       'L’assistant IA est compris dans les deux formules. Les prix sont en euros, toutes taxes comprises.',
     gratuitTag: 'Essayer d’abord',
-    gratuitTitre: (lecons: number) => `${lecons} leçons offertes, sans carte bancaire`,
+    gratuitTitre: (lecons: number) => `${lecons} leçons offertes, pendant 48 heures`,
     gratuitTexte:
-      'Deux modules entiers : la prise en main, puis écrire, traduire et résumer. Vous jugez sur pièce avant de payer.',
+      'Deux modules entiers, sans carte bancaire : la prise en main, puis écrire, traduire et résumer. Quarante-huit heures pour juger sur pièce avant de payer.',
     gratuitCta: 'Ouvrir l’accès gratuit',
   },
 };
@@ -167,14 +177,14 @@ const EN: typeof FR = {
   },
   barre: {
     programme: 'The programme',
-    pratique: 'Practice',
+    outils: 'The tools',
     trajet: 'The path',
     tarifs: 'Pricing',
     cta: 'Get started',
     exProgramme: (lecons, modules, heures) =>
       `${lecons} lessons, ${modules} modules, ${heures}. What you learn, and what each module makes you produce.`,
-    exPratique: (exercices) =>
-      `The workshop, ${exercices} exercises on your own files, the quizzes. You write, you hand in, you get corrected.`,
+    exOutils:
+      'Copilot, Gemini, Claude or ChatGPT: a full path on the one you already use.',
     exTrajet: 'Thirty days inside an account, day by day, up to the certificate.',
     exTarifs: (prix) => `${prix} for 30 days, assistant included. Automations as an add-on.`,
   },
@@ -244,6 +254,8 @@ const EN: typeof FR = {
   trajet: {
     kicker: 'The demonstration',
     titre: 'Thirty days inside an account',
+    ruban: 'Thirty days, seen from inside an account.',
+    quinzaine2: 'She plugs in her tools. On Monday morning, the work is already done.',
     chapeau:
       'Clara Martin is a composite learner. Her account fills up on the product’s real scale. Open a stage to see what she does, day by day.',
     pointsAuBout: 'points by the end',
@@ -270,6 +282,7 @@ const EN: typeof FR = {
     chapeau: (note, retours) =>
       `Three years of small-group workshops at La Poste, Pierre Fabre, La Redoute, E.Leclerc and GL Events. The public score is ${note} out of 10, across ${retours} reviews.`,
     casTitre: 'Three sessions, three outcomes',
+    domainesTitre: 'Fields covered',
     tousLesAvis: 'All reviews',
   },
   tarifs: {
@@ -294,9 +307,9 @@ const EN: typeof FR = {
     rappel: () =>
       'The AI assistant is included in both. Prices are in euros, all taxes included.',
     gratuitTag: 'Try first',
-    gratuitTitre: (lecons) => `${lecons} free lessons, no card needed`,
+    gratuitTitre: (lecons) => `${lecons} free lessons, for 48 hours`,
     gratuitTexte:
-      'Two full modules: getting started, then writing, translating and summarising. You judge for yourself before paying.',
+      'Two full modules, no card needed: getting started, then writing, translating and summarising. Forty-eight hours to judge for yourself before paying.',
     gratuitCta: 'Open free access',
   },
 };

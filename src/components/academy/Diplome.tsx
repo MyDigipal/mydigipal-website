@@ -26,6 +26,8 @@ export default function Diplome({
   relus,
   heures,
   mention,
+  domaines,
+  domainesTitre,
 }: {
   locale: Locale;
   lessons: number;
@@ -36,6 +38,12 @@ export default function Diplome({
   heures: string;
   /** La mention, mot pour mot celle du produit (app-copy). */
   mention: string;
+  /**
+   * Les domaines couverts, une entrée par étape du parcours. Passés par la
+   * seconde page de vente ; sans eux, l'attestation reste celle d'origine.
+   */
+  domaines?: Array<{ titre: string; modules: string[] }>;
+  domainesTitre?: string;
 }) {
   const c = jour30Copy(locale).diplome;
   const wrap = useRef<HTMLDivElement>(null);
@@ -111,6 +119,38 @@ export default function Diplome({
               <p className="mx-auto max-w-[52ch] text-[clamp(14px,1.6vw,15.5px)] leading-[1.7] text-mine">
                 {c.corps(lessons, modules, exercices, relus)}
               </p>
+
+              {/* Les domaines couverts. « Je trouve que c'est un peu léger
+                  comme certification » (Paul, 07/09) : une attestation qui ne
+                  dit pas CE QU'ON A ÉTUDIÉ ne vaut pas grand-chose sur un
+                  bureau de direction. Trois colonnes, une par étape du
+                  parcours, dans la même sobriété que le reste. */}
+              {domaines && domaines.length > 0 ? (
+                <div className="mx-auto mt-[30px] max-w-[62ch] border-t border-[#e2dccc] pt-[26px]">
+                  <p className="m-0 mb-4 font-ac-mono text-[clamp(8.5px,1.1vw,10px)] font-bold uppercase tracking-[0.28em] text-or-grave">
+                    {domainesTitre}
+                  </p>
+                  <div className="grid grid-cols-[minmax(0,1fr)] gap-x-8 gap-y-5 text-left sm:grid-cols-3">
+                    {domaines.map((d) => (
+                      <div key={d.titre}>
+                        <p className="m-0 font-ac-mono text-[clamp(8.5px,1.05vw,9.5px)] font-bold uppercase tracking-[0.16em] text-[#8a6d24]">
+                          {d.titre}
+                        </p>
+                        <ul className="m-0 mt-2 list-none p-0">
+                          {d.modules.map((m) => (
+                            <li
+                              key={m}
+                              className="relative py-[3px] pl-3 text-[clamp(11px,1.3vw,12.5px)] leading-[1.45] text-mine before:absolute before:left-0 before:top-[10px] before:h-[3px] before:w-[3px] before:rounded-full before:bg-or"
+                            >
+                              {m}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
 
               <div className="j30-mention mt-[26px] inline-flex items-center gap-2.5 rounded-full border border-or bg-[#f6ecd3] px-5 py-2">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#8a6d24" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
