@@ -318,7 +318,11 @@ export default function Tarifs({
       </div>
       {places > 1 && (
         <div className="mb-3 mt-2 font-ac-mono text-[13px] text-corps-nuit">
-          {c.total(montant(total(minor)), places)}
+          {/* ⚠️ Le total suit le code, comme le prix unitaire juste au-dessus.
+              Sans cela, la carte affichait 172,55 € par licence et 1 232,50 €
+              pour cinq : deux chiffres qui se contredisent sur la même carte,
+              et c'est le plus gros des deux qu'on retient. */}
+          {c.total(montant(rp ? rp.total : total(minor)), places)}
         </div>
       )}
       <ul className="m-0 mb-5 mt-3 list-none p-0">{lignes.map((l) => rendreLigne(l, or))}</ul>
