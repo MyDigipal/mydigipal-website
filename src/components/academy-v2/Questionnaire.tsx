@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { SYMBOLE, type Devise, type Locale } from '../academy/data';
 import { formatPrice } from '../academy/offres';
-import { useLienApp } from '../academy/track';
+import { paramGarde, useLienApp } from '../academy/track';
 import { copyV2 } from './copy-v2';
 import Glyphe from './Glyphe';
 import {
@@ -70,6 +70,47 @@ export default function Questionnaire({
    * c'est ce qui fait refermer un onglet.
    */
   const montant = (minor: number) => `${formatPrice(minor, locale)} ${SYMBOLE[devise]}`;
+
+  /**
+   * ⚠️ LE CODE PROMO. Sans ça, quelqu'un du Club Protéine lisait « 336 € »
+   * dans la grille de tarifs et « 480 € » ici, sur la même page (constaté le
+   * 08/09, la veille de sa séance). Deux prix pour un seul panier, et celui du
+   * questionnaire est le plus visible puisqu'il vient d'être calculé pour lui.
+   *
+   * ⚠️ Le montant remisé vient de l'APPLICATION, jamais d'un calcul refait ici :
+   * un code ne porte pas forcément sur tout le panier, et deux calculs pour un
+   * seul prix finissent toujours par diverger. Même requête que la grille.
+   */
+  const [code, setCode] = useState<string | null>(null);
+  useEffect(() => setCode(paramGarde('coupon')), []);
+  const [remise, setRemise] = useState<{ methode: number | null; avancee: number | null } | null>(null);
+
+  useEffect(() => {
+    if (!code) {
+      setRemise(null);
+      return;
+    }
+    const ctrl = new AbortController();
+    const demande = (items: string, minor: number) =>
+      fetch(
+        `https://academy.mydigipal.com/api/academy/public/coupon?${new URLSearchParams({
+          code,
+          total: String(minor),
+          devise,
+          items,
+          seats: '1',
+        }).toString()}`,
+        { signal: ctrl.signal },
+      )
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => (d?.valid && d.discount_minor > 0 ? (d.total_minor as number) : null))
+        .catch(() => null);
+    Promise.all([
+      demande('programme', prixMethodeMinor),
+      demande('programme,construire', prixAvanceeMinor),
+    ]).then(([m, a]) => setRemise(m || a ? { methode: m, avancee: a } : null));
+    return () => ctrl.abort();
+  }, [code, devise, prixMethodeMinor, prixAvanceeMinor]);
 
   const base = 'https://academy.mydigipal.com/checkout';
   const lienMethode = useLienApp(`${base}?items=programme&lang=${locale}`);
@@ -324,12 +365,24 @@ export default function Questionnaire({
                   <p className="m-0 text-[19px] font-medium text-ivoire">
                     {res.avance ? c.offreAvancee : c.offreMethode}
                   </p>
-                  <p className="m-0 mt-1.5 text-[31px] font-medium tracking-[-0.02em] text-or">
-                    {montant(res.avance ? prixAvanceeMinor : prixMethodeMinor)}{' '}
-                    <small className="text-[14px] font-normal tracking-normal text-brume-nuit">
-                      {c.duree}
-                    </small>
-                  </p>
+                  {(() => {
+                    const plein = res.avance ? prixAvanceeMinor : prixMethodeMinor;
+                    const remise2 = res.avance ? remise?.avancee : remise?.methode;
+                    return (
+                      <p className="m-0 mt-1.5 flex flex-wrap items-baseline gap-2.5 text-[31px] font-medium tracking-[-0.02em] text-or">
+                        {montant(remise2 ?? plein)}
+                        {remise2 != null && (
+                          <span className="text-[17px] font-normal text-brume-nuit line-through">
+                            {montant(plein)}
+                          </span>
+                        )}
+                        <small className="text-[14px] font-normal tracking-normal text-brume-nuit">
+                          {c.duree}
+                          {remise2 != null && code ? ` · ${c.avecCode(code)}` : ''}
+                        </small>
+                      </p>
+                    );
+                  })()}
                   <p className="m-0 mt-3.5 text-[14.5px] leading-[1.6] text-brume-nuit">
                     {p.pourquoi[locale]}
                   </p>
