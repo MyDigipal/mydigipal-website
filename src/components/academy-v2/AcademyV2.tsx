@@ -139,7 +139,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
           vingt modules en les triant, donc il faut les avoir vus une fois pour
           que le tri veuille dire quelque chose. Et il mène au tunnel, ce qui
           n'a de sens qu'une fois la formation décrite. */}
-      <Questionnaire locale={locale} lienBase={`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}`} />
+      <Questionnaire locale={locale} />
 
       {/* L'espace apprenant, qu'on visite au survol. C'est la cible de l'entrée
           « L'Académie » du menu : ce qu'on ouvre après avoir acheté.

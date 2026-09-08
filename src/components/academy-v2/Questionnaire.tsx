@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '../academy/data';
+import { useLienApp } from '../academy/track';
 import { copyV2 } from './copy-v2';
 import Glyphe from './Glyphe';
 import {
@@ -32,9 +33,26 @@ import {
  * « "default" is not exported ». Deux fichiers du même dossier ne peuvent pas
  * porter le même nom à la casse près.
  */
-export default function Questionnaire({ locale, lienBase }: { locale: Locale; lienBase: string }) {
+export default function Questionnaire({ locale }: { locale: Locale }) {
   const c = copyV2(locale).diagnostic;
-  const fr = locale === 'fr';
+
+  /**
+   * ⚠️ Deux erreurs corrigées ici le 08/09, après un 404 en production.
+   *
+   * 1. Le tunnel n'existe qu'à `/checkout`, JAMAIS `/fr/checkout` : sa langue
+   *    passe par `?lang=`. C'est écrit dans la section 15 du CLAUDE.md de
+   *    l'app, et j'y suis quand même tombé.
+   * 2. Le lien doit passer par `useLienApp`, qui recolle les identifiants de
+   *    clic publicitaire et le code promo captés à l'arrivée. Sans lui, un
+   *    visiteur venu d'une annonce perd son `gclid` en route, et un membre du
+   *    Club Protéine arrive au tunnel sans sa remise.
+   *
+   * ⚠️ Les deux liens se calculent inconditionnellement : `useLienApp` est un
+   * hook, il ne s'appelle pas dans une branche.
+   */
+  const base = 'https://academy.mydigipal.com/checkout';
+  const lienMethode = useLienApp(`${base}?items=programme&lang=${locale}`);
+  const lienAvancee = useLienApp(`${base}?items=programme,construire&lang=${locale}`);
   const [etape, setEtape] = useState(0);
   const [reponses, setReponses] = useState<number[][]>([]);
   const [pris, setPris] = useState<Set<number>>(new Set());
@@ -296,7 +314,7 @@ export default function Questionnaire({ locale, lienBase }: { locale: Locale; li
                   </p>
 
                   <a
-                    href={`${lienBase}/checkout?items=${res.avance ? 'programme,construire' : 'programme'}${fr ? '&lang=fr' : ''}`}
+                    href={res.avance ? lienAvancee : lienMethode}
                     className={`mt-5 inline-flex min-h-12 items-center justify-center rounded-[11px] px-7 py-3.5 text-[15.5px] font-semibold text-salle transition ${
                       res.avance ? 'bg-avance hover:brightness-110' : 'bg-or hover:bg-or-vif'
                     }`}
