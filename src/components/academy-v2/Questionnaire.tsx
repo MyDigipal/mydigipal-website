@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Locale } from '../academy/data';
+import { SYMBOLE, type Devise, type Locale } from '../academy/data';
+import { formatPrice } from '../academy/offres';
 import { useLienApp } from '../academy/track';
 import { copyV2 } from './copy-v2';
 import Glyphe from './Glyphe';
@@ -33,7 +34,18 @@ import {
  * « "default" is not exported ». Deux fichiers du même dossier ne peuvent pas
  * porter le même nom à la casse près.
  */
-export default function Questionnaire({ locale }: { locale: Locale }) {
+export default function Questionnaire({
+  locale,
+  devise,
+  prixMethodeMinor,
+  prixAvanceeMinor,
+}: {
+  locale: Locale;
+  devise: Devise;
+  /** Les mêmes montants que la grille de tarifs, dans la devise affichée. */
+  prixMethodeMinor: number;
+  prixAvanceeMinor: number;
+}) {
   const c = copyV2(locale).diagnostic;
 
   /**
@@ -50,6 +62,15 @@ export default function Questionnaire({ locale }: { locale: Locale }) {
    * ⚠️ Les deux liens se calculent inconditionnellement : `useLienApp` est un
    * hook, il ne s'appelle pas dans une branche.
    */
+  /**
+   * ⚠️ Les prix viennent de l'application, dans la devise choisie en haut de
+   * page. Ils étaient écrits en dur dans la copie (« 290 € », « 480 € ») :
+   * quelqu'un qui basculait la barre en livres lisait 250 £ dans la grille de
+   * tarifs et 290 € ici, sur le même écran. Deux prix pour un seul produit,
+   * c'est ce qui fait refermer un onglet.
+   */
+  const montant = (minor: number) => `${formatPrice(minor, locale)} ${SYMBOLE[devise]}`;
+
   const base = 'https://academy.mydigipal.com/checkout';
   const lienMethode = useLienApp(`${base}?items=programme&lang=${locale}`);
   const lienAvancee = useLienApp(`${base}?items=programme,construire&lang=${locale}`);
@@ -304,7 +325,7 @@ export default function Questionnaire({ locale }: { locale: Locale }) {
                     {res.avance ? c.offreAvancee : c.offreMethode}
                   </p>
                   <p className="m-0 mt-1.5 text-[31px] font-medium tracking-[-0.02em] text-or">
-                    {res.avance ? c.prixAvancee : c.prixMethode}{' '}
+                    {montant(res.avance ? prixAvanceeMinor : prixMethodeMinor)}{' '}
                     <small className="text-[14px] font-normal tracking-normal text-brume-nuit">
                       {c.duree}
                     </small>
