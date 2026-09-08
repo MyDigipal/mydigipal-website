@@ -181,7 +181,11 @@ export default function Visite({
     // visiteur qui touche une ligne sans rien voir bouger croit que rien ne
     // s'est passé. La zone touchée garde son filet d'or, on la retrouve en
     // redescendant.
-    if (tactile) panneau.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // ⚠️ Plus de défilement vers le panneau (Paul, 08/09 : « plutôt que ça me
+    // ramène en haut, est-ce qu'on peut pas avoir un petit pop-up que tu peux
+    // fermer »). On lisait la fiche, puis il fallait redescendre pour toucher
+    // l'élément suivant : cliquer, remonter, redescendre, recliquer. Sous lg le
+    // panneau s'ouvre maintenant PAR-DESSUS, sans bouger la page.
   };
 
   /** Un élément de l'interface qui sait se décrire. */
@@ -335,13 +339,34 @@ export default function Visite({
           {/* Venir dans le panneau arrête la visite automatique sans toucher à la
               fiche : sinon elle changeait sous le curseur au moment où on tendait
               la main vers le bouton de lecture. */}
+          {/* ⚠️ Sous lg, le panneau n'est plus dans le flux quand une fiche est
+              ouverte : il flotte au-dessus du contenu, avec une croix. C'est le
+              même motif que la section « Le programme », et il règle le
+              va-et-vient que Paul décrit. Au-dessus de lg il ne change pas : la
+              colonne de droite est déjà à côté. */}
           <aside
             ref={panneau}
-            className="z-20 scroll-mt-[76px] max-lg:order-first lg:sticky lg:top-24"
+            className={`z-20 lg:sticky lg:top-24 ${
+              fiche
+                ? 'max-lg:fixed max-lg:inset-x-3 max-lg:bottom-3 max-lg:z-50 max-lg:max-h-[76vh] max-lg:overflow-y-auto max-lg:drop-shadow-[0_20px_50px_rgba(0,0,0,.55)]'
+                : 'max-lg:order-first'
+            }`}
             aria-live="polite"
             onMouseEnter={() => setTouche(true)}
           >
-            <div className={`${carte} border-or/[0.28] p-5 lg:p-6`}>
+            <div className={`${carte} relative border-or/[0.28] p-5 lg:p-6`}>
+              {fiche ? (
+                <button
+                  type="button"
+                  onClick={() => setActif(null)}
+                  aria-label={t.barre.fermer}
+                  className="absolute right-3 top-3 grid h-10 w-10 cursor-pointer place-items-center rounded-full border border-filet-nuit bg-salle text-brume-nuit transition hover:text-ivoire lg:hidden"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </svg>
+                </button>
+              ) : null}
               <div key={actif || 'pitch'} className="j30-panneau">
                 {fiche ? (
                   <>

@@ -41,7 +41,16 @@ export default function Mcp({
   texte?: string;
 }) {
   const c = jour30Copy(locale).mcp;
+  const fermer = jour30Copy(locale).barre.fermer;
   const [actif, setActif] = useState(c.outils[0].id);
+  /**
+   * ⚠️ Le panneau flotte au-dessus du contenu, sous lg, à partir du moment où
+   * l'on a touché un outil (Paul, 08/09 : « on est obligé de cliquer, puis
+   * scroller up and down, puis cliquer, c'est pas très intuitif »). Au
+   * chargement il reste dans le flux : une carte flottante avant tout geste
+   * serait une fenêtre surgissante que personne n'a demandée.
+   */
+  const [flottant, setFlottant] = useState(false);
   // « Survolez un outil » est un ordre impossible au doigt. Le verbe se relève
   // dans un effet : le serveur ne sait pas avec quoi on désignera.
   const [tactile, setTactile] = useState(false);
@@ -382,7 +391,10 @@ export default function Mcp({
                   }`}
                   onMouseEnter={() => setActif(o.id)}
                   onFocus={() => setActif(o.id)}
-                  onClick={() => setActif(o.id)}
+                  onClick={() => {
+                    setActif(o.id);
+                    if (tactile) setFlottant(true);
+                  }}
                 >
                   <span className="block text-[15px]">{o.label}</span>
                 </button>
@@ -393,7 +405,25 @@ export default function Mcp({
         </div>
 
         {/* Le panneau : ce que ça donne, en trois temps. */}
-        <div className="mt-[34px] grid grid-cols-[minmax(0,1fr)] gap-6 rounded-carte border border-lin bg-papier px-6 py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] md:px-7">
+        <div
+          className={`relative mt-[34px] grid grid-cols-[minmax(0,1fr)] gap-6 rounded-carte border border-lin bg-papier px-6 py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] md:px-7 ${
+            flottant
+              ? 'max-lg:fixed max-lg:inset-x-3 max-lg:bottom-3 max-lg:z-50 max-lg:mt-0 max-lg:max-h-[76vh] max-lg:overflow-y-auto max-lg:shadow-[0_20px_50px_rgba(0,0,0,.45)]'
+              : ''
+          }`}
+        >
+          {flottant ? (
+            <button
+              type="button"
+              onClick={() => setFlottant(false)}
+              aria-label={fermer}
+              className="absolute right-3 top-3 grid h-10 w-10 cursor-pointer place-items-center rounded-full border border-lin bg-papier text-brume transition hover:text-encre lg:hidden"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
+          ) : null}
           <div>
             <p className="m-0 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.16em] text-or-grave">{outil.label}</p>
             <p className="m-0 mt-2 text-[20px] font-medium leading-[1.25] text-encre">{outil.titre}</p>
