@@ -44,6 +44,22 @@ export default function Programme({
   leconsGratuit: number;
   minutesGratuit: number;
 }) {
+  /**
+   * ⚠️ L'EN-TÊTE COMPTE CE QUE LA SECTION MONTRE (08/09/2026).
+   *
+   * Il affichait `faits.modules` et `faits.heures`, c'est-à-dire le volume du
+   * SEUL parcours vendu : « 16 modules, 12 h 28 ». Or la section liste les
+   * modules des DEUX programmes, et les trois totaux d'étape juste en dessous
+   * additionnaient 20 modules et 16 h 31. Deux chiffres qui se contredisent sur
+   * le même écran, et c'est le plus petit qu'on lisait en premier.
+   *
+   * Les deux totaux viennent donc de `modules.ts`, la même source que les
+   * étapes, avec la même règle : les quatre parcours outils comptent pour un.
+   */
+  const modulesMontres = ETAPES.reduce((n, e) => n + nombreSuivi(e.id), 0);
+  const minutesMontrees = ETAPES.reduce((n, e) => n + minutesDe(e.id), 0);
+  const heuresMontrees = duree(minutesMontrees, locale);
+
   const c = copyV2(locale).programme;
   const [actif, setActif] = useState<Module | null>(null);
   const [fige, setFige] = useState<string | null>(null);
@@ -93,7 +109,7 @@ export default function Programme({
           {c.titre}
         </h2>
         <p className="mt-4 max-w-[64ch] text-[17.5px] leading-[1.65] text-brume">
-          {c.chapeau(modules, heures)}
+          {c.chapeau(modulesMontres, heuresMontrees)}
         </p>
 
         <div className="mt-10 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10">
