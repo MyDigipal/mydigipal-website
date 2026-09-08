@@ -48,9 +48,18 @@ const FR = {
   },
   programme: {
     kicker: 'Le programme',
-    titre: 'Ce que vous apprenez, module par module',
+    // ⚠️ Le titre disait « Ce que vous apprenez, module par module » : il
+    // décrivait la section au lieu de dire ce qu'on y gagne, et il redisait le
+    // libellé juste au-dessus. Il annonce maintenant la progression, qui est
+    // l'argument des trois étapes.
+    titre: 'Ce que vous apprenez, et dans quel ordre',
+    // ⚠️ La durée était nue (« 16 modules, 12 h 28 »), donc personne ne savait
+    // ce qu'elle comptait (Paul, 07/09 : « c'est quoi, c'est de l'audio, de la
+    // vidéo ? »). C'est la somme du temps de lecture et de travail estimé des
+    // leçons, ni de l'audio ni de la vidéo : on le dit. Ne pas y ajouter
+    // l'écoute, la narration n'existe en français que sur les leçons offertes.
     chapeau: (modules: number, heures: string) =>
-      `Trois étapes, ${modules} modules, ${heures}. Vous choisissez un outil et le parcours ne garde que celui-là.`,
+      `Trois étapes, ${modules} modules, ${heures} de lecture et d’exercices, en français comme en anglais. Vous choisissez un outil, et le parcours ne garde que celui-là.`,
     auChoix: 'un au choix',
     vide: 'Survolez un module pour voir ce qu’il contient. Cliquez pour le garder à l’écran.',
     videTactile: 'Touchez un module pour voir ce qu’il contient.',
@@ -245,9 +254,9 @@ const EN: typeof FR = {
   },
   programme: {
     kicker: 'The programme',
-    titre: 'What you learn, module by module',
+    titre: 'What you learn, and in what order',
     chapeau: (modules, heures) =>
-      `Three stages, ${modules} modules, ${heures}. You pick one tool and the path keeps only that one.`,
+      `Three stages, ${modules} modules, ${heures} of reading and exercises, in English and in French. You pick one tool, and the path keeps only that one.`,
     auChoix: 'one of four',
     vide: 'Hover a module to see what it holds. Click to keep it on screen.',
     videTactile: 'Touch a module to see what it holds.',

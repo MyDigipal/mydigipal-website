@@ -224,6 +224,17 @@ export default function Tarifs({
         : 'It answers only from the lessons you have access to, and cites the one it draws from: it can neither invent nor leak content you have not bought.',
       demo: 'assistant',
     },
+    // ⚠️ La formation est bilingue depuis toujours et la page ne le disait nulle
+    // part (Paul, 07/09). Ça se dit ici parce que c'est un critère de décision,
+    // pas une caractéristique : un acheteur français veut savoir qu'il n'achète
+    // pas un cours américain passé à la moulinette, et une équipe internationale
+    // veut savoir que ses collègues suivront le même parcours.
+    {
+      texte: fr ? 'Tout le contenu en français et en anglais' : 'Every lesson in English and in French',
+      detail: fr
+        ? 'Les leçons sont écrites en français, et chacune existe en anglais. On bascule d’un clic, en gardant sa progression : vos collègues à l’étranger suivent exactement le même parcours.'
+        : 'Every lesson exists in both languages. You switch in one click and keep your progress, so colleagues abroad follow exactly the same path.',
+    },
   ];
 
   const avancee: Ligne[] = [
