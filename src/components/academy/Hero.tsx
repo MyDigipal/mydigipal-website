@@ -61,7 +61,18 @@ export default function Hero({
           <h1 className="m-0 max-w-[17ch] text-balance text-[clamp(32px,4.6vw,56px)] font-medium leading-[1.06] tracking-[-0.025em] text-ivoire">
             {c.titre}
           </h1>
-          <p className="mt-6 max-w-[48ch] text-[17px] leading-[1.65] text-corps-nuit">{c.sous(data.faits.lessons, prix)}</p>
+          <p className="mt-6 max-w-[48ch] text-[17px] leading-[1.65] text-corps-nuit">
+            {/* ⚠️ Le gros chiffre est la SOMME de ce qu'on peut ouvrir, pas
+                `faits.lessons`. Mesuré le 08/09 : la page annonçait « 122
+                leçons » puis, deux lignes plus bas, « 78 dans la méthode, 101
+                de plus » - or 78 + 101 font 179. Les deux nombres sont justes
+                mais ne comptent pas la même chose : 122 est le parcours vendu
+                seul, tandis que les 101 des automatisations incluent le
+                parcours avancé. Un visiteur ne peut pas le deviner, et une
+                addition qui ne tombe pas juste sur le premier écran fait
+                douter de tout le reste. */}
+            {c.sous(leconsProgramme(data) + leconsComplement(data), prix)}
+          </p>
           {/* Ce que le prix affiché ouvre vraiment : sept modules du parcours
               relèvent du complément, et la promesse au-dessus porte le volume
               entier. Dire les deux au même endroit est la seule façon que le
