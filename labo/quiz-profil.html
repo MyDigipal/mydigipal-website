@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Labo - Le questionnaire de profil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --salle:#0d1424; --salle2:#141d33; --salle3:#1c2742; --filet:#26324e;
+  --ivoire:#f2eee4; --corps:#b9c1d1; --brume:#7d879b;
+  --or:#c8a951; --or-vif:#dcbc66; --avance:#7fc4dd; --renard:#d9743f;
+  --sauge:#5fbc8f; --profond:#0f1728;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--salle);color:var(--corps);
+     font:16px/1.6 'Space Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.mono{font-family:'JetBrains Mono',Consolas,monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* ---- l'en-tete du labo, pas de la page ---- */
+.labo{background:var(--profond);border-bottom:1px solid var(--filet);padding:20px 0}
+.labo h1{margin:0 0 4px;font-size:17px;font-weight:600;color:var(--ivoire)}
+.labo p{margin:0;font-size:13.5px;color:var(--brume);max-width:82ch}
+
+/* ---- la section ---- */
+section{padding:76px 0 96px;border-bottom:1px solid var(--filet)}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+        letter-spacing:.2em;text-transform:uppercase;color:var(--or);margin:0 0 12px}
+h2{margin:0 0 14px;font-size:clamp(26px,3.4vw,38px);font-weight:500;line-height:1.12;
+   letter-spacing:-.02em;color:var(--ivoire);max-width:22ch}
+.chapeau{margin:0 0 40px;font-size:17px;line-height:1.6;color:var(--brume);max-width:60ch}
+
+/* ---- la scene : le quiz a gauche, la grille a droite ---- */
+.scene{display:grid;grid-template-columns:minmax(0,1fr);gap:34px}
+@media(min-width:1024px){.scene{grid-template-columns:minmax(0,460px) minmax(0,1fr);gap:44px;align-items:start}}
+
+/* ---- le panneau de question ---- */
+.panneau{background:var(--salle2);border:1px solid var(--filet);border-radius:16px;padding:26px;
+         position:relative;overflow:hidden}
+.jauge{position:absolute;top:0;left:0;height:2px;background:var(--or);width:0;
+       transition:width .5s cubic-bezier(.22,1,.36,1)}
+.num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;
+     text-transform:uppercase;color:var(--brume);margin:0 0 10px}
+.q{margin:0 0 20px;font-size:21px;line-height:1.3;font-weight:500;color:var(--ivoire)}
+.choix{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;cursor:pointer;
+     background:transparent;border:1px solid var(--filet);border-radius:11px;
+     padding:13px 15px;color:var(--corps);font:15px/1.4 'Space Grotesk',sans-serif;
+     min-height:52px;transition:border-color .18s,background .18s,transform .12s}
+.opt:hover{border-color:var(--or);background:rgba(200,169,81,.06)}
+.opt:active{transform:scale(.99)}
+.opt .lettre{flex:none;width:26px;height:26px;border-radius:7px;border:1px solid var(--filet);
+     display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;
+     color:var(--brume);transition:all .18s}
+.opt:hover .lettre{border-color:var(--or);color:var(--or);background:rgba(200,169,81,.1)}
+.suite{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
+.continuer{background:var(--or);color:#0d1424;border:0;border-radius:10px;padding:12px 22px;
+           font:600 14.5px 'Space Grotesk',sans-serif;cursor:pointer;min-height:46px;
+           transition:background .18s,opacity .18s}
+.continuer:hover{background:var(--or-vif)}
+.continuer[disabled]{opacity:.32;cursor:not-allowed;background:var(--or)}
+.opt.pris{border-color:var(--or);background:rgba(200,169,81,.12)}
+.opt.pris .lettre{border-color:var(--or);color:#0d1424;background:var(--or)}
+.aide{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+      text-transform:uppercase;color:var(--brume);margin:0 0 12px}
+.retour{margin-top:0;background:none;border:0;color:var(--brume);cursor:pointer;
+        font:12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;
+        padding:8px 0}
+.retour:hover{color:var(--or)}
+
+/* l'entree et la sortie d'une question */
+.etape{animation:entre .42s cubic-bezier(.22,1,.36,1) both}
+@keyframes entre{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.sort{animation:sortie .26s ease-in both}
+@keyframes sortie{to{opacity:0;transform:translateY(-10px)}}
+
+/* ---- la grille des modules ---- */
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:9px}
+.mod{position:relative;border:1px solid var(--filet);border-radius:11px;padding:11px 12px;
+     background:var(--salle2);min-height:74px;display:flex;flex-direction:column;gap:6px;
+     transition:opacity .5s cubic-bezier(.22,1,.36,1),transform .5s cubic-bezier(.22,1,.36,1),
+                border-color .4s,background .4s;opacity:.34}
+.mod .t{font-size:12.5px;line-height:1.28;color:var(--corps);padding-right:13px}
+.mod .p{margin-top:auto;font-family:'JetBrains Mono',monospace;font-size:9.5px;
+        letter-spacing:.08em;text-transform:uppercase;color:var(--brume)}
+.mod.vif{opacity:1;border-color:var(--or);background:rgba(200,169,81,.07)}
+.mod.vif .t{color:var(--ivoire)}
+.mod.vif .p{color:var(--or)}
+.mod.pro.vif{border-color:var(--avance);background:rgba(127,196,221,.08)}
+.mod.pro.vif .p{color:var(--avance)}
+/* Le niveau du milieu : retenu, donc pleinement lisible, mais sans la couleur
+   qui dit « commencez par là ». Sans ce niveau, un questionnaire qui garde
+   quinze modules sur vingt les allume tous pareil, et on ne voit plus d'ordre. */
+.mod.tenu{opacity:.92;border-color:var(--filet);background:var(--salle3)}
+.mod.tenu .t{color:var(--corps)}
+.mod.eteint{opacity:.1;transform:scale(.94)}
+.mod .rang{position:absolute;top:9px;right:10px;font-family:'JetBrains Mono',monospace;
+           font-size:9.5px;color:var(--or);opacity:0;transition:opacity .4s}
+.mod.vif .rang{opacity:1}
+.mod.pro.vif .rang{color:var(--avance)}
+.legende{margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;
+         letter-spacing:.06em;color:var(--brume);display:flex;gap:18px;flex-wrap:wrap}
+.pastille{display:inline-flex;align-items:center;gap:7px}
+.pastille i{width:9px;height:9px;border-radius:3px;display:block}
+
+/* ---- le resultat ---- */
+.resultat{background:var(--salle2);border:1px solid var(--or);border-radius:16px;padding:28px;
+          animation:entre .5s cubic-bezier(.22,1,.36,1) both}
+.resultat .nom{margin:0;font-size:27px;line-height:1.15;font-weight:600;color:var(--ivoire);
+               letter-spacing:-.01em}
+.resultat .sous{margin:9px 0 0;font-size:15.5px;line-height:1.6;color:var(--corps)}
+.formule{margin-top:22px;padding-top:20px;border-top:1px solid var(--filet)}
+.formule .libelle{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+                  text-transform:uppercase;color:var(--brume);margin:0 0 8px}
+.formule .titre{margin:0;font-size:19px;font-weight:500;color:var(--ivoire)}
+.formule .prix{margin:6px 0 0;font-size:31px;font-weight:500;color:var(--or);letter-spacing:-.02em}
+.formule .prix small{font-size:14px;color:var(--brume);font-weight:400;letter-spacing:0}
+.pourquoi{margin:14px 0 0;font-size:14.5px;line-height:1.6;color:var(--brume)}
+.cta{display:inline-flex;align-items:center;justify-content:center;margin-top:20px;
+     background:var(--or);color:#0d1424;border:0;border-radius:11px;padding:14px 26px;
+     font:600 15.5px 'Space Grotesk',sans-serif;cursor:pointer;text-decoration:none;min-height:50px}
+.cta:hover{background:var(--or-vif)}
+.cta.bleu{background:var(--avance)}
+.rejouer{display:block;margin-top:14px;background:none;border:0;color:var(--brume);cursor:pointer;
+         font:12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;padding:8px 0}
+.rejouer:hover{color:var(--or)}
+.compte{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--brume);margin:0 0 12px}
+.compte b{color:var(--or);font-weight:700}
+
+/* le decompte qui s'anime */
+.chiffre{display:inline-block;min-width:2ch;text-align:right}
+
+@media (prefers-reduced-motion: reduce){
+  .etape,.sort,.resultat{animation:none}
+  .mod{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="labo">
+  <div class="wrap">
+    <h1>Labo : le questionnaire de profil</h1>
+    <p>Quatre questions, six profils, et la grille des vrais modules qui se réduit à ceux qui
+      comptent pour vous. Les titres, les paliers et les durées viennent de
+      <span class="mono">modules.ts</span>, et les quatre parcours outils y comptent pour un seul
+      puisqu'on n'en suit qu'un. Rien n'est déployé.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">Par où commencer</p>
+    <h2>Quatre questions, et le parcours se met dans votre ordre.</h2>
+    <p class="chapeau">Tout le monde reçoit les mêmes leçons. Ce qui change, c'est par quoi on
+      commence, et ce qu'on peut sauter pour l'instant.</p>
+
+    <div class="scene">
+      <div id="gauche"></div>
+
+      <div>
+        <p class="compte mono" id="compte"></p>
+        <div class="grille" id="grille"></div>
+        <div class="legende">
+          <span class="pastille"><i style="background:var(--or)"></i> La méthode</span>
+          <span class="pastille"><i style="background:var(--avance)"></i> Les automatisations</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ---------------------------------------------------------------------------
+// Les modules, tels qu'ils sont en production (extraits de modules.ts).
+// ⚠️ En dur, et c'est voulu : une page de labo s'ouvre en double-clic, donc en
+// file://, où Chrome bloque fetch(). Une maquette qui charge ses données par
+// le réseau arrive blanche chez Paul.
+// ---------------------------------------------------------------------------
+const MODULES = [
+  {id:'M0', etape:'debuter', palier:'free', min:38, fr:"Bienvenue et diagnostic"},
+  {id:'M1', etape:'debuter', palier:'essentials', min:65, fr:"Comprendre l'IA générative"},
+  {id:'M2', etape:'debuter', palier:'essentials', min:97, fr:"La méthode de prompting"},
+  {id:'M4', etape:'debuter', palier:'essentials', min:52, fr:"Le parcours de votre outil", outil:true},
+  {id:'M3', etape:'maitriser', palier:'essentials', min:57, fr:"Prompting avancé"},
+  {id:'M9', etape:'maitriser', palier:'essentials', min:36, fr:"Juger une réponse"},
+  {id:'M10', etape:'maitriser', palier:'essentials', min:36, fr:"Vos données et le cadre d'usage"},
+  {id:'M16', etape:'maitriser', palier:'free', min:37, fr:"Écrire, traduire, résumer"},
+  {id:'M17', etape:'maitriser', palier:'essentials', min:25, fr:"Recherche et veille sérieuses"},
+  {id:'M5', etape:'maitriser', palier:'pro', min:53, fr:"Au-delà du texte : image, vidéo, audio"},
+  {id:'M6', etape:'maitriser', palier:'pro', min:56, fr:"Cas d'usage métier"},
+  {id:'M11', etape:'maitriser', palier:'pro', min:56, fr:"Les chiffres et les tableurs"},
+  {id:'M12', etape:'maitriser', palier:'pro', min:54, fr:"Réunions, comptes rendus et messages"},
+  {id:'M19', etape:'maitriser', palier:'pro', min:25, fr:"Présenter et convaincre"},
+  {id:'M8', etape:'agir', palier:'essentials', min:32, fr:"Passer à l'action"},
+  {id:'M7', etape:'agir', palier:'pro', min:49, fr:"Agents et automatisations"},
+  {id:'M20', etape:'agir', palier:'pro', min:43, fr:"Monter sa base MCP"},
+  {id:'M14', etape:'agir', palier:'pro', min:84, fr:"Cas d'usage avancés"},
+  {id:'M15', etape:'agir', palier:'pro', min:64, fr:"Le socle : faire durer"},
+  {id:'M18', etape:'agir', palier:'pro', min:32, fr:"Manager une équipe qui utilise l'IA"},
+];
+
+// ---------------------------------------------------------------------------
+// Les questions. Quatre, pas plus : au-delà, on abandonne avant la fin.
+// Chaque réponse pose des POIDS sur les six profils, plutôt qu'un aiguillage
+// en arbre - un arbre à quatre niveaux demanderait de décrire seize chemins,
+// et le premier ajout de question le casserait.
+// ---------------------------------------------------------------------------
+const QUESTIONS = [
+  {
+    q: "Aujourd'hui, avec l'IA, vous en êtes où ?",
+    multi: false,
+    opts: [
+      {t:"Je n'ai jamais vraiment essayé", p:{debut:3}},
+      {t:"J'essaie de temps en temps, sans méthode", p:{auto:2, plume:1}},
+      {t:"Je m'en sers tous les jours", p:{chiffre:1, bati:2, manage:1}},
+    ],
+  },
+  {
+    q: "Quels outils avez-vous sous la main ?",
+    multi: true,
+    aide: "Plusieurs réponses possibles",
+    opts: [
+      {t:"ChatGPT", p:{}, outil:'ChatGPT'},
+      {t:"Claude", p:{bati:1}, outil:'Claude'},
+      {t:"Copilot, dans Microsoft 365", p:{chiffre:1}, outil:'Copilot'},
+      {t:"Gemini, dans Google Workspace", p:{}, outil:'Gemini'},
+      {t:"Je ne sais pas encore", p:{debut:1}, outil:null},
+    ],
+  },
+  {
+    q: "Votre travail, c'est surtout...",
+    multi: true,
+    aide: "Plusieurs réponses possibles",
+    opts: [
+      {t:"Écrire : documents, messages, contenus", p:{plume:3}},
+      {t:"Des chiffres, des tableaux, du reporting", p:{chiffre:3}},
+      {t:"Des réunions, des clients, du suivi", p:{plume:1, bati:1}},
+      {t:"Faire tourner des processus, des outils", p:{bati:3}},
+      {t:"Encadrer une équipe", p:{manage:3}},
+    ],
+  },
+  {
+    q: "Dans un mois, vous aimeriez quoi ?",
+    multi: true,
+    aide: "Plusieurs réponses possibles",
+    opts: [
+      {t:"Écrire vite et bien, sans y passer la soirée", p:{plume:2, debut:1}},
+      {t:"Arrêter de refaire les mêmes tâches à la main", p:{chiffre:2, bati:1}},
+      {t:"Que des choses tournent sans moi", p:{bati:3}},
+      {t:"Que mon équipe s'y mette pour de bon", p:{manage:3}},
+    ],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Les six profils.
+//
+// ⚠️ Deux listes, et la différence est tout le sujet (Paul, 08/09 : « je veux
+// au moins 70 % qui soient sélectionnés, pour donner envie aux gens d'acheter
+// les deux modules »).
+//   `coeur`  : par où on commence. Quatre à six, en couleur, numérotés.
+//   `ecarte` : le peu qui ne concerne pas ce profil. Tout le reste est RETENU,
+//              donc pleinement visible, ce qui met la sélection au-dessus de 70 %.
+//
+// ⚠️ Sans le niveau du milieu, il n'y a que deux choix possibles : allumer cinq
+// modules et laisser croire que le reste ne sert à rien, ou tout allumer et
+// montrer un questionnaire qui ne trie rien. C'est le troisième niveau qui
+// permet de garder les deux, l'envie et la crédibilité.
+//
+// ⚠️ Cinq profils sur six recommandent la formule avancée, parce que leur cœur
+// contient au moins un module `pro` - les tableurs, les cas métier, les agents,
+// le management. Seul le grand débutant reste sur la méthode : lui vendre les
+// automatisations le jour où il n'a jamais ouvert l'outil serait invendable et
+// se retournerait au remboursement.
+// ---------------------------------------------------------------------------
+const PROFILS = {
+  debut: {
+    nom: "Le premier pas",
+    sous: "Vous n'avez pas encore d'habitude à défaire. C'est le meilleur moment pour prendre la bonne, parce que la méthode s'installe avant les réflexes.",
+    coeur: ['M0','M1','M2','M4','M9'],
+    ecarte: ['M20','M14','M15','M18','M7'],
+    pourquoi: "Vous commencez par les bases et le parcours de votre outil. Les automatisations viendront quand vous aurez pris le pli : elles n'ont pas de sens le premier jour.",
+  },
+  auto: {
+    nom: "L'autodidacte",
+    sous: "Vous obtenez déjà des choses, mais au hasard : parfois excellent, souvent moyen, et vous ne savez pas dire pourquoi. C'est exactement ce que la méthode répare.",
+    coeur: ['M2','M3','M9','M6','M14'],
+    ecarte: ['M0','M18','M5'],
+    pourquoi: "La méthode règle la régularité de vos résultats, et les cas déjà montés des automatisations vous évitent de réinventer ce que d'autres ont déjà câblé.",
+  },
+  plume: {
+    nom: "La plume",
+    sous: "Vous écrivez toute la journée, et c'est là que le temps part. Résumer pour décider, réécrire sans trahir, poser un plan avant un document long.",
+    coeur: ['M16','M2','M12','M19','M17'],
+    ecarte: ['M0','M11','M20'],
+    pourquoi: "L'écrit tient dans la méthode, mais les comptes rendus de réunion, les présentations et les visuels sont dans les automatisations : c'est là que le gros de vos heures se joue.",
+  },
+  chiffre: {
+    nom: "Le chiffreur",
+    sous: "Des tableaux, des exports, des rapprochements. C'est le domaine où l'IA fait gagner le plus de temps, et celui où une réponse fausse coûte le plus cher.",
+    coeur: ['M11','M2','M9','M14','M7'],
+    ecarte: ['M0','M5','M19'],
+    pourquoi: "Les chiffres et les tableurs sont dans les automatisations, avec les chaînes qui vont chercher la donnée toutes seules. La méthode seule vous laisserait sans le module qui vous concerne le plus.",
+  },
+  bati: {
+    nom: "Le bâtisseur",
+    sous: "Vous ne voulez pas d'un assistant à qui il faut tout redemander. Vous voulez que la chaîne tourne le lundi matin sans vous, avec un point d'arrêt là où il faut.",
+    coeur: ['M7','M20','M14','M15','M2'],
+    ecarte: ['M0','M16'],
+    pourquoi: "Les agents, les serveurs MCP et les dix-neuf chaînes complètes sont le cœur des automatisations. La méthode seule vous laisserait à la porte.",
+  },
+  manage: {
+    nom: "Le meneur",
+    sous: "Votre problème n'est pas d'apprendre : c'est que dix personnes s'y mettent, avec les mêmes règles, sans que vous relisiez tout.",
+    coeur: ['M18','M2','M10','M8','M6'],
+    ecarte: ['M0','M5'],
+    pourquoi: "Encadrer une équipe, monter les cas d'un poste et poser les garde-fous sont dans les automatisations. C'est ce qui fait la différence entre dix personnes qui essaient et dix personnes qui produisent.",
+  },
+};
+
+const OFFRES = {
+  methode: {titre:"La méthode", prix:"290 €", duree:"pour 30 jours", items:"programme"},
+  avancee: {titre:"La méthode avancée", prix:"480 €", duree:"pour 30 jours", items:"programme,construire"},
+};
+
+// ---------------------------------------------------------------------------
+const gauche = document.getElementById('gauche');
+const grille = document.getElementById('grille');
+const compte = document.getElementById('compte');
+let etape = 0;
+const scores = {debut:0, auto:0, plume:0, chiffre:0, bati:0, manage:0};
+const outils = new Set();
+const reponses = [];
+const doux = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ⚠️ Le compte s'écrit depuis la liste, jamais à la main. La première version
+// annonçait « 23 modules » pour une grille qui en montre vingt : les quatre
+// parcours outils comptent pour un seul, puisqu'on n'en suit qu'un. C'est la
+// même raison qui fait dire « 16 modules » à la page de vente, qui ne parle
+// elle que du parcours vendu.
+const depart = 'Les <b>' + MODULES.length + '</b> modules des deux programmes';
+
+// La grille, montée une fois. Les cartes ne bougent jamais de place : c'est
+// l'opacité et l'échelle qui font le tri. Déplacer vingt-trois cartes donnerait
+// un remue-ménage illisible, et le regard perdrait celles qu'il suivait.
+MODULES.forEach((m, i) => {
+  const d = document.createElement('div');
+  d.className = 'mod' + (m.palier === 'pro' ? ' pro' : '');
+  d.dataset.id = m.id;
+  d.style.transitionDelay = (i * 22) + 'ms';
+  d.innerHTML = '<span class="rang mono"></span><span class="t">' + m.fr + '</span><span class="p">' +
+    (m.palier === 'pro' ? 'automatisations' : m.palier === 'free' ? 'offert' : 'méthode') + '</span>';
+  grille.appendChild(d);
+});
+
+let pris = new Set();   // les options cochees de la question en cours
+
+function poser() {
+  const q = QUESTIONS[etape];
+  const lettres = 'ABCDE';
+  pris = new Set(reponses[etape] || []);
+  gauche.innerHTML =
+    '<div class="panneau etape">' +
+      '<span class="jauge" style="width:' + (etape / QUESTIONS.length * 100) + '%"></span>' +
+      '<p class="num mono">Question ' + (etape + 1) + ' sur ' + QUESTIONS.length + '</p>' +
+      '<p class="q">' + q.q + '</p>' +
+      (q.aide ? '<p class="aide mono">' + q.aide + '</p>' : '') +
+      '<div class="choix">' +
+        q.opts.map((o, k) =>
+          '<button class="opt' + (pris.has(k) ? ' pris' : '') + '" data-k="' + k + '">' +
+          '<span class="lettre mono">' + lettres[k] + '</span><span>' + o.t + '</span></button>').join('') +
+      '</div>' +
+      '<div class="suite">' +
+        (q.multi ? '<button class="continuer"' + (pris.size ? '' : ' disabled') + '>Continuer</button>' : '') +
+        (etape > 0 ? '<button class="retour mono">Revenir</button>' : '') +
+      '</div>' +
+    '</div>';
+
+  gauche.querySelectorAll('.opt').forEach((b) => {
+    b.addEventListener('click', () => {
+      const k = +b.dataset.k;
+      if (!q.multi) { valider([k]); return; }
+      // ⚠️ « Je ne sais pas encore » est exclusif : le cocher avec trois outils
+      // n'aurait aucun sens, et l'inverse non plus.
+      const exclusif = q.opts[k].outil === null;
+      if (exclusif) { pris = pris.has(k) ? new Set() : new Set([k]); }
+      else {
+        q.opts.forEach((o, i) => { if (o.outil === null) pris.delete(i); });
+        if (pris.has(k)) pris.delete(k); else pris.add(k);
+      }
+      gauche.querySelectorAll('.opt').forEach((x) => x.classList.toggle('pris', pris.has(+x.dataset.k)));
+      const c = gauche.querySelector('.continuer');
+      if (c) c.disabled = pris.size === 0;
+    });
+  });
+  const c = gauche.querySelector('.continuer');
+  if (c) c.addEventListener('click', () => valider([...pris]));
+  const r = gauche.querySelector('.retour');
+  if (r) r.addEventListener('click', reculer);
+}
+
+function valider(ks) {
+  const q = QUESTIONS[etape];
+  reponses[etape] = ks;
+  ks.forEach((k) => {
+    const o = q.opts[k];
+    for (const [p, v] of Object.entries(o.p || {})) scores[p] += v;
+    if ('outil' in o && o.outil) outils.add(o.outil);
+  });
+
+  const pan = gauche.querySelector('.panneau');
+  if (pan && !doux) pan.classList.add('sort');
+  setTimeout(() => {
+    etape++;
+    if (etape < QUESTIONS.length) poser();
+    else conclure();
+  }, doux ? 0 : 220);
+}
+
+function reculer() {
+  etape--;
+  // on defait exactement ce que la reponse avait pose
+  (reponses[etape] || []).forEach((k) => {
+    const o = QUESTIONS[etape].opts[k];
+    for (const [p, v] of Object.entries(o.p || {})) scores[p] -= v;
+    if ('outil' in o && o.outil) outils.delete(o.outil);
+  });
+  poser();
+  grille.querySelectorAll('.mod').forEach((d) => d.classList.remove('vif', 'tenu', 'eteint'));
+  compte.innerHTML = depart;
+}
+
+function conclure() {
+  const clef = Object.keys(PROFILS).reduce((a, b) => (scores[b] > scores[a] ? b : a), 'debut');
+  const p = PROFILS[clef];
+  const coeur = p.coeur;
+  const ecarte = new Set(p.ecarte);
+
+  // Les trois niveaux. Le rang n'est mis que sur le coeur : c'est l'ordre dans
+  // lequel on commence, pas un classement des vingt modules.
+  grille.querySelectorAll('.mod').forEach((d) => {
+    const id = d.dataset.id;
+    d.classList.remove('vif', 'tenu', 'eteint');
+    const r = d.querySelector('.rang');
+    if (coeur.includes(id)) { d.classList.add('vif'); r.textContent = String(coeur.indexOf(id) + 1); }
+    else if (ecarte.has(id)) { d.classList.add('eteint'); r.textContent = ''; }
+    else { d.classList.add('tenu'); r.textContent = ''; }
+  });
+
+  const retenus = MODULES.length - ecarte.size;
+  const aDuPro = coeur.some((id) => (MODULES.find((m) => m.id === id) || {}).palier === 'pro');
+  const offre = aDuPro ? OFFRES.avancee : OFFRES.methode;
+  const minutes = coeur.reduce((s, id) => s + ((MODULES.find((m) => m.id === id) || {}).min || 0), 0);
+  const h = Math.floor(minutes / 60), mn = minutes % 60;
+
+  compte.innerHTML = '<b>' + retenus + '</b> modules sur ' + MODULES.length +
+    ' vous concernent · vous commencez par <b>' + coeur.length + '</b>, soit ' +
+    h + ' h ' + String(mn).padStart(2, '0');
+
+  const liste = [...outils];
+  const lienOutil = liste.length === 0 ? ''
+    : liste.length === 1 ? ' Votre parcours outil sera celui de ' + liste[0] + '.'
+    : ' Vous avez ' + liste.slice(0, -1).join(', ') + ' et ' + liste[liste.length - 1] +
+      ' : le parcours en ouvre un, vous choisirez lequel en arrivant.';
+
+  gauche.innerHTML =
+    '<div class="resultat">' +
+      '<p class="num mono">Votre profil</p>' +
+      '<p class="nom">' + p.nom + '</p>' +
+      '<p class="sous">' + p.sous + lienOutil + '</p>' +
+      '<div class="formule">' +
+        '<p class="libelle mono">La formule qui vous va</p>' +
+        '<p class="titre">' + offre.titre + '</p>' +
+        '<p class="prix">' + offre.prix + ' <small>' + offre.duree + '</small></p>' +
+        '<p class="pourquoi">' + p.pourquoi + '</p>' +
+        '<a class="cta' + (aDuPro ? ' bleu' : '') + '" href="https://academy.mydigipal.com/fr/checkout?items=' +
+          offre.items + '">Commencer par là</a>' +
+        '<button class="rejouer mono">Refaire le test</button>' +
+      '</div>' +
+    '</div>';
+
+  gauche.querySelector('.rejouer').addEventListener('click', () => {
+    etape = 0; outils.clear(); reponses.length = 0;
+    for (const k of Object.keys(scores)) scores[k] = 0;
+    grille.querySelectorAll('.mod').forEach((d) => {
+      d.classList.remove('vif', 'tenu', 'eteint');
+      d.querySelector('.rang').textContent = '';
+    });
+    compte.innerHTML = depart;
+    poser();
+  });
+}
+
+compte.innerHTML = depart;
+poser();
+</script>
+</body>
+</html>

@@ -31,6 +31,7 @@ import AppelFlottant from '../academy/AppelFlottant';
 import { copyV2 } from './copy-v2';
 import { ETAPES, MODULES, modulesDe } from './modules';
 import Profil from './Profil';
+import Questionnaire from './Questionnaire';
 import Programme from './Programme';
 import Tarifs from './Tarifs';
 
@@ -133,6 +134,12 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         leconsGratuit={leconsGratuit(data)}
         minutesGratuit={data.faits.minutesGratuit ?? 0}
       />
+
+      {/* Le questionnaire de profil, juste après le programme : il montre les
+          vingt modules en les triant, donc il faut les avoir vus une fois pour
+          que le tri veuille dire quelque chose. Et il mène au tunnel, ce qui
+          n'a de sens qu'une fois la formation décrite. */}
+      <Questionnaire locale={locale} lienBase={`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}`} />
 
       {/* L'espace apprenant, qu'on visite au survol. C'est la cible de l'entrée
           « L'Académie » du menu : ce qu'on ouvre après avoir acheté.
