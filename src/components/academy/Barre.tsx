@@ -126,6 +126,29 @@ export default function Barre({
     };
   }, [c, reperes, ancreCta]);
 
+  /**
+   * Le menu du téléphone (Paul, 08/09) : « plutôt que d'avoir le titre en haut
+   * où t'es obligé de scroller vers la droite, il devrait juste avoir trois
+   * barres de menu ».
+   *
+   * ⚠️ Ce que ça remplace : la nav était en `overflow-x-auto`, donc sous lg les
+   * repères défilaient latéralement dans une bande de quelques centimètres, et
+   * le sélecteur de devise disparaissait purement et simplement sous md. Une
+   * barre qui cache la moitié de ses commandes et demande un geste horizontal
+   * pour voir le reste ne se découvre pas.
+   */
+  const [menu, setMenu] = useState(false);
+  useEffect(() => {
+    if (!menu) return;
+    const auClavier = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenu(false);
+    };
+    window.addEventListener('keydown', auClavier);
+    return () => window.removeEventListener('keydown', auClavier);
+  }, [menu]);
+
+  const listeReperes = reperes ?? REPERES.map((r) => ({ id: r.id, libelle: c.reperes[r.cle] }));
+
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-filet-nuit bg-salle/92 backdrop-blur" data-theme="nuit">
       <div className="mx-auto flex h-16 max-w-[1280px] items-center gap-4 px-4 sm:px-6">
@@ -134,8 +157,8 @@ export default function Barre({
           <span className="hidden font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-brume-nuit sm:inline">{c.marque}</span>
         </a>
 
-        <nav className="j30-barre-reperes -mx-1 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto px-1" aria-label={c.aria}>
-          {(reperes ?? REPERES.map((r) => ({ id: r.id, libelle: c.reperes[r.cle] }))).map((r) => {
+        <nav className="j30-barre-reperes -mx-1 hidden min-w-0 flex-1 items-center gap-1 px-1 lg:flex" aria-label={c.aria}>
+          {listeReperes.map((r) => {
             const on = actif === r.id;
             return (
               <a
@@ -154,7 +177,7 @@ export default function Barre({
         <span ref={jourRef} className="ml-auto hidden flex-none font-ac-mono text-[11px] font-bold uppercase tracking-[0.14em] text-or transition-opacity duration-300 md:block" style={{ opacity: 0 }} />
 
         {devise && surDevise ? (
-          <div className="hidden flex-none items-center overflow-hidden rounded-bouton border border-filet-nuit md:flex">
+          <div className="hidden flex-none items-center overflow-hidden rounded-bouton border border-filet-nuit lg:flex">
             {(['EUR', 'GBP', 'USD'] as Devise[]).map((d) => (
               <button
                 key={d}
@@ -177,11 +200,25 @@ export default function Barre({
           hrefLang={autre}
           aria-label={c.langueAria}
           title={c.langueAria}
-          className="flex min-h-10 flex-none items-center gap-2 rounded-bouton border border-filet-nuit px-2.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.1em] text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire max-md:ml-auto"
+          className="hidden min-h-10 flex-none items-center gap-2 rounded-bouton border border-filet-nuit px-2.5 font-ac-mono text-[11px] font-bold uppercase tracking-[0.1em] text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire lg:flex"
         >
           <Drapeau locale={autre} />
           <span className="hidden md:inline">{c.langue}</span>
         </a>
+
+        {/* Le bouton du menu, sous lg seulement. */}
+        <button
+          type="button"
+          onClick={() => setMenu((v) => !v)}
+          aria-expanded={menu}
+          aria-controls="barre-menu"
+          aria-label={menu ? c.menuFermer : c.menuOuvrir}
+          className="ml-auto grid h-11 w-11 flex-none cursor-pointer place-items-center rounded-bouton border border-filet-nuit bg-transparent text-corps-nuit transition hover:border-brume-nuit hover:text-ivoire lg:hidden"
+        >
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true">
+            {menu ? <path d="M6 6l12 12M18 6L6 18" /> : <><path d="M4 7h16" /><path d="M4 12h16" /><path d="M4 17h16" /></>}
+          </svg>
+        </button>
 
         {/* Sous lg, l'appel vit en bas à droite (`AppelFlottant`), là où arrive
             le pouce. Ici il était de toute façon tronqué dès que « Jour n / 30 »
@@ -193,6 +230,86 @@ export default function Barre({
           {c.cta}
         </a>
       </div>
+      {/* Le panneau, sous la barre. Il porte TOUT ce que la barre ne montre plus
+          sous lg : les sections, la langue, la devise, et l'appel à l'action.
+          ⚠️ Il se ferme au choix d'une section, sinon il masquerait justement
+          celle qu'on vient de demander. */}
+      {menu ? (
+        <div
+          id="barre-menu"
+          className="absolute inset-x-0 top-16 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b border-filet-nuit bg-salle px-4 pb-5 pt-4 shadow-[0_18px_40px_-18px_rgba(0,0,0,.8)] sm:px-6 lg:hidden"
+        >
+          <p className="m-0 mb-2.5 font-ac-mono text-[10.5px] font-bold uppercase tracking-[.16em] text-brume-nuit">
+            {c.menuSections}
+          </p>
+          <nav className="flex flex-col gap-1.5" aria-label={c.aria}>
+            {listeReperes.map((r) => (
+              <a
+                key={r.id}
+                href={`#${r.id}`}
+                onClick={() => setMenu(false)}
+                className={`flex min-h-11 items-center rounded-[10px] border px-3.5 font-ac-mono text-[12px] font-bold uppercase tracking-[.12em] transition ${
+                  actif === r.id
+                    ? 'border-or bg-or text-salle'
+                    : 'border-filet-nuit text-corps-nuit hover:border-brume-nuit hover:text-ivoire'
+                }`}
+              >
+                {r.libelle}
+              </a>
+            ))}
+          </nav>
+
+          <a
+            href={`#${ancreCta}`}
+            onClick={() => setMenu(false)}
+            className="mt-3.5 flex min-h-12 items-center justify-center rounded-bouton bg-or px-4 text-[15px] font-semibold text-salle transition hover:bg-or-vif"
+          >
+            {c.cta}
+          </a>
+
+          <div className="mt-5 flex flex-wrap items-end justify-between gap-4 border-t border-filet-nuit pt-4">
+            <div>
+              <p className="m-0 mb-2 font-ac-mono text-[10.5px] font-bold uppercase tracking-[.16em] text-brume-nuit">
+                {c.menuLangue}
+              </p>
+              <a
+                href={`/${autre}/${chemin}${ancre}`}
+                hrefLang={autre}
+                aria-label={c.langueAria}
+                className="flex min-h-11 items-center gap-2.5 rounded-bouton border border-filet-nuit px-3.5 font-ac-mono text-[12px] font-bold uppercase tracking-[.1em] text-corps-nuit transition hover:border-brume-nuit hover:text-ivoire"
+              >
+                <Drapeau locale={autre} />
+                {c.langue}
+              </a>
+            </div>
+
+            {devise && surDevise ? (
+              <div>
+                <p className="m-0 mb-2 font-ac-mono text-[10.5px] font-bold uppercase tracking-[.16em] text-brume-nuit">
+                  {c.menuDevise}
+                </p>
+                <div className="flex items-center overflow-hidden rounded-bouton border border-filet-nuit">
+                  {(['EUR', 'GBP', 'USD'] as Devise[]).map((d) => (
+                    <button
+                      key={d}
+                      type="button"
+                      onClick={() => surDevise(d)}
+                      aria-pressed={d === devise}
+                      aria-label={d}
+                      className={`min-h-11 w-12 cursor-pointer border-0 font-ac-mono text-[13px] font-bold transition ${
+                        d === devise ? 'bg-or text-salle' : 'bg-transparent text-corps-nuit hover:text-ivoire'
+                      }`}
+                    >
+                      {SYMBOLE[d]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
       <span className="absolute inset-x-0 bottom-[-1px] h-[2px] bg-filet-nuit" aria-hidden="true">
         <span
           ref={fill}

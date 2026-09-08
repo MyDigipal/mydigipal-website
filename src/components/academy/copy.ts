@@ -721,6 +721,11 @@ const FR = {
     reperes: { q1: 'Quinzaine 1', q2: 'Quinzaine 2', avis: 'Avis', tarifs: 'Tarifs' },
     jour: (n: number) => `Jour ${n} / 30`,
     cta: 'Commencer',
+    menuOuvrir: 'Ouvrir le menu',
+    menuFermer: 'Fermer le menu',
+    menuSections: 'Sections',
+    menuLangue: 'Langue',
+    menuDevise: 'Devise',
   },
   maison: {
     titre: 'Une méthode née en salle, chez La Poste, Pierre Fabre ou La Redoute.',
@@ -1537,6 +1542,11 @@ const EN: Jour30Copy = {
     reperes: { q1: 'Fortnight 1', q2: 'Fortnight 2', avis: 'Reviews', tarifs: 'Pricing' },
     jour: (n: number) => `Day ${n} / 30`,
     cta: 'Get started',
+    menuOuvrir: 'Open the menu',
+    menuFermer: 'Close the menu',
+    menuSections: 'Sections',
+    menuLangue: 'Language',
+    menuDevise: 'Currency',
   },
   maison: {
     titre: 'A method shaped in the training room, at La Poste, Pierre Fabre and La Redoute.',
