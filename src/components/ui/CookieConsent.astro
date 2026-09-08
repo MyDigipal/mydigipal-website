@@ -161,7 +161,17 @@ const text = lang === 'fr' ? {
   function saveConsent(consent) {
     var expires = new Date();
     expires.setFullYear(expires.getFullYear() + 1);
-    document.cookie = CONSENT_COOKIE + '=' + encodeURIComponent(JSON.stringify(consent)) + '; expires=' + expires.toUTCString() + '; path=/; SameSite=Lax';
+    // Le consentement vaut pour TOUT mydigipal.com, sous-domaines compris
+    // (Paul, 08/09) : sans le `domain`, le cookie restait sur mydigipal.com et
+    // academy.mydigipal.com redemandait son accord a quelqu'un qui venait de
+    // le donner deux clics plus tot, au moment de payer. Meme responsable de
+    // traitement, meme finalites, et les deux politiques de confidentialite le
+    // disent : c'est un seul consentement.
+    // En local (localhost, IP), on n'ecrit pas de domaine : un cookie de
+    // domaine y est simplement refuse.
+    var hote = location.hostname;
+    var partage = hote.indexOf('mydigipal.com') !== -1 ? '; domain=.mydigipal.com' : '';
+    document.cookie = CONSENT_COOKIE + '=' + encodeURIComponent(JSON.stringify(consent)) + '; expires=' + expires.toUTCString() + '; path=/' + partage + '; SameSite=Lax';
   }
 
   function updateConsentMode(consent) {
