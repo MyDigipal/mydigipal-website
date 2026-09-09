@@ -53,6 +53,7 @@ export default function Tarifs({
   leconsProgramme,
   heuresProgramme,
   leconsTotal,
+  leconsComplement,
   heuresTotal,
   exercices,
   relectures,
@@ -70,6 +71,8 @@ export default function Tarifs({
   leconsProgramme: number;
   heuresProgramme: string;
   leconsTotal: number;
+  /** Ce que les automatisations ajoutent : la carte le dit, au lieu d'un total flou. */
+  leconsComplement: number;
   heuresTotal: string;
   exercices: number;
   relectures: number;
@@ -238,13 +241,25 @@ export default function Tarifs({
   ];
 
   const avancee: Ligne[] = [
+    /**
+     * ⚠️ La première ligne disait « Tout ce qui précède, et 122 leçons en tout »
+     * (Paul, 09/09 : « ce n'est pas assez clair »). Deux défauts d'un coup.
+     *
+     * « Tout ce qui précède » ne dit pas ce qui précède : sur un téléphone, la
+     * carte de La méthode est bien au-dessus, mais sur un ordinateur elle est à
+     * CÔTÉ. Elle est donc nommée.
+     *
+     * Et 122 était le nombre du parcours vendu seul, alors que le hero annonce
+     * 179 depuis hier : deux totaux différents sur la même page. La carte dit
+     * maintenant l'addition, qui tombe juste.
+     */
     {
       texte: fr
-        ? `Tout ce qui précède, et ${leconsTotal} leçons en tout`
-        : `Everything above, and ${leconsTotal} lessons in total`,
+        ? `La méthode en entier, et ${leconsComplement} leçons de plus`
+        : `The method in full, plus ${leconsComplement} more lessons`,
       detail: fr
-        ? `Le parcours complet, ${heuresTotal} de formation, sans module fermé.`
-        : `The complete path, ${heuresTotal} of training, with no locked module.`,
+        ? `Les ${leconsProgramme} leçons de la méthode et les ${leconsComplement} des automatisations, soit ${leconsProgramme + leconsComplement} en tout. Aucun module fermé.`
+        : `The ${leconsProgramme} lessons of the method and the ${leconsComplement} of the automations, ${leconsProgramme + leconsComplement} in total. No locked module.`,
       demo: 'programme',
     },
     {

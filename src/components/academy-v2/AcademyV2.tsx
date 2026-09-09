@@ -6,6 +6,7 @@ import {
   prixDe,
   type Devise,
   leconsGratuit,
+  leconsComplement,
   leconsProgramme,
   temoignagesPublics,
   type Jour30Data,
@@ -235,6 +236,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         leconsProgramme={leconsProgramme(data)}
         heuresProgramme={data.faits.heuresProgramme ?? data.faits.heures}
         leconsTotal={data.faits.lessons}
+        leconsComplement={leconsComplement(data)}
         heuresTotal={data.faits.heures}
         exercices={data.faits.exercices}
         relectures={data.faits.relectures}

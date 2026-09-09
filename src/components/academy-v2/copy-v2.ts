@@ -208,7 +208,9 @@ const FR = {
     methode: 'La méthode',
     methodeSous: 'Le parcours complet',
     auto: 'La méthode avancée',
-    autoSous: 'Avec les automatisations',
+    // ⚠️ « Avec les automatisations » laissait croire qu'on achetait les
+    // automatisations seules. Le sous-titre nomme les deux (Paul, 09/09).
+    autoSous: 'La méthode + les automatisations',
     commencer: 'Commencer',
     licences: 'Licences',
     places: (n: number) => `${n} licences`,
@@ -417,7 +419,7 @@ const EN: typeof FR = {
     methode: 'The method',
     methodeSous: 'The full path',
     auto: 'The advanced method',
-    autoSous: 'With automations',
+    autoSous: 'The method + the automations',
     commencer: 'Get started',
     licences: 'Licences',
     places: (n) => `${n} licences`,
