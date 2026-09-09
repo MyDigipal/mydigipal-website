@@ -92,6 +92,20 @@ export default function Visite({
   const t = jour30Copy(locale);
   const c = t.visite;
   const [actif, setActif] = useState<SpotId | null>(null);
+  /**
+   * Le panneau ne flotte QUE si un geste l'a ouvert.
+   *
+   * ⚠️ Ne jamais le déduire de `actif`. La rotation automatique pose `actif`
+   * toutes les quatre secondes, si bien que le panneau devenait flottant tout
+   * seul et ne se refermait jamais : mesuré le 09/09/2026 en fenêtre étroite,
+   * un bloc fixe de 220 px du haut de la page jusqu'en bas, soit 37 % de
+   * l'écran masqué en permanence avec la barre d'appel.
+   *
+   * ⚠️ La rotation s'arrête sur un pointeur tactile, donc un vrai téléphone
+   * n'a jamais eu le défaut. C'est la fenêtre étroite sur un ordinateur qui
+   * l'a : elle garde sa souris. Le piège habituel de `pointeurGrossier`.
+   */
+  const [flottant, setFlottant] = useState(false);
   const { ouvert, ouvrir, fermer } = useVisionneuse();
   const [touche, setTouche] = useState(false);
   // Au doigt, tout change : le verbe de la consigne, la visite qui se joue
@@ -177,6 +191,7 @@ export default function Visite({
   const choisir = (id: SpotId) => {
     setTouche(true);
     setActif(id);
+    setFlottant(true);
     // Au doigt seulement : la réponse est plus haut dans la page, et un
     // visiteur qui touche une ligne sans rien voir bouger croit que rien ne
     // s'est passé. La zone touchée garde son filet d'or, on la retrouve en
@@ -347,7 +362,7 @@ export default function Visite({
           <aside
             ref={panneau}
             className={`z-20 lg:sticky lg:top-24 ${
-              fiche
+              fiche && flottant
                 ? 'max-lg:fixed max-lg:inset-x-3 max-lg:bottom-3 max-lg:z-50 max-lg:max-h-[76vh] max-lg:overflow-y-auto max-lg:drop-shadow-[0_20px_50px_rgba(0,0,0,.55)]'
                 : 'max-lg:order-first'
             }`}
@@ -355,10 +370,16 @@ export default function Visite({
             onMouseEnter={() => setTouche(true)}
           >
             <div className={`${carte} relative border-or/[0.28] p-5 lg:p-6`}>
-              {fiche ? (
+              {/* La croix n'a de sens que sur un panneau qui flotte : sur un
+                  panneau posé dans le flux, elle viderait la fiche sans que
+                  rien ne bouge à l'écran. */}
+              {fiche && flottant ? (
                 <button
                   type="button"
-                  onClick={() => setActif(null)}
+                  onClick={() => {
+                    setFlottant(false);
+                    setActif(null);
+                  }}
                   aria-label={t.barre.fermer}
                   className="absolute right-3 top-3 grid h-10 w-10 cursor-pointer place-items-center rounded-full border border-filet-nuit bg-salle text-brume-nuit transition hover:text-ivoire lg:hidden"
                 >
