@@ -32,7 +32,7 @@ const FR = {
       `${lecons} leçons, ${modules} modules, ${heures}. Ce que vous apprenez, et ce que chaque module vous fait produire.`,
     exTrajet: 'Trente jours dans un compte, jour après jour, jusqu’à l’attestation.',
     exTarifs: (prix: string) =>
-      `${prix} pour 30 jours, l'assistant compris. Les automatisations en complément.`,
+      `${prix} pour 30 jours, l’assistant compris. Les automatisations en complément, et soixante jours d’accès.`,
   },
   hero: {
     kicker: 'Formation IA en ligne',
@@ -183,7 +183,7 @@ const FR = {
     votreProfil: 'Votre profil',
     parLa: 'Vous commencez par',
     formule: 'La formule qui vous va',
-    duree: 'pour 30 jours',
+    duree: (jours = 30) => `pour ${jours} jours`,
     avecCode: (c: string) => `avec le code ${c}`,
     offreMethode: 'La méthode',
     offreAvancee: 'La méthode avancée',
@@ -201,10 +201,10 @@ const FR = {
   },
   tarifs: {
     kicker: 'Les tarifs',
-    titre: (prix: string) => `${prix} pour 30 jours`,
+    titre: (prix: string) => `À partir de ${prix}`,
     chapeau: (hausse: string) =>
       `L’assistant IA est compris dans les deux formules. Au 1er octobre, le prix passe à ${hausse}.`,
-    duree: 'pour 30 jours',
+    duree: (jours = 30) => `pour ${jours} jours`,
     methode: 'La méthode',
     methodeSous: 'Le parcours complet',
     auto: 'La méthode avancée',
@@ -266,7 +266,7 @@ const EN: typeof FR = {
     exProgramme: (lecons, modules, heures) =>
       `${lecons} lessons, ${modules} modules, ${heures}. What you learn, and what each module makes you produce.`,
     exTrajet: 'Thirty days inside an account, day by day, up to the certificate.',
-    exTarifs: (prix) => `${prix} for 30 days, assistant included. Automations as an add-on.`,
+    exTarifs: (prix) => `${prix} for 30 days, assistant included. Automations as an add-on, with sixty days of access.`,
   },
   hero: {
     kicker: 'Online AI course',
@@ -392,7 +392,7 @@ const EN: typeof FR = {
     votreProfil: 'Your profile',
     parLa: 'You start with',
     formule: 'The plan that fits',
-    duree: 'for 30 days',
+    duree: (jours = 30) => `for ${jours} days`,
     avecCode: (c) => `with code ${c}`,
     offreMethode: 'The method',
     offreAvancee: 'The advanced method',
@@ -410,10 +410,10 @@ const EN: typeof FR = {
   },
   tarifs: {
     kicker: 'Pricing',
-    titre: (prix) => `${prix} for 30 days`,
+    titre: (prix) => `From ${prix}`,
     chapeau: (hausse) =>
       `The AI assistant is included in both. On 1 October, the price rises to ${hausse}.`,
-    duree: 'for 30 days',
+    duree: (jours = 30) => `for ${jours} days`,
     methode: 'The method',
     methodeSous: 'The full path',
     auto: 'The advanced method',

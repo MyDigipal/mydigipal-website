@@ -377,7 +377,7 @@ export default function Questionnaire({
                           </span>
                         )}
                         <small className="text-[14px] font-normal tracking-normal text-brume-nuit">
-                          {c.duree}
+                          {c.duree(res.avance ? 60 : 30)}
                           {remise2 != null && code ? ` · ${c.avecCode(code)}` : ''}
                         </small>
                       </p>

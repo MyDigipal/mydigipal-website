@@ -323,8 +323,13 @@ export default function Tarifs({
           </span>
         )}
       </div>
+      {/* ⚠️ La durée dépend de la formule depuis le 09/09/2026 : les deux
+          programmes ensemble ouvrent soixante jours. Leur contenu fait 17 h 41,
+          soit trente-cinq jours à une demi-heure par jour : on vendait trente
+          jours pour ce qui n'y tient pas. `or` distingue la méthode (dorée) de
+          l'avancée (bleue). */}
       <div className={`mt-1.5 font-ac-mono text-[12.5px] ${or ? 'text-or' : 'text-avance'}`}>
-        {c.duree}
+        {c.duree(or ? 30 : 60)}
         {places > 1 ? ` · ${c.parPlace}` : ''}
       </div>
       {places > 1 && (
