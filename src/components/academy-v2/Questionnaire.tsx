@@ -83,7 +83,7 @@ export default function Questionnaire({
    */
   const [code, setCode] = useState<string | null>(null);
   useEffect(() => setCode(paramGarde('coupon')), []);
-  const [remise, setRemise] = useState<{ methode: number | null; avancee: number | null } | null>(null);
+  const [remise, setRemise] = useState<{ methode: number | null; avancee: number | null; jours: number | null } | null>(null);
 
   useEffect(() => {
     if (!code) {
@@ -103,12 +103,22 @@ export default function Questionnaire({
         { signal: ctrl.signal },
       )
         .then((r) => (r.ok ? r.json() : null))
-        .then((d) => (d?.valid && d.discount_minor > 0 ? (d.total_minor as number) : null))
+        .then((d) =>
+          d?.valid && d.discount_minor > 0
+            ? ({ total: d.total_minor as number, jours: (d.access_days as number) || null })
+            : null,
+        )
         .catch(() => null);
     Promise.all([
       demande('programme', prixMethodeMinor),
       demande('programme,construire', prixAvanceeMinor),
-    ]).then(([m, a]) => setRemise(m || a ? { methode: m, avancee: a } : null));
+    ]).then(([m, a]) =>
+      setRemise(
+        m || a
+          ? { methode: m?.total ?? null, avancee: a?.total ?? null, jours: m?.jours || a?.jours || null }
+          : null,
+      ),
+    );
     return () => ctrl.abort();
   }, [code, devise, prixMethodeMinor, prixAvanceeMinor]);
 
@@ -377,7 +387,7 @@ export default function Questionnaire({
                           </span>
                         )}
                         <small className="text-[14px] font-normal tracking-normal text-brume-nuit">
-                          {c.duree(res.avance ? 60 : 30)}
+                          {c.duree(Math.max(res.avance ? 60 : 30, remise?.jours ?? 0))}
                           {remise2 != null && code ? ` · ${c.avecCode(code)}` : ''}
                         </small>
                       </p>

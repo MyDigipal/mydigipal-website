@@ -127,6 +127,14 @@ export default function Tarifs({
     methode: Remise | null;
     avancee: Remise | null;
     fin: string | null;
+    /**
+     * Les jours d'accès que le code garantit, quand il en garantit.
+     *
+     * ⚠️ Vient de l'API, jamais écrit ici : une durée recopiée survivrait à un
+     * changement du code et promettrait un accès qu'on ne donnerait plus.
+     * Posé pour le Club Protéine (09/09/2026) : deux mois au lieu d'un.
+     */
+    jours: number | null;
   } | null>(null);
 
   useEffect(() => {
@@ -135,7 +143,10 @@ export default function Tarifs({
       return;
     }
     const ctrl = new AbortController();
-    const demande = (items: string, minor: number): Promise<[Remise | null, string | null]> => {
+    const demande = (
+      items: string,
+      minor: number
+    ): Promise<[Remise | null, string | null, number | null]> => {
       const q = new URLSearchParams({
         code,
         total: String(total(minor)),
@@ -149,13 +160,17 @@ export default function Tarifs({
         .then((r) => (r.ok ? r.json() : null))
         .then((d) =>
           d?.valid && d.discount_minor > 0
-            ? ([{ total: d.total_minor, economie: d.discount_minor }, d.expires_at || null] as [Remise, string | null])
-            : ([null, null] as [null, null]),
+            ? ([
+                { total: d.total_minor, economie: d.discount_minor },
+                d.expires_at || null,
+                d.access_days || null,
+              ] as [Remise, string | null, number | null])
+            : ([null, null, null] as [null, null, null]),
         );
     };
     Promise.all([demande('programme', prixProgrammeMinor), demande('programme,construire', prixAvanceMinor)])
-      .then(([[m, finM], [a, finA]]) =>
-        setPromo(m || a ? { methode: m, avancee: a, fin: finM || finA } : null),
+      .then(([[m, finM, jM], [a, finA, jA]]) =>
+        setPromo(m || a ? { methode: m, avancee: a, fin: finM || finA, jours: jM || jA } : null),
       )
       .catch(() => {
         /* code injoignable : on montre le prix plein, le tunnel fera foi */
@@ -343,8 +358,13 @@ export default function Tarifs({
           soit trente-cinq jours à une demi-heure par jour : on vendait trente
           jours pour ce qui n'y tient pas. `or` distingue la méthode (dorée) de
           l'avancée (bleue). */}
+      {/* ⚠️ La durée vient du code promo quand il en garantit une plus longue,
+          sinon de la formule. Le Club Protéine ouvre deux mois quel que soit le
+          panier (09/09/2026) : afficher trente jours sous un code qui en donne
+          soixante serait promettre moins que ce qu'on livre, et le nouvel
+          acheteur ne le découvrirait qu'après avoir payé. */}
       <div className={`mt-1.5 font-ac-mono text-[12.5px] ${or ? 'text-or' : 'text-avance'}`}>
-        {c.duree(or ? 30 : 60)}
+        {c.duree(Math.max(or ? 30 : 60, promo?.jours ?? 0))}
         {places > 1 ? ` · ${c.parPlace}` : ''}
       </div>
       {places > 1 && (
