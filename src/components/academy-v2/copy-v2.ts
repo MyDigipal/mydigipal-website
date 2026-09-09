@@ -206,7 +206,16 @@ const FR = {
       `L’assistant IA est compris dans les deux formules. Au 1er octobre, le prix passe à ${hausse}.`,
     duree: (jours = 30) => `pour ${jours} jours`,
     methode: 'La méthode',
-    methodeSous: 'Le parcours complet',
+    /**
+     * ⚠️ Les deux sous-titres se lisent EN MIROIR, et c'est leur seul travail :
+     * dire d'un coup d'œil ce que chaque carré contient de plus que l'autre.
+     *
+     * Celui-ci disait « Le parcours complet » (Paul, 09/09 : « il n'est pas
+     * complet, vu qu'il manque les automatisations »). Un carré qui se dit
+     * complet à côté d'un carré qui ajoute cent une leçons se contredit tout
+     * seul, et fait douter du reste de la grille.
+     */
+    methodeSous: 'La méthode et votre outil',
     auto: 'La méthode avancée',
     // ⚠️ « Avec les automatisations » laissait croire qu'on achetait les
     // automatisations seules. Le sous-titre nomme les deux (Paul, 09/09).
@@ -417,7 +426,7 @@ const EN: typeof FR = {
       `The AI assistant is included in both. On 1 October, the price rises to ${hausse}.`,
     duree: (jours = 30) => `for ${jours} days`,
     methode: 'The method',
-    methodeSous: 'The full path',
+    methodeSous: 'The method and your tool',
     auto: 'The advanced method',
     autoSous: 'The method + the automations',
     commencer: 'Get started',
