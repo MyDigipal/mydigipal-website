@@ -336,3 +336,28 @@ export function minutesDe(etape: EtapeId): number {
   const fixes = mods.filter((m) => !m.auChoix).reduce((s, m) => s + m.minutes, 0);
   return fixes + (mods.some((m) => m.auChoix) ? MINUTES_OUTIL : 0);
 }
+
+/**
+ * Les noms des modules d'une étape, en une ligne, pour l'étape REPLIÉE.
+ *
+ * ⚠️ Cette ligne existe pour une raison mesurée le 09/09/2026 : sur téléphone
+ * les étapes arrivent repliées, donc les quatre parcours outils étaient dans
+ * le DOM à taille zéro. Ils n'étaient nommés nulle part avant 8 000 px de
+ * défilement, alors que les campagnes Search achètent « formation chatgpt »,
+ * « formation copilot » et « formation gemini ». La page cachait ce qu'elle
+ * vend, et Google la notait « below average » sur vingt mots-clés sur vingt.
+ *
+ * ⚠️ Les quatre outils sont fondus en une seule entrée qui les nomme tous :
+ * on n'en suit qu'un, donc les lister comme quatre modules distincts ferait
+ * croire qu'on les a tous. C'est la même règle que `nombreSuivi`.
+ */
+export function nomsDe(etape: EtapeId, locale: 'fr' | 'en', auChoix: string): string[] {
+  const mods = modulesDe(etape);
+  const noms = mods.filter((m) => !m.auChoix).map((m) => m.titre[locale]);
+  const outils = mods.filter((m) => m.auChoix);
+  if (outils.length) {
+    const liste = outils.map((m) => m.titre[locale].replace(/^(Microsoft|Google) /, ''));
+    noms.push(`${liste.join(', ')} (${auChoix})`);
+  }
+  return noms;
+}

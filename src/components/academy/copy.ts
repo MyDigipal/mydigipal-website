@@ -81,8 +81,23 @@ const FR = {
 
   hero: {
     titre: 'La formation IA en ligne, tirée de trois ans à former des équipes.',
+    /**
+     * ⚠️ Les quatre outils sont NOMMÉS ici, et ce n'est pas un détail de style.
+     *
+     * Mesuré le 09/09/2026 : sur les 41 mots-clés français achetés en Search,
+     * 2 seulement figuraient dans la page. « formation chatgpt », « formation
+     * copilot » et « formation gemini » sont achetés par une campagne entière
+     * alors que ChatGPT n'était cité que deux fois en 18 500 px, Copilot une
+     * fois, et jamais avant 8 000 px de défilement. Google notait la page
+     * « below average » sur vingt mots-clés sur vingt, et le trafic payant
+     * repartait en quatorze secondes.
+     *
+     * Le contenu existait pourtant : quatre parcours outils complets. La page
+     * les cachait. Les nommer dans le premier écran est ce qui les rend
+     * visibles sur téléphone, où la section du programme arrive repliée.
+     */
     sous: (lecons: number, prix: string) =>
-      `${lecons} leçons à votre rythme, la méthode de prompting, des exercices sur vos propres cas, jusqu’aux agents et aux serveurs MCP. Dès ${prix}.`,
+      `${lecons} leçons à votre rythme : la méthode de prompting, le parcours de votre outil (ChatGPT, Claude, Copilot ou Gemini), des exercices sur vos propres cas, jusqu’aux agents et aux serveurs MCP. Dès ${prix}.`,
     /**
      * La répartition, dite près du prix.
      *
@@ -913,8 +928,11 @@ const EN: Jour30Copy = {
 
   hero: {
     titre: 'The online AI course, built from three years of training teams.',
+    // ⚠️ Même raison qu'en français : 2 des 26 mots-clés anglais achetés
+    // figuraient dans la page, et « chatgpt training », « copilot course » et
+    // « claude ai course » sont achetés par une campagne entière.
     sous: (lecons: number, prix: string) =>
-      `${lecons} lessons at your own pace, the prompting method, exercises on your own cases, all the way to agents and MCP servers. From ${prix}.`,
+      `${lecons} lessons at your own pace: the prompting method, the path for your own tool (ChatGPT, Claude, Copilot or Gemini), exercises on your own cases, all the way to agents and MCP servers. From ${prix}.`,
     repartition: (programme: number, complement: number) =>
       `${programme} lessons in the method, ${complement} more if you take Automations too.`,
     cta: 'Get started',

@@ -13,8 +13,11 @@ export type Locale = 'fr' | 'en';
 const FR = {
   meta: {
     titre: 'Formation IA en ligne : le programme complet',
+    // ⚠️ Les outils sont nommés : la description est lue par Google, et les
+    // campagnes achètent « formation chatgpt », « formation copilot »,
+    // « formation gemini » et « formation claude ia ». Voir le hero.
     description:
-      'Le programme de la formation IA MyDigipal, module par module : la méthode de prompting, le parcours de votre outil, les automatisations. Deux modules offerts.',
+      'Formation IA en ligne : la méthode de prompting, le parcours de votre outil (ChatGPT, Claude, Copilot, Gemini) et les automatisations. Deux modules offerts.',
   },
   barre: {
     programme: 'Le programme',
@@ -39,7 +42,7 @@ const FR = {
     titre: 'Apprendre à travailler avec l’IA, en trente jours.',
     sous: (lecons: number, heures: string) =>
       `${lecons} leçons, ${heures} de formation. La méthode d’abord, votre outil ensuite, puis les automatisations qui tournent sans vous. Née de trois ans d’ateliers chez La Poste, Pierre Fabre et La Redoute.`,
-    cta: (prix: string) => `Commencer — ${prix}`,
+    cta: (prix: string) => `Commencer, ${prix}`,
     cta2: (lecons: number) => `${lecons} leçons offertes`,
     faitLecons: 'leçons',
     faitPrompts: 'prompts prêts',
@@ -266,7 +269,7 @@ const EN: typeof FR = {
   meta: {
     titre: 'Online AI training course: the full programme',
     description:
-      'The MyDigipal AI course programme, module by module: the prompting method, the path for your own tool, automations and MCP servers. Two free modules.',
+      'Online AI course, module by module: the prompting method, the path for your own tool (ChatGPT, Claude, Copilot, Gemini), automations. Two free modules.',
   },
   barre: {
     programme: 'The programme',
@@ -284,7 +287,7 @@ const EN: typeof FR = {
     titre: 'Learn to work with AI, in thirty days.',
     sous: (lecons, heures) =>
       `${lecons} lessons, ${heures} of training. The method first, then your tool, then the automations that run without you. Born from three years of workshops at La Poste, Pierre Fabre and La Redoute.`,
-    cta: (prix) => `Get started — ${prix}`,
+    cta: (prix) => `Get started, ${prix}`,
     cta2: (lecons) => `${lecons} free lessons`,
     faitLecons: 'lessons',
     faitPrompts: 'ready prompts',

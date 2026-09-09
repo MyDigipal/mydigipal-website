@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { pointeurGrossier } from '../academy/motion';
 import Glyphe from './Glyphe';
-import { ETAPES, MODULES, minutesDe, modulesDe, nombreSuivi, type Module } from './modules';
+import { ETAPES, MODULES, minutesDe, modulesDe, nombreSuivi, nomsDe, type Module } from './modules';
 import { copyV2, type Locale } from './copy-v2';
 import { Boucle, estDemo, Visionneuse, type Demo } from './Video';
 
@@ -150,8 +150,11 @@ export default function Programme({
                       repliée : c'est ce qui garde la section informative même
                       fermée, et cette section n'existe que pour dire ce que la
                       formation contient. */}
-                  <p className="mb-4 font-ac-mono text-[12.5px] text-brume lg:hidden">
+                  <p className="mb-4 font-ac-mono text-[12.5px] leading-[1.55] text-brume lg:hidden">
                     {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id), locale)}
+                    <span className="mt-1 block text-mine">
+                      {nomsDe(e.id, locale, c.auChoix).join(' · ')}
+                    </span>
                   </p>
                   <div
                     id={`etape-${e.id}`}
