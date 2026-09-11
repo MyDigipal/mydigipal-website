@@ -9,24 +9,31 @@ import { jour30Copy } from '../academy/copy';
 import { Boucle, estDemo, type Demo } from './Video';
 
 /**
- * Les tarifs : deux formules, un nombre de licences, rien d'autre.
+ * Les tarifs : trois portes, un nombre de licences, rien d'autre.
+ *
+ * ⚠️ TROIS PORTES DEPUIS LE 11/09/2026, et c'est le changement de fond. La page
+ * ne vendait que La méthode (290 €) et « La méthode avancée » (480 €) : quelqu'un
+ * qui pratique déjà tous les jours et ne veut que les automatisations n'avait pas
+ * d'entrée. Le cas s'est présenté le 11/09 avec une membre du Club Protéine, et
+ * c'est le public qui sort des formaférences. La méthode 290 €, Les
+ * automatisations 250 €, les deux 480 € au lieu de 540 €.
+ *
+ * ⚠️ « La méthode avancée » N'EXISTE PLUS comme nom. Deux noms publics, La
+ * méthode et Les automatisations, et une bande qui dit leur addition. Un
+ * troisième nom aurait laissé croire à un troisième produit, alors qu'on vend
+ * deux programmes et un appariement.
  *
  * ⚠️ La session avec Paul et l'audit flash ont été RETIRÉS de la page le
- * 06/09/2026 (Paul : « on l'enlève complètement... c'est juste soit il choisit
- * la méthode à 290 €, soit la méthode avancée à 480 € »). Ils continuent
- * d'exister dans le catalogue de l'application et se vendent ailleurs ; ils ne
- * doivent plus paraître ici. Ne pas les remettre « pour information ».
+ * 06/09/2026 (Paul : « on l'enlève complètement »). Ils existent toujours au
+ * catalogue et se vendent ailleurs ; ne pas les remettre « pour information ».
  *
- * ⚠️ La méthode avancée est un TOUT à 480 €, pas un complément de 190 € à
- * cocher. C'est la somme de `programme` et `construire`, calculée depuis les
- * montants de l'application : ni 480 ni 290 ne sont écrits ici.
+ * ⚠️ « Pour 60 jours », pas « par mois » : la vente est un achat ponctuel de
+ * soixante jours d'accès, et « par mois » laisse croire à un abonnement
+ * reconductible. La durée est la MÊME pour les trois depuis le 11/09/2026
+ * (Paul : « on va mettre 60 jours pour tout le monde »), et elle vient de l'app.
  *
- * ⚠️ « Pour 30 jours », pas « par mois » : la vente est un achat ponctuel de
- * trente jours d'accès, et « par mois » laisse croire à un abonnement
- * reconductible.
- *
- * L'assistant est compris dans les deux, avec un plafond exprimé en questions
- * plutôt qu'en euros : environ 250 pour la méthode, 500 pour l'avancée.
+ * L'assistant est compris dans les trois, avec un plafond exprimé en questions
+ * plutôt qu'en euros : environ 250 par programme, 500 pour les deux.
  */
 
 interface Ligne {
@@ -46,15 +53,15 @@ const PLACES = [1, 2, 3, 5, 10];
 export default function Tarifs({
   locale,
   prixProgrammeMinor,
-  prixAvanceMinor,
-  hausseMinor,
+  prixAutoMinor,
+  prixLotMinor,
+  pleinLotMinor,
+  accesJours,
   devise,
   paliersEquipe,
   leconsProgramme,
   heuresProgramme,
-  leconsTotal,
   leconsComplement,
-  heuresTotal,
   exercices,
   relectures,
   leconsGratuit,
@@ -63,17 +70,21 @@ export default function Tarifs({
 }: {
   locale: Locale;
   prixProgrammeMinor: number;
-  prixAvanceMinor: number;
-  hausseMinor: number;
+  /** Les automatisations achetées SEULES. Nouveau prix du 11/09/2026. */
+  prixAutoMinor: number;
+  /** Les deux ensemble, servi par l'app : jamais une addition faite ici. */
+  prixLotMinor: number;
+  /** La somme des deux prix pleins, celle qu'on barre. */
+  pleinLotMinor: number;
+  /** Les jours d'accès vendus, identiques pour les trois. */
+  accesJours: number;
   /** La devise choisie dans la barre. Le symbole se pose APRÈS le montant. */
   devise: Devise;
   paliersEquipe: Array<{ seats: number; discount: number }>;
   leconsProgramme: number;
   heuresProgramme: string;
-  leconsTotal: number;
   /** Ce que les automatisations ajoutent : la carte le dit, au lieu d'un total flou. */
   leconsComplement: number;
-  heuresTotal: string;
   exercices: number;
   relectures: number;
   leconsGratuit: number;
@@ -98,12 +109,14 @@ export default function Tarifs({
     const franchis = paliersEquipe.filter((p) => places >= p.seats);
     return franchis.length ? franchis[franchis.length - 1].seats : 0;
   }, [places, paliersEquipe]);
-  // ⚠️ Le tunnel lit `items` et `seats` dans l'URL (voir la section 15 du
-  // CLAUDE.md de l'app) : sans eux, les deux boutons menaient au même panier et
-  // le choix de l'acheteur était perdu entre la page et la caisse.
+  // ⚠️ Le tunnel lit `items` et `seats` dans l'URL : sans eux, les boutons
+  // mèneraient au même panier et le choix de l'acheteur serait perdu entre la
+  // page et la caisse. Depuis le 11/09/2026 le tunnel laisse ensuite le
+  // modifier, mais c'est bien ce lien qui pose le panier d'arrivée.
   const base = 'https://academy.mydigipal.com/checkout';
   const lienMethode = useLienApp(`${base}?items=programme&seats=${places}&lang=${locale}`);
-  const lienAvancee = useLienApp(`${base}?items=programme,construire&seats=${places}&lang=${locale}`);
+  const lienAuto = useLienApp(`${base}?items=construire&seats=${places}&lang=${locale}`);
+  const lienLot = useLienApp(`${base}?items=programme,construire&seats=${places}&lang=${locale}`);
   const total = (minor: number) => Math.round(minor * places * (1 - remise));
   const montant = (minor: number) => `${formatPrice(minor, locale)} ${SYMBOLE[devise]}`;
 
@@ -113,26 +126,26 @@ export default function Tarifs({
    * ⚠️ Ce que ça répare : le code voyageait bien jusqu'au tunnel, mais la page
    * annonçait le prix plein. Quelqu'un du Club Protéine lisait 290 € et ne
    * découvrait 203 € qu'à la caisse, c'est-à-dire au moment où il avait déjà
-   * décidé de ne pas acheter. L'ancienne page de vente le disait ; la refonte
-   * des tarifs du 01/09 ne l'avait pas repris.
+   * décidé de ne pas acheter.
    *
    * ⚠️ LE MONTANT REMISÉ VIENT DE L'APPLICATION, jamais d'un calcul refait ici.
-   * Un code peut ne porter que sur une partie du panier (PROTEINE30 ne solde ni
-   * la session avec Paul ni l'audit flash), et deux calculs pour un seul prix
-   * finissent toujours par diverger. On interroge donc une fois par formule.
+   * Un code peut ne porter que sur une partie du panier, et depuis le 11/09/2026
+   * il peut même REFUSER un panier : un code personnel limité aux automatisations
+   * ne s'applique pas au lot. On interroge donc une fois par porte, et les trois
+   * réponses peuvent différer.
    */
   const [code, setCode] = useState<string | null>(null);
   useEffect(() => setCode(paramGarde('coupon')), []);
   const [promo, setPromo] = useState<{
     methode: Remise | null;
-    avancee: Remise | null;
+    auto: Remise | null;
+    lot: Remise | null;
     fin: string | null;
     /**
      * Les jours d'accès que le code garantit, quand il en garantit.
      *
      * ⚠️ Vient de l'API, jamais écrit ici : une durée recopiée survivrait à un
      * changement du code et promettrait un accès qu'on ne donnerait plus.
-     * Posé pour le Club Protéine (09/09/2026) : deux mois au lieu d'un.
      */
     jours: number | null;
   } | null>(null);
@@ -168,30 +181,49 @@ export default function Tarifs({
             : ([null, null, null] as [null, null, null]),
         );
     };
-    Promise.all([demande('programme', prixProgrammeMinor), demande('programme,construire', prixAvanceMinor)])
-      .then(([[m, finM, jM], [a, finA, jA]]) =>
-        setPromo(m || a ? { methode: m, avancee: a, fin: finM || finA, jours: jM || jA } : null),
+    Promise.all([
+      demande('programme', prixProgrammeMinor),
+      demande('construire', prixAutoMinor),
+      demande('programme,construire', prixLotMinor),
+    ])
+      .then(([[m, finM, jM], [a, finA, jA], [l, finL, jL]]) =>
+        setPromo(
+          m || a || l
+            ? { methode: m, auto: a, lot: l, fin: finM || finA || finL, jours: jM || jA || jL }
+            : null,
+        ),
       )
       .catch(() => {
         /* code injoignable : on montre le prix plein, le tunnel fera foi */
       });
     return () => ctrl.abort();
-  }, [code, devis, places, devise, remise, prixProgrammeMinor, prixAvanceMinor]);
+  }, [code, devis, places, devise, remise, prixProgrammeMinor, prixAutoMinor, prixLotMinor]);
 
   /** Le pourcentage annoncé, lu sur la remise réelle et jamais écrit à la main. */
   const pctPromo = useMemo(() => {
-    const r = promo?.methode || promo?.avancee;
+    const r = promo?.methode || promo?.auto || promo?.lot;
     if (!r) return 0;
     const plein = r.total + r.economie;
     return plein > 0 ? Math.round((r.economie / plein) * 100) : 0;
   }, [promo]);
 
-  /** Ce que le code couvre vraiment, déduit des deux réponses. */
-  const porteePromo = promo?.methode && promo?.avancee
-    ? c.codePortee.deux
-    : promo?.methode
-      ? c.codePortee.methode
-      : c.codePortee.avancee;
+  /**
+   * Ce que le code couvre vraiment, déduit des trois réponses.
+   *
+   * ⚠️ Un code qui ne marche que sur une porte doit le dire, sinon quelqu'un
+   * clique sur une autre et découvre le prix plein au moment de payer. C'est
+   * devenu possible le 11/09/2026 avec les codes à portée stricte.
+   */
+  const porteePromo = useMemo(() => {
+    const m = !!promo?.methode;
+    const a = !!promo?.auto;
+    const l = !!promo?.lot;
+    if (m && a && l) return c.codePortee.deux;
+    if (l && !m && !a) return c.codePortee.lot;
+    if (m && !a) return c.codePortee.methode;
+    if (a && !m) return c.codePortee.avancee;
+    return c.codePortee.deux;
+  }, [promo, c]);
 
   // La date de fin dans la langue lue. Absente si le code n'expire pas.
   const finPromo = useMemo(() => {
@@ -201,6 +233,9 @@ export default function Tarifs({
       ? null
       : d.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'long' });
   }, [promo, locale]);
+
+  /** La durée annoncée : celle de la formule, ou celle du code s'il donne plus. */
+  const jours = Math.max(accesJours, promo?.jours ?? 0);
 
   const methode: Ligne[] = [
     {
@@ -244,9 +279,7 @@ export default function Tarifs({
     },
     // ⚠️ La formation est bilingue depuis toujours et la page ne le disait nulle
     // part (Paul, 07/09). Ça se dit ici parce que c'est un critère de décision,
-    // pas une caractéristique : un acheteur français veut savoir qu'il n'achète
-    // pas un cours américain passé à la moulinette, et une équipe internationale
-    // veut savoir que ses collègues suivront le même parcours.
+    // pas une caractéristique.
     {
       texte: fr ? 'Tout le contenu en français et en anglais' : 'Every lesson in English and in French',
       detail: fr
@@ -255,32 +288,24 @@ export default function Tarifs({
     },
   ];
 
-  const avancee: Ligne[] = [
-    /**
-     * ⚠️ La première ligne disait « Tout ce qui précède, et 122 leçons en tout »
-     * (Paul, 09/09 : « ce n'est pas assez clair »). Deux défauts d'un coup.
-     *
-     * « Tout ce qui précède » ne dit pas ce qui précède : sur un téléphone, la
-     * carte de La méthode est bien au-dessus, mais sur un ordinateur elle est à
-     * CÔTÉ. Elle est donc nommée.
-     *
-     * Et 122 était le nombre du parcours vendu seul, alors que le hero annonce
-     * 179 depuis hier : deux totaux différents sur la même page. La carte dit
-     * maintenant l'addition, qui tombe juste.
-     */
+  /**
+   * ⚠️ Cette carte décrit LES AUTOMATISATIONS SEULES depuis le 11/09/2026.
+   *
+   * Elle disait « La méthode en entier, et 101 leçons de plus », parce qu'elle
+   * vendait le lot. Maintenant qu'elle a son propre prix, elle doit dire ce que
+   * 250 € ouvrent et rien d'autre : promettre La méthode dans la carte qui ne la
+   * contient pas serait exactement la faute qu'on vient de corriger dans le
+   * panneau du tunnel.
+   *
+   * Et elle dit pour QUI c'est, en dernière ligne. Un parcours qui suppose un
+   * acquis doit le déclarer, sinon on vend les automatisations à un débutant qui
+   * se retrouvera bloqué à la troisième leçon et demandera son remboursement.
+   */
+  const auto: Ligne[] = [
     {
       texte: fr
-        ? `La méthode en entier, et ${leconsComplement} leçons de plus`
-        : `The method in full, plus ${leconsComplement} more lessons`,
-      detail: fr
-        ? `Les ${leconsProgramme} leçons de la méthode et les ${leconsComplement} des automatisations, soit ${leconsProgramme + leconsComplement} en tout. Aucun module fermé.`
-        : `The ${leconsProgramme} lessons of the method and the ${leconsComplement} of the automations, ${leconsProgramme + leconsComplement} in total. No locked module.`,
-      demo: 'programme',
-    },
-    {
-      texte: fr
-        ? `${modulesAuto} modules de plus, dont le parcours des automatisations`
-        : `${modulesAuto} more modules, including the automations path`,
+        ? `${leconsComplement} leçons, ${modulesAuto} modules`
+        : `${leconsComplement} lessons, ${modulesAuto} modules`,
       detail: fr
         ? 'Image, vidéo et audio, les cas de votre métier, les chiffres et les tableurs, les réunions, présenter et convaincre, manager une équipe.'
         : 'Image, video and audio, the cases of your job, figures and spreadsheets, meetings, presenting, and managing a team.',
@@ -301,11 +326,19 @@ export default function Tarifs({
       demo: 'cas',
     },
     {
-      texte: fr ? 'L’assistant IA, environ 500 questions' : 'The AI assistant, about 500 questions',
+      texte: fr ? 'L’assistant IA, environ 250 questions' : 'The AI assistant, about 250 questions',
       detail: fr
-        ? 'Le même assistant, avec le double de questions et la relecture de vos « À vous » : ce qui est bien, ce qui manque au regard de la méthode, et une phrase reformulée.'
-        : 'The same assistant, with twice the questions and a review of your “Your turn” entries: what works, what is missing against the method, and one sentence rewritten.',
+        ? 'Il ne répond qu’à partir des leçons auxquelles vous avez accès, et cite celle dont il tire sa réponse : il ne peut ni inventer, ni divulguer un contenu que vous n’avez pas.'
+        : 'It answers only from the lessons you have access to, and cites the one it draws from: it can neither invent nor leak content you have not bought.',
       demo: 'assistant',
+    },
+    {
+      texte: fr
+        ? 'Pour qui pratique déjà l’IA toutes les semaines'
+        : 'For people who already use AI every week',
+      detail: fr
+        ? 'Ce parcours ne réapprend pas à écrire une bonne demande : il suppose que c’est acquis. Si vous débutez, prenez La méthode d’abord, ou les deux ensemble.'
+        : 'This path does not teach you how to write a good request again: it assumes you know. If you are starting out, take The method first, or both together.',
     },
   ];
 
@@ -330,7 +363,8 @@ export default function Tarifs({
     minor: number,
     lignes: Ligne[],
     or: boolean,
-    // La remise du code sur CETTE formule, telle que l'application la calcule.
+    lien: string,
+    // La remise du code sur CETTE porte, telle que l'application la calcule.
     rp: Remise | null = null,
   ) => (
     <div className={`rounded-carte border bg-salle-2 p-7 ${or ? 'border-or' : 'border-avance'}`}>
@@ -353,36 +387,23 @@ export default function Tarifs({
           </span>
         )}
       </div>
-      {/* ⚠️ La durée dépend de la formule depuis le 09/09/2026 : les deux
-          programmes ensemble ouvrent soixante jours. Leur contenu fait 17 h 41,
-          soit trente-cinq jours à une demi-heure par jour : on vendait trente
-          jours pour ce qui n'y tient pas. `or` distingue la méthode (dorée) de
-          l'avancée (bleue). */}
-      {/* ⚠️ La durée vient du code promo quand il en garantit une plus longue,
-          sinon de la formule. Le Club Protéine ouvre deux mois quel que soit le
-          panier (09/09/2026) : afficher trente jours sous un code qui en donne
-          soixante serait promettre moins que ce qu'on livre, et le nouvel
-          acheteur ne le découvrirait qu'après avoir payé. */}
       <div className={`mt-1.5 font-ac-mono text-[12.5px] ${or ? 'text-or' : 'text-avance'}`}>
-        {c.duree(Math.max(or ? 30 : 60, promo?.jours ?? 0))}
+        {c.duree(jours)}
         {places > 1 ? ` · ${c.parPlace}` : ''}
       </div>
       {places > 1 && (
         <div className="mb-3 mt-2 font-ac-mono text-[13px] text-corps-nuit">
           {/* ⚠️ Le total suit le code, comme le prix unitaire juste au-dessus.
               Sans cela, la carte affichait 172,55 € par licence et 1 232,50 €
-              pour cinq : deux chiffres qui se contredisent sur la même carte,
-              et c'est le plus gros des deux qu'on retient. */}
+              pour cinq : deux chiffres qui se contredisent sur la même carte. */}
           {c.total(montant(rp ? rp.total : total(minor)), places)}
         </div>
       )}
       <ul className="m-0 mb-5 mt-3 list-none p-0">{lignes.map((l) => rendreLigne(l, or))}</ul>
       <a
-        href={or ? lienMethode : lienAvancee}
+        href={lien}
         className={`inline-flex min-h-11 items-center rounded-bouton px-6 text-[15px] font-semibold transition ${
-          or
-            ? 'bg-or text-salle hover:bg-or-vif'
-            : 'bg-avance text-salle hover:bg-[#a2dcef]'
+          or ? 'bg-or text-salle hover:bg-or-vif' : 'bg-avance text-salle hover:bg-[#a2dcef]'
         }`}
       >
         {c.commencer}
@@ -402,10 +423,10 @@ export default function Tarifs({
       <div className="mx-auto max-w-[1180px]">
         <div className="font-ac-mono text-[11px] uppercase tracking-[.16em] text-or">{c.kicker}</div>
         <h2 className="mt-3 text-[clamp(26px,3.2vw,38px)] font-medium leading-[1.1] tracking-[-0.02em] text-ivoire">
-          {c.titre(montant(prixProgrammeMinor))}
+          {c.titre(montant(Math.min(prixProgrammeMinor, prixAutoMinor)))}
         </h2>
         <p className="mt-4 max-w-[62ch] text-[17.5px] leading-[1.65] text-brume-nuit">
-          {c.chapeau(montant(hausseMinor))}
+          {c.chapeau(jours)}
         </p>
 
         {/* Les licences. Une par défaut : la page vend d'abord à une personne,
@@ -495,9 +516,12 @@ export default function Tarifs({
           </div>
         )}
 
+        {/* Les deux programmes, à égalité. Ni l'un ni l'autre n'est « le vrai »
+            dont l'autre serait le complément : ce sont deux entrées, l'une par
+            la méthode, l'autre par les automatisations. */}
         <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[1fr_1fr_320px]">
-          {carte(c.methode, c.methodeSous, prixProgrammeMinor, methode, true, promo?.methode ?? null)}
-          {carte(c.auto, c.autoSous, prixAvanceMinor, avancee, false, promo?.avancee ?? null)}
+          {carte(c.methode, c.methodeSous, prixProgrammeMinor, methode, true, lienMethode, promo?.methode ?? null)}
+          {carte(c.auto, c.autoSous, prixAutoMinor, auto, false, lienAuto, promo?.auto ?? null)}
 
           {/* Le cadre qui se remplit au survol d'une ligne, avec l'écran qui va
               avec. Masqué sous lg : au doigt il n'y a pas de survol, et le
@@ -525,9 +549,83 @@ export default function Tarifs({
           </aside>
         </div>
 
-        {/* La troisième porte : essayer sans payer. Dans la teinte du renard,
-            distincte de l'or de La méthode et du bleu des Automatisations, pour
-            qu'on voie d'un coup d'œil que ce n'est pas une troisième formule. */}
+        {/*
+          LA BANDE « LES DEUX » (11/09/2026, direction retenue par Paul).
+
+          ⚠️ Une bande et non une troisième carte, parce que ce n'est pas un
+          troisième produit : c'est l'addition des deux au-dessus. Une carte de
+          même forme, posée à côté, aurait mis trois choses en concurrence là où
+          il n'y a que deux objets et un appariement.
+
+          Le dégradé va de l'or de La méthode au bleu des Automatisations : c'est
+          déjà le filet qui court en haut du tunnel de paiement, donc la page
+          n'apprend pas un vocabulaire de plus. La couleur dit « les deux
+          ensemble » sans un mot, et c'est la seule chose qu'elle a à dire.
+        */}
+        <div className="relative mt-4 overflow-hidden rounded-carte border border-filet-nuit bg-salle-2">
+          <span
+            aria-hidden="true"
+            className="absolute inset-x-0 top-0 h-[3px]"
+            style={{ background: 'linear-gradient(90deg,#c8a951 0%,#dcbc66 38%,#7fc4dd 100%)' }}
+          />
+          <div className="flex flex-col gap-5 px-6 py-6 sm:flex-row sm:items-center sm:gap-x-8">
+            <div className="min-w-0 flex-1">
+              <span className="font-ac-mono text-[10.5px] uppercase tracking-[.12em] text-or">
+                {c.lot}
+              </span>
+              <p className="m-0 mt-1 text-[17px] leading-[1.45] text-ivoire">{c.lotSous}</p>
+              <p className="m-0 mt-1 text-[15px] leading-[1.55] text-brume-nuit">
+                {fr
+                  ? `${leconsProgramme + leconsComplement} leçons en tout, aucun module fermé.`
+                  : `${leconsProgramme + leconsComplement} lessons in total, no locked module.`}
+              </p>
+            </div>
+
+            <div className="flex flex-none flex-wrap items-baseline gap-x-2.5 gap-y-1">
+              <span className="text-[32px] font-semibold tabular-nums leading-none text-ivoire">
+                {montant(promo?.lot ? Math.round(promo.lot.total / places) : parLicence(prixLotMinor))}
+              </span>
+              {/* Le prix plein barré est la somme des deux achetés séparément.
+                  Il doit rester vérifiable : les deux se vendent vraiment à ce
+                  prix-là chacun de leur côté, juste au-dessus. */}
+              <span className="font-ac-mono text-[14px] tabular-nums text-brume-nuit line-through">
+                {montant(parLicence(pleinLotMinor))}
+              </span>
+            </div>
+
+            <a
+              href={lienLot}
+              className="inline-flex min-h-11 flex-none items-center justify-center rounded-bouton bg-ivoire px-6 text-[15px] font-semibold text-salle transition hover:bg-white max-sm:w-full"
+            >
+              {c.lotCta}
+            </a>
+          </div>
+
+          <div className="flex flex-wrap gap-x-5 gap-y-1 border-t border-filet-nuit px-6 py-3 font-ac-mono text-[12.5px]">
+            <span className="text-sauge-nuit">
+              {c.lotEconomie(
+                montant(
+                  promo?.lot
+                    ? promo.lot.economie + (parLicence(pleinLotMinor) - parLicence(prixLotMinor)) * places
+                    : parLicence(pleinLotMinor) - parLicence(prixLotMinor)
+                )
+              )}
+            </span>
+            <span className="text-brume-nuit">{c.duree(jours)}</span>
+            <span className="text-brume-nuit">
+              {fr ? 'L’assistant IA, environ 500 questions' : 'The AI assistant, about 500 questions'}
+            </span>
+            {places > 1 && (
+              <span className="text-corps-nuit">
+                {c.total(montant(promo?.lot ? promo.lot.total : total(prixLotMinor)), places)}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* La porte gratuite. Dans la teinte du renard, distincte de l'or de La
+            méthode et du bleu des Automatisations, pour qu'on voie d'un coup
+            d'œil que ce n'est pas une quatrième formule. */}
         <div className="mt-4 flex flex-col gap-4 rounded-carte border border-renard/45 bg-[rgba(217,116,63,.07)] px-6 py-6 sm:flex-row sm:items-center sm:gap-x-8">
           <div className="min-w-0 flex-1">
             <span className="font-ac-mono text-[10.5px] uppercase tracking-[.12em] text-renard">

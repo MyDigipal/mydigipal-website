@@ -35,7 +35,7 @@ const FR = {
       `${lecons} leçons, ${modules} modules, ${heures}. Ce que vous apprenez, et ce que chaque module vous fait produire.`,
     exTrajet: 'Trente jours dans un compte, jour après jour, jusqu’à l’attestation.',
     exTarifs: (prix: string) =>
-      `${prix} pour 30 jours, l’assistant compris. Les automatisations en complément, et soixante jours d’accès.`,
+      `À partir de ${prix} pour soixante jours, l’assistant compris. La méthode, les automatisations, ou les deux.`,
   },
   hero: {
     kicker: 'Formation IA en ligne',
@@ -205,9 +205,16 @@ const FR = {
   tarifs: {
     kicker: 'Les tarifs',
     titre: (prix: string) => `À partir de ${prix}`,
-    chapeau: (hausse: string) =>
-      `L’assistant IA est compris dans les deux formules. Au 1er octobre, le prix passe à ${hausse}.`,
-    duree: (jours = 30) => `pour ${jours} jours`,
+    /**
+     * ⚠️ Le chapeau ANNONÇAIT LA HAUSSE DU 1er OCTOBRE (« le prix passe à
+     * 450 € »). Elle est abandonnée depuis le 11/09/2026 : avec trois portes
+     * d'achat, La méthode seule à 450 € aurait coûté presque le prix du lot.
+     * Ce qui la remplace est vrai en permanence et n'a pas besoin d'être tenu
+     * à jour : ce qui est compris, et la durée d'accès.
+     */
+    chapeau: (jours: number) =>
+      `L’assistant IA est compris dans les trois, et l’accès dure ${jours} jours quelle que soit la formule.`,
+    duree: (jours = 60) => `pour ${jours} jours`,
     methode: 'La méthode',
     /**
      * ⚠️ Les deux sous-titres se lisent EN MIROIR, et c'est leur seul travail :
@@ -219,10 +226,21 @@ const FR = {
      * seul, et fait douter du reste de la grille.
      */
     methodeSous: 'La méthode et votre outil',
-    auto: 'La méthode avancée',
-    // ⚠️ « Avec les automatisations » laissait croire qu'on achetait les
-    // automatisations seules. Le sous-titre nomme les deux (Paul, 09/09).
-    autoSous: 'La méthode + les automatisations',
+    /**
+     * ⚠️ « La méthode avancée » A DISPARU comme nom de formule (Paul,
+     * 11/09/2026). Les deux noms publics sont La méthode et Les
+     * automatisations, et le troisième achat n'est pas un troisième produit :
+     * c'est les deux premiers ensemble. « Avancée » annonçait un niveau là
+     * où la bande dit une addition, et le mot entrait en concurrence avec
+     * « Les automatisations » dans la même grille.
+     */
+    auto: 'Les automatisations',
+    autoSous: 'Les agents, les chaînes et le MCP',
+    lot: 'Les deux',
+    lotSous: 'La méthode + Les automatisations',
+    lotAuLieuDe: (plein: string) => `au lieu de ${plein}`,
+    lotEconomie: (montant: string) => `Vous économisez ${montant}`,
+    lotCta: 'Prendre les deux',
     commencer: 'Commencer',
     licences: 'Licences',
     places: (n: number) => `${n} licences`,
@@ -236,7 +254,7 @@ const FR = {
     survol: 'Survolez une ligne pour voir l’écran',
     survolTactile: 'Touchez une ligne pour voir l’écran',
     rappel: () =>
-      'L’assistant IA est compris dans les deux formules. Les prix sont en euros, toutes taxes comprises.',
+      'L’assistant IA est compris dans les trois. Les prix sont en euros, toutes taxes comprises.',
     gratuitTag: 'Essayer d’abord',
     gratuitTitre: (lecons: number) => `${lecons} leçons offertes, pendant 48 heures`,
     gratuitTexte:
@@ -259,7 +277,12 @@ const FR = {
     codeNom: (code: string) => `code ${code}`,
     codeBandeau: (pct: number, portee: string, fin: string | null) =>
       `Votre code est actif : ${pct} % ${portee}${fin ? `, jusqu’au ${fin}` : ''}. Il s’applique tout seul au paiement.`,
-    codePortee: { deux: 'sur les deux formules', methode: 'sur la méthode', avancee: 'sur la méthode avancée' },
+    codePortee: {
+      deux: 'sur toutes les formules',
+      methode: 'sur La méthode',
+      avancee: 'sur Les automatisations',
+      lot: 'sur les deux programmes ensemble',
+    },
     economie: (montant: string, places: number) =>
       places > 1 ? `Vous économisez ${montant} au total` : `Vous économisez ${montant}`,
   },
@@ -280,7 +303,7 @@ const EN: typeof FR = {
     exProgramme: (lecons, modules, heures) =>
       `${lecons} lessons, ${modules} modules, ${heures}. What you learn, and what each module makes you produce.`,
     exTrajet: 'Thirty days inside an account, day by day, up to the certificate.',
-    exTarifs: (prix) => `${prix} for 30 days, assistant included. Automations as an add-on, with sixty days of access.`,
+    exTarifs: (prix) => `From ${prix} for sixty days, assistant included. The method, the automations, or both.`,
   },
   hero: {
     kicker: 'Online AI course',
@@ -425,13 +448,18 @@ const EN: typeof FR = {
   tarifs: {
     kicker: 'Pricing',
     titre: (prix) => `From ${prix}`,
-    chapeau: (hausse) =>
-      `The AI assistant is included in both. On 1 October, the price rises to ${hausse}.`,
-    duree: (jours = 30) => `for ${jours} days`,
+    chapeau: (jours) =>
+      `The AI assistant is included in all three, and access runs for ${jours} days whichever you take.`,
+    duree: (jours = 60) => `for ${jours} days`,
     methode: 'The method',
     methodeSous: 'The method and your tool',
-    auto: 'The advanced method',
-    autoSous: 'The method + the automations',
+    auto: 'Automations',
+    autoSous: 'Agents, chains and MCP',
+    lot: 'Both',
+    lotSous: 'The method + Automations',
+    lotAuLieuDe: (plein) => `instead of ${plein}`,
+    lotEconomie: (montant) => `You save ${montant}`,
+    lotCta: 'Take both',
     commencer: 'Get started',
     licences: 'Licences',
     places: (n) => `${n} licences`,
@@ -445,7 +473,7 @@ const EN: typeof FR = {
     survol: 'Hover a line to see the screen',
     survolTactile: 'Touch a line to see the screen',
     rappel: () =>
-      'The AI assistant is included in both. Prices are in euros, all taxes included.',
+      'The AI assistant is included in all three. Prices are in euros, all taxes included.',
     gratuitTag: 'Try first',
     gratuitTitre: (lecons) => `${lecons} free lessons, for 48 hours`,
     gratuitTexte:
@@ -457,7 +485,12 @@ const EN: typeof FR = {
     codeNom: (code) => `code ${code}`,
     codeBandeau: (pct, portee, fin) =>
       `Your code is active: ${pct}% ${portee}${fin ? `, until ${fin}` : ''}. It applies on its own at checkout.`,
-    codePortee: { deux: 'on both plans', methode: 'on the method', avancee: 'on the advanced method' },
+    codePortee: {
+      deux: 'on every plan',
+      methode: 'on The method',
+      avancee: 'on Automations',
+      lot: 'on both programmes together',
+    },
     economie: (montant, places) => (places > 1 ? `You save ${montant} in total` : `You save ${montant}`),
   },
 };

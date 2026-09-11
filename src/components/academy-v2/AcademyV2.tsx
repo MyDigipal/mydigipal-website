@@ -89,6 +89,18 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
   const fin = data.etats[data.etats.length - 1];
   const programme = data.offres.find((o) => o.id === 'programme');
   const construire = data.offres.find((o) => o.id === 'construire');
+  /**
+   * Le prix des deux programmes ensemble, et le prix plein qu'on barre.
+   *
+   * ⚠️ Ils VIENNENT DE L'APP depuis le 11/09/2026. La page les additionnait,
+   * ce qui était juste tant que le lot valait la somme : depuis qu'il porte une
+   * remise de 60 €, l'addition aurait affiché 540 € au-dessus d'un bouton qui
+   * mène à une caisse à 480 €. Le repli sur l'addition ne sert qu'aux
+   * instantanés de build d'avant ce jour.
+   */
+  const somme = (programme ? prixDe(programme, devise) : 0) + (construire ? prixDe(construire, devise) : 0);
+  const prixLot = data.lot?.prix?.[devise] ?? somme;
+  const pleinLot = data.lot?.plein?.[devise] ?? somme;
   const nbAuto = MODULES.filter((m) => m.palier === 'pro').length;
   // Les domaines de l'attestation : une colonne par étape, et les modules
   // nommés. Les quatre modules outils comptent pour une seule ligne, puisque
@@ -144,9 +156,7 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         locale={locale}
         devise={devise}
         prixMethodeMinor={programme ? prixDe(programme, devise) : 0}
-        prixAvanceeMinor={
-          (programme ? prixDe(programme, devise) : 0) + (construire ? prixDe(construire, devise) : 0)
-        }
+        prixAvanceeMinor={prixLot}
       />
 
       {/* L'espace apprenant, qu'on visite au survol. C'est la cible de l'entrée
@@ -228,16 +238,14 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         locale={locale}
         devise={devise}
         prixProgrammeMinor={programme ? prixDe(programme, devise) : 0}
-        prixAvanceMinor={
-          (programme ? prixDe(programme, devise) : 0) + (construire ? prixDe(construire, devise) : 0)
-        }
-        hausseMinor={data.hausse ? prixDe(data.hausse, devise) : 0}
+        prixAutoMinor={construire ? prixDe(construire, devise) : 0}
+        prixLotMinor={prixLot}
+        pleinLotMinor={pleinLot}
+        accesJours={data.acces_jours ?? 60}
         paliersEquipe={data.equipe?.paliers ?? []}
         leconsProgramme={leconsProgramme(data)}
         heuresProgramme={data.faits.heuresProgramme ?? data.faits.heures}
-        leconsTotal={data.faits.lessons}
         leconsComplement={leconsComplement(data)}
-        heuresTotal={data.faits.heures}
         exercices={data.faits.exercices}
         relectures={data.faits.relectures}
         leconsGratuit={leconsGratuit(data)}

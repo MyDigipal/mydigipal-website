@@ -229,28 +229,39 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
     });
   }
 
-  // Le prix annoncé pour le 1er octobre suit la devise consultée : annoncer une
-  // hausse en euros à quelqu'un qui lit des dollars ferait deux prix différents
-  // pour la même date.
-  const prixHausse = data.hausse.prix?.[devise] ?? data.hausse.ttc_minor;
+  /**
+   * ⚠️ PLUS AUCUNE HAUSSE N'EST ANNONCÉE depuis le 11/09/2026 : l'app publie
+   * `hausse: null`. Cette page est la PREMIÈRE page de vente, gardée en ligne
+   * hors index pour pouvoir revenir vite — donc gardée en ligne tout court, et
+   * une page en ligne qui promet une augmentation qui n'aura pas lieu est un
+   * mensonge, même si personne n'est censé la trouver.
+   *
+   * Les deux lignes disparaissent quand le champ est nul. Le code reste : si
+   * une hausse revient un jour, elle se rallume dans l'app et cette page suit.
+   */
+  const prixHausse = data.hausse ? data.hausse.prix?.[devise] ?? data.hausse.ttc_minor : 0;
 
-  const hausse = (() => {
-    const d = new Date(`${data.hausse.date}T00:00:00Z`);
-    const jour = d.getUTCDate();
-    const mois = d.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { month: 'long', timeZone: 'UTC' });
-    return enDevise(c.hausse(formatPrice(prixHausse, locale), c.dateHausse(jour, mois)), devise);
-  })();
+  const hausse = data.hausse
+    ? (() => {
+        const d = new Date(`${data.hausse!.date}T00:00:00Z`);
+        const jour = d.getUTCDate();
+        const mois = d.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { month: 'long', timeZone: 'UTC' });
+        return enDevise(c.hausse(formatPrice(prixHausse, locale), c.dateHausse(jour, mois)), devise);
+      })()
+    : null;
   // À moins de seize jours de la hausse, la ligne devient franche et datée
   // (Paul, 25/08/2026) : c'est vrai, c'est daté, ça décide. Elle disparaît
   // toute seule le jour de la hausse, quand le prix du JSON a changé.
-  const hausseProche = (() => {
-    const d = new Date(`${data.hausse.date}T00:00:00Z`);
-    const jours = (d.getTime() - Date.now()) / 86400000;
-    if (jours <= 0 || jours > 16) return null;
-    const veille = new Date(d.getTime() - 86400000);
-    const veilleTexte = c.dateHausse(veille.getUTCDate(), veille.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { month: 'long', timeZone: 'UTC' }));
-    return enDevise(c.hausseProche(formatPrice(prixOffre(programme), locale), veilleTexte, formatPrice(prixHausse, locale)), devise);
-  })();
+  const hausseProche = data.hausse
+    ? (() => {
+        const d = new Date(`${data.hausse!.date}T00:00:00Z`);
+        const jours = (d.getTime() - Date.now()) / 86400000;
+        if (jours <= 0 || jours > 16) return null;
+        const veille = new Date(d.getTime() - 86400000);
+        const veilleTexte = c.dateHausse(veille.getUTCDate(), veille.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', { month: 'long', timeZone: 'UTC' }));
+        return enDevise(c.hausseProche(formatPrice(prixOffre(programme), locale), veilleTexte, formatPrice(prixHausse, locale)), devise);
+      })()
+    : null;
 
   // La vérification, à chaque changement de panier. Annulable : quelqu'un qui
   // coche trois cases d'affilée ne doit pas voir clignoter trois réponses.

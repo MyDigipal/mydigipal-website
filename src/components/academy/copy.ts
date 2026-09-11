@@ -835,8 +835,11 @@ const FR = {
     dejaAcquis: 'Non retenu',
     panierVide: 'Choisissez au moins un programme.',
     remiseCode: (code: string, pct: number) => `Code ${code} : −${pct} % sur la méthode et les automatisations`,
-    unique: 'pour un mois',
-    uniquePlaces: (n: number) => `pour un mois, ${n} places`,
+    // ⚠️ Soixante jours pour tout le monde depuis le 11/09/2026, et non plus
+    // « un mois ». Cette page est la première version, gardée en ligne hors index :
+    // elle ne doit pas annoncer une durée d'accès que le tunnel ne vend plus.
+    unique: 'pour 60 jours',
+    uniquePlaces: (n: number) => `pour 60 jours, ${n} places`,
     mensuel: 'par mois, assistant',
     sansAbo: 'assistant compris, rien à résilier',
     placesRecap: (n: number) => `× ${n} places`,
@@ -1653,8 +1656,8 @@ const EN: Jour30Copy = {
     dejaAcquis: 'Not included',
     panierVide: 'Pick at least one course.',
     remiseCode: (code: string, pct: number) => `Code ${code}: −${pct}% on the method and Automations`,
-    unique: 'for one month',
-    uniquePlaces: (n: number) => `for one month, ${n} seats`,
+    unique: 'for 60 days',
+    uniquePlaces: (n: number) => `for 60 days, ${n} seats`,
     mensuel: 'per month, assistant',
     sansAbo: 'assistant included, nothing to cancel',
     placesRecap: (n: number) => `× ${n} seats`,

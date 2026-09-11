@@ -129,7 +129,33 @@ export interface Jour30Data {
   };
   craft: Record<string, string>;
   offres: Offre[];
-  hausse: { date: string; ttc_minor: number; prix?: Partial<Record<Devise, number>> };
+  /**
+   * LES DEUX PROGRAMMES ENSEMBLE, servis par l'app depuis le 11/09/2026.
+   *
+   * ⚠️ La page ADDITIONNAIT `programme` et `construire` pour afficher le prix du
+   * lot, à trois endroits. C'était juste tant que le lot valait la somme ; c'est
+   * devenu faux le jour où il a porté une remise, et la page aurait annoncé
+   * 540 € là où le tunnel encaisse 480 €. Le prix du lot, le prix plein qu'on
+   * barre et le coût du second programme viennent donc de l'app, comme tous les
+   * autres prix.
+   *
+   * Optionnel : un instantané de build d'avant ce jour ne le porte pas, et le
+   * repli reste l'addition.
+   */
+  lot?: {
+    items: string[];
+    prix: Partial<Record<Devise, number>>;
+    plein: Partial<Record<Devise, number>>;
+    second: Partial<Record<Devise, { programme: number; construire: number }>>;
+  };
+  /** Les jours d'accès vendus. Soixante pour tout le monde depuis le 11/09/2026. */
+  acces_jours?: number;
+  /**
+   * ⚠️ NULLE depuis le 11/09/2026 : plus aucune hausse n'est annoncée. Le champ
+   * reste pour que les instantanés anciens restent lisibles, mais rien ne doit
+   * s'afficher sans le tester.
+   */
+  hausse: { date: string; ttc_minor: number; prix?: Partial<Record<Devise, number>> } | null;
   /** Les devises proposées par l'app. Absente sur un instantané ancien. */
   devises?: Devise[];
   /**
