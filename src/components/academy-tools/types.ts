@@ -55,6 +55,23 @@ export interface Resultat {
   texte: string;
 }
 
+/** Un document réellement produit en formation, ouvrable depuis la page. */
+export interface Livrable {
+  /** Nom du fichier dans /academy/livrables/. */
+  fichier: string;
+  titre: string;
+  texte: string;
+  /** Ce que ça a pris : la matière de départ et le temps. */
+  cout: string;
+}
+
+export interface Film {
+  fichier: string;
+  titre: string;
+  texte: string;
+  duree: string;
+}
+
 export interface Question {
   q: string;
   /** Un paragraphe par entrée. */
@@ -90,6 +107,23 @@ export interface CopyOutil {
     chapeau: string;
     indice: (n: number) => string;
     ecrans: Ecran[];
+  };
+  /**
+   * Les livrables ouvrables, produits pendant une vraie session de formation.
+   *
+   * Optionnels, et absents des pages anglaises tant que les documents n'existent
+   * qu'en français : montrer une réponse à appel d'offres en français à un
+   * anglophone ne prouve rien, ça l'arrête.
+   */
+  livrables?: {
+    kicker: string;
+    titre: string;
+    chapeau: string;
+    ouvrir: string;
+    items: Livrable[];
+    filmsTitre: string;
+    filmsChapeau: string;
+    films: Film[];
   };
   resultats: { kicker: string; titre: string; chapeau: string; items: Resultat[] };
   demo: {

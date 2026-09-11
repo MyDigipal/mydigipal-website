@@ -244,27 +244,108 @@ const schema = {
       <Console client:visible ecrans={c.console.ecrans} indices={indices} />
     </section>
 
+    <!-- ------------------------------------------------------- livrables -->
+    {
+      c.livrables && (
+        <section class="mx-auto max-w-[1180px] px-6 py-14 md:py-20">
+          <p class="mb-3.5 font-ac-mono text-[11px] uppercase tracking-[0.2em] text-or">
+            {c.livrables.kicker}
+          </p>
+          <h2 class="mb-3 text-[clamp(24px,3vw,34px)] font-semibold leading-tight tracking-[-0.02em] text-ivoire">
+            {c.livrables.titre}
+          </h2>
+          <p class="mb-7 max-w-[72ch]">{c.livrables.chapeau}</p>
+
+          {/* Cinq documents, cinq cases : le premier prend deux colonnes, sinon
+              la grille laisserait un trou en bas à droite. */}
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {c.livrables.items.map((l, i) => (
+              <a
+                href={`/academy/livrables/${l.fichier}.html`}
+                target="_blank"
+                rel="noopener"
+                class:list={[
+                  'group flex flex-col overflow-hidden rounded-carte border border-filet-nuit bg-salle-2 no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-or',
+                  i === 0 ? 'lg:col-span-2' : '',
+                ]}
+              >
+                <img
+                  src={`/academy/livrables/vignettes/${l.fichier}.jpg`}
+                  alt={l.titre}
+                  width={960}
+                  height={620}
+                  loading="lazy"
+                  decoding="async"
+                  class="block h-auto w-full border-b border-filet-nuit"
+                />
+                <div class="flex flex-1 flex-col px-5 py-4">
+                  <h3 class="mb-1.5 text-[17px] font-semibold text-ivoire">{l.titre}</h3>
+                  <p class="mb-3 text-[14.5px] text-corps-nuit">{l.texte}</p>
+                  <p class="mt-auto mb-0 font-ac-mono text-[11.5px] text-brume-nuit">{l.cout}</p>
+                  <span class="mt-2 font-ac-mono text-[12.5px] text-or-texte transition-colors group-hover:text-or-vif">
+                    {c.livrables!.ouvrir} -&gt;
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <h3 class="mb-2 mt-12 text-xl font-semibold text-ivoire">{c.livrables.filmsTitre}</h3>
+          <p class="mb-5 max-w-[72ch]">{c.livrables.filmsChapeau}</p>
+          <div class="grid gap-4 md:grid-cols-2">
+            {c.livrables.films.map((f) => (
+              <figure class="m-0 overflow-hidden rounded-carte border border-filet-nuit bg-salle-2">
+                {/* preload="none" : deux films d'un mégaoctet ne se téléchargent
+                    pas tant que personne ne les lance. */}
+                <video
+                  controls
+                  preload="none"
+                  playsinline
+                  poster={`/academy/livrables/vignettes/${f.fichier}.jpg`}
+                  class="block h-auto w-full"
+                >
+                  <source src={`/academy/livrables/${f.fichier}.mp4`} type="video/mp4" />
+                </video>
+                <figcaption class="px-5 py-4">
+                  <h4 class="mb-1 text-base font-semibold text-ivoire">
+                    {f.titre}
+                    <span class="ml-2 font-ac-mono text-[11.5px] font-normal text-brume-nuit">{f.duree}</span>
+                  </h4>
+                  <p class="m-0 text-[14.5px] text-corps-nuit">{f.texte}</p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
     <!-- ------------------------------------------------------- resultats -->
-    <section class="mx-auto max-w-[1180px] px-6 py-14 md:py-20">
-      <p class="mb-3.5 font-ac-mono text-[11px] uppercase tracking-[0.2em] text-or">{c.resultats.kicker}</p>
-      <h2 class="mb-3 text-[clamp(24px,3vw,34px)] font-semibold leading-tight tracking-[-0.02em] text-ivoire">
-        {c.resultats.titre}
-      </h2>
-      <p class="mb-7 max-w-[72ch]">{c.resultats.chapeau}</p>
-      <div class="grid gap-px overflow-hidden rounded-carte border border-filet-nuit bg-filet-nuit sm:grid-cols-2 lg:grid-cols-3">
-        {
-          c.resultats.items.map((r, i) => (
-            <article class="bg-salle px-6 py-5">
-              <span class="font-ac-mono text-[11px] tracking-[0.14em] text-or-texte">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <h3 class="mb-1.5 mt-2 text-[16.5px] font-semibold text-ivoire">{r.titre}</h3>
-              <p class="m-0 text-[14.5px] text-brume-nuit">{r.texte}</p>
-            </article>
-          ))
-        }
-      </div>
-    </section>
+    {
+      !c.livrables && (
+      <section class="mx-auto max-w-[1180px] px-6 py-14 md:py-20">
+        <p class="mb-3.5 font-ac-mono text-[11px] uppercase tracking-[0.2em] text-or">{c.resultats.kicker}</p>
+        <h2 class="mb-3 text-[clamp(24px,3vw,34px)] font-semibold leading-tight tracking-[-0.02em] text-ivoire">
+          {c.resultats.titre}
+        </h2>
+        <p class="mb-7 max-w-[72ch]">{c.resultats.chapeau}</p>
+        <div class="grid gap-px overflow-hidden rounded-carte border border-filet-nuit bg-filet-nuit sm:grid-cols-2 lg:grid-cols-3">
+          {
+            c.resultats.items.map((r, i) => (
+              <article class="bg-salle px-6 py-5">
+                <span class="font-ac-mono text-[11px] tracking-[0.14em] text-or-texte">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <h3 class="mb-1.5 mt-2 text-[16.5px] font-semibold text-ivoire">{r.titre}</h3>
+                <p class="m-0 text-[14.5px] text-brume-nuit">{r.texte}</p>
+              </article>
+            ))
+          }
+        </div>
+      </section>
+        </section>
+      )
+    }
 
     <!-- ------------------------------------------------------------ demo -->
     <section class="mx-auto max-w-[1180px] px-6 py-14 md:py-20">

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comité du 12 septembre - Atelier Rivière</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14111A;--ink-2:#39323F;--ink-3:#6B6272;--ink-4:#98909E;
+  --line:#E7E2E9;--line-2:#F3F0F5;--bg:#FBF9FB;
+  --cp:#A8183C;--cp-2:#C93055;
+  --amber-soft:#FDF3E3;--amber-line:#F2DDB4;
+  --green:#2F7D52;
+  --font:'Inter',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:#EDE9EF;color:var(--ink-2);line-height:1.55;-webkit-font-smoothing:antialiased;padding:34px 20px 60px}
+
+.hdr{max-width:1120px;margin:0 auto 26px;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap}
+.hdr .t{font-size:15px;color:var(--ink-3)}
+.hdr .t b{color:var(--ink);font-weight:800;font-size:17px;display:block}
+.stamp{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;font-weight:700;color:#2F7D52;background:#E8F4ED;border:1px solid #B9DFC9;border-radius:999px;padding:8px 15px}
+.stamp .g{width:7px;height:7px;border-radius:50%;background:#5FB97E}
+
+.slide{max-width:1120px;margin:0 auto 22px;background:#fff;border-radius:14px;aspect-ratio:16/9;
+  box-shadow:0 3px 26px rgba(20,17,26,.11);padding:50px 60px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.slide .num{position:absolute;bottom:24px;right:34px;font-family:var(--mono);font-size:12px;color:var(--ink-4);letter-spacing:.1em}
+.slide .brand{position:absolute;bottom:24px;left:60px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-4)}
+.kick{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--cp);font-weight:700;margin-bottom:13px}
+.slide h2{font-size:36px;font-weight:800;color:var(--ink);letter-spacing:-.028em;line-height:1.12;margin-bottom:16px}
+.slide h2 em{font-style:normal;color:var(--cp)}
+.slide p{font-size:18px;color:var(--ink-2);max-width:880px}
+.slide.cover{background:linear-gradient(135deg,#1A1119 0%,#3A2531 100%);color:#fff;justify-content:center}
+.slide.cover h1{font-size:52px;font-weight:900;letter-spacing:-.035em;line-height:1.06;margin-bottom:18px}
+.slide.cover h1 em{font-style:normal;color:#FF8FA3}
+.slide.cover .sub{font-size:19px;color:#C9BEC8;max-width:700px}
+.slide.cover .meta{display:flex;gap:42px;margin-top:30px;padding-top:20px;border-top:1px solid rgba(255,255,255,.16);flex-wrap:wrap}
+.slide.cover .meta .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8E8395;margin-bottom:4px}
+.slide.cover .meta .v{font-weight:700;font-size:16px;color:#fff}
+.slide.cover .brand,.slide.cover .num{color:#7E7385}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:4px}
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:6px}
+.box{background:var(--bg);border:1px solid var(--line);border-radius:13px;padding:20px 22px}
+.box h4{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:9px}
+.box p{font-size:15.5px;color:var(--ink-2)}
+.box ul{list-style:none;display:grid;gap:8px;margin-top:4px}
+.box li{position:relative;padding-left:19px;font-size:15.5px;color:var(--ink-2);line-height:1.42}
+.box li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:50%;background:var(--cp)}
+
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:12px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:13px;padding:22px}
+.kpi .n{font-size:44px;font-weight:900;color:var(--cp);letter-spacing:-.03em;line-height:1}
+.kpi .t{font-size:15px;color:var(--ink-3);margin-top:8px;line-height:1.35}
+.kpi .d{font-family:var(--mono);font-size:12.5px;font-weight:700;margin-top:7px}
+.kpi .d.up{color:var(--green)}.kpi .d.dn{color:var(--cp-2)}
+
+.bars{display:grid;gap:12px;margin-top:14px}
+.bar{display:grid;grid-template-columns:220px 1fr 74px;gap:18px;align-items:center;font-size:16px}
+.bar .t{color:var(--ink);font-weight:600}
+.bar .track{height:21px;background:var(--line-2);border-radius:7px;overflow:hidden}
+.bar .fill{height:100%;background:linear-gradient(90deg,#A8183C,#E8637F);border-radius:7px}
+.bar .v{text-align:right;font-family:var(--mono);font-weight:700;color:var(--ink);font-size:14px}
+
+.hole{background:var(--amber-soft);border:1px solid var(--amber-line);border-left:4px solid #E0A93C;
+  border-radius:0 11px 11px 0;padding:12px 18px;font-size:15.5px;color:#7A5108;margin-top:14px}
+.hole b{color:#5E3D04;font-weight:800}
+.hole code{font-family:var(--mono);font-size:14px;background:#F7E6C6;padding:2px 7px;border-radius:5px;color:#5E3D04}
+
+ol.dec{list-style:none;counter-reset:d;display:grid;gap:15px;margin-top:8px}
+ol.dec li{counter-increment:d;display:grid;grid-template-columns:44px 1fr;gap:18px;align-items:start}
+ol.dec li::before{content:counter(d);font-family:var(--mono);font-weight:800;font-size:18px;width:44px;height:44px;
+  border-radius:12px;background:var(--cp);color:#fff;display:flex;align-items:center;justify-content:center}
+ol.dec li .x{padding-top:4px}
+ol.dec li .x b{display:block;font-size:18.5px;color:var(--ink);font-weight:800;margin-bottom:2px}
+ol.dec li .x span{font-size:15.5px;color:var(--ink-3)}
+
+.foot{max-width:1120px;margin:26px auto 0;font-size:14px;color:var(--ink-4);text-align:center}
+
+@media(max-width:900px){
+  .slide{aspect-ratio:auto;padding:32px 26px}
+  .cols,.cols3,.kpis{grid-template-columns:1fr}
+  .slide h2{font-size:27px}.slide.cover h1{font-size:34px}
+  .bar{grid-template-columns:1fr;gap:6px}
+}
+@media print{body{background:#fff;padding:0}.slide{box-shadow:none;break-after:page;margin-bottom:0}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="t"><b>Comité du vendredi 12 septembre</b>Atelier Rivière &middot; 8 diapositives &middot; construit à partir de notes en vrac</div>
+  <div class="stamp"><span class="g"></span>Produit avec l'IA &middot; relu</div>
+</div>
+
+<div class="slide cover">
+  <div class="kick" style="color:#FF8FA3;">Comité de direction &middot; 12 septembre 2026</div>
+  <h1>Le trimestre,<br>et les <em>trois décisions</em><br>à prendre aujourd'hui.</h1>
+  <div class="sub">Ce que les chiffres disent, ce que les clients disent, et les arbitrages qui ne peuvent plus attendre.</div>
+  <div class="meta">
+    <div><div class="l">Période</div><div class="v">T3 2026</div></div>
+    <div><div class="l">Préparé en</div><div class="v">12 minutes</div></div>
+    <div><div class="l">À partir de</div><div class="v">Notes de la semaine et 3 comptes rendus</div></div>
+  </div>
+  <div class="brand">Atelier Rivière</div><div class="num">01 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">En un coup d'oeil</div>
+  <h2>Le trimestre en <em>trois chiffres</em></h2>
+  <div class="kpis">
+    <div class="kpi"><div class="n">+18 %</div><div class="t">de chiffre d'affaires sur le trimestre</div><div class="d up">meilleur T3 depuis 2023</div></div>
+    <div class="kpi"><div class="n">31 %</div><div class="t">de marge brute moyenne</div><div class="d dn">en recul de 4 points</div></div>
+    <div class="kpi"><div class="n">47 j</div><div class="t">de délai de paiement moyen</div><div class="d dn">en hausse de 9 jours</div></div>
+  </div>
+  <p style="margin-top:20px;color:var(--ink-3);font-size:17px;">La croissance est là, et elle coûte cher. Les deux diapositives suivantes expliquent pourquoi.</p>
+  <div class="brand">Atelier Rivière</div><div class="num">02 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">Le sujet du trimestre</div>
+  <h2>La marge recule alors que <em>l'activité progresse</em></h2>
+  <div class="cols">
+    <div class="box">
+      <h4>Ce qu'on constate</h4>
+      <ul>
+        <li>Les trois plus gros chantiers ont dépassé le budget matière</li>
+        <li>Les devis signés en juin l'ont été aux prix de mars</li>
+        <li>Deux chantiers ont été repris partiellement, à nos frais</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>Ce que ça implique</h4>
+      <ul>
+        <li>La grille de prix doit être revue avant janvier</li>
+        <li>Un devis de plus de trois mois ne doit plus être signé tel quel</li>
+        <li>La reprise à nos frais doit devenir une exception tracée</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hole"><b>Chiffre à compléter avant le comité :</b> le montant exact des reprises à nos frais. L'assistant a laissé <code>[montant à compléter]</code> plutôt que de l'estimer, parce que la donnée n'était pas dans les notes fournies.</div>
+  <div class="brand">Atelier Rivière</div><div class="num">03 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">Ce que disent les clients</div>
+  <h2>Trois rendez-vous, <em>un même signal</em></h2>
+  <div class="bars">
+    <div class="bar"><div class="t">Qualité de la finition</div><div class="track"><div class="fill" style="width:92%"></div></div><div class="v">Fort</div></div>
+    <div class="bar"><div class="t">Respect des délais</div><div class="track"><div class="fill" style="width:78%"></div></div><div class="v">Bon</div></div>
+    <div class="bar"><div class="t">Clarté du devis</div><div class="track"><div class="fill" style="width:41%"></div></div><div class="v">Faible</div></div>
+    <div class="bar"><div class="t">Suivi pendant le chantier</div><div class="track"><div class="fill" style="width:34%"></div></div><div class="v">Faible</div></div>
+  </div>
+  <p style="margin-top:20px;">Les trois clients rencontrés cette semaine ont spontanément cité le même point : ils ne savent pas où en est leur chantier entre deux visites. <strong>Aucun n'a parlé du prix.</strong></p>
+  <div class="brand">Atelier Rivière</div><div class="num">04 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">L'opportunité</div>
+  <h2>Le point faible est aussi <em>le moins cher à corriger</em></h2>
+  <div class="cols3">
+    <div class="box"><h4>Le constat</h4><p>Le suivi de chantier est le premier motif d'insatisfaction, alors qu'il ne coûte presque rien à améliorer.</p></div>
+    <div class="box"><h4>La piste</h4><p>Un point d'avancement envoyé chaque vendredi, avec deux photos et la prochaine étape.</p></div>
+    <div class="box"><h4>L'effort</h4><p>Une demi-journée de mise en place, puis dix minutes par chantier et par semaine.</p></div>
+  </div>
+  <p style="margin-top:20px;color:var(--ink-3);font-size:17px;">C'est le meilleur rapport entre l'effort demandé et l'effet attendu de tout ce trimestre.</p>
+  <div class="brand">Atelier Rivière</div><div class="num">05 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">Le carnet de commandes</div>
+  <h2>Ce qui est <em>déjà signé</em> pour le prochain trimestre</h2>
+  <div class="bars">
+    <div class="bar"><div class="t">Chantiers signés</div><div class="track"><div class="fill" style="width:72%"></div></div><div class="v">72 %</div></div>
+    <div class="bar"><div class="t">Devis en attente de réponse</div><div class="track"><div class="fill" style="width:34%"></div></div><div class="v">34 %</div></div>
+    <div class="bar"><div class="t">Capacité encore disponible</div><div class="track"><div class="fill" style="width:19%"></div></div><div class="v">19 %</div></div>
+  </div>
+  <p style="margin-top:20px;">Le trimestre est presque plein. La question n'est plus de vendre davantage, elle est de <strong>choisir ce qu'on accepte</strong>.</p>
+  <div class="brand">Atelier Rivière</div><div class="num">06 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">Ce que je propose</div>
+  <h2>Trois chantiers <em>internes</em>, d'ici décembre</h2>
+  <div class="cols3">
+    <div class="box"><h4>01 &middot; Les prix</h4><ul><li>Nouvelle grille au 1er janvier</li><li>Validité des devis à 60 jours</li><li>Clause de révision matière</li></ul></div>
+    <div class="box"><h4>02 &middot; Le suivi</h4><ul><li>Point hebdomadaire automatique</li><li>Deux photos et la prochaine étape</li><li>Test sur trois chantiers d'abord</li></ul></div>
+    <div class="box"><h4>03 &middot; Les encaissements</h4><ul><li>Acompte porté à 40 %</li><li>Relance à J+30 systématique</li><li>Objectif : repasser sous 40 jours</li></ul></div>
+  </div>
+  <div class="brand">Atelier Rivière</div><div class="num">07 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">Ce que j'attends de ce comité</div>
+  <h2>Trois <em>décisions</em>, aujourd'hui</h2>
+  <ol class="dec">
+    <li><div class="x"><b>Valider la nouvelle grille de prix au 1er janvier</b><span>Et acter la validité des devis à 60 jours, applicable dès maintenant.</span></div></li>
+    <li><div class="x"><b>Autoriser le test du suivi hebdomadaire sur trois chantiers</b><span>Une demi-journée de mise en place. Décision réversible si ça ne prend pas.</span></div></li>
+    <li><div class="x"><b>Trancher sur l'acompte à 40 %</b><span>C'est le point qui peut faire perdre des affaires. C'est aussi le seul levier rapide sur la trésorerie.</span></div></li>
+  </ol>
+  <div class="brand">Atelier Rivière</div><div class="num">08 / 08</div>
+</div>
+
+<div class="foot">Construit avec l'IA à partir de notes en vrac et de trois comptes rendus de rendez-vous</div>
+
+</body>
+</html>

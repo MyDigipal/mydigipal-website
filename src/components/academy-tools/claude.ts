@@ -11,7 +11,7 @@
 // ⚠️ Aucun nombre ici. Les leçons, les heures, les prix et la note arrivent en
 // argument, lus dans l'application.
 
-import type { Ecran, CopyOutil, Locale, Outil } from './types';
+import type { Ecran, CopyOutil, Livrable, Locale, Outil } from './types';
 
 const IMG = '/academy/outils/claude';
 
@@ -295,6 +295,57 @@ function ecransEn(): Ecran[] {
   ];
 }
 
+/* ------------------------------------------------------- livrables (FR) */
+
+/**
+ * Ce qui a réellement été produit pendant la formaférence du 9 septembre 2026,
+ * autour d'une PME fictive, l'Atelier Rivière. Les fichiers sont importés par
+ * `scripts/import-livrables-academy.py`, qui en retire le nom du client et
+ * neutralise la mention d'outil : ces mêmes documents serviront sur les pages
+ * Copilot, ChatGPT et Gemini, et écrire le nom d'un autre outil dessus serait
+ * faux.
+ *
+ * Français seulement pour l'instant. Un anglophone à qui l'on ouvre une réponse
+ * à appel d'offres en français s'arrête à la première ligne.
+ */
+const LIVRABLES_FR: Livrable[] = [
+  {
+    fichier: '02-synthese',
+    titre: 'Une note de préparation',
+    texte:
+      "Un rapport sectoriel de quarante-deux pages en entrée, une note de rendez-vous en sortie, avec la source de chaque chiffre.",
+    cout: '42 pages lues, une note en cinq minutes',
+  },
+  {
+    fichier: '03-presentation',
+    titre: 'Un comité de direction',
+    texte:
+      'Des notes en vrac deviennent huit diapositives et trois décisions à prendre. Un chiffre inventé au passage, repéré à la relecture.',
+    cout: 'des notes en vrac, huit diapositives',
+  },
+  {
+    fichier: '04-dashboard',
+    titre: 'Un tableau de bord mensuel',
+    texte:
+      "L'export comptable et l'export des devis, croisés en cinq chiffres qui tiennent sur un écran. Aucune saisie à la main.",
+    cout: 'deux exports bruts, quinze minutes',
+  },
+  {
+    fichier: '06-site',
+    titre: 'Un site vitrine',
+    texte:
+      "Une page complète depuis une seule demande, puis ajustée en trois phrases. Ce que l'outil sait faire, et là où il s'arrête.",
+    cout: 'une demande, trois retouches',
+  },
+  {
+    fichier: '07-appel-offres',
+    titre: "Une réponse à appel d'offres",
+    texte:
+      "Une recherche sur le donneur d'ordre, une autre dans vos propres dossiers, et un dossier de réponse. Avec une certification affirmée à tort, corrigée.",
+    cout: 'deux recherches, un dossier complet',
+  },
+];
+
 /* ------------------------------------------------------------------ copy FR */
 
 const FR: CopyOutil = {
@@ -324,6 +375,33 @@ const FR: CopyOutil = {
       "Trois choses que presque personne n'utilise, et qui font la différence entre une conversation et un outil de travail.",
     indice: (n) => `${n} repères sur cet écran`,
     ecrans: ecransFr(),
+  },
+  livrables: {
+    kicker: 'Des vrais documents',
+    titre: 'Ce qui sort de la formation',
+    chapeau:
+      "Cinq documents produits pendant une session, devant la salle, à partir de la matière d'une entreprise. Ouvrez-les : c'est le genre de choses que vous rendrez.",
+    ouvrir: 'Ouvrir le document',
+    items: LIVRABLES_FR,
+    filmsTitre: 'Et ce qui tourne sans personne',
+    filmsChapeau:
+      "Deux séquences filmées à l'écran, telles qu'elles se sont passées. C'est ce que la troisième étape du parcours apprend à monter.",
+    films: [
+      {
+        fichier: '08-agent',
+        titre: 'Un agent qui qualifie à 22 h 47',
+        texte:
+          "Une demande arrive le soir. L'agent la lit, la qualifie, cherche le contexte, et le mail part à 22 h 49.",
+        duree: '34 s',
+      },
+      {
+        fichier: '09-automatisation',
+        titre: 'Une prospection du lundi au mercredi',
+        texte:
+          'La chaîne part le lundi à huit heures, relance, et rend la réponse obtenue le mercredi.',
+        duree: '38 s',
+      },
+    ],
   },
   resultats: {
     kicker: 'À la sortie',
