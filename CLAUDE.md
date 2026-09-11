@@ -344,6 +344,46 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
   hero. ⚠️ La note du 25/08 « pas de rail flottant vers chaque section » visait un sommaire animé
   au milieu de la page ; la barre fine du haut est un autre objet, validée par Paul.
 
+## Les pages outils de l'Academy (11/09/2026)
+
+`/{lang}/academy/{outil}` : une page de VENTE de la formation par outil, avec son
+vocabulaire et ses écrans. **Claude est en ligne, les trois autres suivront la même
+forme.** Pilotage, brainstorm et maquette : `docs/academy-tool-pages/`.
+
+Pourquoi : `post_click_quality_score` BELOW_AVERAGE sur **39 mots-clés sur 39** dans
+le compte 377-338-1446, parce que les quatre groupes d'annonces outils visaient tous
+la page de vente générale. Google demandait jusqu'à 8,00 £ la première page sur
+« formation microsoft copilot ».
+
+- **Une seule route** : `src/pages/[lang]/academy/[tool].astro`, `getStaticPaths` sur
+  les langues x les outils **publiés**. Un outil dont `publie` vaut faux n'est ni
+  généré, ni mis au sitemap, ni lié : c'est ce qui permet de sortir les pages une par
+  une sans renvois en 404 (et sans faire échouer `check-seo.mjs`).
+- **Le contenu par outil** dans `src/components/academy-tools/<outil>.ts`, FR et EN
+  côte à côte. L'anglais n'est pas une traduction : les deux marchés n'achètent pas
+  les mêmes mots. Les mots-clés servis par chaque page sont listés dans le document
+  de pilotage, section 05.
+- **Deux îlots React seulement**, en `client:visible` : `Console.tsx` (les vraies
+  captures de l'outil, repères au survol) et `Demo.tsx` (la même demande écrite deux
+  fois). 78 Ko rendus contre 237 Ko pour la page de vente.
+- ⚠️ **Une fonction passée en propriété d'un îlot Astro casse l'hydratation** :
+  les propriétés traversent une sérialisation JSON. Ça compile, ça passe le build,
+  et ça tombe en production avec « m is not a function ». Composer les libellés côté
+  serveur (`indices: string[]`, pas `indice: (n) => string`).
+- **Aucun montant dans le code.** Lus au build, puis RELUS dans le navigateur par le
+  script du bas de page : un prix changé dans l'application apparaît sans
+  redéploiement (exigence de Paul). Chaque valeur porte `data-fait` et son gabarit
+  `data-gabarit`, où `{}` reçoit la valeur.
+- **Les leçons** viennent de `src/data/academy/lecons-outils.json`, extrait des
+  sources du dépôt de l'app. Reste à faire : étendre `/api/academy/public/jour30`
+  pour les servir. ⚠️ Aucune durée par leçon n'est affichée tant que l'écart entre le
+  lot 2 du dépôt (49 min pour M4C) et la production (75 min) n'est pas tranché.
+- **Pas de captures de Copilot** : l'app n'en a aucune, et Paul n'a pas la licence
+  Microsoft 365 qui permettrait de les prendre. À régler avant cette page-là.
+- **Après mise en ligne** : URL finale **au niveau du mot-clé** dans Google Ads, ne
+  jamais éditer les RSA (une annonce modifiée est remplacée et perd sa force et son
+  historique). Mesure à trois semaines sur les mêmes 39 mots-clés.
+
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)
 
 Paul veut vendre l'Academy en priorité, puis « refaire un petit peu » les autres pages IA.
