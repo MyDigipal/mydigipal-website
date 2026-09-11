@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
+import { OUTILS_PUBLIES } from '@/components/academy-tools';
 
 const site = 'https://mydigipal.com';
 const languages = ['en', 'fr'];
@@ -64,6 +65,11 @@ export const GET: APIRoute = async () => {
   // Calculator
   addBilingualPage('/calculator', 0.9, 'monthly');
   addBilingualPage('/academy', 0.9, 'weekly');
+  // Les pages outils de l'Academy. Seules les publiees : une URL au sitemap
+  // sans page generee fait echouer scripts/check-seo.mjs, et c'est voulu.
+  for (const outil of OUTILS_PUBLIES) {
+    addBilingualPage(`/academy/${outil.slug}`, 0.8, 'monthly');
+  }
 
   // Blog index
   addBilingualPage('/blog', 0.9, 'daily');

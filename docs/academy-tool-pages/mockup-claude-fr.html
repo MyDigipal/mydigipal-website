@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette - /fr/academy/claude</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --salle:#0d1424; --salle2:#141d33; --salle3:#1c2742; --filet:#26324e;
+    --ivoire:#f2eee4; --corps:#b9c1d1; --mute:#7d879b;
+    --or:#c8a951; --or-vif:#dcbc66; --or-grave:#8a6d24;
+    --craie:#f7f5f0; --encre:#0f1a2e; --lin:#e6e1d6; --brume:#646c7a;
+    --sauge:#5fbc8f; --avance:#7fc4dd; --renard:#d9743f;
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--salle); color:var(--corps);
+    font-family:'Space Grotesk',system-ui,sans-serif; font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased; overflow-x:clip;
+  }
+  a{color:inherit}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 24px}
+  .kicker{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--or); margin:0 0 14px;
+  }
+  h1{
+    font-size:clamp(30px,4.4vw,52px); line-height:1.08; letter-spacing:-.025em;
+    color:var(--ivoire); font-weight:600; margin:0 0 18px;
+  }
+  h1 em{font-family:'Fraunces',Georgia,serif; font-style:italic; font-weight:400; color:var(--or-vif); letter-spacing:0}
+  h2{
+    font-size:clamp(24px,3vw,34px); line-height:1.15; letter-spacing:-.02em;
+    color:var(--ivoire); font-weight:600; margin:0 0 12px;
+  }
+  h3{font-size:18px; color:var(--ivoire); font-weight:600; margin:0 0 8px}
+  p{margin:0 0 14px; max-width:72ch}
+  section{padding:clamp(56px,8vw,104px) 0}
+
+  /* ---------- barre ---------- */
+  .barre{
+    position:sticky; top:0; z-index:60; background:rgba(13,20,36,.86);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--filet);
+  }
+  .barre .wrap{display:flex; align-items:center; gap:20px; height:64px}
+  .marque{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--ivoire); text-decoration:none; white-space:nowrap;
+  }
+  .marque b{color:var(--or)}
+  .barre nav{display:none; gap:22px; margin-left:auto; font-size:14px}
+  @media(min-width:900px){.barre nav{display:flex}}
+  .barre nav a{color:var(--mute); text-decoration:none; transition:color .15s}
+  .barre nav a:hover{color:var(--ivoire)}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    min-height:44px; padding:11px 20px; border-radius:10px; font-size:15px; font-weight:600;
+    text-decoration:none; border:1px solid transparent; cursor:pointer; transition:transform .12s, background .15s, border-color .15s;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-or{background:var(--or); color:#15203a}
+  .btn-or:hover{background:var(--or-vif)}
+  .btn-fil{border-color:var(--filet); color:var(--ivoire); background:transparent}
+  .btn-fil:hover{border-color:var(--or); color:var(--or-vif)}
+  .barre .btn{margin-left:auto; padding:9px 16px; font-size:14px; min-height:40px}
+  @media(min-width:900px){.barre .btn{margin-left:0}}
+
+  /* ---------- hero ---------- */
+  .hero{padding-top:clamp(40px,6vw,72px); padding-bottom:clamp(40px,6vw,64px)}
+  .hero .grille{display:grid; gap:clamp(28px,4vw,56px); grid-template-columns:1fr; align-items:center}
+  @media(min-width:1000px){.hero .grille{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}}
+  .hero p.sous{font-size:clamp(17px,1.5vw,19px); color:var(--corps); max-width:54ch}
+  .actions{display:flex; flex-wrap:wrap; gap:12px; margin:26px 0 0}
+  .preuves{display:flex; flex-wrap:wrap; gap:26px; margin-top:30px; padding-top:22px; border-top:1px solid var(--filet)}
+  .preuves .v{
+    font-family:'JetBrains Mono',monospace; font-size:19px; color:var(--ivoire); display:block; line-height:1.2;
+  }
+  .preuves .l{font-size:12.5px; color:var(--mute)}
+  .capsule{
+    position:relative; border:1px solid var(--filet); border-radius:16px; overflow:hidden;
+    background:#0a0f1c; box-shadow:0 30px 80px rgba(0,0,0,.45);
+  }
+  .capsule img{display:block; width:100%; height:auto}
+  .capsule .chrome{
+    display:flex; align-items:center; gap:7px; padding:10px 14px; border-bottom:1px solid var(--filet);
+    background:#111a2e;
+  }
+  .capsule .chrome i{width:9px; height:9px; border-radius:50%; background:#2b3550}
+  .pastille{width:9px; height:9px; border-radius:50%; background:#2b3550}
+  .chrome span{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mute); margin-left:8px;
+  }
+
+  /* ---------- console ---------- */
+  .capacites{display:grid; gap:10px; grid-template-columns:1fr; margin-bottom:20px}
+  @media(min-width:760px){.capacites{grid-template-columns:repeat(3,1fr)}}
+  .cap{
+    text-align:left; background:transparent; border:1px solid var(--filet); border-radius:12px;
+    padding:14px 16px; cursor:pointer; color:var(--corps); font-family:inherit; font-size:15px;
+    transition:border-color .18s, background .18s, transform .18s; min-height:44px;
+  }
+  .cap:hover{border-color:#3a4a6b}
+  .cap b{display:block; color:var(--ivoire); font-weight:600; margin-bottom:3px}
+  .cap span{font-size:13.5px; color:var(--mute); display:block; line-height:1.45}
+  .cap[aria-selected="true"]{
+    border-color:var(--or); background:linear-gradient(180deg,rgba(200,169,81,.10),rgba(200,169,81,.02));
+  }
+  .cap[aria-selected="true"] b{color:var(--or-vif)}
+  .ecran-zone{display:grid; gap:20px; grid-template-columns:minmax(0,1fr)}
+  @media(min-width:1000px){.ecran-zone{grid-template-columns:minmax(0,1fr) 330px}}
+  .ecran{
+    position:relative; border:1px solid var(--filet); border-radius:14px; overflow:hidden;
+    background:#0a0f1c; line-height:0;
+  }
+  .ecran img{display:block; width:100%; height:auto; transition:opacity .3s}
+  .ecran.charge img{opacity:.55}
+  .point{
+    position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%;
+    border:1px solid rgba(200,169,81,.55); background:rgba(200,169,81,.16); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; padding:0;
+    transition:transform .18s, background .18s, border-color .18s;
+  }
+  .point::after{content:''; width:7px; height:7px; border-radius:50%; background:var(--or)}
+  .point:hover,.point[aria-pressed="true"]{transform:scale(1.18); background:rgba(200,169,81,.34); border-color:var(--or)}
+  .point .halo{
+    position:absolute; inset:-8px; border-radius:50%; border:1px solid rgba(200,169,81,.45);
+    animation:halo 2.6s ease-out infinite;
+  }
+  @keyframes halo{0%{transform:scale(.72); opacity:.85}70%{transform:scale(1.35); opacity:0}100%{opacity:0}}
+  .panneau{
+    border:1px solid var(--filet); border-radius:14px; padding:18px 20px; background:var(--salle2);
+    align-self:start;
+  }
+  .panneau .fil{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--or-grave); margin:0 0 8px;
+  }
+  .panneau h4{margin:0 0 8px; color:var(--ivoire); font-size:16px; font-weight:600}
+  .panneau p{font-size:14.5px; margin:0 0 10px}
+  .panneau .lecon{
+    font-size:13px; color:var(--mute); border-top:1px solid var(--filet); padding-top:10px; margin:0;
+  }
+  .panneau .lecon b{color:var(--corps); font-weight:500}
+  .indice{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--mute);
+    margin:14px 0 0; text-align:right;
+  }
+
+  /* ---------- resultats ---------- */
+  .resultats{display:grid; gap:1px; background:var(--filet); border:1px solid var(--filet); border-radius:14px; overflow:hidden}
+  @media(min-width:760px){.resultats{grid-template-columns:1fr 1fr}}
+  @media(min-width:1080px){.resultats{grid-template-columns:repeat(3,1fr)}}
+  .res{background:var(--salle); padding:22px 24px}
+  .res .n{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--or-grave); letter-spacing:.14em;
+  }
+  .res h3{margin:8px 0 6px; font-size:16.5px}
+  .res p{font-size:14.5px; margin:0; color:var(--mute)}
+
+  /* ---------- demonstration ---------- */
+  .demo{display:grid; gap:18px; grid-template-columns:1fr}
+  @media(min-width:960px){.demo{grid-template-columns:1fr 1fr}}
+  .term{
+    border:1px solid var(--filet); border-radius:14px; background:#0a0f1c; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .term .tete{
+    display:flex; align-items:center; gap:8px; padding:11px 16px; border-bottom:1px solid var(--filet);
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--mute); background:#111a2e;
+  }
+  .term.bon .tete{color:var(--or-vif)}
+  .term .corps{padding:18px 20px; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.7}
+  /* La hauteur est reservee des le depart : sans elle, la reponse qui arrive
+     pousse la page vers le bas au moment ou on la lit. */
+  @media(min-width:960px){.term .corps{min-height:420px}}
+  .term .dit{color:#d5dbe6; white-space:pre-wrap; margin:0 0 16px}
+  .term .dit .lbl{color:var(--or-grave); display:block; font-size:11px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:6px}
+  .term .rep{
+    border-top:1px dashed var(--filet); padding-top:14px; color:var(--mute); white-space:pre-wrap; margin:0;
+  }
+  .term.bon .rep{color:var(--corps)}
+  .caret{
+    display:inline-block; width:7px; height:14px; background:var(--or); vertical-align:-2px;
+    animation:blink 1s steps(1) infinite;
+  }
+  @keyframes blink{50%{opacity:0}}
+  .artefact{
+    margin-top:14px; border:1px solid rgba(200,169,81,.35); border-radius:10px; padding:12px 14px;
+    background:rgba(200,169,81,.06);
+  }
+  .artefact .t{font-family:'Space Grotesk',sans-serif; color:var(--ivoire); font-size:14px; font-weight:600; margin:0 0 4px}
+  .artefact .s{font-family:'Space Grotesk',sans-serif; font-size:13px; color:var(--mute); margin:0}
+
+  /* ---------- lecons ---------- */
+  .lecons{border:1px solid var(--filet); border-radius:14px; overflow:hidden}
+  .lecon-l{
+    display:flex; gap:16px; align-items:baseline; padding:14px 20px; border-bottom:1px solid var(--filet);
+    transition:background .15s;
+  }
+  .lecon-l:last-child{border-bottom:none}
+  .lecon-l:hover{background:var(--salle2)}
+  .lecon-l .i{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--or-grave); flex:0 0 32px}
+  .lecon-l .t{color:var(--ivoire); font-size:15.5px; flex:1}
+  .lecon-l .d{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--mute); flex:0 0 auto}
+
+  /* ---------- feuille claire ---------- */
+  .feuille{background:#efeae0; color:var(--encre)}
+  .feuille h2,.feuille h3{color:var(--encre)}
+  .feuille p{color:#3c4657}
+  .duo{display:grid; gap:24px; grid-template-columns:1fr; margin-top:28px}
+  @media(min-width:860px){.duo{grid-template-columns:1fr 1fr}}
+  .duo .bloc{background:#f7f4ed; border:1px solid #ddd5c6; border-radius:14px; padding:22px 24px}
+  .duo ul{margin:0; padding:0; list-style:none}
+  .duo li{padding:9px 0 9px 26px; position:relative; font-size:15px; border-bottom:1px solid #e5ded0}
+  .duo li:last-child{border-bottom:none}
+  .duo li::before{
+    content:''; position:absolute; left:2px; top:17px; width:10px; height:2px; background:var(--or-grave);
+  }
+  .duo .moins li::before{background:#b0705a}
+  .autres{display:grid; gap:14px; grid-template-columns:1fr; margin-top:26px}
+  @media(min-width:760px){.autres{grid-template-columns:repeat(3,1fr)}}
+  .autre{
+    display:block; text-decoration:none; background:#f7f4ed; border:1px solid #ddd5c6; border-radius:12px;
+    padding:16px 18px; transition:border-color .15s, transform .15s;
+  }
+  .autre:hover{border-color:var(--or-grave); transform:translateY(-2px)}
+  .autre b{display:block; color:var(--encre); font-size:16px; margin-bottom:4px}
+  .autre span{font-size:13.5px; color:#5c6675}
+  .autre .fleche{color:var(--or-grave); font-family:'JetBrains Mono',monospace; font-size:13px}
+
+  /* ---------- programme ---------- */
+  .etapes{display:grid; gap:16px; grid-template-columns:1fr; margin-top:26px}
+  @media(min-width:900px){.etapes{grid-template-columns:repeat(3,1fr)}}
+  .etape{border:1px solid var(--filet); border-radius:14px; padding:20px 22px; background:var(--salle2)}
+  .etape .n{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--or-grave); letter-spacing:.16em; text-transform:uppercase}
+  .etape h3{margin:10px 0 10px}
+  .etape ul{margin:0; padding:0; list-style:none}
+  .etape li{font-size:14px; padding:6px 0; border-bottom:1px solid rgba(38,50,78,.6); color:var(--corps)}
+  .etape li:last-child{border-bottom:none}
+  .etape li.ici{color:var(--or-vif)}
+  .etape li.ici::after{content:' - vous etes ici'; font-size:11.5px; color:var(--or-grave); font-family:'JetBrains Mono',monospace}
+  .etape li.av{color:var(--avance)}
+
+  /* ---------- prix ---------- */
+  .prix-zone{
+    border:1px solid var(--filet); border-radius:18px; background:linear-gradient(180deg,var(--salle2),var(--salle));
+    padding:clamp(26px,4vw,42px); display:grid; gap:28px; grid-template-columns:1fr; align-items:center;
+  }
+  @media(min-width:900px){.prix-zone{grid-template-columns:minmax(0,1fr) 320px}}
+  .tarif{
+    border:1px solid rgba(200,169,81,.4); border-radius:14px; padding:22px 24px; background:rgba(200,169,81,.05);
+  }
+  .tarif .m{font-family:'JetBrains Mono',monospace; font-size:38px; color:var(--ivoire); line-height:1}
+  .tarif .m small{font-size:15px; color:var(--mute)}
+  .tarif ul{margin:16px 0 20px; padding:0; list-style:none}
+  .tarif li{font-size:14px; padding:5px 0; color:var(--corps)}
+  .tarif .btn{width:100%}
+  .synchro{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--or-grave); margin:12px 0 0; text-align:center;
+  }
+
+  /* ---------- faq ---------- */
+  .faq{border-top:1px solid var(--filet)}
+  .q{border-bottom:1px solid var(--filet)}
+  .q button{
+    width:100%; text-align:left; background:none; border:none; color:var(--ivoire); font-family:inherit;
+    font-size:16.5px; font-weight:500; padding:18px 40px 18px 0; cursor:pointer; position:relative; min-height:44px;
+  }
+  .q button::after{
+    content:'+'; position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    font-family:'JetBrains Mono',monospace; color:var(--or); font-size:19px; transition:transform .2s;
+  }
+  .q[open] button::after{content:'-'}
+  .q .rep{padding:0 0 18px; font-size:15px; color:var(--corps); max-width:74ch}
+  .q .rep p{margin:0 0 10px}
+  .q .rep p:last-child{margin:0}
+
+  /* ---------- pied ---------- */
+  footer{border-top:1px solid var(--filet); padding:36px 0 60px; color:var(--mute); font-size:14px}
+
+  /* ---------- note de maquette ---------- */
+  .note-maquette{
+    background:#141d33; border-top:3px solid var(--or); padding:34px 0 44px;
+  }
+  .note-maquette h3{color:var(--or-vif)}
+  .note-maquette table{border-collapse:collapse; width:100%; font-size:13.5px; margin-top:12px}
+  .note-maquette th,.note-maquette td{
+    text-align:left; padding:8px 12px; border-bottom:1px solid var(--filet); vertical-align:top;
+  }
+  .note-maquette th{font-family:'JetBrains Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--mute); font-weight:500}
+  .note-maquette .c{font-family:'JetBrains Mono',monospace; color:var(--sauge); white-space:nowrap}
+  .note-maquette ul{margin:10px 0 0; padding-left:18px; font-size:14px}
+  .note-maquette li{margin-bottom:6px}
+
+  [data-reveal]{opacity:0; transform:translateY(16px); transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1)}
+  [data-reveal].vu{opacity:1; transform:none}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    [data-reveal]{opacity:1; transform:none; transition:none}
+    .point .halo,.caret{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="barre">
+  <div class="wrap">
+    <a class="marque" href="#">My<b>Digipal</b> / AI Academy</a>
+    <nav>
+      <a href="#claude">Claude</a>
+      <a href="#lecons">Le parcours</a>
+      <a href="#programme">Le programme</a>
+      <a href="#tarifs">Tarifs</a>
+    </nav>
+    <a class="btn btn-or" href="#tarifs">Commencer</a>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="grille">
+      <div>
+        <p class="kicker">Formation Claude - Anthropic</p>
+        <h1>Formation Claude : apprendre l'IA avec l'outil d'<em>Anthropic</em></h1>
+        <p class="sous">La méthode de prompting d'abord, le parcours Claude ensuite, puis les automatisations. Cours en ligne, à votre rythme, en français.</p>
+        <div class="actions">
+          <a class="btn btn-or" href="#tarifs">Commencer, 290 &euro;</a>
+          <a class="btn btn-fil" href="#">15 leçons offertes</a>
+        </div>
+        <div class="preuves">
+          <div><span class="v">9,4 / 10</span><span class="l">sur 497 retours</span></div>
+          <div><span class="v">78</span><span class="l">leçons, dont 8 sur Claude</span></div>
+          <div><span class="v">7 h 52</span><span class="l">de lecture et d'exercices</span></div>
+        </div>
+      </div>
+      <div class="capsule" data-reveal>
+        <div class="chrome"><i class="pastille"></i><i class="pastille"></i><i class="pastille"></i><span>claude.ai - un projet ouvert</span></div>
+        <img src="../../public/academy/outils/claude/projet-ouvert.png" alt="Un projet Claude ouvert, avec ses instructions, sa mémoire, son contexte et ses tâches programmées">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="claude">
+  <div class="wrap">
+    <p class="kicker">Ce que vous apprenez à piloter</p>
+    <h2>Claude, écran par écran</h2>
+    <p>Trois choses que presque personne n'utilise, et qui font la différence entre une conversation et un outil de travail. Touchez un repère doré sur l'écran.</p>
+
+    <div style="margin-top:28px">
+      <div class="capacites" role="tablist" aria-label="Les capacités de Claude">
+        <button class="cap" role="tab" aria-selected="true" data-ecran="projets">
+          <b>Les projets</b>
+          <span>Le contexte que vous n'écrivez qu'une fois, et que Claude garde.</span>
+        </button>
+        <button class="cap" role="tab" aria-selected="false" data-ecran="connecteurs">
+          <b>Les connecteurs</b>
+          <span>Drive, Gmail, Microsoft 365, Slack, Notion, branchés sur la conversation.</span>
+        </button>
+        <button class="cap" role="tab" aria-selected="false" data-ecran="taches">
+          <b>Les tâches planifiées</b>
+          <span>Ce qui tourne sans vous, le matin ou le vendredi soir.</span>
+        </button>
+      </div>
+
+      <div class="ecran-zone">
+        <div class="ecran" id="ecran">
+          <img id="ecran-img" src="../../public/academy/outils/claude/projet-ouvert.png" alt="Un projet Claude ouvert">
+        </div>
+        <div class="panneau" id="panneau">
+          <p class="fil" id="p-fil">Les projets</p>
+          <h4 id="p-titre">Le contexte, écrit une fois</h4>
+          <p id="p-texte">Un projet garde vos documents, vos instructions et ce que Claude a retenu de vous. Vous ne réexpliquez plus qui vous êtes ni ce que vous vendez à chaque conversation.</p>
+          <p class="lecon" id="p-lecon"><b>Leçon M4C-L02</b> : Les projets Claude, contexte et mémoire.</p>
+        </div>
+      </div>
+    </div>
+    <p class="indice" id="indice">Survolez un repère doré</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">À la sortie</p>
+    <h2>Ce que vous saurez produire avec Claude</h2>
+    <p>Pas des connaissances sur l'IA. Des choses que vous rendez à quelqu'un.</p>
+    <div class="resultats" style="margin-top:28px" data-reveal>
+      <div class="res"><span class="n">01</span><h3>Une synthèse de soixante pages</h3><p>Trois rapports déposés dans un projet, une note d'une page qui dit ce qui a changé et ce qu'il faut décider.</p></div>
+      <div class="res"><span class="n">02</span><h3>Un tableau de bord lisible</h3><p>Un export brut en entrée, un tableau de bord à l'écran en sortie, que vous ajustez en parlant.</p></div>
+      <div class="res"><span class="n">03</span><h3>Une présentation montée</h3><p>Le brief, le plan, puis les diapositives. Vous gardez la main sur l'argument, pas sur la mise en forme.</p></div>
+      <div class="res"><span class="n">04</span><h3>Un projet client qui se souvient</h3><p>Ses documents, son ton, ses contraintes. Vous ouvrez, vous demandez, il sait déjà de quoi vous parlez.</p></div>
+      <div class="res"><span class="n">05</span><h3>Une veille du vendredi</h3><p>Une tâche planifiée qui lit, trie et vous rend un bilan pendant que vous faites autre chose.</p></div>
+      <div class="res"><span class="n">06</span><h3>Le bon outil, au bon moment</h3><p>Une méthode de choix entre Claude, ChatGPT, Copilot et Gemini, qui ne se périme pas à la prochaine sortie.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">La méthode, appliquée à Claude</p>
+    <h2>La même demande, écrite deux fois</h2>
+    <p>Ce que la formation change tient dans cet écart. Cinq pièces à poser dans la demande : le contexte, le rôle, l'action, le format, le ton.</p>
+
+    <div class="demo" style="margin-top:28px" data-reveal>
+      <div class="term">
+        <div class="tete">Ce que la plupart des gens écrivent</div>
+        <div class="corps">
+          <p class="dit"><span class="lbl">Vous</span>Résume-moi ces documents.</p>
+          <p class="rep">Voici un résumé des documents fournis. Le premier présente les résultats du trimestre, le deuxième détaille les actions menées, le troisième revient sur les objectifs annuels. Dans l'ensemble, la performance est contrastée et plusieurs leviers pourraient être activés.</p>
+        </div>
+      </div>
+      <div class="term bon">
+        <div class="tete">La même, une fois la méthode apprise</div>
+        <div class="corps">
+          <p class="dit" id="prompt-bon"><span class="lbl">Vous</span><span id="prompt-txt"></span><span class="caret" id="caret"></span></p>
+          <div id="reponse-bon" style="display:none">
+            <p class="rep">Trois écarts changent la décision du comité. Le premier est chiffré et daté, les deux autres reposent sur une donnée manquante que je signale plutôt que de l'estimer.</p>
+            <div class="artefact">
+              <p class="t">Note au comité - T1 à T3</p>
+              <p class="s">Une page, un tableau des écarts, trois recommandations. Posée à côté de la conversation, prête à envoyer.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="lecons">
+  <div class="wrap">
+    <p class="kicker">Le parcours Claude</p>
+    <h2>Les huit leçons du module</h2>
+    <p>Elles arrivent après la méthode de prompting, et avant les automatisations. Vous choisissez un outil, et le parcours ne garde que celui-là.</p>
+    <div class="lecons" style="margin-top:26px" data-reveal>
+      <div class="lecon-l"><span class="i">01</span><span class="t">Où vit Claude, et lequel choisir selon ce qu'on fait</span><span class="d">7 min</span></div>
+      <div class="lecon-l"><span class="i">02</span><span class="t">Les projets Claude : contexte et mémoire</span><span class="d">6 min</span></div>
+      <div class="lecon-l"><span class="i">03</span><span class="t">Les artefacts : ce que Claude produit à l'écran</span><span class="d">6 min</span></div>
+      <div class="lecon-l"><span class="i">04</span><span class="t">Produire un document et une synthèse soignée</span><span class="d">6 min</span></div>
+      <div class="lecon-l"><span class="i">05</span><span class="t">Produire un tableau de bord et gérer de la donnée</span><span class="d">6 min</span></div>
+      <div class="lecon-l"><span class="i">06</span><span class="t">Produire une présentation</span><span class="d">5 min</span></div>
+      <div class="lecon-l"><span class="i">07</span><span class="t">Claude Code en aperçu</span><span class="d">7 min</span></div>
+      <div class="lecon-l"><span class="i">08</span><span class="t">Quand choisir Claude : la matrice de décision</span><span class="d">6 min</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="feuille">
+  <div class="wrap">
+    <p class="kicker" style="color:var(--or-grave)">Honnêtement</p>
+    <h2>Ce que Claude fait mieux, et là où il coince</h2>
+    <p>Une formation qui ne dit que du bien de son outil ne sert à rien le jour où l'outil coince.</p>
+    <div class="duo">
+      <div class="bloc">
+        <h3>Là où il est devant</h3>
+        <ul>
+          <li>Les documents longs : soixante pages lues sans perdre le fil du début.</li>
+          <li>Les artefacts : on repart avec un livrable, pas avec un bloc de texte à recopier.</li>
+          <li>Les connecteurs et le MCP : c'est l'outil qui se branche le plus loin sur vos données.</li>
+          <li>Le ton écrit : moins de superlatifs, moins de listes à puces involontaires.</li>
+        </ul>
+      </div>
+      <div class="bloc">
+        <h3>Là où il coince</h3>
+        <ul class="moins">
+          <li>Il ne génère pas d'images. Pour un visuel, on passe ailleurs, et la formation le dit.</li>
+          <li>Moins répandu en entreprise : votre service informatique connaît souvent mieux Copilot.</li>
+          <li>La version gratuite s'arrête vite dès qu'on travaille sérieusement.</li>
+          <li>Brancher un connecteur demande de comprendre ce qu'on autorise, et c'est une leçon en soi.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-top:40px">Ce n'est peut-être pas votre outil</h3>
+    <p>Le parcours se choisit au module 4, et il se change. Si vous travaillez déjà toute la journée dans une autre suite, commencez par là.</p>
+    <div class="autres">
+      <a class="autre" href="#"><b>Microsoft Copilot</b><span>Dans Word, Excel, Outlook et Teams, sur vos fichiers d'entreprise.</span><br><span class="fleche">La formation Copilot -&gt;</span></a>
+      <a class="autre" href="#"><b>ChatGPT</b><span>Le plus répandu : les GPT sur mesure, les fichiers, la recherche.</span><br><span class="fleche">La formation ChatGPT -&gt;</span></a>
+      <a class="autre" href="#"><b>Google Gemini</b><span>Dans Docs, Sheets et Gmail, plus la recherche approfondie.</span><br><span class="fleche">La formation Gemini -&gt;</span></a>
+    </div>
+  </div>
+</section>
+
+<section id="programme">
+  <div class="wrap">
+    <p class="kicker">Le programme complet</p>
+    <h2>Claude est une étape, pas la formation entière</h2>
+    <p>Ce que vous achetez est une formation à l'intelligence artificielle au travail. Claude en est la porte d'entrée pratique.</p>
+    <div class="etapes" data-reveal>
+      <div class="etape">
+        <span class="n">Étape 1 - Débuter</span>
+        <h3>Comprendre, puis demander</h3>
+        <ul>
+          <li>Bienvenue et diagnostic</li>
+          <li>Comprendre l'IA générative</li>
+          <li>La méthode de prompting</li>
+          <li class="ici">Claude, le parcours de votre outil</li>
+        </ul>
+      </div>
+      <div class="etape">
+        <span class="n">Étape 2 - Maîtriser</span>
+        <h3>Juger, encadrer, produire</h3>
+        <ul>
+          <li>Prompting avancé</li>
+          <li>Juger une réponse</li>
+          <li>Vos données et le cadre d'usage</li>
+          <li>Écrire, traduire, résumer</li>
+          <li>Réunions, comptes rendus et messages</li>
+        </ul>
+      </div>
+      <div class="etape">
+        <span class="n">Étape 3 - Mettre en œuvre</span>
+        <h3>Ce qui tourne sans vous</h3>
+        <ul>
+          <li class="av">Les agents</li>
+          <li class="av">Les serveurs MCP</li>
+          <li class="av">Les chaînes d'automatisation</li>
+          <li class="av">Le plan de déploiement dans l'équipe</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tarifs">
+  <div class="wrap">
+    <div class="prix-zone" data-reveal>
+      <div>
+        <p class="kicker">Les tarifs</p>
+        <h2>Une formation, soixante jours d'accès</h2>
+        <p>Le parcours complet, votre outil compris, l'assistant qui répond pendant que vous apprenez, et l'attestation à la fin. Rien n'est facturé au mois.</p>
+        <p style="color:var(--mute); font-size:14.5px">Vous pourrez ajouter les automatisations plus tard, sans repayer ce que vous avez déjà.</p>
+      </div>
+      <div class="tarif">
+        <p style="margin:0 0 4px; color:var(--or-vif); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase">La méthode</p>
+        <p class="m">290 &euro; <small>TTC</small></p>
+        <ul>
+          <li>78 leçons, 7 h 52</li>
+          <li>Le parcours Claude, 8 leçons</li>
+          <li>18 exercices relus</li>
+          <li>60 jours d'accès</li>
+        </ul>
+        <a class="btn btn-or" href="#">Commencer maintenant</a>
+        <p class="synchro">montants lus dans l'application</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">Questions</p>
+    <h2>Ce qu'on nous demande sur la formation Claude</h2>
+    <div class="faq" style="margin-top:24px">
+      <details class="q" open>
+        <summary style="list-style:none"><button type="button">Faut-il un abonnement Claude payant pour suivre la formation ?</button></summary>
+        <div class="rep"><p>Non pour commencer. Les premières leçons se suivent avec la version gratuite d'Anthropic. Les projets, les connecteurs et les tâches planifiées demandent un abonnement chez Anthropic, que nous ne vendons pas et qui ne passe pas par nous. La formation dit exactement à quel moment ça devient nécessaire.</p></div>
+      </details>
+      <details class="q">
+        <summary style="list-style:none"><button type="button">Et si mon entreprise utilise Copilot, pas Claude ?</button></summary>
+        <div class="rep"><p>La méthode est la même pour les quatre outils, et c'est elle qui compte. Le parcours outil se change quand vous voulez : vous suivez celui de Copilot à la place, et rien d'autre ne bouge dans votre formation.</p></div>
+      </details>
+      <details class="q">
+        <summary style="list-style:none"><button type="button">Combien de temps faut-il y consacrer ?</button></summary>
+        <div class="rep"><p>Comptez sept à huit heures de lecture et d'exercices sur le parcours, étalées comme vous le souhaitez pendant vos soixante jours d'accès. La plupart des apprenants font une leçon par jour, le matin, sur une trentaine de jours.</p></div>
+      </details>
+      <details class="q">
+        <summary style="list-style:none"><button type="button">C'est une formation en ligne ou en présentiel ?</button></summary>
+        <div class="rep"><p>En ligne, à votre rythme, avec des exercices relus par un humain. Si vous cherchez une session animée en salle ou à distance pour votre équipe, c'est une autre offre et nous la faisons aussi.</p></div>
+      </details>
+      <details class="q">
+        <summary style="list-style:none"><button type="button">Est-ce qu'il y a une attestation ?</button></summary>
+        <div class="rep"><p>Oui, une attestation nominative à la fin du parcours, qui liste les domaines couverts et le volume réellement suivi. Elle ne remplace pas un diplôme et nous ne prétendons pas le contraire.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p style="margin:0">MyDigipal - AI Academy. Maquette, les liens ne sont pas actifs.</p>
+  </div>
+</footer>
+
+<div class="note-maquette">
+  <div class="wrap">
+    <p class="kicker">Pour toi, pas pour la page</p>
+    <h3>Les métadonnées et ce qui reste à vérifier</h3>
+    <table>
+      <tr><th>Champ</th><th>Valeur</th><th>Caractères</th></tr>
+      <tr><td>Titre du frontmatter</td><td>Formation Claude IA en ligne : le programme</td><td class="c">42 / 37-47</td></tr>
+      <tr><td>Titre rendu</td><td>Formation Claude IA en ligne : le programme | MyDigipal</td><td class="c">55 / 50-60</td></tr>
+      <tr><td>Description</td><td>Formation Claude en ligne : la méthode de prompting, les projets et connecteurs d'Anthropic, puis les automatisations. 8 leçons sur Claude, à votre rythme.</td><td class="c">156 / 145-160</td></tr>
+      <tr><td>H1</td><td>Formation Claude : apprendre l'IA avec l'outil d'Anthropic</td><td class="c">unique</td></tr>
+    </table>
+    <ul>
+      <li>Les huit titres de leçons viennent de <span style="font-family:'JetBrains Mono',monospace">atelier/contenu/lot2/M4C/_module.json</span>. La liste servie par l'application annonce 75 minutes pour ce module quand ce fichier en totalise 49 : c'est l'écart que l'extension de l'API réglera, et d'ici là aucun de ces chiffres ne part en production.</li>
+      <li>Les montants, le nombre de leçons, la note et le nombre de retours affichés ici sont ceux de l'API d'aujourd'hui. Dans la vraie page ils sont lus au build puis relus dans le navigateur, donc un changement de prix dans l'application se voit sans redéploiement du site.</li>
+      <li>Vocabulaire couvert par cette page : formation claude, formation claude ia, formation claude ai, formation claude anthropic, cours claude ia, cours claude ai, formation ia claude, apprendre claude ia, formation claude ai en ligne.</li>
+      <li>Aucun bouton n'ouvre Claude : la démonstration se joue sur la page, comme tu l'as demandé.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- la console ---------- */
+  var ECRANS = {
+    projets: {
+      img: '../../public/academy/outils/claude/projet-ouvert.png',
+      alt: 'Un projet Claude ouvert',
+      fil: 'Les projets',
+      repos: {
+        titre: 'Le contexte, écrit une fois',
+        texte: "Un projet garde vos documents, vos instructions et ce que Claude a retenu de vous. Vous ne réexpliquez plus qui vous êtes ni ce que vous vendez à chaque conversation.",
+        lecon: '<b>Leçon M4C-L02</b> : Les projets Claude, contexte et mémoire.'
+      },
+      points: [
+        { x: 66, y: 16, titre: 'Instructions',
+          texte: "Le comportement que Claude garde d'une conversation à l'autre : votre ton, vos interdits, ce qu'il doit toujours demander avant de répondre.",
+          lecon: "<b>Leçon M4C-L02</b> : on les écrit ensemble, sur votre vrai dossier." },
+        { x: 64, y: 30, titre: 'Mémoire',
+          texte: "Ce qu'il a retenu de vous au fil des conversations. La leçon montre comment la lire, la corriger, et la couper quand elle n'a rien à faire là.",
+          lecon: "<b>Leçon M4C-L02</b> : la mémoire, et le jour où il vaut mieux la vider." },
+        { x: 78, y: 61, titre: 'Contexte',
+          texte: "Vos PDF et vos documents de référence, déposés une fois pour toutes. C'est ce qui permet de travailler sur soixante pages sans les recoller à chaque question.",
+          lecon: "<b>Leçon M4C-L04</b> : produire un document et une synthèse soignée." },
+        { x: 65, y: 79, titre: 'Programmé',
+          texte: "Une tâche qui se répète, attachée au projet. Le bilan du vendredi part avec le contexte du dossier, pas à vide.",
+          lecon: "<b>Leçon M4C-L01</b> : choisir la bonne porte selon le travail." },
+        { x: 17, y: 24, titre: 'Chat ou Cowork',
+          texte: "Deux façons de travailler : la conversation, ou l'espace où Claude produit à côté de vous. La leçon dit laquelle prendre selon ce que vous rendez.",
+          lecon: "<b>Leçon M4C-L03</b> : les artefacts, ce que Claude produit à l'écran." }
+      ]
+    },
+    connecteurs: {
+      img: '../../public/academy/outils/claude/repertoire-connecteurs.png',
+      alt: 'Le répertoire des connecteurs de Claude',
+      fil: 'Les connecteurs',
+      repos: {
+        titre: 'Brancher Claude sur vos outils',
+        texte: "Drive, Gmail, Microsoft 365, Slack, Notion, HubSpot. Claude va chercher l'information là où elle est, au lieu que vous la copiiez dans la conversation.",
+        lecon: "<b>Étape 3</b> : c'est la porte d'entrée des serveurs MCP et des automatisations."
+      },
+      points: [
+        { x: 46, y: 40, titre: 'Google Drive, déjà branché',
+          texte: "Une fois autorisé, Claude cherche et lit vos fichiers sans que vous les téléversiez. La coche verte dit que la connexion est active.",
+          lecon: "<b>Leçon M4C-L01</b> : ce que chaque porte sait faire, et ce qu'elle voit." },
+        { x: 8, y: 66, titre: 'Microsoft 365',
+          texte: "SharePoint, OneDrive, Outlook et Teams, accessibles depuis Claude. C'est ce qui permet de garder Claude même quand l'entreprise vit dans la suite Microsoft.",
+          lecon: "<b>Module 10</b> : vos données et le cadre d'usage, avant de brancher quoi que ce soit." },
+        { x: 86, y: 30, titre: '2 307 connecteurs',
+          texte: "Le répertoire complet. La formation n'en fait pas le tour : elle apprend à juger si un connecteur mérite l'accès qu'il demande.",
+          lecon: "<b>Étape 3</b> : les serveurs MCP, et celui qu'on construit soi-même." }
+      ]
+    },
+    taches: {
+      img: '../../public/academy/outils/claude/taches-planifiees.png',
+      alt: 'Les tâches planifiées de Claude',
+      fil: 'Les tâches planifiées',
+      repos: {
+        titre: 'Ce qui tourne sans vous',
+        texte: "Une tâche part à heure fixe, lit ce qu'il faut, et vous rend le résultat. C'est le premier pas vers les automatisations, et il ne demande aucun code.",
+        lecon: "<b>Leçon M4C-L01</b> : quelle porte pour quel travail."
+      },
+      points: [
+        { x: 87, y: 3, titre: 'Nouvelle tâche',
+          texte: "Deux façons de la créer : en la décrivant à Claude, ou en réglant vous-même la fréquence et le contenu. La leçon montre les deux et dit quand chacune sert.",
+          lecon: "<b>Leçon M4C-L01</b> : où vit Claude, et lequel choisir." },
+        { x: 66, y: 79, titre: 'Bilan hebdomadaire',
+          texte: "Tous les vendredis à 16 h, un résumé de la semaine écoulée. Le genre de tâche que personne ne fait à la main deux semaines de suite.",
+          lecon: "<b>Étape 3</b> : la même idée, appliquée à un vrai processus d'équipe." },
+        { x: 69, y: 64, titre: 'Triage de la boîte',
+          texte: "Catégoriser ce qui arrive et préparer les réponses urgentes. À lire avec le module sur les données : ce que vous laissez lire compte autant que le résultat.",
+          lecon: "<b>Module 12</b> : réunions, comptes rendus et messages." }
+      ]
+    }
+  };
+
+  var ecran = document.getElementById('ecran');
+  var img = document.getElementById('ecran-img');
+  var pFil = document.getElementById('p-fil');
+  var pTitre = document.getElementById('p-titre');
+  var pTexte = document.getElementById('p-texte');
+  var pLecon = document.getElementById('p-lecon');
+  var indice = document.getElementById('indice');
+  var courant = 'projets';
+
+  function ecrire(fil, o){
+    pFil.textContent = fil;
+    pTitre.textContent = o.titre;
+    pTexte.textContent = o.texte;
+    pLecon.innerHTML = o.lecon;
+  }
+
+  function poser(cle){
+    var e = ECRANS[cle];
+    courant = cle;
+    img.src = e.img;
+    img.alt = e.alt;
+    ecran.querySelectorAll('.point').forEach(function(p){ p.remove(); });
+    e.points.forEach(function(pt, i){
+      var b = document.createElement('button');
+      b.className = 'point';
+      b.type = 'button';
+      b.style.left = pt.x + '%';
+      b.style.top = pt.y + '%';
+      b.setAttribute('aria-label', pt.titre);
+      b.setAttribute('aria-pressed', 'false');
+      if (!reduit && i === 0){
+        var h = document.createElement('span'); h.className = 'halo'; b.appendChild(h);
+      }
+      function montrer(){
+        ecran.querySelectorAll('.point').forEach(function(a){ a.setAttribute('aria-pressed','false'); });
+        b.setAttribute('aria-pressed','true');
+        ecran.classList.add('charge');
+        ecrire(e.fil, pt);
+      }
+      b.addEventListener('mouseenter', montrer);
+      b.addEventListener('focus', montrer);
+      b.addEventListener('click', montrer);
+      ecran.appendChild(b);
+    });
+    ecran.classList.remove('charge');
+    ecrire(e.fil, e.repos);
+    indice.textContent = e.points.length + ' repères sur cet écran';
+  }
+
+  document.querySelectorAll('.cap').forEach(function(c){
+    function choisir(){
+      if (c.dataset.ecran === courant) return;
+      document.querySelectorAll('.cap').forEach(function(a){ a.setAttribute('aria-selected','false'); });
+      c.setAttribute('aria-selected','true');
+      poser(c.dataset.ecran);
+    }
+    c.addEventListener('click', choisir);
+    c.addEventListener('mouseenter', choisir);
+  });
+  poser('projets');
+
+  /* ---------- le prompt qui s'ecrit ---------- */
+  // Pas de retour a la ligne a l'interieur d'un paragraphe : la colonne n'a
+  // pas la meme largeur partout, et un retour force coupe une phrase au
+  // mauvais endroit des que la fenetre change de taille.
+  var PROMPT = "Tu es analyste dans une agence marketing. Dans ce projet, tu as les trois rapports trimestriels de notre client.\n\n"
+    + "Compare-les et sors les trois écarts qui changent la décision du comité. Format : une note d'une page, un tableau des écarts chiffrés, puis ce que tu recommandes.\n\n"
+    + "Ton direct, pas de superlatifs. Si un chiffre manque, dis-le au lieu de l'estimer.";
+  var cible = document.getElementById('prompt-txt');
+  var caret = document.getElementById('caret');
+  var reponse = document.getElementById('reponse-bon');
+  var lance = false;
+
+  function taper(){
+    if (lance) return; lance = true;
+    if (reduit){
+      cible.textContent = PROMPT; caret.style.display = 'none';
+      reponse.style.display = 'block'; return;
+    }
+    // Le rythme se mesure sur l'horloge et non sur un intervalle : un onglet
+    // qui perd le focus ralentit les minuteurs, et la demonstration se jouait
+    // alors au ralenti sans que rien ne le signale.
+    var DUREE = 3200;
+    var debut = performance.now();
+    function pas(t){
+      var part = Math.min(1, (t - debut) / DUREE);
+      cible.textContent = PROMPT.slice(0, Math.round(part * PROMPT.length));
+      if (part < 1){ requestAnimationFrame(pas); return; }
+      caret.style.display = 'none';
+      setTimeout(function(){ reponse.style.display = 'block'; }, 400);
+    }
+    requestAnimationFrame(pas);
+  }
+
+  /* ---------- entrees dans le champ de vision ---------- */
+  if ('IntersectionObserver' in window){
+    var obs = new IntersectionObserver(function(entrees){
+      entrees.forEach(function(e){
+        if (!e.isIntersecting) return;
+        if (e.target.hasAttribute('data-reveal')) e.target.classList.add('vu');
+        if (e.target.classList.contains('demo')) taper();
+        obs.unobserve(e.target);
+      });
+    }, { threshold: 0.25 });
+    document.querySelectorAll('[data-reveal]').forEach(function(n){ obs.observe(n); });
+    var d = document.querySelector('.demo');
+    if (d) obs.observe(d);
+  } else {
+    document.querySelectorAll('[data-reveal]').forEach(function(n){ n.classList.add('vu'); });
+    taper();
+  }
+
+  /* ---------- la FAQ : un seul volet ouvert ---------- */
+  document.querySelectorAll('.q').forEach(function(q){
+    q.querySelector('button').addEventListener('click', function(ev){
+      ev.preventDefault();
+      var ouvert = q.hasAttribute('open');
+      document.querySelectorAll('.q').forEach(function(a){ a.removeAttribute('open'); });
+      if (!ouvert) q.setAttribute('open','');
+    });
+  });
+})();
+</script>
+</body>
+</html>

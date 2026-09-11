@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pages outils Academy - brainstorm et plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --salle:#0d1424; --salle2:#141d33; --salle3:#1c2742; --filet:#26324e;
+    --ivoire:#f2eee4; --corps:#b9c1d1; --mute:#7d879b;
+    --or:#c8a951; --or-vif:#dcbc66; --or-grave:#8a6d24;
+    --craie:#f7f5f0; --encre:#0f1a2e; --lin:#e6e1d6; --brume:#646c7a;
+    --sauge:#2e7d5b; --renard:#d9743f;
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--craie); color:var(--encre);
+    font-family:'Space Grotesk',system-ui,sans-serif; font-size:16px; line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1060px;margin:0 auto;padding:0 24px 140px}
+  header.hero{
+    background:var(--salle); color:var(--ivoire); margin-bottom:56px;
+    border-bottom:3px solid var(--or);
+  }
+  header.hero .wrap{padding-top:56px;padding-bottom:44px}
+  .kicker{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--or); margin:0 0 14px;
+  }
+  h1{font-size:clamp(28px,4.2vw,44px); line-height:1.12; margin:0 0 16px; font-weight:600; letter-spacing:-.02em}
+  header.hero p{color:var(--corps); max-width:68ch; margin:0}
+  .meta{
+    display:flex; flex-wrap:wrap; gap:26px; margin-top:28px; padding-top:22px;
+    border-top:1px solid var(--filet);
+  }
+  .meta div{min-width:120px}
+  .meta .v{font-family:'JetBrains Mono',monospace; font-size:22px; color:var(--or-vif); display:block}
+  .meta .l{font-size:12px; color:var(--mute); text-transform:uppercase; letter-spacing:.12em}
+  h2{
+    font-size:26px; font-weight:600; letter-spacing:-.015em; margin:64px 0 6px;
+    padding-top:26px; border-top:1px solid var(--lin);
+  }
+  h2 .n{font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--or-grave); margin-right:12px}
+  h3{font-size:18px; font-weight:600; margin:34px 0 8px}
+  h4{font-size:15px; font-weight:600; margin:20px 0 6px}
+  p{margin:0 0 14px; max-width:76ch}
+  .chapeau{color:var(--brume); margin-bottom:24px; max-width:76ch}
+  .mono{font-family:'JetBrains Mono',monospace; font-size:.92em}
+  table{border-collapse:collapse; width:100%; margin:18px 0 8px; font-size:14px}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--lin); vertical-align:top}
+  th{
+    font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase;
+    letter-spacing:.1em; color:var(--brume); font-weight:500; border-bottom:1px solid var(--encre);
+  }
+  td.num{font-family:'JetBrains Mono',monospace; text-align:right; white-space:nowrap}
+  tr.tot td{font-weight:600; border-top:1px solid var(--encre); border-bottom:none}
+  .bad{color:#a33a2a; font-weight:600}
+  .table-scroll{overflow-x:auto}
+  .dirs{display:grid; gap:18px; grid-template-columns:1fr; margin:26px 0}
+  @media(min-width:900px){.dirs{grid-template-columns:repeat(3,1fr)}}
+  .dir{
+    border:1px solid var(--lin); border-radius:var(--r); padding:20px; background:#fff;
+    display:flex; flex-direction:column;
+  }
+  .dir.reco{border-color:var(--or); box-shadow:0 0 0 3px rgba(200,169,81,.14)}
+  .dir .tag{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--or-grave); margin-bottom:8px;
+  }
+  .dir h3{margin:0 0 10px; font-size:19px}
+  .dir p{font-size:14.5px; margin-bottom:12px}
+  .sketch{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; line-height:1.45; white-space:pre;
+    background:var(--salle); color:var(--corps); border-radius:10px; padding:14px; overflow-x:auto;
+    margin:4px 0 14px;
+  }
+  .pourcontre{font-size:13.5px; margin-top:auto}
+  .pourcontre div{display:flex; gap:8px; margin-bottom:6px}
+  .pourcontre .s{font-family:'JetBrains Mono',monospace; flex:0 0 auto; width:16px}
+  .pourcontre .plus .s{color:var(--sauge)}
+  .pourcontre .moins .s{color:var(--renard)}
+  .nuit{
+    background:var(--salle); color:var(--corps); border-radius:var(--r); padding:26px 28px;
+    margin:24px 0;
+  }
+  .nuit h3,.nuit h4{color:var(--ivoire)}
+  .nuit .mono{color:var(--or-vif)}
+  .etapes{list-style:none; padding:0; margin:18px 0; counter-reset:e}
+  .etapes li{
+    counter-increment:e; padding:14px 0 14px 52px; border-bottom:1px solid var(--lin); position:relative;
+  }
+  .etapes li:last-child{border-bottom:none}
+  .etapes li::before{
+    content:counter(e,decimal-leading-zero); position:absolute; left:0; top:14px;
+    font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--or-grave);
+    border:1px solid var(--lin); border-radius:8px; width:34px; height:28px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .etapes b{display:block; font-weight:600}
+  .etapes span{font-size:14.5px; color:var(--brume)}
+  .grid2{display:grid; gap:20px; grid-template-columns:1fr}
+  @media(min-width:820px){.grid2{grid-template-columns:1fr 1fr}}
+  .carte{border:1px solid var(--lin); border-radius:var(--r); padding:18px 20px; background:#fff}
+  .carte h4{margin-top:0}
+  .carte p{font-size:14.5px; margin-bottom:8px}
+  .fil{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--brume);
+    text-transform:uppercase; letter-spacing:.1em; margin:0 0 4px;
+  }
+  .alerte{
+    border-left:3px solid var(--renard); background:#fdf3ee; padding:14px 18px;
+    border-radius:0 10px 10px 0; margin:18px 0;
+  }
+  .alerte p{margin:0; font-size:14.5px}
+  .alerte b{color:#a33a2a}
+  .decision{
+    border:1px solid var(--lin); border-radius:var(--r); background:#fff;
+    padding:18px 20px; margin:16px 0;
+  }
+  .decision .q{font-weight:600; margin:0 0 12px; display:flex; gap:10px}
+  .decision .q .id{font-family:'JetBrains Mono',monospace; color:var(--or-grave); flex:0 0 auto}
+  .opts{display:flex; flex-direction:column; gap:8px; margin-bottom:12px}
+  .opts label{
+    display:flex; gap:10px; align-items:flex-start; font-size:14.5px; cursor:pointer;
+    padding:8px 10px; border:1px solid transparent; border-radius:9px;
+    transition:background .15s, border-color .15s; min-height:44px;
+  }
+  .opts label:hover{background:var(--craie)}
+  .opts input{margin-top:4px; accent-color:var(--or-grave); flex:0 0 auto; width:16px; height:16px}
+  .opts input:checked + span{font-weight:600}
+  .opts .why{display:block; font-weight:400; color:var(--brume); font-size:13.5px}
+  textarea{
+    width:100%; min-height:62px; border:1px solid var(--lin); border-radius:9px; padding:10px 12px;
+    font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--encre); background:var(--craie);
+    resize:vertical;
+  }
+  textarea:focus{outline:2px solid var(--or); outline-offset:1px; background:#fff}
+  .note-l{
+    font-size:12px; color:var(--brume); text-transform:uppercase; letter-spacing:.1em;
+    font-family:'JetBrains Mono',monospace; display:block; margin-bottom:6px;
+  }
+  #save{
+    position:fixed; right:26px; bottom:26px; z-index:9999; width:62px; height:62px; border-radius:50%;
+    border:none; background:var(--encre); color:var(--or-vif); cursor:pointer;
+    box-shadow:0 10px 30px rgba(15,26,46,.32); display:flex; align-items:center; justify-content:center;
+    transition:transform .15s, background .15s;
+  }
+  #save:hover{transform:translateY(-2px); background:#1b2b48}
+  #save.pulse{animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 10px 30px rgba(15,26,46,.32)}50%{box-shadow:0 10px 30px rgba(200,169,81,.55)}}
+  #save svg{width:26px;height:26px}
+  #flash{
+    position:fixed; right:26px; bottom:100px; z-index:9999; background:var(--encre); color:var(--ivoire);
+    padding:9px 14px; border-radius:9px; font-size:13px; opacity:0; transition:opacity .25s; pointer-events:none;
+  }
+  #flash.on{opacity:1}
+  @media print{
+    #save,#flash{display:none}
+    body{background:#fff}
+    .nuit{background:#fff; color:var(--encre); border:1px solid var(--lin)}
+    .nuit h3,.nuit h4{color:var(--encre)}
+    .nuit .mono{color:var(--or-grave)}
+    .sketch{background:#fff; color:var(--encre); border:1px solid var(--lin)}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker">Chantier 869f0qz2w - 11 septembre 2026</p>
+    <h1>Quatre pages outils pour l'AI Academy</h1>
+    <p>Le score de qualité des campagnes Search sur les outils est plombé par une seule composante, et c'est la page. Voici ce que disent les chiffres, trois directions possibles, celle que je recommande, et ce qu'il reste à trancher avant que j'écrive une ligne.</p>
+    <div class="meta">
+      <div><span class="v">39/39</span><span class="l">mots-clés notés below average</span></div>
+      <div><span class="v">1 703</span><span class="l">impressions en 13 jours</span></div>
+      <div><span class="v">115</span><span class="l">clics</span></div>
+      <div><span class="v">97 &pound;</span><span class="l">dépensés sur la période</span></div>
+      <div><span class="v">8,00 &pound;</span><span class="l">demandés sur formation copilot</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h2><span class="n">01</span>Ce que disent les chiffres</h2>
+<p class="chapeau">Relevé le 11/09/2026 sur le compte 377-338-1446, période du 29/08 au 10/09, campagnes <span class="mono">SER#Academy_FR_Tools</span> et <span class="mono">SER#Academy_EN_Tools</span>.</p>
+
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr><th>Groupe</th><th class="num">Impressions</th><th class="num">Clics</th><th class="num">Coût</th><th>Note de la page</th><th>Ce qu'il faut retenir</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Claude FR</td><td class="num">436</td><td class="num">24</td><td class="num">19,83 &pound;</td><td class="bad">Below average</td><td>Le plus gros volume français. Des requêtes d'apprentissage, pas d'achat.</td></tr>
+    <tr><td>Claude EN</td><td class="num">339</td><td class="num">31</td><td class="num">28,95 &pound;</td><td class="bad">Below average</td><td>Le poste le plus cher du lot. Un seul mot-clé porte 254 impressions.</td></tr>
+    <tr><td>ChatGPT FR</td><td class="num">398</td><td class="num">21</td><td class="num">13,47 &pound;</td><td class="bad">Below average</td><td>318 impressions sur la seule requête « bien utiliser chatgpt ».</td></tr>
+    <tr><td>Copilot EN</td><td class="num">186</td><td class="num">14</td><td class="num">12,77 &pound;</td><td class="bad">Below average</td><td>Deux mots-clés à 72 impressions, notés 2 et 3 sur 10.</td></tr>
+    <tr><td>ChatGPT EN</td><td class="num">140</td><td class="num">15</td><td class="num">14,02 &pound;</td><td class="bad">Below average</td><td>Les seuls 7 sur 10 du compte, et la page les tire vers le bas.</td></tr>
+    <tr><td>Copilot FR</td><td class="num">106</td><td class="num">4</td><td class="num">3,90 &pound;</td><td class="bad">Below average</td><td>C'est ici que Google demande 8,00 &pound; pour la première page.</td></tr>
+    <tr><td>Gemini FR</td><td class="num">81</td><td class="num">4</td><td class="num">2,82 &pound;</td><td class="bad">Below average</td><td>Volume marginal, mais la page manque quand même.</td></tr>
+    <tr><td>Gemini EN</td><td class="num">17</td><td class="num">2</td><td class="num">1,57 &pound;</td><td>non noté</td><td>Trop peu de données pour que Google se prononce.</td></tr>
+    <tr class="tot"><td>Total</td><td class="num">1 703</td><td class="num">115</td><td class="num">97,33 &pound;</td><td></td><td>CPC moyen 0,85 &pound;</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Le diagnostic tient en trois lignes</h3>
+<p><b>La pertinence de l'annonce est déjà bonne</b> : above average sur 9 mots-clés, et le taux de clic attendu est moyen. <b>La page, elle, est below average sur la totalité des 39 mots-clés notés.</b> C'est la seule composante qui ne varie jamais, donc la seule qui explique l'écart de prix.</p>
+<p><b>Et l'intention n'est pas celle qu'on croit.</b> En relevant les 70 vraies requêtes des trente derniers jours, la majorité du volume est en « comment utiliser », pas en « formation » : <span class="mono">comment fonctionne chatgpt</span> (53 impressions), <span class="mono">comment se servir de chatgpt</span> (52), <span class="mono">how to use copilot</span> (50), <span class="mono">comment utiliser copilot</span> (34), <span class="mono">apprendre à utiliser claude</span> (23), <span class="mono">copilot tutoriel</span>, <span class="mono">claude ai tutorial</span>, <span class="mono">que faire avec chatgpt</span>. Ces gens arrivent aujourd'hui sur une page qui répond « achetez trente jours de formation à 290 euros ». L'écart n'est pas seulement lexical, il est d'intention.</p>
+<p><b>Ce que ça impose à la forme des pages</b> : ce sont des pages qui répondent d'abord à la question posée, et qui vendent ensuite. Pas un second tunnel de vente. La tâche le disait déjà, les requêtes le confirment.</p>
+
+<h2><span class="n">02</span>Trois directions, et celle que je recommande</h2>
+<p class="chapeau">Les trois gardent la salle de nuit, l'or, Space Grotesk et JetBrains Mono : une page outil doit se reconnaître comme étant la même maison que la page de vente. Ce qui change, c'est ce qui occupe le centre de la page.</p>
+
+<div class="dirs">
+  <div class="dir reco">
+    <p class="tag">Direction A - recommandée avec B</p>
+    <h3>La console de l'outil</h3>
+    <div class="sketch">+---------------------------+
+| titre        |  ECRAN     |
+| sous-titre   |  de l'outil|
+| [acheter]    |  o  o  o   |
++---------------------------+
+|  survol d'un point chaud  |
+|  -> panneau : ce que la   |
+|     lecon en fait         |
++---------------------------+</div>
+    <p>L'héritière directe de la visite de l'espace apprenant. Le centre de page est l'interface réelle de l'outil, avec des points chauds. On survole « Connecteurs » chez Claude, « Deep Research » chez Gemini, « Excel » chez Copilot, et le panneau dit ce que la formation en fait.</p>
+    <div class="pourcontre">
+      <div class="plus"><span class="s">+</span><span>Continuité évidente avec la page de vente.</span></div>
+      <div class="plus"><span class="s">+</span><span>Quatre pages qui ne se ressemblent pas, parce que les quatre écrans ne se ressemblent pas.</span></div>
+      <div class="plus"><span class="s">+</span><span>Prouve qu'on connaît l'outil écran par écran.</span></div>
+      <div class="moins"><span class="s">-</span><span>Dépend de captures réelles, et il n'en existe aucune pour Copilot.</span></div>
+    </div>
+  </div>
+
+  <div class="dir reco">
+    <p class="tag">Direction B - recommandée avec A</p>
+    <h3>Le banc d'essai</h3>
+    <div class="sketch">+---------------------------+
+| la demande naive          |
+|  > "resume ce fichier"    |
+|    reponse tiede          |
++---------------------------+
+| la meme, ecrite au propre |
+|  > contexte. role. action |
+|    reponse utile          |
+|  + le livrable qui sort   |
++---------------------------+</div>
+    <p>La même demande écrite deux fois, côte à côte : celle que tout le monde tape, puis celle que la méthode produit, avec le résultat et le livrable qui en sort. Le prompt s'écrit tout seul à l'entrée dans l'écran, et tout se joue <b>sur la page</b>.</p>
+    <div class="pourcontre">
+      <div class="plus"><span class="s">+</span><span>Montre en dix secondes ce que la formation change, sans une ligne d'argumentaire.</span></div>
+      <div class="plus"><span class="s">+</span><span>Contenu entièrement différent d'une page à l'autre : les prompts n'ont rien à voir.</span></div>
+      <div class="plus"><span class="s">+</span><span>Sert le vocabulaire de l'outil dans un contexte naturel, pas en liste de mots-clés.</span></div>
+      <div class="moins"><span class="s">-</span><span>Décidé le 11/09 : aucun bouton n'ouvre l'outil. C'est une page de vente, pas un atelier gratuit.</span></div>
+    </div>
+  </div>
+
+  <div class="dir">
+    <p class="tag">Direction C - écartée</p>
+    <h3>Le trajet filtré par l'outil</h3>
+    <div class="sketch">+---------------------------+
+| jour 4   o----------------|
+| jour 11  |  o-------------|
+| jour 22  |  |  o----------|
+|                           |
+| le recit de Clara, mais   |
+| seulement ses jours avec  |
+| l'outil                   |
++---------------------------+</div>
+    <p>La frise des trente jours, rejouée en ne gardant que les moments où l'outil entre en scène. Elle réutilise les composants du récit, donc c'est la plus rapide à produire.</p>
+    <div class="pourcontre">
+      <div class="plus"><span class="s">+</span><span>Presque rien à écrire, tout existe déjà.</span></div>
+      <div class="moins"><span class="s">-</span><span>Elle raconte encore notre produit au lieu de parler de l'outil.</span></div>
+      <div class="moins"><span class="s">-</span><span>C'est exactement le défaut que Google sanctionne aujourd'hui.</span></div>
+      <div class="moins"><span class="s">-</span><span>Quatre pages presque identiques, donc du contenu dupliqué.</span></div>
+    </div>
+  </div>
+</div>
+
+<p><b>Ma recommandation : A en haut de page, B au milieu.</b> La console prouve qu'on connaît l'outil, le banc d'essai prouve que la méthode sert à quelque chose, et les deux ensemble donnent une page qui répond à la question avant de vendre. C est écartée, mais elle n'est pas perdue : un lien vers la page de vente raconte les trente jours à qui veut la suite.</p>
+
+<h2><span class="n">03</span>La page, section par section</h2>
+<p class="chapeau">La même ossature sur les huit pages. Ce qui est marqué « propre à l'outil » est ce qui empêche les quatre pages d'être du contenu dupliqué, et c'est la moitié de la page.</p>
+
+<ol class="etapes">
+  <li><b>Le titre reprend la question posée</b><span>Un seul H1, qui nomme l'outil et le verbe cherché. Le titre de l'onglet porte la formule commerciale, le H1 porte la question. Un bouton d'achat, un lien vers les leçons offertes.</span></li>
+  <li><b>La console de l'outil</b><span>Propre à l'outil. Écran réel, points chauds, panneau au survol et au doigt. Sur mobile le panneau passe sous l'écran, comme sur la visite.</span></li>
+  <li><b>Le banc d'essai</b><span>Propre à l'outil. Cinq tâches, la demande ratée, la demande réécrite, et l'ouverture dans l'outil.</span></li>
+  <li><b>Les leçons de ce module</b><span>Titres réels et durée réelle, lus dans le catalogue de l'application. Aucun nombre écrit à la main, c'est la règle du 28/08.</span></li>
+  <li><b>Ce que cet outil fait, et ce qu'il ne fait pas</b><span>Propre à l'outil. Là où il est meilleur que les trois autres, et là où il coince. C'est la section qui donne sa crédibilité à la page, et c'est celle que personne n'écrit.</span></li>
+  <li><b>Les trois autres outils</b><span>Trois renvois courts, écrits depuis cette page. Ils retiennent le visiteur qui s'est trompé de porte et créent le maillage entre les quatre pages.</span></li>
+  <li><b>Le prix et l'achat</b><span>Prix lu dans l'application, jamais recalculé ici. Bouton principal vers la caisse existante, bouton secondaire vers la page de vente.</span></li>
+  <li><b>Cinq questions</b><span>Propres à l'outil, et prises dans les vraies requêtes : faut-il une licence, est-ce que la version gratuite suffit, combien de temps ça prend, et que se passe-t-il si on choisit le mauvais outil.</span></li>
+</ol>
+
+<h2><span class="n">04</span>Ce qui distingue les quatre pages</h2>
+<p class="chapeau">Une thèse par outil. Tout le reste de la page en découle, et deux pages ne peuvent plus se ressembler une fois ces thèses posées.</p>
+
+<div class="grid2">
+  <div class="carte">
+    <p class="fil">Copilot - module M4A, 49 minutes</p>
+    <h4>Celui qui travaille dans vos fichiers</h4>
+    <p>Il n'est pas une conversation à côté du travail, il est dans Word, Excel, Outlook et Teams, et il voit ce que l'entreprise lui donne à voir. La page parle licences, ce qu'il lit vraiment, et le compte rendu de réunion qui sort tout seul.</p>
+    <p><b>Là où il coince :</b> tout dépend de la licence et de ce qui est indexé, et il déçoit souvent sur les gros classeurs Excel.</p>
+  </div>
+  <div class="carte">
+    <p class="fil">Gemini - module M4B, 45 minutes</p>
+    <h4>Celui qui lit et qui cherche</h4>
+    <p>Le panneau dans Docs, Sheets et Gmail, la recherche approfondie qui rend un rapport sourcé, le carnet de recherche où l'on dépose vingt documents, et les Gems que l'on configure une fois pour toutes.</p>
+    <p><b>Là où il coince :</b> la qualité dépend de ce qu'il trouve dans le Drive, et il n'accepte pas qu'on lui passe une demande par un lien.</p>
+  </div>
+  <div class="carte">
+    <p class="fil">Claude - module M4C, 75 minutes, le plus fourni</p>
+    <h4>Celui qu'on branche</h4>
+    <p>Les projets qui gardent le contexte, les fichiers longs, les connecteurs vers vos outils, les tâches qui tournent sans vous, et le MCP. C'est le seul des quatre qui mène naturellement au second parcours, celui des automatisations.</p>
+    <p><b>Là où il coince :</b> moins répandu en entreprise, et brancher un connecteur demande de comprendre ce qu'on autorise.</p>
+  </div>
+  <div class="carte">
+    <p class="fil">ChatGPT - module M4D, 40 minutes</p>
+    <h4>Le plus répandu, pris au sérieux</h4>
+    <p>Les conversations, les GPT sur mesure que l'on partage à l'équipe, les fichiers joints, la recherche et ses sources. La page corrige ce que les gens croient savoir après six mois d'usage approximatif.</p>
+    <p><b>Là où il coince :</b> la mémoire entre conversations surprend, et la version gratuite n'ouvre pas ce dont on parle ici.</p>
+  </div>
+</div>
+
+<h2><span class="n">05</span>Le vocabulaire que chaque page doit servir</h2>
+<p class="chapeau">Ce sont les mots-clés réellement achetés dans le compte. Entre parenthèses, ce que Google demande aujourd'hui pour la première page quand c'est cher. Ces formulations doivent se retrouver dans le H1, les H2 et le corps, au naturel, et c'est toute la raison d'être de ces pages.</p>
+
+<div class="grid2">
+  <div class="carte">
+    <p class="fil">/fr/academy/copilot</p>
+    <h4>Le mot qui coûte le plus cher du compte : Microsoft</h4>
+    <p>formation microsoft copilot (8,00 &pound;), formation microsoft 365 copilot (5,46 &pound;), formation copilot, formation copilot en ligne, formation copilot 365, cours copilot, apprendre copilot, formation copilot word excel.</p>
+    <p><b>Microsoft n'apparaissait nulle part dans nos annonces Copilot</b>, et c'est exactement le mot dont le ticket d'entrée atteint 8,00 &pound;. La page dit Microsoft, Microsoft 365, Word, Excel, Outlook et Teams.</p>
+  </div>
+  <div class="carte">
+    <p class="fil">/en/academy/copilot</p>
+    <h4>Douze formulations, la plus chère à 7,09 &pound;</h4>
+    <p>microsoft copilot course (7,09 &pound;), microsoft 365 copilot training (5,46 &pound;), microsoft copilot training course, ms copilot training, microsoft 365 copilot workshop, copilot training courses, copilot courses, microsoft copilot training, copilot training course, copilot course, copilot training, microsoft copilot workshop.</p>
+    <p>« Workshop » et « course » ne veulent pas dire la même chose pour un acheteur anglophone : les deux doivent être servis, et la page dit clairement que c'est en ligne et à son rythme.</p>
+  </div>
+  <div class="carte">
+    <p class="fil">/fr/academy/chatgpt</p>
+    <h4>Dix formulations, et une requête d'usage à fort volume</h4>
+    <p>formation chatgpt, meilleures formations chatgpt, cours chatgpt, formation ia chatgpt, formation chatgpt en ligne, formation chatgpt rédaction, formation prompt chatgpt, formation chatgpt débutant, bien utiliser chatgpt, apprendre chatgpt.</p>
+    <p>« bien utiliser chatgpt » porte à elle seule 318 impressions. C'est un H2 entier, pas une incise.</p>
+  </div>
+  <div class="carte">
+    <p class="fil">/en/academy/chatgpt</p>
+    <h4>Onze formulations autour de course et training</h4>
+    <p>chatgpt prompt course, chatgpt training, chatgpt course online, chatgpt course for beginners, learn chatgpt, chatgpt course, chatgpt training course, chatgpt courses, chatgpt training program, introduction to chatgpt course, chatgpt online course.</p>
+    <p>« for beginners » et « introduction » disent le niveau attendu : la page doit dire à qui elle s'adresse dès le premier écran.</p>
+  </div>
+  <div class="carte">
+    <p class="fil">/fr/academy/claude</p>
+    <h4>Anthropic doit être nommé</h4>
+    <p>formation claude anthropic, formation ia claude, formation claude ai, formation claude ia, cours claude ia, formation claude ai en ligne, apprendre claude ia, formation claude, cours claude ai.</p>
+    <p>Même logique que Microsoft chez Copilot : le nom de l'éditeur est acheté, il doit figurer sur la page. « claude ia » et « claude ai » coexistent en français, les deux s'écrivent.</p>
+  </div>
+  <div class="carte">
+    <p class="fil">/en/academy/claude</p>
+    <h4>Quatre formulations, le plus gros volume du compte</h4>
+    <p>claude ai training, claude ai courses, claude ai course, learn claude ai.</p>
+    <p>Peu de vocabulaire, beaucoup de volume : 339 impressions sur la période, dont 254 sur « claude ai course ». C'est la page à soigner en premier.</p>
+  </div>
+  <div class="carte">
+    <p class="fil">/fr/academy/gemini</p>
+    <h4>Cinq formulations, et une page volontairement plus courte</h4>
+    <p>cours gemini, formation google gemini, formation gemini, apprendre gemini, formation gemini en ligne.</p>
+    <p><b>Ne pas compenser le peu de vocabulaire par des généralités sur l'IA</b> : ce serait du texte partagé avec les trois autres pages, donc exactement ce qu'on cherche à éviter. Plus courte, et entièrement sur Gemini, Google Workspace, Docs, Sheets et Gmail.</p>
+  </div>
+  <div class="carte">
+    <p class="fil">/en/academy/gemini</p>
+    <h4>Deux formulations seulement</h4>
+    <p>google gemini training, gemini course.</p>
+    <p>Dix-sept impressions sur la période, non notée par Google faute de données. La page existe pour la cohérence des quatre et pour le maillage, pas pour un volume qu'elle n'a pas.</p>
+  </div>
+</div>
+
+<h2><span class="n">06</span>L'architecture</h2>
+
+<div class="nuit">
+  <h3>Les fichiers</h3>
+  <p><span class="mono">src/pages/[lang]/academy/[tool].astro</span> : une seule route, un <span class="mono">getStaticPaths</span> qui rend deux langues fois quatre outils. Elle cohabite sans conflit avec <span class="mono">academy.astro</span>.</p>
+  <p><span class="mono">src/components/academy-tools/</span> : la console et le banc d'essai en îlots React, le reste en Astro statique. Les textes par outil dans un fichier par outil, français et anglais côte à côte, sur le modèle de <span class="mono">copy-v2.ts</span>.</p>
+  <h3>Le poids, qui compte autant que le texte</h3>
+  <p>La page de vente est un îlot React chargé en <span class="mono">client:load</span>, soit 237 Ko. Une page outil n'a pas besoin de ça. Six sections sur huit sont du HTML statique, et seules la console et le banc d'essai s'hydratent, en <span class="mono">client:visible</span>. La vitesse de chargement entre dans la note que Google donne à la page, au même titre que la pertinence.</p>
+  <h3>Les chiffres viennent de l'application</h3>
+  <p>Prix, nombre de leçons, durée : lus au build sur <span class="mono">/api/academy/public/jour30</span>, avec l'instantané de secours, exactement comme la page de vente. Rien n'est recopié à la main.</p>
+  <h3>Les garde-fous du build</h3>
+  <p><span class="mono">check-seo.mjs</span> casse le build sur un titre hors 50-60 caractères, une description hors 145-160, un doublon de titre ou de description, une page sans H1, une URL du sitemap sans page générée. Huit pages sœurs en deux langues, c'est le terrain idéal pour un doublon : les huit titres et les huit descriptions seront écrits et comptés avant tout le reste.</p>
+</div>
+
+<h2><span class="n">07</span>Deux trous à boucher avant de commencer</h2>
+
+<div class="alerte">
+  <p><b>Il n'existe aucune capture de Copilot.</b> L'application en a onze pour Claude, sept pour Gemini, cinq pour ChatGPT, et zéro pour Copilot. C'est ennuyeux, parce que Copilot est précisément la page où l'écart de prix est le plus violent : 8,00 &pound; demandés contre 1,70 euro de prix de marché. Il faut quatre ou cinq captures : le volet dans Word, dans Excel, le résumé d'un fil Outlook, le compte rendu Teams.</p>
+</div>
+
+<div class="alerte">
+  <p><b>Le catalogue ne sort pas les leçons module par module.</b> L'API publique sert les totaux, pas le détail des modules M4A à M4D. Deux chemins : j'ajoute ces quatre listes à l'endpoint côté application et le site les lit comme il lit les prix ; ou bien on écrit les titres à la main dans le site, ce qui contredit la règle du fait unique et dérivera au premier changement de catalogue. Le premier chemin coûte une demi-heure et un déploiement.</p>
+</div>
+
+<div class="alerte">
+  <p><b>Point de vigilance relevé en préparant ce document.</b> L'application en production ne sert plus <span class="mono">lot</span> ni <span class="mono">acces_jours</span>, et elle annonce toujours une hausse de prix au 1er octobre, alors que l'instantané du site, daté d'aujourd'hui, porte l'inverse. Le site tient debout parce qu'il a des replis, mais huit pages de plus vont afficher un prix : autant vérifier ce qui est réellement déployé côté application avant.</p>
+</div>
+
+<h2><span class="n">08</span>L'ordre de livraison et la mesure</h2>
+<p>Claude d'abord, parce qu'il porte à lui seul 775 impressions et 48 &pound;. Copilot ensuite, parce que c'est là que l'économie par clic est la plus grande. ChatGPT en troisième, il a le plus gros volume français sur une requête unique. Gemini en dernier, 98 impressions ne justifient pas de passer devant. Les deux langues d'une même page partent ensemble, et l'anglais n'est pas une traduction du français : il est écrit dans sa langue.</p>
+<p>Une fois les pages en ligne, l'URL finale se pose <b>au niveau du mot-clé</b>, jamais en modifiant les annonces existantes : éditer une annonce la remplace, et remet sa force et son historique à zéro. Les quatre annonces outil ayant été retouchées aujourd'hui, c'est encore plus vrai cette semaine. Le modèle de suivi de la campagne ne bouge pas. Puis on attend trois semaines et on relit les mêmes 39 mots-clés, sur deux colonnes seulement : la note de la page, et le coût demandé pour la première page. C'est la seule preuve qui vaille.</p>
+
+<h3>Les huit adresses, à confirmer une fois les pages en ligne</h3>
+<div class="nuit">
+  <p class="mono">/fr/academy/claude &nbsp;&nbsp; /en/academy/claude<br>
+  /fr/academy/copilot &nbsp;&nbsp; /en/academy/copilot<br>
+  /fr/academy/chatgpt &nbsp;&nbsp; /en/academy/chatgpt<br>
+  /fr/academy/gemini &nbsp;&nbsp; /en/academy/gemini</p>
+  <p>Sans barre oblique finale, c'est la configuration du site (<span class="mono">trailingSlash: 'never'</span>). Le domaine est <span class="mono">https://mydigipal.com</span>. Je te reconfirme la liste exacte au moment de la mise en ligne, et pas avant : une URL annoncée qui ne répond pas encore coûte plus cher qu'une journée d'attente. Les slugs courts sont arrêtés (décision du 11/09) : la piste <span class="mono">microsoft-copilot</span>, qui aurait mis le mot le plus cher du compte dans l'adresse, est écartée au profit d'une série régulière.</p>
+</div>
+
+<h2><span class="n">09</span>Ce qui a été tranché le 11 septembre</h2>
+<p class="chapeau">Décisions de Paul, prises après lecture de ce document. Elles ne se rouvrent plus sans raison nouvelle.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Question</th><th>Décision</th><th>Ce que ça change</th></tr></thead>
+  <tbody>
+    <tr><td>La nature des pages</td><td><b>Des pages de vente, sectionnées sur un outil</b></td><td>On enseigne l'intelligence artificielle avec l'outil que la personne cherche, avec son vocabulaire. Ce n'est pas un tutoriel gratuit, et ce n'est pas une page générique sur l'IA.</td></tr>
+    <tr><td>D1 - La direction</td><td><b>A + B</b></td><td>La console de l'outil en haut, la démonstration de la méthode au milieu. C est écartée.</td></tr>
+    <tr><td>D2 - Ouvrir dans l'outil</td><td><b>Non</b></td><td>Aucun bouton ne lance ChatGPT, Claude ou Copilot. La démonstration se joue sur la page : « c'est une page de vente, on n'a pas envie de commencer à faire des exercices directement ».</td></tr>
+    <tr><td>D3 - Les captures Copilot</td><td><b>Paul les produit</b></td><td>Sur demande précise, captures ou petits enregistrements Recordly. La liste est à la section 10.</td></tr>
+    <tr><td>D4 - Les leçons</td><td><b>Lues dans l'application</b></td><td>Même logique que les montants. J'étends l'endpoint public pour servir les leçons des quatre modules outils.</td></tr>
+    <tr><td>D5 - Le rythme</td><td><b>Une page bien faite, puis on réplique</b></td><td>Claude d'abord, en français et en anglais. Les trois autres suivent la même forme.</td></tr>
+    <tr><td>D6 - Les montants</td><td><b>Affichés, et synchronisés</b></td><td>Exigence de Paul : un prix changé sur la page de vente doit changer sur les pages outils, tout seul. Voir la section 06.</td></tr>
+    <tr><td>D7 - Les adresses</td><td><b>Les slugs courts</b></td><td><span class="mono">/academy/copilot</span>, <span class="mono">/academy/claude</span>, <span class="mono">/academy/chatgpt</span>, <span class="mono">/academy/gemini</span>, dans les deux langues.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="nuit">
+  <h3>Comment le prix se synchronise réellement</h3>
+  <p>Le site est statique : une page construite hier garde les chiffres d'hier. La page de vente contourne ça en relisant l'application <b>dans le navigateur du visiteur</b>, après l'affichage. Les pages outils feront pareil, et c'est ce qui répond à ta demande : un prix modifié dans l'Academy apparaît sur les huit pages au prochain chargement, <b>sans redéploiement du site</b>.</p>
+  <p>Trois niveaux, du plus rapide au plus sûr : la valeur lue au build, l'instantané de secours si l'application ne répond pas pendant le build, puis la relecture en direct dans le navigateur. Aucun montant n'est écrit dans le code des pages.</p>
+</div>
+
+<h2><span class="n">10</span>Les captures qu'il me faut</h2>
+<p class="chapeau">Pour Claude, j'ai déjà tout ce qu'il faut dans l'application. Il manque Copilot en entier, et c'est la page au ticket d'entrée le plus cher du compte.</p>
+
+<h3>Les consignes, valables pour toutes</h3>
+<div class="grid2">
+  <div class="carte">
+    <h4>La forme</h4>
+    <p>PNG, au moins 1 100 pixels de large. Fenêtre seule, sans la barre de favoris ni la barre des tâches. Interface en français si tu peux la basculer, sinon l'anglais fera l'affaire pour commencer.</p>
+    <p>Le thème sombre d'Office si tu l'as sous la main : la page est en salle de nuit, et une capture claire y fait un rectangle blanc. Si ce n'est pas possible, je l'encadre autrement, ce n'est pas bloquant.</p>
+  </div>
+  <div class="carte">
+    <h4>Le fond</h4>
+    <p>Aucune donnée client lisible : pas de nom d'entreprise, pas de montant réel, pas d'adresse courriel. Un document de démonstration suffit, et c'est ce qui est fait sur les captures de Claude, où les conversations récentes sont floutées.</p>
+    <p>L'écran doit montrer l'outil <b>en train de servir</b>, pas un écran vide : un volet ouvert avec une demande dedans vaut dix fois mieux qu'une page d'accueil.</p>
+  </div>
+</div>
+
+<h3>Microsoft Copilot, six captures</h3>
+<ol class="etapes">
+  <li><b>Word, le volet Copilot ouvert</b><span>Un document de plusieurs pages à gauche, le volet à droite avec une demande tapée du type « Résume ce document en cinq points ». C'est la capture principale de la page.</span></li>
+  <li><b>Excel, Copilot sur un tableau</b><span>Un tableau de données, le volet ouvert, une analyse ou une formule proposée. Le module a une leçon entière là-dessus.</span></li>
+  <li><b>Outlook, le résumé d'un fil</b><span>Un fil de discussion avec le résumé Copilot en haut, ou le volet de rédaction en train de proposer une réponse.</span></li>
+  <li><b>Teams, les notes de réunion</b><span>Le récapitulatif après réunion, avec les points et les actions relevés.</span></li>
+  <li><b>Le chat Microsoft 365</b><span>L'accueil du chat Copilot avec ses suggestions, là où l'on voit qu'il a accès aux fichiers de l'entreprise. C'est la capture qui porte le mot « Microsoft 365 », celui qui coûte 5,46 &pound;.</span></li>
+  <li><b>La création d'un agent</b><span>L'écran de configuration d'un agent Copilot. La dernière leçon du module s'appelle « Créer un agent Copilot », et aucune page concurrente ne montre ça.</span></li>
+</ol>
+
+<h3>Les enregistrements, si tu veux aller plus loin</h3>
+<p>Utiles mais pas indispensables au premier jet : cinq à huit secondes, sans son, une seule action par séquence. Par exemple Copilot qui produit un résumé dans Word, ou Gemini qui déroule sa recherche approfondie. Je les intègre comme les démonstrations de la page de vente, en boucle et sans commande visible.</p>
+
+<h3>ChatGPT et Gemini, déjà couverts</h3>
+<p>L'application a cinq captures pour ChatGPT (l'éditeur de GPT, la personnalisation, la recherche et ses sources, le menu des outils, l'accueil) et sept pour Gemini (les volets Docs, Sheets et Gmail, la recherche approfondie, les deux écrans de NotebookLM, l'accueil). C'est suffisant pour monter les deux consoles. Je te redemanderai seulement si un écran a trop vieilli.</p>
+
+<div class="decision">
+  <p class="q"><span class="id">Suite</span><span>Ce que ce document n'a pas prévu</span></p>
+  <label class="note-l">Notes libres</label><textarea name="n8" style="min-height:110px"></textarea>
+</div>
+
+</div>
+
+<button id="save" class="pulse" title="Enregistrer" aria-label="Enregistrer">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+    <polyline points="7 3 7 8 15 8"></polyline>
+  </svg>
+</button>
+<div id="flash"></div>
+
+<script>
+(function(){
+  var handle = null;
+  var btn = document.getElementById('save');
+  var flash = document.getElementById('flash');
+
+  function dire(t){
+    flash.textContent = t; flash.classList.add('on');
+    setTimeout(function(){ flash.classList.remove('on'); }, 2200);
+  }
+
+  // Les choix et les notes doivent survivre a l'enregistrement : on les ecrit
+  // dans le DOM avant de serialiser, sinon le fichier sauvegarde repart avec
+  // les valeurs d'origine.
+  function prepareHtmlForSave(){
+    document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(function(i){
+      if (i.checked) i.setAttribute('checked','checked'); else i.removeAttribute('checked');
+    });
+    document.querySelectorAll('textarea').forEach(function(t){ t.textContent = t.value; });
+    btn.classList.remove('pulse');
+    return '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  }
+
+  async function enregistrer(){
+    var html = prepareHtmlForSave();
+    if (window.showSaveFilePicker){
+      try{
+        if (!handle){
+          handle = await window.showSaveFilePicker({
+            suggestedName: 'Chantier_Pages_Outils.html',
+            types: [{ description: 'Page HTML', accept: {'text/html': ['.html']} }]
+          });
+        }
+        var w = await handle.createWritable();
+        await w.write(html); await w.close();
+        dire('Enregistré'); return;
+      } catch(e){
+        if (e && e.name === 'AbortError') return;
+      }
+    }
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
+    a.download = 'Chantier_Pages_Outils.html';
+    a.click(); URL.revokeObjectURL(a.href);
+    dire('Téléchargé');
+  }
+
+  btn.addEventListener('click', enregistrer);
+  document.addEventListener('keydown', function(e){
+    if ((e.ctrlKey || e.metaKey) && e.key === 's'){ e.preventDefault(); enregistrer(); }
+  });
+  document.addEventListener('change', function(){ btn.classList.add('pulse'); });
+  document.addEventListener('input', function(){ btn.classList.add('pulse'); });
+})();
+</script>
+</body>
+</html>

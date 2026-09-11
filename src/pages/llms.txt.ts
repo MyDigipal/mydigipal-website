@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
+import { OUTILS_PUBLIES } from '@/components/academy-tools';
 
 /**
  * llms.txt genere au build, comme sitemap.xml.
@@ -68,12 +69,19 @@ export const GET: APIRoute = async () => {
   }
 
   // --- AI Academy : page de vente de la formation en ligne ---
+  // Les pages outils sont listees depuis le catalogue : une page non publiee
+  // ne doit etre annoncee nulle part, pas plus ici que dans le sitemap.
+  const pagesOutils = OUTILS_PUBLIES.flatMap((o) => [
+    `- [${o.nom}](${site}/en/academy/${o.slug}) : apprendre l'IA avec ${o.nom}, en anglais.`,
+    `- [${o.nom}](${site}/fr/academy/${o.slug}) : apprendre l'IA avec ${o.nom}, en francais.`,
+  ]);
   blocs.push(`## AI Academy
 
 Formation IA en ligne, trente jours, pour les equipes marketing.
 
 - [AI Academy](${site}/en/academy) : la formation en ligne, en anglais.
 - [AI Academy](${site}/fr/academy) : la formation en ligne, en francais.
+${pagesOutils.join('\n')}
 - L'application vit sur https://academy.mydigipal.com`);
 
   // --- Etudes de cas ---
