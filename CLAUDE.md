@@ -378,6 +378,19 @@ la page de vente générale. Google demandait jusqu'à 8,00 £ la première page
   sources du dépôt de l'app. Reste à faire : étendre `/api/academy/public/jour30`
   pour les servir. ⚠️ Aucune durée par leçon n'est affichée tant que l'écart entre le
   lot 2 du dépôt (49 min pour M4C) et la production (75 min) n'est pas tranché.
+- **Les livrables ouvrables** (`public/academy/livrables/`) viennent de la formaférence
+  Claude du 09/09/2026 au Club d'affaires Protéine, construits autour d'une PME fictive
+  (l'Atelier Rivière). `scripts/import-livrables-academy.py` les réimporte en retirant le
+  nom du club et en neutralisant TOUTE mention d'outil (« produit avec l'IA »,
+  « l'assistant a laissé passer un chiffre ») : les mêmes documents serviront sur les
+  quatre pages, et y laisser le nom d'un outil qui ne les a pas produits serait faux.
+  Ils portent `noindex`, sinon `check-seo` les juge comme des pages du site.
+  `scripts/vignettes-livrables.py` refait les aperçus, et les affiches des films sortent
+  de ffmpeg à la troisième seconde. ⚠️ **Français seulement** : la page anglaise garde la
+  section en six phrases tant que les documents ne sont pas traduits.
+  Matière encore disponible et non utilisée dans
+  `Client Projects/Club Protéine/Formaference Claude/` : le film de présentation de 20 s,
+  les sept cas d'usage du deck et les captures d'écran.
 - **Pas de captures de Copilot** : l'app n'en a aucune, et Paul n'a pas la licence
   Microsoft 365 qui permettrait de les prendre. À régler avant cette page-là.
 - **Après mise en ligne** : URL finale **au niveau du mot-clé** dans Google Ads, ne
