@@ -389,9 +389,11 @@ la page de vente générale. Google demandait jusqu'à 8,00 £ la première page
   « l'assistant a laissé passer un chiffre ») : les mêmes documents serviront sur les
   quatre pages, et y laisser le nom d'un outil qui ne les a pas produits serait faux.
   Ils portent `noindex`, sinon `check-seo` les juge comme des pages du site.
-  `scripts/vignettes-livrables.py` refait les aperçus, et les affiches des films sortent
-  de ffmpeg à la troisième seconde. ⚠️ **Français seulement** : la page anglaise garde la
-  section en six phrases tant que les documents ne sont pas traduits.
+  `scripts/vignettes-livrables.py` refait les aperçus des deux langues, et les affiches
+  des films sortent de ffmpeg à la troisième seconde. **Les cinq documents existent en
+  anglais depuis le 13/09/2026** (`public/academy/livrables/en/`) :
+  `scripts/livrables-textes.py` extrait les nœuds de texte, la traduction se fait
+  dessus, le script les réinjecte, donc la mise en page ne se perd jamais.
   Matière encore disponible et non utilisée dans
   `Client Projects/Club Protéine/Formaference Claude/` : le film de présentation de 20 s,
   les sept cas d'usage du deck et les captures d'écran.
@@ -414,6 +416,16 @@ la page de vente générale. Google demandait jusqu'à 8,00 £ la première page
 - **Après mise en ligne** : URL finale **au niveau du mot-clé** dans Google Ads, ne
   jamais éditer les RSA (une annonce modifiée est remplacée et perd sa force et son
   historique). Mesure à trois semaines sur les mêmes 39 mots-clés.
+
+### La page de vente renvoie vers les pages outils (13/09/2026)
+
+`academy-v2/OutilsCartes.tsx`, **juste après le programme et avant le questionnaire**.
+C'est le seul endroit qui marche : le programme se termine sur « vous choisissez un
+outil, et le parcours ne garde que celui-là », donc la question « lequel ? » se pose
+là, et le questionnaire qui suit aide à y répondre. Quatre cartes, une phrase, un
+lien. ⚠️ Ce n'est pas le retour de la section retirée le 07/09 : c'est un aiguillage,
+pas un chapitre. Les outils arrivent en propriété depuis `academy.astro` pour ne pas
+embarquer le catalogue des huit pages dans l'îlot.
 
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)
 
