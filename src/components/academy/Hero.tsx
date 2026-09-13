@@ -41,7 +41,12 @@ export default function Hero({
   // ⚠️ Le symbole est DANS la valeur : la copie ne l'ajoute plus, sinon une
   // devise choisie donnerait « 250 £ € ».
   const prix = prixAffiche ?? (programme ? `${formatPrice(programme.ttc_minor, locale)} €` : '');
-  const cta = 'inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton px-[26px] py-3.5 text-[15.5px] font-semibold transition duration-150';
+  // ⚠️ Deux colonnes au téléphone, et des boutons compacts (Paul, 13/09/2026 :
+  // « sur mobile ça doit être deux petits boutons pour ne pas que ça prenne trop
+  // de place de la page »). `whitespace-nowrap` ne revient qu'à partir de sm :
+  // en dessous, un libellé long se replie plutôt que d'élargir le bouton.
+  const cta =
+    'inline-flex min-h-11 items-center justify-center rounded-bouton px-3 py-3 text-center text-[14px] font-semibold leading-tight transition duration-150 sm:whitespace-nowrap sm:px-[26px] sm:py-3.5 sm:text-[15.5px]';
   // ⚠️ Le lien vers le module gratuit passe par `useLienApp` : sans lui,
   // quelqu'un qui arrive d'une annonce et ouvre l'accès gratuit change de
   // domaine en perdant son identifiant de clic, et l'achat qui suit une
@@ -80,7 +85,7 @@ export default function Hero({
           <p className="mt-2 max-w-[48ch] font-ac-mono text-[12px] leading-[1.5] text-brume-nuit">
             {c.repartition(leconsProgramme(data), leconsComplement(data))}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3.5">
+          <div className="mt-8 grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:gap-3.5">
             <a href={`#${ancreTarifs}`} className={`${cta} bg-or text-salle hover:bg-or-vif`}>
               {c.cta}
             </a>
