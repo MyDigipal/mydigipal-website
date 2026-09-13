@@ -349,7 +349,21 @@ const LIVRABLES_FR: Livrable[] = [
 /* ------------------------------------------------------------------ copy FR */
 
 const FR: CopyOutil = {
-  barre: { outil: 'Claude', lecons: 'Le parcours', programme: 'Le programme', tarifs: 'Les tarifs', cta: 'Commencer' },
+  barre: {
+    outil: 'Claude',
+    lecons: 'Le parcours',
+    programme: 'Le programme',
+    tarifs: 'Les tarifs',
+    cta: 'Commencer',
+    marque: 'AI Academy',
+    aria: 'Repères de la page',
+    langue: 'EN',
+    langueAria: 'Read this page in English',
+    menuOuvrir: 'Ouvrir le menu',
+    menuSections: 'Sections',
+    menuLangue: 'Langue',
+    menuDevise: 'Devise',
+  },
   meta: {
     titre: 'Formation Claude IA en ligne : le programme',
     description:
@@ -554,7 +568,21 @@ const FR: CopyOutil = {
 /* ------------------------------------------------------------------ copy EN */
 
 const EN: CopyOutil = {
-  barre: { outil: 'Claude', lecons: 'The path', programme: 'The programme', tarifs: 'Pricing', cta: 'Start' },
+  barre: {
+    outil: 'Claude',
+    lecons: 'The path',
+    programme: 'The programme',
+    tarifs: 'Pricing',
+    cta: 'Start',
+    marque: 'AI Academy',
+    aria: 'Page markers',
+    langue: 'FR',
+    langueAria: 'Lire cette page en français',
+    menuOuvrir: 'Open the menu',
+    menuSections: 'Sections',
+    menuLangue: 'Language',
+    menuDevise: 'Currency',
+  },
   meta: {
     titre: 'Claude AI training online: the programme',
     description:

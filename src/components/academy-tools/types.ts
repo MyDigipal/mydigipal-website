@@ -80,7 +80,22 @@ export interface Question {
 
 export interface CopyOutil {
   /** Les quatre reperes de la barre du haut. Courts : ils tiennent sur une ligne. */
-  barre: { outil: string; lecons: string; programme: string; tarifs: string; cta: string };
+  barre: {
+    outil: string;
+    lecons: string;
+    programme: string;
+    tarifs: string;
+    cta: string;
+    /** Les mêmes libellés que la barre de la page de vente, pour ne pas dériver. */
+    marque: string;
+    aria: string;
+    langue: string;
+    langueAria: string;
+    menuOuvrir: string;
+    menuSections: string;
+    menuLangue: string;
+    menuDevise: string;
+  };
   meta: {
     /** 37 à 47 caractères : BaseLayout ajoute « | MyDigipal », soit 13. */
     titre: string;

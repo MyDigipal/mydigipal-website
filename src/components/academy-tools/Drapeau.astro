@@ -1,0 +1,49 @@
+---
+/**
+ * Les deux drapeaux du sélecteur de langue, en SVG.
+ *
+ * Reprise du composant React de la page de vente (`academy/Drapeau.tsx`), en
+ * Astro : la barre des pages outils ne charge pas React, elle n'a donc aucun
+ * moyen de rendre le composant d'origine.
+ *
+ * Pas d'emoji : sous Windows les drapeaux emoji ne sont pas rendus du tout, et
+ * un visiteur y verrait deux lettres grises. Pas d'image non plus : deux
+ * requêtes pour dix-neuf pixels de large.
+ *
+ * ⚠️ Les identifiants de détourage sont préfixés `ot-` et non `j30-` : les deux
+ * barres peuvent coexister sur une même page, et deux SVG qui partagent un `id`
+ * se volent leur masque.
+ */
+interface Props {
+  locale: 'fr' | 'en';
+  class?: string;
+}
+const { locale, class: classe = '' } = Astro.props;
+const commun = `block h-[13px] w-[19px] flex-none rounded-[2px] ${classe}`;
+---
+
+{
+  locale === 'fr' ? (
+    <svg viewBox="0 0 3 2" class={commun} aria-hidden="true" focusable="false">
+      <rect width="1" height="2" x="0" fill="#0055A4" />
+      <rect width="1" height="2" x="1" fill="#FFFFFF" />
+      <rect width="1" height="2" x="2" fill="#EF4135" />
+    </svg>
+  ) : (
+    <svg viewBox="0 0 60 30" class={commun} aria-hidden="true" focusable="false">
+      <clipPath id="ot-uk-cadre">
+        <path d="M0,0 v30 h60 v-30 z" />
+      </clipPath>
+      <clipPath id="ot-uk-diag">
+        <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" />
+      </clipPath>
+      <g clip-path="url(#ot-uk-cadre)">
+        <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#FFFFFF" stroke-width="6" />
+        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#ot-uk-diag)" stroke="#C8102E" stroke-width="4" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#FFFFFF" stroke-width="10" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6" />
+      </g>
+    </svg>
+  )
+}

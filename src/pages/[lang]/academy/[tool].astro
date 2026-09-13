@@ -4,6 +4,7 @@ import Footer from '@/components/layout/Footer.astro';
 import { type Language, languages } from '@/i18n/config';
 import Console from '@/components/academy-tools/Console';
 import Demo from '@/components/academy-tools/Demo';
+import BarreOutil from '@/components/academy-tools/BarreOutil.astro';
 import { OUTILS_PUBLIES, autresOutils, lienOutil, outilParSlug } from '@/components/academy-tools';
 import { ETAPES, nomsDe } from '@/components/academy-v2/modules';
 import {
@@ -70,6 +71,13 @@ const data = await lire();
 
 const programme = data.offres.find((o) => o.id === 'programme');
 const prixTexte = `${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, 'EUR'), locale)} €`;
+// Les trois montants partent dans le HTML : le sélecteur de devise doit répondre
+// au premier clic, pas après un aller-retour avec l'application.
+const prixDevises = {
+  EUR: prixDe(programme ?? { ttc_minor: 0 }, 'EUR'),
+  GBP: prixDe(programme ?? { ttc_minor: 0 }, 'GBP'),
+  USD: prixDe(programme ?? { ttc_minor: 0 }, 'USD'),
+};
 const avis = data.avis ?? AVIS_REPLI;
 const jours = data.acces_jours ?? 60;
 
@@ -131,34 +139,22 @@ const schema = {
 <BaseLayout lang={lang} title={c.meta.titre} description={c.meta.description}>
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
-  <main class="j30 flex-grow overflow-x-clip bg-salle text-corps-nuit" data-theme="nuit">
-    <!-- La barre. Volontairement statique : la page de vente a sa propre barre
-         React avec repères et progression, qui pèse et qui n'a pas de sens sur
-         une page courte. -->
-    <div class="sticky top-0 z-50 border-b border-filet-nuit bg-salle/85 backdrop-blur">
-      <div class="mx-auto flex h-16 max-w-[1180px] items-center gap-5 px-6">
-        <a
-          href={lienVente}
-          class="whitespace-nowrap font-ac-mono text-xs uppercase tracking-[0.16em] text-ivoire"
-        >
-          My<b class="text-or">Digipal</b><span class="hidden sm:inline"> / AI Academy</span>
-        </a>
-        <nav class="ml-auto hidden gap-6 text-sm lg:flex">
-          <a href="#outil" class="text-brume-nuit transition-colors hover:text-ivoire">{c.barre.outil}</a>
-          <a href="#lecons" class="text-brume-nuit transition-colors hover:text-ivoire">{c.barre.lecons}</a>
-          <a href="#programme" class="text-brume-nuit transition-colors hover:text-ivoire">{c.barre.programme}</a>
-          <a href="#tarifs" class="text-brume-nuit transition-colors hover:text-ivoire">{c.barre.tarifs}</a>
-        </nav>
-        <a
-          href={lienApp}
-          data-app-link
-          class="ml-auto inline-flex min-h-10 items-center whitespace-nowrap rounded-bouton bg-or px-4 text-sm font-semibold text-[#15203a] transition-colors hover:bg-or-vif lg:ml-0"
-        >
-          <span class="lg:hidden">{c.barre.cta}</span>
-          <span class="hidden lg:inline">{c.tarifs.cta}</span>
-        </a>
-      </div>
-    </div>
+  <main class="j30 flex-grow overflow-x-clip bg-salle pt-16 text-corps-nuit" data-theme="nuit">
+    <BarreOutil
+      locale={locale}
+      lienAutreLangue={`/${locale === 'fr' ? 'en' : 'fr'}/academy/${outil.slug}`}
+      reperes={[
+        { id: 'outil', libelle: c.barre.outil },
+        { id: 'lecons', libelle: c.barre.lecons },
+        { id: 'programme', libelle: c.barre.programme },
+        { id: 'tarifs', libelle: c.barre.tarifs },
+      ]}
+      cta={c.barre.cta}
+      lienApp={lienApp}
+      lienVente={lienVente}
+      prix={prixDevises}
+      copy={c.barre}
+    />
 
     <!-- ------------------------------------------------------------ hero -->
     <section class="mx-auto max-w-[1180px] px-6 pb-12 pt-10 md:pt-16">
@@ -567,20 +563,30 @@ const schema = {
 
 <script>
   /**
-   * Les chiffres se relisent dans le navigateur.
+   * Ce qui bouge sur cette page, hors des deux îlots : le menu, la devise, et
+   * les chiffres.
    *
-   * Le site est statique : une page construite hier porterait les chiffres
-   * d'hier. La page de vente contourne ça en rappelant l'application après
-   * l'affichage, et ces pages font pareil. Un prix modifié dans l'Academy
-   * apparaît donc ici au chargement suivant, sans redéploiement (exigence de
-   * Paul, 11/09/2026 : « si je modifie le prix sur la page de vente, je veux
-   * que ça se modifie aussi automatiquement sur les pages de produits »).
+   * Les chiffres se relisent dans le navigateur parce que le site est statique :
+   * une page construite hier porterait les prix d'hier. La page de vente fait
+   * pareil, et c'est ce qui répond à la demande de Paul du 11/09/2026 : « si je
+   * modifie le prix sur la page de vente, je veux que ça se modifie aussi
+   * automatiquement sur les pages de produits ».
    *
    * Chaque valeur porte `data-fait`, et son gabarit `data-gabarit` où `{}`
-   * reçoit la valeur. Sans cela il faudrait dupliquer les phrases ici, et
-   * elles dériveraient de celles du fichier de copie.
+   * reçoit la valeur. Sans cela il faudrait réécrire les phrases ici, et elles
+   * dériveraient de celles du fichier de copie.
    */
-  import { ENDPOINT, AVIS_REPLI, leconsGratuit, leconsProgramme, noteLocale, prixDe, type Jour30Data } from '@/components/academy/data';
+  import {
+    ENDPOINT,
+    AVIS_REPLI,
+    SYMBOLE,
+    leconsGratuit,
+    leconsProgramme,
+    noteLocale,
+    prixDe,
+    type Devise,
+    type Jour30Data,
+  } from '@/components/academy/data';
   import { formatPrice } from '@/components/academy/offres';
   import { captureAdClickIds, withAdClickIds } from '@/components/academy/track';
 
@@ -590,27 +596,85 @@ const schema = {
   }
 
   const locale = document.documentElement.lang === 'fr' ? 'fr' : 'en';
+  const barre = document.querySelector<HTMLElement>('[data-barre-outil]');
+
+  /* ---------------------------------------------------------------- le menu */
+  const bouton = document.querySelector<HTMLButtonElement>('[data-menu-bouton]');
+  const panneau = document.getElementById('barre-menu');
+  if (bouton && panneau) {
+    const basculer = (ouvert: boolean) => {
+      panneau.hidden = !ouvert;
+      bouton.setAttribute('aria-expanded', String(ouvert));
+    };
+    bouton.addEventListener('click', () => basculer(panneau.hidden));
+    // ⚠️ Le panneau se ferme au choix d'une section, sinon il masquerait
+    // justement celle qu'on vient de demander.
+    for (const l of panneau.querySelectorAll('[data-menu-lien]')) {
+      l.addEventListener('click', () => basculer(false));
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !panneau.hidden) basculer(false);
+    });
+  }
+
+  /* ------------------------------------------------------------- les faits */
+  // Les trois montants viennent du build ; l'application les remplace si elle
+  // répond. Le sélecteur de devise marche donc dès le premier clic.
+  let prix: Partial<Record<Devise, number>> = {};
+  try {
+    prix = JSON.parse(barre?.dataset.prix || '{}');
+  } catch {
+    prix = {};
+  }
+  let data: Jour30Data | null = null;
+  let devise: Devise = 'EUR';
+
+  function appliquer() {
+    const montant = prix[devise];
+    const valeurs: Record<string, string> = {};
+    if (typeof montant === 'number') {
+      valeurs.prix = `${formatPrice(montant, locale)} ${SYMBOLE[devise]}`;
+    }
+    if (data) {
+      const avis = data.avis ?? AVIS_REPLI;
+      valeurs.gratuit = String(leconsGratuit(data));
+      valeurs.lecons = String(leconsProgramme(data));
+      valeurs.heures = data.faits.heuresProgramme ?? data.faits.heures;
+      valeurs.note = `${noteLocale(avis.note, locale)} / 10`;
+      valeurs.retours = String(avis.nombre);
+    }
+    for (const el of document.querySelectorAll<HTMLElement>('[data-fait]')) {
+      const v = valeurs[el.dataset.fait || ''];
+      if (!v) continue;
+      const gabarit = el.dataset.gabarit;
+      el.textContent = gabarit ? gabarit.replace('{}', v) : v;
+    }
+  }
+
+  for (const b of document.querySelectorAll<HTMLButtonElement>('[data-devise]')) {
+    b.addEventListener('click', () => {
+      devise = (b.dataset.devise as Devise) || 'EUR';
+      for (const autre of document.querySelectorAll<HTMLButtonElement>('[data-devise]')) {
+        autre.setAttribute('aria-pressed', String(autre.dataset.devise === devise));
+      }
+      appliquer();
+    });
+  }
 
   fetch(`${ENDPOINT}?lang=${locale}`)
     .then((r) => (r.ok ? r.json() : null))
     .then((d: Jour30Data | null) => {
       if (!d || d.lang !== locale || !d.faits?.lessons) return;
+      data = d;
       const programme = d.offres.find((o) => o.id === 'programme');
-      const avis = d.avis ?? AVIS_REPLI;
-      const valeurs: Record<string, string> = {
-        prix: programme ? `${formatPrice(prixDe(programme, 'EUR'), locale)} €` : '',
-        gratuit: String(leconsGratuit(d)),
-        lecons: String(leconsProgramme(d)),
-        heures: d.faits.heuresProgramme ?? d.faits.heures,
-        note: `${noteLocale(avis.note, locale)} / 10`,
-        retours: String(avis.nombre),
-      };
-      for (const el of document.querySelectorAll<HTMLElement>('[data-fait]')) {
-        const v = valeurs[el.dataset.fait || ''];
-        if (!v) continue;
-        const gabarit = el.dataset.gabarit;
-        el.textContent = gabarit ? gabarit.replace('{}', v) : v;
+      if (programme) {
+        prix = {
+          EUR: prixDe(programme, 'EUR'),
+          GBP: prixDe(programme, 'GBP'),
+          USD: prixDe(programme, 'USD'),
+        };
       }
+      appliquer();
     })
     .catch(() => {
       /* les chiffres du build restent affichés */
