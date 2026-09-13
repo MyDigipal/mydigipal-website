@@ -84,6 +84,13 @@ const FR = {
     pied: (lecons: number, minutes: number, modulesAuto: number) =>
       `Deux modules sont offerts, soit ${lecons} leçons et ${minutes} minutes, sans carte bancaire. ${modulesAuto} modules s’ouvrent avec Les automatisations.`,
   },
+  outils: {
+    kicker: 'Le parcours de votre outil',
+    titre: 'Quatre outils, quatre parcours écrits séparément.',
+    chapeau:
+      "Vous en suivez un seul, celui que vous avez déjà sous la main, et vous en ouvrez un autre le jour où votre entreprise change d'avis. Chaque page dit ce que l'outil fait, ce qu'il ne fait pas, et ce que la formation en tire.",
+    lien: 'Voir le parcours',
+  },
   pratique: {
     kicker: 'La pratique',
     titre: 'On n’apprend pas l’IA en lisant',
@@ -352,6 +359,13 @@ const EN: typeof FR = {
     },
     pied: (lecons, minutes, modulesAuto) =>
       `Two modules are free, that is ${lecons} lessons and ${minutes} minutes, no card needed. ${modulesAuto} modules open with Automations.`,
+  },
+  outils: {
+    kicker: 'Your tool’s path',
+    titre: 'Four tools, four paths, written separately.',
+    chapeau:
+      'You follow one, the one already in your hands, and you open another the day your company changes its mind. Each page says what the tool does, what it does not, and what the course gets out of it.',
+    lien: 'See the path',
   },
   pratique: {
     kicker: 'Practice',

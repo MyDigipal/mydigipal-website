@@ -5,6 +5,7 @@ import { type Language, languages } from '@/i18n/config';
 import AcademyV2 from '@/components/academy-v2/AcademyV2';
 import { copyV2 } from '@/components/academy-v2/copy-v2';
 import { ENDPOINT, type Jour30Data } from '@/components/academy/data';
+import { OUTILS_PUBLIES, lienOutil } from '@/components/academy-tools';
 import secoursFr from '@/data/academy/jour30-fr.json';
 import secoursEn from '@/data/academy/jour30-en.json';
 import '@fontsource-variable/space-grotesk';
@@ -49,11 +50,25 @@ async function lire(): Promise<Jour30Data> {
   return (lang === 'fr' ? secoursFr : secoursEn) as unknown as Jour30Data;
 }
 const data = await lire();
+
+/**
+ * Les pages outils, pour la section qui y renvoie.
+ *
+ * Construites ICI et passées en propriété : importer le catalogue dans l'îlot
+ * embarquerait les textes complets des huit pages outils dans le JavaScript de
+ * la page de vente, pour quatre noms et quatre phrases.
+ */
+const outils = OUTILS_PUBLIES.map((o) => ({
+  id: o.id,
+  nom: o.nom,
+  lien: lienOutil(o, lang as 'fr' | 'en'),
+  phrase: o.renvoi[lang as 'fr' | 'en'],
+}));
 ---
 
 <BaseLayout lang={lang} title={c.meta.titre} description={c.meta.description}>
   <main class="flex-grow">
-    <AcademyV2 client:load locale={lang as 'fr' | 'en'} initial={data} />
+    <AcademyV2 client:load locale={lang as 'fr' | 'en'} initial={data} outils={outils} />
   </main>
   <Footer lang={lang} />
 </BaseLayout>

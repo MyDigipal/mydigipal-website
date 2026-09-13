@@ -35,6 +35,7 @@ import Profil from './Profil';
 import Questionnaire from './Questionnaire';
 import Programme from './Programme';
 import Tarifs from './Tarifs';
+import OutilsCartes, { type CarteOutil } from './OutilsCartes';
 
 /**
  * La page de vente, seconde formule.
@@ -60,7 +61,16 @@ import Tarifs from './Tarifs';
  *   2. une grille de tarifs à deux formules et un nombre de licences, sans la
  *      session ni l'audit flash.
  */
-export default function AcademyV2({ locale, initial }: { locale: Locale; initial: Jour30Data }) {
+export default function AcademyV2({
+  locale,
+  initial,
+  outils = [],
+}: {
+  locale: Locale;
+  initial: Jour30Data;
+  /** Les pages outils publiées, passées par la page Astro. */
+  outils?: CarteOutil[];
+}) {
   const [data, setData] = useState(initial);
   // La devise du visiteur. L'euro par défaut : c'est la monnaie du prix
   // annoncé partout ailleurs, et un prix qui change entre la page et la caisse
@@ -147,6 +157,13 @@ export default function AcademyV2({ locale, initial }: { locale: Locale; initial
         leconsGratuit={leconsGratuit(data)}
         minutesGratuit={data.faits.minutesGratuit ?? 0}
       />
+
+      {/* Les quatre outils, juste après le programme. Le programme vient de
+          dire « vous choisissez un outil, et le parcours ne garde que celui-là » :
+          la question « lequel ? » se pose exactement ici, et chaque carte ouvre
+          la page de son outil. Quatre lignes et un lien, pas un chapitre : la
+          section entière consacrée aux outils avait été retirée le 07/09. */}
+      <OutilsCartes locale={locale} outils={outils} />
 
       {/* Le questionnaire de profil, juste après le programme : il montre les
           vingt modules en les triant, donc il faut les avoir vus une fois pour
