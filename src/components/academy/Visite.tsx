@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type FocusEvent as EvtFocus,
+  type MouseEvent as EvtSouris,
+} from 'react';
 import { Affiche, Visionneuse, libelleDemo, useVisionneuse, type DemoKey } from './Demos';
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
@@ -188,7 +195,39 @@ export default function Visite({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actif]);
 
-  const choisir = (id: SpotId) => {
+  /**
+   * Garder l'écran là où il est quand le panneau change d'état.
+   *
+   * ⚠️ Sous lg, le panneau est DANS le flux au repos (`order-first`, au-dessus
+   * du tableau de bord) et en sort dès qu'on touche un élément (`fixed`). Sa
+   * hauteur disparaît donc du flux au moment du clic, et tout ce qui est en
+   * dessous remonte d'autant : de 240 à 360 px selon la fiche. Paul, 13/09 :
+   * « quand je clique sur un truc, je veux que l'écran reste au même endroit ».
+   *
+   * On mesure l'élément touché avant le changement d'état, on le remesure à la
+   * trame suivante, et on rend au défilement l'écart exact. `requestAnimation-
+   * Frame` passe APRÈS le rendu de React et AVANT l'affichage, donc la
+   * correction ne se voit pas. `instant` est obligatoire : la page est en
+   * `scroll-behavior: smooth`, et un rattrapage animé se verrait comme un
+   * soubresaut.
+   */
+  const tenirLEcran = (el: HTMLElement | null) => {
+    if (!el) return;
+    const avant = el.getBoundingClientRect().top;
+    requestAnimationFrame(() => {
+      const ecart = el.getBoundingClientRect().top - avant;
+      if (Math.abs(ecart) > 1) window.scrollBy({ top: ecart, behavior: 'instant' });
+    });
+  };
+
+  /** Le dernier élément touché, pour que la fermeture ne bouge pas non plus. */
+  const dernier = useRef<HTMLElement | null>(null);
+
+  const choisir = (id: SpotId, el?: HTMLElement | null) => {
+    if (el) {
+      dernier.current = el;
+      if (!flottant) tenirLEcran(el);
+    }
     setTouche(true);
     setActif(id);
     setFlottant(true);
@@ -209,9 +248,9 @@ export default function Visite({
     tabIndex: 0,
     role: 'button' as const,
     'aria-pressed': actif === id,
-    onMouseEnter: () => choisir(id),
-    onFocus: () => choisir(id),
-    onClick: () => choisir(id),
+    onMouseEnter: (e: EvtSouris<HTMLDivElement>) => choisir(id, e.currentTarget),
+    onFocus: (e: EvtFocus<HTMLDivElement>) => choisir(id, e.currentTarget),
+    onClick: (e: EvtSouris<HTMLDivElement>) => choisir(id, e.currentTarget),
     className: `${extra} cursor-pointer rounded-carte outline-none transition-[opacity,box-shadow,transform] duration-300 ${
       actif === null ? '' : actif === id ? 'shadow-[0_0_0_1.5px_#c8a951,0_18px_40px_-24px_rgba(200,169,81,0.6)]' : 'opacity-[0.55]'
     }`,
@@ -377,6 +416,10 @@ export default function Visite({
                 <button
                   type="button"
                   onClick={() => {
+                    // Le panneau revient dans le flux : la page s'allonge de sa
+                    // hauteur, donc on rend l'écart au défilement, comme à
+                    // l'ouverture.
+                    tenirLEcran(dernier.current);
                     setFlottant(false);
                     setActif(null);
                   }}

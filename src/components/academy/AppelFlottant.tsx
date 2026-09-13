@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { surAncre } from './ancre';
 import { jour30Copy } from './copy';
 import type { Locale } from './data';
-import { useLienApp } from './track';
 
 /**
  * Le bouton qui suit le visiteur, au doigt.
@@ -17,9 +17,13 @@ import { useLienApp } from './track';
  * l'écran, c'est une hésitation, pas une insistance — et cela règle au passage
  * son texte tronqué quand « Jour n / 30 » s'affiche à côté.
  *
- * Deux liens plutôt qu'un : l'accès gratuit est une réponse à une objection
- * (« je ne veux pas payer pour voir »), et une objection se traite là où elle
- * naît, pas au bout d'un menu qu'il faut penser à ouvrir.
+ * ⚠️ UN SEUL bouton depuis le 13/09/2026. Il y en avait deux, empilés : la
+ * pastille « n leçons offertes » au-dessus de « Commencer ». Paul, en lisant la
+ * page sur son téléphone dans la section de la visite : « sur téléphone, il
+ * devrait juste y avoir le bouton Get Started ». Deux pastilles collées au coin
+ * du pouce mangeaient quatre lignes du texte qu'on est en train de lire, et la
+ * page propose déjà l'accès gratuit en clair dans le hero, dans le
+ * retournement et dans la grille de tarifs.
  *
  * Il s'efface à deux endroits, et pour la même raison : ne jamais répéter au
  * doigt ce que l'écran propose déjà. Dans le hero, les deux mêmes boutons sont
@@ -28,12 +32,9 @@ import { useLienApp } from './track';
  */
 export default function AppelFlottant({
   locale,
-  leconsGratuites,
   ancreTarifs = 'pricing',
-  libelleGratuit,
 }: {
   locale: Locale;
-  leconsGratuites: number;
   /**
    * L'ancre de la grille de prix. Elle sert deux fois : la destination du
    * bouton, et la zone où le bouton doit s'effacer. Sur la seconde page de
@@ -41,13 +42,10 @@ export default function AppelFlottant({
    * nulle part ET restait affiché par-dessus la grille.
    */
   ancreTarifs?: string;
-  /** Libellé du lien gratuit, pour y annoncer la durée. */
-  libelleGratuit?: string;
 }) {
   const c = jour30Copy(locale).flottant;
   const [visible, setVisible] = useState(false);
   const boite = useRef<HTMLDivElement>(null);
-  const gratuit = useLienApp(`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`);
 
   useEffect(() => {
     const zones = ['academy-hero', ancreTarifs].map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
@@ -81,18 +79,9 @@ export default function AppelFlottant({
         visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
       }`}
     >
-      {/* Le libellé gratuit reste en bas de casse, sans le mono espacé du
-          reste de la page : en capitales, il était plus large que le bouton
-          d'achat, et deux pastilles larges collées au bord mangent quatre
-          lignes du texte qu'on est en train de lire. */}
-      <a
-        href={gratuit}
-        className="inline-flex min-h-9 items-center rounded-bouton border border-or/45 bg-salle/95 px-3 text-[12.5px] font-medium text-or backdrop-blur"
-      >
-        {libelleGratuit ?? c.gratuit(leconsGratuites)}
-      </a>
       <a
         href={`#${ancreTarifs}`}
+        onClick={surAncre(ancreTarifs)}
         className="inline-flex min-h-12 items-center rounded-bouton bg-or px-4 text-[14.5px] font-semibold text-salle shadow-[0_14px_34px_-12px_rgba(0,0,0,0.85)]"
       >
         {c.cta}

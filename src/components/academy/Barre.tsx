@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { surAncre } from './ancre';
 import { jour30Copy } from './copy';
 import type { Locale } from './data';
 import Drapeau from './Drapeau';
@@ -225,6 +226,7 @@ export default function Barre({
             s'affichait à côté : sur un écran de 390 px, les deux ne tiennent pas. */}
         <a
           href={`#${ancreCta}`}
+          onClick={surAncre(ancreCta)}
           className="hidden min-h-10 flex-none items-center whitespace-nowrap rounded-bouton bg-or px-4 py-2 text-[14px] font-semibold text-salle transition duration-150 hover:bg-or-vif lg:inline-flex"
         >
           {c.cta}
@@ -261,7 +263,10 @@ export default function Barre({
 
           <a
             href={`#${ancreCta}`}
-            onClick={() => setMenu(false)}
+            onClick={(e) => {
+              setMenu(false);
+              surAncre(ancreCta)(e);
+            }}
             className="mt-3.5 flex min-h-12 items-center justify-center rounded-bouton bg-or px-4 text-[15px] font-semibold text-salle transition hover:bg-or-vif"
           >
             {c.cta}

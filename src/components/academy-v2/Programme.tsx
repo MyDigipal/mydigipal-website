@@ -64,17 +64,6 @@ export default function Programme({
   const [actif, setActif] = useState<Module | null>(null);
   const [fige, setFige] = useState<string | null>(null);
   const [grand, setGrand] = useState<Demo | null>(null);
-  /**
-   * L'étape dépliée, sous lg uniquement (Paul, 07/09 : « on devrait mettre
-   * Getting started, Getting good et Putting it to work en dépliable ; si la
-   * personne clique dessus ça déplie, sinon ne pas le faire »).
-   *
-   * ⚠️ Fermé au premier rendu, des deux côtés : la largeur ne se connaît pas
-   * au rendu serveur, et un état initial qui en dépendrait donnerait une
-   * hydratation qui ne colle pas. C'est le CSS qui rouvre tout dès lg.
-   * Une seule à la fois, comme le repli des modules dans l'application.
-   */
-  const [deplie, setDeplie] = useState<string | null>(null);
   // ⚠️ Dans un effet, jamais au rendu : le serveur n'a pas de pointeur, et
   // un rendu qui en suppose un donne une hydratation qui ne colle pas.
   const [tactile, setTactile] = useState(false);
@@ -111,110 +100,92 @@ export default function Programme({
         <p className="mt-4 max-w-[64ch] text-[17.5px] leading-[1.65] text-brume">
           {c.chapeau(modulesMontres, heuresMontrees)}
         </p>
+        {/* La consigne, au doigt seulement : sur grand écran le panneau de
+            droite la porte déjà, et il est visible au repos. Sur téléphone il
+            n'existe qu'une fois ouvert, donc rien ne dirait que les lignes se
+            touchent. */}
+        <p className="mt-3 font-ac-mono text-[12px] leading-[1.5] text-or-grave lg:hidden">
+          {c.videTactile}
+        </p>
 
         <div className="mt-10 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10">
           <div>
             {ETAPES.map((e) => {
               const mods = modulesDe(e.id);
-              const ouverte = deplie === e.id;
               return (
                 <div key={e.id} className="mb-9 last:mb-0">
-                  {/* L'en-tête est un bouton sous lg, et rien du tout au-dessus :
-                      `lg:pointer-events-none` le rend inerte plutôt que de rendre
-                      deux balises différentes selon la largeur, ce que le rendu
-                      serveur ne saurait pas trancher. */}
-                  <button
-                    type="button"
-                    onClick={() => setDeplie(ouverte ? null : e.id)}
-                    aria-expanded={ouverte}
-                    aria-controls={`etape-${e.id}`}
-                    className="-mx-1 flex w-full cursor-pointer items-baseline gap-3 rounded-[8px] border-0 bg-transparent px-1 py-1 text-left lg:pointer-events-none lg:m-0 lg:cursor-default lg:p-0"
-                  >
-                    <h3 className="m-0 font-ac-mono text-[13px] font-semibold uppercase tracking-[.14em] text-encre">
+                  {/* ⚠️ Le titre d'étape était en monospace, en capitales, à
+                      13 px (Paul, 13/09 : « ça fait très écrit tout petit avec
+                      une police chelou en plus ; on avait dit qu'on avait moins
+                      de police d'écriture »). Il est rendu dans la police de la
+                      page, à sa taille de sous-titre. Le monospace ne sert plus
+                      QUE aux durées et aux comptes, dans toute la section. */}
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <h3 className="m-0 text-[19px] font-semibold leading-[1.2] tracking-[-0.01em] text-encre">
                       {e.titre[locale]}
                     </h3>
-                    <span className="font-ac-mono text-[12px] text-brume">{e.jours[locale]}</span>
-                    {/* Paul, 13/09 : « c'est pas clair que tu peux cliquer sur
-                        la petite flèche ». Le verbe est écrit à côté. */}
-                    <span className="ml-auto self-center font-ac-mono text-[11px] uppercase tracking-[.12em] text-or-texte lg:hidden">
-                      {ouverte ? c.masquer : c.voir}
+                    <span className="text-[13.5px] text-brume">{e.jours[locale]}</span>
+                    <span className="ml-auto font-ac-mono text-[12px] text-brume">
+                      {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id), locale)}
                     </span>
-                    <span
-                      className={`self-center text-brume transition-transform duration-200 lg:hidden ${ouverte ? 'rotate-180' : ''}`}
-                      aria-hidden="true"
-                    >
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </span>
-                  </button>
-                  <p className="mb-2 mt-1 max-w-[62ch] text-[15.5px] leading-[1.6] text-brume">
+                  </div>
+                  <p className="mb-1 mt-1.5 max-w-[62ch] text-[15.5px] leading-[1.6] text-brume">
                     {e.chapeau[locale]}
                   </p>
-                  {/* ⚠️ La liste des noms de modules s'affichait ICI quand
-                      l'étape était repliée. Elle y avait été mise le 09/09 pour
-                      que les quatre parcours outils soient nommés sans avoir à
-                      déplier ; Paul l'a retirée le 13/09 (« des vieilles lignes
-                      qui apparaissent juste en dessous de 4 modules, 4 h 12 »).
-                      Les modules restent dans le HTML de l'étape repliée, donc
-                      lisibles par un moteur : c'est l'affichage qui change, pas
-                      le contenu de la page. */}
-                  <p className="mb-4 font-ac-mono text-[12.5px] leading-[1.55] text-brume lg:hidden">
-                    {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id), locale)}
-                  </p>
-                  <div
-                    id={`etape-${e.id}`}
-                    className={`grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2.5 lg:grid ${ouverte ? 'grid' : 'hidden'}`}
-                  >
-                    {mods.map((m) => (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onMouseEnter={() => montre(m)}
-                        onFocus={() => montre(m)}
-                        onClick={() => cliquer(m)}
-                        style={{ ['--teinte' as string]: m.teinte }}
-                        className={`flex min-h-[136px] cursor-pointer flex-col items-start gap-2.5 rounded-carte border bg-papier p-3.5 text-left transition duration-150 hover:-translate-y-[3px] hover:shadow-[0_8px_22px_rgba(15,26,46,.11)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                          fige === m.id || actif?.id === m.id
-                            ? 'border-[var(--teinte)] shadow-[0_8px_22px_rgba(15,26,46,.11)]'
-                            : 'border-lin'
-                        }`}
-                      >
-                        <span
-                          className="grid h-9 w-9 place-items-center rounded-[11px]"
-                          style={{
-                            color: m.teinte,
-                            background: `color-mix(in srgb, ${m.teinte} 12%, transparent)`,
-                          }}
-                        >
-                          <Glyphe nom={m.glyphe} taille={20} />
-                        </span>
-                        <span className="text-[15px] font-medium leading-[1.35] text-encre">
-                          {m.titre[locale]}
-                        </span>
-                        <span className="mt-auto flex flex-wrap items-center gap-2">
-                          <span className="font-ac-mono text-[12px] text-brume">
-                            {duree(m.minutes, locale)}
-                          </span>
-                          {m.palier !== 'essentials' && (
+                  {/* La liste qui se lit (direction B, choisie par Paul le
+                      13/09). Plus rien n'est caché derrière un « Voir les
+                      modules » : les vingt-trois modules sont nommés d'emblée,
+                      une ligne chacun, et le clic ouvre la fiche du module.
+                      Ce que ça remplace : une grille de tuiles de 136 px de
+                      haut, qui demandait de déplier l'étape avant de savoir ce
+                      qu'elle contenait. */}
+                  <ul className="m-0 mt-2.5 list-none p-0">
+                    {mods.map((m) => {
+                      const on = fige === m.id || actif?.id === m.id;
+                      return (
+                        <li key={m.id} className="border-b border-lin last:border-b-0">
+                          <button
+                            type="button"
+                            onMouseEnter={() => montre(m)}
+                            onFocus={() => montre(m)}
+                            onClick={() => cliquer(m)}
+                            aria-pressed={fige === m.id}
+                            className={`-mx-2 flex w-full cursor-pointer items-center gap-3 rounded-[10px] border-0 px-2 py-2.5 text-left transition duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                              on ? 'bg-papier shadow-[0_6px_16px_rgba(15,26,46,.09)]' : 'bg-transparent hover:bg-papier'
+                            }`}
+                          >
                             <span
-                              className={`inline-block rounded-full px-2 py-1 font-ac-mono text-[10.5px] uppercase tracking-[.09em] ${teintePalier[m.palier]}`}
+                              className="grid h-[30px] w-[30px] flex-none place-items-center rounded-[9px]"
+                              style={{
+                                color: m.teinte,
+                                background: `color-mix(in srgb, ${m.teinte} 12%, transparent)`,
+                              }}
                             >
-                              {c.paliers[m.palier]}
+                              <Glyphe nom={m.glyphe} taille={17} />
                             </span>
-                          )}
-                          {m.auChoix && (
-                            <span className="font-ac-mono text-[10.5px] uppercase tracking-[.09em] text-brume">
-                              {c.auChoix}
+                            <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                              <span className="text-[15px] leading-[1.3] text-encre">
+                                {m.titre[locale]}
+                              </span>
+                              {m.auChoix && (
+                                <span className="text-[12.5px] text-brume">{c.auChoix}</span>
+                              )}
+                              {m.palier !== 'essentials' && (
+                                <span
+                                  className={`inline-block rounded-full px-2 py-[2px] font-ac-mono text-[10px] uppercase tracking-[.08em] ${teintePalier[m.palier]}`}
+                                >
+                                  {c.paliers[m.palier]}
+                                </span>
+                              )}
                             </span>
-                          )}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                  <p className="mt-2.5 hidden font-ac-mono text-[12.5px] text-brume lg:block">
-                    {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id), locale)}
-                  </p>
+                            <span className="flex-none font-ac-mono text-[12px] text-brume">
+                              {duree(m.minutes, locale)}
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
               );
             })}

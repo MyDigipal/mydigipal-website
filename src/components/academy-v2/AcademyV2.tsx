@@ -270,12 +270,7 @@ export default function AcademyV2({
         lienGratuit={gratuit}
       />
 
-      <AppelFlottant
-        locale={locale}
-        leconsGratuites={leconsGratuit(data)}
-        ancreTarifs="tarifs"
-        libelleGratuit={c.tarifs.gratuitCourt(leconsGratuit(data))}
-      />
+      <AppelFlottant locale={locale} ancreTarifs="tarifs" />
     </div>
   );
 }

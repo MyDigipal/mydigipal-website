@@ -88,7 +88,7 @@ export default function Academy({ locale, initial }: { locale: Locale; initial: 
       <Maison locale={locale} temoignages={temoignagesPublics(data.temoignages)} avis={preuve} />
       <Produit locale={locale} />
       <ConfigurateurNuit locale={locale} data={data} />
-      <AppelFlottant locale={locale} leconsGratuites={leconsGratuit(data)} />
+      <AppelFlottant locale={locale} />
     </div>
   );
 }

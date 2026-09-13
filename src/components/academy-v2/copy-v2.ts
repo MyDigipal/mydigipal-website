@@ -64,8 +64,6 @@ const FR = {
     chapeau: (modules: number, heures: string) =>
       `Trois étapes, ${modules} modules, ${heures} de lecture et d’exercices, en français comme en anglais. Vous choisissez un outil, et le parcours ne garde que celui-là.`,
     auChoix: 'un au choix',
-    voir: 'Voir les modules',
-    masquer: 'Masquer',
     vide: 'Survolez un module pour voir ce qu’il contient. Cliquez pour le garder à l’écran.',
     videTactile: 'Touchez un module pour voir ce qu’il contient.',
     deLecons: 'de leçons',
@@ -344,8 +342,6 @@ const EN: typeof FR = {
     chapeau: (modules, heures) =>
       `Three stages, ${modules} modules, ${heures} of reading and exercises, in English and in French. You pick one tool, and the path keeps only that one.`,
     auChoix: 'one of four',
-    voir: 'See the modules',
-    masquer: 'Hide',
     vide: 'Hover a module to see what it holds. Click to keep it on screen.',
     videTactile: 'Touch a module to see what it holds.',
     deLecons: 'of lessons',

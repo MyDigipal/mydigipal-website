@@ -1,3 +1,4 @@
+import { surAncre } from './ancre';
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
 import { leconsProgramme, leconsComplement, leconsGratuit } from './data';
@@ -86,7 +87,11 @@ export default function Hero({
             {c.repartition(leconsProgramme(data), leconsComplement(data))}
           </p>
           <div className="mt-8 grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:gap-3.5">
-            <a href={`#${ancreTarifs}`} className={`${cta} bg-or text-salle hover:bg-or-vif`}>
+            <a
+              href={`#${ancreTarifs}`}
+              onClick={surAncre(ancreTarifs)}
+              className={`${cta} bg-or text-salle hover:bg-or-vif`}
+            >
               {c.cta}
             </a>
             <a

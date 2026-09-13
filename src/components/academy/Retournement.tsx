@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { surAncre } from './ancre';
 import { jour30Copy } from './copy';
 import { nombreLocal } from './offres';
 import { ease, onEnter, probeClock, reducedMotion, tween } from './motion';
@@ -161,6 +162,7 @@ export default function Retournement({
           <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-3.5">
             <a
               href={`#${ancreTarifs}`}
+              onClick={surAncre(ancreTarifs)}
               className="inline-flex min-h-11 items-center justify-center rounded-bouton bg-or px-4 py-3.5 text-center text-[14.5px] font-semibold text-salle transition duration-150 hover:bg-or-vif sm:whitespace-nowrap sm:px-[26px] sm:text-[15.5px]"
             >
               {c.ouvrir}
