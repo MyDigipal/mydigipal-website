@@ -12,7 +12,7 @@
 // argument, lus dans l'application.
 
 import type { Ecran, CopyOutil, Locale, Outil } from './types';
-import { FILMS_FR, livrablesDe } from './livrables';
+import { FILMS_EN, FILMS_FR, livrablesDe } from './livrables';
 
 const IMG = '/academy/outils/claude';
 
@@ -543,6 +543,18 @@ const EN: CopyOutil = {
       'Three things almost nobody uses, and they are what separates a chat window from a working tool.',
     indice: (n) => `${n} markers on this screen`,
     ecrans: ecransEn(),
+  },
+  livrables: {
+    kicker: 'Real documents',
+    titre: 'What comes out of the course',
+    chapeau:
+      'Five documents produced during a session, in front of the room, from one company’s own material. Open them: this is the kind of thing you will be handing over.',
+    ouvrir: 'Open the document',
+    items: livrablesDe('claude', 'en'),
+    filmsTitre: 'And what runs without anyone',
+    filmsChapeau:
+      'Two sequences filmed on screen, exactly as they happened. This is what the third stage of the path teaches you to build.',
+    films: FILMS_EN,
   },
   resultats: {
     kicker: 'On the way out',

@@ -502,6 +502,14 @@ const EN: CopyOutil = {
     indice: (n) => `${n} markers on this screen`,
     ecrans: ecransEn(),
   },
+  livrables: {
+    kicker: 'Real documents',
+    titre: 'What comes out of the course',
+    chapeau:
+      'Four documents produced during a session, in front of the room, from one company’s own material. Open them: this is the kind of thing you will be handing over.',
+    ouvrir: 'Open the document',
+    items: livrablesDe('gemini', 'en'),
+  },
   resultats: {
     kicker: 'On the way out',
     titre: 'What you will be able to do with Gemini',

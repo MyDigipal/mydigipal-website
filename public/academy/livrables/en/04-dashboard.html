@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard - Atelier Rivière - September 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14111A;--ink-2:#39323F;--ink-3:#6B6272;--ink-4:#98909E;
+  --line:#E7E2E9;--line-2:#F3F0F5;--bg:#FBF9FB;
+  --cp:#A8183C;--cp-2:#C93055;--cp-soft:#FCEFF2;--cp-line:#F2C9D3;
+  --green:#2F7D52;--green-soft:#EDF7F1;--green-line:#BFE0CD;
+  --amber:#B4740A;--amber-soft:#FDF3E3;--amber-line:#F2DDB4;
+  --font:'Inter',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:#EDE9EF;color:var(--ink-2);line-height:1.5;-webkit-font-smoothing:antialiased;padding:30px 20px 50px}
+.page{max-width:1180px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 3px 34px rgba(20,17,26,.11);overflow:hidden}
+
+.top{background:linear-gradient(135deg,#1A1119 0%,#3A2531 100%);color:#fff;padding:30px 40px;display:flex;
+  align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.top .kick{font-family:var(--mono);font-size:11.5px;letter-spacing:.17em;text-transform:uppercase;color:#FFA8BA;font-weight:700;margin-bottom:8px}
+.top h1{font-size:29px;font-weight:800;letter-spacing:-.025em;line-height:1.14}
+.top .sub{font-size:15px;color:#C9BEC8;margin-top:6px}
+.stamp{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;font-weight:700;color:#A6DDBB;background:rgba(47,125,82,.2);border:1px solid rgba(95,185,126,.45);
+  border-radius:999px;padding:8px 15px;white-space:nowrap}
+.stamp .g{width:7px;height:7px;border-radius:50%;background:#5FB97E}
+
+.body{padding:32px 40px 38px}
+h2{font-size:12.5px;font-family:var(--mono);letter-spacing:.15em;text-transform:uppercase;color:var(--cp);
+  font-weight:700;margin:0 0 15px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+section{margin-bottom:34px}
+section:last-child{margin-bottom:0}
+
+.five{display:grid;grid-template-columns:repeat(5,1fr);gap:15px}
+.kpi{border:1px solid var(--line);border-radius:13px;padding:18px 18px 16px;background:var(--bg);position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--cp)}
+.kpi.ok::before{background:var(--green)}
+.kpi.warn::before{background:#E0A93C}
+.kpi .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4);font-weight:700;margin-bottom:9px}
+.kpi .n{font-size:33px;font-weight:900;letter-spacing:-.03em;color:var(--ink);line-height:1}
+.kpi .d{font-family:var(--mono);font-size:12px;font-weight:700;margin-top:8px;display:flex;align-items:center;gap:5px}
+.kpi .d.up{color:var(--green)}.kpi .d.dn{color:var(--cp-2)}.kpi .d.flat{color:var(--ink-4)}
+.kpi .c{font-size:13px;color:var(--ink-3);margin-top:7px;line-height:1.35}
+
+.split{display:grid;grid-template-columns:1.25fr 1fr;gap:30px}
+
+.bars{display:grid;gap:11px}
+.bar{display:grid;grid-template-columns:186px 1fr 62px;gap:15px;align-items:center;font-size:15.5px}
+.bar .t{color:var(--ink);font-weight:600}
+.bar .track{height:20px;background:var(--line-2);border-radius:6px;overflow:hidden}
+.bar .fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#A8183C,#E8637F)}
+.bar .fill.g{background:linear-gradient(90deg,#2F7D52,#5FB97E)}
+.bar .fill.a{background:linear-gradient(90deg,#B4740A,#E0A93C)}
+.bar .v{text-align:right;font-family:var(--mono);font-weight:700;color:var(--ink);font-size:14px}
+
+.alerts{display:grid;gap:11px}
+.alert{border-radius:12px;padding:14px 17px;border:1px solid;display:grid;grid-template-columns:26px 1fr;gap:13px;align-items:start}
+.alert .i{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:800;font-size:13px;color:#fff}
+.alert .h{font-size:15.5px;font-weight:800;color:var(--ink);margin-bottom:3px;line-height:1.3}
+.alert .x{font-size:14.5px;color:var(--ink-3);line-height:1.4}
+.alert.red{background:var(--cp-soft);border-color:var(--cp-line)}
+.alert.red .i{background:var(--cp)}
+.alert.amb{background:var(--amber-soft);border-color:var(--amber-line)}
+.alert.amb .i{background:#D89A2B}
+.alert.grn{background:var(--green-soft);border-color:var(--green-line)}
+.alert.grn .i{background:var(--green)}
+
+table{width:100%;border-collapse:collapse;font-size:15.5px}
+th{text-align:left;padding:10px 13px;background:var(--line-2);color:var(--ink-3);font-size:11px;
+  font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;font-weight:700;border-bottom:1px solid var(--line)}
+th.n,td.n{text-align:right}
+td{padding:11px 13px;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
+td b{color:var(--ink);font-weight:700}
+td.n{font-family:var(--mono);font-weight:700;color:var(--ink)}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  font-weight:700;padding:3px 9px;border-radius:999px}
+.tag.r{background:var(--cp-soft);color:var(--cp);border:1px solid var(--cp-line)}
+.tag.a{background:var(--amber-soft);color:var(--amber);border:1px solid var(--amber-line)}
+.tag.g{background:var(--green-soft);color:var(--green);border:1px solid var(--green-line)}
+
+.spark{display:flex;align-items:flex-end;gap:5px;height:78px;margin-top:12px}
+.spark .s{flex:1;background:linear-gradient(180deg,#E8637F,#A8183C);border-radius:4px 4px 0 0;min-height:5px}
+.spark-l{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--ink-4);margin-top:7px}
+
+.note{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:15px 19px;font-size:15px;color:var(--ink-3);margin-top:16px}
+.note b{color:var(--ink);font-weight:700}
+
+.foot{background:var(--bg);border-top:1px solid var(--line);padding:20px 40px;font-size:13.5px;color:var(--ink-4);
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+@media(max-width:1000px){
+  .five{grid-template-columns:repeat(2,1fr)}
+  .split{grid-template-columns:1fr}
+  .bar{grid-template-columns:1fr;gap:5px}
+  .top,.body,.foot{padding-left:22px;padding-right:22px}
+}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}section{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="top">
+    <div>
+      <div class="kick">Monthly dashboard &middot; September 2026</div>
+      <h1>Atelier Rivière - management view</h1>
+      <div class="sub">Generated from the accounting export and the quoting software export. No manual entry.</div>
+    </div>
+    <div class="stamp"><span class="g"></span>Produced with AI &middot; 15 minutes</div>
+  </div>
+
+  <div class="body">
+
+    <section>
+      <h2>Monday's five figures</h2>
+      <div class="five">
+        <div class="kpi ok">
+          <div class="l">Revenue</div>
+          <div class="n">248 k&euro;</div>
+          <div class="d up">&#9650; +18 % vs Q2</div>
+          <div class="c">Best quarter since 2023</div>
+        </div>
+        <div class="kpi warn">
+          <div class="l">Gross margin</div>
+          <div class="n">31 %</div>
+          <div class="d dn">&#9660; -4 pts</div>
+          <div class="c">Below the 35 % target</div>
+        </div>
+        <div class="kpi">
+          <div class="l">Payment days</div>
+          <div class="n">47 d</div>
+          <div class="d dn">&#9660; +9 days</div>
+          <div class="c">Main point of concern</div>
+        </div>
+        <div class="kpi ok">
+          <div class="l">Signed order book</div>
+          <div class="n">72 %</div>
+          <div class="d up">&#9650; +11 pts</div>
+          <div class="c">Next quarter almost full</div>
+        </div>
+        <div class="kpi warn">
+          <div class="l">Quotes with no reply</div>
+          <div class="n">14</div>
+          <div class="d flat">&#9679; 6 of them &gt; 30 days</div>
+          <div class="c">61 k&euro; awaiting a decision</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>What is slipping, and by how much</h2>
+      <div class="split">
+        <div class="alerts">
+          <div class="alert red">
+            <div class="i">!</div>
+            <div>
+              <div class="h">Payment days have grown by 9 in one quarter</div>
+              <div class="x">Three clients account for 80 % of the delay. To be handled this week, before it turns structural. Immediate lever: a 40 % deposit.</div>
+            </div>
+          </div>
+          <div class="alert amb">
+            <div class="i">!</div>
+            <div>
+              <div class="h">Material margin is falling on the larger projects</div>
+              <div class="x">Quotes older than three months were signed at the old prices. A material revision clause would settle it at source.</div>
+            </div>
+          </div>
+          <div class="alert amb">
+            <div class="i">!</div>
+            <div>
+              <div class="h">Six quotes have been sitting for more than 30 days</div>
+              <div class="x">61,000 euros in total. Not one reminder has gone out. It is the fastest money on the table this month.</div>
+            </div>
+          </div>
+          <div class="alert grn">
+            <div class="i">&#10003;</div>
+            <div>
+              <div class="h">The win rate is holding up</div>
+              <div class="x">54 % of quotes issued are signed, steady for a year. The problem is not commercial, it is administrative.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4);font-weight:700;margin-bottom:4px;">Monthly revenue</div>
+          <div class="spark">
+            <div class="s" style="height:44%"></div><div class="s" style="height:52%"></div>
+            <div class="s" style="height:47%"></div><div class="s" style="height:61%"></div>
+            <div class="s" style="height:58%"></div><div class="s" style="height:70%"></div>
+            <div class="s" style="height:66%"></div><div class="s" style="height:83%"></div>
+            <div class="s" style="height:100%"></div>
+          </div>
+          <div class="spark-l"><span>Jan</span><span>May</span><span>Sep</span></div>
+          <div class="note"><b>Reading it.</b> The curve is rising, and that is exactly what hides the margin problem. A busy month at 31 % margin brings in less than an average month at 35 %.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>The deals to handle this week</h2>
+      <table>
+        <thead>
+          <tr><th style="width:32%">Deal</th><th class="n">Amount</th><th class="n">Age</th><th>What to do</th><th>Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>Résidence Les Tilleuls</b></td><td class="n">24 800 &euro;</td><td class="n">41 d</td><td>Invoice overdue, no reminder sent</td><td><span class="tag r">Urgent</span></td></tr>
+          <tr><td><b>Cabinet Delmas</b></td><td class="n">18 200 &euro;</td><td class="n">36 d</td><td>Quote unanswered, reminder to write</td><td><span class="tag r">Urgent</span></td></tr>
+          <tr><td><b>Brasserie du Canal</b></td><td class="n">12 400 &euro;</td><td class="n">33 d</td><td>Quote unanswered since the site visit</td><td><span class="tag a">This week</span></td></tr>
+          <tr><td><b>Groupe Vinso</b></td><td class="n">9 600 &euro;</td><td class="n">12 d</td><td>Consultation open, response to submit</td><td><span class="tag a">This week</span></td></tr>
+          <tr><td><b>Maison Aubert</b></td><td class="n">6 100 &euro;</td><td class="n">8 d</td><td>Deposit received, scheduling to confirm</td><td><span class="tag g">Follow up</span></td></tr>
+        </tbody>
+      </table>
+      <div class="note"><b>What this dashboard changes.</b> The five lines come out of two exports nobody ever opens. Cross-checked, they say where the 71,000 euros easiest to recover this month are sitting. Next month, you hand over the new exports and the page updates itself.</div>
+    </section>
+
+  </div>
+
+  <div class="foot">
+    <div><b>Atelier Rivière</b> &middot; September 2026 dashboard &middot; fictional data</div>
+    <div>Built with AI from two raw exports</div>
+  </div>
+
+</div>
+</body>
+</html>

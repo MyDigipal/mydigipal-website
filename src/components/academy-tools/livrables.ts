@@ -13,8 +13,9 @@
 // « produit avec Copilot » sur un document produit avec Claude serait faux, et
 // se verrait : Copilot ne rend pas un artefact HTML.
 //
-// Français seulement. Un anglophone à qui l'on ouvre une réponse à appel
-// d'offres en français s'arrête à la première ligne.
+// Les deux langues depuis le 13/09/2026. Les documents anglais sont produits par
+// `scripts/livrables-textes.py`, qui ne touche QUE les nœuds de texte : la mise
+// en page ne peut pas se perdre en chemin.
 
 import type { Film, Livrable } from './types';
 
@@ -88,9 +89,75 @@ export const FILMS_FR: Film[] = [
   },
 ];
 
+
+/**
+ * Les mêmes documents, en anglais.
+ *
+ * ⚠️ Le `fichier` porte son dossier (`en/…`) : c'est lui qui décide du chemin
+ * servi et de la vignette. Un préfixe ajouté ailleurs finirait par diverger.
+ */
+export const LIVRABLES_EN: Livrable[] = [
+  {
+    fichier: 'en/02-synthese',
+    titre: 'A meeting preparation note',
+    texte:
+      'A forty-two page sector report in, a one-page briefing note out, with the source of every figure.',
+    cout: '42 pages read, a note in five minutes',
+  },
+  {
+    fichier: 'en/03-presentation',
+    titre: 'A board meeting',
+    texte:
+      'Scattered notes become eight slides and three decisions to take. One invented figure along the way, caught on review.',
+    cout: 'scattered notes, eight slides',
+  },
+  {
+    fichier: 'en/04-dashboard',
+    titre: 'A monthly dashboard',
+    texte:
+      'The accounting export and the quotes export, cross-checked into five figures that fit on one screen. No manual entry.',
+    cout: 'two raw exports, fifteen minutes',
+  },
+  {
+    fichier: 'en/06-site',
+    titre: 'A one-page website',
+    texte:
+      'A full page from a single request, then adjusted in three sentences. What the tool can do, and where it stops.',
+    cout: 'one request, three corrections',
+  },
+  {
+    fichier: 'en/07-appel-offres',
+    titre: 'A tender response',
+    texte:
+      'Research on the buyer, more research in your own files, and a submission. Including a certification wrongly claimed, then corrected.',
+    cout: 'two searches, a full submission',
+  },
+];
+
+/** Les deux films, décrits en anglais. */
+export const FILMS_EN: Film[] = [
+  {
+    fichier: '08-agent',
+    titre: 'An agent qualifying a lead at 10.47 pm',
+    texte:
+      'A request arrives in the evening. The agent reads it, qualifies it, finds the context, and the email goes out at 10.49 pm.',
+    duree: '34 s',
+  },
+  {
+    fichier: '09-automatisation',
+    titre: 'Outreach from Monday to Wednesday',
+    texte: 'The chain starts on Monday at eight, follows up, and hands back the reply received on Wednesday.',
+    duree: '38 s',
+  },
+];
+
 /** Ce que chaque outil sait produire. Copilot ne fabrique pas de site, et
  *  montrer une page web sur sa page ferait mentir la démonstration. */
-export function livrablesDe(outil: 'claude' | 'chatgpt' | 'gemini' | 'copilot'): Livrable[] {
-  if (outil === 'claude' || outil === 'chatgpt') return LIVRABLES_FR;
-  return LIVRABLES_FR.filter((l) => l.fichier !== '06-site');
+export function livrablesDe(
+  outil: 'claude' | 'chatgpt' | 'gemini' | 'copilot',
+  locale: 'fr' | 'en' = 'fr',
+): Livrable[] {
+  const tous = locale === 'en' ? LIVRABLES_EN : LIVRABLES_FR;
+  if (outil === 'claude' || outil === 'chatgpt') return tous;
+  return tous.filter((l) => !l.fichier.endsWith('06-site'));
 }

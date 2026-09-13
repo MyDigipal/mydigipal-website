@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Board meeting, 12 September - Atelier Rivière</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14111A;--ink-2:#39323F;--ink-3:#6B6272;--ink-4:#98909E;
+  --line:#E7E2E9;--line-2:#F3F0F5;--bg:#FBF9FB;
+  --cp:#A8183C;--cp-2:#C93055;
+  --amber-soft:#FDF3E3;--amber-line:#F2DDB4;
+  --green:#2F7D52;
+  --font:'Inter',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:#EDE9EF;color:var(--ink-2);line-height:1.55;-webkit-font-smoothing:antialiased;padding:34px 20px 60px}
+
+.hdr{max-width:1120px;margin:0 auto 26px;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap}
+.hdr .t{font-size:15px;color:var(--ink-3)}
+.hdr .t b{color:var(--ink);font-weight:800;font-size:17px;display:block}
+.stamp{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;font-weight:700;color:#2F7D52;background:#E8F4ED;border:1px solid #B9DFC9;border-radius:999px;padding:8px 15px}
+.stamp .g{width:7px;height:7px;border-radius:50%;background:#5FB97E}
+
+.slide{max-width:1120px;margin:0 auto 22px;background:#fff;border-radius:14px;aspect-ratio:16/9;
+  box-shadow:0 3px 26px rgba(20,17,26,.11);padding:50px 60px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.slide .num{position:absolute;bottom:24px;right:34px;font-family:var(--mono);font-size:12px;color:var(--ink-4);letter-spacing:.1em}
+.slide .brand{position:absolute;bottom:24px;left:60px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-4)}
+.kick{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--cp);font-weight:700;margin-bottom:13px}
+.slide h2{font-size:36px;font-weight:800;color:var(--ink);letter-spacing:-.028em;line-height:1.12;margin-bottom:16px}
+.slide h2 em{font-style:normal;color:var(--cp)}
+.slide p{font-size:18px;color:var(--ink-2);max-width:880px}
+.slide.cover{background:linear-gradient(135deg,#1A1119 0%,#3A2531 100%);color:#fff;justify-content:center}
+.slide.cover h1{font-size:52px;font-weight:900;letter-spacing:-.035em;line-height:1.06;margin-bottom:18px}
+.slide.cover h1 em{font-style:normal;color:#FF8FA3}
+.slide.cover .sub{font-size:19px;color:#C9BEC8;max-width:700px}
+.slide.cover .meta{display:flex;gap:42px;margin-top:30px;padding-top:20px;border-top:1px solid rgba(255,255,255,.16);flex-wrap:wrap}
+.slide.cover .meta .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8E8395;margin-bottom:4px}
+.slide.cover .meta .v{font-weight:700;font-size:16px;color:#fff}
+.slide.cover .brand,.slide.cover .num{color:#7E7385}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:4px}
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:6px}
+.box{background:var(--bg);border:1px solid var(--line);border-radius:13px;padding:20px 22px}
+.box h4{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:9px}
+.box p{font-size:15.5px;color:var(--ink-2)}
+.box ul{list-style:none;display:grid;gap:8px;margin-top:4px}
+.box li{position:relative;padding-left:19px;font-size:15.5px;color:var(--ink-2);line-height:1.42}
+.box li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:50%;background:var(--cp)}
+
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:12px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:13px;padding:22px}
+.kpi .n{font-size:44px;font-weight:900;color:var(--cp);letter-spacing:-.03em;line-height:1}
+.kpi .t{font-size:15px;color:var(--ink-3);margin-top:8px;line-height:1.35}
+.kpi .d{font-family:var(--mono);font-size:12.5px;font-weight:700;margin-top:7px}
+.kpi .d.up{color:var(--green)}.kpi .d.dn{color:var(--cp-2)}
+
+.bars{display:grid;gap:12px;margin-top:14px}
+.bar{display:grid;grid-template-columns:220px 1fr 74px;gap:18px;align-items:center;font-size:16px}
+.bar .t{color:var(--ink);font-weight:600}
+.bar .track{height:21px;background:var(--line-2);border-radius:7px;overflow:hidden}
+.bar .fill{height:100%;background:linear-gradient(90deg,#A8183C,#E8637F);border-radius:7px}
+.bar .v{text-align:right;font-family:var(--mono);font-weight:700;color:var(--ink);font-size:14px}
+
+.hole{background:var(--amber-soft);border:1px solid var(--amber-line);border-left:4px solid #E0A93C;
+  border-radius:0 11px 11px 0;padding:12px 18px;font-size:15.5px;color:#7A5108;margin-top:14px}
+.hole b{color:#5E3D04;font-weight:800}
+.hole code{font-family:var(--mono);font-size:14px;background:#F7E6C6;padding:2px 7px;border-radius:5px;color:#5E3D04}
+
+ol.dec{list-style:none;counter-reset:d;display:grid;gap:15px;margin-top:8px}
+ol.dec li{counter-increment:d;display:grid;grid-template-columns:44px 1fr;gap:18px;align-items:start}
+ol.dec li::before{content:counter(d);font-family:var(--mono);font-weight:800;font-size:18px;width:44px;height:44px;
+  border-radius:12px;background:var(--cp);color:#fff;display:flex;align-items:center;justify-content:center}
+ol.dec li .x{padding-top:4px}
+ol.dec li .x b{display:block;font-size:18.5px;color:var(--ink);font-weight:800;margin-bottom:2px}
+ol.dec li .x span{font-size:15.5px;color:var(--ink-3)}
+
+.foot{max-width:1120px;margin:26px auto 0;font-size:14px;color:var(--ink-4);text-align:center}
+
+@media(max-width:900px){
+  .slide{aspect-ratio:auto;padding:32px 26px}
+  .cols,.cols3,.kpis{grid-template-columns:1fr}
+  .slide h2{font-size:27px}.slide.cover h1{font-size:34px}
+  .bar{grid-template-columns:1fr;gap:6px}
+}
+@media print{body{background:#fff;padding:0}.slide{box-shadow:none;break-after:page;margin-bottom:0}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="t"><b>Board meeting, Friday 12 September</b>Atelier Rivière &middot; 8 slides &middot; built from scattered notes</div>
+  <div class="stamp"><span class="g"></span>Produced with AI &middot; reviewed</div>
+</div>
+
+<div class="slide cover">
+  <div class="kick" style="color:#FF8FA3;">Management board &middot; 12 September 2026</div>
+  <h1>The quarter,<br>and the <em>three decisions</em><br>to take today.</h1>
+  <div class="sub">What the figures say, what the clients say, and the calls that cannot wait any longer.</div>
+  <div class="meta">
+    <div><div class="l">Period</div><div class="v">Q3 2026</div></div>
+    <div><div class="l">Prepared in</div><div class="v">12 minutes</div></div>
+    <div><div class="l">From</div><div class="v">A week of notes and 3 meeting reports</div></div>
+  </div>
+  <div class="brand">Atelier Rivière</div><div class="num">01 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">At a glance</div>
+  <h2>The quarter in <em>three figures</em></h2>
+  <div class="kpis">
+    <div class="kpi"><div class="n">+18 %</div><div class="t">of revenue over the quarter</div><div class="d up">best Q3 since 2023</div></div>
+    <div class="kpi"><div class="n">31 %</div><div class="t">average gross margin</div><div class="d dn">down 4 points</div></div>
+    <div class="kpi"><div class="n">47 d</div><div class="t">average payment time</div><div class="d dn">up by 9 days</div></div>
+  </div>
+  <p style="margin-top:20px;color:var(--ink-3);font-size:17px;">The growth is there, and it is expensive. The next two slides explain why.</p>
+  <div class="brand">Atelier Rivière</div><div class="num">02 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">The story of the quarter</div>
+  <h2>Margin is falling while <em>activity is growing</em></h2>
+  <div class="cols">
+    <div class="box">
+      <h4>What we see</h4>
+      <ul>
+        <li>The three largest projects went over their material budget</li>
+        <li>Quotes signed in June were signed at March prices</li>
+        <li>Two projects were partly redone, at our expense</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>What it means</h4>
+      <ul>
+        <li>The price list has to be revised before January</li>
+        <li>A quote older than three months must no longer be signed as it stands</li>
+        <li>Redoing work at our expense must become a traced exception</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hole"><b>Figure to complete before the board:</b> the exact cost of the work redone at our expense. The assistant left <code>[amount to complete]</code> rather than estimating it, because the data was not in the notes provided.</div>
+  <div class="brand">Atelier Rivière</div><div class="num">03 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">What the clients say</div>
+  <h2>Three meetings, <em>one same signal</em></h2>
+  <div class="bars">
+    <div class="bar"><div class="t">Quality of the finish</div><div class="track"><div class="fill" style="width:92%"></div></div><div class="v">Strong</div></div>
+    <div class="bar"><div class="t">Meeting deadlines</div><div class="track"><div class="fill" style="width:78%"></div></div><div class="v">Good</div></div>
+    <div class="bar"><div class="t">Clarity of the quote</div><div class="track"><div class="fill" style="width:41%"></div></div><div class="v">Weak</div></div>
+    <div class="bar"><div class="t">Updates during the project</div><div class="track"><div class="fill" style="width:34%"></div></div><div class="v">Weak</div></div>
+  </div>
+  <p style="margin-top:20px;">The three clients met this week all raised the same point unprompted: they do not know where their project stands between two visits. <strong>Not one of them mentioned price.</strong></p>
+  <div class="brand">Atelier Rivière</div><div class="num">04 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">The opportunity</div>
+  <h2>The weak point is also <em>the cheapest to fix</em></h2>
+  <div class="cols3">
+    <div class="box"><h4>What we observe</h4><p>Project updates are the first cause of dissatisfaction, and they cost almost nothing to improve.</p></div>
+    <div class="box"><h4>The idea</h4><p>A progress note sent every Friday, with two photos and the next step.</p></div>
+    <div class="box"><h4>The effort</h4><p>Half a day to set up, then ten minutes per project per week.</p></div>
+  </div>
+  <p style="margin-top:20px;color:var(--ink-3);font-size:17px;">It is the best ratio of effort to effect of anything in this quarter.</p>
+  <div class="brand">Atelier Rivière</div><div class="num">05 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">The order book</div>
+  <h2>What is <em>already signed</em> for next quarter</h2>
+  <div class="bars">
+    <div class="bar"><div class="t">Projects signed</div><div class="track"><div class="fill" style="width:72%"></div></div><div class="v">72 %</div></div>
+    <div class="bar"><div class="t">Quotes awaiting an answer</div><div class="track"><div class="fill" style="width:34%"></div></div><div class="v">34 %</div></div>
+    <div class="bar"><div class="t">Capacity still available</div><div class="track"><div class="fill" style="width:19%"></div></div><div class="v">19 %</div></div>
+  </div>
+  <p style="margin-top:20px;">The quarter is almost full. The question is no longer how to sell more, it is <strong>choosing what we accept</strong>.</p>
+  <div class="brand">Atelier Rivière</div><div class="num">06 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">What I propose</div>
+  <h2>Three <em>internal</em> projects, by December</h2>
+  <div class="cols3">
+    <div class="box"><h4>01 &middot; Prices</h4><ul><li>New price list on 1 January</li><li>Quotes valid for 60 days</li><li>Material revision clause</li></ul></div>
+    <div class="box"><h4>02 &middot; Updates</h4><ul><li>Automatic weekly progress note</li><li>Two photos and the next step</li><li>Tested on three projects first</li></ul></div>
+    <div class="box"><h4>03 &middot; Cash in</h4><ul><li>Deposit raised to 40 %</li><li>Systematic reminder at day 30</li><li>Target: back under 40 days</li></ul></div>
+  </div>
+  <div class="brand">Atelier Rivière</div><div class="num">07 / 08</div>
+</div>
+
+<div class="slide">
+  <div class="kick">What I need from this board</div>
+  <h2>Three <em>decisions</em>, today</h2>
+  <ol class="dec">
+    <li><div class="x"><b>Approve the new price list on 1 January</b><span>And confirm 60-day quote validity, effective immediately.</span></div></li>
+    <li><div class="x"><b>Authorise the weekly update trial on three projects</b><span>Half a day to set up. Reversible if it does not take.</span></div></li>
+    <li><div class="x"><b>Decide on the 40 % deposit</b><span>It is the point that can lose us business. It is also the only fast lever on cash.</span></div></li>
+  </ol>
+  <div class="brand">Atelier Rivière</div><div class="num">08 / 08</div>
+</div>
+
+<div class="foot">Built with AI from scattered notes and three meeting reports</div>
+
+</body>
+</html>
