@@ -286,8 +286,15 @@ const schema = {
             ))}
           </div>
 
+          {/* Les films n'accompagnent que la page Claude : ils montrent des agents
+              et des chaînes, et Paul les juge « très orientés Claude » (13/09). */}
+          {c.livrables.films && (
           <h3 class="mb-2 mt-12 text-xl font-semibold text-ivoire">{c.livrables.filmsTitre}</h3>
+          )}
+          {c.livrables.films && (
           <p class="mb-5 max-w-[72ch]">{c.livrables.filmsChapeau}</p>
+          )}
+          {c.livrables.films && (
           <div class="grid gap-4 md:grid-cols-2">
             {c.livrables.films.map((f) => (
               <figure class="m-0 overflow-hidden rounded-carte border border-filet-nuit bg-salle-2">
@@ -312,6 +319,7 @@ const schema = {
               </figure>
             ))}
           </div>
+          )}
         </section>
       )
     }

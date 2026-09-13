@@ -9,10 +9,16 @@
 // (et sans faire échouer `scripts/check-seo.mjs`, qui casse le build sur une
 // URL du sitemap sans page générée).
 
+import { chatgpt } from './chatgpt';
 import { claude } from './claude';
+import { copilot } from './copilot';
+import { gemini } from './gemini';
 import type { Locale, Outil, OutilId } from './types';
 
-export const OUTILS: Outil[] = [claude];
+// L'ordre commande celui des renvois d'une page à l'autre : Claude d'abord, il
+// porte le plus gros volume ; Copilot ensuite, c'est là que le clic coûte le
+// plus cher ; ChatGPT, puis Gemini, qui n'a que 98 impressions sur treize jours.
+export const OUTILS: Outil[] = [claude, copilot, chatgpt, gemini];
 
 export const OUTILS_PUBLIES = OUTILS.filter((o) => o.publie);
 

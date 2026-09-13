@@ -136,11 +136,17 @@ export interface CopyOutil {
     chapeau: string;
     ouvrir: string;
     items: Livrable[];
-    filmsTitre: string;
-    filmsChapeau: string;
-    films: Film[];
+    /** Les films n'accompagnent que la page Claude (décision du 13/09/2026). */
+    filmsTitre?: string;
+    filmsChapeau?: string;
+    films?: Film[];
   };
-  resultats: { kicker: string; titre: string; chapeau: string; items: Resultat[] };
+  /**
+   * Les six phrases de repli, quand la page n'a pas de livrables à ouvrir.
+   * C'est le cas des pages anglaises tant que les documents ne sont qu'en
+   * français.
+   */
+  resultats?: { kicker: string; titre: string; chapeau: string; items: Resultat[] };
   demo: {
     kicker: string;
     titre: string;

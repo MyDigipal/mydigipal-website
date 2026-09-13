@@ -23,7 +23,10 @@ DOCS = ["02-synthese", "03-presentation", "04-dashboard", "06-site", "07-appel-o
 def main() -> None:
     SORTIE.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
-        nav = p.chromium.launch()
+        # `channel="chrome"` : le chromium embarque de Playwright disparait a chaque
+        # mise a jour du paquet tant que `playwright install` n'est pas relance.
+        # Le Chrome du poste, lui, est toujours la.
+        nav = p.chromium.launch(channel="chrome")
         # Une carte fait 380 px de large au plus : 960 px de capture suffisent, et
         # une vignette de 300 Ko sur une page qui en pèse 78 serait absurde.
         page = nav.new_page(viewport={"width": 960, "height": 620}, device_scale_factor=1)
