@@ -347,8 +347,9 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
 ## Les pages outils de l'Academy (11/09/2026)
 
 `/{lang}/academy/{outil}` : une page de VENTE de la formation par outil, avec son
-vocabulaire et ses écrans. **Claude est en ligne, les trois autres suivront la même
-forme.** Pilotage, brainstorm et maquette : `docs/academy-tool-pages/`.
+vocabulaire et ses écrans. **Les huit pages sont en ligne depuis le 13/09/2026**
+(claude, copilot, chatgpt, gemini, en français et en anglais). Pilotage, brainstorm
+et maquette : `docs/academy-tool-pages/`.
 
 Pourquoi : `post_click_quality_score` BELOW_AVERAGE sur **39 mots-clés sur 39** dans
 le compte 377-338-1446, parce que les quatre groupes d'annonces outils visaient tous
@@ -391,8 +392,22 @@ la page de vente générale. Google demandait jusqu'à 8,00 £ la première page
   Matière encore disponible et non utilisée dans
   `Client Projects/Club Protéine/Formaference Claude/` : le film de présentation de 20 s,
   les sept cas d'usage du deck et les captures d'écran.
-- **Pas de captures de Copilot** : l'app n'en a aucune, et Paul n'a pas la licence
-  Microsoft 365 qui permettrait de les prendre. À régler avant cette page-là.
+- **Pas de captures de Copilot, et il n'y en aura pas** : l'app n'en a aucune et Paul
+  n'a pas la licence. Sa console porte donc DEUX SCHÉMAS, fabriqués par
+  `scripts/schemas-copilot.py` et annoncés comme tels dans le chapeau : les cinq
+  portes avec ce que chacune ne fait pas, puis ce que Copilot a le droit de lire et
+  ses cinq angles morts. Emprunter des visuels Microsoft sur le web pour une page
+  commerciale a été écarté (droits).
+- **La barre est celle de la page de vente** (`BarreOutil.astro` + `Drapeau.astro`),
+  sélecteur de devise et de langue compris, mais en Astro et non en React : la page
+  ne charge React que pour la console et la démonstration. Les trois montants partent
+  dans `data-prix` au build, donc le sélecteur répond au premier clic.
+- **Gemini est volontairement plus courte** que les trois autres : cinq formulations
+  achetées en français, deux en anglais. La remplir de généralités sur l'IA
+  produirait du texte partagé avec les autres pages, donc du contenu dupliqué.
+- **Les livrables sont partagés mais filtrés** (`livrablesDe()`) : ni Copilot ni
+  Gemini ne montrent le site vitrine, aucun des deux ne rend une page web. Les deux
+  films restent sur Claude.
 - **Après mise en ligne** : URL finale **au niveau du mot-clé** dans Google Ads, ne
   jamais éditer les RSA (une annonce modifiée est remplacée et perd sa force et son
   historique). Mesure à trois semaines sur les mêmes 39 mots-clés.
