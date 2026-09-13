@@ -375,10 +375,13 @@ la page de vente générale. Google demandait jusqu'à 8,00 £ la première page
   script du bas de page : un prix changé dans l'application apparaît sans
   redéploiement (exigence de Paul). Chaque valeur porte `data-fait` et son gabarit
   `data-gabarit`, où `{}` reçoit la valeur.
-- **Les leçons** viennent de `src/data/academy/lecons-outils.json`, extrait des
-  sources du dépôt de l'app. Reste à faire : étendre `/api/academy/public/jour30`
-  pour les servir. ⚠️ Aucune durée par leçon n'est affichée tant que l'écart entre le
-  lot 2 du dépôt (49 min pour M4C) et la production (75 min) n'est pas tranché.
+- **Les leçons viennent de l'application** depuis le 13/09/2026 : l'endpoint
+  `/api/academy/public/jour30` sert `modulesOutils` (les leçons de chaque module
+  outil, dans l'ordre, avec leur durée). `src/data/academy/lecons-outils.json` n'est
+  plus qu'un secours, rafraîchi par `scripts/instantane-lecons-outils.py`.
+  ⚠️ **Ne jamais reconstituer cette liste depuis `mydigipal-academy/atelier/contenu/`** :
+  celle qui en venait annonçait 8 leçons et 49 min pour Claude, la production en sert
+  **11 et 75 min**, et la page a affiché « Les 8 leçons » pendant deux jours.
 - **Les livrables ouvrables** (`public/academy/livrables/`) viennent de la formaférence
   Claude du 09/09/2026 au Club d'affaires Protéine, construits autour d'une PME fictive
   (l'Atelier Rivière). `scripts/import-livrables-academy.py` les réimporte en retirant le
