@@ -20,6 +20,13 @@ import { formatPrice } from '@/components/academy/offres';
 import secoursFr from '@/data/academy/jour30-fr.json';
 import secoursEn from '@/data/academy/jour30-en.json';
 import leconsOutils from '@/data/academy/lecons-outils.json';
+
+/** Ce que l'application sert pour un module outil, et ce que l'instantané copie. */
+interface ModuleOutil {
+  module_id: string;
+  minutes: number;
+  lecons: Array<{ id: string; minutes: number; titre: Record<string, string> }>;
+}
 import '@fontsource-variable/space-grotesk';
 import '@fontsource-variable/jetbrains-mono';
 import '@fontsource-variable/fraunces';
@@ -84,22 +91,23 @@ const jours = data.acces_jours ?? 60;
 /**
  * Les leçons du module outil.
  *
- * ⚠️ L'API publique ne les sert pas encore : elle donne les totaux, pas le
- * détail des modules. L'instantané de `lecons-outils.json` vient des sources du
- * dépôt de l'application. Dès que l'endpoint servira `modulesOutils`, la page
- * le lira en priorité et l'instantané redeviendra un simple secours, comme
- * pour le reste des chiffres.
+ * Servies par l'application depuis le 13/09/2026 (`modulesOutils`), avec leur
+ * durée. L'instantané de `lecons-outils.json` n'est plus qu'un secours, pour le
+ * build qui tomberait un jour où l'application ne répond pas ; il se rafraîchit
+ * avec `python scripts/instantane-lecons-outils.py`.
  *
- * Aucune durée par leçon n'est affichée : les minutes du dépôt et celles
- * servies en production ne concordent pas encore, et un chiffre douteux ne
- * part pas en ligne.
+ * ⚠️ Ne jamais reconstituer cette liste depuis les fichiers du dépôt de
+ * l'application : celle qui venait de `atelier/contenu/lot2/` annonçait huit
+ * leçons et 49 minutes pour Claude, là où la production en sert onze et 75.
  */
-const catalogue = (leconsOutils as Record<string, { lecons: Array<{ id: string; titre: Record<string, string> }> }>)[
+const catalogue = (leconsOutils as Record<string, ModuleOutil>)[outil.cleLecons];
+const servi = (data as unknown as { modulesOutils?: Record<string, ModuleOutil | null> }).modulesOutils?.[
   outil.cleLecons
 ];
-const servi = (data as unknown as { modulesOutils?: Record<string, { lecons: Array<{ id: string; titre: Record<string, string> }> }> })
-  .modulesOutils?.[outil.cleLecons];
-const lecons = (servi ?? catalogue).lecons.map((l) => l.titre[locale]);
+const moduleOutil = servi ?? catalogue;
+const lecons = moduleOutil.lecons.map((l) => ({ titre: l.titre[locale], minutes: l.minutes }));
+// La durée du module, telle que l'application la compte.
+const minutesOutil = moduleOutil.minutes;
 
 // Les libellés de la console, composés ICI : les propriétés d'un îlot passent
 // par une sérialisation JSON, donc une fonction n'y survit pas.
@@ -370,10 +378,11 @@ const schema = {
       <p class="mb-7 max-w-[72ch]">{c.lecons.chapeau}</p>
       <ol class="m-0 list-none overflow-hidden rounded-carte border border-filet-nuit p-0">
         {
-          lecons.map((titre, i) => (
+          lecons.map((l, i) => (
             <li class="flex items-baseline gap-4 border-b border-filet-nuit px-5 py-3.5 last:border-b-0">
               <span class="font-ac-mono text-xs text-or-texte">{String(i + 1).padStart(2, '0')}</span>
-              <span class="text-[15.5px] text-ivoire">{titre}</span>
+              <span class="flex-1 text-[15.5px] text-ivoire">{l.titre}</span>
+              <span class="font-ac-mono text-xs text-brume-nuit">{l.minutes} min</span>
             </li>
           ))
         }
