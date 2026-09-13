@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programme - trois directions</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--craie:#f7f5f0;--papier:#fff;--encre:#0f1a2e;--mine:#2a3441;--brume:#646c7a;
+        --lin:#e6e1d6;--or:#c8a951;--or-grave:#8a6d24;--salle:#0d1424}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--salle);color:#b9c1d1;font-family:'Space Grotesk',sans-serif;
+       padding:32px 24px 80px}
+  .mono{font-family:'JetBrains Mono',monospace}
+  h1{color:#f2eee4;font-size:30px;font-weight:600;letter-spacing:-.02em;margin-bottom:8px}
+  .intro{color:#7d879b;max-width:76ch;font-size:15px;line-height:1.6;margin-bottom:28px}
+  .rangee{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
+  .col{width:390px;flex:none}
+  .col > h2{color:#f2eee4;font-size:17px;font-weight:600;margin-bottom:4px}
+  .col > p.quoi{color:#7d879b;font-size:13.5px;line-height:1.5;margin-bottom:10px;min-height:56px}
+  .tel{background:var(--craie);border-radius:14px;padding:22px 18px;color:var(--encre);
+       max-height:760px;overflow-y:auto}
+  .kick{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+        text-transform:uppercase;color:var(--or-grave)}
+  .titre-sec{font-size:25px;font-weight:500;line-height:1.12;letter-spacing:-.02em;
+             margin:10px 0 12px;color:var(--encre)}
+  .sous{color:var(--brume);font-size:14.5px;line-height:1.6;margin-bottom:22px}
+  .etape{margin-bottom:26px}
+  .tete{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+  .tete h3{font-size:18px;font-weight:600;color:var(--encre)}
+  .jours{font-size:13px;color:var(--brume)}
+  .chap{font-size:14px;line-height:1.55;color:var(--brume);margin-bottom:8px}
+  .compte{font-size:13px;color:var(--mine);margin-bottom:10px}
+  .grille-past{display:flex;flex-wrap:wrap;gap:7px}
+  .past{width:42px;height:42px;border:1px solid var(--lin);border-radius:11px;background:var(--papier);
+        display:grid;place-items:center;cursor:pointer;transition:.15s}
+  .past:hover,.past[aria-pressed=true]{border-color:var(--t);transform:translateY(-2px);
+        box-shadow:0 6px 14px rgba(15,26,46,.1)}
+  .liste{list-style:none}
+  .ligne{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--lin)}
+  .ligne:last-child{border-bottom:none}
+  .ico{width:26px;height:26px;display:grid;place-items:center;flex:none}
+  .nom{flex:1;font-size:14.5px;color:var(--encre);line-height:1.3}
+  .nom i{font-style:normal;font-size:12px;color:var(--brume)}
+  .mn{font-size:12px;color:var(--brume)}
+  .mn::after{content:' min'}
+  .carte{background:var(--papier);border:1px solid var(--lin);border-radius:14px;
+         padding:16px 16px 18px;margin-bottom:12px}
+  .num{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.14em;
+       text-transform:uppercase;color:var(--or-grave)}
+  .carte h3{font-size:19px;font-weight:600;color:var(--encre);margin:5px 0 3px}
+  .jours-c{font-size:12.5px;color:var(--brume);margin-bottom:8px}
+  .fiche{margin-top:12px;border:1px solid var(--lin);border-left:3px solid var(--t,var(--or));
+         border-radius:10px;background:var(--papier);padding:11px 13px}
+  .fiche b{display:block;font-size:14.5px;color:var(--encre)}
+  .fiche span{font-size:12.5px;color:var(--brume)}
+  .vide{color:var(--brume);font-size:12.5px;margin-top:12px;font-style:italic}
+</style>
+</head>
+<body>
+<h1>La section « Le programme », trois directions</h1>
+<p class="intro">Rendues à 390 px, avec les vrais modules et les vrais glyphes. Dans les trois,
+le même nettoyage : les titres d'étape passent en Space Grotesk, le monospace ne sert plus
+qu'aux durées, et plus rien n'est caché derrière un « voir les modules ».</p>
+
+<div class="rangee">
+  <div class="col">
+    <h2>A &middot; La grille de glyphes</h2>
+    <p class="quoi">Tous les modules visibles d'emblée, en pastilles. On touche, la fiche s'ouvre dessous. Aucun repli.</p>
+    <div class="tel" id="a">
+      <div class="kick">Le programme</div>
+      <h2 class="titre-sec">Ce que vous apprenez, et dans quel ordre</h2>
+      <p class="sous">Trois étapes, 20 modules, 17 h 41 de lecture et d'exercices. Vous choisissez un outil, et le parcours ne garde que celui-là.</p>
+      
+      <div class="etape">
+        <div class="tete"><h3>Débuter</h3><span class="jours">Jours 1 à 9</span></div>
+        <p class="chap">Comprendre ce qu'on manipule, apprendre la méthode, et ouvrir l'outil que vous avez déjà.</p>
+        <p class="compte">4 modules &middot; <span class="mono">4 h 12</span></p>
+        <div class="grille-past"><button class="past" data-m="M0" style="--t:#1d6b4f" aria-label="Bienvenue et diagnostic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#1d6b4f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.4 3.6h7.2v16.8H5.4z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M12.6 3.6H5.4v16.8h7.2"/> <path d="M12.6 2.8v18.4"/> <circle cx="10.4" cy="12" r=".9" fill="currentColor" stroke="none"/> <path d="M15.4 12h5.2m0 0-2.6-2.6m2.6 2.6-2.6 2.6"/></svg></button><button class="past" data-m="M1" style="--t:#2f5d8a" aria-label="Comprendre l'IA générative"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#2f5d8a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.2 4.4c-2.6 0-4.6 1.6-4.6 3.7 0 .5.1 1 .3 1.4-.9.6-1.5 1.5-1.5 2.6 0 1 .5 1.9 1.3 2.5-.1.3-.2.7-.2 1 0 1.9 1.8 3.4 4.1 3.4h.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M11.2 4.4c-2.6 0-4.6 1.6-4.6 3.7 0 .5.1 1 .3 1.4-.9.6-1.5 1.5-1.5 2.6 0 1 .5 1.9 1.3 2.5-.1.3-.2.7-.2 1 0 1.9 1.8 3.4 4.1 3.4h.6"/> <path d="M12.8 4.4c2.6 0 4.6 1.6 4.6 3.7 0 .5-.1 1-.3 1.4.9.6 1.5 1.5 1.5 2.6 0 1-.5 1.9-1.3 2.5.1.3.2.7.2 1 0 1.9-1.8 3.4-4.1 3.4h-.6"/> <path d="M12 4.4v15.2"/> <path d="M9.4 9.2c.9.5 1.6 1.4 1.6 2.6M14.6 13.4c-.9-.5-1.6-1.4-1.6-2.6"/></svg></button><button class="past" data-m="M2" style="--t:#a8862f" aria-label="La méthode de prompting"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#a8862f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="4.4" rx="1.2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="4" y="4" width="16" height="4.4" rx="1.2"/> <rect x="4" y="9.8" width="16" height="4.4" rx="1.2"/> <rect x="4" y="15.6" width="11" height="4.4" rx="1.2"/> <path d="M7.2 6.2h1.6M7.2 12h1.6M7.2 17.8h1.6"/></svg></button><button class="past" data-m="M4A" style="--t:#3a4a6b" aria-label="Microsoft Copilot"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#3a4a6b" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2"/> <path d="M3.4 9.2h17.2M9.4 9.2v10.4"/> <path d="m13 13 4.4 1.6-1.8.8-.8 1.8z" fill="currentColor" stroke="none"/></svg></button><button class="past" data-m="M4B" style="--t:#1f6d72" aria-label="Google Gemini"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#1f6d72" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="6.4" width="13.4" height="9.6" rx="1.8" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="2.6" y="6.4" width="13.4" height="9.6" rx="1.8"/> <path d="m2.6 7.6 6.7 4.4 6.7-4.4"/> <path d="M13.6 11.6h5.8a1.6 1.6 0 0 1 1.6 1.6v6.6a1.6 1.6 0 0 1-1.6 1.6h-5.4"/> <path d="M15.8 15.4h3.2M15.8 18h2"/></svg></button><button class="past" data-m="M4C" style="--t:#8a4b2a" aria-label="Claude"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#8a4b2a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.6h9.4L19 8.2v12.2H5z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M5 3.6h9.4L19 8.2v12.2H5z"/> <path d="M14.2 3.8v4.4H18.8"/> <path d="M7.6 12.4h8.8M7.6 15.4h8.8M7.6 18h5.4"/></svg></button><button class="past" data-m="M4D" style="--t:#2b6b5e" aria-label="ChatGPT"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#2b6b5e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.4 5.6h12.2v8.2H8.2l-4.8 3.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M3.4 5.6h12.2v8.2H8.2l-4.8 3.6z"/> <path d="M18 9.4h2.6v8.2h-3.4l-3.6 2.8v-2.8h-1.4"/> <path d="M6.4 9.8h6.2"/></svg></button></div>
+      </div>
+      <div class="etape">
+        <div class="tete"><h3>Maîtriser</h3><span class="jours">Jours 10 à 20</span></div>
+        <p class="chap">Aller plus loin dans la demande, juger ce qui sort, protéger ses données, et faire son vrai travail avec.</p>
+        <p class="compte">10 modules &middot; <span class="mono">7 h 15</span></p>
+        <div class="grille-past"><button class="past" data-m="M3" style="--t:#5b4a7a" aria-label="Prompting avancé"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#5b4a7a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.4 8.4 4.3-8.4 4.3-8.4-4.3z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m12 3.4 8.4 4.3-8.4 4.3-8.4-4.3z"/> <path d="m4.6 12 7.4 3.8 7.4-3.8"/> <path d="m4.6 16.3 7.4 3.8 7.4-3.8"/></svg></button><button class="past" data-m="M9" style="--t:#2f5d8a" aria-label="Juger une réponse"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#2f5d8a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.4v13.2M7 18.6h10" stroke-width="1.6"/> <path d="m4 11 2.8-5.2L9.6 11z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m4 11 2.8-5.2L9.6 11a2.8 2.8 0 0 1-5.6 0Z"/> <path d="m14.4 11 2.8-5.2L20 11z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m14.4 11 2.8-5.2L20 11a2.8 2.8 0 0 1-5.6 0Z"/> <path d="M6.8 5.8h10.4"/></svg></button><button class="past" data-m="M10" style="--t:#1d6b4f" aria-label="Vos données et le cadre d'usage"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#1d6b4f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.4l7 2.6v5.4c0 4-2.9 7.4-7 8.8-4.1-1.4-7-4.8-7-8.8V6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M12 3.4l7 2.6v5.4c0 4-2.9 7.4-7 8.8-4.1-1.4-7-4.8-7-8.8V6z"/> <path d="m8.8 11.8 2.2 2.2 4.2-4.4"/></svg></button><button class="past" data-m="M16" style="--t:#2b6b5e" aria-label="Écrire, traduire, résumer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#2b6b5e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.4-4.4L16.2 4.8a2 2 0 0 1 2.8 2.8L8.4 18.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M4 20l1.4-4.4L16.2 4.8a2 2 0 0 1 2.8 2.8L8.4 18.6z"/> <path d="m14.6 6.4 3 3"/> <path d="M4 20h6"/></svg></button><button class="past" data-m="M5" style="--t:#8a3550" aria-label="Au-delà du texte : image, vidéo, audio"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#8a3550" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.4" y="4.8" width="17.2" height="14.4" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.4" y="4.8" width="17.2" height="14.4" rx="2"/> <circle cx="8.4" cy="9.6" r="1.5"/> <path d="m3.8 16.6 4.6-4.2 3.4 3 3-2.6 5.4 4.6"/></svg></button><button class="past" data-m="M6" style="--t:#7a5b1e" aria-label="Cas d'usage métier"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#7a5b1e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="7.6" width="17.6" height="11.6" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.2" y="7.6" width="17.6" height="11.6" rx="2"/> <path d="M9 7.6V6a1.6 1.6 0 0 1 1.6-1.6h2.8A1.6 1.6 0 0 1 15 6v1.6"/> <path d="M3.2 12.6h17.6"/> <path d="M10.6 12.6h2.8"/></svg></button><button class="past" data-m="M11" style="--t:#1f6d72" aria-label="Les chiffres et les tableurs"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#1f6d72" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.6" y="3.6" width="7.2" height="7.2" rx="1.4" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.6" y="3.6" width="7.2" height="7.2" rx="1.4"/> <rect x="13.2" y="3.6" width="7.2" height="7.2" rx="1.4"/> <rect x="3.6" y="13.2" width="7.2" height="7.2" rx="1.4"/> <rect x="13.2" y="13.2" width="7.2" height="7.2" rx="1.4"/> <path d="M6.4 7.2h1.6M16 7.2h1.6M6.4 16.8h1.6M16 16.8h1.6"/></svg></button><button class="past" data-m="M12" style="--t:#5b4a7a" aria-label="Réunions, comptes rendus et messages"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#5b4a7a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.4" y="3.6" width="15.2" height="16.8" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="4.4" y="3.6" width="15.2" height="16.8" rx="2"/> <path d="M8 8.2h8M8 12h8M8 15.8h4.6"/></svg></button><button class="past" data-m="M17" style="--t:#3a4a6b" aria-label="Recherche et veille sérieuses"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#3a4a6b" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.4" fill="currentColor" fill-opacity=".16" stroke="none"/> <circle cx="12" cy="12" r="8.4"/> <circle cx="12" cy="12" r="4.6"/> <path d="M12 12 18 6.6"/> <circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/> <circle cx="16.6" cy="8.4" r="1.4" fill="currentColor" stroke="none"/></svg></button><button class="past" data-m="M19" style="--t:#a8862f" aria-label="Présenter et convaincre"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#a8862f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.4 20v-6.4h7.2V20z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M8.4 20v-6.4h7.2V20z"/> <path d="M3 20h18"/> <circle cx="12" cy="6.4" r="2.6"/> <path d="M9.6 13.6c0-2 1.1-3.2 2.4-3.2s2.4 1.2 2.4 3.2"/> <path d="M5.6 20v-3.4h2.8M18.4 20v-3.4h-2.8"/></svg></button></div>
+      </div>
+      <div class="etape">
+        <div class="tete"><h3>Mettre en œuvre</h3><span class="jours">Jours 21 à 30</span></div>
+        <p class="chap">Brancher l'IA sur vos outils avec un serveur MCP, monter des chaînes qui tournent sans vous, et cadrer l'équipe.</p>
+        <p class="compte">6 modules &middot; <span class="mono">5 h 04</span></p>
+        <div class="grille-past"><button class="past" data-m="M7" style="--t:#6b5344" aria-label="Agents et automatisations"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#6b5344" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.2" y="8.2" width="15.6" height="10.6" rx="3" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="4.2" y="8.2" width="15.6" height="10.6" rx="3"/> <path d="M12 3.6v4.6"/> <circle cx="12" cy="3.2" r="1.1"/> <circle cx="9" cy="12.6" r="1.2" fill="currentColor" stroke="none"/> <circle cx="15" cy="12.6" r="1.2" fill="currentColor" stroke="none"/> <path d="M9.6 16h4.8"/> <path d="M2.6 12v3M21.4 12v3"/></svg></button><button class="past" data-m="M20" style="--t:#1f6d72" aria-label="Monter sa base MCP"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#1f6d72" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.4 8.6h11.2v2.8a5.6 5.6 0 1 1-11.2 0z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M6.4 8.6h11.2v2.8a5.6 5.6 0 1 1-11.2 0z"/> <path d="M9.2 3.4v5.2M14.8 3.4v5.2"/> <path d="M12 17v3.6"/></svg></button><button class="past" data-m="M14" style="--t:#7a5b1e" aria-label="Cas d'usage avancés"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#7a5b1e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.4" y="8.2" width="10.4" height="7.6" rx="3.8" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M10 8.2H6.2a3.8 3.8 0 0 0 0 7.6H10"/> <path d="M14 8.2h3.8a3.8 3.8 0 0 1 0 7.6H14"/> <path d="M8.6 12h6.8" stroke-width="2"/></svg></button><button class="past" data-m="M15" style="--t:#3f5a34" aria-label="Le socle : faire durer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#3f5a34" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.4 20v-4h15.2v4z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M3 20.4h18"/> <path d="M4.4 20v-4h15.2v4"/> <path d="M6.8 16v-3.6h10.4V16"/> <path d="M9.4 12.4V8.8h5.2v3.6"/> <path d="M12 8.8V5.2"/></svg></button><button class="past" data-m="M18" style="--t:#8a3550" aria-label="Manager une équipe qui utilise l'IA"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#8a3550" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8.4" cy="7.6" r="3.2" fill="currentColor" fill-opacity=".16" stroke="none"/> <circle cx="8.4" cy="7.6" r="3.2"/> <path d="M2.8 19.4c0-3.2 2.4-5.4 5.6-5.4s5.6 2.2 5.6 5.4"/> <circle cx="17" cy="10" r="2.6"/> <path d="M15.4 15c2.8 0 5.2 1.9 5.2 4.4"/></svg></button><button class="past" data-m="M8" style="--t:#3f5a34" aria-label="Passer à l'action"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" style="color:#3f5a34" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4.6h11.8l-2.6 3.6 2.6 3.6H6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M6 4.6h11.8l-2.6 3.6 2.6 3.6H6"/> <path d="M6 3.4v17.2"/></svg></button></div>
+      </div>
+      <div class="vide" id="vide-a">Touchez un module pour voir ce qu'il contient.</div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2>B &middot; La liste qui se lit</h2>
+    <p class="quoi">Aucune interaction : les vingt modules sont nommés, avec leur durée. On lit, on ne clique pas.</p>
+    <div class="tel" id="b">
+      <div class="kick">Le programme</div>
+      <h2 class="titre-sec">Ce que vous apprenez, et dans quel ordre</h2>
+      <p class="sous">Trois étapes, 20 modules, 17 h 41 de lecture et d'exercices. Vous choisissez un outil, et le parcours ne garde que celui-là.</p>
+      
+      <div class="etape">
+        <div class="tete"><h3>Débuter</h3><span class="jours">Jours 1 à 9</span></div>
+        <p class="chap">Comprendre ce qu'on manipule, apprendre la méthode, et ouvrir l'outil que vous avez déjà.</p>
+        <ul class="liste">
+        <li class="ligne" data-m="M0">
+          <span class="ico" style="--t:#1d6b4f"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#1d6b4f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.4 3.6h7.2v16.8H5.4z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M12.6 3.6H5.4v16.8h7.2"/> <path d="M12.6 2.8v18.4"/> <circle cx="10.4" cy="12" r=".9" fill="currentColor" stroke="none"/> <path d="M15.4 12h5.2m0 0-2.6-2.6m2.6 2.6-2.6 2.6"/></svg></span>
+          <span class="nom">Bienvenue et diagnostic</span>
+          <span class="mn mono">38</span>
+        </li>
+        <li class="ligne" data-m="M1">
+          <span class="ico" style="--t:#2f5d8a"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#2f5d8a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.2 4.4c-2.6 0-4.6 1.6-4.6 3.7 0 .5.1 1 .3 1.4-.9.6-1.5 1.5-1.5 2.6 0 1 .5 1.9 1.3 2.5-.1.3-.2.7-.2 1 0 1.9 1.8 3.4 4.1 3.4h.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M11.2 4.4c-2.6 0-4.6 1.6-4.6 3.7 0 .5.1 1 .3 1.4-.9.6-1.5 1.5-1.5 2.6 0 1 .5 1.9 1.3 2.5-.1.3-.2.7-.2 1 0 1.9 1.8 3.4 4.1 3.4h.6"/> <path d="M12.8 4.4c2.6 0 4.6 1.6 4.6 3.7 0 .5-.1 1-.3 1.4.9.6 1.5 1.5 1.5 2.6 0 1-.5 1.9-1.3 2.5.1.3.2.7.2 1 0 1.9-1.8 3.4-4.1 3.4h-.6"/> <path d="M12 4.4v15.2"/> <path d="M9.4 9.2c.9.5 1.6 1.4 1.6 2.6M14.6 13.4c-.9-.5-1.6-1.4-1.6-2.6"/></svg></span>
+          <span class="nom">Comprendre l'IA générative</span>
+          <span class="mn mono">65</span>
+        </li>
+        <li class="ligne" data-m="M2">
+          <span class="ico" style="--t:#a8862f"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#a8862f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="4.4" rx="1.2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="4" y="4" width="16" height="4.4" rx="1.2"/> <rect x="4" y="9.8" width="16" height="4.4" rx="1.2"/> <rect x="4" y="15.6" width="11" height="4.4" rx="1.2"/> <path d="M7.2 6.2h1.6M7.2 12h1.6M7.2 17.8h1.6"/></svg></span>
+          <span class="nom">La méthode de prompting</span>
+          <span class="mn mono">97</span>
+        </li>
+        <li class="ligne" data-m="M4A">
+          <span class="ico" style="--t:#3a4a6b"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#3a4a6b" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2"/> <path d="M3.4 9.2h17.2M9.4 9.2v10.4"/> <path d="m13 13 4.4 1.6-1.8.8-.8 1.8z" fill="currentColor" stroke="none"/></svg></span>
+          <span class="nom">Microsoft Copilot <i>un au choix</i></span>
+          <span class="mn mono">49</span>
+        </li>
+        <li class="ligne" data-m="M4B">
+          <span class="ico" style="--t:#1f6d72"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#1f6d72" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="6.4" width="13.4" height="9.6" rx="1.8" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="2.6" y="6.4" width="13.4" height="9.6" rx="1.8"/> <path d="m2.6 7.6 6.7 4.4 6.7-4.4"/> <path d="M13.6 11.6h5.8a1.6 1.6 0 0 1 1.6 1.6v6.6a1.6 1.6 0 0 1-1.6 1.6h-5.4"/> <path d="M15.8 15.4h3.2M15.8 18h2"/></svg></span>
+          <span class="nom">Google Gemini <i>un au choix</i></span>
+          <span class="mn mono">45</span>
+        </li>
+        <li class="ligne" data-m="M4C">
+          <span class="ico" style="--t:#8a4b2a"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#8a4b2a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.6h9.4L19 8.2v12.2H5z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M5 3.6h9.4L19 8.2v12.2H5z"/> <path d="M14.2 3.8v4.4H18.8"/> <path d="M7.6 12.4h8.8M7.6 15.4h8.8M7.6 18h5.4"/></svg></span>
+          <span class="nom">Claude <i>un au choix</i></span>
+          <span class="mn mono">75</span>
+        </li>
+        <li class="ligne" data-m="M4D">
+          <span class="ico" style="--t:#2b6b5e"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#2b6b5e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.4 5.6h12.2v8.2H8.2l-4.8 3.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M3.4 5.6h12.2v8.2H8.2l-4.8 3.6z"/> <path d="M18 9.4h2.6v8.2h-3.4l-3.6 2.8v-2.8h-1.4"/> <path d="M6.4 9.8h6.2"/></svg></span>
+          <span class="nom">ChatGPT <i>un au choix</i></span>
+          <span class="mn mono">40</span>
+        </li></ul>
+      </div>
+      <div class="etape">
+        <div class="tete"><h3>Maîtriser</h3><span class="jours">Jours 10 à 20</span></div>
+        <p class="chap">Aller plus loin dans la demande, juger ce qui sort, protéger ses données, et faire son vrai travail avec.</p>
+        <ul class="liste">
+        <li class="ligne" data-m="M3">
+          <span class="ico" style="--t:#5b4a7a"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#5b4a7a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.4 8.4 4.3-8.4 4.3-8.4-4.3z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m12 3.4 8.4 4.3-8.4 4.3-8.4-4.3z"/> <path d="m4.6 12 7.4 3.8 7.4-3.8"/> <path d="m4.6 16.3 7.4 3.8 7.4-3.8"/></svg></span>
+          <span class="nom">Prompting avancé</span>
+          <span class="mn mono">57</span>
+        </li>
+        <li class="ligne" data-m="M9">
+          <span class="ico" style="--t:#2f5d8a"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#2f5d8a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.4v13.2M7 18.6h10" stroke-width="1.6"/> <path d="m4 11 2.8-5.2L9.6 11z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m4 11 2.8-5.2L9.6 11a2.8 2.8 0 0 1-5.6 0Z"/> <path d="m14.4 11 2.8-5.2L20 11z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m14.4 11 2.8-5.2L20 11a2.8 2.8 0 0 1-5.6 0Z"/> <path d="M6.8 5.8h10.4"/></svg></span>
+          <span class="nom">Juger une réponse</span>
+          <span class="mn mono">36</span>
+        </li>
+        <li class="ligne" data-m="M10">
+          <span class="ico" style="--t:#1d6b4f"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#1d6b4f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.4l7 2.6v5.4c0 4-2.9 7.4-7 8.8-4.1-1.4-7-4.8-7-8.8V6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M12 3.4l7 2.6v5.4c0 4-2.9 7.4-7 8.8-4.1-1.4-7-4.8-7-8.8V6z"/> <path d="m8.8 11.8 2.2 2.2 4.2-4.4"/></svg></span>
+          <span class="nom">Vos données et le cadre d'usage</span>
+          <span class="mn mono">36</span>
+        </li>
+        <li class="ligne" data-m="M16">
+          <span class="ico" style="--t:#2b6b5e"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#2b6b5e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.4-4.4L16.2 4.8a2 2 0 0 1 2.8 2.8L8.4 18.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M4 20l1.4-4.4L16.2 4.8a2 2 0 0 1 2.8 2.8L8.4 18.6z"/> <path d="m14.6 6.4 3 3"/> <path d="M4 20h6"/></svg></span>
+          <span class="nom">Écrire, traduire, résumer</span>
+          <span class="mn mono">37</span>
+        </li>
+        <li class="ligne" data-m="M5">
+          <span class="ico" style="--t:#8a3550"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#8a3550" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.4" y="4.8" width="17.2" height="14.4" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.4" y="4.8" width="17.2" height="14.4" rx="2"/> <circle cx="8.4" cy="9.6" r="1.5"/> <path d="m3.8 16.6 4.6-4.2 3.4 3 3-2.6 5.4 4.6"/></svg></span>
+          <span class="nom">Au-delà du texte : image, vidéo, audio</span>
+          <span class="mn mono">53</span>
+        </li>
+        <li class="ligne" data-m="M6">
+          <span class="ico" style="--t:#7a5b1e"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#7a5b1e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="7.6" width="17.6" height="11.6" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.2" y="7.6" width="17.6" height="11.6" rx="2"/> <path d="M9 7.6V6a1.6 1.6 0 0 1 1.6-1.6h2.8A1.6 1.6 0 0 1 15 6v1.6"/> <path d="M3.2 12.6h17.6"/> <path d="M10.6 12.6h2.8"/></svg></span>
+          <span class="nom">Cas d'usage métier</span>
+          <span class="mn mono">56</span>
+        </li>
+        <li class="ligne" data-m="M11">
+          <span class="ico" style="--t:#1f6d72"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#1f6d72" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.6" y="3.6" width="7.2" height="7.2" rx="1.4" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.6" y="3.6" width="7.2" height="7.2" rx="1.4"/> <rect x="13.2" y="3.6" width="7.2" height="7.2" rx="1.4"/> <rect x="3.6" y="13.2" width="7.2" height="7.2" rx="1.4"/> <rect x="13.2" y="13.2" width="7.2" height="7.2" rx="1.4"/> <path d="M6.4 7.2h1.6M16 7.2h1.6M6.4 16.8h1.6M16 16.8h1.6"/></svg></span>
+          <span class="nom">Les chiffres et les tableurs</span>
+          <span class="mn mono">56</span>
+        </li>
+        <li class="ligne" data-m="M12">
+          <span class="ico" style="--t:#5b4a7a"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#5b4a7a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.4" y="3.6" width="15.2" height="16.8" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="4.4" y="3.6" width="15.2" height="16.8" rx="2"/> <path d="M8 8.2h8M8 12h8M8 15.8h4.6"/></svg></span>
+          <span class="nom">Réunions, comptes rendus et messages</span>
+          <span class="mn mono">54</span>
+        </li>
+        <li class="ligne" data-m="M17">
+          <span class="ico" style="--t:#3a4a6b"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#3a4a6b" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.4" fill="currentColor" fill-opacity=".16" stroke="none"/> <circle cx="12" cy="12" r="8.4"/> <circle cx="12" cy="12" r="4.6"/> <path d="M12 12 18 6.6"/> <circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/> <circle cx="16.6" cy="8.4" r="1.4" fill="currentColor" stroke="none"/></svg></span>
+          <span class="nom">Recherche et veille sérieuses</span>
+          <span class="mn mono">25</span>
+        </li>
+        <li class="ligne" data-m="M19">
+          <span class="ico" style="--t:#a8862f"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#a8862f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.4 20v-6.4h7.2V20z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M8.4 20v-6.4h7.2V20z"/> <path d="M3 20h18"/> <circle cx="12" cy="6.4" r="2.6"/> <path d="M9.6 13.6c0-2 1.1-3.2 2.4-3.2s2.4 1.2 2.4 3.2"/> <path d="M5.6 20v-3.4h2.8M18.4 20v-3.4h-2.8"/></svg></span>
+          <span class="nom">Présenter et convaincre</span>
+          <span class="mn mono">25</span>
+        </li></ul>
+      </div>
+      <div class="etape">
+        <div class="tete"><h3>Mettre en œuvre</h3><span class="jours">Jours 21 à 30</span></div>
+        <p class="chap">Brancher l'IA sur vos outils avec un serveur MCP, monter des chaînes qui tournent sans vous, et cadrer l'équipe.</p>
+        <ul class="liste">
+        <li class="ligne" data-m="M7">
+          <span class="ico" style="--t:#6b5344"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#6b5344" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.2" y="8.2" width="15.6" height="10.6" rx="3" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="4.2" y="8.2" width="15.6" height="10.6" rx="3"/> <path d="M12 3.6v4.6"/> <circle cx="12" cy="3.2" r="1.1"/> <circle cx="9" cy="12.6" r="1.2" fill="currentColor" stroke="none"/> <circle cx="15" cy="12.6" r="1.2" fill="currentColor" stroke="none"/> <path d="M9.6 16h4.8"/> <path d="M2.6 12v3M21.4 12v3"/></svg></span>
+          <span class="nom">Agents et automatisations</span>
+          <span class="mn mono">49</span>
+        </li>
+        <li class="ligne" data-m="M20">
+          <span class="ico" style="--t:#1f6d72"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#1f6d72" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.4 8.6h11.2v2.8a5.6 5.6 0 1 1-11.2 0z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M6.4 8.6h11.2v2.8a5.6 5.6 0 1 1-11.2 0z"/> <path d="M9.2 3.4v5.2M14.8 3.4v5.2"/> <path d="M12 17v3.6"/></svg></span>
+          <span class="nom">Monter sa base MCP</span>
+          <span class="mn mono">43</span>
+        </li>
+        <li class="ligne" data-m="M14">
+          <span class="ico" style="--t:#7a5b1e"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#7a5b1e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.4" y="8.2" width="10.4" height="7.6" rx="3.8" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M10 8.2H6.2a3.8 3.8 0 0 0 0 7.6H10"/> <path d="M14 8.2h3.8a3.8 3.8 0 0 1 0 7.6H14"/> <path d="M8.6 12h6.8" stroke-width="2"/></svg></span>
+          <span class="nom">Cas d'usage avancés</span>
+          <span class="mn mono">84</span>
+        </li>
+        <li class="ligne" data-m="M15">
+          <span class="ico" style="--t:#3f5a34"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#3f5a34" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.4 20v-4h15.2v4z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M3 20.4h18"/> <path d="M4.4 20v-4h15.2v4"/> <path d="M6.8 16v-3.6h10.4V16"/> <path d="M9.4 12.4V8.8h5.2v3.6"/> <path d="M12 8.8V5.2"/></svg></span>
+          <span class="nom">Le socle : faire durer</span>
+          <span class="mn mono">64</span>
+        </li>
+        <li class="ligne" data-m="M18">
+          <span class="ico" style="--t:#8a3550"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#8a3550" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8.4" cy="7.6" r="3.2" fill="currentColor" fill-opacity=".16" stroke="none"/> <circle cx="8.4" cy="7.6" r="3.2"/> <path d="M2.8 19.4c0-3.2 2.4-5.4 5.6-5.4s5.6 2.2 5.6 5.4"/> <circle cx="17" cy="10" r="2.6"/> <path d="M15.4 15c2.8 0 5.2 1.9 5.2 4.4"/></svg></span>
+          <span class="nom">Manager une équipe qui utilise l'IA</span>
+          <span class="mn mono">32</span>
+        </li>
+        <li class="ligne" data-m="M8">
+          <span class="ico" style="--t:#3f5a34"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" style="color:#3f5a34" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4.6h11.8l-2.6 3.6 2.6 3.6H6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M6 4.6h11.8l-2.6 3.6 2.6 3.6H6"/> <path d="M6 3.4v17.2"/></svg></span>
+          <span class="nom">Passer à l'action</span>
+          <span class="mn mono">32</span>
+        </li></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2>C &middot; Les trois cartes</h2>
+    <p class="quoi">Une carte par étape, posée sur la craie. Les modules en pastilles dedans, la fiche s'ouvre au bas de l'écran.</p>
+    <div class="tel" id="c">
+      <div class="kick">Le programme</div>
+      <h2 class="titre-sec">Ce que vous apprenez, et dans quel ordre</h2>
+      <p class="sous">Trois étapes, 20 modules, 17 h 41 de lecture et d'exercices. Vous choisissez un outil, et le parcours ne garde que celui-là.</p>
+      
+      <div class="carte">
+        <span class="num">Étape 1</span>
+        <h3>Débuter</h3>
+        <p class="jours-c">Jours 1 à 9 &middot; 4 modules &middot; <span class="mono">4 h 12</span></p>
+        <p class="chap">Comprendre ce qu'on manipule, apprendre la méthode, et ouvrir l'outil que vous avez déjà.</p>
+        <div class="grille-past"><button class="past c" data-m="M0" style="--t:#1d6b4f" aria-label="Bienvenue et diagnostic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#1d6b4f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.4 3.6h7.2v16.8H5.4z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M12.6 3.6H5.4v16.8h7.2"/> <path d="M12.6 2.8v18.4"/> <circle cx="10.4" cy="12" r=".9" fill="currentColor" stroke="none"/> <path d="M15.4 12h5.2m0 0-2.6-2.6m2.6 2.6-2.6 2.6"/></svg></button><button class="past c" data-m="M1" style="--t:#2f5d8a" aria-label="Comprendre l'IA générative"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#2f5d8a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.2 4.4c-2.6 0-4.6 1.6-4.6 3.7 0 .5.1 1 .3 1.4-.9.6-1.5 1.5-1.5 2.6 0 1 .5 1.9 1.3 2.5-.1.3-.2.7-.2 1 0 1.9 1.8 3.4 4.1 3.4h.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M11.2 4.4c-2.6 0-4.6 1.6-4.6 3.7 0 .5.1 1 .3 1.4-.9.6-1.5 1.5-1.5 2.6 0 1 .5 1.9 1.3 2.5-.1.3-.2.7-.2 1 0 1.9 1.8 3.4 4.1 3.4h.6"/> <path d="M12.8 4.4c2.6 0 4.6 1.6 4.6 3.7 0 .5-.1 1-.3 1.4.9.6 1.5 1.5 1.5 2.6 0 1-.5 1.9-1.3 2.5.1.3.2.7.2 1 0 1.9-1.8 3.4-4.1 3.4h-.6"/> <path d="M12 4.4v15.2"/> <path d="M9.4 9.2c.9.5 1.6 1.4 1.6 2.6M14.6 13.4c-.9-.5-1.6-1.4-1.6-2.6"/></svg></button><button class="past c" data-m="M2" style="--t:#a8862f" aria-label="La méthode de prompting"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#a8862f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="4.4" rx="1.2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="4" y="4" width="16" height="4.4" rx="1.2"/> <rect x="4" y="9.8" width="16" height="4.4" rx="1.2"/> <rect x="4" y="15.6" width="11" height="4.4" rx="1.2"/> <path d="M7.2 6.2h1.6M7.2 12h1.6M7.2 17.8h1.6"/></svg></button><button class="past c" data-m="M4A" style="--t:#3a4a6b" aria-label="Microsoft Copilot"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#3a4a6b" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2"/> <path d="M3.4 9.2h17.2M9.4 9.2v10.4"/> <path d="m13 13 4.4 1.6-1.8.8-.8 1.8z" fill="currentColor" stroke="none"/></svg></button><button class="past c" data-m="M4B" style="--t:#1f6d72" aria-label="Google Gemini"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#1f6d72" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="6.4" width="13.4" height="9.6" rx="1.8" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="2.6" y="6.4" width="13.4" height="9.6" rx="1.8"/> <path d="m2.6 7.6 6.7 4.4 6.7-4.4"/> <path d="M13.6 11.6h5.8a1.6 1.6 0 0 1 1.6 1.6v6.6a1.6 1.6 0 0 1-1.6 1.6h-5.4"/> <path d="M15.8 15.4h3.2M15.8 18h2"/></svg></button><button class="past c" data-m="M4C" style="--t:#8a4b2a" aria-label="Claude"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#8a4b2a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.6h9.4L19 8.2v12.2H5z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M5 3.6h9.4L19 8.2v12.2H5z"/> <path d="M14.2 3.8v4.4H18.8"/> <path d="M7.6 12.4h8.8M7.6 15.4h8.8M7.6 18h5.4"/></svg></button><button class="past c" data-m="M4D" style="--t:#2b6b5e" aria-label="ChatGPT"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#2b6b5e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.4 5.6h12.2v8.2H8.2l-4.8 3.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M3.4 5.6h12.2v8.2H8.2l-4.8 3.6z"/> <path d="M18 9.4h2.6v8.2h-3.4l-3.6 2.8v-2.8h-1.4"/> <path d="M6.4 9.8h6.2"/></svg></button></div>
+      </div>
+      <div class="carte">
+        <span class="num">Étape 2</span>
+        <h3>Maîtriser</h3>
+        <p class="jours-c">Jours 10 à 20 &middot; 10 modules &middot; <span class="mono">7 h 15</span></p>
+        <p class="chap">Aller plus loin dans la demande, juger ce qui sort, protéger ses données, et faire son vrai travail avec.</p>
+        <div class="grille-past"><button class="past c" data-m="M3" style="--t:#5b4a7a" aria-label="Prompting avancé"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#5b4a7a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.4 8.4 4.3-8.4 4.3-8.4-4.3z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m12 3.4 8.4 4.3-8.4 4.3-8.4-4.3z"/> <path d="m4.6 12 7.4 3.8 7.4-3.8"/> <path d="m4.6 16.3 7.4 3.8 7.4-3.8"/></svg></button><button class="past c" data-m="M9" style="--t:#2f5d8a" aria-label="Juger une réponse"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#2f5d8a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.4v13.2M7 18.6h10" stroke-width="1.6"/> <path d="m4 11 2.8-5.2L9.6 11z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m4 11 2.8-5.2L9.6 11a2.8 2.8 0 0 1-5.6 0Z"/> <path d="m14.4 11 2.8-5.2L20 11z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="m14.4 11 2.8-5.2L20 11a2.8 2.8 0 0 1-5.6 0Z"/> <path d="M6.8 5.8h10.4"/></svg></button><button class="past c" data-m="M10" style="--t:#1d6b4f" aria-label="Vos données et le cadre d'usage"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#1d6b4f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.4l7 2.6v5.4c0 4-2.9 7.4-7 8.8-4.1-1.4-7-4.8-7-8.8V6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M12 3.4l7 2.6v5.4c0 4-2.9 7.4-7 8.8-4.1-1.4-7-4.8-7-8.8V6z"/> <path d="m8.8 11.8 2.2 2.2 4.2-4.4"/></svg></button><button class="past c" data-m="M16" style="--t:#2b6b5e" aria-label="Écrire, traduire, résumer"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#2b6b5e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.4-4.4L16.2 4.8a2 2 0 0 1 2.8 2.8L8.4 18.6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M4 20l1.4-4.4L16.2 4.8a2 2 0 0 1 2.8 2.8L8.4 18.6z"/> <path d="m14.6 6.4 3 3"/> <path d="M4 20h6"/></svg></button><button class="past c" data-m="M5" style="--t:#8a3550" aria-label="Au-delà du texte : image, vidéo, audio"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#8a3550" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.4" y="4.8" width="17.2" height="14.4" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.4" y="4.8" width="17.2" height="14.4" rx="2"/> <circle cx="8.4" cy="9.6" r="1.5"/> <path d="m3.8 16.6 4.6-4.2 3.4 3 3-2.6 5.4 4.6"/></svg></button><button class="past c" data-m="M6" style="--t:#7a5b1e" aria-label="Cas d'usage métier"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#7a5b1e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="7.6" width="17.6" height="11.6" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.2" y="7.6" width="17.6" height="11.6" rx="2"/> <path d="M9 7.6V6a1.6 1.6 0 0 1 1.6-1.6h2.8A1.6 1.6 0 0 1 15 6v1.6"/> <path d="M3.2 12.6h17.6"/> <path d="M10.6 12.6h2.8"/></svg></button><button class="past c" data-m="M11" style="--t:#1f6d72" aria-label="Les chiffres et les tableurs"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#1f6d72" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.6" y="3.6" width="7.2" height="7.2" rx="1.4" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="3.6" y="3.6" width="7.2" height="7.2" rx="1.4"/> <rect x="13.2" y="3.6" width="7.2" height="7.2" rx="1.4"/> <rect x="3.6" y="13.2" width="7.2" height="7.2" rx="1.4"/> <rect x="13.2" y="13.2" width="7.2" height="7.2" rx="1.4"/> <path d="M6.4 7.2h1.6M16 7.2h1.6M6.4 16.8h1.6M16 16.8h1.6"/></svg></button><button class="past c" data-m="M12" style="--t:#5b4a7a" aria-label="Réunions, comptes rendus et messages"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#5b4a7a" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.4" y="3.6" width="15.2" height="16.8" rx="2" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="4.4" y="3.6" width="15.2" height="16.8" rx="2"/> <path d="M8 8.2h8M8 12h8M8 15.8h4.6"/></svg></button><button class="past c" data-m="M17" style="--t:#3a4a6b" aria-label="Recherche et veille sérieuses"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#3a4a6b" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.4" fill="currentColor" fill-opacity=".16" stroke="none"/> <circle cx="12" cy="12" r="8.4"/> <circle cx="12" cy="12" r="4.6"/> <path d="M12 12 18 6.6"/> <circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/> <circle cx="16.6" cy="8.4" r="1.4" fill="currentColor" stroke="none"/></svg></button><button class="past c" data-m="M19" style="--t:#a8862f" aria-label="Présenter et convaincre"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#a8862f" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.4 20v-6.4h7.2V20z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M8.4 20v-6.4h7.2V20z"/> <path d="M3 20h18"/> <circle cx="12" cy="6.4" r="2.6"/> <path d="M9.6 13.6c0-2 1.1-3.2 2.4-3.2s2.4 1.2 2.4 3.2"/> <path d="M5.6 20v-3.4h2.8M18.4 20v-3.4h-2.8"/></svg></button></div>
+      </div>
+      <div class="carte">
+        <span class="num">Étape 3</span>
+        <h3>Mettre en œuvre</h3>
+        <p class="jours-c">Jours 21 à 30 &middot; 6 modules &middot; <span class="mono">5 h 04</span></p>
+        <p class="chap">Brancher l'IA sur vos outils avec un serveur MCP, monter des chaînes qui tournent sans vous, et cadrer l'équipe.</p>
+        <div class="grille-past"><button class="past c" data-m="M7" style="--t:#6b5344" aria-label="Agents et automatisations"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#6b5344" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.2" y="8.2" width="15.6" height="10.6" rx="3" fill="currentColor" fill-opacity=".16" stroke="none"/> <rect x="4.2" y="8.2" width="15.6" height="10.6" rx="3"/> <path d="M12 3.6v4.6"/> <circle cx="12" cy="3.2" r="1.1"/> <circle cx="9" cy="12.6" r="1.2" fill="currentColor" stroke="none"/> <circle cx="15" cy="12.6" r="1.2" fill="currentColor" stroke="none"/> <path d="M9.6 16h4.8"/> <path d="M2.6 12v3M21.4 12v3"/></svg></button><button class="past c" data-m="M20" style="--t:#1f6d72" aria-label="Monter sa base MCP"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#1f6d72" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.4 8.6h11.2v2.8a5.6 5.6 0 1 1-11.2 0z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M6.4 8.6h11.2v2.8a5.6 5.6 0 1 1-11.2 0z"/> <path d="M9.2 3.4v5.2M14.8 3.4v5.2"/> <path d="M12 17v3.6"/></svg></button><button class="past c" data-m="M14" style="--t:#7a5b1e" aria-label="Cas d'usage avancés"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#7a5b1e" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.4" y="8.2" width="10.4" height="7.6" rx="3.8" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M10 8.2H6.2a3.8 3.8 0 0 0 0 7.6H10"/> <path d="M14 8.2h3.8a3.8 3.8 0 0 1 0 7.6H14"/> <path d="M8.6 12h6.8" stroke-width="2"/></svg></button><button class="past c" data-m="M15" style="--t:#3f5a34" aria-label="Le socle : faire durer"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#3f5a34" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.4 20v-4h15.2v4z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M3 20.4h18"/> <path d="M4.4 20v-4h15.2v4"/> <path d="M6.8 16v-3.6h10.4V16"/> <path d="M9.4 12.4V8.8h5.2v3.6"/> <path d="M12 8.8V5.2"/></svg></button><button class="past c" data-m="M18" style="--t:#8a3550" aria-label="Manager une équipe qui utilise l'IA"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#8a3550" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8.4" cy="7.6" r="3.2" fill="currentColor" fill-opacity=".16" stroke="none"/> <circle cx="8.4" cy="7.6" r="3.2"/> <path d="M2.8 19.4c0-3.2 2.4-5.4 5.6-5.4s5.6 2.2 5.6 5.4"/> <circle cx="17" cy="10" r="2.6"/> <path d="M15.4 15c2.8 0 5.2 1.9 5.2 4.4"/></svg></button><button class="past c" data-m="M8" style="--t:#3f5a34" aria-label="Passer à l'action"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" style="color:#3f5a34" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4.6h11.8l-2.6 3.6 2.6 3.6H6z" fill="currentColor" fill-opacity=".16" stroke="none"/> <path d="M6 4.6h11.8l-2.6 3.6 2.6 3.6H6"/> <path d="M6 3.4v17.2"/></svg></button></div>
+      </div>
+      <div class="vide" id="vide-c">Touchez un module pour voir ce qu'il contient.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const FICHES = {"M0": {"nom": "Bienvenue et diagnostic", "min": 38, "palier": "free", "teinte": "#1d6b4f"}, "M1": {"nom": "Comprendre l'IA générative", "min": 65, "palier": "essentials", "teinte": "#2f5d8a"}, "M2": {"nom": "La méthode de prompting", "min": 97, "palier": "essentials", "teinte": "#a8862f"}, "M4A": {"nom": "Microsoft Copilot", "min": 49, "palier": "essentials", "teinte": "#3a4a6b"}, "M4B": {"nom": "Google Gemini", "min": 45, "palier": "essentials", "teinte": "#1f6d72"}, "M4C": {"nom": "Claude", "min": 75, "palier": "essentials", "teinte": "#8a4b2a"}, "M4D": {"nom": "ChatGPT", "min": 40, "palier": "essentials", "teinte": "#2b6b5e"}, "M3": {"nom": "Prompting avancé", "min": 57, "palier": "essentials", "teinte": "#5b4a7a"}, "M9": {"nom": "Juger une réponse", "min": 36, "palier": "essentials", "teinte": "#2f5d8a"}, "M10": {"nom": "Vos données et le cadre d'usage", "min": 36, "palier": "essentials", "teinte": "#1d6b4f"}, "M16": {"nom": "Écrire, traduire, résumer", "min": 37, "palier": "free", "teinte": "#2b6b5e"}, "M5": {"nom": "Au-delà du texte : image, vidéo, audio", "min": 53, "palier": "pro", "teinte": "#8a3550"}, "M6": {"nom": "Cas d'usage métier", "min": 56, "palier": "pro", "teinte": "#7a5b1e"}, "M11": {"nom": "Les chiffres et les tableurs", "min": 56, "palier": "pro", "teinte": "#1f6d72"}, "M12": {"nom": "Réunions, comptes rendus et messages", "min": 54, "palier": "pro", "teinte": "#5b4a7a"}, "M17": {"nom": "Recherche et veille sérieuses", "min": 25, "palier": "essentials", "teinte": "#3a4a6b"}, "M19": {"nom": "Présenter et convaincre", "min": 25, "palier": "pro", "teinte": "#a8862f"}, "M7": {"nom": "Agents et automatisations", "min": 49, "palier": "pro", "teinte": "#6b5344"}, "M20": {"nom": "Monter sa base MCP", "min": 43, "palier": "pro", "teinte": "#1f6d72"}, "M14": {"nom": "Cas d'usage avancés", "min": 84, "palier": "pro", "teinte": "#7a5b1e"}, "M15": {"nom": "Le socle : faire durer", "min": 64, "palier": "pro", "teinte": "#3f5a34"}, "M18": {"nom": "Manager une équipe qui utilise l'IA", "min": 32, "palier": "pro", "teinte": "#8a3550"}, "M8": {"nom": "Passer à l'action", "min": 32, "palier": "essentials", "teinte": "#3f5a34"}};
+const PALIERS = {free: 'Offert', essentials: 'La méthode', pro: 'Les automatisations'};
+function brancher(col, videId) {
+  const zone = document.getElementById(col);
+  const vide = document.getElementById(videId);
+  zone.querySelectorAll('.past').forEach((b) => {
+    b.addEventListener('click', () => {
+      zone.querySelectorAll('.past').forEach((x) => x.setAttribute('aria-pressed', 'false'));
+      zone.querySelectorAll('.fiche').forEach((f) => f.remove());
+      b.setAttribute('aria-pressed', 'true');
+      const f = FICHES[b.dataset.m];
+      const d = document.createElement('div');
+      d.className = 'fiche';
+      d.style.setProperty('--t', f.teinte);
+      d.innerHTML = '<b>' + f.nom + '</b><span>' + f.min + ' min &middot; ' + PALIERS[f.palier] + '</span>';
+      b.closest('.etape, .carte').appendChild(d);
+      if (vide) vide.style.display = 'none';
+    });
+  });
+}
+brancher('a', 'vide-a');
+brancher('c', 'vide-c');
+</script>
+</body>
+</html>
