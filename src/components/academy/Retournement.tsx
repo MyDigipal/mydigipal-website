@@ -155,16 +155,19 @@ export default function Retournement({
             {c.titre}
           </h2>
           <p className="mt-[22px] max-w-[46ch] text-[17px] leading-[1.65] text-corps-nuit">{c.texte}</p>
-          <div className="mt-8 flex flex-wrap gap-3.5">
+          {/* Deux colonnes au téléphone (Paul, 13/09/2026 : « on pourrait
+              mettre les deux boutons les uns à côté des autres »). Les libellés
+              se replient sur deux lignes plutôt que d'empiler les boutons. */}
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-3.5">
             <a
               href={`#${ancreTarifs}`}
-              className="inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton bg-or px-[26px] py-3.5 text-[15.5px] font-semibold text-salle transition duration-150 hover:bg-or-vif"
+              className="inline-flex min-h-11 items-center justify-center rounded-bouton bg-or px-4 py-3.5 text-center text-[14.5px] font-semibold text-salle transition duration-150 hover:bg-or-vif sm:whitespace-nowrap sm:px-[26px] sm:text-[15.5px]"
             >
               {c.ouvrir}
             </a>
             <a
               href={gratuit}
-              className="inline-flex min-h-11 items-center whitespace-nowrap rounded-bouton border border-filet-nuit px-[26px] py-3.5 text-[15.5px] font-medium text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire"
+              className="inline-flex min-h-11 items-center justify-center rounded-bouton border border-filet-nuit px-4 py-3.5 text-center text-[14.5px] font-medium text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire sm:whitespace-nowrap sm:px-[26px] sm:text-[15.5px]"
             >
               {libelleGratuit ?? c.gratuit(leconsGratuites)}
             </a>

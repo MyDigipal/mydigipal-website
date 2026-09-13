@@ -693,7 +693,10 @@ const FR = {
 
   diplome: {
     kicker: 'Jour 30',
-    titre: 'Elle l’imprime et la pose sur le bureau de son directeur.',
+    // ⚠️ Le titre racontait Clara (« elle l'imprime et la pose sur le bureau de
+    // son directeur »), ce qui ne disait pas de quoi la section parle. Paul,
+    // 13/09/2026 : « le titre il est nul, faut juste mettre Certification ».
+    titre: 'L’attestation de fin de parcours.',
     surtitre: 'Attestation d’usage professionnel de l’intelligence artificielle',
     decernee: 'décernée à',
     nom: 'Clara Martin',
@@ -1521,7 +1524,7 @@ const EN: Jour30Copy = {
 
   diplome: {
     kicker: 'Day 30',
-    titre: 'She prints it and puts it on her director’s desk.',
+    titre: 'The end-of-course certificate.',
     surtitre: 'Certificate of professional use of artificial intelligence',
     decernee: 'awarded to',
     nom: 'Clara Martin',

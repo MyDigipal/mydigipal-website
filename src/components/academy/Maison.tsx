@@ -103,14 +103,22 @@ export default function Maison({ locale, temoignages, avis: preuve }: { locale: 
         <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-11 min-[900px]:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
           <div className="grid grid-cols-2 gap-2.5">
             <figure className="relative col-span-2 m-0 overflow-hidden rounded-carte border border-lin">
-              <img src={grande.src} alt={grande.alt} loading="lazy" width={grande.w} height={grande.h} className="block aspect-video h-auto w-full object-cover" />
+              {/* Paul, 13/09 : « les photos, elles s'ouvrent pas, c'est vrai
+                  qu'elles pourraient être cliquables ». Un lien vers le fichier,
+                  sans visionneuse : une photo de session n'a pas besoin d'un
+                  carrousel, et ça ne coûte pas une ligne de JavaScript. */}
+              <a href={grande.src} target="_blank" rel="noopener" className="block cursor-zoom-in">
+                <img src={grande.src} alt={grande.alt} loading="lazy" width={grande.w} height={grande.h} className="block aspect-video h-auto w-full object-cover" />
+              </a>
               <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-b from-transparent to-encre/85 px-4 pb-3 pt-[34px] font-ac-mono text-[10px] uppercase tracking-[0.14em] text-ivoire/90">
                 {grande.legende}
               </figcaption>
             </figure>
             {petites.map((p) => (
               <figure key={p.src} className="relative m-0 overflow-hidden rounded-carte border border-lin">
-                <img src={p.src} alt={p.alt} loading="lazy" width={p.w} height={p.h} className="block aspect-[4/3] h-auto w-full object-cover" />
+                <a href={p.src} target="_blank" rel="noopener" className="block cursor-zoom-in">
+                  <img src={p.src} alt={p.alt} loading="lazy" width={p.w} height={p.h} className="block aspect-[4/3] h-auto w-full object-cover" />
+                </a>
                 <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-b from-transparent to-encre/85 px-3.5 pb-2.5 pt-[30px] font-ac-mono text-[10px] uppercase tracking-[0.14em] text-ivoire/90">
                   {p.legende}
                 </figcaption>
@@ -132,23 +140,13 @@ export default function Maison({ locale, temoignages, avis: preuve }: { locale: 
         </div>
       </div>
 
-      <div className="mt-16 border-t border-lin">
-        <div className="mx-auto max-w-[1180px] px-4 sm:px-6">
-          <div className="grid grid-cols-[minmax(0,1fr)] md:grid-cols-3">
-            {c.metiers.map((m, i) => (
-              <div
-                key={m.titre}
-                className={`py-[26px] md:py-8 ${
-                  i === 0 ? 'md:border-r md:border-lin md:pr-7' : i === 1 ? 'border-t border-lin md:border-r md:border-t-0 md:px-7' : 'border-t border-lin md:border-t-0 md:pl-7'
-                }`}
-              >
-                <h3 className="m-0 text-[19px] font-medium text-encre">{m.titre}</h3>
-                <p className="mt-2 text-[14.5px] leading-[1.6] text-brume">{m.texte}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* ⚠️ Les trois métiers de l'agence (marketing de performance, data et
+          mesure, automatisation et IA) étaient listés ici, en trois colonnes
+          séparées par des filets. Retirés le 13/09/2026 : « je pense pas qu'il
+          y ait besoin de mettre ça en trois petites sections-là » (Paul). La
+          section dit qui enseigne avec des logos et des verbatims, ce qui suffit
+          à répondre. Les textes restent dans `copy.ts`, la première page de
+          vente s'en sert. */}
 
       <div className="overflow-hidden border-t border-lin bg-papier pb-11 pt-[38px]">
         <p className="mx-auto mb-[22px] max-w-[1180px] px-4 font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-brume sm:px-6">{c.logosTitre}</p>

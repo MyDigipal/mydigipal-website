@@ -423,7 +423,7 @@ export default function Tarifs({
       <div className="mx-auto max-w-[1180px]">
         <div className="font-ac-mono text-[11px] uppercase tracking-[.16em] text-or">{c.kicker}</div>
         <h2 className="mt-3 text-[clamp(26px,3.2vw,38px)] font-medium leading-[1.1] tracking-[-0.02em] text-ivoire">
-          {c.titre(montant(Math.min(prixProgrammeMinor, prixAutoMinor)))}
+          {c.titre}
         </h2>
         <p className="mt-4 max-w-[62ch] text-[17.5px] leading-[1.65] text-brume-nuit">
           {c.chapeau(jours)}

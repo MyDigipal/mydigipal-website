@@ -93,20 +93,19 @@ export default function Hero({
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-[16px] border border-filet-nuit bg-encre shadow-[0_40px_80px_-50px_rgba(0,0,0,0.9)]">
+        {/* ⚠️ Rien de tout ceci au téléphone (Paul, 13/09/2026 : « la photo de
+            l'académie dans le hero, je trouve qu'elle n'a pas sa place ici »).
+            Elle avait d'abord été réduite, puis cadrée en 4:5 le 01/09 pour
+            rester lisible ; elle sort maintenant, et le premier écran tient en
+            un titre, une phrase et deux boutons. */}
+        <div className="hidden overflow-hidden rounded-[16px] border border-filet-nuit bg-encre shadow-[0_40px_80px_-50px_rgba(0,0,0,0.9)] sm:block">
           <div className="flex items-center gap-2 border-b border-filet-nuit px-4 py-3">
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
             <span className="ml-3 font-ac-mono text-[11px] text-brume-nuit">{c.url}</span>
           </div>
-          {/* Au téléphone, la capture d'une interface d'ordinateur réduite à
-              358 px ne se lit pas (Paul, 01/09/2026 : « sur téléphone, c'était
-              pas ouf »). Plutôt que la réduire, on la CADRE : un rapport 4:5,
-              l'image couvre la hauteur et montre son coin haut gauche, la
-              colonne du parcours, deux fois plus grand qu'avant. Dès sm, le
-              16:10 entier revient. */}
-          <div className="relative aspect-[4/5] sm:aspect-[16/10]">
+          <div className="relative aspect-[16/10]">
             <img
               src={cheminCapture('tableau-de-bord', locale)}
               alt={c.alt}

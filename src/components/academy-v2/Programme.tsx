@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { pointeurGrossier } from '../academy/motion';
 import Glyphe from './Glyphe';
-import { ETAPES, MODULES, minutesDe, modulesDe, nombreSuivi, nomsDe, type Module } from './modules';
+import { ETAPES, MODULES, minutesDe, modulesDe, nombreSuivi, type Module } from './modules';
 import { copyV2, type Locale } from './copy-v2';
 import { Boucle, estDemo, Visionneuse, type Demo } from './Video';
 
@@ -134,8 +134,13 @@ export default function Programme({
                       {e.titre[locale]}
                     </h3>
                     <span className="font-ac-mono text-[12px] text-brume">{e.jours[locale]}</span>
+                    {/* Paul, 13/09 : « c'est pas clair que tu peux cliquer sur
+                        la petite flèche ». Le verbe est écrit à côté. */}
+                    <span className="ml-auto self-center font-ac-mono text-[11px] uppercase tracking-[.12em] text-or-texte lg:hidden">
+                      {ouverte ? c.masquer : c.voir}
+                    </span>
                     <span
-                      className={`ml-auto self-center text-brume transition-transform duration-200 lg:hidden ${ouverte ? 'rotate-180' : ''}`}
+                      className={`self-center text-brume transition-transform duration-200 lg:hidden ${ouverte ? 'rotate-180' : ''}`}
                       aria-hidden="true"
                     >
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -146,15 +151,16 @@ export default function Programme({
                   <p className="mb-2 mt-1 max-w-[62ch] text-[15.5px] leading-[1.6] text-brume">
                     {e.chapeau[locale]}
                   </p>
-                  {/* Le compte et la durée restent visibles quand l'étape est
-                      repliée : c'est ce qui garde la section informative même
-                      fermée, et cette section n'existe que pour dire ce que la
-                      formation contient. */}
+                  {/* ⚠️ La liste des noms de modules s'affichait ICI quand
+                      l'étape était repliée. Elle y avait été mise le 09/09 pour
+                      que les quatre parcours outils soient nommés sans avoir à
+                      déplier ; Paul l'a retirée le 13/09 (« des vieilles lignes
+                      qui apparaissent juste en dessous de 4 modules, 4 h 12 »).
+                      Les modules restent dans le HTML de l'étape repliée, donc
+                      lisibles par un moteur : c'est l'affichage qui change, pas
+                      le contenu de la page. */}
                   <p className="mb-4 font-ac-mono text-[12.5px] leading-[1.55] text-brume lg:hidden">
                     {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id), locale)}
-                    <span className="mt-1 block text-mine">
-                      {nomsDe(e.id, locale, c.auChoix).join(' · ')}
-                    </span>
                   </p>
                   <div
                     id={`etape-${e.id}`}

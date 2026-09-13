@@ -417,11 +417,16 @@ export default function Questionnaire({
             )}
           </div>
 
+          {/* ⚠️ La grille des vingt modules ne s'affiche QU'APRÈS les quatre
+              questions (Paul, 13/09/2026 : « si la personne ne décide pas, faut
+              pas faire apparaître les 20 modules en dessous »). Avant, elle
+              s'affichait éteinte, ce qui donnait une section à rallonge sous un
+              questionnaire auquel personne n'avait encore répondu, et le
+              programme juste au-dessus les montre déjà. */}
+          {fini && (
           <div ref={grilleRef} className="scroll-mt-24">
             <p className="m-0 mb-3 font-ac-mono text-[12px] text-brume-nuit">
-              {fini
-                ? c.compteFini(res.retenus, res.total, res.coeur.length, dureeCourte(res.minutesCoeur, locale))
-                : c.compteDepart(MODULES_SUIVIS.length)}
+              {c.compteFini(res.retenus, res.total, res.coeur.length, dureeCourte(res.minutesCoeur, locale))}
             </p>
 
             <div className="grid grid-cols-[repeat(auto-fill,minmax(132px,1fr))] gap-2.5">
@@ -482,6 +487,7 @@ export default function Questionnaire({
               </span>
             </div>
           </div>
+          )}
         </div>
       </div>
     </section>

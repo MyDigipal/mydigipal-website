@@ -64,6 +64,8 @@ const FR = {
     chapeau: (modules: number, heures: string) =>
       `Trois étapes, ${modules} modules, ${heures} de lecture et d’exercices, en français comme en anglais. Vous choisissez un outil, et le parcours ne garde que celui-là.`,
     auChoix: 'un au choix',
+    voir: 'Voir les modules',
+    masquer: 'Masquer',
     vide: 'Survolez un module pour voir ce qu’il contient. Cliquez pour le garder à l’écran.',
     videTactile: 'Touchez un module pour voir ce qu’il contient.',
     deLecons: 'de leçons',
@@ -176,7 +178,13 @@ const FR = {
   },
   diagnostic: {
     kicker: 'Par où commencer',
-    titre: 'Quatre questions, et le parcours se met dans votre ordre.',
+    /**
+     * ⚠️ Le titre disait « le parcours se met dans votre ordre », et son anglais
+     * « the course falls into your order » ne voulait rien dire (Paul, 13/09).
+     * Il annonce maintenant ce que la section fait : quatre questions, et les
+     * modules qui vous concernent.
+     */
+    titre: 'Quatre questions pour savoir par quels modules commencer.',
     chapeau:
       'Tout le monde reçoit les mêmes leçons. Ce qui change, c’est par quoi on commence, et ce qu’on peut garder pour plus tard.',
     numero: (n: number, total: number) => `Question ${n} sur ${total}`,
@@ -203,8 +211,14 @@ const FR = {
     legendeAuto: 'Les automatisations',
   },
   tarifs: {
-    kicker: 'Les tarifs',
-    titre: (prix: string) => `À partir de ${prix}`,
+    kicker: 'Ce que ça coûte',
+    /**
+     * ⚠️ Le titre ANNONÇAIT « À partir de 190 € » (Paul, 13/09 : « c'est nul »).
+     * Le montant était celui du moins cher des deux programmes, donc il vendait
+     * la page au prix du complément, que personne n'achète seul en arrivant.
+     * Le titre nomme la section, les prix sont juste en dessous.
+     */
+    titre: 'Les tarifs',
     /**
      * ⚠️ Le chapeau ANNONÇAIT LA HAUSSE DU 1er OCTOBRE (« le prix passe à
      * 450 € »). Elle est abandonnée depuis le 11/09/2026 : avec trois portes
@@ -323,6 +337,8 @@ const EN: typeof FR = {
     chapeau: (modules, heures) =>
       `Three stages, ${modules} modules, ${heures} of reading and exercises, in English and in French. You pick one tool, and the path keeps only that one.`,
     auChoix: 'one of four',
+    voir: 'See the modules',
+    masquer: 'Hide',
     vide: 'Hover a module to see what it holds. Click to keep it on screen.',
     videTactile: 'Touch a module to see what it holds.',
     deLecons: 'of lessons',
@@ -419,7 +435,7 @@ const EN: typeof FR = {
   },
   diagnostic: {
     kicker: 'Where to start',
-    titre: 'Four questions, and the course falls into your order.',
+    titre: 'Four questions, and you know which modules are yours.',
     chapeau:
       'Everyone gets the same lessons. What changes is where you start, and what can wait.',
     numero: (n, total) => `Question ${n} of ${total}`,
@@ -446,8 +462,8 @@ const EN: typeof FR = {
     legendeAuto: 'The automations',
   },
   tarifs: {
-    kicker: 'Pricing',
-    titre: (prix) => `From ${prix}`,
+    kicker: 'What it costs',
+    titre: 'Pricing',
     chapeau: (jours) =>
       `The AI assistant is included in all three, and access runs for ${jours} days whichever you take.`,
     duree: (jours = 60) => `for ${jours} days`,

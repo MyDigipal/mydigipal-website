@@ -448,25 +448,15 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, frise, photo
             <ChoixOutil c={c.j9} />
           </Jour>
 
-          {/* L'interruption de preuve, en négatif dans la colonne : le retour de
-              Paul appelle la question « qui est ce Paul ». Pas de bandeau de
-              logos ici. */}
-          <div className="relative -mx-4 mb-14 border-y border-filet-nuit bg-profond px-4 py-7 sm:-mx-6 sm:px-6 lg:-ml-6 lg:mr-0 lg:w-[calc(100%+48px)] lg:px-6">
-            <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-6 md:grid-cols-[minmax(0,1fr)_auto]">
-              <div>
-                <p className="m-0 text-[17px] font-medium text-ivoire">{c.preuve.question}</p>
-                <p className="m-0 mt-2 max-w-[56ch] text-[14.5px] leading-[1.65] text-corps-nuit">{c.preuve.texte}</p>
-              </div>
-              <div className="flex gap-8">
-                {c.preuve.chiffres(avis).map((k) => (
-                  <span key={k.libelle}>
-                    <b className="block font-ac-mono text-[26px] font-bold leading-none text-or">{k.valeur}</b>
-                    <span className="text-[12.5px] text-brume-nuit">{k.libelle}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+          {/* ⚠️ L'INTERRUPTION DE PREUVE a été retirée le 13/09/2026. Elle
+              coupait le récit entre le jour 9 et la suite pour demander « qui
+              enseigne ? » et afficher 2 500 professionnels formés et la note.
+              Paul : « ça n'a pas sa place là, comme ça on enchaîne les premiers
+              quinze jours et les quinze derniers ». La réponse à cette question
+              vit déjà dans « Qui enseigne » (`Maison.tsx`), avec les logos et
+              les verbatims. La propriété `avis` reste passée au composant : le
+              reste du récit s'en sert. */
+          }
 
           <Jour n={11} label={c.jour(11)} phrase={c.j11.phrase} note={c.j11.note}>
             <div className="grid max-w-[640px] gap-3">

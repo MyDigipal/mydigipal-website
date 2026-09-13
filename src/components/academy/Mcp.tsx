@@ -370,11 +370,17 @@ export default function Mcp({
                   que le serveur fait vraiment avec l'outil survolé, et ce
                   qu'il n'a pas le droit de faire : c'est la seule question
                   que se pose quelqu'un à qui on parle d'automatisation. */}
+              {/* ⚠️ Ces deux lignes REPRENAIENT le texte de l'outil désigné,
+                  que le panneau affiche déjà juste en dessous. Au doigt, le
+                  panneau flotte par-dessus l'écran, et le même paragraphe se
+                  lisait deux fois (Paul, 13/09/2026 : « ça fait doublon »).
+                  Le cœur du schéma garde donc son texte d'accueil, et l'outil
+                  n'est décrit qu'à un seul endroit. */}
               <p className="m-0 mt-[9px] min-h-[3.2em] text-[16px] leading-[1.45] text-encre">
-                {premier.current ? c.hub.ligne : outil.corps}
+                {c.hub.ligne}
               </p>
               <p className="m-0 mt-[9px] min-h-[2.9em] font-ac-mono text-[11px] leading-[1.5] text-brume">
-                {premier.current ? c.hub.defaut(c.outils.length) : `${outil.label} · ${outil.droits}`}
+                {c.hub.defaut(c.outils.length)}
               </p>
             </div>
           </div>
@@ -448,7 +454,10 @@ export default function Mcp({
           </ol>
         </div>
 
-        <p className="m-0 mt-8 max-w-[60ch] text-[15px] leading-[1.65] text-brume">{c.pied}</p>
+        {/* ⚠️ La phrase de pied (« ce n'est pas du développement, c'est une
+            configuration qui se lit ») est retirée le 13/09/2026 à la demande
+            de Paul. Le texte reste dans `copy.ts` : la première page de vente
+            s'en sert encore. */}
       </div>
     </section>
   );
