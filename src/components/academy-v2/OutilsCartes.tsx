@@ -1,5 +1,6 @@
 import type { Locale } from './copy-v2';
 import { copyV2 } from './copy-v2';
+import { MARQUES } from '../academy-tools/logos';
 
 export interface CarteOutil {
   id: string;
@@ -52,8 +53,28 @@ export default function OutilsCartes({ locale, outils }: { locale: Locale; outil
               href={o.lien}
               className="group flex flex-col rounded-carte border border-filet-nuit bg-salle-2 px-5 py-5 no-underline transition duration-200 hover:-translate-y-0.5 hover:border-or"
             >
-              <b className="text-[17px] font-semibold text-ivoire">{o.nom}</b>
-              <span className="mt-2 flex-1 text-[14px] leading-[1.55] text-brume-nuit">{o.phrase}</span>
+              {/* La marque de l'outil, en un seul tracé, monochrome (Paul,
+                  14/09 : « on peut pas rajouter un petit logo ici de chaque
+                  outil ? »). Elle prend la couleur du texte, donc elle
+                  s'éclaire avec la carte au survol au lieu de rester un
+                  rectangle de marque posé dessus. */}
+              <span className="flex items-center gap-2.5">
+                {MARQUES[o.id] && (
+                  <span className="grid h-8 w-8 flex-none place-items-center rounded-[9px] border border-filet-nuit bg-salle text-brume-nuit transition-colors duration-200 group-hover:text-ivoire">
+                    <svg
+                      viewBox={MARQUES[o.id].viewBox}
+                      width="17"
+                      height="17"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d={MARQUES[o.id].trace} />
+                    </svg>
+                  </span>
+                )}
+                <b className="text-[17px] font-semibold leading-[1.2] text-ivoire">{o.nom}</b>
+              </span>
+              <span className="mt-2.5 flex-1 text-[14px] leading-[1.55] text-brume-nuit">{o.phrase}</span>
               <span className="mt-4 font-ac-mono text-[12px] uppercase tracking-[0.1em] text-or-texte transition-colors group-hover:text-or-vif">
                 {c.lien} -&gt;
               </span>
