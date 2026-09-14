@@ -487,6 +487,16 @@ lien. ⚠️ Ce n'est pas le retour de la section retirée le 07/09 : c'est un a
 pas un chapitre. Les outils arrivent en propriété depuis `academy.astro` pour ne pas
 embarquer le catalogue des huit pages dans l'îlot.
 
+Chaque carte porte **la marque de son outil** depuis le 14/09
+(`academy-tools/logos.ts`). ⚠️ **Fichier généré** par `scripts/marques-outils.py`
+à partir des SVG gardés dans `scripts/sources-marques/logos/` : Claude, OpenAI et
+Google Gemini viennent de simple-icons (CC0), Microsoft 365 Copilot de Wikimedia
+Commons (version « one-color »). Ne pas retoucher les tracés à la main.
+Elles sont **monochromes et rendues en `currentColor`** : les vraies marques de
+Copilot et de Gemini portent un dégradé, et le système n'a qu'une couleur d'accent
+sans aucun dégradé. Usage nominatif seulement, jamais à côté du logo MyDigipal
+d'une manière qui suggérerait un partenariat.
+
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)
 
 Paul veut vendre l'Academy en priorité, puis « refaire un petit peu » les autres pages IA.
