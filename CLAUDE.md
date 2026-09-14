@@ -344,6 +344,66 @@ La page vit sur `/fr/academy` et `/en/academy` (`src/pages/[lang]/academy.astro`
   hero. ⚠️ La note du 25/08 « pas de rail flottant vers chaque section » visait un sommaire animé
   au milieu de la page ; la barre fine du haut est un autre objet, validée par Paul.
 
+## La page de vente est passée en v2 (06-13/09/2026)
+
+⚠️ **`/{lang}/academy` ne rend plus `Academy.tsx` mais `AcademyV2.tsx`**
+(`src/components/academy-v2/`). L'ancienne page vit en `noindex` sur
+`/{lang}/academy-v1` pour comparaison, et `/{lang}/academy-v2` n'est plus qu'une
+redirection en `noindex`. Tout ce qui est écrit plus haut sur les sections du 25/08
+reste vrai : **la v2 ne réécrit rien, elle importe les sections existantes de
+`academy/` et change leur ORDRE**, plus trois ajouts (`Programme`, `OutilsCartes`,
+`Questionnaire`) et une grille de tarifs à part (`Tarifs.tsx`, ancre `#tarifs` et
+non `#pricing`).
+
+Pourquoi : la page mesurée le 06/09 faisait 21 235 px, dont 37 % pour le récit des
+trente jours et **3,8 % pour décrire la formation**. Google disait la même chose de
+son côté avec ses scores de qualité.
+
+- **Le programme (`academy-v2/Programme.tsx`) est la raison d'être de cette page.**
+  Les vingt-trois modules des deux parcours sont **nommés d'emblée, un par ligne**
+  (glyphe teinté, nom, durée à droite), et un clic ouvre la fiche du module : à
+  droite en panneau collant dès lg, en carré flottant en dessous. C'est la
+  direction B des trois maquettes du 13/09 (`docs/academy-programme/3-directions.html`).
+  ⚠️ **Plus aucun dépliage** : le repli par étape, posé le 07/09, a été retiré le
+  13/09 parce qu'il cachait ce qu'on vient vendre. Et **le monospace ne sert plus
+  qu'aux durées et aux comptes** : les titres d'étape sont dans la police de la page.
+- **Le contenu des modules est dans `academy-v2/modules.ts`**, relevé en production
+  par l'API d'administration, jamais depuis `MyDigipal Admin/AI training/contenu/`
+  qui est périmé. Les quatre parcours outils portent `auChoix` et comptent pour un
+  seul module dans les totaux (`nombreSuivi`, `minutesDe`).
+- **La grille : 290 € la méthode, 250 € les automatisations, 440 € les deux**
+  (100 € d'économie sur 540, depuis le 13/09). Ces montants viennent de
+  `data.lot.prix` servi par l'app ; la page ne les additionne plus, parce que
+  l'addition afficherait 540 au-dessus d'un bouton qui mène à une caisse à 440.
+- **Un seul appel flottant sous lg** (`AppelFlottant.tsx`) : « Commencer », et rien
+  d'autre. La pastille de l'accès gratuit qui se posait au-dessus a été retirée le
+  13/09 ; l'accès gratuit reste proposé dans le hero, le retournement et les tarifs.
+
+### `ancre.ts` : un lien d'ancre ne suffit pas sur cette page
+
+`src/components/academy/ancre.ts` (`allerA`, `surAncre`). Sur une page de plus de
+quinze mille pixels, le défilement natif d'une ancre vise une position calculée **au
+moment du clic** ; les îlots en `client:visible` s'hydratent pendant l'animation, donc
+la cible a bougé avant qu'on l'atteigne. Mesuré en production le 13/09 à 390 px :
+arrivée 157 px trop court, le mot « Pricing » au milieu de l'écran. `allerA` attend
+que le défilement se soit arrêté puis rattrape l'écart, et tous les boutons qui mènent
+aux tarifs (hero, barre, menu, retournement, appel flottant) passent par là.
+
+⚠️ Deux pièges : le budget de rattrapage se compte **en temps, pas en trames** (une
+animation douce sur douze mille pixels consomme 150 trames à elle seule), et
+`behavior: 'auto'` reprend le `scroll-behavior: smooth` de la page, donc un rattrapage
+doit être en `'instant'`.
+
+### Un panneau qui sort du flux doit être compensé au défilement
+
+Même mécanique, autre usage. Dans `Visite.tsx`, le panneau est dans le flux au repos
+sous lg (`max-lg:order-first`) et passe en `fixed` au premier geste : sa hauteur
+disparaissait du flux et tout ce qui est en dessous remontait de 240 à 360 px selon la
+fiche. On mesure l'élément touché avant, on le remesure dans un `requestAnimationFrame`
+(après le rendu de React, avant l'affichage) et on rend l'écart exact au défilement.
+`Programme.tsx` n'a jamais eu le défaut parce que son panneau est `hidden` sous lg au
+repos, donc déjà hors du flux.
+
 ## Les pages outils de l'Academy (11/09/2026)
 
 `/{lang}/academy/{outil}` : une page de VENTE de la formation par outil, avec son
