@@ -130,8 +130,9 @@ export default function Questionnaire({
   }, [code, devise, prixMethodeMinor, prixAvanceeMinor]);
 
   const base = 'https://academy.mydigipal.com/checkout';
-  const lienMethode = useLienApp(`${base}?items=programme&lang=${locale}`);
-  const lienAvancee = useLienApp(`${base}?items=programme,construire&lang=${locale}`);
+  // La devise lue part au tunnel, comme depuis la grille de tarifs (15/09/2026).
+  const lienMethode = useLienApp(`${base}?items=programme&lang=${locale}&devise=${devise}`);
+  const lienAvancee = useLienApp(`${base}?items=programme,construire&lang=${locale}&devise=${devise}`);
   const [etape, setEtape] = useState(0);
   const [reponses, setReponses] = useState<number[][]>([]);
   const [pris, setPris] = useState<Set<number>>(new Set());

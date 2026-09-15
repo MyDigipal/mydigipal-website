@@ -123,9 +123,11 @@ export default function Tarifs({
   // ⚠️ La devise voyage aussi depuis le 15/09/2026. Le tunnel savait la lire
   // (`?devise=GBP` présélectionne le Royaume-Uni) mais la page ne la passait
   // pas : quelqu'un qui venait de lire 250 £ retrouvait des euros à la caisse.
-  // L'euro n'a pas besoin du paramètre, c'est déjà le défaut du tunnel.
+  // L'euro part aussi (15/09/2026) : sans paramètre, le tunnel suit le pays, et
+  // la page anglaise présélectionne le Royaume-Uni, donc des livres sous un prix
+  // lu en euros. Le tunnel applique la devise choisie, le pays ne fait que la TVA.
   const base = 'https://academy.mydigipal.com/checkout';
-  const qDevise = devise === 'EUR' ? '' : `&devise=${devise}`;
+  const qDevise = `&devise=${devise}`;
   const lienMethode = useLienApp(`${base}?items=programme&seats=${places}&lang=${locale}${qDevise}`);
   const lienAuto = useLienApp(`${base}?items=construire&seats=${places}&lang=${locale}${qDevise}`);
   const lienLot = useLienApp(`${base}?items=programme,construire&seats=${places}&lang=${locale}${qDevise}`);
