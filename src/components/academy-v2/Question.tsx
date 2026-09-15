@@ -65,6 +65,8 @@ export default function Question({
   const pastille = useRef<HTMLButtonElement>(null);
   const fermerBtn = useRef<HTMLButtonElement>(null);
   const arrivee = useRef(0);
+  /** La hauteur du bandeau cookies tant qu'il est à l'écran, zéro ensuite. */
+  const [bandeau, setBandeau] = useState(0);
 
   // L'apparition : la grille de tarifs à l'écran, ou une minute sur la page.
   // ⚠️ `setTimeout` et non `requestAnimationFrame` : un onglet en arrière-plan
@@ -108,6 +110,29 @@ export default function Question({
     return () => {
       window.clearTimeout(a);
       window.clearTimeout(b);
+    };
+  }, [visible]);
+
+  // ⚠️ Le bandeau cookies (`#cookie-consent-banner`, `fixed bottom-0 z-50`)
+  // recouvrait la pastille et le bas du panneau tant que le visiteur n'avait pas
+  // répondu : vu à la mesure le 15/09/2026, 110 px sur téléphone. La pastille se
+  // pose donc au-dessus de lui, et revient à sa place dès qu'il se retire. Il se
+  // retire par une classe, d'où l'observation de l'attribut.
+  useEffect(() => {
+    if (!visible) return;
+    const b = document.getElementById('cookie-consent-banner');
+    if (!b) return;
+    const mesurer = () => {
+      const r = b.getBoundingClientRect();
+      setBandeau(r.height > 0 && r.top < window.innerHeight - 1 ? Math.round(window.innerHeight - r.top) : 0);
+    };
+    mesurer();
+    const mo = new MutationObserver(() => window.setTimeout(mesurer, 350));
+    mo.observe(b, { attributes: true, attributeFilter: ['class', 'style'] });
+    window.addEventListener('resize', mesurer);
+    return () => {
+      mo.disconnect();
+      window.removeEventListener('resize', mesurer);
     };
   }, [visible]);
 
@@ -191,7 +216,10 @@ export default function Question({
   return (
     <>
       {!ouvert && (
-        <div className="fixed bottom-[5.5rem] right-4 z-40 flex flex-col items-end gap-3 lg:bottom-6 lg:right-6">
+        <div
+          className="fixed bottom-[5.5rem] right-4 z-40 flex flex-col items-end gap-3 lg:bottom-6 lg:right-6"
+          style={bandeau ? { bottom: `${bandeau + 16}px` } : undefined}
+        >
           {bulle && (
             <div
               role="status"
@@ -227,7 +255,7 @@ export default function Question({
         <div
           role="dialog"
           aria-label={c.dialogAria}
-          className="fixed inset-x-3 bottom-3 z-50 flex max-h-[85dvh] flex-col overflow-hidden rounded-carte border border-filet-nuit bg-salle-2 text-corps-nuit shadow-[0_24px_60px_-12px_rgba(4,8,18,.8)] sm:inset-x-auto sm:bottom-6 sm:right-6 sm:max-h-[min(40rem,calc(100dvh-6rem))] sm:w-[24rem]"
+          className="fixed inset-x-3 bottom-3 z-[60] flex max-h-[85dvh] flex-col overflow-hidden rounded-carte border border-filet-nuit bg-salle-2 text-corps-nuit shadow-[0_24px_60px_-12px_rgba(4,8,18,.8)] sm:inset-x-auto sm:bottom-6 sm:right-6 sm:max-h-[min(40rem,calc(100dvh-6rem))] sm:w-[24rem]"
         >
           <div className="flex items-center gap-3 border-b border-filet-nuit py-3 pl-4 pr-2">
             <img src={PHOTO} alt="" width={44} height={44} className="h-11 w-11 flex-none rounded-full border border-filet-nuit object-cover" />
