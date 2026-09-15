@@ -39,12 +39,19 @@ export default function Questionnaire({
   devise,
   prixMethodeMinor,
   prixAvanceeMinor,
+  accesJours = 60,
 }: {
   locale: Locale;
   devise: Devise;
   /** Les mêmes montants que la grille de tarifs, dans la devise affichée. */
   prixMethodeMinor: number;
   prixAvanceeMinor: number;
+  /**
+   * Les jours d'accès vendus, servis par l'app. ⚠️ Le résultat écrivait
+   * `res.avance ? 60 : 30` en dur (corrigé le 15/09/2026) : il annonçait trente
+   * jours à La méthode quatre écrans au-dessus d'une grille qui en dit soixante.
+   */
+  accesJours?: number;
 }) {
   const c = copyV2(locale).diagnostic;
 
@@ -387,7 +394,7 @@ export default function Questionnaire({
                           </span>
                         )}
                         <small className="text-[14px] font-normal tracking-normal text-brume-nuit">
-                          {c.duree(Math.max(res.avance ? 60 : 30, remise?.jours ?? 0))}
+                          {c.duree(Math.max(accesJours, remise?.jours ?? 0))}
                           {remise2 != null && code ? ` · ${c.avecCode(code)}` : ''}
                         </small>
                       </p>

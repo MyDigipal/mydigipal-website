@@ -151,6 +151,15 @@ export interface Jour30Data {
   /** Les jours d'accès vendus. Soixante pour tout le monde depuis le 11/09/2026. */
   acces_jours?: number;
   /**
+   * Servis par l'app depuis le 15/09/2026, pour que la page cesse de les écrire
+   * à la main : la durée de l'essai gratuit, la garantie de l'article 6 des
+   * conditions de vente, et les questions d'assistant comprises par mois.
+   * Optionnels : un instantané de build plus ancien ne les porte pas.
+   */
+  essai_heures?: number;
+  garantie?: { heures: number; seuil_pct: number };
+  assistant_questions?: { methode: number; automatisations: number };
+  /**
    * ⚠️ NULLE depuis le 11/09/2026 : plus aucune hausse n'est annoncée. Le champ
    * reste pour que les instantanés anciens restent lisibles, mais rien ne doit
    * s'afficher sans le tester.

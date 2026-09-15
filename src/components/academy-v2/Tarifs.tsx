@@ -3,7 +3,7 @@ import { pointeurGrossier } from '../academy/motion';
 import { formatPrice, teamDiscount } from '../academy/offres';
 import { SYMBOLE, type Devise } from '../academy/data';
 import { copyV2, type Locale } from './copy-v2';
-import { useLienApp, paramGarde } from '../academy/track';
+import { useLienApp, paramGarde, trackSelectItem } from '../academy/track';
 import FormEquipe from '../academy/FormEquipe';
 import { jour30Copy } from '../academy/copy';
 import { Boucle, estDemo, type Demo } from './Video';
@@ -63,10 +63,12 @@ export default function Tarifs({
   heuresProgramme,
   leconsComplement,
   exercices,
-  relectures,
   leconsGratuit,
   modulesAuto,
   lienGratuit,
+  assistantMethode,
+  assistantAuto,
+  garantie,
 }: {
   locale: Locale;
   prixProgrammeMinor: number;
@@ -86,11 +88,15 @@ export default function Tarifs({
   /** Ce que les automatisations ajoutent : la carte le dit, au lieu d'un total flou. */
   leconsComplement: number;
   exercices: number;
-  relectures: number;
   leconsGratuit: number;
   modulesAuto: number;
   /** Le module gratuit, déjà enrichi des identifiants de clic. */
   lienGratuit: string;
+  /** Les questions d'assistant comprises par mois, servies par l'app (15/09/2026). */
+  assistantMethode: number;
+  assistantAuto: number;
+  /** La garantie de l'article 6 des conditions de vente, servie par l'app : jamais recopiée ici. */
+  garantie: { heures: number; seuilPct: number };
 }) {
   const c = copyV2(locale).tarifs;
   const [survol, setSurvol] = useState<Ligne | null>(null);
@@ -113,10 +119,16 @@ export default function Tarifs({
   // mèneraient au même panier et le choix de l'acheteur serait perdu entre la
   // page et la caisse. Depuis le 11/09/2026 le tunnel laisse ensuite le
   // modifier, mais c'est bien ce lien qui pose le panier d'arrivée.
+  //
+  // ⚠️ La devise voyage aussi depuis le 15/09/2026. Le tunnel savait la lire
+  // (`?devise=GBP` présélectionne le Royaume-Uni) mais la page ne la passait
+  // pas : quelqu'un qui venait de lire 250 £ retrouvait des euros à la caisse.
+  // L'euro n'a pas besoin du paramètre, c'est déjà le défaut du tunnel.
   const base = 'https://academy.mydigipal.com/checkout';
-  const lienMethode = useLienApp(`${base}?items=programme&seats=${places}&lang=${locale}`);
-  const lienAuto = useLienApp(`${base}?items=construire&seats=${places}&lang=${locale}`);
-  const lienLot = useLienApp(`${base}?items=programme,construire&seats=${places}&lang=${locale}`);
+  const qDevise = devise === 'EUR' ? '' : `&devise=${devise}`;
+  const lienMethode = useLienApp(`${base}?items=programme&seats=${places}&lang=${locale}${qDevise}`);
+  const lienAuto = useLienApp(`${base}?items=construire&seats=${places}&lang=${locale}${qDevise}`);
+  const lienLot = useLienApp(`${base}?items=programme,construire&seats=${places}&lang=${locale}${qDevise}`);
   const total = (minor: number) => Math.round(minor * places * (1 - remise));
   const montant = (minor: number) => `${formatPrice(minor, locale)} ${SYMBOLE[devise]}`;
 
@@ -263,15 +275,16 @@ export default function Tarifs({
       demo: 'atelier',
     },
     {
-      texte: fr
-        ? `${exercices} exercices, dont ${relectures} relus et annotés`
-        : `${exercices} exercises, ${relectures} of them reviewed and annotated`,
+      // ⚠️ Disait « dont 3 relus et annotés » (retiré le 15/09/2026) : les
+      // relectures appartiennent au palier `pro`, qu'un achat de La méthode
+      // seule n'ouvre pas.
+      texte: fr ? `${exercices} exercices sur vos propres dossiers` : `${exercices} exercises on your own files`,
       detail: fr
-        ? 'Les exercices portent sur vos propres dossiers, pas sur un cas d’école. Vous en déposez autant que vous voulez ; trois vous reviennent annotés.'
-        : 'Exercises run on your own files, not on a textbook case. You hand in as many as you like; three come back annotated.',
+        ? 'Les exercices portent sur vos propres dossiers, pas sur un cas d’école. Vous en déposez autant que vous voulez, et chacun reste dans votre compte.'
+        : 'Exercises run on your own files, not on a textbook case. You hand in as many as you like, and each one stays in your account.',
     },
     {
-      texte: fr ? 'L’assistant IA, environ 250 questions' : 'The AI assistant, about 250 questions',
+      texte: fr ? `L’assistant IA, environ ${assistantMethode} questions par mois` : `The AI assistant, about ${assistantMethode} questions a month`,
       detail: fr
         ? 'Il ne répond qu’à partir des leçons auxquelles vous avez accès, et cite celle dont il tire sa réponse : il ne peut ni inventer, ni divulguer un contenu que vous n’avez pas.'
         : 'It answers only from the lessons you have access to, and cites the one it draws from: it can neither invent nor leak content you have not bought.',
@@ -326,7 +339,7 @@ export default function Tarifs({
       demo: 'cas',
     },
     {
-      texte: fr ? 'L’assistant IA, environ 250 questions' : 'The AI assistant, about 250 questions',
+      texte: fr ? `L’assistant IA, environ ${assistantAuto} questions par mois` : `The AI assistant, about ${assistantAuto} questions a month`,
       detail: fr
         ? 'Il ne répond qu’à partir des leçons auxquelles vous avez accès, et cite celle dont il tire sa réponse : il ne peut ni inventer, ni divulguer un contenu que vous n’avez pas.'
         : 'It answers only from the lessons you have access to, and cites the one it draws from: it can neither invent nor leak content you have not bought.',
@@ -357,6 +370,15 @@ export default function Tarifs({
     </li>
   );
 
+  /**
+   * `select_item` au clic sur un bouton d'achat (15/09/2026). La page V2 ne le
+   * poussait plus depuis sa mise en ligne du 07/09, alors que GTM y accroche
+   * ViewContent chez Meta et Reddit et `contents_viewed` chez ChatGPT Ads. La
+   * valeur est le total du panier affiché, dans la devise affichée.
+   */
+  const choisir = (id: string, nom: string, totalMinor: number) =>
+    trackSelectItem({ tier: id, tierName: nom, value: totalMinor / 100, currency: devise });
+
   const carte = (
     titre: string,
     sous: string,
@@ -364,6 +386,8 @@ export default function Tarifs({
     lignes: Ligne[],
     or: boolean,
     lien: string,
+    /** L'article du tunnel, celui que `select_item` doit porter pour recoller l'entonnoir. */
+    offreId: string,
     // La remise du code sur CETTE porte, telle que l'application la calcule.
     rp: Remise | null = null,
   ) => (
@@ -402,6 +426,7 @@ export default function Tarifs({
       <ul className="m-0 mb-5 mt-3 list-none p-0">{lignes.map((l) => rendreLigne(l, or))}</ul>
       <a
         href={lien}
+        onClick={() => choisir(offreId, titre, rp ? rp.total : total(minor))}
         className={`inline-flex min-h-11 items-center rounded-bouton px-6 text-[15px] font-semibold transition ${
           or ? 'bg-or text-salle hover:bg-or-vif' : 'bg-avance text-salle hover:bg-[#a2dcef]'
         }`}
@@ -426,7 +451,7 @@ export default function Tarifs({
           {c.titre}
         </h2>
         <p className="mt-4 max-w-[62ch] text-[17.5px] leading-[1.65] text-brume-nuit">
-          {c.chapeau(jours)}
+          {c.chapeau(jours, garantie)}
         </p>
 
         {/* Les licences. Une par défaut : la page vend d'abord à une personne,
@@ -520,8 +545,8 @@ export default function Tarifs({
             dont l'autre serait le complément : ce sont deux entrées, l'une par
             la méthode, l'autre par les automatisations. */}
         <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[1fr_1fr_320px]">
-          {carte(c.methode, c.methodeSous, prixProgrammeMinor, methode, true, lienMethode, promo?.methode ?? null)}
-          {carte(c.auto, c.autoSous, prixAutoMinor, auto, false, lienAuto, promo?.auto ?? null)}
+          {carte(c.methode, c.methodeSous, prixProgrammeMinor, methode, true, lienMethode, 'programme', promo?.methode ?? null)}
+          {carte(c.auto, c.autoSous, prixAutoMinor, auto, false, lienAuto, 'construire', promo?.auto ?? null)}
 
           {/* Le cadre qui se remplit au survol d'une ligne, avec l'écran qui va
               avec. Masqué sous lg : au doigt il n'y a pas de survol, et le
@@ -595,6 +620,7 @@ export default function Tarifs({
 
             <a
               href={lienLot}
+              onClick={() => choisir('programme,construire', c.lot, promo?.lot ? promo.lot.total : total(prixLotMinor))}
               className="inline-flex min-h-11 flex-none items-center justify-center rounded-bouton bg-ivoire px-6 text-[15px] font-semibold text-salle transition hover:bg-white max-sm:w-full"
             >
               {c.lotCta}
@@ -613,7 +639,7 @@ export default function Tarifs({
             </span>
             <span className="text-brume-nuit">{c.duree(jours)}</span>
             <span className="text-brume-nuit">
-              {fr ? 'L’assistant IA, environ 500 questions' : 'The AI assistant, about 500 questions'}
+              {fr ? `L’assistant IA, environ ${assistantAuto} questions par mois` : `The AI assistant, about ${assistantAuto} questions a month`}
             </span>
             {places > 1 && (
               <span className="text-corps-nuit">
@@ -644,7 +670,7 @@ export default function Tarifs({
           </a>
         </div>
 
-        <p className="mt-5 text-[14px] leading-[1.6] text-brume-nuit">{c.rappel()}</p>
+        <p className="mt-5 text-[14px] leading-[1.6] text-brume-nuit">{c.rappel(devise)}</p>
       </div>
     </section>
   );

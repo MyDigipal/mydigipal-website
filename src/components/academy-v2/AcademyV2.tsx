@@ -174,6 +174,7 @@ export default function AcademyV2({
         devise={devise}
         prixMethodeMinor={programme ? prixDe(programme, devise) : 0}
         prixAvanceeMinor={prixLot}
+        accesJours={data.acces_jours ?? 60}
       />
 
       {/* L'espace apprenant, qu'on visite au survol. C'est la cible de l'entrée
@@ -264,10 +265,12 @@ export default function AcademyV2({
         heuresProgramme={data.faits.heuresProgramme ?? data.faits.heures}
         leconsComplement={leconsComplement(data)}
         exercices={data.faits.exercices}
-        relectures={data.faits.relectures}
         leconsGratuit={leconsGratuit(data)}
         modulesAuto={nbAuto}
         lienGratuit={gratuit}
+        assistantMethode={data.assistant_questions?.methode ?? 250}
+        assistantAuto={data.assistant_questions?.automatisations ?? 500}
+        garantie={{ heures: data.garantie?.heures ?? 48, seuilPct: data.garantie?.seuil_pct ?? 5 }}
       />
 
       <AppelFlottant locale={locale} ancreTarifs="tarifs" />

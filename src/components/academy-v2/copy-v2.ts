@@ -231,8 +231,10 @@ const FR = {
      * Ce qui la remplace est vrai en permanence et n'a pas besoin d'être tenu
      * à jour : ce qui est compris, et la durée d'accès.
      */
-    chapeau: (jours: number) =>
-      `L’assistant IA est compris dans les trois, et l’accès dure ${jours} jours quelle que soit la formule.`,
+    // La garantie s'ajoute le 15/09/2026 : elle n'était dite nulle part sur la
+    // page, alors qu'elle répond à la dernière hésitation avant la carte.
+    chapeau: (jours: number, garantie: { heures: number; seuilPct: number }) =>
+      `L’assistant IA est compris dans les trois, et l’accès dure ${jours} jours quelle que soit la formule. Vous avez ${garantie.heures} heures pour demander un remboursement intégral, tant que moins de ${garantie.seuilPct}\u00a0% du parcours a été consulté.`,
     duree: (jours = 60) => `pour ${jours} jours`,
     methode: 'La méthode',
     /**
@@ -272,8 +274,12 @@ const FR = {
       'Au-delà de dix licences, le prix se construit avec vous : les accès, le rythme, l’accompagnement de l’équipe. Dites-nous ce que vous cherchez, Paul vous répond sous un jour ouvré.',
     survol: 'Survolez une ligne pour voir l’écran',
     survolTactile: 'Touchez une ligne pour voir l’écran',
-    rappel: () =>
-      'L’assistant IA est compris dans les trois. Les prix sont en euros, toutes taxes comprises.',
+    // ⚠️ Disait « en euros » quelle que soit la devise affichée (15/09/2026).
+    // En dollars aucune TVA n'est facturée : le tunnel le dit dans ces termes.
+    rappel: (devise: 'EUR' | 'GBP' | 'USD') =>
+      devise === 'USD'
+        ? 'L’assistant IA est compris dans les trois. Les prix sont en dollars américains, et le montant affiché est le montant payé.'
+        : `L’assistant IA est compris dans les trois. Les prix sont en ${devise === 'GBP' ? 'livres sterling' : 'euros'}, toutes taxes comprises.`,
     gratuitTag: 'Essayer d’abord',
     gratuitTitre: (lecons: number) => `${lecons} leçons offertes, pendant 48 heures`,
     gratuitTexte:
@@ -474,8 +480,8 @@ const EN: typeof FR = {
   tarifs: {
     kicker: 'What it costs',
     titre: 'Pricing',
-    chapeau: (jours) =>
-      `The AI assistant is included in all three, and access runs for ${jours} days whichever you take.`,
+    chapeau: (jours, garantie) =>
+      `The AI assistant is included in all three, and access runs for ${jours} days whichever you take. You have ${garantie.heures} hours to ask for a full refund, as long as less than ${garantie.seuilPct}% of the course has been opened.`,
     duree: (jours = 60) => `for ${jours} days`,
     methode: 'The method',
     methodeSous: 'The method and your tool',
@@ -498,8 +504,10 @@ const EN: typeof FR = {
       'Beyond ten licences the price is built with you: the seats, the pace, the support your team needs. Tell us what you are looking for, Paul answers within one working day.',
     survol: 'Hover a line to see the screen',
     survolTactile: 'Touch a line to see the screen',
-    rappel: () =>
-      'The AI assistant is included in all three. Prices are in euros, all taxes included.',
+    rappel: (devise) =>
+      devise === 'USD'
+        ? 'The AI assistant is included in all three. Prices are in US dollars, and the amount shown is the amount you pay.'
+        : `The AI assistant is included in all three. Prices are in ${devise === 'GBP' ? 'pounds sterling' : 'euros'}, all taxes included.`,
     gratuitTag: 'Try first',
     gratuitTitre: (lecons) => `${lecons} free lessons, for 48 hours`,
     gratuitTexte:
