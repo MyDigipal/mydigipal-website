@@ -110,7 +110,9 @@ export default function Barre({
       // Le repère actif : le dernier dont le haut est passé.
       let courant: string | null = null;
       cibles().forEach((el, i) => {
-        if (el && el.getBoundingClientRect().top <= 140) courant = REPERES[i].id;
+        // ⚠️ `ids` et non `REPERES` (15/09/2026) : la V2 passe ses propres repères,
+        // et le repère actif n'était jamais surligné.
+        if (el && el.getBoundingClientRect().top <= 140) courant = ids[i];
       });
       setActif((prev) => (prev === courant ? prev : courant));
     };
