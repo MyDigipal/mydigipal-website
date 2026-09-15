@@ -29,8 +29,10 @@ function push(event: DataLayerEvent): void {
 /**
  * Le panneau « Une question ? » (15/09/2026) : ouverture, question lue, envoi.
  *
- * ⚠️ Aucun de ces événements n'est une conversion, et aucun ne doit le devenir :
- * les campagnes apprendraient à acheter des questions plutôt que des ventes.
+ * ⚠️ `sent` ne part qu'au PREMIER message d'une conversation : c'est le seul qui
+ * pourra devenir une conversion (Paul, même jour : « une seule conversion pour
+ * tout vrai chat »). `open` et `faq` restent de la mesure : en faire des
+ * conversions apprendrait aux campagnes à acheter des ouvertures de panneau.
  */
 export function trackQuestion(action: 'open' | 'faq' | 'sent', params: DataLayerEvent = {}): void {
   push({ event: `academy_question_${action}`, ...params });

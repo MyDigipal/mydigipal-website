@@ -331,6 +331,18 @@ export default function Question({
     try {
       const f = await assurerFil();
       const texte = question.trim();
+      // `sent` ne part qu'au PREMIER message d'une conversation (Paul, 15/09/2026 :
+      // « une seule conversion pour tout vrai chat », pas une par message). Les
+      // relances n'envoient rien. La session garde les conversations déjà comptées,
+      // pour qu'un rechargement de page ne recompte pas.
+      const CLE_COMPTEES = 'academy_question_comptees';
+      let comptees: string[] = [];
+      try {
+        comptees = JSON.parse(sessionStorage.getItem(CLE_COMPTEES) || '[]') as string[];
+      } catch {
+        /* stockage indisponible : on compte sur les messages déjà affichés */
+      }
+      const premier = !messages.some((m) => m.auteur === 'visiteur') && !(f && comptees.includes(f.id));
       const res = await fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -348,7 +360,16 @@ export default function Question({
       setMessages((m) => [...m, { auteur: 'visiteur', texte, at: new Date().toISOString() }]);
       setQuestion('');
       setVue((v) => (v === 'fil' ? 'fil' : 'envoye'));
-      trackQuestion('sent', { faq_lues: lues.length });
+      if (premier) {
+        trackQuestion('sent', { faq_lues: lues.length });
+        if (f) {
+          try {
+            sessionStorage.setItem(CLE_COMPTEES, JSON.stringify([...comptees, f.id]));
+          } catch {
+            /* rien à garder */
+          }
+        }
+      }
     } catch {
       setErreur(c.erreurEnvoi);
     } finally {
