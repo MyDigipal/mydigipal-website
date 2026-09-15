@@ -41,7 +41,13 @@ const FR = {
   note: 'Paul répond lui-même, par e-mail. Votre adresse ne sert qu’à cette réponse.',
   retour: 'Revenir aux questions',
   envoyeTitre: 'C’est envoyé.',
-  envoyeTexte: (email: string) => `Paul vous répond à ${email}. Vous pouvez continuer à lire la page en attendant.`,
+  // La conversation en direct (15/09/2026) : si Paul est là, sa réponse s'affiche
+  // dans le panneau ; sinon elle part à l'adresse saisie.
+  envoyeTexte: (email: string) =>
+    `Si Paul est disponible, sa réponse s’affiche ici dans quelques minutes. Sinon, il vous répond à ${email}.`,
+  paulARepondu: 'Paul vous a répondu.',
+  voirConversation: 'Voir la conversation',
+  repondre: 'Votre message',
   erreurQuestion: 'Écrivez votre question en quelques mots.',
   erreurEmail: 'Cette adresse e-mail ne semble pas complète.',
   erreurEnvoi: 'L’envoi n’a pas abouti. Réessayez dans un instant.',
@@ -70,7 +76,11 @@ const EN: Copie = {
   note: 'Paul answers himself, by email. Your address is only used for this reply.',
   retour: 'Back to the questions',
   envoyeTitre: 'Sent.',
-  envoyeTexte: (email: string) => `Paul will reply to ${email}. Feel free to keep reading the page in the meantime.`,
+  envoyeTexte: (email: string) =>
+    `If Paul is available, his reply appears here within a few minutes. Otherwise he will reply to ${email}.`,
+  paulARepondu: 'Paul has replied.',
+  voirConversation: 'See the conversation',
+  repondre: 'Your message',
   erreurQuestion: 'Write your question in a few words.',
   erreurEmail: 'This email address looks incomplete.',
   erreurEnvoi: 'Sending failed. Please try again in a moment.',
