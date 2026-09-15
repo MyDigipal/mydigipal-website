@@ -35,6 +35,7 @@ import Profil from './Profil';
 import Questionnaire from './Questionnaire';
 import Programme from './Programme';
 import Tarifs from './Tarifs';
+import Question from './Question';
 import OutilsCartes, { type CarteOutil } from './OutilsCartes';
 
 /**
@@ -272,6 +273,11 @@ export default function AcademyV2({
         assistantAuto={data.assistant_questions?.automatisations ?? 500}
         garantie={{ heures: data.garantie?.heures ?? 48, seuilPct: data.garantie?.seuil_pct ?? 5 }}
       />
+
+      {/* « Une question ? », Paul répond (direction A du labo, 15/09/2026). Il
+          apparaît avec la grille de tarifs ; sous lg il se pose au-dessus de
+          « Commencer », qui garde le coin du pouce. */}
+      <Question locale={locale} devise={devise} data={data} modulesAuto={nbAuto} ancreTarifs="tarifs" />
 
       <AppelFlottant locale={locale} ancreTarifs="tarifs" />
     </div>

@@ -26,6 +26,16 @@ function push(event: DataLayerEvent): void {
   w.dataLayer.push(event);
 }
 
+/**
+ * Le panneau « Une question ? » (15/09/2026) : ouverture, question lue, envoi.
+ *
+ * ⚠️ Aucun de ces événements n'est une conversion, et aucun ne doit le devenir :
+ * les campagnes apprendraient à acheter des questions plutôt que des ventes.
+ */
+export function trackQuestion(action: 'open' | 'faq' | 'sent', params: DataLayerEvent = {}): void {
+  push({ event: `academy_question_${action}`, ...params });
+}
+
 export function trackSelectItem(item: { tier: string; tierName: string; value: number; currency: string }): void {
   push({ ecommerce: null });
   push({

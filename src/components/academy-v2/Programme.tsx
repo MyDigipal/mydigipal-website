@@ -45,20 +45,16 @@ export default function Programme({
   minutesGratuit: number;
 }) {
   /**
-   * ⚠️ L'EN-TÊTE COMPTE CE QUE LA SECTION MONTRE (08/09/2026).
+   * ⚠️ L'EN-TÊTE LIT L'API DEPUIS LE 15/09/2026, comme le hero et l'attestation.
    *
-   * Il affichait `faits.modules` et `faits.heures`, c'est-à-dire le volume du
-   * SEUL parcours vendu : « 16 modules, 12 h 28 ». Or la section liste les
-   * modules des DEUX programmes, et les trois totaux d'étape juste en dessous
-   * additionnaient 20 modules et 16 h 31. Deux chiffres qui se contredisent sur
-   * le même écran, et c'est le plus petit qu'on lisait en premier.
-   *
-   * Les deux totaux viennent donc de `modules.ts`, la même source que les
-   * étapes, avec la même règle : les quatre parcours outils comptent pour un.
+   * Le 08/09 il comptait `modules.ts`, parce que l'API ne portait alors que le
+   * seul parcours vendu (« 16 modules, 12 h 28 ») face à des étapes qui en
+   * additionnaient 20. Depuis le 09/09 l'API compte les deux programmes, module
+   * Claude des automatisations compris, et la page affichait 20 ici et 21 plus
+   * bas. Paul a tranché le 15/09 : « 21 partout ». Le module Claude est donc
+   * aussi montré dans « Mettre en œuvre » (`M4C-auto`), et les étapes retombent
+   * sur le même nombre de modules que cet en-tête.
    */
-  const modulesMontres = ETAPES.reduce((n, e) => n + nombreSuivi(e.id), 0);
-  const minutesMontrees = ETAPES.reduce((n, e) => n + minutesDe(e.id), 0);
-  const heuresMontrees = duree(minutesMontrees, locale);
 
   const c = copyV2(locale).programme;
   const [actif, setActif] = useState<Module | null>(null);
@@ -98,7 +94,7 @@ export default function Programme({
           {c.titre}
         </h2>
         <p className="mt-4 max-w-[64ch] text-[17.5px] leading-[1.65] text-brume">
-          {c.chapeau(modulesMontres, heuresMontrees)}
+          {c.chapeau(modules, heures)}
         </p>
         {/* La consigne, au doigt seulement : sur grand écran le panneau de
             droite la porte déjà, et il est visible au repos. Sur téléphone il

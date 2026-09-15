@@ -209,6 +209,21 @@ export const MODULES: Module[] = [
 
   // ---------------------------------------------------------- mettre en œuvre
   {
+    // ⚠️ Le module Claude est AUSSI dans « Les automatisations » (15/09/2026) :
+    // le parcours avancé l'ouvre en tête, parce que ses connecteurs et ses
+    // tâches planifiées portent les agents et le MCP. L'API le compte donc une
+    // seconde fois pour qui prend les deux programmes, et Paul a tranché :
+    // « 21 partout ». Identifiant suffixé pour React, même contenu en base.
+    id: 'M4C-auto',
+    titre: { fr: 'Claude, pour les automatisations', en: 'Claude, for automations' },
+    texte: {
+      fr: 'Le module Claude, ouvert avec Les automatisations même si votre outil au quotidien est un autre : les connecteurs et les tâches planifiées sur lesquels s’appuient les agents et le MCP.',
+      en: 'The Claude module, opened with Automations even if your everyday tool is another one: the connectors and scheduled tasks the agents and MCP build on.',
+    },
+    glyphe: 'tool_doc', teinte: '#8a4b2a', etape: 'agir', palier: 'pro', minutes: 75,
+    parcoursAvance: true,
+  },
+  {
     id: 'M7',
     titre: { fr: 'Agents et automatisations', en: 'Agents and automations' },
     texte: {
