@@ -221,9 +221,11 @@ export default function Question({
           style={bandeau ? { bottom: `${bandeau + 16}px` } : undefined}
         >
           {bulle && (
+            // Sur téléphone, la tête seule au-dessus de « Commencer », sans bulle
+            // (Paul, 15/09/2026) : deux blocs de texte sous le pouce mangeaient la page.
             <div
               role="status"
-              className="relative max-w-[16rem] rounded-carte rounded-br-[4px] bg-craie py-3 pl-3.5 pr-9 text-encre shadow-[0_12px_32px_-10px_rgba(4,8,18,.65)]"
+              className="relative max-w-[16rem] rounded-carte rounded-br-[4px] bg-craie py-3 pl-3.5 pr-9 text-encre shadow-[0_12px_32px_-10px_rgba(4,8,18,.65)] max-lg:hidden"
             >
               <button type="button" onClick={() => ouvrir('bulle')} className="text-left text-[15px] leading-[1.4]">
                 {nb(c.bulle)}
