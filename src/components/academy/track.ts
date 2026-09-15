@@ -57,9 +57,80 @@ export function trackSelectItem(item: { tier: string; tierName: string; value: n
 const CLES = ['gclid', 'fbclid', 'gbraid', 'wbraid', 'coupon'] as const;
 const STOCK = 'academy_ad_ids';
 
+/**
+ * La provenance du visiteur, pour le panneau « Une question ? » (15/09/2026).
+ *
+ * Paul : « ce serait bien qu'il ait les infos, genre quelle campagne ». Les
+ * campagnes Search posent le nom de campagne, le mot-clé, la correspondance et
+ * l'appareil dans l'adresse d'arrivée, mais le panneau ne lisait que l'adresse
+ * de la page en cours : tout se perdait dès la deuxième page. On garde donc,
+ * pour la visite, ces paramètres, l'origine du site précédent et la page
+ * d'entrée.
+ *
+ * ⚠️ Rangé à part des identifiants de clic : ceux-là sont réinjectés dans les
+ * liens vers le tunnel, et ces paramètres ne doivent pas l'être.
+ */
+const CLES_PROVENANCE = [
+  'gclid',
+  'gbraid',
+  'wbraid',
+  'gad_source',
+  'gad_campaignid',
+  'fbclid',
+  'rdt_cid',
+  'ttclid',
+  'utm_source',
+  'utm_medium',
+  'utm_campaign',
+  'utm_term',
+  'utm_content',
+  'matchtype',
+  'device',
+  'network',
+] as const;
+const STOCK_PROVENANCE = 'academy_provenance';
+
+function captureProvenance(): void {
+  try {
+    const q = new URLSearchParams(window.location.search);
+    const vus: Record<string, string> = {};
+    for (const k of CLES_PROVENANCE) {
+      const v = q.get(k);
+      if (v) vus[k] = v.slice(0, 300);
+    }
+    // Une nouvelle arrivée par une annonce remplace la précédente ; sans elle,
+    // la première page de la visite fait foi.
+    if (!Object.keys(vus).length && sessionStorage.getItem(STOCK_PROVENANCE)) return;
+    let referrer: string | undefined;
+    try {
+      const r = document.referrer ? new URL(document.referrer) : null;
+      if (r && r.hostname !== window.location.hostname) referrer = r.origin;
+    } catch {
+      /* référent illisible : on s'en passe */
+    }
+    sessionStorage.setItem(
+      STOCK_PROVENANCE,
+      JSON.stringify({ ...vus, ...(referrer ? { referrer } : {}), landing: window.location.pathname })
+    );
+  } catch {
+    /* stockage indisponible : on continue sans */
+  }
+}
+
+/** La provenance gardée pour la visite, vide si rien n'a été capté. */
+export function provenance(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  try {
+    return JSON.parse(sessionStorage.getItem(STOCK_PROVENANCE) || '{}') as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+
 /** À l'arrivée : on range les identifiants de clic présents dans l'URL. */
 export function captureAdClickIds(): void {
   if (typeof window === 'undefined') return;
+  captureProvenance();
   try {
     const q = new URLSearchParams(window.location.search);
     const found: Record<string, string> = {};

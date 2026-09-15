@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Devise, Jour30Data, Locale } from '../academy/data';
-import { paramGarde, trackQuestion } from '../academy/track';
+import { paramGarde, provenance, trackQuestion } from '../academy/track';
 import { faqVente, questionCopy } from './question-copy';
 
 /**
@@ -235,19 +235,19 @@ export default function Question({
     };
   }, [visible]);
 
+  // La provenance gardée pour la visite (campagne, mot-clé, site d'origine,
+  // page d'entrée) : Paul la lit dans la notification et sur la page de réponse.
   const contexte = () => {
-    const q = new URLSearchParams(window.location.search);
+    const prov = provenance();
     return {
+      ...prov,
       surface: 'page',
       language: locale,
       page: window.location.pathname,
       devise,
       secondes: Math.round((Date.now() - arrivee.current) / 1000),
-      gclid: paramGarde('gclid') || undefined,
-      fbclid: paramGarde('fbclid') || undefined,
-      utm_source: q.get('utm_source') || undefined,
-      utm_medium: q.get('utm_medium') || undefined,
-      utm_campaign: q.get('utm_campaign') || undefined,
+      gclid: prov.gclid || paramGarde('gclid') || undefined,
+      fbclid: prov.fbclid || paramGarde('fbclid') || undefined,
     };
   };
 
