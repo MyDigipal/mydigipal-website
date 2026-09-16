@@ -1,5 +1,5 @@
 // ============================================================
-// Le panneau « Une question ? » : ses textes et sa FAQ
+// Le panneau « Une question ? » : ses textes, ses catégories et sa FAQ
 // ============================================================
 //
 // Direction A, « Paul répond », retenue par Paul le 15/09/2026 dans
@@ -10,6 +10,10 @@
 // d'équipe viennent du JSON de l'application et de la devise affichée. Une
 // réponse de FAQ qui recopierait « 290 € » ou « 48 heures » serait fausse le
 // jour où la grille bouge, et personne ne penserait à la relire.
+//
+// 16/09/2026, Paul : « on pourrait mettre des catégories de questions ». Les
+// questions sont donc rangées en familles (`categoriesVente`), et le panneau
+// ouvre sur ces familles plutôt que sur une liste de huit questions.
 
 import { SYMBOLE, leconsComplement, leconsGratuit, leconsProgramme, prixDe, type Devise, type Jour30Data, type Locale } from '../academy/data';
 import { formatPrice } from '../academy/offres';
@@ -18,6 +22,13 @@ export interface QuestionFaq {
   id: string;
   q: string;
   a: string;
+}
+
+export interface QuestionCategorie {
+  id: string;
+  titre: string;
+  /** Les questions de la famille, dans l'ordre d'affichage. */
+  questions: QuestionFaq[];
 }
 
 const FR = {
@@ -29,16 +40,19 @@ const FR = {
   role: 'Fondateur de MyDigipal, répond lui-même',
   fermer: 'Fermer',
   dialogAria: 'Questions à Paul',
-  accueil: 'Bonjour. Voici les questions qu’on me pose le plus. S’il manque la vôtre, écrivez-moi.',
+  accueil: 'Bonjour. Votre question est à propos de quoi ? Sinon, écrivez-la-moi directement en bas.',
+  categoriesTitre: 'Votre question est à propos de quoi ?',
   poser: 'Poser ma question',
+  ecrirePlaceholder: 'Écrivez votre question à Paul...',
   differente: 'Ma question est un peu différente',
   autres: 'Voir les autres questions',
+  retourCategories: 'Revenir aux catégories',
   labelQuestion: 'Votre question',
   exempleQuestion: 'Par exemple : la formation couvre-t-elle Copilot dans Excel ?',
   labelEmail: 'Votre e-mail, pour la réponse',
   exempleEmail: 'vous@entreprise.com',
   envoyer: 'Envoyer à Paul',
-  note: 'Paul répond lui-même, par e-mail. Votre adresse ne sert qu’à cette réponse.',
+  note: 'Paul répond lui-même. Votre adresse ne sert qu’à cette réponse.',
   retour: 'Revenir aux questions',
   envoyeTitre: 'C’est envoyé.',
   // La conversation en direct (15/09/2026) : si Paul est là, sa réponse s'affiche
@@ -64,16 +78,19 @@ const EN: Copie = {
   role: 'Founder of MyDigipal, answers himself',
   fermer: 'Close',
   dialogAria: 'Questions for Paul',
-  accueil: 'Hello. Here are the questions I get most often. If yours is not here, write to me.',
+  accueil: 'Hello. What is your question about? If none of these fit, write to me below.',
+  categoriesTitre: 'What is your question about?',
   poser: 'Ask my question',
+  ecrirePlaceholder: 'Write your question to Paul...',
   differente: 'My question is a bit different',
   autres: 'See the other questions',
+  retourCategories: 'Back to the topics',
   labelQuestion: 'Your question',
   exempleQuestion: 'For example: does the course cover Copilot in Excel?',
   labelEmail: 'Your email, for the reply',
   exempleEmail: 'you@company.com',
   envoyer: 'Send to Paul',
-  note: 'Paul answers himself, by email. Your address is only used for this reply.',
+  note: 'Paul answers himself. Your address is only used for this reply.',
   retour: 'Back to the questions',
   envoyeTitre: 'Sent.',
   envoyeTexte: (email: string) =>
@@ -92,8 +109,8 @@ export function questionCopy(locale: Locale): Copie {
 
 /**
  * Les questions, dans l'ordre des hésitations : ce qu'il y a dedans, laquelle
- * prendre, le temps, l'essai, la garantie, la facture, le financement (ou la
- * langue en anglais, le CPF ne voulant rien dire hors de France), les équipes.
+ * prendre, le temps, l'assistant, les langues, l'essai, la garantie, la facture,
+ * le financement (le CPF ne voulant rien dire hors de France), les équipes.
  *
  * Une réponse dont la donnée manque (un instantané de build ancien) retire la
  * phrase concernée plutôt que d'écrire un nombre de repli.
@@ -111,8 +128,9 @@ export function faqVente(locale: Locale, d: Jour30Data, devise: Devise, modulesA
   const hAuto = d.faits.heuresComplement;
   const jours = d.acces_jours;
   const g = d.garantie;
+  const assistant = d.assistant_questions;
   const paliers = d.equipe?.paliers ?? [];
-  const pct = (x: number) => `${Math.round(x * 100)}${fr ? ' %' : '%'}`;
+  const pct = (x: number) => `${Math.round(x * 100)}${fr ? ' %' : '%'}`;
   const listePaliers = paliers
     .map((p, i) =>
       fr
@@ -149,6 +167,18 @@ export function faqVente(locale: Locale, d: Jour30Data, devise: Devise, modulesA
         ]
           .filter(Boolean)
           .join(' '),
+      },
+      {
+        id: 'assistant',
+        q: 'L’assistant IA est-il inclus ?',
+        a: assistant
+          ? `Oui. Il répond dans la plateforme à partir de vos propres leçons, jamais d’ailleurs : ${assistant.methode} questions par mois avec La méthode, ${assistant.automatisations} avec les deux programmes.`
+          : 'Oui. Il répond dans la plateforme à partir de vos propres leçons, jamais d’ailleurs.',
+      },
+      {
+        id: 'langues',
+        q: 'En quelle langue est la formation ?',
+        a: 'Chaque leçon existe en français et en anglais. On passe de l’une à l’autre en un clic, sans perdre sa progression : un collègue à l’étranger suit exactement le même parcours.',
       },
       {
         id: 'essai',
@@ -206,6 +236,18 @@ export function faqVente(locale: Locale, d: Jour30Data, devise: Devise, modulesA
         .join(' '),
     },
     {
+      id: 'assistant',
+      q: 'Is the AI assistant included?',
+      a: assistant
+        ? `Yes. It answers inside the platform, from your own lessons and nothing else: ${assistant.methode} questions a month with The method, ${assistant.automatisations} with both programmes.`
+        : 'Yes. It answers inside the platform, from your own lessons and nothing else.',
+    },
+    {
+      id: 'langues',
+      q: 'Which languages is it in?',
+      a: 'Every lesson exists in English and in French. You switch in one click and keep your progress, so colleagues abroad follow exactly the same path.',
+    },
+    {
       id: 'essai',
       q: 'Can I try it before paying?',
       a: `Yes. Free access opens ${leconsGratuit(d)} lessons${d.essai_heures ? ` for ${d.essai_heures} hours` : ''}, with no card needed.`,
@@ -223,11 +265,6 @@ export function faqVente(locale: Locale, d: Jour30Data, devise: Devise, modulesA
       a: 'Yes. Enter your company at checkout: the invoice, already marked as paid, is attached to your access email. For a business in the European Union, a valid VAT number, checked at payment, removes the VAT.',
     },
     {
-      id: 'langues',
-      q: 'Which languages is it in?',
-      a: 'Every lesson exists in English and in French. You switch in one click and keep your progress, so colleagues abroad follow exactly the same path.',
-    },
-    {
       id: 'equipe',
       q: 'What about a team?',
       a: listePaliers
@@ -235,4 +272,36 @@ export function faqVente(locale: Locale, d: Jour30Data, devise: Devise, modulesA
         : 'The price per licence goes down with the number of licences, and Paul puts together a proposal for larger teams.',
     },
   ];
+}
+
+/** Les familles de questions, dans l'ordre où l'on hésite. */
+const FAMILLES: { id: string; fr: string; en: string; ids: string[] }[] = [
+  { id: 'programme', fr: 'Ce qu’il y a dans la formation', en: 'What is in the course', ids: ['contenu', 'temps'] },
+  { id: 'plateforme', fr: 'La plateforme et l’assistant IA', en: 'The platform and the AI assistant', ids: ['assistant', 'langues'] },
+  { id: 'prix', fr: 'Le prix, la facture, les équipes', en: 'Price, invoice, teams', ids: ['formule', 'facture', 'cpf', 'equipe'] },
+  { id: 'avant', fr: 'Essayer, l’accès et la garantie', en: 'Trying it, access and guarantee', ids: ['essai', 'garantie'] },
+];
+
+/**
+ * Les questions rangées par famille (Paul, 16/09/2026). Une famille dont aucune
+ * question n'existe dans la langue affichée disparaît, et toute question oubliée
+ * dans `FAMILLES` est rattachée à la dernière : rien ne se perd en silence.
+ */
+export function categoriesVente(locale: Locale, faq: QuestionFaq[]): QuestionCategorie[] {
+  const parId = new Map(faq.map((q) => [q.id, q]));
+  const rangees = new Set<string>();
+  const familles = FAMILLES.map((f) => {
+    const questions = f.ids
+      .map((id) => {
+        const q = parId.get(id);
+        if (q) rangees.add(id);
+        return q;
+      })
+      .filter((q): q is QuestionFaq => !!q);
+    return { id: f.id, titre: locale === 'en' ? f.en : f.fr, questions };
+  }).filter((f) => f.questions.length > 0);
+
+  const oubliees = faq.filter((q) => !rangees.has(q.id));
+  if (oubliees.length && familles.length) familles[familles.length - 1].questions.push(...oubliees);
+  return familles;
 }

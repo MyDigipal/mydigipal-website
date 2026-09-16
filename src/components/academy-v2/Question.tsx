@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Devise, Jour30Data, Locale } from '../academy/data';
 import { paramGarde, provenance, trackQuestion } from '../academy/track';
-import { faqVente, questionCopy } from './question-copy';
+import { categoriesVente, faqVente, questionCopy } from './question-copy';
 
 /**
  * « Une question ? », le panneau où Paul répond (15/09/2026).
@@ -14,18 +14,27 @@ import { faqVente, questionCopy } from './question-copy';
  *
  * Trois règles, et elles tiennent le composant :
  *   - il n'apparaît qu'une fois la grille de tarifs à l'écran, ou au bout d'une
- *     minute sur la page ; la bulle ne se montre qu'une fois par visite, et le
- *     panneau ne s'ouvre JAMAIS tout seul ;
+ *     minute sur la page ;
  *   - la FAQ est écrite, aucun modèle ne répond : ce qui part est une vraie
  *     question, et elle part à Paul ;
  *   - aucun chiffre n'est écrit à la main (voir `question-copy.ts`).
  *
- * LA CONVERSATION EN DIRECT (même jour, « le niveau 1 et le niveau 2 ») :
- * ouvrir le panneau ouvre un fil dans l'application et prévient Paul dans
- * Google Chat. Le panneau interroge ce fil ; si Paul répond depuis
- * `academy.mydigipal.com/admin/questions`, sa réponse s'affiche ici, et une
- * pastille dorée le signale quand le panneau est fermé. Si la personne est
- * partie, la réponse part par courriel, côté application.
+ * L'OUVERTURE AUTOMATIQUE (Paul, 16/09/2026 : « on devrait l'ouvrir
+ * automatiquement, le chat ») : une seule fois par visite, trois secondes après
+ * l'apparition de la pastille, et SEULEMENT au pointeur fin. Sur téléphone, le
+ * panneau couvrirait la page et le pouce, là où Paul a tranché qu'on ne met que
+ * sa tête au-dessus de « Commencer ».
+ *
+ * LES FAMILLES DE QUESTIONS (même jour) : le panneau ouvre sur « Votre question
+ * est à propos de quoi ? » plutôt que sur dix questions en vrac, et le champ
+ * d'écriture est là tout de suite, sans bouton intermédiaire.
+ *
+ * LA CONVERSATION EN DIRECT (15/09) : ouvrir le panneau ouvre un fil dans
+ * l'application et prévient Paul dans Google Chat. Le panneau interroge ce fil ;
+ * si Paul répond depuis `academy.mydigipal.com/admin/questions` ou depuis sa
+ * bulle Google Chat, sa réponse s'affiche ici, et une pastille dorée le signale
+ * quand le panneau est fermé. Si la personne est partie, la réponse part par
+ * courriel, côté application.
  *
  * ⚠️ Sous `lg`, le coin bas droit est déjà pris par « Commencer »
  * (`AppelFlottant`, `bottom-4`, 48 px). La pastille se pose au-dessus, jamais
@@ -37,10 +46,11 @@ const PHOTO = '/images/team/Team_Paul_Andre.webp';
 const ENDPOINT = 'https://academy.mydigipal.com/api/academy/public/question';
 const CLE_BULLE = 'academy_question_bulle';
 const CLE_FIL = 'academy_question_fil';
+const CLE_AUTO = 'academy_question_auto';
 /** Au-delà, le panneau n'interroge plus le fil : la réponse part par courriel. */
 const DUREE_ECOUTE_MS = 30 * 60_000;
 
-type Vue = 'liste' | 'reponse' | 'form' | 'envoye' | 'fil';
+type Vue = 'accueil' | 'categorie' | 'reponse' | 'form' | 'envoye' | 'fil';
 interface MessageFil {
   auteur: 'visiteur' | 'paul';
   texte: string;
@@ -68,6 +78,7 @@ export default function Question({
 }) {
   const c = questionCopy(locale);
   const faq = useMemo(() => faqVente(locale, data, devise, modulesAuto), [locale, data, devise, modulesAuto]);
+  const categories = useMemo(() => categoriesVente(locale, faq), [locale, faq]);
   // L'espace avant ? ! : ; est insécable en français : sans lui, le signe passe
   // seul à la ligne dans une bulle étroite.
   const nb = (s: string) => (locale === 'fr' ? s.replace(/ ([?!:;%])/g, ' $1') : s);
@@ -75,7 +86,8 @@ export default function Question({
   const [visible, setVisible] = useState(false);
   const [bulle, setBulle] = useState(false);
   const [ouvert, setOuvert] = useState(false);
-  const [vue, setVue] = useState<Vue>('liste');
+  const [vue, setVue] = useState<Vue>('accueil');
+  const [categorieId, setCategorieId] = useState<string | null>(null);
   const [faqId, setFaqId] = useState<string | null>(null);
   const [lues, setLues] = useState<string[]>([]);
   const [question, setQuestion] = useState('');
@@ -155,6 +167,28 @@ export default function Question({
       window.clearTimeout(b);
     };
   }, [visible]);
+
+  // L'ouverture automatique : une fois par visite, au pointeur fin seulement.
+  // ⚠️ `hover: hover` et jamais la largeur d'écran : une fenêtre étroite sur un
+  // ordinateur garde sa souris, et c'est le doigt qu'on protège ici.
+  useEffect(() => {
+    if (!visible || ouvert) return;
+    try {
+      if (sessionStorage.getItem(CLE_AUTO) === '1') return;
+    } catch {
+      /* stockage indisponible : le panneau s'ouvrira une fois de plus, sans gravité */
+    }
+    if (typeof window.matchMedia !== 'function' || !window.matchMedia('(hover: hover)').matches) return;
+    const minuterie = window.setTimeout(() => {
+      try {
+        sessionStorage.setItem(CLE_AUTO, '1');
+      } catch {
+        /* rien à garder */
+      }
+      ouvrir('auto');
+    }, 3000);
+    return () => window.clearTimeout(minuterie);
+  }, [visible, ouvert]);
 
   useEffect(() => {
     ouvertRef.current = ouvert;
@@ -293,16 +327,21 @@ export default function Question({
     return () => window.removeEventListener('keydown', touche);
   }, [ouvert]);
 
-  const ouvrir = (source: 'pastille' | 'bulle' | 'reponse') => {
+  const ouvrir = (source: 'pastille' | 'bulle' | 'reponse' | 'auto') => {
     paulVus.current = messages.filter((m) => m.auteur === 'paul').length;
     setOuvert(true);
     setBulle(false);
     setBulleReponse(false);
     setNouveau(false);
-    setVue(messages.length ? 'fil' : 'liste');
+    setVue(messages.length ? 'fil' : 'accueil');
     setErreur('');
     trackQuestion('open', { question_source: source });
     void assurerFil();
+  };
+
+  const ouvrirCategorie = (id: string) => {
+    setCategorieId(id);
+    setVue('categorie');
   };
 
   const lire = (id: string) => {
@@ -380,11 +419,14 @@ export default function Question({
   if (!visible) return null;
 
   const choisie = faq.find((f) => f.id === faqId);
+  const categorie = categories.find((x) => x.id === categorieId);
   const champ =
     'w-full rounded-bouton border border-filet-nuit bg-salle px-3 py-2.5 text-[15px] leading-[1.45] text-ivoire outline-none transition placeholder:text-brume-nuit focus:border-or';
   const lien = 'self-start py-1.5 text-left text-[14px] font-medium text-or underline-offset-4 hover:underline';
   const bouton =
     'min-h-11 w-full rounded-bouton bg-or text-[15px] font-semibold text-salle transition hover:bg-or-vif disabled:opacity-60';
+  const carte =
+    'w-full rounded-bouton border border-filet-nuit px-3.5 py-2.5 text-left text-[15px] leading-[1.35] text-ivoire transition hover:border-or hover:bg-salle-3 active:translate-y-px';
   // Le piège à robots : invisible pour un humain, rempli par un robot.
   const piegeChamp = (
     <input
@@ -399,6 +441,39 @@ export default function Question({
     />
   );
   const texteBulle = bulleReponse ? c.paulARepondu : c.bulle;
+
+  /** Le champ d'écriture, posé sous les familles : pas de bouton à franchir. */
+  const champLibre = (
+    <form onSubmit={envoyer} className="flex flex-col gap-2 border-t border-filet-nuit p-3" noValidate>
+      <p className="m-0 text-[12.5px] font-semibold uppercase tracking-[0.08em] text-brume-nuit">{c.poser}</p>
+      <textarea
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
+        placeholder={nb(c.ecrirePlaceholder)}
+        aria-label={c.labelQuestion}
+        rows={2}
+        maxLength={2000}
+        className={`${champ} resize-none`}
+      />
+      {!emailValide(email) && (
+        <input
+          type="email"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={c.labelEmail}
+          aria-label={c.labelEmail}
+          className={champ}
+        />
+      )}
+      {piegeChamp}
+      {erreur && <p className="m-0 text-[13.5px] text-[#f0a39a]">{erreur}</p>}
+      <button type="submit" disabled={envoi} aria-busy={envoi} className={bouton}>
+        {c.envoyer}
+      </button>
+      <p className="m-0 text-[12px] leading-[1.45] text-brume-nuit">{c.note}</p>
+    </form>
+  );
 
   return (
     <>
@@ -477,7 +552,7 @@ export default function Question({
             </button>
           </div>
 
-          {vue === 'liste' && (
+          {vue === 'accueil' && (
             <>
               <div className="flex flex-col gap-2.5 overflow-y-auto p-4">
                 <p className="m-0 max-w-[92%] self-start rounded-carte rounded-tl-[4px] bg-salle-3 px-3.5 py-3 text-[15px] leading-[1.5] text-ivoire">
@@ -488,23 +563,31 @@ export default function Question({
                     {c.voirConversation}
                   </button>
                 )}
-                {faq.map((f) => (
-                  <button
-                    key={f.id}
-                    type="button"
-                    onClick={() => lire(f.id)}
-                    className="w-full rounded-bouton border border-filet-nuit px-3.5 py-2.5 text-left text-[15px] leading-[1.35] text-ivoire transition hover:border-or hover:bg-salle-3 active:translate-y-px"
-                  >
-                    {nb(f.q)}
+                {categories.map((cat) => (
+                  <button key={cat.id} type="button" onClick={() => ouvrirCategorie(cat.id)} className={carte}>
+                    {nb(cat.titre)}
+                    <span className="ml-2 text-[13px] text-brume-nuit">{cat.questions.length}</span>
                   </button>
                 ))}
               </div>
-              <div className="border-t border-filet-nuit p-4">
-                <button type="button" onClick={() => setVue('form')} className={bouton}>
-                  {c.poser}
-                </button>
-              </div>
+              {champLibre}
             </>
+          )}
+
+          {vue === 'categorie' && categorie && (
+            <div className="flex flex-col gap-2.5 overflow-y-auto p-4">
+              <p className="m-0 text-[12.5px] font-semibold uppercase tracking-[0.08em] text-brume-nuit">
+                {nb(categorie.titre)}
+              </p>
+              {categorie.questions.map((f) => (
+                <button key={f.id} type="button" onClick={() => lire(f.id)} className={carte}>
+                  {nb(f.q)}
+                </button>
+              ))}
+              <button type="button" onClick={() => setVue('accueil')} className={lien}>
+                {c.retourCategories}
+              </button>
+            </div>
           )}
 
           {vue === 'reponse' && choisie && (
@@ -518,7 +601,7 @@ export default function Question({
               <button type="button" onClick={() => setVue('form')} className={lien}>
                 {c.differente}
               </button>
-              <button type="button" onClick={() => setVue('liste')} className={lien}>
+              <button type="button" onClick={() => setVue(categorie ? 'categorie' : 'accueil')} className={lien}>
                 {c.autres}
               </button>
             </div>
@@ -554,7 +637,7 @@ export default function Question({
                 {c.envoyer}
               </button>
               <p className="m-0 text-[12.5px] leading-[1.5] text-brume-nuit">{c.note}</p>
-              <button type="button" onClick={() => setVue('liste')} className={lien}>
+              <button type="button" onClick={() => setVue('accueil')} className={lien}>
                 {c.retour}
               </button>
             </form>
@@ -569,7 +652,7 @@ export default function Question({
                   {c.voirConversation}
                 </button>
               )}
-              <button type="button" onClick={() => setVue('liste')} className={lien}>
+              <button type="button" onClick={() => setVue('accueil')} className={lien}>
                 {c.retour}
               </button>
             </div>
@@ -596,7 +679,7 @@ export default function Question({
                     </p>
                   ),
                 )}
-                <button type="button" onClick={() => setVue('liste')} className={lien}>
+                <button type="button" onClick={() => setVue('accueil')} className={lien}>
                   {c.autres}
                 </button>
               </div>
