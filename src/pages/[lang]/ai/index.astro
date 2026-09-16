@@ -5,6 +5,9 @@ import Icon from '@/components/ui/Icon.astro';
 import Button from '@/components/ui/Button.astro';
 import TrustedBy from '@/components/sections/TrustedBy.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
+import { ENDPOINT, prixDe, type Jour30Data } from '@/components/academy/data';
+import secoursFr from '@/data/academy/jour30-fr.json';
+import secoursEn from '@/data/academy/jour30-en.json';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -13,6 +16,45 @@ export function getStaticPaths() {
 }
 
 const { lang } = Astro.params as { lang: Language };
+
+/**
+ * Les chiffres de l'AI Academy viennent du catalogue, jamais de cette page.
+ *
+ * Elle annoncait « Accès permanent, dès 290 € » et « Relecture humaine » : trois
+ * erreurs d'un coup au 16/09/2026. L'accès dure soixante jours depuis le
+ * 11/09 ; l'entrée est à 250 € puisque Les automatisations se vendent seules ;
+ * et les relectures appartiennent au palier `pro`, retirées de la page de vente
+ * le 15/09 pour cette raison. Le nombre de leçons, lui, a bougé sept fois.
+ *
+ * Même mécanique que la page de vente : l'API au build, l'instantané en secours
+ * (règle « un fait chiffré, une source », Paul le 28/08/2026).
+ */
+async function lireAcademy(): Promise<Jour30Data> {
+  try {
+    const r = await fetch(`${ENDPOINT}?lang=${lang}`, { signal: AbortSignal.timeout(10000) });
+    if (r.ok) {
+      const d = (await r.json()) as Jour30Data;
+      if (d?.faits?.lessons && d.lang === lang) return d;
+    }
+  } catch {
+    /* instantané */
+  }
+  return (lang === 'fr' ? secoursFr : secoursEn) as unknown as Jour30Data;
+}
+const academy = await lireAcademy();
+// La page anglaise compte en dollars, la française en euros (Paul, 16/09/2026).
+const deviseAcademy = lang === 'fr' ? 'EUR' : 'USD';
+const prixEntree = Math.min(
+  ...academy.offres
+    .filter((o) => o.id === 'programme' || o.id === 'construire')
+    .map((o) => prixDe(o, deviseAcademy)),
+);
+const entree =
+  lang === 'fr'
+    ? `${Math.round(prixEntree / 100)} €`
+    : `$${Math.round(prixEntree / 100)}`;
+const leconsAcademy = academy.faits.lessons;
+const joursAcademy = academy.acces_jours ?? 60;
 
 const blogArticles = {
   en: [
@@ -89,9 +131,9 @@ const content = {
         icon: "award",
         name: "AI Academy",
         tagline: "Learn Online, At Your Own Pace",
-        description: "The online course built from three years of training teams: the CRAFT method, exercises reviewed by a human, all the way to agents and MCP servers. Permanent access, from €290.",
+        description: `The online course built from three years of training teams: the CRAFT method, the writing workshop, all the way to agents and MCP servers. ${joursAcademy} days of access, from ${entree}.`,
         href: "/en/academy",
-        features: ["105 Lessons", "CRAFT Workshop", "Human Review", "Agents & MCP"],
+        features: [`${leconsAcademy} Lessons`, "CRAFT Workshop", "AI Assistant", "Agents & MCP"],
         highlights: [
           "Thirty days shown in the real product",
           "Points, ranks and trophies as you go",
@@ -212,9 +254,9 @@ const content = {
         icon: "award",
         name: "AI Academy",
         tagline: "Apprendre en ligne, à votre rythme",
-        description: "La formation en ligne tirée de trois ans à former des équipes : la méthode CRAFT, des exercices relus par un humain, jusqu'aux agents et aux serveurs MCP. Accès permanent, dès 290 €.",
+        description: `La formation en ligne tirée de trois ans à former des équipes : la méthode CRAFT, l'atelier d'écriture, jusqu'aux agents et aux serveurs MCP. ${joursAcademy} jours d'accès, dès ${entree}.`,
         href: "/fr/academy",
-        features: ["105 leçons", "Atelier CRAFT", "Relecture humaine", "Agents & MCP"],
+        features: [`${leconsAcademy} leçons`, "Atelier CRAFT", "Assistant IA", "Agents & MCP"],
         highlights: [
           "Trente jours montrés dans le vrai produit",
           "Points, rangs et trophées au fil de l'eau",
