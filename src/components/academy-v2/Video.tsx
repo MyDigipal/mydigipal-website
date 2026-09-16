@@ -37,7 +37,7 @@ export function estDemo(x: string | undefined): x is Demo {
 }
 
 /** Les écrans filmés dont il existe une version française. */
-export const DEMOS_FR = new Set<Demo>([]);
+export const DEMOS_FR = new Set<Demo>(['prompts']);
 
 /** Le dossier d'un écran, dans la langue lue quand elle existe. */
 export function baseDemo(nom: Demo, locale?: string): string {
