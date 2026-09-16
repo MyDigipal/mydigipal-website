@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { baseDemo } from './demos-fr';
 import type { Locale } from './data';
 
 /**
@@ -84,25 +85,17 @@ export function libelleDemo(nom: DemoKey, locale: Locale): string {
 }
 
 /**
- * Les écrans dont il existe une version filmée en français, dans
- * `public/academy/demos/fr/`. Les autres sont servis en anglais.
+ * Les écrans filmés en français, et le chemin qui va avec.
  *
- * ⚠️ Une liste explicite, et pas une tentative de chargement : une balise
- * `<source>` ne se replie PAS sur un 404, elle ne se replie que sur un type
- * que le navigateur ne sait pas lire. Un fichier français manquant donnerait
- * donc un cadre noir, pas la version anglaise. On sait ce qu'on a enregistré,
- * on l'écrit ici.
- *
- * Ajouter une langue à un écran, c'est : trois fichiers (`.mp4`, `.webm`,
- * `.jpg`) plus la vignette `-v.jpg` dans `demos/fr/`, traités exactement comme
- * les anglais (la recette est dans la section 32 du CLAUDE.md de l'app), et une
- * entrée ici. Écran par écran : rien n'oblige à tout refaire d'un coup.
+ * ⚠️ La liste vit dans `demos-fr.ts`, partagée avec la V2. Elle était écrite
+ * deux fois, et les deux ont divergé dès la première prise : voir l'en-tête de
+ * ce fichier-là.
  */
-export const DEMOS_FR = new Set<DemoKey>([]);
+export { DEMOS_FR } from './demos-fr';
 
 /** Le chemin d'un écran, dans la langue lue quand il y existe. */
 export function cheminDemo(nom: DemoKey, locale: Locale): string {
-  return locale === 'fr' && DEMOS_FR.has(nom) ? `/academy/demos/fr/${nom}` : `/academy/demos/${nom}`;
+  return baseDemo(nom, locale);
 }
 
 /**

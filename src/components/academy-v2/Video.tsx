@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { baseDemo } from '../academy/demos-fr';
 
 /**
  * Les écrans filmés du produit, et la visionneuse qui les ouvre en grand.
@@ -36,13 +37,12 @@ export function estDemo(x: string | undefined): x is Demo {
   return !!x && (DEMOS as readonly string[]).includes(x);
 }
 
-/** Les écrans filmés dont il existe une version française. */
-export const DEMOS_FR = new Set<Demo>(['prompts']);
-
-/** Le dossier d'un écran, dans la langue lue quand elle existe. */
-export function baseDemo(nom: Demo, locale?: string): string {
-  return locale === 'fr' && DEMOS_FR.has(nom) ? `/academy/demos/fr/${nom}` : `/academy/demos/${nom}`;
-}
+/**
+ * ⚠️ La liste des écrans filmés en français vit dans `academy/demos-fr.ts`,
+ * partagée avec les composants de la première page. Elle était écrite deux fois,
+ * et les deux ont divergé dès la première prise.
+ */
+export { DEMOS_FR, baseDemo } from '../academy/demos-fr';
 
 /** Une boucle muette, chargée seulement quand elle approche de l'écran. */
 export function Boucle({
