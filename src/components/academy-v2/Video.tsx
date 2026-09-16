@@ -11,10 +11,20 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * l'écran : la page en montre jusqu'à huit, et huit vidéos préchargées, ce sont
  * huit connexions pour un écran que la plupart des visiteurs ne regarderont pas.
  *
- * ⚠️ Il n'existe pas de version française des boucles (le dossier `demos/fr/`
- * est vide au 06/09/2026). La vignette porte donc l'interface anglaise sur la
- * page française. À reprendre depuis un compte réglé en français : une capture
- * prise dans la mauvaise langue est une capture à refaire, pas à traduire.
+ * ⚠️ Une boucle filmée dans la mauvaise langue est une boucle à REFAIRE, pas à
+ * traduire : elle montre l'interface de l'application, qui est bilingue. Le
+ * dossier `demos/fr/` est vide au 16/09/2026, donc la page française montre
+ * encore l'anglais.
+ *
+ * `DEMOS_FR` dit lesquelles existent en français, écran par écran. Une liste
+ * explicite, et pas une tentative de chargement : une balise `<source>` ne se
+ * replie PAS sur un 404, seulement sur un type que le navigateur ne sait pas
+ * lire. Un fichier français manquant donnerait donc un cadre noir, pas la
+ * version anglaise.
+ *
+ * Ajouter un écran, c'est quatre fichiers dans `public/academy/demos/fr/`
+ * (`.webm`, `.mp4`, `.jpg` et la vignette `-v.jpg`, mêmes noms qu'en anglais)
+ * et une entrée ici. Rien n'oblige à tout refaire d'un coup.
  */
 
 export const DEMOS = [
@@ -26,19 +36,31 @@ export function estDemo(x: string | undefined): x is Demo {
   return !!x && (DEMOS as readonly string[]).includes(x);
 }
 
+/** Les écrans filmés dont il existe une version française. */
+export const DEMOS_FR = new Set<Demo>([]);
+
+/** Le dossier d'un écran, dans la langue lue quand elle existe. */
+export function baseDemo(nom: Demo, locale?: string): string {
+  return locale === 'fr' && DEMOS_FR.has(nom) ? `/academy/demos/fr/${nom}` : `/academy/demos/${nom}`;
+}
+
 /** Une boucle muette, chargée seulement quand elle approche de l'écran. */
 export function Boucle({
   nom,
+  locale,
   className = '',
   vignette = false,
 }: {
   nom: Demo;
+  /** La langue lue. Absente, l'anglais : c'est ce qui existe pour tous les écrans. */
+  locale?: string;
   className?: string;
   vignette?: boolean;
 }) {
   const hote = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
-  const affiche = `/academy/demos/${nom}${vignette ? '-v' : ''}.jpg`;
+  const base = baseDemo(nom, locale);
+  const affiche = `${base}${vignette ? '-v' : ''}.jpg`;
 
   useEffect(() => {
     const el = hote.current;
@@ -72,8 +94,8 @@ export function Boucle({
           loop
           playsInline
         >
-          <source src={`/academy/demos/${nom}.webm`} type="video/webm" />
-          <source src={`/academy/demos/${nom}.mp4`} type="video/mp4" />
+          <source src={`${base}.webm`} type="video/webm" />
+          <source src={`${base}.mp4`} type="video/mp4" />
         </video>
       ) : (
         <img src={affiche} alt="" className="block h-full w-full object-cover" loading="lazy" />
@@ -91,11 +113,13 @@ export function Visionneuse({
   titre,
   fermer,
   libelleFermer,
+  locale,
 }: {
   nom: Demo | null;
   titre: string;
   fermer: () => void;
   libelleFermer: string;
+  locale?: string;
 }) {
   const sortie = useRef<HTMLButtonElement | null>(null);
 
@@ -149,15 +173,15 @@ export function Visionneuse({
         </div>
         <video
           className="block w-full rounded-carte border border-filet-nuit"
-          poster={`/academy/demos/${nom}.jpg`}
+          poster={`${baseDemo(nom, locale)}.jpg`}
           autoPlay
           muted
           loop
           playsInline
           controls
         >
-          <source src={`/academy/demos/${nom}.webm`} type="video/webm" />
-          <source src={`/academy/demos/${nom}.mp4`} type="video/mp4" />
+          <source src={`${baseDemo(nom, locale)}.webm`} type="video/webm" />
+          <source src={`${baseDemo(nom, locale)}.mp4`} type="video/mp4" />
         </video>
       </div>
     </div>

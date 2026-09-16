@@ -245,7 +245,7 @@ export default function Programme({
                     onClick={() => setGrand(actif.demo as Demo)}
                     className="block w-full cursor-pointer overflow-hidden rounded-[11px] border border-lin p-0 transition hover:border-brume"
                   >
-                    <Boucle nom={actif.demo as Demo} className="aspect-[16/10]" vignette />
+                    <Boucle nom={actif.demo as Demo} locale={locale} className="aspect-[16/10]" vignette />
                     <span className="block bg-craie py-2 font-ac-mono text-[11px] uppercase tracking-[.1em] text-brume">
                       {c.voirEcran}
                     </span>
@@ -263,6 +263,7 @@ export default function Programme({
 
       <Visionneuse
         nom={grand}
+        locale={locale}
         titre={actif?.titre[locale] ?? ''}
         fermer={() => setGrand(null)}
         libelleFermer={copyV2(locale).pratique.fermer}

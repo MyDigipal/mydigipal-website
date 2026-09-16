@@ -568,6 +568,7 @@ export default function Tarifs({
                 {estDemo(survol.demo) && (
                   <Boucle
                     nom={survol.demo}
+                    locale={locale}
                     className="mb-4 min-h-[200px] flex-1 rounded-[11px] border border-filet-nuit"
                     vignette
                   />
