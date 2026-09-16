@@ -28,12 +28,19 @@ export const DEMOS_FR: ReadonlySet<string> = new Set<string>([
   'cas',
   'profil',
   'avance',
+  'quiz',
+  'assistant',
 ]);
 
-// ⚠️ Manquent encore : `assistant`, `quiz` et `atelier`. Ce sont les trois écrans
-// où la boucle doit MONTRER UNE INTERACTION, et le pilotage au clavier ne les
-// atteint pas : la prise reste fixe pendant onze secondes, ce qui est pire que
-// l'anglais. Ils attendent une prise à la souris, machine libre.
+// ⚠️ Manque `atelier`, et pas pour une raison technique : l'atelier CRAFT garde
+// le brouillon enregistré du compte, et celui de Paul est rédigé en anglais. Le
+// filmer en français demanderait de vider son travail, ce qui ne se fait pas sans
+// lui demander.
+//
+// Les trois écrans interactifs (quiz, assistant, et l'atelier le jour venu) se
+// tournent à la SOURIS : le clavier n'atteint pas leurs commandes, et la fenêtre
+// de prise doit être posée en toujours-au-dessus, sinon une fenêtre de Paul passe
+// devant et les clics partent chez elle.
 
 /** Le dossier d'un écran, dans la langue lue quand elle existe. */
 export function baseDemo(nom: string, locale?: string): string {
