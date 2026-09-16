@@ -66,8 +66,8 @@ export default function Tarifs({
   leconsGratuit,
   modulesAuto,
   lienGratuit,
-  assistantMethode,
-  assistantAuto,
+  assistantUn,
+  assistantDeux,
   garantie,
 }: {
   locale: Locale;
@@ -93,8 +93,13 @@ export default function Tarifs({
   /** Le module gratuit, déjà enrichi des identifiants de clic. */
   lienGratuit: string;
   /** Les questions d'assistant comprises par mois, servies par l'app (15/09/2026). */
-  assistantMethode: number;
-  assistantAuto: number;
+  /**
+   * Les questions de l'assistant, par nombre de programmes (Paul, 16/09/2026).
+   * Une carte de programme annonce donc le meme nombre que l'autre, et c'est la
+   * bande du lot qui porte le second.
+   */
+  assistantUn: number;
+  assistantDeux: number;
   /** La garantie de l'article 6 des conditions de vente, servie par l'app : jamais recopiée ici. */
   garantie: { heures: number; seuilPct: number };
 }) {
@@ -286,7 +291,7 @@ export default function Tarifs({
         : 'Exercises run on your own files, not on a textbook case. You hand in as many as you like, and each one stays in your account.',
     },
     {
-      texte: fr ? `L’assistant IA, environ ${assistantMethode} questions par mois` : `The AI assistant, about ${assistantMethode} questions a month`,
+      texte: fr ? `L’assistant IA, environ ${assistantUn} questions par mois` : `The AI assistant, about ${assistantUn} questions a month`,
       detail: fr
         ? 'Il ne répond qu’à partir des leçons auxquelles vous avez accès, et cite celle dont il tire sa réponse : il ne peut ni inventer, ni divulguer un contenu que vous n’avez pas.'
         : 'It answers only from the lessons you have access to, and cites the one it draws from: it can neither invent nor leak content you have not bought.',
@@ -341,7 +346,7 @@ export default function Tarifs({
       demo: 'cas',
     },
     {
-      texte: fr ? `L’assistant IA, environ ${assistantAuto} questions par mois` : `The AI assistant, about ${assistantAuto} questions a month`,
+      texte: fr ? `L’assistant IA, environ ${assistantUn} questions par mois` : `The AI assistant, about ${assistantUn} questions a month`,
       detail: fr
         ? 'Il ne répond qu’à partir des leçons auxquelles vous avez accès, et cite celle dont il tire sa réponse : il ne peut ni inventer, ni divulguer un contenu que vous n’avez pas.'
         : 'It answers only from the lessons you have access to, and cites the one it draws from: it can neither invent nor leak content you have not bought.',
@@ -641,7 +646,7 @@ export default function Tarifs({
             </span>
             <span className="text-brume-nuit">{c.duree(jours)}</span>
             <span className="text-brume-nuit">
-              {fr ? `L’assistant IA, environ ${assistantAuto} questions par mois` : `The AI assistant, about ${assistantAuto} questions a month`}
+              {fr ? `L’assistant IA, environ ${assistantDeux} questions par mois` : `The AI assistant, about ${assistantDeux} questions a month`}
             </span>
             {places > 1 && (
               <span className="text-corps-nuit">

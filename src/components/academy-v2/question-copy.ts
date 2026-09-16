@@ -186,7 +186,7 @@ export function faqVente(locale: Locale, d: Jour30Data, devise: Devise, modulesA
         id: 'assistant',
         q: 'L’assistant IA est-il inclus ?',
         a: assistant
-          ? `Oui. Il répond dans la plateforme à partir de vos propres leçons, jamais d’ailleurs : ${assistant.methode} questions par mois avec La méthode, ${assistant.automatisations} avec les deux programmes.`
+          ? `Oui. Il répond dans la plateforme à partir de vos propres leçons, jamais d’ailleurs : ${assistant.un} questions par mois avec un programme, ${assistant.deux} avec les deux.`
           : 'Oui. Il répond dans la plateforme à partir de vos propres leçons, jamais d’ailleurs.',
       },
       {
@@ -253,7 +253,7 @@ export function faqVente(locale: Locale, d: Jour30Data, devise: Devise, modulesA
       id: 'assistant',
       q: 'Is the AI assistant included?',
       a: assistant
-        ? `Yes. It answers inside the platform, from your own lessons and nothing else: ${assistant.methode} questions a month with The method, ${assistant.automatisations} with both programmes.`
+        ? `Yes. It answers inside the platform, from your own lessons and nothing else: ${assistant.un} questions a month with one programme, ${assistant.deux} with both.`
         : 'Yes. It answers inside the platform, from your own lessons and nothing else.',
     },
     {

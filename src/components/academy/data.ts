@@ -158,7 +158,14 @@ export interface Jour30Data {
    */
   essai_heures?: number;
   garantie?: { heures: number; seuil_pct: number };
-  assistant_questions?: { methode: number; automatisations: number };
+  /**
+   * Les questions d'assistant comprises par mois, par NOMBRE de programmes
+   * (Paul, 16/09/2026) : un seul en ouvre 300, quel qu'il soit, les deux en
+   * ouvrent 500. Les cles disaient `methode` et `automatisations` jusqu'au
+   * 16/09, ce qui annoncait 500 questions pour Les automatisations achetees
+   * seules, autant que le lot.
+   */
+  assistant_questions?: { un: number; deux: number };
   /**
    * ⚠️ NULLE depuis le 11/09/2026 : plus aucune hausse n'est annoncée. Le champ
    * reste pour que les instantanés anciens restent lisibles, mais rien ne doit

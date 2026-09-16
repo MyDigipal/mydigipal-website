@@ -270,8 +270,8 @@ export default function AcademyV2({
         leconsGratuit={leconsGratuit(data)}
         modulesAuto={nbAuto}
         lienGratuit={gratuit}
-        assistantMethode={data.assistant_questions?.methode ?? 250}
-        assistantAuto={data.assistant_questions?.automatisations ?? 500}
+        assistantUn={data.assistant_questions?.un ?? 300}
+        assistantDeux={data.assistant_questions?.deux ?? 500}
         garantie={{ heures: data.garantie?.heures ?? 48, seuilPct: data.garantie?.seuil_pct ?? 5 }}
       />
 
