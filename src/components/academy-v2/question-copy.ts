@@ -62,8 +62,16 @@ const FR = {
   paulARepondu: 'Paul vous a répondu.',
   voirConversation: 'Voir la conversation',
   repondre: 'Votre message',
+  // L'adresse ne se demande plus dans un champ (Paul, 16/09/2026) : Paul la
+  // demande dans la conversation, et la personne répond comme à un message.
+  demandeAdresse:
+    'C’est parti chez moi. Si je ne suis pas disponible tout de suite, écrivez-moi votre adresse e-mail ici et je vous réponds dessus.',
+  adresseNotee: (email: string) => `C’est noté : si je réponds après votre départ, ce sera à ${email}.`,
+  envoyeTexteSansAdresse: 'Si Paul est disponible, sa réponse s’affiche ici dans quelques minutes.',
+  barreMobile: 'Une question ? Écrivez-moi.',
   erreurQuestion: 'Écrivez votre question en quelques mots.',
   erreurEmail: 'Cette adresse e-mail ne semble pas complète.',
+  erreurAdresseRequise: 'Écrivez votre adresse e-mail pour que Paul puisse vous répondre.',
   erreurEnvoi: 'L’envoi n’a pas abouti. Réessayez dans un instant.',
 };
 
@@ -98,8 +106,14 @@ const EN: Copie = {
   paulARepondu: 'Paul has replied.',
   voirConversation: 'See the conversation',
   repondre: 'Your message',
+  demandeAdresse:
+    'That reached me. If I am not available right now, write your email address here and I will reply to it.',
+  adresseNotee: (email: string) => `Noted: if I answer after you leave, it goes to ${email}.`,
+  envoyeTexteSansAdresse: 'If Paul is available, his reply appears here within a few minutes.',
+  barreMobile: 'A question? Write to me.',
   erreurQuestion: 'Write your question in a few words.',
   erreurEmail: 'This email address looks incomplete.',
+  erreurAdresseRequise: 'Write your email address so Paul can reply.',
   erreurEnvoi: 'Sending failed. Please try again in a moment.',
 };
 

@@ -73,10 +73,11 @@ export default function AcademyV2({
   outils?: CarteOutil[];
 }) {
   const [data, setData] = useState(initial);
-  // La devise du visiteur. L'euro par défaut : c'est la monnaie du prix
-  // annoncé partout ailleurs, et un prix qui change entre la page et la caisse
-  // est ce qui se remarque le plus mal.
-  const [devise, setDevise] = useState<Devise>('EUR');
+  // La devise du visiteur : l'euro sur la page française, le DOLLAR sur la page
+  // anglaise (Paul, 16/09/2026 : « pour la page anglaise, même sur tous les
+  // endroits où il y a les prix, ça devrait être en dollar »). Elle se change
+  // dans la barre, et elle suit jusqu'au tunnel, où seul le pays décide la TVA.
+  const [devise, setDevise] = useState<Devise>(locale === 'en' ? 'USD' : 'EUR');
   const c = copyV2(locale);
   const gratuit = useLienApp(
     `https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`,

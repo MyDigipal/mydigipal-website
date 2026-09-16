@@ -19,11 +19,16 @@ import { categoriesVente, faqVente, questionCopy } from './question-copy';
  *     question, et elle part à Paul ;
  *   - aucun chiffre n'est écrit à la main (voir `question-copy.ts`).
  *
- * L'OUVERTURE AUTOMATIQUE (Paul, 16/09/2026 : « on devrait l'ouvrir
- * automatiquement, le chat ») : une seule fois par visite, trois secondes après
- * l'apparition de la pastille, et SEULEMENT au pointeur fin. Sur téléphone, le
- * panneau couvrirait la page et le pouce, là où Paul a tranché qu'on ne met que
- * sa tête au-dessus de « Commencer ».
+ * L'OUVERTURE (Paul, 16/09/2026) : sur ordinateur, le panneau s'ouvre tout seul
+ * une fois par visite, trois secondes après l'apparition de la pastille. Sur
+ * téléphone, « j'ai peur que ça prenne trop de place » : c'est une petite barre
+ * « Une question ? » qui s'affiche au-dessus de « Commencer », et le panneau ne
+ * s'ouvre qu'au toucher.
+ *
+ * L'ADRESSE E-MAIL NE SE DEMANDE PLUS DANS UN CHAMP (même jour) : la personne
+ * écrit sa question, point. Une fois le message parti, Paul la demande DANS la
+ * conversation, et la réponse se tape comme un message : le panneau y reconnaît
+ * une adresse et la garde pour le cas où Paul répond après le départ.
  *
  * LES FAMILLES DE QUESTIONS (même jour) : le panneau ouvre sur « Votre question
  * est à propos de quoi ? » plutôt que sur dix questions en vrac, et le champ
@@ -31,10 +36,9 @@ import { categoriesVente, faqVente, questionCopy } from './question-copy';
  *
  * LA CONVERSATION EN DIRECT (15/09) : ouvrir le panneau ouvre un fil dans
  * l'application et prévient Paul dans Google Chat. Le panneau interroge ce fil ;
- * si Paul répond depuis `academy.mydigipal.com/admin/questions` ou depuis sa
- * bulle Google Chat, sa réponse s'affiche ici, et une pastille dorée le signale
- * quand le panneau est fermé. Si la personne est partie, la réponse part par
- * courriel, côté application.
+ * si Paul répond depuis sa bulle Google Chat ou depuis
+ * `academy.mydigipal.com/admin/questions`, sa réponse s'affiche ici, et une
+ * pastille dorée le signale quand le panneau est fermé.
  *
  * ⚠️ Sous `lg`, le coin bas droit est déjà pris par « Commencer »
  * (`AppelFlottant`, `bottom-4`, 48 px). La pastille se pose au-dessus, jamais
@@ -62,6 +66,8 @@ interface Fil {
 }
 
 const emailValide = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
+/** Une adresse écrite au fil de la conversation, repérée dans le message. */
+const adresseDans = (texte: string) => texte.match(/[^\s@,;]+@[^\s@,;]+\.[^\s@,;]{2,}/)?.[0] || '';
 
 export default function Question({
   locale,
@@ -85,6 +91,8 @@ export default function Question({
 
   const [visible, setVisible] = useState(false);
   const [bulle, setBulle] = useState(false);
+  /** La barre « Une question ? » du téléphone, à la place de l'ouverture automatique. */
+  const [barre, setBarre] = useState(false);
   const [ouvert, setOuvert] = useState(false);
   const [vue, setVue] = useState<Vue>('accueil');
   const [categorieId, setCategorieId] = useState<string | null>(null);
@@ -92,6 +100,9 @@ export default function Question({
   const [lues, setLues] = useState<string[]>([]);
   const [question, setQuestion] = useState('');
   const [email, setEmail] = useState('');
+  /** Paul a demandé l'adresse dans la conversation, elle n'est pas encore donnée. */
+  const [demandeAdresse, setDemandeAdresse] = useState(false);
+  const [adresseNotee, setAdresseNotee] = useState(false);
   const [piege, setPiege] = useState('');
   const [erreur, setErreur] = useState('');
   const [envoi, setEnvoi] = useState(false);
@@ -149,7 +160,8 @@ export default function Question({
     };
   }, [ancreTarifs]);
 
-  // La bulle, une fois par visite, et elle se retire d'elle-même.
+  // La bulle d'accroche, une fois par visite sur ordinateur, et elle se retire
+  // d'elle-même. Sur téléphone, c'est la barre qui joue ce rôle.
   useEffect(() => {
     if (!visible) return;
     let deja = false;
@@ -168,24 +180,25 @@ export default function Question({
     };
   }, [visible]);
 
-  // L'ouverture automatique : une fois par visite, au pointeur fin seulement.
-  // ⚠️ `hover: hover` et jamais la largeur d'écran : une fenêtre étroite sur un
-  // ordinateur garde sa souris, et c'est le doigt qu'on protège ici.
+  // L'ouverture automatique sur ordinateur, la barre sur téléphone, une fois par
+  // visite. ⚠️ `hover: hover` et jamais la largeur d'écran : une fenêtre étroite
+  // sur un ordinateur garde sa souris, et c'est le pouce qu'on protège ici.
   useEffect(() => {
     if (!visible || ouvert) return;
     try {
       if (sessionStorage.getItem(CLE_AUTO) === '1') return;
     } catch {
-      /* stockage indisponible : le panneau s'ouvrira une fois de plus, sans gravité */
+      /* stockage indisponible : ça se reproduira une fois de plus, sans gravité */
     }
-    if (typeof window.matchMedia !== 'function' || !window.matchMedia('(hover: hover)').matches) return;
+    const pointeurFin = typeof window.matchMedia === 'function' && window.matchMedia('(hover: hover)').matches;
     const minuterie = window.setTimeout(() => {
       try {
         sessionStorage.setItem(CLE_AUTO, '1');
       } catch {
         /* rien à garder */
       }
-      ouvrir('auto');
+      if (pointeurFin) ouvrir('auto');
+      else setBarre(true);
     }, 3000);
     return () => window.clearTimeout(minuterie);
   }, [visible, ouvert]);
@@ -327,10 +340,11 @@ export default function Question({
     return () => window.removeEventListener('keydown', touche);
   }, [ouvert]);
 
-  const ouvrir = (source: 'pastille' | 'bulle' | 'reponse' | 'auto') => {
+  const ouvrir = (source: 'pastille' | 'bulle' | 'reponse' | 'auto' | 'barre') => {
     paulVus.current = messages.filter((m) => m.auteur === 'paul').length;
     setOuvert(true);
     setBulle(false);
+    setBarre(false);
     setBulleReponse(false);
     setNouveau(false);
     setVue(messages.length ? 'fil' : 'accueil');
@@ -363,13 +377,23 @@ export default function Question({
   const envoyer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (envoi) return;
-    if (question.trim().length < 5) return setErreur(c.erreurQuestion);
-    if (!emailValide(email)) return setErreur(c.erreurEmail);
+    const texte = question.trim();
+    if (texte.length < 5) return setErreur(c.erreurQuestion);
+    // L'adresse ne se demande plus dans un champ : si la personne l'écrit dans
+    // la conversation, on la reconnaît là.
+    const trouvee = emailValide(email) ? email.trim() : adresseDans(texte);
     setErreur('');
     setEnvoi(true);
     try {
       const f = await assurerFil();
-      const texte = question.trim();
+      // Sans conversation ET sans adresse, l'application ne saurait pas où
+      // envoyer la réponse : on la demande plutôt que d'envoyer dans le vide.
+      if (!f && !trouvee) {
+        setDemandeAdresse(true);
+        setErreur(c.erreurAdresseRequise);
+        setEnvoi(false);
+        return;
+      }
       // `sent` ne part qu'au PREMIER message d'une conversation (Paul, 15/09/2026 :
       // « une seule conversion pour tout vrai chat », pas une par message). Les
       // relances n'envoient rien. La session garde les conversations déjà comptées,
@@ -387,7 +411,7 @@ export default function Question({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...contexte(),
-          email: email.trim(),
+          email: trouvee || undefined,
           question: texte,
           faq: lues.map((id) => faq.find((x) => x.id === id)?.q || id),
           fil_id: f?.id,
@@ -398,7 +422,14 @@ export default function Question({
       if (!res.ok) throw new Error(String(res.status));
       setMessages((m) => [...m, { auteur: 'visiteur', texte, at: new Date().toISOString() }]);
       setQuestion('');
-      setVue((v) => (v === 'fil' ? 'fil' : 'envoye'));
+      if (trouvee && !emailValide(email)) {
+        setEmail(trouvee);
+        setAdresseNotee(true);
+        setDemandeAdresse(false);
+      } else if (!trouvee) {
+        setDemandeAdresse(true);
+      }
+      setVue(f ? 'fil' : 'envoye');
       if (premier) {
         trackQuestion('sent', { faq_lues: lues.length });
         if (f) {
@@ -427,6 +458,8 @@ export default function Question({
     'min-h-11 w-full rounded-bouton bg-or text-[15px] font-semibold text-salle transition hover:bg-or-vif disabled:opacity-60';
   const carte =
     'w-full rounded-bouton border border-filet-nuit px-3.5 py-2.5 text-left text-[15px] leading-[1.35] text-ivoire transition hover:border-or hover:bg-salle-3 active:translate-y-px';
+  const bullePaul =
+    'm-0 max-w-[92%] self-start whitespace-pre-line rounded-carte rounded-tl-[4px] bg-salle-3 px-3.5 py-3 text-[15px] leading-[1.55] text-ivoire';
   // Le piège à robots : invisible pour un humain, rempli par un robot.
   const piegeChamp = (
     <input
@@ -442,36 +475,24 @@ export default function Question({
   );
   const texteBulle = bulleReponse ? c.paulARepondu : c.bulle;
 
-  /** Le champ d'écriture, posé sous les familles : pas de bouton à franchir. */
-  const champLibre = (
+  /** Le champ d'écriture : la question seule, jamais l'adresse. */
+  const champLibre = (placeholder: string, titre?: string) => (
     <form onSubmit={envoyer} className="flex flex-col gap-2 border-t border-filet-nuit p-3" noValidate>
-      <p className="m-0 text-[12.5px] font-semibold uppercase tracking-[0.08em] text-brume-nuit">{c.poser}</p>
+      {titre && <p className="m-0 text-[12.5px] font-semibold uppercase tracking-[0.08em] text-brume-nuit">{titre}</p>}
       <textarea
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
-        placeholder={nb(c.ecrirePlaceholder)}
+        placeholder={nb(placeholder)}
         aria-label={c.labelQuestion}
         rows={2}
         maxLength={2000}
         className={`${champ} resize-none`}
       />
-      {!emailValide(email) && (
-        <input
-          type="email"
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={c.labelEmail}
-          aria-label={c.labelEmail}
-          className={champ}
-        />
-      )}
       {piegeChamp}
       {erreur && <p className="m-0 text-[13.5px] text-[#f0a39a]">{erreur}</p>}
       <button type="submit" disabled={envoi} aria-busy={envoi} className={bouton}>
         {c.envoyer}
       </button>
-      <p className="m-0 text-[12px] leading-[1.45] text-brume-nuit">{c.note}</p>
     </form>
   );
 
@@ -511,6 +532,26 @@ export default function Question({
               </button>
             </div>
           )}
+
+          {barre && (
+            // La barre du téléphone : une invitation de la taille d'un champ, pas
+            // un panneau qui mange l'écran (Paul, 16/09/2026).
+            <div className="flex items-center gap-2 rounded-full border border-or bg-salle-2 py-1.5 pl-1.5 pr-1 shadow-[0_10px_30px_-8px_rgba(4,8,18,.75)] lg:hidden">
+              <button type="button" onClick={() => ouvrir('barre')} className="flex min-h-11 items-center gap-2 pr-1 text-left">
+                <img src={PHOTO} alt="" width={36} height={36} className="h-9 w-9 flex-none rounded-full object-cover" />
+                <span className="text-[14px] leading-[1.3] text-ivoire">{nb(c.barreMobile)}</span>
+              </button>
+              <button
+                type="button"
+                aria-label={c.masquer}
+                onClick={() => setBarre(false)}
+                className="grid h-9 w-9 flex-none place-items-center rounded-full text-[18px] leading-none text-brume-nuit transition hover:text-ivoire"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
           <button
             ref={pastille}
             type="button"
@@ -570,7 +611,7 @@ export default function Question({
                   </button>
                 ))}
               </div>
-              {champLibre}
+              {champLibre(c.ecrirePlaceholder, c.poser)}
             </>
           )}
 
@@ -608,45 +649,20 @@ export default function Question({
           )}
 
           {vue === 'form' && (
-            <form onSubmit={envoyer} className="flex flex-col gap-3 overflow-y-auto p-4" noValidate>
-              <label className="flex flex-col gap-1.5 text-[13px] text-corps-nuit">
-                {c.labelQuestion}
-                <textarea
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  placeholder={nb(c.exempleQuestion)}
-                  rows={4}
-                  maxLength={2000}
-                  className={`${champ} resize-y`}
-                />
-              </label>
-              <label className="flex flex-col gap-1.5 text-[13px] text-corps-nuit">
-                {c.labelEmail}
-                <input
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={c.exempleEmail}
-                  className={champ}
-                />
-              </label>
-              {piegeChamp}
-              {erreur && <p className="m-0 text-[13.5px] text-[#f0a39a]">{erreur}</p>}
-              <button type="submit" disabled={envoi} aria-busy={envoi} className={bouton}>
-                {c.envoyer}
-              </button>
-              <p className="m-0 text-[12.5px] leading-[1.5] text-brume-nuit">{c.note}</p>
-              <button type="button" onClick={() => setVue('accueil')} className={lien}>
-                {c.retour}
-              </button>
-            </form>
+            <>
+              <div className="overflow-y-auto p-4">
+                <p className={bullePaul}>{nb(c.accueil)}</p>
+              </div>
+              {champLibre(c.exempleQuestion, c.labelQuestion)}
+            </>
           )}
 
           {vue === 'envoye' && (
             <div className="flex flex-col gap-2 p-4">
               <p className="m-0 text-[17px] font-semibold text-ivoire">{c.envoyeTitre}</p>
-              <p className="m-0 text-[15px] leading-[1.55] text-corps-nuit">{nb(c.envoyeTexte(email.trim()))}</p>
+              <p className="m-0 text-[15px] leading-[1.55] text-corps-nuit">
+                {nb(emailValide(email) ? c.envoyeTexte(email.trim()) : c.envoyeTexteSansAdresse)}
+              </p>
               {messages.length > 0 && (
                 <button type="button" onClick={() => setVue('fil')} className={lien}>
                   {c.voirConversation}
@@ -663,10 +679,7 @@ export default function Question({
               <div className="flex flex-col gap-2.5 overflow-y-auto p-4" aria-live="polite">
                 {messages.map((m, i) =>
                   m.auteur === 'paul' ? (
-                    <p
-                      key={`${m.at}-${i}`}
-                      className="m-0 max-w-[92%] self-start whitespace-pre-line rounded-carte rounded-tl-[4px] bg-salle-3 px-3.5 py-3 text-[15px] leading-[1.55] text-ivoire"
-                    >
+                    <p key={`${m.at}-${i}`} className={bullePaul}>
                       <span className="mb-1 block text-[12.5px] font-semibold text-or">{c.signe}</span>
                       {m.texte}
                     </p>
@@ -679,37 +692,24 @@ export default function Question({
                     </p>
                   ),
                 )}
+                {/* L'adresse se demande ici, comme un message, jamais dans un champ. */}
+                {adresseNotee && emailValide(email) && (
+                  <p className={bullePaul}>
+                    <span className="mb-1 block text-[12.5px] font-semibold text-or">{c.signe}</span>
+                    {nb(c.adresseNotee(email.trim()))}
+                  </p>
+                )}
+                {demandeAdresse && !emailValide(email) && (
+                  <p className={bullePaul}>
+                    <span className="mb-1 block text-[12.5px] font-semibold text-or">{c.signe}</span>
+                    {nb(c.demandeAdresse)}
+                  </p>
+                )}
                 <button type="button" onClick={() => setVue('accueil')} className={lien}>
                   {c.autres}
                 </button>
               </div>
-              <form onSubmit={envoyer} className="flex flex-col gap-2 border-t border-filet-nuit p-3" noValidate>
-                <textarea
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  placeholder={c.repondre}
-                  aria-label={c.repondre}
-                  rows={2}
-                  maxLength={2000}
-                  className={`${champ} resize-none`}
-                />
-                {!emailValide(email) && (
-                  <input
-                    type="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder={c.labelEmail}
-                    aria-label={c.labelEmail}
-                    className={champ}
-                  />
-                )}
-                {piegeChamp}
-                {erreur && <p className="m-0 text-[13.5px] text-[#f0a39a]">{erreur}</p>}
-                <button type="submit" disabled={envoi} aria-busy={envoi} className={bouton}>
-                  {c.envoyer}
-                </button>
-              </form>
+              {champLibre(demandeAdresse && !emailValide(email) ? c.labelEmail : c.repondre)}
             </>
           )}
         </div>
