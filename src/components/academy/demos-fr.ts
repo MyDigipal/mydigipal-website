@@ -22,7 +22,18 @@
 // navigateur ne sait pas lire. Un fichier français manquant donnerait donc un
 // cadre noir, pas la version anglaise.
 
-export const DEMOS_FR: ReadonlySet<string> = new Set<string>(['prompts']);
+export const DEMOS_FR: ReadonlySet<string> = new Set<string>([
+  'prompts',
+  'programme',
+  'cas',
+  'profil',
+  'avance',
+]);
+
+// ⚠️ Manquent encore : `assistant`, `quiz` et `atelier`. Ce sont les trois écrans
+// où la boucle doit MONTRER UNE INTERACTION, et le pilotage au clavier ne les
+// atteint pas : la prise reste fixe pendant onze secondes, ce qui est pire que
+// l'anglais. Ils attendent une prise à la souris, machine libre.
 
 /** Le dossier d'un écran, dans la langue lue quand elle existe. */
 export function baseDemo(nom: string, locale?: string): string {
