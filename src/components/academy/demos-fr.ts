@@ -30,12 +30,13 @@ export const DEMOS_FR: ReadonlySet<string> = new Set<string>([
   'avance',
   'quiz',
   'assistant',
+  'atelier',
 ]);
 
-// ⚠️ Manque `atelier`, et pas pour une raison technique : l'atelier CRAFT garde
-// le brouillon enregistré du compte, et celui de Paul est rédigé en anglais. Le
-// filmer en français demanderait de vider son travail, ce qui ne se fait pas sans
-// lui demander.
+// Les huit y sont depuis le 16/09/2026. L'atelier CRAFT a demandé une permission :
+// il garde le brouillon enregistré du compte, et celui de Paul était écrit en
+// anglais. Il a dit d'y mettre un exemple français, donc les champs Action et
+// Format ont été réécrits, et la boucle filme le champ Ton qui se remplit.
 //
 // Les trois écrans interactifs (quiz, assistant, et l'atelier le jour venu) se
 // tournent à la SOURIS : le clavier n'atteint pas leurs commandes, et la fenêtre
