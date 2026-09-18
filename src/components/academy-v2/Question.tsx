@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Devise, Jour30Data, Locale } from '../academy/data';
 import { paramGarde, provenance, trackQuestion } from '../academy/track';
+import { rendreLeTitre, signalerReponse } from './notif-visiteur';
 import { categoriesVente, faqVente, questionCopy } from './question-copy';
 
 /**
@@ -238,6 +239,13 @@ export default function Question({
           setMessages(liste);
           const nPaul = liste.filter((m) => m.auteur === 'paul').length;
           if (nPaul > paulVus.current) {
+            // Le son et le titre de l'onglet préviennent même quand la personne
+            // regarde ailleurs (18/09/2026, après la conversation d'Anthony
+            // Turner : sa page était fermée quand la réponse est arrivée).
+            signalerReponse(
+              document.visibilityState === 'visible' && ouvertRef.current ? 0 : nPaul - paulVus.current,
+              locale
+            );
             if (ouvertRef.current) {
               paulVus.current = nPaul;
               setVue('fil');
@@ -347,6 +355,7 @@ export default function Question({
     setBarre(false);
     setBulleReponse(false);
     setNouveau(false);
+    rendreLeTitre(); // la personne a vu, l'onglet reprend son nom
     setVue(messages.length ? 'fil' : 'accueil');
     setErreur('');
     trackQuestion('open', { question_source: source });
