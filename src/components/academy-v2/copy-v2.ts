@@ -280,6 +280,33 @@ const FR = {
       devise === 'USD'
         ? 'L’assistant IA est compris dans les trois. Les prix sont en dollars américains, et le montant affiché est le montant payé.'
         : `L’assistant IA est compris dans les trois. Les prix sont en ${devise === 'GBP' ? 'livres sterling' : 'euros'}, toutes taxes comprises.`,
+    /**
+     * La bande de réassurance, sous les cartes (21/09/2026).
+     *
+     * Vingt-quatre tunnels ouverts depuis le 15/09, deux arrivées jusqu'à la page
+     * de paiement, zéro achat : ce qui manque n'est pas l'envie, c'est ce qu'on sait
+     * au moment de sortir sa carte. Le remboursement était dit dans le chapeau, en
+     * paragraphe ; la facture et le moyen de paiement n'étaient dits nulle part.
+     *
+     * ⚠️ Les heures et le seuil viennent de l'application, jamais écrits ici.
+     */
+    rassure: (garantie: { heures: number; seuilPct: number }) => [
+      {
+        titre: `${garantie.heures} heures pour changer d’avis`,
+        detail: `Remboursement intégral tant que moins de ${garantie.seuilPct} % du parcours a été consulté.`,
+      },
+      {
+        titre: 'Facture au nom de votre société',
+        detail: 'Émise automatiquement après le paiement, TVA comprise.',
+      },
+      {
+        titre: 'Paiement par carte',
+        detail: 'Page sécurisée par Revolut. Votre accès s’ouvre dans la minute.',
+      },
+    ],
+    rassureAutre: 'Besoin d’un virement, d’un bon de commande ou d’une facture avant paiement ?',
+    rassureAutreLien: 'Écrivez-moi',
+
     gratuitTag: 'Essayer d’abord',
     gratuitTitre: (lecons: number) => `${lecons} leçons offertes, pendant 48 heures`,
     gratuitTexte:
@@ -508,6 +535,23 @@ const EN: typeof FR = {
       devise === 'USD'
         ? 'The AI assistant is included in all three. Prices are in US dollars, and the amount shown is the amount you pay.'
         : `The AI assistant is included in all three. Prices are in ${devise === 'GBP' ? 'pounds sterling' : 'euros'}, all taxes included.`,
+    rassure: (garantie) => [
+      {
+        titre: `${garantie.heures} hours to change your mind`,
+        detail: `Full refund as long as less than ${garantie.seuilPct}% of the course has been opened.`,
+      },
+      {
+        titre: 'Invoice in your company name',
+        detail: 'Issued automatically after payment, VAT included.',
+      },
+      {
+        titre: 'Pay by card',
+        detail: 'Secure page by Revolut. Your access opens within the minute.',
+      },
+    ],
+    rassureAutre: 'Need a bank transfer, a purchase order, or an invoice before you pay?',
+    rassureAutreLien: 'Write to me',
+
     gratuitTag: 'Try first',
     gratuitTitre: (lecons) => `${lecons} free lessons, for 48 hours`,
     gratuitTexte:

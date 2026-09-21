@@ -766,7 +766,11 @@ const FR = {
       { titre: 'Automatisation et IA', texte: 'Assistants, agents et automatisations opérés en production, pas en démonstration.' },
     ],
     logosTitre: 'Nous formons leurs équipes',
-    avisTitre: 'Ils ont adoré le training',
+    // ⚠️ Disait « Ils ont adoré le training » (21/09/2026) : sur une page qui vend
+    // un parcours en ligne, le mot renvoyait à la salle, et les avis mis en tête
+    // parlaient d'animation plutôt que de méthode. Le titre dit maintenant ce que
+    // ces retours ont de transposable, et l'ordre des témoignages a suivi.
+    avisTitre: 'Ce qu’ils disent de la méthode',
     avisLigne: (avis: Avis) => `${avis.nombre} retours écrits, une moyenne de ${noteLocale(avis.note, 'fr')} sur 10`,
     avisPlus: (n: number) => `Voir les ${n} autres avis`,
     avisMoins: 'Replier',
@@ -1594,7 +1598,7 @@ const EN: Jour30Copy = {
       { titre: 'Automation and AI', texte: 'Assistants, agents and automations run in production, not in demos.' },
     ],
     logosTitre: 'We train their teams',
-    avisTitre: 'They loved the training',
+    avisTitre: 'What they say about the method',
     avisLigne: (avis: Avis) => `${avis.nombre} written reviews, averaging ${noteLocale(avis.note, 'en')} out of 10`,
     avisPlus: (n: number) => `See the ${n} other reviews`,
     avisMoins: 'Show fewer',

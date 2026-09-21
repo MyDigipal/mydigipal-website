@@ -657,6 +657,37 @@ export default function Tarifs({
           </div>
         </div>
 
+        {/*
+          LA BANDE DE RÉASSURANCE (21/09/2026).
+
+          Vingt-quatre tunnels ouverts depuis le 15/09, deux arrivées jusqu'à la
+          page de paiement, zéro achat. Ce qui manquait ne se joue pas plus haut
+          dans la page : le remboursement n'était dit qu'en paragraphe, et ni la
+          facture ni le moyen de paiement n'étaient dits nulle part. Les deux
+          paniers perdus étaient des achats professionnels.
+
+          Une bande et non trois cartes : ce sont trois faits sur un même achat,
+          pas trois options à comparer.
+        */}
+        <ul className="mt-4 grid list-none grid-cols-[minmax(0,1fr)] gap-x-8 gap-y-4 rounded-carte border border-filet-nuit bg-salle-2 px-6 py-5 sm:grid-cols-3">
+          {c.rassure(garantie).map((r) => (
+            <li key={r.titre} className="min-w-0">
+              <p className="m-0 text-[15.5px] font-medium leading-[1.35] text-ivoire">{r.titre}</p>
+              <p className="m-0 mt-1 text-[14px] leading-[1.55] text-brume-nuit">{r.detail}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 text-[14px] leading-[1.6] text-brume-nuit">
+          {c.rassureAutre}{' '}
+          <a
+            href="mailto:paul@mydigipal.com?subject=MyDigipal%20Academy"
+            className="text-or underline decoration-or/50 underline-offset-4 hover:decoration-or"
+          >
+            {c.rassureAutreLien}
+          </a>
+          .
+        </p>
+
         {/* La porte gratuite. Dans la teinte du renard, distincte de l'or de La
             méthode et du bleu des Automatisations, pour qu'on voie d'un coup
             d'œil que ce n'est pas une quatrième formule. */}
