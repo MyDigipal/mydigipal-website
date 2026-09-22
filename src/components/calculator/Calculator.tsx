@@ -545,7 +545,11 @@ export default function Calculator({ lang = 'fr', preselectedDomain }: Calculato
       grandTotal: grandTotalWithoutBudget,
       hasCustomQuote
     };
-  }, [selectedDomains, selections, disabledServices, adBudgets, budgetActivated, aiTraining, aiTrainingActivated, cmsAddon, trackingSelections, trackingAudit, duration, dismissedDomains, trackingDismissed, trackingNotSure, notSureAbout, sessionCount]);
+  // getServicePrice et getNbChannelsForDomain portent les canaux sociaux et le pack de
+  // contacts : sans eux, retirer un canal laissait le total calculé avec l'ancien nombre.
+  // Lead ai-coustics du 22/09/2026 : récap à 500 € de gestion Paid Social (1 canal),
+  // total à 850 € (2 canaux), donc 1 750 €/mois annoncés au lieu de 1 400 €.
+  }, [selectedDomains, selections, disabledServices, adBudgets, budgetActivated, aiTraining, aiTrainingActivated, cmsAddon, trackingSelections, trackingAudit, duration, dismissedDomains, trackingDismissed, trackingNotSure, notSureAbout, sessionCount, getServicePrice, getNbChannelsForDomain]);
 
   // --- Tracking du funnel ---------------------------------------------------
   // Une ref plutot qu'un state : le handler d'abandon doit lire l'etat au moment
