@@ -102,6 +102,20 @@ const isCalculatorPage = currentPath.includes('/calculator');
 </script>
 
 <style>
+  /* À côté de la bulle de l'assistant (22/09/2026) : les deux appels à l'action du site, sur une
+     ligne, le calculateur à gauche du visage de Paul. Décalage = marge de la bulle + sa largeur
+     + 10 px, et même ligne de base que la bulle (16 px du bas sur téléphone, 24 px au-delà). */
+  :global(html[data-assistant='on']) #sticky-calculator-cta {
+    right: 78px;
+    bottom: 16px;
+  }
+  @media (min-width: 640px) {
+    :global(html[data-assistant='on']) #sticky-calculator-cta {
+      right: 92px;
+      bottom: 24px;
+    }
+  }
+
   @keyframes ping-slow {
     75%, 100% {
       transform: scale(1.1);

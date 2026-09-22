@@ -132,8 +132,10 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   `/{lang}/calculator-v6` renvoie vers `/calculator` en gardant l'ancre.
 - **Assistant du site** (`src/components/site-assistant/`) : la bulle avec la photo de Paul,
   sans modèle, reliée à Google Chat (espace « Website Chat ») par l'application Academy.
-  Affichée sur le calculateur et avec `?assistant=1` ; `let actif = true` dans le script de
-  `BaseLayout.astro` l'ouvre à tout le site. Mémoire : `site_chat_sept2026.md`.
+  Sur tout le site depuis le 22/09/2026, sauf `/academy*` et `/admin` (script de
+  `BaseLayout.astro` ; `?assistant=0` l'éteint pour la visite). Règle de Paul : **deux appels à
+  l'action flottants, pas un de plus**, « Calculer mon budget » (`StickyCalculatorCTA`, décalé à
+  gauche de la bulle par `html[data-assistant='on']`) et son visage. Mémoire : `site_chat_sept2026.md`.
 
 ## 3 bis. L'ancien calculateur (v5, noindex sur `/{lang}/calculator-v5`)
 

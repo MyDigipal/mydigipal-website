@@ -348,26 +348,28 @@ const canonical = canonicalURL || Astro.url.href;
       document.addEventListener('astro:page-load', wireAll);
     </script>
 
-    <!-- L'assistant du site (22/09/2026) : la bulle avec le visage de Paul. Pour l'instant,
-         il ne s'affiche que sur le calculateur et pour qui ouvre une page avec ?assistant=1
-         (jusqu'à la fin de la visite ; ?assistant=0 l'éteint). Pour l'ouvrir à tout le site :
-         `let actif = true`.
-         Jamais sur les pages Academy, qui ont leur propre panneau. Son code n'est
-         chargé que là où il s'affiche. -->
+    <!-- L'assistant du site : la bulle avec le visage de Paul, sur tout le site depuis le
+         22/09/2026 (décision de Paul). Jamais sur les pages Academy, qui ont leur propre
+         panneau, ni dans /admin. ?assistant=0 l'éteint pour la visite, ?assistant=1 le rallume.
+         Paul, 22/09/2026 : sur tout le site, deux appels à l'action et pas un de plus,
+         « Calculer mon budget » et son visage. Là où la bulle s'affiche, `data-assistant="on"`
+         sur <html> décale le bouton collant du calculateur (StickyCalculatorCTA) juste à gauche
+         de la bulle, sur la même ligne. Son code n'est chargé qu'après le premier affichage. -->
     <script>
       const cheminPage = location.pathname;
-      const academie = /^\/(fr|en)\/academy/.test(cheminPage) || cheminPage.startsWith('/admin');
+      const exclue = /^\/(fr|en)\/academy/.test(cheminPage) || cheminPage.startsWith('/admin');
       const calculateur = /^\/(fr|en)\/calculator\/?$/.test(cheminPage);
-      let actif = calculateur;
+      let actif = true;
       try {
         const q = new URLSearchParams(location.search).get('assistant');
-        if (q === '1') sessionStorage.setItem('mdp_assistant_on', '1');
-        if (q === '0') sessionStorage.removeItem('mdp_assistant_on');
-        actif = actif || sessionStorage.getItem('mdp_assistant_on') === '1';
+        if (q === '0') sessionStorage.setItem('mdp_assistant_off', '1');
+        if (q === '1') sessionStorage.removeItem('mdp_assistant_off');
+        actif = sessionStorage.getItem('mdp_assistant_off') !== '1';
       } catch {
-        /* stockage indisponible : l'assistant reste limité au calculateur */
+        /* stockage indisponible : l'assistant reste affiché */
       }
-      if (actif && !academie) {
+      if (actif && !exclue) {
+        document.documentElement.dataset.assistant = 'on';
         const charger = () => import('@/components/site-assistant/mount').then((m) => m.monter());
         if (calculateur) charger();
         else if ('requestIdleCallback' in window) window.requestIdleCallback(charger, { timeout: 2500 });

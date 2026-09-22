@@ -390,6 +390,8 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
         <div className="flex flex-wrap gap-2">
           <button type="button" className={puceForte} onClick={() => maj((x) => ({ ...x, etape: 'industry', items: [...x.items, { k: 'moi', texte: service ? c.go : c.aide }, { k: 'bot', texte: QUESTIONS.industry[lang] }] }))}>{service ? c.go : c.aide}</button>
           <button type="button" className={puce} onClick={() => { maj((x) => ({ ...x, items: [...x.items, { k: 'moi', texte: c.poser }] })); versLibre(); }}>{c.poser}</button>
+          {/* Le bouton collant « Calculer mon budget » est retiré là où la bulle s'affiche : son accès passe ici. */}
+          {!surCalculateur && <a href={`${cheminCalculateur(lang)}${service ? `?service=${service}` : ''}`} className={puce} onClick={() => pousser('site_assistant_calculator')}>{c.calculateur}</a>}
         </div>
       );
     }
@@ -426,7 +428,9 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     <>
       {/* Fermé : le visage de Paul, et selon la page une phrase discrète ou l'invitation en grand. */}
       {!ouvert && (
-        <div className={`fixed right-4 z-[45] flex items-end gap-3 sm:right-6 ${bas}`}>
+        // En colonne : la phrase ou l'invitation AU-DESSUS du visage, pour ne jamais couvrir le
+        // bouton « Calculer mon budget » posé à sa gauche (les deux appels à l'action du site).
+        <div className={`fixed right-4 z-[45] flex flex-col items-end gap-2 sm:right-6 ${bas}`}>
           {grand && devisCourant ? (
             <div className="w-[min(340px,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white p-4 shadow-xl max-sm:fixed max-sm:inset-x-4 max-sm:bottom-4 max-sm:w-auto">
               <div className="flex items-start gap-3">
@@ -445,7 +449,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
               </div>
             </div>
           ) : (invite || nonLu) ? (
-            <div className="mb-2 flex items-center gap-1 rounded-2xl rounded-br-md border border-slate-200 bg-white py-2 pl-3.5 pr-1.5 shadow-lg">
+            <div className="flex items-center gap-1 rounded-2xl rounded-br-md border border-slate-200 bg-white py-2 pl-3.5 pr-1.5 shadow-lg">
               <button type="button" onClick={() => ouvrir(devisCourant ? 'devis' : 'normal')} className="text-left text-[14px] font-semibold text-slate-900">{nonLu ? c.paulARepondu : c.invite}</button>
               {!nonLu && (
                 <button type="button" aria-label={c.fermer} onClick={() => { setInvite(false); ecrire(CLE_INVITE, true); }} className="grid h-7 w-7 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700">
