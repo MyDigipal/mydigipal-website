@@ -20,8 +20,11 @@ import {
   trackingAuditOption,
   trackingServices,
   convertPrice,
-  CURRENCY_CONFIGS
+  CURRENCY_CONFIGS,
+  aiSolutionsQuestions
 } from '../calculator/data';
+import { CONTACT_PRICING_CONFIG, getContactTotalPrice, getContactUnitPrice, type ContactType } from '../calculator/data/emailing-services';
+import { generateRecommendation, budgetOptionToValue } from '../calculator/guided-data';
 import type { Currency, ServiceDomain } from '../calculator/types';
 
 export type Lang = 'fr' | 'en';
@@ -35,12 +38,18 @@ export const DOMAIN_ORDER = Object.keys(domainConfigs) as ServiceDomain[];
 export const BUDGET_STEPS = [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 7500, 10000, 12500, 15000, 20000, 25000, 30000, 40000, 50000];
 export const DEFAULT_BUDGET = 2000;
 export const TRAVEL_COST = aiTrainingPricing.travelCost.default;
+/** Publication automatique dans le CMS : 100 EUR/mois, valeur de l'ancien calculateur (cmsAddon). */
+export const CMS_ADDON_PRICE = 100;
+export const CONTACT_VOLUMES = [100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 7500, 10000];
+export const DEFAULT_CONTACT_VOLUME = 1000;
+export const CONTACT_TYPES = Object.keys(CONTACT_PRICING_CONFIG.prices) as ContactType[];
+export const AI_CUSTOM_FIELDS = aiSolutionsQuestions;
 
-/** Services hors parcours pour l'instant (acquisition de contacts : prix par type x volume). */
+/** L'acquisition de contacts a ses propres questions (type puis volume), pas un niveau. */
 const EXCLUDED_SERVICES = new Set(['email-contacts-package']);
 
-export type QuestionKind = 'level' | 'budget' | 'channels' | 'choice' | 'multi';
-export interface Option { value: string | number; label: Txt; desc?: Txt; price?: number; oneOff?: boolean; info?: string }
+export type QuestionKind = 'level' | 'budget' | 'channels' | 'choice' | 'multi' | 'volume' | 'form';
+export interface Option { value: string | number; label: Txt; desc?: Txt; price?: number; oneOff?: boolean; info?: string; /** Prix unitaire le plus bas (contacts). */ unitFrom?: number }
 export interface Question {
   id: string;
   domain: ServiceDomain;
@@ -48,6 +57,8 @@ export interface Question {
   title: Txt;
   help?: Txt;
   service?: string;
+  /** Question posée seulement si la condition est vraie (ex. le volume de contacts). */
+  when?: (a: Answers) => boolean;
 }
 
 const LEVEL_TITLES: Record<string, Txt> = {
@@ -119,6 +130,36 @@ export function questionsFor(domain: ServiceDomain): Question[] {
       { id: 'tr-mode', domain, kind: 'choice', title: { fr: 'Où ?', en: 'Where?' } }
     ];
   }
+  if (domain === 'seo') {
+    return [
+      levelQuestion(domain, 'seo-audit'),
+      levelQuestion(domain, 'seo-monthly'),
+      { id: 'seo-cms', domain, kind: 'choice', title: { fr: 'Publier les articles directement sur votre site ?', en: 'Publish the articles straight to your site?' },
+        help: { fr: 'Les articles du mois sont mis en ligne dans votre CMS, sans copier-coller de votre côté.', en: 'Each month’s articles go live in your CMS, with no copy and paste on your side.' },
+        when: (a) => typeof a['seo-monthly'] === 'number' }
+    ];
+  }
+  if (domain === 'emailing') {
+    return [
+      levelQuestion(domain, 'email-management-package'),
+      { id: 'em-contacts', domain, kind: 'choice', title: { fr: 'Des contacts à acquérir pour vos campagnes ?', en: 'Contacts to acquire for your campaigns?' },
+        help: { fr: 'Contacts vérifiés, prix dégressif selon le volume. Frais uniques.', en: 'Verified contacts, lower unit price as volume grows. One-off fees.' } },
+      { id: 'em-volume', domain, kind: 'volume', title: { fr: 'Combien de contacts ?', en: 'How many contacts?' },
+        when: (a) => typeof a['em-contacts'] === 'string' && a['em-contacts'] !== 'none' }
+    ];
+  }
+  if (domain === 'ai-solutions') {
+    return [
+      levelQuestion(domain, 'ai-chatbot'),
+      levelQuestion(domain, 'ai-workflow'),
+      levelQuestion(domain, 'ai-maintenance'),
+      { id: 'ai-custom', domain, kind: 'choice', title: { fr: 'Un projet IA sur mesure ?', en: 'A custom AI project?' },
+        help: { fr: 'Agent IA, analyse de données, intégration : on le chiffre avec vous.', en: 'AI agent, data analysis, integration: we price it with you.' } },
+      { id: 'ai-custom-form', domain, kind: 'form', title: { fr: 'Parlez-nous de votre projet', en: 'Tell us about your project' },
+        help: { fr: 'Quelques lignes suffisent, on revient vers vous avec un chiffrage.', en: 'A few lines are enough, we come back to you with a price.' },
+        when: (a) => a['ai-custom'] === 'yes' }
+    ];
+  }
   if (domain === 'tracking-reporting') {
     return [{ id: 'trk-items', domain, kind: 'multi', title: { fr: 'Qu’est-ce qu’il faut mettre en place ?', en: 'What needs setting up?' },
       help: { fr: 'Plusieurs réponses possibles. Frais uniques.', en: 'Pick as many as you need. One-off fees.' } }];
@@ -167,6 +208,29 @@ export function optionsFor(q: Question, answers: Answers): Option[] {
       { value: 'onsite', label: { fr: 'Dans vos locaux', en: 'At your office' }, desc: { fr: 'Frais de déplacement', en: 'Travel costs' }, price: TRAVEL_COST, oneOff: true, info: 'train:onsite' }
     ];
   }
+  if (q.id === 'seo-cms') {
+    return [
+      { value: 'no', label: { fr: 'Non merci', en: 'No thanks' }, desc: { fr: 'Nous vous livrons les articles, vous les publiez', en: 'We deliver the articles, you publish them' }, info: 'cms' },
+      { value: 'yes', label: { fr: 'Oui, publication automatique', en: 'Yes, automatic publishing' }, price: CMS_ADDON_PRICE, info: 'cms' }
+    ];
+  }
+  if (q.id === 'em-contacts') {
+    return [
+      { value: 'none', label: { fr: 'Non merci', en: 'No thanks' }, desc: { fr: 'J’ai déjà ma base de contacts', en: 'I already have my contact list' } },
+      ...CONTACT_TYPES.map((type) => {
+        const lbl = CONTACT_PRICING_CONFIG.labels[type];
+        const d = CONTACT_PRICING_CONFIG.descriptions[type];
+        const from = CONTACT_PRICING_CONFIG.prices[type][CONTACT_PRICING_CONFIG.prices[type].length - 1];
+        return { value: type, label: { fr: stripEmoji(lbl.fr), en: stripEmoji(lbl.en) }, desc: { fr: d.fr, en: d.en }, info: `cnt:${type}`, unitFrom: from };
+      })
+    ];
+  }
+  if (q.id === 'ai-custom') {
+    return [
+      { value: 'no', label: { fr: 'Non merci', en: 'No thanks' }, info: 'svc:ai-workflow' },
+      { value: 'yes', label: { fr: 'Oui, je le décris', en: 'Yes, let me describe it' }, desc: { fr: 'Chiffré sur devis', en: 'Priced on quote' }, info: 'aicustom' }
+    ];
+  }
   if (q.kind === 'multi') {
     return [trackingAuditOption, ...trackingServices].map((s) => ({
       value: s.id, label: { fr: s.titleFr.replace(/^[A-Z]\.\s*/, ''), en: s.title.replace(/^[A-Z]\.\s*/, '') }, price: s.price, oneOff: true, info: `trk:${s.id}`
@@ -180,7 +244,8 @@ export function optionsFor(q: Question, answers: Answers): Option[] {
 
 // --- l'état et le calcul -----------------------------------------------------------
 
-export type Answers = Record<string, string | number | null | string[] | undefined>;
+export const stripEmoji = (x: string) => x.replace(/[\u{1F000}-\u{1FAFF}\u2600-\u27BF\uFE0F]/gu, '').trim();
+export type Answers = Record<string, string | number | null | string[] | Record<string, string> | undefined>;
 export interface QuoteState {
   domains: ServiceDomain[];
   answers: Answers;
@@ -189,7 +254,7 @@ export interface QuoteState {
 }
 export const emptyState = (): QuoteState => ({ domains: [], answers: {}, discuss: {}, duration: 4 });
 
-export type Per = 'month' | 'once' | 'media';
+export type Per = 'month' | 'once' | 'media' | 'quote';
 export interface Line { label: Txt; amount: number; per: Per; info?: string; service?: string; level?: Txt; kind: 'fee' | 'media' | 'service' }
 export interface DomainQuote { domain: ServiceDomain; discuss: boolean; lines: Line[]; monthly: number; oneOff: number; fee: number; media: number; empty: boolean }
 export interface Quote {
@@ -248,6 +313,22 @@ export function devis(st: QuoteState): Quote {
         amount: unit * n, per: 'once', info: `train:${a['tr-format']}` });
       if (a['tr-mode'] === 'onsite') lines.push({ kind: 'service', service: 'travel', label: { fr: 'Déplacement', en: 'Travel' }, amount: TRAVEL_COST, per: 'once', info: 'train:onsite' });
     }
+    if (d === 'seo' && a['seo-cms'] === 'yes' && typeof a['seo-monthly'] === 'number') {
+      lines.push({ kind: 'service', service: 'cms', label: { fr: 'Publication automatique dans votre CMS', en: 'Automatic CMS publishing' }, level: { fr: 'Option', en: 'Add-on' },
+        amount: CMS_ADDON_PRICE, per: 'month', info: 'cms' });
+    }
+    if (d === 'emailing' && typeof a['em-contacts'] === 'string' && a['em-contacts'] !== 'none') {
+      const type = a['em-contacts'] as ContactType;
+      const volume = typeof a['em-volume'] === 'number' ? (a['em-volume'] as number) : DEFAULT_CONTACT_VOLUME;
+      const lbl = CONTACT_PRICING_CONFIG.labels[type];
+      lines.push({ kind: 'service', service: 'contacts', label: { fr: `${stripEmoji(lbl.fr)}, ${volume.toLocaleString('fr-FR')} contacts`, en: `${stripEmoji(lbl.en)}, ${volume.toLocaleString('en-GB')} contacts` },
+        level: { fr: `${stripEmoji(lbl.fr)}, ${volume} contacts`, en: `${stripEmoji(lbl.en)}, ${volume} contacts` },
+        amount: getContactTotalPrice(type, volume), per: 'once', info: `cnt:${type}` });
+    }
+    if (d === 'ai-solutions' && a['ai-custom'] === 'yes') {
+      lines.push({ kind: 'service', service: 'ai-custom', label: { fr: 'Projet IA sur mesure', en: 'Custom AI project' }, level: { fr: 'Sur devis', en: 'Custom quote' },
+        amount: 0, per: 'quote', info: 'aicustom' });
+    }
     if (d === 'tracking-reporting') {
       const all = [trackingAuditOption, ...trackingServices];
       for (const id of (Array.isArray(a['trk-items']) ? (a['trk-items'] as string[]) : [])) {
@@ -261,7 +342,7 @@ export function devis(st: QuoteState): Quote {
     feesMonthly += fee;
     oneOff += once;
     media += med;
-    out.push({ domain: d, discuss: false, lines, monthly, oneOff: once, fee, media: med, empty: monthly + once === 0 });
+    out.push({ domain: d, discuss: false, lines, monthly, oneOff: once, fee, media: med, empty: lines.filter((l) => l.kind !== 'media').length === 0 });
   }
 
   const beforeDiscount = servicesMonthly + feesMonthly;
@@ -274,12 +355,70 @@ export function devis(st: QuoteState): Quote {
 /** Parcours B : l'ordre des écrans. */
 export function sequence(st: QuoteState): string[] {
   const s = ['pick'];
-  for (const d of st.domains) if (!st.discuss[d]) for (const q of questionsFor(d)) s.push(q.id);
+  for (const d of st.domains) if (!st.discuss[d]) for (const q of visibleQuestions(d, st.answers)) s.push(q.id);
   s.push('duration', 'recap');
   return s;
 }
 
+/** Les questions d'un service que le visiteur voit réellement, selon ses réponses. */
+export const visibleQuestions = (d: ServiceDomain, a: Answers) => questionsFor(d).filter((q) => !q.when || q.when(a));
+
 export const inOrder = (list: ServiceDomain[]) => DOMAIN_ORDER.filter((d) => list.includes(d));
+
+export const unitContactPrice = (type: ContactType, volume: number) => getContactUnitPrice(type, volume);
+
+// --- « Aidez-moi à choisir » : le moteur du mode guidé actuel, recalé sur le budget ------------
+
+export const GUIDED_BUDGETS = Object.keys(budgetOptionToValue);
+const MONTHLY_LEVELS = ['seo-monthly', 'social-creatives', 'email-management-package', 'ai-content-blog', 'ai-content-social', 'ai-maintenance'];
+const nearestStep = (v: number) => BUDGET_STEPS.reduce((b, x) => (Math.abs(x - v) < Math.abs(b - v) ? x : b), BUDGET_STEPS[0]);
+
+/**
+ * Proposition à partir de trois réponses (secteur, objectif, budget), avec `generateRecommendation`
+ * (guided-data.ts). Ce moteur choisit les services sans regarder leur prix : pour « B2B, leads,
+ * 2 à 5 k€ » il proposait 5 450 EUR/mois média compris. On le recale : on baisse d'abord d'un cran
+ * le service mensuel le plus cher, puis on retire le service le moins prioritaire, jusqu'à tenir
+ * le budget annoncé à 10 % près. Les frais de mise en place optionnels (catalogue, chatbot,
+ * workflows) ne sont pas proposés d'office : le visiteur les ajoute s'il le souhaite.
+ */
+export function guidedProposal(industry: string, goal: string, budgetOption: string): { state: QuoteState; budget: number } {
+  const budget = budgetOptionToValue[budgetOption] ?? 3500;
+  const rec = generateRecommendation({ industry, goals: [goal], monthlyBudget: budget, currentEfforts: [], freeTextContext: '' });
+  const priority = [...rec.selectedDomains];
+  const answers: Answers = {};
+  for (const d of priority) {
+    const lvl = rec.selections[d];
+    for (const q of questionsFor(d)) {
+      if (q.kind !== 'level' || lvl == null) continue;
+      const service = domainConfigs[d].services.find((x) => x.id === q.service)!;
+      const once = !!(service.isOneOff || service.levels[0]?.isOneOff);
+      answers[q.id] = once ? (q.service === 'seo-audit' ? 0 : null) : Math.min(lvl, service.levels.length - 1);
+    }
+  }
+  if (priority.includes('google-ads')) answers['ga-budget'] = nearestStep(rec.adBudgets['google-ads']);
+  if (priority.includes('paid-social')) { answers['ps-budget'] = nearestStep(rec.adBudgets['paid-social']); answers['ps-channels'] = rec.recommendedChannels ?? []; }
+  if (priority.includes('tracking-reporting')) {
+    answers['trk-items'] = [...(rec.trackingAudit ? ['tracking-audit'] : []), ...Object.entries(rec.trackingPreselections ?? {}).filter(([, v]) => v).map(([k]) => k)];
+  }
+  const st: QuoteState = { domains: inOrder(priority), answers, discuss: {}, duration: 4 };
+  const over = () => { const q = devis(st); return q.monthly + q.media > budget * 1.1; };
+  for (let guard = 0; guard < 40 && over(); guard++) {
+    const cands = MONTHLY_LEVELS.filter((id) => st.domains.includes(QUESTION_INDEX[id].domain) && typeof st.answers[id] === 'number' && (st.answers[id] as number) > 0);
+    if (cands.length) {
+      const price = (id: string) => domainConfigs[QUESTION_INDEX[id].domain].services.find((x) => x.id === id)!.levels[st.answers[id] as number].price;
+      const top = cands.sort((x, y) => price(y) - price(x))[0];
+      st.answers[top] = (st.answers[top] as number) - 1;
+      continue;
+    }
+    if (st.domains.length > 2) {
+      const drop = [...priority].reverse().find((d) => st.domains.includes(d));
+      st.domains = st.domains.filter((d) => d !== drop);
+      continue;
+    }
+    break;
+  }
+  return { state: st, budget };
+}
 
 // --- affichage des montants ----------------------------------------------------------
 
@@ -291,7 +430,7 @@ export function money(eur: number, currency: Currency, lang: Lang): string {
   const sym = CURRENCY_CONFIGS[currency].symbol;
   return lang === 'fr' ? `${n} ${sym}` : `${sym}${n}`;
 }
-export const perLabel = (per: Per, lang: Lang) => (per === 'once' ? (lang === 'fr' ? ' une fois' : ' one-off') : lang === 'fr' ? '/mois' : '/mo');
+export const perLabel = (per: Per, lang: Lang) => (per === 'quote' ? '' : per === 'once' ? (lang === 'fr' ? ' une fois' : ' one-off') : lang === 'fr' ? '/mois' : '/mo');
 
 // --- l'envoi : même format qu'avant, le workflow n8n n'a pas à changer -------------------
 
@@ -301,6 +440,10 @@ export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, curre
   const q = devis(st);
   const selections: Record<string, number> = {};
   for (const [k, v] of Object.entries(st.answers)) if (QUESTION_INDEX[k]?.kind === 'level' && typeof v === 'number') selections[k] = v;
+  const contactType = typeof st.answers['em-contacts'] === 'string' && st.answers['em-contacts'] !== 'none' && st.domains.includes('emailing') ? (st.answers['em-contacts'] as ContactType) : null;
+  if (contactType) selections['email-contacts-package'] = 0;
+  const aiCustom = st.domains.includes('ai-solutions') && st.answers['ai-custom'] === 'yes'
+    ? ((st.answers['ai-custom-form'] as Record<string, string> | undefined) ?? {}) : null;
   const trk = Array.isArray(st.answers['trk-items']) ? (st.answers['trk-items'] as string[]) : [];
   const departmentBreakdown = q.domains.map((dq) => {
     const isTracking = dq.domain === 'tracking-reporting';
@@ -310,7 +453,11 @@ export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, curre
       icon: domainConfigs[dq.domain].icon,
       isNotSure: dq.discuss,
       services: dq.lines.filter((l) => l.kind === 'service').map((l) => ({
-        name: l.service === 'ai-training' ? domainName('ai-training', lang) : l.service && SERVICE_SHORT[l.service] ? t(SERVICE_SHORT[l.service], lang) : t(l.label, lang),
+        name: l.service === 'ai-training' ? domainName('ai-training', lang)
+          : l.service === 'contacts' ? (lang === 'fr' ? 'Acquisition de contacts' : 'Contact acquisition')
+          : l.service === 'cms' ? (lang === 'fr' ? 'Publication CMS automatique' : 'Auto CMS Publishing')
+          : l.service === 'ai-custom' ? (lang === 'fr' ? 'Solution IA sur-mesure (devis)' : 'Custom AI Solution (quote)')
+          : l.service && SERVICE_SHORT[l.service] ? t(SERVICE_SHORT[l.service], lang) : t(l.label, lang),
         level: l.level ? t(l.level, lang) : '',
         price: l.amount,
         isOneOff: l.per === 'once'
@@ -332,6 +479,9 @@ export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, curre
     adBudgets: has('google-ads') || has('paid-social') ? { 'google-ads': budgetOf(st.answers, 'ga-budget'), 'paid-social': budgetOf(st.answers, 'ps-budget') } : null,
     selectedSocialChannels: has('paid-social') ? channelsOf(st.answers) : null,
     aiTraining: has('ai-training') ? { format: st.answers['tr-format'] === 'full' ? 'full-day' : 'half-day', sessions: st.answers['tr-sessions'], inPerson: st.answers['tr-mode'] === 'onsite' } : null,
+    aiSolutions: aiCustom,
+    contactAcquisition: contactType ? { type: contactType, volume: typeof st.answers['em-volume'] === 'number' ? st.answers['em-volume'] : DEFAULT_CONTACT_VOLUME } : null,
+    cmsAddon: has('seo') && st.answers['seo-cms'] === 'yes' && typeof st.answers['seo-monthly'] === 'number',
     pricing: {
       monthlyTotal: q.servicesMonthly,
       oneOffTotal: q.oneOff,

@@ -20,11 +20,12 @@ import {
 } from '../calculator/data';
 import { channelDescriptions } from '../calculator/data/channel-descriptions';
 import type { Currency, ServiceDomain } from '../calculator/types';
-import { SERVICE_SHORT, TRAVEL_COST, domainName, domainDesc, money, perLabel, questionsFor, t, type Lang } from './engine';
+import { CONTACT_PRICING_CONFIG } from '../calculator/data/emailing-services';
+import { CMS_ADDON_PRICE, SERVICE_SHORT, TRAVEL_COST, domainName, domainDesc, money, perLabel, questionsFor, stripEmoji, t, type Lang } from './engine';
 
 export interface Info { kick?: string; title: string; meta?: string; text?: string; list?: string[]; note?: string; video?: string }
 
-const EMOJI = /[\u{1F000}-\u{1FAFF}☀-➿️]/gu;
+const EMOJI = /[\u{1F000}-\u{1FAFF}\u2600-\u27BF\uFE0F]/gu;
 const clean = (s?: string) => (s ?? '').replace(EMOJI, '').replace(/\s+/g, ' ').trim();
 const cleanAll = (l?: string[]) => (l ?? []).map(clean).filter(Boolean);
 
@@ -153,6 +154,38 @@ export function info(key: string | null | undefined, lang: Lang, currency: Curre
     list: DURATION_CONFIG.options.map((o) => `${o.months} ${L(lang, 'mois', 'months')} : ${o.discount ? `-${o.discount} %` : L(lang, 'sans remise', 'no discount')}`),
     video: 'duration'
   };
+  if (type === 'g') {
+    if (a === 'monthly') return { title: L(lang, 'Honoraires mensuels', 'Monthly fees'), text: L(lang, 'Ce que vous payez chaque mois à MyDigipal : les services et la gestion des campagnes, remise comprise. Le budget média n’y est pas.', 'What you pay MyDigipal each month: services and campaign management, discount included. The media budget is not part of it.') };
+    if (a === 'once') return { title: L(lang, 'Mise en place', 'Set-up'), text: L(lang, 'Payée une seule fois, au démarrage : audits, installation du tracking, catalogue, chatbot, formation, contacts.', 'Paid once, at the start: audits, tracking set-up, catalogue, chatbot, training, contacts.') };
+    if (a === 'total') return { title: L(lang, 'Nos honoraires sur la durée', 'Our fees over the period'), text: L(lang, 'Les honoraires mensuels multipliés par la durée d’engagement, plus la mise en place. Le budget média n’y est pas compris.', 'Monthly fees times the commitment period, plus set-up. The media budget is not included.') };
+  }
+  if (type === 'cms') return {
+    kick: domainName('seo', lang), title: L(lang, 'Publication automatique dans votre CMS', 'Automatic CMS publishing'),
+    meta: `${money(CMS_ADDON_PRICE, currency, lang)}${perLabel('month', lang)}`,
+    text: L(lang, 'Votre CMS, c’est l’outil où vit votre site : WordPress, Webflow, Shopify. Avec cette option, les articles du mois y sont publiés pour vous, au lieu de vous être livrés à mettre en ligne.', 'Your CMS is the tool your website runs on: WordPress, Webflow, Shopify. With this option, each month’s articles are published there for you instead of being delivered for you to upload.'),
+    video: 'seo'
+  };
+  if (type === 'contacts') {
+    const di = detailed('email-contacts-package', lang);
+    return { kick: domainName('emailing', lang), title: L(lang, 'Acquisition de contacts', 'Contact acquisition'), text: di?.intro, list: di?.items, note: di?.concl, video: 'emailing' };
+  }
+  if (type === 'cnt') {
+    const ct = a as keyof typeof CONTACT_PRICING_CONFIG.prices;
+    const prices = CONTACT_PRICING_CONFIG.prices[ct];
+    if (!prices) return null;
+    return {
+      kick: L(lang, 'Acquisition de contacts', 'Contact acquisition'), title: stripEmoji(CONTACT_PRICING_CONFIG.labels[ct][lang]),
+      text: CONTACT_PRICING_CONFIG.descriptions[ct][lang],
+      list: CONTACT_PRICING_CONFIG.tiers.map((tier, k) => `${lang === 'fr' ? tier.label : tier.labelEn} : ${money(prices[k], currency, lang)} ${L(lang, 'le contact', 'per contact')}`),
+      video: 'emailing'
+    };
+  }
+  if (type === 'aicustom') return {
+    kick: domainName('ai-solutions', lang), title: L(lang, 'Projet IA sur mesure', 'Custom AI project'),
+    text: L(lang, 'Pour ce qui ne rentre pas dans un chatbot ou quelques workflows : agent IA multi-outils, analyse de données, système de génération de contenu, intégration d’API IA.', 'For what does not fit a chatbot or a few workflows: multi-tool AI agent, data analysis, content generation system, AI API integration.'),
+    list: [L(lang, 'Vous décrivez le besoin en quelques lignes', 'You describe the need in a few lines'), L(lang, 'On revient vers vous avec un chiffrage', 'We come back to you with a price')],
+    video: 'ai-solutions'
+  };
   if (type === 'train') {
     const p = aiTrainingPricing;
     const kick = domainName('ai-training', lang);
@@ -178,6 +211,10 @@ export function restKey(step: string): string {
   if (step === 'ps-channels') return 'dom:paid-social';
   if (step === 'trk-items') return 'dom:tracking-reporting';
   if (step.startsWith('tr-')) return 'dom:ai-training';
+  if (step === 'seo-cms') return 'cms';
+  if (step === 'em-contacts' || step === 'em-volume') return 'contacts';
+  if (step === 'ai-custom' || step === 'ai-custom-form') return 'aicustom';
+  if (step.startsWith('g-')) return 'intro';
   return `svc:${step}`;
 }
 
@@ -191,6 +228,9 @@ export function termsFor(step: string, lang: Lang): { key: string; label: string
   if (step === 'trk-items') return [{ key: 'dom:tracking-reporting', label: L(lang, 'Pourquoi le tracking d’abord ?', 'Why tracking first?') }];
   if (step.startsWith('tr-')) return [{ key: 'dom:ai-training', label: L(lang, 'Le contenu de la formation', 'What the training covers') }];
   if (step === 'duration') return [{ key: 'duration', label: L(lang, 'Pourquoi une remise ?', 'Why a discount?') }];
+  if (step === 'seo-cms') return [{ key: 'cms', label: L(lang, 'C’est quoi, un CMS ?', 'What is a CMS?') }];
+  if (step === 'em-contacts' || step === 'em-volume') return [{ key: 'contacts', label: L(lang, 'Comment ça marche ?', 'How does it work?') }];
+  if (step === 'ai-custom') return [{ key: 'aicustom', label: L(lang, 'Quel genre de projet ?', 'What kind of project?') }];
   if (questionsFor('seo').concat(questionsFor('paid-social'), questionsFor('emailing'), questionsFor('ai-content'), questionsFor('ai-solutions')).some((q) => q.id === step)) {
     return [{ key: `svc:${step}`, label: L(lang, 'Ce que comprend ce service', 'What this service includes') }];
   }

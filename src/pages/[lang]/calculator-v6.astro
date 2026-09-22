@@ -25,26 +25,25 @@ const copy = {
   fr: {
     title: 'Calculateur de devis, version de test',
     description: 'Version de test du calculateur de devis MyDigipal.',
-    headline: 'Votre devis marketing, question par question',
-    sub: 'Choisissez vos services, répondez à quelques questions, le prix se calcule au fil des réponses.'
+    headline: 'Calculez votre budget marketing',
+    sub: 'Quelques questions, un prix tout de suite, sans engagement.'
   },
   en: {
     title: 'Quote calculator, test version',
     description: 'Test version of the MyDigipal quote calculator.',
-    headline: 'Your marketing quote, one question at a time',
-    sub: 'Pick your services, answer a few questions, and the price builds up as you go.'
+    headline: 'Price your marketing plan',
+    sub: 'A few questions, an instant price, no commitment.'
   }
 }[lang === 'fr' ? 'fr' : 'en'];
 ---
 
 <BaseLayout lang={lang} title={copy.title} description={copy.description} noindex>
   <Header lang={lang} />
-  <main class="bg-slate-50 pb-20 pt-28 lg:pt-32">
+  <main class="bg-slate-50 pb-16 pt-6 lg:pt-8">
     <div class="container-custom max-w-6xl">
-      <div class="mb-8 max-w-2xl">
-        <p class="mb-3 inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">{lang === 'fr' ? 'Page de test : rien n’est envoyé' : 'Test page: nothing is sent'}</p>
-        <h1 class="font-display text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">{copy.headline}</h1>
-        <p class="mt-3 text-lg text-slate-600">{copy.sub}</p>
+      <div class="mb-5">
+        <h1 class="font-display text-xl font-bold tracking-tight text-slate-900 sm:text-2xl md:text-3xl">{copy.headline}</h1>
+        <p class="mt-1 text-sm text-slate-600 sm:text-base md:text-lg">{copy.sub} <span class="ml-1 inline-block rounded-full bg-amber-100 px-2.5 py-0.5 align-middle text-xs font-semibold text-amber-800">{lang === 'fr' ? 'Test : rien n’est envoyé' : 'Test: nothing is sent'}</span></p>
       </div>
       <CalculatorV6 client:load lang={lang === 'fr' ? 'fr' : 'en'} showEmptyVideoSlots dryRun />
     </div>
