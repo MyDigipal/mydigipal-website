@@ -82,7 +82,7 @@ function InfoView({ data, lang, showEmpty }: { data: Info | null; lang: Lang; sh
  * Bulle de définition : un terme souligné en pointillés, et au survol (ou au toucher) un petit
  * carré avec la définition. Position fixe, pour ne pas être coupée par la zone qui défile.
  */
-function Hint({ k, lang, currency, children, className = '' }: { k?: string; lang: Lang; currency: Currency; children: React.ReactNode; className?: string }) {
+function Hint({ k, lang, currency, children, className = '', tone = 'light' }: { k?: string; lang: Lang; currency: Currency; children: React.ReactNode; className?: string; tone?: 'light' | 'dark' }) {
   const [pos, setPos] = useState<{ top: number; left: number; width: number; above: boolean } | null>(null);
   const ref = useRef<HTMLButtonElement>(null);
   const id = useId();
@@ -106,7 +106,7 @@ function Hint({ k, lang, currency, children, className = '' }: { k?: string; lan
   return (
     <>
       <button ref={ref} type="button" aria-describedby={pos ? id : undefined}
-        className={`cursor-help border-b border-dashed border-slate-400 text-left transition-colors hover:border-primary-600 hover:text-primary-700 ${className}`}
+        className={`cursor-help border-b border-dashed text-left transition-colors ${tone === 'dark' ? 'border-white/60 hover:border-white' : 'border-slate-400 hover:border-primary-600 hover:text-primary-700'} ${className}`}
         onPointerEnter={(e) => { if (e.pointerType === 'mouse') open(); }}
         onPointerLeave={(e) => { if (e.pointerType === 'mouse') setPos(null); }}
         onBlur={() => setPos(null)}
@@ -130,6 +130,33 @@ function Hint({ k, lang, currency, children, className = '' }: { k?: string; lan
   );
 }
 
+/** Un montant qui monte jusqu'à sa valeur (easeOutCubic, comme les compteurs du site). Le texte
+ * est écrit directement dans le DOM pendant l'animation, sans re-rendu React à chaque image. */
+function CountUp({ value, format }: { value: number; format: (n: number) => string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const prev = useRef(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const from = prev.current;
+    prev.current = value;
+    if (from === value || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = format(value); return; }
+    const duration = from === 0 ? 1300 : 450;
+    const t0 = performance.now();
+    let raf = 0;
+    const step = (now: number) => {
+      const p = Math.min(1, (now - t0) / duration);
+      el.textContent = format(from + (value - from) * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value, format]);
+  return <span ref={ref}>{format(0)}</span>;
+}
+
+const BOOKING_URL = 'https://calendar.app.google/ofYHfRHbFoMpVxf79';
+
 type Guided = { step: number; industry?: string; goals?: string; monthlyBudget?: string };
 const GUIDED_TITLES: Record<string, { fr: string; en: string; subFr: string; subEn: string }> = {
   industry: { fr: 'Votre secteur ?', en: 'Your industry?', subFr: 'Le plus proche suffit, on adapte la proposition.', subEn: 'The closest one is fine, we tailor the proposal.' },
@@ -147,6 +174,10 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   const [sheetKey, setSheetKey] = useState<string | null>(null);
   const [guided, setGuided] = useState<Guided | null>(null);
   const [proposalBudget, setProposalBudget] = useState<number | null>(null);
+  const [resultStyle, setResultStyle] = useState<'a' | 'b'>('a');
+  const [audit, setAudit] = useState({ website: '', clients: '', works: '', priority: '' });
+  const pendingKey = useRef<number | null>(null);
+  const inGuide = useRef(false);
   const [contact, setContact] = useState<Contact>({ name: '', email: '', company: '', message: '' });
   const [honeypot, setHoneypot] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
@@ -162,8 +193,8 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   const quote = useMemo(() => devis(st), [st]);
   const fmt = useCallback((eur: number) => money(eur, currency, lang), [currency, lang]);
   // Composant stable (mémorisé) : sans ça, chaque rendu du bloc refermerait la bulle ouverte.
-  const H = useMemo(() => function HintBound({ k, children, className }: { k?: string; children: React.ReactNode; className?: string }) {
-    return <Hint k={k} lang={lang} currency={currency} className={className}>{children}</Hint>;
+  const H = useMemo(() => function HintBound({ k, children, className, tone }: { k?: string; children: React.ReactNode; className?: string; tone?: 'light' | 'dark' }) {
+    return <Hint k={k} lang={lang} currency={currency} className={className} tone={tone}>{children}</Hint>;
   }, [lang, currency]);
 
   // --- suivi du funnel (mêmes events qu'avant : la version 75 du conteneur GTM reste valable)
@@ -287,12 +318,19 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     setFormError('');
     if (honeypot.trim()) return;
     if ((Date.now() - mountedAt.current) / 1000 < 3) return;
-    if (!contact.name.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email.trim())) {
-      setFormError(L(lang, 'Indiquez votre nom et une adresse email valide.', 'Please enter your name and a valid email address.'));
+    if (!contact.name.trim() || !contact.company.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email.trim())) {
+      setFormError(L(lang, 'Indiquez votre nom, votre entreprise et une adresse email valide.', 'Please enter your name, your company and a valid email address.'));
       return;
     }
+    const auditLines = ([
+      [L(lang, 'Site', 'Website'), audit.website],
+      [L(lang, 'Clients', 'Customers'), audit.clients],
+      [L(lang, 'Ce qui marche, ce qui coince', 'What works, what gets stuck'), audit.works],
+      [L(lang, 'Priorité à trois mois', 'Three-month priority'), audit.priority]
+    ] as const).filter(([, v]) => v.trim()).map(([k, v]) => `${k} : ${v.trim()}`);
     const payload = {
-      ...buildPayload(st, { ...contact, name: contact.name.trim(), email: contact.email.trim(), company: contact.company.trim() }, lang, currency),
+      ...buildPayload(st, { name: contact.name.trim(), email: contact.email.trim(), company: contact.company.trim(), message: auditLines.join('\n') }, lang, currency),
+      auditRequest: { website: audit.website.trim(), clients: audit.clients.trim(), whatWorks: audit.works.trim(), priority: audit.priority.trim() },
       guidedRecommendation: proposalBudget ? { selectedDomains: st.domains, estimatedMonthly: proposalBudget } : null
     };
     payload.metadata.usedGuidedMode = !!proposalBudget;
@@ -321,17 +359,33 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   };
 
   // --- survol : le guide explique ce qui est sous la souris (ordinateur) ---------------------
+  // Retour de Paul (22/09) : en allant vers la vidéo, la souris traversait d'autres options et le
+  // guide changeait avant d'être atteint. Il attend donc 300 ms d'arrêt sur un élément avant de
+  // changer, garde son contenu 900 ms après la sortie, et se fige tant que la souris est dedans.
+  const clearGuideTimers = () => {
+    if (hideTimer.current) window.clearTimeout(hideTimer.current);
+    if (pendingKey.current) window.clearTimeout(pendingKey.current);
+  };
   const onOver = (e: React.MouseEvent | React.FocusEvent) => {
+    if (inGuide.current) return;
     const el = (e.target as HTMLElement).closest('[data-info]');
     if (!el) return;
-    if (hideTimer.current) window.clearTimeout(hideTimer.current);
-    setHoverKey(el.getAttribute('data-info'));
+    const key = el.getAttribute('data-info');
+    clearGuideTimers();
+    if (key === hoverKey) return;
+    pendingKey.current = window.setTimeout(() => { if (!inGuide.current) setHoverKey(key); }, e.type === 'focus' ? 0 : 300);
   };
   const onOut = (e: React.MouseEvent | React.FocusEvent) => {
     const to = (e.relatedTarget as HTMLElement | null)?.closest?.('[data-info]');
     if (to) return;
-    if (hideTimer.current) window.clearTimeout(hideTimer.current);
-    hideTimer.current = window.setTimeout(() => setHoverKey(null), 400);
+    clearGuideTimers();
+    hideTimer.current = window.setTimeout(() => { if (!inGuide.current) setHoverKey(null); }, 900);
+  };
+  const onGuideEnter = () => { inGuide.current = true; clearGuideTimers(); };
+  const onGuideLeave = () => {
+    inGuide.current = false;
+    clearGuideTimers();
+    hideTimer.current = window.setTimeout(() => setHoverKey(null), 900);
   };
   const guideKey = hoverKey && info(hoverKey, lang, currency) ? hoverKey : restKey(cur);
 
@@ -498,14 +552,17 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     </div>
   );
 
-  const DurationSwitch = () => (
-    <div className="flex w-full rounded-xl bg-slate-100 p-1" role="radiogroup" aria-label={L(lang, 'Durée d’engagement', 'Commitment')}>
-      {DURATION_CONFIG.options.map((o) => (
-        <button key={o.months} type="button" role="radio" aria-checked={st.duration === o.months} onClick={() => setDuration(o.months, false)}
-          className={`flex-1 rounded-lg px-2 py-2 text-sm font-semibold ${st.duration === o.months ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}>
-          {o.months} {L(lang, 'mois', 'months')}{o.discount ? <span className="block text-[11.5px] text-emerald-700">-{o.discount}&nbsp;%</span> : null}
-        </button>
-      ))}
+  const DurationSwitch = ({ dark = false }: { dark?: boolean }) => (
+    <div className={`flex w-full rounded-xl p-1 ${dark ? 'bg-white/15' : 'bg-slate-100'}`} role="radiogroup" aria-label={L(lang, 'Durée d’engagement', 'Commitment')}>
+      {DURATION_CONFIG.options.map((o) => {
+        const on = st.duration === o.months;
+        return (
+          <button key={o.months} type="button" role="radio" aria-checked={on} onClick={() => setDuration(o.months, false)}
+            className={`flex-1 rounded-lg px-2 py-2 text-sm font-semibold ${on ? (dark ? 'bg-white text-primary-700 shadow-sm' : 'bg-white text-slate-900 shadow-sm') : (dark ? 'text-white' : 'text-slate-600')}`}>
+            {o.months} {L(lang, 'mois', 'months')}{o.discount ? <span className={`block text-[11.5px] ${on || !dark ? 'text-emerald-700' : 'text-emerald-200'}`}>-{o.discount}&nbsp;%</span> : null}
+          </button>
+        );
+      })}
     </div>
   );
 
@@ -591,81 +648,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       </>
     );
   } else if (cur === 'recap') {
-    const figure = (label: React.ReactNode, value: string, sub: string, strong = false) => (
-      <div className={`rounded-2xl p-3 ${strong ? 'bg-primary-600 text-white' : 'bg-slate-50'}`}>
-        <p className={`text-[12px] font-medium ${strong ? 'text-primary-100' : 'text-slate-500'}`}>{label}</p>
-        <p className={`mt-1 font-display text-lg font-extrabold leading-tight tabular-nums sm:text-xl ${strong ? 'text-white' : 'text-slate-900'}`}>{value}</p>
-        <p className={`text-[11.5px] ${strong ? 'text-primary-100' : 'text-slate-500'}`}>{sub}</p>
-      </div>
-    );
-    body = (
-      <>
-        {title(proposalBudget ? L(lang, 'Notre proposition', 'Our proposal') : L(lang, 'Votre devis', 'Your quote'))}
-        <p className="mb-4 mt-1 text-sm text-slate-500">
-          {proposalBudget
-            ? L(lang, `Pour un budget d’environ ${fmt(proposalBudget)} par mois, média compris. Chaque ligne se modifie.`, `For a budget of about ${fmt(proposalBudget)} a month, media included. Every line can be changed.`)
-            : L(lang, 'Tout reste modifiable. Survolez un terme souligné pour sa définition.', 'Everything can still change. Hover over an underlined term for its definition.')}
-          {proposalBudget ? <> <button type="button" onClick={restart} className="font-semibold text-primary-600 underline underline-offset-2">{L(lang, 'Repartir de zéro', 'Start over')}</button></> : null}
-        </p>
-        <div className="grid grid-cols-3 gap-2">
-          {figure(<H k="g:monthly" className="text-inherit">{L(lang, 'Par mois', 'Per month')}</H>, fmt(quote.monthly), quote.discountPct ? L(lang, `remise de ${quote.discountPct} % déduite`, `${quote.discountPct}% discount applied`) : L(lang, 'honoraires', 'fees'), true)}
-          {figure(<H k="g:once">{L(lang, 'Mise en place', 'Set-up')}</H>, fmt(quote.oneOff), L(lang, 'une seule fois', 'once'))}
-          {figure(<H k="media">{L(lang, 'Budget média', 'Media budget')}</H>, fmt(quote.media), L(lang, 'par mois, en plus', 'a month, on top'))}
-        </div>
-        <div className="mt-4"><DurationSwitch /></div>
-        <div className="mt-4 space-y-2">
-          {quote.domains.map((dq) => (
-            <div key={dq.domain} className="rounded-2xl border border-slate-200 p-3.5">
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="font-display text-[15px] font-bold text-slate-900">{domainName(dq.domain, lang)}</p>
-                <span className="text-right text-[13.5px] font-semibold tabular-nums text-slate-900">{domainSummary(dq)}</span>
-              </div>
-              {!(dq.discuss || dq.empty) && (
-                <ul className="mt-2 space-y-1 text-[13px] text-slate-600">
-                  {dq.lines.map((l) => (
-                    <li key={l.label.fr} className="flex justify-between gap-3">
-                      <H k={l.info}>{t(l.label, lang)}</H>
-                      <span className="whitespace-nowrap tabular-nums">{amountText(l.amount, l.per)}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <button type="button" className="mt-2 text-[13px] font-semibold text-primary-600 underline underline-offset-2" onClick={() => editDomain(dq.domain)}>
-                {dq.discuss || dq.empty ? L(lang, 'Préciser', 'Set it up') : L(lang, 'Modifier', 'Edit')}
-              </button>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 flex items-baseline justify-between gap-3 rounded-2xl bg-slate-50 px-4 py-3">
-          <H k="g:total" className="text-sm font-bold text-slate-900">{L(lang, `Nos honoraires sur ${st.duration} mois`, `Our fees over ${st.duration} months`)}</H>
-          <span className="font-display text-lg font-extrabold tabular-nums text-slate-900">{fmt(quote.totalFees)}</span>
-        </div>
-        <form className="mt-6 grid gap-3" onSubmit={(e) => { e.preventDefault(); submit(); }} noValidate>
-          <label className="grid gap-1.5 text-[13px] font-semibold text-slate-700">{L(lang, 'Nom', 'Name')}
-            <input className={`${inputClass} h-11`} autoComplete="name" value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} />
-          </label>
-          <label className="grid gap-1.5 text-[13px] font-semibold text-slate-700">{L(lang, 'Email professionnel', 'Work email')}
-            <input type="email" className={`${inputClass} h-11`} autoComplete="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} />
-          </label>
-          <label className="grid gap-1.5 text-[13px] font-semibold text-slate-700">{L(lang, 'Entreprise', 'Company')}
-            <input className={`${inputClass} h-11`} autoComplete="organization" value={contact.company} onChange={(e) => setContact({ ...contact, company: e.target.value })} />
-          </label>
-          <label className="grid gap-1.5 text-[13px] font-semibold text-slate-700">{L(lang, 'Un mot sur votre projet (facultatif)', 'A word about your project (optional)')}
-            <textarea rows={3} className={`${inputClass} py-2`} value={contact.message} onChange={(e) => setContact({ ...contact, message: e.target.value })} />
-          </label>
-          <input type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} name="website" />
-          {formError && <p className="text-sm font-medium text-red-700" role="alert">{formError}</p>}
-          {status === 'error' && (
-            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
-              {L(lang, 'L’envoi n’a pas abouti. Réessayez dans un instant, ou écrivez-nous depuis la ', 'Sending failed. Please try again in a moment, or reach us through the ')}
-              <a className="font-semibold underline" href={`/${lang}/contact`}>{L(lang, 'page contact', 'contact page')}</a>.
-            </p>
-          )}
-        </form>
-        <div className="mt-6 lg:hidden"><InfoView data={info('next', lang, currency)} lang={lang} showEmpty={false} /></div>
-      </>
-    );
-    actions = <button type="button" className={primaryBtn} disabled={status === 'sending'} onClick={submit}>{status === 'sending' ? L(lang, 'Envoi...', 'Sending...') : L(lang, 'Recevoir mon devis', 'Get my quote')}</button>;
+    body = null;
   } else {
     const q = QUESTION_INDEX[cur];
     const list = visibleQuestions(q.domain, st.answers);
@@ -694,6 +677,246 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     if (guided) { if (guided.step === 0) setGuided(null); else setGuided({ ...guided, step: guided.step - 1 }); return; }
     go(i - 1);
   };
+
+
+  // --- la page de résultat : on quitte le bloc qui défile (retour de Paul du 22/09) --------------
+  const renderResults = () => {
+    const nb = quote.domains.length;
+    const linesOf = (per: 'month' | 'once' | 'media' | 'quote') => quote.domains.flatMap((dq) => (dq.discuss ? [] : dq.lines.filter((l) => l.per === per).map((l) => ({ d: dq.domain, l }))));
+    const talkDomains = quote.domains.filter((dq) => dq.discuss || dq.empty);
+    const firstName = contact.name.trim().split(/\s+/)[0];
+    const rise = (k: number) => ({ className: 'motion-safe:animate-fade-in-up [animation-fill-mode:both]', style: { animationDelay: `${k * 120}ms` } });
+    const inputCls = `${inputClass} h-11`;
+    const questions: { key: keyof typeof audit; q: string; ph: string }[] = [
+      { key: 'clients', q: L(lang, 'Qui sont vos clients, et comment vous trouvent-ils aujourd’hui ?', 'Who are your customers, and how do they find you today?'), ph: L(lang, 'Ex. : des PME industrielles, surtout par le bouche-à-oreille', 'E.g. industrial SMEs, mostly through word of mouth') },
+      { key: 'works', q: L(lang, 'Qu’est-ce qui marche déjà, et qu’est-ce qui coince ?', 'What already works, and what gets stuck?'), ph: L(lang, 'Ex. : le salon annuel marche, le site ne génère aucun contact', 'E.g. the yearly trade show works, the website brings no leads') },
+      { key: 'priority', q: L(lang, 'Votre priorité pour les trois prochains mois ?', 'Your priority for the next three months?'), ph: L(lang, 'Ex. : 20 rendez-vous qualifiés par mois', 'E.g. 20 qualified meetings a month') }
+    ];
+
+    const monthlyCard = (
+      <div {...rise(1)} className={`rounded-3xl bg-primary-600 p-6 text-white sm:p-8 ${rise(1).className}`}>
+        <p className="text-sm font-medium text-primary-100"><H k="g:monthly" tone="dark">{L(lang, 'Nos honoraires, par mois', 'Our fees, per month')}</H></p>
+        <p className="mt-2 font-display text-5xl font-extrabold leading-none tabular-nums sm:text-6xl"><CountUp value={quote.monthly} format={fmt} /></p>
+        <p className="mt-2 text-sm text-primary-100">{quote.discountPct ? L(lang, `Remise de ${quote.discountPct}\u00a0% déduite`, `${quote.discountPct}% discount applied`) : L(lang, 'Hors budget média', 'Media budget not included')}</p>
+        <div className="mt-6"><DurationSwitch dark /></div>
+      </div>
+    );
+    const tile = (k: number, hint: string, label: string, value: string, sub: string) => (
+      <div {...rise(k)} className={`rounded-3xl border border-slate-200 bg-white p-5 ${rise(k).className}`}>
+        <p className="text-sm font-medium text-slate-500"><H k={hint}>{label}</H></p>
+        <p className="mt-1.5 font-display text-3xl font-extrabold tabular-nums text-slate-900">{value}</p>
+        <p className="mt-0.5 text-[13px] text-slate-500">{sub}</p>
+      </div>
+    );
+    const totalLine = (
+      <p className="flex flex-wrap items-baseline justify-between gap-2 rounded-2xl bg-slate-50 px-5 py-3.5 text-sm">
+        <H k="g:total" className="font-semibold text-slate-900">{L(lang, `Nos honoraires sur ${st.duration} mois, mise en place comprise`, `Our fees over ${st.duration} months, set-up included`)}</H>
+        <span className="font-display text-xl font-extrabold tabular-nums text-slate-900">{fmt(quote.totalFees)}</span>
+      </p>
+    );
+    const serviceCards = (
+      <div className="grid gap-3 md:grid-cols-2">
+        {quote.domains.map((dq) => (
+          <div key={dq.domain} className="rounded-2xl border border-slate-200 p-4">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="font-display text-base font-bold text-slate-900">{domainName(dq.domain, lang)}</p>
+              <span className="text-right text-sm font-semibold tabular-nums text-slate-900">{domainSummary(dq)}</span>
+            </div>
+            {!(dq.discuss || dq.empty) && (
+              <ul className="mt-2.5 space-y-1.5 text-[13.5px] text-slate-600">
+                {dq.lines.map((l) => (
+                  <li key={l.label.fr} className="flex justify-between gap-3"><H k={l.info}>{t(l.label, lang)}</H><span className="whitespace-nowrap tabular-nums">{amountText(l.amount, l.per)}</span></li>
+                ))}
+              </ul>
+            )}
+            <button type="button" className="mt-3 text-[13px] font-semibold text-primary-600 underline underline-offset-2" onClick={() => editDomain(dq.domain)}>
+              {dq.discuss || dq.empty ? L(lang, 'Préciser', 'Set it up') : L(lang, 'Modifier', 'Edit')}
+            </button>
+          </div>
+        ))}
+      </div>
+    );
+    const phase = (title: string, amount: string, rows: { d: ServiceDomain; l: DomainQuote['lines'][number] }[], extra?: React.ReactNode) => (
+      <li className="grid gap-3 border-t border-slate-200 py-5 first:border-t-0 first:pt-0 md:grid-cols-[220px_1fr]">
+        <div>
+          <p className="font-display text-lg font-bold text-slate-900">{title}</p>
+          <p className="text-sm font-semibold tabular-nums text-primary-700">{amount}</p>
+        </div>
+        <ul className="space-y-2 text-[14px] text-slate-700">
+          {rows.map(({ d, l }) => (
+            <li key={d + l.label.fr} className="flex justify-between gap-4">
+              <span><span className="block text-[12px] font-medium text-slate-500">{domainName(d, lang)}</span><H k={l.info}>{t(l.label, lang)}</H></span>
+              <span className="whitespace-nowrap tabular-nums">{amountText(l.amount, l.per)}</span>
+            </li>
+          ))}
+          {extra}
+        </ul>
+      </li>
+    );
+    const plan = (
+      <ol>
+        {linesOf('once').length > 0 && phase(L(lang, 'Au démarrage', 'To start'), `${fmt(quote.oneOff)}${perLabel('once', lang)}`, linesOf('once'))}
+        {phase(L(lang, 'Chaque mois', 'Every month'), `${fmt(quote.monthly)}${perLabel('month', lang)}`, linesOf('month'))}
+        {(linesOf('media').length > 0 || linesOf('quote').length > 0 || talkDomains.length > 0) && phase(
+          L(lang, 'En parallèle', 'Alongside'),
+          quote.media ? `${fmt(quote.media)}${perLabel('month', lang)} ${L(lang, 'de média', 'media')}` : L(lang, 'À voir ensemble', 'To discuss'),
+          [...linesOf('media'), ...linesOf('quote')],
+          talkDomains.map((dq) => (
+            <li key={dq.domain} className="flex justify-between gap-4"><span><span className="block text-[12px] font-medium text-slate-500">{domainName(dq.domain, lang)}</span>{L(lang, 'À discuter ensemble', 'To discuss together')}</span></li>
+          ))
+        )}
+      </ol>
+    );
+
+    const auditPanel = status === 'sent' ? (
+      <div className="rounded-3xl bg-slate-900 p-6 text-white sm:p-10">
+        <h3 className="font-display text-2xl font-bold sm:text-3xl">{L(lang, `Merci ${firstName}, c’est parti`, `Thank you ${firstName}, we’re on it`)}</h3>
+        <p className="mt-3 max-w-2xl text-slate-300">{L(lang, `Le devis arrive dans votre boîte mail dans quelques minutes. On étudie ${contact.company.trim()} de près, et on revient vers vous sous 24 à 48 h.`, `The quote reaches your inbox in a few minutes. We take a close look at ${contact.company.trim()} and get back to you within 24 to 48 hours.`)}</p>
+        <a href={BOOKING_URL} target="_blank" rel="noopener" className="mt-6 inline-flex h-11 items-center rounded-xl bg-white px-5 text-[15px] font-semibold text-slate-900">{L(lang, 'Réserver un appel de 30 min', 'Book a 30-min call')}</a>
+        {dryRun && <p className="mt-5 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
+      </div>
+    ) : (
+      <div className="rounded-3xl border border-primary-100 bg-primary-50/70 p-5 sm:p-8">
+        <h3 className="font-display text-2xl font-bold text-slate-900 sm:text-3xl">{L(lang, 'Un audit fait pour votre entreprise, en plus du devis', 'An audit built for your business, on top of the quote')}</h3>
+        <p className="mt-2 max-w-2xl text-slate-600">{L(lang, 'Ce devis repose sur nos grilles de prix. Donnez-nous votre site et quelques réponses : on regarde votre entreprise de l’extérieur, vos recherches, vos concurrents, votre tracking, et on vous envoie un audit adapté.', 'This quote is based on our price grid. Share your website and a few answers: we look at your business from the outside, your searches, your competitors, your tracking, and send you a tailored audit.')}</p>
+        <form className="mt-6 grid gap-4" onSubmit={(e) => { e.preventDefault(); submit(); }} noValidate>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1.5 text-[13px] font-semibold text-slate-700">{L(lang, 'Entreprise', 'Company')}
+              <input className={inputCls} autoComplete="organization" value={contact.company} onChange={(e) => setContact({ ...contact, company: e.target.value })} />
+            </label>
+            <label className="grid gap-1.5 text-[13px] font-semibold text-slate-700">{L(lang, 'Site web', 'Website')} <span className="-mt-1 text-[12px] font-normal text-slate-500">{L(lang, 'Facultatif, mais c’est lui qu’on audite', 'Optional, but it is what we audit')}</span>
+              <input className={inputCls} inputMode="url" autoComplete="url" value={audit.website} onChange={(e) => setAudit({ ...audit, website: e.target.value })} />
+            </label>
+            <label className="grid gap-1.5 text-[13px] font-semibold text-slate-700">{L(lang, 'Nom', 'Name')}
+              <input className={inputCls} autoComplete="name" value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} />
+            </label>
+            <label className="grid gap-1.5 text-[13px] font-semibold text-slate-700">{L(lang, 'Email professionnel', 'Work email')}
+              <input type="email" className={inputCls} autoComplete="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} />
+            </label>
+          </div>
+          {questions.map((x) => (
+            <label key={x.key} className="block rounded-2xl border border-slate-200 bg-white p-4 transition-colors focus-within:border-primary-600">
+              <span className="flex items-baseline justify-between gap-3">
+                <span className="font-display text-[15px] font-bold text-slate-900">{x.q}</span>
+                <span className="shrink-0 text-xs text-slate-500">{L(lang, 'Facultatif', 'Optional')}</span>
+              </span>
+              <textarea rows={2} placeholder={x.ph} value={audit[x.key]} onChange={(e) => setAudit({ ...audit, [x.key]: e.target.value })}
+                className="mt-2 w-full resize-y border-0 bg-transparent p-0 text-[15px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0" />
+            </label>
+          ))}
+          <input type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} name="website_url" />
+          {formError && <p className="text-sm font-medium text-red-700" role="alert">{formError}</p>}
+          {status === 'error' && (
+            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+              {L(lang, 'L’envoi n’a pas abouti. Réessayez dans un instant, ou écrivez-nous depuis la ', 'Sending failed. Please try again in a moment, or reach us through the ')}
+              <a className="font-semibold underline" href={`/${lang}/contact`}>{L(lang, 'page contact', 'contact page')}</a>.
+            </p>
+          )}
+          <div className="flex flex-wrap items-center gap-3">
+            <button type="submit" disabled={status === 'sending'} className="inline-flex h-12 items-center justify-center rounded-xl bg-primary-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-primary-700 disabled:opacity-50">
+              {status === 'sending' ? L(lang, 'Envoi...', 'Sending...') : L(lang, 'Recevoir mon devis et mon audit', 'Get my quote and my audit')}
+            </button>
+            <a href={BOOKING_URL} target="_blank" rel="noopener" className="inline-flex h-12 items-center rounded-xl bg-white px-5 text-[15px] font-semibold text-slate-900 ring-1 ring-slate-200 hover:ring-slate-300">{L(lang, 'Réserver un appel de 30 min', 'Book a 30-min call')}</a>
+          </div>
+          <p className="text-xs text-slate-500">{L(lang, 'Sans engagement. Vos réponses servent uniquement à préparer l’audit.', 'No commitment. Your answers are only used to prepare the audit.')}</p>
+        </form>
+      </div>
+    );
+
+    const steps = [
+      [L(lang, 'Le devis arrive par email', 'The quote lands in your inbox'), L(lang, 'Dans quelques minutes, avec le détail service par service.', 'Within minutes, service by service.')],
+      [L(lang, 'On étudie votre entreprise', 'We study your business'), L(lang, 'Votre site, vos recherches, vos concurrents : l’audit part de là.', 'Your website, your searches, your competitors: the audit starts there.')],
+      [L(lang, 'On en parle ensemble', 'We talk it through'), L(lang, 'Un expert vous rappelle sous 24 à 48 h, sans engagement.', 'An expert calls you within 24 to 48 hours, no commitment.')]
+    ];
+
+    return (
+      <div ref={rootRef} className="overflow-clip rounded-3xl border border-slate-200 bg-white shadow-soft">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 sm:px-7">
+          <button type="button" onClick={() => go(i - 1)} disabled={status === 'sent'} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 disabled:opacity-30">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-100"><IconBack /></span>{L(lang, 'Modifier mes réponses', 'Edit my answers')}
+          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            {dryRun && (
+              <div className="inline-flex rounded-xl bg-amber-50 p-1" role="radiogroup" aria-label={L(lang, 'Mise en page à comparer', 'Layout to compare')}>
+                {([['a', L(lang, 'A. Le tableau', 'A. The board')], ['b', L(lang, 'B. Le plan', 'B. The plan')]] as const).map(([v, lab]) => (
+                  <button key={v} type="button" role="radio" aria-checked={resultStyle === v} onClick={() => setResultStyle(v)}
+                    className={`rounded-lg px-3 py-1.5 text-[13px] font-semibold ${resultStyle === v ? 'bg-white text-slate-900 shadow-sm' : 'text-amber-800'}`}>{lab}</button>
+                ))}
+              </div>
+            )}
+            <CurrencySwitch />
+          </div>
+        </div>
+
+        <div className="space-y-10 px-4 py-8 sm:px-8 sm:py-10 lg:px-12">
+          <div {...rise(0)}>
+            <p className="text-[13px] font-semibold text-primary-600">{proposalBudget ? L(lang, 'Notre proposition', 'Our proposal') : L(lang, 'C’est prêt', 'All set')}</p>
+            <h2 className="mt-1 font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              {proposalBudget ? L(lang, `Pour environ ${fmt(proposalBudget)} par mois`, `For about ${fmt(proposalBudget)} a month`) : L(lang, 'Votre devis est prêt', 'Your quote is ready')}
+            </h2>
+            <p className="mt-2 text-slate-600">
+              {L(lang, `${nb} service${nb > 1 ? 's' : ''}, engagement de ${st.duration} mois. Tout reste modifiable, et chaque terme souligné a sa définition.`, `${nb} service${nb > 1 ? 's' : ''}, ${st.duration}-month commitment. Everything can still change, and each underlined term has its definition.`)}
+              {proposalBudget ? <> <button type="button" onClick={restart} className="font-semibold text-primary-600 underline underline-offset-2">{L(lang, 'Repartir de zéro', 'Start over')}</button></> : null}
+            </p>
+          </div>
+
+          {resultStyle === 'a' ? (
+            <>
+              <section className="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
+                {monthlyCard}
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                  {tile(2, 'g:once', L(lang, 'Mise en place', 'Set-up'), fmt(quote.oneOff), L(lang, 'Une seule fois, au démarrage', 'Once, at the start'))}
+                  {tile(3, 'media', L(lang, 'Budget média', 'Media budget'), `${fmt(quote.media)}${perLabel('month', lang)}`, L(lang, 'En plus, dépensé sur les plateformes', 'On top, spent on the platforms'))}
+                </div>
+              </section>
+              <div {...rise(4)}>{totalLine}</div>
+              <section {...rise(5)}>
+                <h3 className="mb-4 font-display text-xl font-bold text-slate-900">{L(lang, 'Le détail, service par service', 'Service by service')}</h3>
+                {serviceCards}
+              </section>
+            </>
+          ) : (
+            <>
+              <section {...rise(1)} className={`rounded-3xl bg-primary-600 px-6 py-10 text-center text-white sm:px-10 ${rise(1).className}`}>
+                <p className="text-sm font-medium text-primary-100"><H k="g:monthly" tone="dark">{L(lang, 'Nos honoraires, par mois', 'Our fees, per month')}</H></p>
+                <p className="mt-3 font-display text-6xl font-extrabold leading-none tabular-nums sm:text-7xl"><CountUp value={quote.monthly} format={fmt} /></p>
+                <p className="mx-auto mt-4 flex max-w-xl flex-wrap justify-center gap-x-6 gap-y-1 text-sm text-primary-100">
+                  <span>+ {fmt(quote.oneOff)} <H k="g:once" tone="dark">{L(lang, 'de mise en place', 'set-up')}</H></span>
+                  <span><H k="media" tone="dark">{L(lang, 'budget média', 'media budget')}</H> {fmt(quote.media)}{perLabel('month', lang)}</span>
+                </p>
+                <div className="mx-auto mt-6 max-w-md"><DurationSwitch dark /></div>
+              </section>
+              <div {...rise(2)}>{totalLine}</div>
+              <section {...rise(3)}>
+                <h3 className="mb-5 font-display text-xl font-bold text-slate-900">{L(lang, 'Votre plan', 'Your plan')}</h3>
+                {plan}
+                <p className="mt-4 flex flex-wrap gap-2 text-[13px]">
+                  <span className="text-slate-500">{L(lang, 'Modifier :', 'Edit:')}</span>
+                  {quote.domains.map((dq) => <button key={dq.domain} type="button" onClick={() => editDomain(dq.domain)} className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700 hover:bg-slate-200">{domainName(dq.domain, lang)}</button>)}
+                </p>
+              </section>
+            </>
+          )}
+
+          <section {...rise(6)}>{auditPanel}</section>
+
+          <section {...rise(7)}>
+            <h3 className="mb-4 font-display text-xl font-bold text-slate-900">{L(lang, 'Ce qui se passe ensuite', 'What happens next')}</h3>
+            <ol className="grid gap-4 md:grid-cols-3">
+              {steps.map(([title, text], k) => (
+                <li key={title} className="flex gap-3">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-900 text-sm font-bold text-white">{k + 1}</span>
+                  <span><span className="block font-semibold text-slate-900">{title}</span><span className="block text-sm text-slate-600">{text}</span></span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </div>
+      </div>
+    );
+  };
+
+  if (!guided && cur === 'recap') return renderResults();
 
   return (
     <div ref={rootRef} className="overflow-clip rounded-3xl border border-slate-200 bg-white shadow-soft lg:grid lg:h-[680px] lg:grid-cols-[minmax(0,1fr)_440px]">
@@ -731,7 +954,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         )}
       </div>
 
-      <aside className="hidden min-h-0 flex-col gap-3 overflow-y-auto border-l border-slate-200 bg-slate-50 p-6 lg:flex">
+      <aside className="hidden min-h-0 flex-col gap-3 overflow-y-auto border-l border-slate-200 bg-slate-50 p-6 lg:flex" onMouseEnter={onGuideEnter} onMouseLeave={onGuideLeave}>
         <InfoView data={info(status === 'sent' ? 'next' : guideKey, lang, currency)} lang={lang} showEmpty={showEmptyVideoSlots} />
       </aside>
 
