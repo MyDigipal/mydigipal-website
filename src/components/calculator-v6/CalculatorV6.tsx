@@ -263,7 +263,8 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       const opt = optionsFor(q, st.answers).find((o) => o.value === value);
       trackService({ domainId: q.domain, serviceId: q.service, levelName: opt ? opt.label.fr : 'none', levelIndex: typeof value === 'number' ? value : -1, price: opt?.price ?? 0, selected: value !== null });
     }
-    scheduleNext(q.id);
+    // Pas d'avance automatique (retours d'Alexandre et de Jordan, 22/09) : on laisse comparer
+    // les prix, et le même bouton fait avancer à toutes les questions.
   };
   const setRaw = (id: string, value: number | Record<string, string>) => setSt((s) => ({ ...s, answers: { ...s.answers, [id]: value } }));
   const toggleMulti = (q: Question, value: string) => {
@@ -359,8 +360,9 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
 
   // --- survol : le guide explique ce qui est sous la souris (ordinateur) ---------------------
   // Retour de Paul (22/09) : en allant vers la vidéo, la souris traversait d'autres options et le
-  // guide changeait avant d'être atteint. Il attend donc 300 ms d'arrêt sur un élément avant de
+  // guide changeait avant d'être atteint. Il attend donc un court arrêt sur un élément avant de
   // changer, garde son contenu 900 ms après la sortie, et se fige tant que la souris est dedans.
+  // 300 ms paraissaient lents à Jordan (22/09) : 120 ms suffisent à ignorer une option traversée.
   const clearGuideTimers = () => {
     if (hideTimer.current) window.clearTimeout(hideTimer.current);
     if (pendingKey.current) window.clearTimeout(pendingKey.current);
@@ -372,7 +374,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     const key = el.getAttribute('data-info');
     clearGuideTimers();
     if (key === hoverKey) return;
-    pendingKey.current = window.setTimeout(() => { if (!inGuide.current) setHoverKey(key); }, e.type === 'focus' ? 0 : 300);
+    pendingKey.current = window.setTimeout(() => { if (!inGuide.current) setHoverKey(key); }, e.type === 'focus' ? 0 : 120);
   };
   const onOut = (e: React.MouseEvent | React.FocusEvent) => {
     const to = (e.relatedTarget as HTMLElement | null)?.closest?.('[data-info]');
@@ -568,7 +570,6 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   let body: React.ReactNode;
   let actions: React.ReactNode = null;
   const primaryBtn = 'inline-flex h-11 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-primary-600 px-5 text-[15px] font-semibold text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-40 lg:flex-none lg:min-w-[170px]';
-  const ghostBtn = 'inline-flex h-11 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-slate-100 px-5 text-[15px] font-semibold text-slate-900 transition-colors hover:bg-slate-200 lg:flex-none';
   const kicker = (text: string) => <p className="mb-1.5 text-[13px] font-semibold text-primary-600">{text}</p>;
   const title = (text: string) => <h3 className="font-display text-2xl font-bold leading-tight text-slate-900 lg:text-[26px]">{text}</h3>;
 
@@ -677,8 +678,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         </button>
       </>
     );
-    if (!auto) actions = <button type="button" className={primaryBtn} onClick={() => go(i + 1)}>{L(lang, 'Continuer', 'Continue')}<IconNext /></button>;
-    else if (answered) actions = <button type="button" className={ghostBtn} onClick={() => go(i + 1)}>{L(lang, 'Question suivante', 'Next question')}<IconNext /></button>;
+    actions = <button type="button" className={primaryBtn} disabled={auto && !answered} onClick={() => go(i + 1)}>{L(lang, 'Continuer', 'Continue')}<IconNext /></button>;
   }
 
   const talk = quote.domains.filter((d) => d.discuss).length;
