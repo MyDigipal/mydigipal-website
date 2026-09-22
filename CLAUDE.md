@@ -5,7 +5,7 @@
 | Clé | Valeur |
 |-----|--------|
 | Stack | Astro 6.2.2 + Tailwind 4.2.4 + React islands |
-| Calculateur | `/en/calculator` et `/fr/calculator` (React island) |
+| Calculateur | `/en/calculator` et `/fr/calculator` : la v6 depuis le 22/09/2026 (section 3) |
 | Webhook | `https://n8n.mydigipal.com/webhook/calculateur-marketing` |
 | Build | `npm run build` (~14s, 200 pages) |
 | Hosting | **Render** (auto-deploy GitHub via `render.yaml`) - Cloudflare = DNS proxy/CDN devant uniquement |
@@ -106,7 +106,36 @@ Elles ne se configurent PAS dans `render.yaml` : le service Render n'est rattach
 aucun Blueprint (son buildCommand réel diffère de celui du fichier). Elles se
 saisissent dans le dashboard Render, onglet Redirects and Rewrites.
 
-## 3. Architecture du calculateur (v5)
+## 3. Le calculateur v6 (en ligne sur `/{lang}/calculator` depuis le 22/09/2026)
+
+Pilotage : `docs/calculator/refonte-2026-09/calculateur-en-etapes.html` (artifact
+MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2026.md`.
+
+- **Code** : `src/components/calculator-v6/` (`CalculatorV6.tsx`, `engine.ts`, `content.ts`,
+  `videos.ts`). Il réutilise les grilles de prix de `components/calculator/data/`.
+- **Un seul calcul** : `devis(état)` dans `engine.ts`. L'écran, la page de résultat, l'envoi
+  au webhook et GA4 lisent tous ce résultat (fin du bug 1 750 € contre 1 400 €).
+- **Parcours** : une question à la fois sur téléphone, guide à droite sur ordinateur, aucune
+  avance automatique (le même bouton « Continuer » partout), page de résultat pleine largeur
+  avec l'audit et le rendez-vous.
+- **Entrées** : `?service=<domaine>` coche le service ; `#plan=<encodePlan>` (et `&b=<budget>`)
+  ouvre directement un devis, c'est ce que font l'assistant du site et le bouton « Revoir mon
+  devis » des mails.
+- **Envoi** : même format qu'avant pour n8n, plus `display` (les montants déjà mis en forme
+  dans la devise du visiteur), `auditRequest`, `metadata.planUrl` et `metadata.provenance`.
+- **Mails** : le code du nœud n8n « Generate Email HTML » est versionné dans
+  `scripts/n8n-calculateur/generate-email.js`. On le modifie là, on le teste avec
+  `node scripts/n8n-calculateur/test-mails.cjs scripts/n8n-calculateur/envois-exemple.json`
+  (aperçus HTML dans `apercus/`), puis `python scripts/n8n-calculateur/publier.py`. Jamais
+  d'édition à la main dans n8n : la copie du dépôt deviendrait fausse.
+- **Anciennes adresses** : `/{lang}/calculator-v5` sert l'ancien calculateur en noindex ;
+  `/{lang}/calculator-v6` renvoie vers `/calculator` en gardant l'ancre.
+- **Assistant du site** (`src/components/site-assistant/`) : la bulle avec la photo de Paul,
+  sans modèle, reliée à Google Chat (espace « Website Chat ») par l'application Academy.
+  Affichée sur le calculateur et avec `?assistant=1` ; `let actif = true` dans le script de
+  `BaseLayout.astro` l'ouvre à tout le site. Mémoire : `site_chat_sept2026.md`.
+
+## 3 bis. L'ancien calculateur (v5, noindex sur `/{lang}/calculator-v5`)
 
 ### Fichiers principaux
 - **Composant** : `src/components/calculator/Calculator.tsx` (~2200 lignes)
