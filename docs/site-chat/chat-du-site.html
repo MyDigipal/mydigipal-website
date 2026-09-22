@@ -147,6 +147,50 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .hint{font-size:12px;color:#5f7084;text-align:center}
 .eg{position:absolute;top:66px;right:12px;z-index:2;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#855700;background:#fbf0d8;border-radius:6px;padding:2px 7px}
 
+/* retenue : visiteur + Google Chat */
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,390px));gap:30px;margin-top:26px}
+@media (max-width:860px){.duo{grid-template-columns:minmax(0,420px)}}
+.duo h3{font-size:17px;margin-bottom:10px}
+.gc{width:100%;max-width:390px;border:1px solid var(--line-2);border-radius:18px;box-shadow:var(--shadow);background:#fff;color:#0f1b29;overflow:hidden}
+.gc-head{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid #e6ebf1}
+.gc-head strong{font:700 15px var(--f-display)}
+.gc-head small{display:block;font-size:12px;color:#5f7084}
+.gc-ic{flex:none;width:30px;height:30px;border-radius:8px;background:#e8f1fa;display:grid;place-items:center;font:700 12px var(--f-display);color:#1d71b8}
+.gc-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px;font-size:14px;line-height:1.45}
+.gc-msg{display:grid;grid-template-columns:30px 1fr;gap:10px}
+.gc-msg .av{width:30px;height:30px;font-size:11px}
+.gc-name{font-weight:700;font-size:13px}
+.gc-name span{font-weight:500;color:#5f7084;margin-left:6px}
+.gc-card{margin-top:6px;border:1px solid #dae1ea;border-radius:10px;padding:10px 12px;font-size:13.5px}
+.gc-card div{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+.gc-card b{font-variant-numeric:tabular-nums;text-align:right}
+.gc-live{font-size:12.5px;color:#1a7a51;font-weight:600;margin-top:6px}
+.gc-note{font-size:12px;color:#5f7084;margin-top:4px}
+.desk-wrap{overflow-x:auto;margin-top:18px;padding-bottom:6px}
+.desk{position:relative;width:1080px;border:1px solid var(--line-2);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;background:#fff;color:#0f1b29}
+.desk-top{display:flex;align-items:center;gap:14px;height:38px;padding:0 14px;background:#edf1f6;border-bottom:1px solid #dae1ea}
+.dots{display:flex;gap:6px}
+.dots i{width:10px;height:10px;border-radius:50%;background:#c3cedb}
+.url{flex:1;max-width:520px;height:24px;border-radius:7px;background:#fff;font-size:12.5px;color:#5f7084;display:flex;align-items:center;padding:0 10px}
+.desk-page{position:relative;height:660px;background:#f7f9fb}
+.d-nav{display:flex;align-items:center;gap:30px;height:64px;padding:0 44px;background:#fff;border-bottom:1px solid #e6ebf1}
+.d-links{display:flex;gap:26px;font-size:14px;color:#394859;flex:1}
+.d-cta{font-size:13.5px;font-weight:600;color:#fff;background:#1d71b8;border-radius:10px;padding:9px 14px}
+.d-hero{padding:70px 44px;max-width:560px}
+.d-hero b{display:block;font:800 44px/1.08 var(--f-display);letter-spacing:-.025em;margin-top:16px}
+.d-hero p{font-size:17px;color:#5f7084;margin:14px 0 0}
+.d-btns{display:flex;gap:10px;margin-top:26px}
+.d-b1,.d-b2{font-size:14px;font-weight:600;border-radius:10px;padding:11px 16px}
+.d-b1{background:#1d71b8;color:#fff}
+.d-b2{background:#fff;border:1px solid #c3cedb}
+.desk .eg{top:84px;left:44px;right:auto}
+.d-panel{position:absolute;right:24px;bottom:24px;width:380px;height:572px;background:#fff;border-radius:18px;display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(15,27,41,.22),0 2px 6px rgba(15,27,41,.08)}
+.closed{display:flex;align-items:center;justify-content:flex-end;gap:10px;width:1080px;margin-top:14px}
+.closed-lbl{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-right:auto}
+.bubble-pill{font-size:14px;font-weight:600;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:9px 14px;box-shadow:var(--shadow)}
+.bubble{width:52px;height:52px;border-radius:50%;background:#1d71b8;display:grid;place-items:center;box-shadow:0 8px 22px rgba(29,113,184,.35)}
+.small-note{font-size:14px;margin-top:12px}
+
 /* flux */
 .flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0 10px;padding:0;list-style:none;counter-reset:f}
 .flow li{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px}
@@ -173,9 +217,10 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
     <p class="lede">Un chat sur toutes les pages de mydigipal.com, qui sait sur quelle page il s’ouvre, qui connaît le calculateur, et qui te fait suivre la conversation dans Google Chat pour que tu puisses répondre en direct. Trois façons de le faire, une recommandation, et ce qu’il te faudra trancher.</p>
     <ul class="toc">
       <li><a href="#etat">Où on en est</a></li>
+      <li><a href="#retenue">La direction retenue</a></li>
       <li><a href="#existant">Ce qui existe déjà</a></li>
-      <li><a href="#directions">Trois directions</a></li>
-      <li><a href="#reco">Ma recommandation</a></li>
+      <li><a href="#directions">Les trois directions</a></li>
+      <li><a href="#reco">Deux temps</a></li>
       <li><a href="#page">Ce qu’il sait de la page</a></li>
       <li><a href="#trancher">À trancher</a></li>
       <li><a href="#docs">Les documents</a></li>
@@ -185,12 +230,128 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   <section id="etat" class="prose">
     <h2>Où on en est</h2>
     <dl class="etat">
-      <div class="etat-row"><dt>Direction</dt><dd><span class="pill-st st-open">À choisir</span>Trois directions plus bas. Je recommande la B, construite en deux temps.</dd></div>
+      <div class="etat-row"><dt>Direction</dt><dd><span class="pill-st st-done">Décidé</span>La B, fusionnée avec l’assistant qui aide à choisir. Ton choix du 22/09 : une seule bulle, des questions posées d’elles-mêmes, et toi qui vois tout en direct et qui interviens quand tu veux. Voir <a href="#retenue">la direction retenue</a>.</dd></div>
       <div class="etat-row"><dt>Tuyauterie</dt><dd><span class="pill-st st-done">Existe</span>Le chat de l’Academy fait déjà l’aller et le retour avec Google Chat, et le serveur accepte déjà les appels venus de mydigipal.com. On le réutilise.</dd></div>
       <div class="etat-row"><dt>Espace Google Chat</dt><dd><span class="pill-st st-wait">À créer</span>Un nouvel espace pour le site, comme tu l’avais demandé le 15/09, avec son webhook. L’app Chat « MyDigipal » existante y est ajoutée : on n’en crée pas une deuxième.</dd></div>
       <div class="etat-row"><dt>Calculateur</dt><dd><span class="pill-st st-open">Prévu</span>Sur la page de résultat, le chat reçoit le devis en cours : tu le vois dans Google Chat dès que le visiteur écrit.</dd></div>
-      <div class="etat-row"><dt>Construction</dt><dd><span class="pill-st st-wait">Pas commencée</span>Rien n’est codé tant que la direction n’est pas choisie.</dd></div>
+      <div class="etat-row"><dt>Construction</dt><dd><span class="pill-st st-wait">Pas commencée</span>Premier temps prêt à démarrer dès que l’espace Google Chat existe et que les trois questions plus bas sont tranchées.</dd></div>
     </dl>
+  </section>
+
+  <section id="retenue">
+    <div class="prose">
+      <h2>La direction retenue : un seul assistant, toi en direct</h2>
+      <p>Le chat et l’assistant qui aide à choisir ne font plus qu’un. Une petite bulle en bas à droite de chaque page. Quand on l’ouvre, l’assistant pose ses questions de lui-même, en partant de la page où l’on est, et chiffre avec le moteur du calculateur. Le visiteur peut aussi écrire librement.</p>
+      <p>De ton côté, une notification arrive dans Google Chat dès que quelqu’un répond à la première question. Chaque réponse, chaque choix et l’estimation qui bouge s’ajoutent dans le même fil, en direct. Tu interviens quand tu veux en écrivant <code>@MyDigipal</code> dans le fil : ton message apparaît chez le visiteur, et l’assistant se met en retrait dans cette conversation.</p>
+    </div>
+    <div class="duo">
+      <div>
+        <h3>Sur téléphone, ce que voit le visiteur</h3>
+        <div class="frame" aria-label="Maquette du panneau visiteur">
+          <div class="site">
+            <div class="site-bar"><span class="logo">my<i>digipal</i>.</span><span class="burger"></span></div>
+            <div class="site-hero"><span class="site-badge">Google Ads</span><b>Dominez les résultats de recherche instantanément</b><p>Stratégie PPC optimisée par l’IA</p></div>
+          </div>
+          <span class="eg">Exemple</span>
+          <div class="scrim"></div>
+          <div class="sheet">
+            <div class="sheet-head">
+              <span class="av">MD</span>
+              <div class="who"><strong>MyDigipal</strong><small><span class="dot"></span>Paul peut vous rejoindre à tout moment</small></div>
+              <span class="x"><svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="#394859" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            </div>
+            <div class="sheet-body">
+              <div class="m bot">Vous regardez Google Ads. Deux questions, et je vous donne un ordre de prix. Quel budget publicitaire par mois ?</div>
+              <div class="chips"><span class="chip">1 000 €</span><span class="chip on">3 000 €</span><span class="chip">5 000 €</span><span class="chip">Je ne sais pas</span></div>
+              <div class="m bot">Qu’attendez-vous d’abord de Google ?</div>
+              <div class="chips"><span class="chip on">Des demandes de devis</span><span class="chip">Des ventes en ligne</span><span class="chip">Du trafic en magasin</span></div>
+              <div class="card">
+                <div class="row"><span>Gestion Google Ads</span><b>600 €/mois</b></div>
+                <div class="row"><span>Budget média</span><b>3 000 €/mois</b></div>
+                <span class="cta">Voir le devis détaillé</span>
+              </div>
+              <div class="event">Paul a rejoint la conversation</div>
+              <p class="from">Paul</p>
+              <div class="m paul">Bonjour, c’est Paul. Vous vendez en France seulement, ou aussi à l’export ? Ça change la façon de répartir le budget.</div>
+            </div>
+            <div class="sheet-foot"><span class="field">Votre message…</span><span class="send"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3>Ce que tu vois dans Google Chat</h3>
+        <div class="gc" aria-label="Maquette du fil Google Chat">
+          <div class="gc-head"><span class="gc-ic">SC</span><div><strong>Site - Chat</strong><small>Un fil par visiteur</small></div></div>
+          <div class="gc-body">
+            <div class="gc-msg"><span class="av">MD</span><div>
+              <p class="gc-name" style="margin:0">MyDigipal <span>app</span></p>
+              Assistant démarré sur la page Google Ads, en français. Arrivé par une annonce Google.
+              <div class="gc-card">
+                <div><span>Budget</span><b>3 000 €/mois</b></div>
+                <div><span>Objectif</span><b>Des demandes de devis</b></div>
+                <div><span>Estimation</span><b>600 €/mois + 3 000 € de média</b></div>
+              </div>
+              <p class="gc-live">Le visiteur est sur la page en ce moment</p>
+            </div></div>
+            <div class="gc-msg"><span class="av paul">PA</span><div>
+              <p class="gc-name" style="margin:0">Paul</p>
+              <code>@MyDigipal</code> Bonjour, c’est Paul. Vous vendez en France seulement, ou aussi à l’export ? Ça change la façon de répartir le budget.
+              <p class="gc-note">Part chez le visiteur en quelques secondes. L’assistant se met en retrait.</p>
+            </div></div>
+          </div>
+        </div>
+        <div class="dir-txt">
+          <p>Les questions sont celles du mode « Aidez-moi à choisir » du calculateur, et les prix sortent du même calcul. Le bouton « Aidez-moi à choisir » du calculateur ouvrira ce même assistant : un seul cerveau, pas deux.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="prose" style="margin-top:44px">
+      <h3>Sur ordinateur</h3>
+      <p class="muted" style="margin-top:6px">Même assistant, dans une fenêtre posée en bas à droite, par-dessus la page. La page reste lisible et cliquable à côté. Fermée, il ne reste qu’une bulle avec une phrase courte.</p>
+    </div>
+    <div class="desk-wrap">
+      <div class="desk" aria-label="Maquette ordinateur">
+        <div class="desk-top"><span class="dots"><i></i><i></i><i></i></span><span class="url">mydigipal.com/fr/services/google-ads</span></div>
+        <div class="desk-page">
+          <div class="d-nav"><span class="logo">my<i>digipal</i>.</span><span class="d-links"><span>Services</span><span>IA</span><span>Automobile</span><span>Études de cas</span><span>Blog</span></span><span class="d-cta">Calculer mon budget</span></div>
+          <div class="d-hero">
+            <span class="site-badge">Google Ads</span>
+            <b>Dominez les résultats de recherche instantanément</b>
+            <p>Stratégie PPC optimisée par l’IA</p>
+            <span class="d-btns"><span class="d-b1">Calculer mon budget</span><span class="d-b2">Voir les études de cas</span></span>
+          </div>
+          <span class="eg">Exemple</span>
+          <div class="d-panel">
+            <div class="sheet-head">
+              <span class="av">MD</span>
+              <div class="who"><strong>MyDigipal</strong><small><span class="dot"></span>Paul peut vous rejoindre à tout moment</small></div>
+              <span class="x"><svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="#394859" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            </div>
+            <div class="sheet-body">
+              <div class="m bot">Vous regardez Google Ads. Deux questions, et je vous donne un ordre de prix. Quel budget publicitaire par mois ?</div>
+              <div class="chips"><span class="chip">1 000 €</span><span class="chip on">3 000 €</span><span class="chip">5 000 €</span><span class="chip">Je ne sais pas</span></div>
+              <div class="m bot">Qu’attendez-vous d’abord de Google ?</div>
+              <div class="chips"><span class="chip on">Des demandes de devis</span><span class="chip">Des ventes en ligne</span></div>
+              <div class="card">
+                <div class="row"><span>Gestion Google Ads</span><b>600 €/mois</b></div>
+                <div class="row"><span>Budget média</span><b>3 000 €/mois</b></div>
+                <span class="cta">Voir le devis détaillé</span>
+              </div>
+            </div>
+            <div class="sheet-foot"><span class="field">Votre message…</span><span class="send"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="closed">
+        <span class="closed-lbl">Fermée</span>
+        <span class="bubble-pill">Une question ? Je vous aide à choisir</span>
+        <span class="bubble"><svg viewBox="0 0 20 20" width="20" height="20"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h7A2.5 2.5 0 0 1 16 5.5v5a2.5 2.5 0 0 1-2.5 2.5H9l-3.5 3v-3A2.5 2.5 0 0 1 4 10.5z" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      </div>
+    </div>
+    <div class="prose">
+      <p class="muted small-note">Sur la page du calculateur, la fenêtre s’ouvre au-dessus du guide de droite sans le remplacer : le guide explique la question, l’assistant aide à décider.</p>
+    </div>
   </section>
 
   <section id="existant">
@@ -217,7 +378,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 
   <section id="directions">
     <div class="prose">
-      <h2>Trois directions</h2>
+      <h2>Les trois directions</h2>
+      <p class="muted">Gardées pour mémoire : tu as choisi la B le 22/09, en y fusionnant l’assistant de décision.</p>
       <p>Même page dans les trois maquettes : un visiteur sur la page Google Ads, sur téléphone. Les conversations sont des exemples. Les montants, eux, viennent de la vraie grille du calculateur : pour 3 000 € de budget mensuel, la gestion Google Ads est à 20 % du budget, donc 600 € par mois.</p>
     </div>
     <div class="pick">
@@ -357,10 +519,9 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   </section>
 
   <section id="reco" class="prose">
-    <h2>Ma recommandation : B, en deux temps</h2>
-    <p>La B est la seule qui fait tout ce que tu as demandé : répondre sur la page où l’on est, rediriger vers le bon endroit du site, connaître le calculateur et te mettre en direct. Elle garde aussi le meilleur de la C : quand un prix est en jeu, l’assistant chiffre avec le moteur du calculateur et propose d’ouvrir le devis prérempli.</p>
-    <p><b>Premier temps, sans modèle.</b> Le panneau aux couleurs du site sur toutes les pages, l’espace Google Chat du site, ta réponse en direct, le devis du calculateur transmis. C’est déjà utile tel quel, et ça ne coûte rien par conversation.</p>
-    <p><b>Second temps, le modèle.</b> Il répond pendant que tu n’es pas là, avec la limite par IP et un plafond de messages par conversation posés avant la mise en ligne.</p>
+    <h2>En deux temps</h2>
+    <p><b>Premier temps, sans modèle.</b> La bulle aux couleurs du site sur toutes les pages, les questions posées d’elles-mêmes selon la page, le chiffrage par le moteur du calculateur, l’espace Google Chat du site avec chaque réponse en direct, et ton intervention depuis le fil. Tout est écrit d’avance, donc aucune réponse fausse et aucun coût par conversation. Un message libre du visiteur t’arrive, et c’est toi qui réponds.</p>
+    <p><b>Second temps, le modèle.</b> Il répond aux messages libres pendant que tu n’es pas là, oriente vers la bonne page du site, et se tait dès que tu interviens. La limite par IP et le plafond de messages par conversation sont posés avant sa mise en ligne.</p>
     <ol class="flow">
       <li><b>Le visiteur écrit</b><span>Le panneau envoie son message avec la page, la langue et le devis du calculateur s’il en a un.</span></li>
       <li><b>L’assistant répond</b><span>Avec la page, le plan du site et le calcul du calculateur. Jamais un prix de tête.</span></li>
@@ -405,10 +566,10 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   <section id="trancher" class="prose">
     <h2>À trancher</h2>
     <ol class="qs">
-      <li><b>La direction.</b> A, B ou C. Je recommande B en deux temps.</li>
-      <li><b>Quand tu n’es pas là.</b> L’assistant répond seul, ou il se contente d’orienter vers une page et de prendre une adresse ?</li>
-      <li><b>L’ouverture.</b> Un bouton discret partout, ou une ouverture automatique comme sur l’Academy ? Ma proposition : bouton discret partout, ouverture automatique seulement sur la page de résultat du calculateur.</li>
-      <li><b>L’espace Google Chat.</b> Un nom, par exemple « Site - Chat ». Il faudra que tu crées l’espace et son webhook toi-même : dans l’espace, menu du nom de l’espace, <b>Apps &amp; integrations</b>, puis <b>Webhooks</b>. Je te guiderai au moment de le faire.</li>
+      <li><b>Quand te prévenir.</b> Ma proposition : à la première réponse, pas à la simple ouverture de la bulle. Beaucoup de gens ouvrent pour voir et referment, et chaque ouverture ferait sonner ton téléphone.</li>
+      <li><b>L’ouverture de la bulle.</b> Ma proposition : la bulle reste discrète partout, et s’ouvre d’elle-même seulement sur la page de résultat du calculateur, où la décision se prend.</li>
+      <li><b>Le bouton du calculateur.</b> « Aidez-moi à choisir » ouvre ce même assistant au lieu du parcours guidé actuel. Je recommande oui, pour qu’il n’y ait qu’un seul assistant sur le site.</li>
+      <li><b>L’espace Google Chat.</b> Il faut que tu le crées toi-même, par exemple « Site - Chat », avec son webhook : dans l’espace, menu du nom de l’espace, <b>Apps &amp; integrations</b>, puis <b>Webhooks</b>. Ajoute aussi l’app « MyDigipal » à l’espace. Je te guiderai au moment de le faire.</li>
     </ol>
   </section>
 
