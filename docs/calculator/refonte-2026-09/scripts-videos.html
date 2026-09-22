@@ -1,0 +1,393 @@
+<meta charset="utf-8">
+<title>Scripts vidéo du calculateur</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+<style>
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --surface-2:#edf1f6; --ink:#0f1b29; --ink-2:#394859; --muted:#5f7084;
+  --line:#dae1ea; --line-2:#c3cedb; --accent:#1d71b8; --accent-hover:#175e99; --accent-ink:#ffffff; --accent-soft:#e8f1fa;
+  --ok:#1a7a51; --ok-soft:#e2f2e9; --talk:#855700; --talk-soft:#fbf0d8;
+  --shadow:0 1px 2px rgba(16,42,72,.06),0 12px 32px rgba(16,42,72,.08);
+  --f-display:"Plus Jakarta Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b1219; --surface:#111a24; --surface-2:#18232f; --ink:#e6edf4; --ink-2:#b8c5d2; --muted:#8a9bad;
+  --line:#223141; --line-2:#304154; --accent:#4f9fe1; --accent-hover:#6daee7; --accent-ink:#04111d; --accent-soft:#12283c;
+  --ok:#4dbf89; --ok-soft:#0f2a1f; --talk:#e3b24f; --talk-soft:#2a2112;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --bg:#0b1219; --surface:#111a24; --surface-2:#18232f; --ink:#e6edf4; --ink-2:#b8c5d2; --muted:#8a9bad;
+  --line:#223141; --line-2:#304154; --accent:#4f9fe1; --accent-hover:#6daee7; --accent-ink:#04111d; --accent-soft:#12283c;
+  --ok:#4dbf89; --ok-soft:#0f2a1f; --talk:#e3b24f; --talk-soft:#2a2112;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:44px 110px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,4.4vw,44px);line-height:1.08;letter-spacing:-.022em;font-weight:800}
+h2{font-size:clamp(21px,2.6vw,26px);line-height:1.2;letter-spacing:-.012em;font-weight:700}
+.kicker{font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.04em;text-transform:uppercase;margin:0 0 14px}
+.lede{font-size:17.5px;line-height:1.55;color:var(--ink-2);margin:16px 0 0;max-width:680px}
+.notes{margin:18px 0 0;padding-left:20px;color:var(--ink-2);font-size:15px;max-width:680px}
+.notes li{margin-bottom:6px}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding-block:12px;margin-top:26px;border-bottom:1px solid var(--line)}
+.seg{display:flex;background:var(--surface-2);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:none;font:600 14px/1 var(--f-body);color:var(--ink-2);padding:10px 14px;border-radius:9px;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(16,42,72,.12)}
+.bar .total{font-size:13.5px;color:var(--muted);margin-left:auto}
+
+.toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 20px;margin:24px 0 0;padding:0;list-style:none}
+.toc a{display:flex;justify-content:space-between;gap:10px;text-decoration:none;color:var(--ink);font-size:15px;padding:7px 0;border-bottom:1px solid var(--line)}
+.toc a:hover{color:var(--accent)}
+.toc small{color:var(--muted);font-size:12.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.group{font:700 13px var(--f-body);color:var(--muted);margin:30px 0 0}
+
+.sc{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px 24px;margin-top:22px;scroll-margin-top:90px;box-shadow:var(--shadow)}
+.sc-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.sc-h .kind{font-size:13px;color:var(--muted)}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;margin:14px 0 0;font-size:14px}
+.info dt{font-weight:700;color:var(--ink);font-size:13px}
+.info dd{margin:2px 0 0;color:var(--ink-2)}
+.versions{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+body[data-show="fr"] .ver[data-lang="en"],body[data-show="en"] .ver[data-lang="fr"]{display:none}
+body[data-show="fr"] .versions,body[data-show="en"] .versions{grid-template-columns:minmax(0,720px)}
+.ver{background:var(--surface-2);border-radius:14px;padding:16px 18px 18px}
+.ver-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.tag{font:800 12px/1 var(--f-display);color:var(--accent-ink);background:var(--accent);border-radius:6px;padding:5px 7px}
+.count{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.count b{font-weight:600;color:var(--ok)}
+.count b.out{color:var(--talk)}
+.copy{margin-left:auto;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:9px;height:34px;padding:0 12px;font:600 13.5px var(--f-body);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.copy:hover{border-color:var(--accent);color:var(--accent)}
+.copy.done{border-color:var(--ok);color:var(--ok)}
+.txt p{margin:0 0 12px;font-size:17px;line-height:1.62;color:var(--ink)}
+.txt p:last-child{margin-bottom:0}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.end{margin-top:60px;font-size:13px;color:var(--muted);max-width:720px}
+.end p{margin:0 0 8px}
+
+@media (max-width:820px){
+  .versions{grid-template-columns:1fr}
+  .info{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  .wrap{padding-inline:16px;padding-block:28px 90px}
+  .sc{padding:18px 16px 18px;border-radius:16px}
+  .ver{padding:14px 14px 16px}
+  .txt p{font-size:16.5px}
+  .bar .total{margin-left:0;width:100%}
+}
+</style>
+
+<main class="wrap">
+  <header>
+    <p class="kicker">Calculateur de devis, vidéos face caméra</p>
+    <h1>Onze scripts à tourner, en français et en anglais</h1>
+    <p class="lede">Huit vidéos de service et trois notions courtes. Elles iront dans les zones à survoler de la version ordinateur et sur les écrans de questions de la version mobile.</p>
+    <ul class="notes">
+      <li>Aucun prix n’est cité : les montants sont en cours de révision, et chaque vidéo renvoie au calculateur pour le chiffre.</li>
+      <li>Aucun chiffre de résultat ni nom de client : tout ce qui est dit vient des fiches du calculateur et des pages services du site.</li>
+      <li>Le compteur calcule la durée à 150 mots par minute. Cible : 45 à 70 s pour un service, 20 à 35 s pour une notion.</li>
+    </ul>
+  </header>
+
+  <div class="bar">
+    <div class="seg" role="group" aria-label="Langue affichée">
+      <button type="button" data-show="both" aria-pressed="true">FR et EN</button>
+      <button type="button" data-show="fr" aria-pressed="false">FR</button>
+      <button type="button" data-show="en" aria-pressed="false">EN</button>
+    </div>
+    <span class="total" id="total"></span>
+  </div>
+
+  <nav aria-label="Sommaire">
+    <p class="group">Services</p>
+    <ul class="toc" id="toc-services"></ul>
+    <p class="group">Notions</p>
+    <ul class="toc" id="toc-notions"></ul>
+  </nav>
+
+  <div id="scripts"></div>
+
+  <footer class="end">
+    <p>Sources : fiches <code>detailedInfo</code> et niveaux de <code>src/components/calculator/data/*.ts</code>, configurations formation IA, solutions IA et tracking du même dossier, pages <code>src/content/services/fr</code> et <code>en</code>, FAQ de la page calculateur (engagement minimum de 4 mois pour les services récurrents).</p>
+  </footer>
+</main>
+
+<script>
+(function(){
+'use strict';
+var SCRIPTS = [
+{
+  id:'seo', kind:'service', name:'SEO',
+  where:['Mobile : premier écran SEO, « Un audit SEO pour démarrer ? ». Ordinateur : zone SEO du bloc.','Mobile: first SEO screen. Desktop: the SEO area of the block.'],
+  screen:['Une page de résultats Google, puis un article publié sur le blog. Incrustations : « Audit », puis « Chaque mois ».','A Google results page, then a published blog article.'],
+  fr:[
+    'Vous avez un bon site. Mais quand un client cherche sur Google ce que vous faites, c’est un concurrent qui sort en premier.',
+    'Le SEO, c’est le travail qui vous fait remonter dans ces résultats, sans payer chaque clic.',
+    'On commence souvent par un audit. On passe votre site au crible : la vitesse, la version mobile, la structure des pages, les titres, l’indexation. On regarde aussi vos concurrents et les mots-clés que vos clients tapent vraiment. Vous repartez avec un plan d’action priorisé.',
+    'Ensuite, il y a l’accompagnement mensuel. Chaque mois, on suit vos positions, on améliore vos pages existantes et on publie des articles optimisés. Ils sont rédigés avec notre système IA, puis relus par un humain. On les optimise aussi pour que ChatGPT, Perplexity ou Gemini citent votre site. Et on fait le point avec vous régulièrement.',
+    'Juste en dessous, dites-moi si vous voulez l’audit, l’accompagnement, ou les deux. Le calculateur vous donne le prix tout de suite.'
+  ],
+  en:[
+    'Your website is good. But when a customer searches Google for what you do, a competitor shows up first.',
+    'SEO is the work that moves you up those results, without paying for every click.',
+    'We usually start with an audit. We go through your site: speed, mobile, page structure, titles, indexing. We look at your competitors too, and at the keywords your customers actually type. You come away with a prioritised action plan.',
+    'Then there’s the monthly programme. Every month, we track your rankings, improve your existing pages and publish optimised articles. They’re drafted with our AI system, then reviewed by a human. We also optimise them so ChatGPT, Perplexity and Gemini cite your site. And we review progress with you regularly.',
+    'Just below, tell me whether you want the audit, the monthly programme, or both. The calculator shows you the price straight away.'
+  ]
+},
+{
+  id:'google-ads', kind:'service', name:'Google Ads',
+  where:['Mobile : écran du budget Google Ads. Ordinateur : zone Google Ads, à côté du curseur de budget.','Mobile: the Google Ads budget screen. Desktop: the Google Ads area, next to the budget slider.'],
+  screen:['Une page de résultats Google avec une annonce en tête. Incrustation : « Search, Performance Max, Shopping, YouTube ».','A Google results page with an ad at the top.'],
+  fr:[
+    'Au moment où je vous parle, quelqu’un tape sur Google exactement ce que vous vendez. La question, c’est : est-ce que c’est vous qu’il trouve ?',
+    'Google Ads, c’est la publicité qui apparaît au moment où quelqu’un cherche. Vous payez au clic, et vous touchez des gens qui ont déjà un besoin.',
+    'On commence par un audit : vos campagnes actuelles, vos concurrents, les opportunités rapides. Ensuite, on construit la structure, on écrit les annonces et on installe le suivi des conversions. Search, Performance Max, Shopping ou YouTube : on choisit selon votre objectif.',
+    'Après le lancement, on optimise en continu : les enchères, les mots-clés, les tests d’annonces. Vos campagnes sont revues chaque semaine, et chaque mois vous recevez un rapport clair. Pas de boîte noire.',
+    'Question suivante : combien voulez-vous investir en publicité par mois ? Ce budget va à Google. Nos honoraires sont calculés à partir de lui, et le calculateur vous les affiche aussitôt.'
+  ],
+  en:[
+    'Right now, someone is typing exactly what you sell into Google. The question is: do they find you?',
+    'Google Ads puts you in front of people at the very moment they search. You pay per click, and you reach people who already have a need.',
+    'We start with an audit: your current campaigns, your competitors, the quick wins. Then we build the account structure, write the ads and set up conversion tracking. Search, Performance Max, Shopping or YouTube: we pick based on your goal.',
+    'Once you’re live, we optimise continuously: bids, keywords, ad tests. Your campaigns get reviewed every week, and every month you get a clear report. No black box.',
+    'Next question: how much do you want to spend on ads each month? That budget goes to Google. Our fee is based on it, and the calculator shows it right away.'
+  ]
+},
+{
+  id:'paid-social', kind:'service', name:'Paid Social',
+  where:['Mobile : écran « Sur quels réseaux ? ». Ordinateur : zone Paid Social, au-dessus du choix des réseaux.','Mobile: the "Which networks?" screen. Desktop: the Paid Social area, above the network picker.'],
+  screen:['Les logos LinkedIn, Meta, TikTok et YouTube au moment de la question. Capture : un carrousel publicitaire.','LinkedIn, Meta, TikTok and YouTube logos on the final line. Screenshot of an ad carousel.'],
+  fr:[
+    'Vos clients ne sont pas tous sur Google. Mais ils passent du temps sur LinkedIn, Instagram, Facebook ou TikTok, tous les jours.',
+    'Le Paid Social, c’est la publicité sur ces réseaux. La différence avec Google : on ne répond pas à une recherche, on va chercher les bonnes personnes. Sur LinkedIn, on cible par poste, par secteur, par taille d’entreprise. Sur Meta, on peut recibler ceux qui ont déjà visité votre site.',
+    'On gère vos campagnes de bout en bout : le ciblage, le lancement, l’optimisation, le reporting. On peut aussi produire les visuels : images, carrousels, vidéos courtes, adaptés à chaque réseau. On en teste plusieurs, on garde les gagnants, et on les renouvelle avant que votre audience s’en lasse.',
+    'Si vous vendez des produits ou des véhicules, on peut connecter votre catalogue pour que vos annonces se mettent à jour toutes seules.',
+    'Première question : sur quels réseaux voulez-vous être présent ?'
+  ],
+  en:[
+    'Your customers aren’t only on Google. They spend time on LinkedIn, Instagram, Facebook or TikTok, every single day.',
+    'Paid social is advertising on those networks. The difference with Google: you’re not answering a search, you’re going out to find the right people. On LinkedIn, we target by job title, industry and company size. On Meta, we can reach people who’ve already visited your site.',
+    'We run your campaigns end to end: targeting, launch, optimisation, reporting. We can also produce the creative: images, carousels, short videos, built for each network. We test several, keep the winners, and refresh them before your audience gets tired of them.',
+    'If you sell products or vehicles, we can connect your catalogue so your ads update themselves.',
+    'First question: which networks do you want to be on?'
+  ]
+},
+{
+  id:'ai-training', kind:'service', name:'Formation IA', nameEn:'AI Training',
+  where:['Mobile : écran « Quel format ? ». Ordinateur : zone Formation IA.','Mobile: the "Which format?" screen. Desktop: the AI Training area.'],
+  screen:['Un extrait d’une session en salle. Incrustation : « CRAFT », puis « Demi-journée ou journée ».','A clip from an in-room session.'],
+  fr:[
+    'Vos équipes utilisent déjà ChatGPT ou Copilot. Souvent chacun dans son coin, avec des résultats très inégaux.',
+    'Notre formation IA remet tout le monde au même niveau, sur vos vrais cas d’usage.',
+    'Avant la session, on évalue la maturité de l’équipe et on adapte les exemples à votre métier. Pendant la session, on apprend à bien formuler une demande avec notre méthode CRAFT, on s’entraîne avec des exercices pratiques, et on parle aussi des garde-fous et de l’éthique.',
+    'En journée complète, on va plus loin : un projet de groupe pour construire vos propres workflows IA, et une séance commune pour bâtir votre feuille de route IA.',
+    'À la fin, on recueille l’avis de chaque participant pour mesurer l’impact. On vient dans vos locaux, ou on le fait à distance.',
+    'Question suivante : plutôt une demi-journée de trois heures, ou une journée complète ?'
+  ],
+  en:[
+    'Your team already uses ChatGPT or Copilot. Usually each person on their own, with very mixed results.',
+    'Our AI training brings everyone up to the same level, on your real use cases.',
+    'Before the session, we assess where the team stands and tailor the examples to your line of work. During the session, people learn to write a proper prompt with our CRAFT framework, practise with hands-on exercises, and we cover guardrails and ethics too.',
+    'On a full day, we go further: a group project where you build your own AI workflows, and a joint session to put together your AI roadmap.',
+    'At the end, we collect feedback from every participant to measure the impact. We come to your office, or we run it remotely.',
+    'Next question: a three-hour half day, or a full day?'
+  ]
+},
+{
+  id:'emailing', kind:'service', name:'Email Marketing',
+  where:['Mobile : écran « Vos campagnes email gérées chaque mois ? ». Ordinateur : zone Email Marketing.','Mobile: the email campaign screen. Desktop: the Email Marketing area.'],
+  screen:['Un email de campagne affiché sur téléphone. Incrustation : « Objet, contenu, heure d’envoi ».','A campaign email on a phone screen.'],
+  fr:[
+    'Votre liste de contacts, c’est un actif qui vous appartient. Mais si personne n’a le temps de lui écrire, elle ne rapporte rien.',
+    'L’email marketing, c’est garder le contact avec vos prospects et vos clients, au bon moment, avec le bon message.',
+    'On prend en charge toute l’exécution. Chaque mois, on construit un calendrier éditorial, on écrit les emails, on les met en page et on les programme. On teste systématiquement les objets, les contenus et les heures d’envoi. Et on surveille la délivrabilité, pour que vos emails arrivent en boîte de réception, pas en spam.',
+    'Newsletters, promotions, séquences automatiques pour faire mûrir un prospect : on gère tout ça. Chaque mois, vous recevez un rapport avec nos recommandations.',
+    'Juste en dessous, choisissez le volume de campagnes qui vous correspond. Le calculateur vous donne le prix.'
+  ],
+  en:[
+    'Your contact list is an asset you own. But if nobody has time to write to it, it earns you nothing.',
+    'Email marketing keeps you in touch with prospects and customers, at the right moment, with the right message.',
+    'We handle the whole thing. Every month, we build an editorial calendar, write the emails, design them and schedule them. We test subject lines, content and send times as a matter of routine. And we keep an eye on deliverability, so your emails land in the inbox, not in spam.',
+    'Newsletters, promotions, automated sequences that warm up a lead: we run all of it. Every month, you get a report with our recommendations.',
+    'Just below, pick the campaign volume that fits you. The calculator gives you the price.'
+  ]
+},
+{
+  id:'ai-solutions', kind:'service', name:'Solutions IA', nameEn:'AI Solutions',
+  where:['Mobile : écran « Un chatbot IA ? ». Ordinateur : zone Solutions IA.','Mobile: the "An AI chatbot?" screen. Desktop: the AI Solutions area.'],
+  screen:['Le widget d’un chatbot sur un site, puis un schéma de workflow automatisé.','A chatbot widget on a website, then an automation workflow diagram.'],
+  fr:[
+    'Combien d’heures votre équipe passe-t-elle chaque semaine à recopier des informations d’un outil à l’autre, ou à répondre aux mêmes questions ?',
+    'Nos solutions IA servent à reprendre ces tâches-là.',
+    'Premier type de projet : le chatbot. Un assistant formé sur votre documentation, vos FAQ, vos produits. Il répond à vos clients sur votre site, dans plusieurs langues, et il passe la main à un humain quand il le faut. On le livre testé et documenté, et on forme votre équipe.',
+    'Deuxième type : l’automatisation. On repère les tâches répétitives et on les confie à des workflows connectés à vos outils. Traiter les leads qui arrivent, enrichir votre CRM, produire des rapports, synchroniser vos logiciels.',
+    'On utilise Claude ou GPT pour l’intelligence, et n8n, Make ou des API directes pour relier le tout.',
+    'Et si vous voulez qu’on suive la solution une fois en place, il y a la maintenance. Choisissez juste en dessous ce dont vous avez besoin.'
+  ],
+  en:[
+    'How many hours a week does your team spend copying data from one tool to another, or answering the same questions over and over?',
+    'Our AI solutions take those tasks off their plate.',
+    'First kind of project: the chatbot. An assistant trained on your documentation, your FAQs, your products. It answers customers on your website, in several languages, and hands over to a human when it needs to. We deliver it tested and documented, and we train your team on it.',
+    'Second kind: automation. We spot the repetitive tasks and hand them to workflows connected to your tools. Handling incoming leads, enriching your CRM, producing reports, keeping your software in sync.',
+    'We use Claude or GPT for the intelligence, and n8n, Make or direct APIs to wire it all together.',
+    'And if you want us to look after it once it’s live, there’s a maintenance plan. Pick what you need just below.'
+  ]
+},
+{
+  id:'ai-content', kind:'service', name:'Contenu IA', nameEn:'AI Content',
+  where:['Mobile : écran « Des articles de blog SEO chaque mois ? ». Ordinateur : zone Contenu IA.','Mobile: the blog articles screen. Desktop: the AI Content area.'],
+  screen:['Un article du blog MyDigipal, puis un post LinkedIn. Incrustation : « Votre voix de marque ».','A MyDigipal blog article, then a LinkedIn post.'],
+  fr:[
+    'Tout le monde sait qu’il faudrait publier plus. Des articles, des posts LinkedIn, des pages. Le problème, c’est le temps. Et le contenu générique fait à la chaîne, ça se voit tout de suite.',
+    'Notre service de contenu IA règle les deux.',
+    'On commence par apprendre votre voix de marque, à partir de vos contenus existants. Ensuite, on choisit les sujets avec les données : Ahrefs et Search Console nous disent ce que vos clients cherchent. Notre système IA rédige des articles structurés, avec leurs titres, leur FAQ et leurs liens internes. Puis un humain relit tout, vérifie les faits et fait les derniers réglages.',
+    'Au-delà du blog, on produit aussi vos posts sociaux, vos landing pages, vos études de cas. On peut même publier directement sur votre site.',
+    'Juste en dessous, choisissez combien d’articles par mois, et si vous voulez aussi le contenu social.'
+  ],
+  en:[
+    'Everyone knows they should publish more. Articles, LinkedIn posts, landing pages. The problem is time. And generic, mass-produced content shows straight away.',
+    'Our AI content service solves both.',
+    'We start by learning your brand voice from the content you already have. Then we pick topics with data: Ahrefs and Search Console tell us what your customers are searching for. Our AI system drafts structured articles, with headings, an FAQ and internal links. Then a human reviews everything, checks the facts and does the final polish.',
+    'Beyond the blog, we produce your social posts, landing pages and case studies. We can even publish straight to your website.',
+    'Just below, choose how many articles you want each month, and whether you want social content too.'
+  ]
+},
+{
+  id:'tracking', kind:'service', name:'Tracking & Reporting',
+  where:['Mobile : écran « Qu’est-ce qu’il faut mettre en place ? ». Ordinateur : zone Tracking & Reporting.','Mobile: the "What needs setting up?" screen. Desktop: the Tracking & Reporting area.'],
+  screen:['Un tableau de bord de reporting. Incrustation : « GA4, conversions, cookies, CRM ».','A reporting dashboard.'],
+  fr:[
+    'Vous dépensez en marketing. Mais est-ce que vous savez quelle campagne vous a amené vos derniers clients ?',
+    'Le tracking, c’est ce qui vous le dit. Et le reporting, c’est ce qui le rend lisible.',
+    'On installe ou on remet d’aplomb Google Analytics 4. On configure les conversions qui comptent pour vous : formulaires, achats, appels. On pose une bannière cookies conforme au RGPD, avec le Consent Mode de Google. On peut relier vos outils à votre CRM, HubSpot, Salesforce ou Pipedrive, pour suivre un lead jusqu’à la vente signée.',
+    'Et on construit un tableau de bord qui regroupe toutes vos données, Google, Meta, LinkedIn et CRM, mis à jour automatiquement.',
+    'Si vous avez déjà quelque chose en place, on commence par un audit pour voir ce qui manque.',
+    'Cochez juste en dessous ce qu’il faut mettre en place. Et si vous ne savez pas, dites-le : on en parlera ensemble.'
+  ],
+  en:[
+    'You spend money on marketing. But do you know which campaign brought in your last few customers?',
+    'Tracking is what tells you. Reporting is what makes it readable.',
+    'We install or fix Google Analytics 4. We set up the conversions that matter to you: forms, purchases, calls. We add a GDPR-compliant cookie banner with Google Consent Mode. We can connect your tools to your CRM, whether that’s HubSpot, Salesforce or Pipedrive, to follow a lead all the way to the signed deal.',
+    'And we build a dashboard that pulls all your data together, Google, Meta, LinkedIn and your CRM, refreshed automatically.',
+    'If you already have something in place, we start with an audit to see what’s missing.',
+    'Tick what you need just below. And if you’re not sure, just say so: we’ll work it out together.'
+  ]
+},
+{
+  id:'budget-media', kind:'notion', name:'Budget média et honoraires', nameEn:'Media budget vs fee',
+  where:['Info-bulle à côté du curseur de budget (Google Ads et Paid Social), et ligne « Budget média » du récapitulatif.','Tooltip next to the budget slider, and the "Media budget" line in the summary.'],
+  screen:['Deux colonnes incrustées : « Budget média, pour les plateformes » et « Honoraires, pour MyDigipal ».','Two on-screen columns: "Media budget" and "Our fee".'],
+  fr:[
+    'Dans votre devis, il y a deux montants différents pour la publicité, et on les confond souvent.',
+    'Le budget média, c’est l’argent que Google, Meta ou LinkedIn dépensent pour diffuser vos annonces. Il va entièrement aux plateformes, il n’est pas compris dans nos honoraires.',
+    'Nos honoraires, c’est notre travail : construire les campagnes, les optimiser, vous rendre des comptes. En dessous d’un certain budget, c’est un forfait. Au-dessus, c’est une part du budget, et cette part baisse quand le budget augmente.'
+  ],
+  en:[
+    'Your quote has two separate amounts for advertising, and people often mix them up.',
+    'The media budget is what Google, Meta or LinkedIn spend to show your ads. All of it goes to the platforms. It isn’t part of our fee.',
+    'Our fee pays for our work: building the campaigns, optimising them, reporting back to you. Below a certain budget, it’s a flat fee. Above it, it’s a share of the budget, and that share goes down as the budget goes up.'
+  ]
+},
+{
+  id:'tracking-first', kind:'notion', name:'Le tracking avant la publicité', nameEn:'Tracking before ads',
+  where:['Info-bulle sur Tracking & Reporting, et message affiché quand un service publicitaire est choisi sans tracking.','Tooltip on Tracking & Reporting, and the prompt shown when an ads service is picked without tracking.'],
+  screen:['Incrustation : « Mesurer d’abord, dépenser ensuite ».','On-screen text: "Measure first, then spend".'],
+  fr:[
+    'Pourquoi je vous propose le tracking avant de lancer la publicité ?',
+    'Parce que Google et Meta apprennent de vos conversions. Si elles ne leur remontent pas, leurs algorithmes optimisent à l’aveugle, et votre budget part vers des clics qui ne rapportent rien.',
+    'Et sans tracking, impossible de savoir quelle campagne marche. On mesure d’abord, on dépense ensuite.'
+  ],
+  en:[
+    'Why do I suggest tracking before you run any ads?',
+    'Because Google and Meta learn from your conversions. If those conversions never reach them, their algorithms optimise blind, and your budget goes on clicks that bring nothing back.',
+    'And without tracking, you can’t tell which campaign is working. Measure first, then spend.'
+  ]
+},
+{
+  id:'duree', kind:'notion', name:'La durée d’engagement', nameEn:'Commitment length',
+  where:['Info-bulle sur le choix de la durée, au récapitulatif.','Tooltip on the duration picker, in the summary.'],
+  screen:['Les trois durées à l’écran : 4, 6 et 12 mois.','The three durations on screen: 4, 6 and 12 months.'],
+  fr:[
+    'Pour les services récurrents, l’engagement commence à quatre mois. Vous pouvez aussi choisir six ou douze mois.',
+    'Pourquoi quatre mois ? Parce qu’il faut le temps de lancer, de laisser les plateformes apprendre, puis d’optimiser. En SEO, les résultats se construisent sur plusieurs mois.',
+    'Plus l’engagement est long, plus le tarif mensuel baisse. Changez la durée : le calculateur vous montre la remise aussitôt.'
+  ],
+  en:[
+    'For recurring services, the commitment starts at four months. You can also choose six or twelve.',
+    'Why four? Because it takes time to launch, let the platforms learn, and then optimise. With SEO, results build up over several months.',
+    'The longer the commitment, the lower the monthly rate. Change the duration and the calculator shows you the discount straight away.'
+  ]
+}
+];
+
+var WPM = 150;
+function words(paras){ return paras.join(' ').split(/\s+/).filter(function(w){ return /[\p{L}\p{N}]/u.test(w); }).length; }
+function secs(n){ return Math.round(n / WPM * 60); }
+function fmtDur(s){ var m = Math.floor(s / 60), r = s % 60; return m ? m + ' min ' + (r < 10 ? '0' : '') + r + ' s' : r + ' s'; }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function target(kind){ return kind === 'service' ? [45, 70] : [20, 35]; }
+
+var holder = document.getElementById('scripts');
+var tocS = document.getElementById('toc-services'), tocN = document.getElementById('toc-notions');
+var totFr = 0, totEn = 0;
+
+SCRIPTS.forEach(function(s){
+  var t = target(s.kind);
+  function ver(lang){
+    var paras = s[lang], n = words(paras), d = secs(n), ok = d >= t[0] && d <= t[1];
+    return '<div class="ver" data-lang="' + lang + '"><div class="ver-h"><span class="tag">' + lang.toUpperCase() + '</span>' +
+      '<span class="count">' + n + (lang === 'fr' ? ' mots, ' : ' words, ') + '<b class="' + (ok ? '' : 'out') + '">' + fmtDur(d) + '</b></span>' +
+      '<button type="button" class="copy" data-id="' + s.id + '" data-lang="' + lang + '">' + (lang === 'fr' ? 'Copier' : 'Copy') + '</button></div>' +
+      '<div class="txt" lang="' + lang + '">' + paras.map(function(p){ return '<p>' + esc(p) + '</p>'; }).join('') + '</div></div>';
+  }
+  var dFr = secs(words(s.fr)), dEn = secs(words(s.en));
+  totFr += dFr; totEn += dEn;
+  var art = document.createElement('article');
+  art.className = 'sc'; art.id = 's-' + s.id;
+  art.innerHTML = '<div class="sc-h"><h2>' + esc(s.name) + (s.nameEn ? ' <span class="kind">' + esc(s.nameEn) + '</span>' : '') + '</h2><span class="kind">' +
+    (s.kind === 'service' ? 'Service, cible 45 à 70 s' : 'Notion, cible 20 à 35 s') + '</span></div>' +
+    '<dl class="info"><div><dt>Où elle apparaît</dt><dd>' + esc(s.where[0]) + '</dd></div><div><dt>À l’écran</dt><dd>' + esc(s.screen[0]) + '</dd></div></dl>' +
+    '<div class="versions">' + ver('fr') + ver('en') + '</div>';
+  holder.appendChild(art);
+  var li = document.createElement('li');
+  li.innerHTML = '<a href="#s-' + s.id + '"><span>' + esc(s.name) + '</span><small>' + fmtDur(dFr) + ' / ' + fmtDur(dEn) + '</small></a>';
+  (s.kind === 'service' ? tocS : tocN).appendChild(li);
+});
+document.getElementById('total').textContent = 'Total à tourner : ' + fmtDur(totFr) + ' en français, ' + fmtDur(totEn) + ' en anglais';
+
+function copyText(text, btn){
+  var label = btn.textContent;
+  function done(){ btn.classList.add('done'); btn.textContent = btn.getAttribute('data-lang') === 'fr' ? 'Copié' : 'Copied'; setTimeout(function(){ btn.classList.remove('done'); btn.textContent = label; }, 1800); }
+  function fallback(){
+    var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    ta.remove();
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+}
+holder.addEventListener('click', function(e){
+  var btn = e.target.closest('.copy'); if (!btn) return;
+  var s = SCRIPTS.filter(function(x){ return x.id === btn.getAttribute('data-id'); })[0];
+  copyText(s[btn.getAttribute('data-lang')].join('\n\n'), btn);
+});
+
+document.body.setAttribute('data-show', 'both');
+document.querySelectorAll('[data-show]').forEach(function(b){
+  if (b.tagName !== 'BUTTON') return;
+  b.addEventListener('click', function(){
+    document.body.setAttribute('data-show', b.getAttribute('data-show'));
+    document.querySelectorAll('.bar [data-show]').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+  });
+});
+})();
+</script>

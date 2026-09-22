@@ -261,23 +261,258 @@ footer.end{margin-top:70px;font-size:13px;color:var(--muted)}
   .seg button{padding:9px 9px;font-size:13px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* état du chantier */
+.etat{margin:8px 0 0;border-top:1px solid var(--line)}
+.etat-row{display:grid;grid-template-columns:180px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+.etat-row dt{font-weight:600;color:var(--ink)}
+.etat-row dd{margin:0;color:var(--ink-2)}
+.pill-st{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px;margin-right:8px;white-space:nowrap}
+.st-done{background:var(--ok-soft);color:var(--ok)}
+.st-wait{background:var(--talk-soft);color:var(--talk)}
+.st-open{background:var(--accent-soft);color:var(--accent)}
+.tag-ret{display:inline-block;font:600 12px var(--f-body);color:var(--ok);background:var(--ok-soft);border-radius:999px;padding:3px 9px;margin-left:4px}
+
+/* version ordinateur */
+.dk-stage{position:relative;width:100%;overflow:hidden}
+.dk-scale{width:1120px;transform-origin:0 0}
+.dk{position:relative;width:1120px;height:660px;background:var(--surface);border:1px solid var(--line-2);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;display:grid;font-size:15px}
+.d1{grid-template-columns:1fr 452px}
+.d2{grid-template-columns:1fr 420px}
+.d3{grid-template-rows:auto 1fr auto}
+.dk-main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.dk-head{display:flex;align-items:center;gap:12px;padding:16px 28px;border-bottom:1px solid var(--line)}
+.dk-body{flex:1;min-height:0;overflow-y:auto;padding:26px 28px}
+.dk-foot{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 28px;border-top:1px solid var(--line)}
+.dk-foot .acts{display:flex;gap:10px;flex:none}
+.dk-foot .btn{min-width:160px}
+.dk-tot{min-width:0}
+.dk-tot .p-total{justify-content:flex-start;gap:14px}
+.dk-hint{font-size:13.5px;color:var(--muted)}
+.dk .b-q{font-size:26px;margin-bottom:8px}
+.dk .chips{grid-template-columns:repeat(4,minmax(0,1fr))}
+.opts2>.q{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts2>.q>.opt{margin-top:0}
+.opts2>.q>.q-h,.opts2>.q>.bud,.opts2>.q>.pills{grid-column:1/-1}
+.terms{display:flex;flex-wrap:wrap;gap:18px;margin:2px 0 16px;font-size:14px}
+.term{border:0;background:none;padding:0 0 1px;font:500 14px var(--f-body);color:var(--accent);border-bottom:1px dashed currentColor;cursor:help}
+.guide{background:var(--surface-2);border-left:1px solid var(--line);padding:26px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;min-height:0}
+.g-video{position:relative;flex:none;aspect-ratio:16/9;border-radius:14px;background:#0f1b29;color:#e8eef5;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;padding:14px 16px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+.g-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:56px;height:56px;border-radius:999px;background:rgba(255,255,255,.14);display:grid;place-items:center}
+.g-video b{font:700 15px/1.3 var(--f-display)}
+.g-video span.g-sub{font-size:12.5px;opacity:.72}
+.g-video.sm{aspect-ratio:auto;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;padding:10px 12px}
+.g-video.sm .g-play{position:static;transform:none;width:38px;height:38px;flex:none}
+.g-kick{font-size:12.5px;font-weight:600;color:var(--accent);margin:4px 0 0}
+.g-t{font:700 19px/1.25 var(--f-display);margin:0}
+.g-p{font-size:14.5px;color:var(--ink-2);margin:0;line-height:1.5}
+.g-meta{font-size:13.5px;color:var(--muted);margin:0}
+.g-meta strong{color:var(--ink)}
+.g-list{margin:0;padding-left:18px;font-size:14px;color:var(--ink-2)}
+.g-list li{margin-bottom:4px}
+.paper-wrap{background:var(--surface-2);border-left:1px solid var(--line);padding:22px;overflow-y:auto;min-height:0}
+.paper{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 20px 16px}
+.paper h4{font:700 17px var(--f-display);margin:0 0 2px}
+.pp-sub{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+.pp-empty{font-size:14px;color:var(--muted);padding:14px 0 4px;margin:0}
+.pp-dom{padding:10px 0;border-top:1px solid var(--line)}
+.pp-dom strong{display:block;font:700 14.5px var(--f-display);margin-bottom:4px}
+.pp-line{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;color:var(--ink-2);padding:3px 6px;margin:0 -6px;border-radius:6px;cursor:help}
+.pp-line span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.pp-line:hover{background:var(--accent-soft)}
+.pp-line.fresh{animation:fresh 1.4s ease}
+@keyframes fresh{0%{background:var(--ok-soft)}100%{background:transparent}}
+.paper .r-sum{margin-top:12px}
+.pop{position:absolute;z-index:20;width:320px;background:var(--surface);border:1px solid var(--line-2);border-radius:14px;box-shadow:0 18px 44px rgba(16,42,72,.22);padding:16px;pointer-events:none;display:flex;flex-direction:column;gap:8px}
+.pop .g-t{font-size:16px}
+.pop .g-p,.pop .g-list{font-size:13.5px}
+.d3-top{padding:22px 28px 4px}
+.d3-top h4{font:700 22px var(--f-display);margin:0}
+.d3-top p{margin:4px 0 0;color:var(--muted);font-size:14.5px}
+.d3-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:1fr 1fr;gap:12px;padding:14px 28px 16px;min-height:0}
+.tile{position:relative;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:16px;text-align:left;cursor:pointer;overflow:hidden;font:inherit;color:inherit;display:flex;flex-direction:column;gap:6px;min-height:0}
+.tile .t-n{font:700 17px var(--f-display);padding-right:22px}
+.tile .t-d{font-size:13.5px;color:var(--muted);line-height:1.4}
+.tile .t-p{margin-top:auto;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums;color:var(--accent)}
+.tile.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.tile.on .t-p{color:var(--ink)}
+.tile .t-ok{position:absolute;top:15px;right:14px;color:var(--ok);display:flex}
+.t-back{position:absolute;inset:0;background:var(--surface);padding:15px 16px;display:flex;flex-direction:column;gap:8px;opacity:0;transition:opacity .18s ease;pointer-events:none}
+.tile:hover .t-back,.tile:focus-visible .t-back{opacity:1}
+.t-back .t-n2{font:700 15px var(--f-display)}
+.t-list{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.t-list span{position:relative;padding-left:11px}
+.t-list span::before{content:"";position:absolute;left:0;top:.55em;width:4px;height:4px;border-radius:999px;background:currentColor}
+.t-vid{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink)}
+.t-vid i{width:28px;height:28px;border-radius:999px;background:#0f1b29;color:#fff;display:grid;place-items:center;flex:none}
+.t-vid i svg{width:14px;height:14px}
+.t-cta{margin-top:auto;font-size:13px;font-weight:600;color:var(--accent)}
+.d3-bar{display:flex;align-items:center;gap:18px;padding:14px 28px;border-top:1px solid var(--line)}
+.d3-chips{flex:1;display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.d3-chip{font-size:12.5px;font-weight:600;background:var(--surface-2);border-radius:999px;padding:4px 10px}
+.ov{position:absolute;inset:0;background:rgba(8,18,30,.42);z-index:10;display:grid;place-items:center}
+.ov-card{width:640px;max-height:600px;background:var(--surface);border-radius:18px;box-shadow:0 24px 60px rgba(8,18,30,.35);display:flex;flex-direction:column;overflow:hidden}
+.ov-card.wide{width:720px}
+.ov-h{display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line)}
+.ov-h strong{font:700 17px var(--f-display)}
+.ov-b{flex:1;min-height:0;overflow-y:auto;padding:22px}
+.ov-f{display:flex;align-items:center;gap:10px;padding:14px 22px;border-top:1px solid var(--line)}
+.ov-f .grow{flex:1}
+.dk .toast{bottom:88px;left:auto;right:28px;width:360px}
+.dk-desc>div{display:none;margin-top:18px;max-width:760px}
+.dk-desc>div.on{display:block}
+.dk-desc h3{margin-bottom:8px}
+.dk-desc p{color:var(--ink-2);font-size:15px}
+
+/* tableau des prix */
+.checks{padding-left:22px;margin:10px 0 0}
+.checks li{margin-bottom:10px}
+.px-group{margin-top:30px}
+.px-group h3{font-size:17px;margin-bottom:4px}
+.px-group>p{margin:0 0 8px}
+.px{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.px th{font-size:12px;font-weight:600;color:var(--muted);text-align:left;padding:8px 10px 6px 0}
+.px td{padding:9px 10px 9px 0;border-top:1px solid var(--line);vertical-align:top}
+.px td:first-child{font-weight:500;min-width:190px}
+.px .cur{white-space:nowrap;font-weight:600}
+.px input,.px textarea{border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--ink);font:400 14px var(--f-body)}
+.px input[type=number]{width:104px;height:36px;padding:0 8px}
+.px input.note{width:100%;min-width:150px;height:36px;padding:0 8px}
+.px textarea{width:100%;min-width:230px;padding:6px 8px;font-size:13px;line-height:1.45;resize:vertical}
+.px tr.chg td{background:var(--accent-soft)}
+.px tr.dirty td{background:var(--talk-soft)}
+.px-status{font-size:14px;color:var(--ink-2);margin-top:14px;min-height:1.4em}
+.save-btn{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:9999;display:flex;align-items:center;gap:8px;height:52px;padding:0 20px;border-radius:999px;border:0;background:var(--accent);color:var(--accent-ink);font:700 15px var(--f-body);box-shadow:0 10px 30px rgba(16,42,72,.3);cursor:pointer}
+.save-btn[disabled]{opacity:.55;cursor:default}
+.save-btn.idle{background:var(--surface);color:var(--ink-2);border:1px solid var(--line-2);box-shadow:var(--shadow)}
+.save-btn.pulse{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 10px 30px rgba(16,42,72,.3),0 0 0 0 rgba(29,113,184,.45)}50%{box-shadow:0 10px 30px rgba(16,42,72,.3),0 0 0 12px rgba(29,113,184,0)}}
+@media (max-width:760px){
+  .etat-row{grid-template-columns:1fr;gap:4px}
+  .px thead{display:none}
+  .px tr{display:block;border-top:1px solid var(--line);padding:10px 0}
+  .px td{display:block;border:0;padding:4px 0}
+  .px td[data-l]::before{content:attr(data-l);display:block;font-size:11.5px;color:var(--muted);font-weight:600;margin-bottom:2px}
+  .px td:first-child{min-width:0}
+  .px textarea,.px input.note{min-width:0}
+  .save-btn{right:16px;height:48px;padding:0 16px}
+}
+@media (prefers-reduced-motion:reduce){.save-btn.pulse{animation:none}.pp-line.fresh{animation:none}}
+
+.pop[hidden]{display:none}
 </style>
 
 <main class="wrap">
   <header class="prose">
     <p class="kicker">Calculateur de devis, 22 septembre 2026</p>
     <h1>Un bloc, une étape par service</h1>
-    <p class="lede">Trois architectures pour remplacer le grand tableau du calculateur. Les maquettes plus bas fonctionnent avec les vrais services et les vrais prix : clique dedans comme un visiteur.</p>
+    <p class="lede">Le document de pilotage de la refonte : où on en est, la version ordinateur, les prix à valider, et les maquettes mobile. Toutes les maquettes tournent avec les vrais services et les vrais prix : clique dedans comme un visiteur.</p>
     <ul class="toc">
+      <li><a href="#etat">Où on en est</a></li>
+      <li><a href="#ordinateur">Version ordinateur</a></li>
+      <li><a href="#prix">Prix à valider</a></li>
+      <li><a href="#mail">Mail des devis</a></li>
+      <li><a href="#maquettes">Version mobile</a></li>
       <li><a href="#lead">Le lead ai-coustics</a></li>
       <li><a href="#aujourdhui">Le calculateur aujourd’hui</a></li>
-      <li><a href="#maquettes">Les trois maquettes</a></li>
-      <li><a href="#comparaison">Comparaison</a></li>
-      <li><a href="#reco">Recommandation</a></li>
       <li><a href="#capot">Sous le capot</a></li>
       <li><a href="#trancher">À trancher</a></li>
+      <li><a href="#documents">Documents</a></li>
     </ul>
   </header>
+
+  <section id="etat" class="prose">
+    <h2>Où on en est</h2>
+    <dl class="etat">
+      <div class="etat-row"><dt>Version mobile</dt><dd><span class="pill-st st-done">Décidé</span>B, une question à la fois. Ton choix du 22/09.</dd></div>
+      <div class="etat-row"><dt>Version ordinateur</dt><dd><span class="pill-st st-open">À choisir</span>Trois directions juste en dessous, toutes sur le moteur de B. Mon avis : D1, le guide à côté.</dd></div>
+      <div class="etat-row"><dt>Prix</dt><dd><span class="pill-st st-open">À valider</span>Le tableau plus bas. Tes corrections s’enregistrent dans cette page, je les relis et je les reporte dans le code. Six incohérences relevées en tête du tableau.</dd></div>
+      <div class="etat-row"><dt>Vidéos facecam</dt><dd><span class="pill-st st-done">Scripts prêts</span>Onze scripts en français et en anglais, de 21 à 64 secondes : <a href="https://claude.ai/artifact/G6qUL8pdqMUEKiFMPW6fVv">la page des scripts</a>.</dd></div>
+      <div class="etat-row"><dt>Mail des devis</dt><dd><span class="pill-st st-done">Corrigé dans n8n</span>Récapitulatif et objet de ton mail, le 22/09. Passage dans le CRM proposé plus bas, avec la refonte.</dd></div>
+      <div class="etat-row"><dt>Total faux</dt><dd><span class="pill-st st-done">Corrigé</span>Le bug du lead ai-coustics, commit <code>8e259ff</code>, en ligne.</dd></div>
+      <div class="etat-row"><dt>GA4 et BigQuery</dt><dd><span class="pill-st st-wait">À vérifier</span>Aucun export dans le projet Google Cloud <code>mydigipal</code>. Le compte ouvert dans ton Chrome n’a que la lecture sur la propriété 281550532, donc la rubrique <b>BigQuery links</b> n’y apparaît pas.</dd></div>
+    </dl>
+  </section>
+
+  <section id="ordinateur">
+    <div class="prose">
+      <h2>La version ordinateur</h2>
+      <p>Sur ordinateur, on a la place de montrer ce qu’un téléphone doit cacher. Les trois directions gardent le moteur du mobile B, avec les mêmes questions et le même calcul, et changent ce qui entoure la question. Chaque zone qui porte une explication réagit au survol : services, options, réseaux, budget, honoraires, lignes du devis. Les encadrés sombres marquent l’emplacement de tes vidéos.</p>
+      <p class="muted small">À regarder sur un ordinateur. Sur un téléphone, la maquette est réduite à l’échelle.</p>
+    </div>
+    <div class="ctl">
+      <div class="seg" role="group" aria-label="Direction affichée">
+        <button type="button" data-dk="d1" aria-pressed="true">D1. Le guide à côté</button>
+        <button type="button" data-dk="d2" aria-pressed="false">D2. Le devis qui s’écrit</button>
+        <button type="button" data-dk="d3" aria-pressed="false">D3. La carte des services</button>
+      </div>
+      <div class="seg" role="group" aria-label="Langue des maquettes ordinateur">
+        <button type="button" data-lang="fr" aria-pressed="true">FR</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button type="button" class="reset" id="dk-reset">Recommencer</button>
+    </div>
+    <div class="dk-stage" id="dk-stage"><div class="dk-scale" id="dk-scale"><div class="dk d1" id="dk"></div></div></div>
+    <div class="dk-desc">
+      <div data-dkd="d1" class="on">
+        <h3>D1. Le guide à côté</h3>
+        <p>La question à gauche, un panneau à droite. Au repos, le panneau montre ta vidéo sur le service en cours et ce qu’il faut en retenir. Au survol d’une option, d’un réseau, du budget ou des honoraires, il explique l’élément survolé. C’est le principe de la visite de la page Academy, appliqué au devis.</p>
+        <div class="pc">
+          <div><h4>Ce qui marche</h4><ul><li>Exactement le parcours du mobile, la pédagogie en plus.</li><li>Une place fixe et grande pour chaque vidéo.</li></ul></div>
+          <div><h4>Ce qui coince</h4><ul><li>Le devis complet n’apparaît qu’au récapitulatif.</li><li>Le panneau change souvent si la souris se promène.</li></ul></div>
+        </div>
+      </div>
+      <div data-dkd="d2">
+        <h3>D2. Le devis qui s’écrit</h3>
+        <p>La question à gauche, le devis à droite, qui s’écrit ligne par ligne à chaque réponse. Les explications sortent en bulle au survol d’une option ou d’une ligne du devis, avec la vidéo en vignette.</p>
+        <div class="pc">
+          <div><h4>Ce qui marche</h4><ul><li>On voit en permanence d’où vient chaque euro.</li><li>Le devis reste sous les yeux jusqu’au formulaire.</li></ul></div>
+          <div><h4>Ce qui coince</h4><ul><li>Les bulles couvrent une partie de l’écran.</li><li>La vidéo n’y est qu’une vignette.</li></ul></div>
+        </div>
+      </div>
+      <div data-dkd="d3">
+        <h3>D3. La carte des services</h3>
+        <p>Les huit services en tuiles. Le survol retourne la tuile : ce que c’est, ce que ça apporte, la vidéo. Le clic ouvre les questions du service dans une fenêtre, puis la tuile affiche son prix. Le récapitulatif s’ouvre depuis la barre du bas.</p>
+        <div class="pc">
+          <div><h4>Ce qui marche</h4><ul><li>Toute l’offre d’un coup d’œil.</li><li>La plus adaptée à qui ne sait pas encore ce qu’il veut.</li></ul></div>
+          <div><h4>Ce qui coince</h4><ul><li>Ce n’est plus le parcours B : deux logiques à maintenir entre mobile et ordinateur.</li><li>La plus longue à développer.</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="prix">
+    <div class="prose">
+      <h2>Les prix à valider</h2>
+      <p>Toutes les valeurs qu’utilise le calculateur aujourd’hui, relevées dans le code. Écris un nouveau montant là où tu veux changer, corrige ce qui est inclus dans chaque niveau, ajoute une note si besoin, puis clique le bouton <b>Enregistrer</b> en bas à droite. Tes corrections restent dans cette page : je les relis et je les reporte dans le code. Une case « Nouveau » vide veut dire « on garde ».</p>
+      <h3>Six points à regarder d’abord</h3>
+      <ol class="checks">
+        <li><b>Deux offres d’articles de blog.</b> SEO mensuel Starter : 2 articles par mois pour 500 €. Contenu IA : 4 articles par mois pour 500 €.</li>
+        <li><b>Paid Social sur deux réseaux.</b> La gestion est multipliée par 1,7. Avec 1 500 € de budget, elle coûte 850 €, soit 57 % du budget média.</li>
+        <li><b>La remise d’engagement</b> s’applique aussi aux frais de gestion dans le code, alors que le commentaire du code dit le contraire. Lequel est voulu ?</li>
+        <li><b>Contacts « Email + IA »</b> à 0,05 € le contact, moins cher que « Email seul » à 0,10 €.</li>
+        <li><b>Déplacement de la formation.</b> La configuration prévoit de 300 à 700 €, le calculateur applique toujours 500 €.</li>
+        <li><b>Engagement minimum.</b> La FAQ du calculateur dit 4 mois, la page SEO dit « Sans engagement, flexibilité au mois ».</li>
+      </ol>
+    </div>
+    <div id="px"></div>
+    <p class="px-status prose" id="px-status" role="status"></p>
+  </section>
+
+  <section id="mail" class="prose">
+    <h2>Le mail des devis : n8n ou Google Cloud</h2>
+    <p><b>Fait aujourd’hui, dans n8n.</b> Le récapitulatif du mail et de la pièce jointe montre maintenant les services, puis les frais de gestion publicitaire, puis le total mensuel, au lieu de sauter de 400 € à 1 400 €. L’objet de ton mail donne le mensuel et le total : « 1 400 €/mois, 5 600 € sur 4 mois ». Testé sur la demande de Thom avant d’être publié.</p>
+    <p><b>Ensuite, oui, Google Cloud, mais pas pour quitter n8n.</b> Le vrai gain, c’est tout ce que le workflow actuel ne fait pas :</p>
+    <ul>
+      <li>Les leads du calculateur n’arrivent pas dans le CRM : aucun nœud n’écrit dans sales.mydigipal.com.</li>
+      <li>Si le mail qui t’est envoyé échoue, le site affiche quand même « demande enregistrée » : le lead est perdu sans bruit.</li>
+      <li>Aucun contrôle côté serveur : un robot qui poste directement sur le webhook peut faire partir des mails depuis ta boîte vers n’importe quelle adresse.</li>
+      <li>Les modèles de mail ne sont pas versionnés dans git.</li>
+    </ul>
+    <p><b>Où :</b> dans le CRM (<code>mydigipal-crm</code>), qui envoie déjà des mails et écrit déjà les contacts dans <code>prospection.contacts</code>. Une route publique <code>/api/site-lead</code>, sur le modèle de la demande d’équipe de l’Academy. À faire avec la refonte, pour le calculateur et pour le formulaire de contact, qui partagent le même classeur et la même boîte d’envoi.</p>
+    <p><b>Un choix à faire :</b> aujourd’hui le mail au prospect part de paul@. Depuis le CRM, il partirait de marketing@ avec réponse à paul@, sauf si l’on crée un mot de passe d’application pour ta boîte. La pièce jointe HTML, souvent mal vue des filtres anti-spam, deviendrait un lien vers une page de devis hébergée.</p>
+    <p class="muted small">n8n restera pour les candidatures (CV en pièce jointe) et pour le relais du paiement Revolut de l’Academy, tant qu’on ne les migre pas aussi.</p>
+  </section>
 
   <section id="lead" class="prose">
     <h2>D’où viennent les 1 750 € et les 7 000 €</h2>
@@ -336,8 +571,8 @@ footer.end{margin-top:70px;font-size:13px;color:var(--muted)}
 
   <section id="maquettes">
     <div class="prose">
-      <h2>Trois architectures, à la taille d’un téléphone</h2>
-      <p>Chaque maquette est le bloc du calculateur seul, en 390&nbsp;px de large, avec les huit services, leurs niveaux et leurs prix réels. Le total du bas se recalcule à chaque réponse. Rien n’est envoyé.</p>
+      <h2>La version mobile : B retenue</h2>
+      <p>Tu as retenu B le 22/09. Les trois maquettes restent ici pour mémoire. Chacune est le bloc du calculateur seul, en 390&nbsp;px de large, avec les huit services, leurs niveaux et leurs prix réels. Le total du bas se recalcule à chaque réponse. Rien n’est envoyé.</p>
     </div>
     <div class="ctl">
       <div class="seg pick-arch" role="group" aria-label="Maquette affichée">
@@ -365,7 +600,7 @@ footer.end{margin-top:70px;font-size:13px;color:var(--muted)}
         </div>
       </div>
       <div class="col" data-col="b">
-        <div class="col-h"><span class="letter">B</span><h3>Une question à la fois</h3></div>
+        <div class="col-h"><span class="letter">B</span><h3>Une question à la fois <span class="tag-ret">Retenue</span></h3></div>
         <div class="frame" id="proto-b"></div>
         <div class="col-txt">
           <p>Le même parcours, découpé plus fin : un écran par question, une barre de progression en haut. Un choix simple fait avancer tout seul, « Continuer » sert aux curseurs et aux choix multiples. Le mode « Aidez-moi à choisir » devient une autre série de questions dans le même moteur.</p>
@@ -409,7 +644,8 @@ footer.end{margin-top:70px;font-size:13px;color:var(--muted)}
 
   <section id="reco" class="prose">
     <div class="reco">
-      <h2>Ma recommandation : A, puis C comme porte d’entrée</h2>
+      <h2>Mon avis de départ : A, puis C comme porte d’entrée</h2>
+      <p><b>Décision du 22/09 : B sur mobile.</b> L’avis ci-dessous est gardé pour mémoire. Le point sur C reste vrai pour la version ordinateur : le moteur du mode guidé doit tenir le budget annoncé avant de servir d’entrée.</p>
       <p><b>A d’abord</b>, ton idée, parce que les onglets donnent ce que ni la page actuelle ni B ne donnent : la carte du devis. Le visiteur sait à tout moment ce qu’il a choisi, ce qu’il lui reste, et combien ça coûte. Paid Social, le seul onglet long, garde l’ordre des questions du visiteur (réseaux, budget, visuels, catalogue), et le budget passe sur un curseur par paliers : sur un curseur linéaire de 500 à 50 000 €, tout ce qui se joue entre 500 et 5 000 € tient dans le premier dixième.</p>
       <p><b>C ensuite</b>, pas comme un second calculateur mais comme le bouton « Aidez-moi à choisir » qui préremplit les onglets de A. À condition de recaler d’abord le moteur pour qu’il tienne le budget annoncé : aujourd’hui il propose 56 % de plus que ce que le visiteur a dit pouvoir dépenser.</p>
       <p><b>B</b> est la plus propre sur téléphone, mais demande deux fois plus d’écrans pour le même devis, sur une page qui reçoit environ deux vues par jour. Chaque écran de plus coûte des visiteurs qu’on n’a pas.</p>
@@ -431,15 +667,25 @@ footer.end{margin-top:70px;font-size:13px;color:var(--muted)}
   <section id="trancher" class="prose">
     <h2>À trancher</h2>
     <ol class="todo">
-      <li><b>L’architecture.</b> A, B ou C. Je pars sur A si tu valides, en commençant par une page de test en noindex, comme pour les composants V2.</li>
+      <li><b>La version ordinateur.</b> D1, D2 ou D3. Mon avis : D1, le guide à côté.</li>
+      <li><b>Les prix.</b> Le tableau, en commençant par les six points en tête.</li>
       <li><b>Les frais uniques.</b> Affichés à part, comme dans les maquettes (« + 500 € de mise en place »), ou lissés sur la durée d’engagement comme dans la barre actuelle (choix de la V5.6).</li>
       <li><b>Le formulaire.</b> Dans le bloc, en dernière étape (maquettes), ou dans la fenêtre qui s’ouvre aujourd’hui.</li>
-      <li><b>Le mail n8n.</b> Je corrige maintenant la ligne « Monthly services » et je mets le mensuel et le total dans l’objet de ton mail, sans attendre la refonte ?</li>
-      <li><b>La mesure.</b> Relier la propriété GA4 281550532 à BigQuery (<b>Admin</b>, <b>Product links</b>, <b>BigQuery links</b>, <b>Link</b>). L’export ne remonte pas dans le passé, donc à faire avant la mise en ligne pour comparer avant et après. Et vérifier dans GTM pourquoi <code>generate_lead</code> ne part plus.</li>
+      <li><b>Le mail.</b> Le passer dans le CRM avec la refonte, et choisir l’expéditeur : marketing@ avec réponse vers toi, ou ta boîte.</li>
+      <li><b>GA4 et BigQuery.</b> Regarder avec ton compte administrateur dans GA4 (<b>Admin</b>, <b>Product links</b>, <b>BigQuery links</b>). S’il n’y a rien, créer le lien avant la mise en ligne : l’export ne remonte pas dans le passé. Et vérifier dans GTM pourquoi <code>generate_lead</code> ne part plus.</li>
     </ol>
   </section>
 
-  <footer class="end">Sources : mails du 22/09/2026, workflow n8n « Marketing Calculator - Quote Request V7 », <code>Calculator.tsx</code> et <code>data/*.ts</code> au commit <code>8e259ff</code>, relevé Playwright de la production le 22/09, table <code>googleAnalytics_v2.events</code> du 04/08 au 21/09.</footer>
+  <section id="documents" class="prose">
+    <h2>Les documents du projet</h2>
+    <ul class="issues">
+      <li><a href="https://claude.ai/artifact/G6qUL8pdqMUEKiFMPW6fVv">Scripts des vidéos facecam</a> : onze scripts en français et en anglais, avec un bouton Copier pour le prompteur. Fichier <code>docs/calculator/refonte-2026-09/scripts-videos.html</code>.</li>
+      <li>Ce document de pilotage : <code>docs/calculator/refonte-2026-09/calculateur-en-etapes.html</code>.</li>
+      <li>L’audit précédent du calculateur : <code>docs/calculator/CALCULATOR-AUDIT.md</code>.</li>
+    </ul>
+  </section>
+
+  <footer class="end">Sources : mails du 22/09/2026, workflow n8n « Marketing Calculator - Quote Request V7 », <code>Calculator.tsx</code> et <code>data/*.ts</code> au commit <code>8e259ff</code>, relevé Playwright de la production le 22/09, table <code>googleAnalytics_v2.events</code> du 04/08 au 21/09, workflow n8n corrigé le 22/09 (version publiée <code>09a5d627</code>).</footer>
 </main>
 
 <script>
@@ -477,10 +723,10 @@ var STEPS = [500,1000,1500,2000,2500,3000,4000,5000,6000,7500,10000,12500,15000,
 function levelQ(domain, service){ return {id:service, domain:domain, kind:'level', service:service, title:QT[service]}; }
 function questions(domain){
   switch(domain){
-    case 'google-ads': return [{id:'ga-budget', domain:domain, kind:'budget', title:['Quel budget média par mois sur Google ?','Monthly media budget on Google?'], help:['Payé directement à Google, en plus de nos honoraires.','Paid straight to Google, on top of our fees.']}];
+    case 'google-ads': return [{id:'ga-budget', domain:domain, kind:'budget', title:['Quel budget média par mois sur Google ?','Monthly media budget on Google?'], help:['Dépensé sur Google, en plus de nos honoraires. Il n’est pas inclus dans le devis.','Spent on Google, on top of our fees. It is not included in the quote.']}];
     case 'paid-social': return [
       {id:'ps-channels', domain:domain, kind:'channels', title:['Sur quels réseaux ?','Which networks?'], help:['Nos frais de gestion augmentent avec chaque réseau ajouté.','Our management fee grows with each extra network.']},
-      {id:'ps-budget', domain:domain, kind:'budget', title:['Quel budget média par mois sur ces réseaux ?','Monthly media budget across these networks?'], help:['Payé directement aux réseaux, en plus de nos honoraires.','Paid straight to the networks, on top of our fees.']},
+      {id:'ps-budget', domain:domain, kind:'budget', title:['Quel budget média par mois sur ces réseaux ?','Monthly media budget across these networks?'], help:['Dépensé sur les réseaux, en plus de nos honoraires. Il n’est pas inclus dans le devis.','Spent on the networks, on top of our fees. It is not included in the quote.']},
       levelQ(domain,'social-creatives'), levelQ(domain,'social-feed-catalogue')];
     case 'seo': return [levelQ(domain,'seo-audit'), levelQ(domain,'seo-monthly')];
     case 'emailing': return [levelQ(domain,'email-management-package')];
@@ -519,31 +765,31 @@ function devis(st){
     var items = [];
     if (d === 'google-ads') {
       var b = a['ga-budget'] != null ? a['ga-budget'] : D.budget.def; media += b;
-      items.push({l:tr('Gestion des campagnes','Campaign management'), p:feeInfo(b,1).fee, per:'m'});
-      items.push({l:tr('Budget média, payé à Google','Media budget, paid to Google'), p:b, per:'media'});
+      items.push({l:tr('Gestion des campagnes','Campaign management'), p:feeInfo(b,1).fee, per:'m', info:'fee'});
+      items.push({l:tr('Budget média (non inclus)','Media budget (not included)'), p:b, per:'media', info:'media'});
     }
     if (d === 'paid-social') {
       var ch = a['ps-channels'] || [], b2 = a['ps-budget'] != null ? a['ps-budget'] : D.budget.def; media += b2;
       var n = Math.max(ch.length, 1);
-      items.push({l:tr('Gestion des campagnes','Campaign management') + (n > 1 ? tr(', ' + n + ' réseaux', ', ' + n + ' networks') : ''), p:feeInfo(b2,n).fee, per:'m'});
-      items.push({l:tr('Budget média, payé aux réseaux','Media budget, paid to the networks'), p:b2, per:'media'});
+      items.push({l:tr('Gestion des campagnes','Campaign management') + (n > 1 ? tr(', ' + n + ' réseaux', ', ' + n + ' networks') : ''), p:feeInfo(b2,n).fee, per:'m', info:'fee'});
+      items.push({l:tr('Budget média (non inclus)','Media budget (not included)'), p:b2, per:'media', info:'media'});
     }
     questions(d).forEach(function(q){
       if (q.kind !== 'level') return;
       var v = a[q.id];
       if (v == null) return;
       var L = D.services[q.service][v];
-      items.push({l:tr(SVC[q.service][0], SVC[q.service][1]) + ', ' + tr(L.fr, L.en), p:L.p, per:L.o ? 'o' : 'm'});
+      items.push({l:tr(SVC[q.service][0], SVC[q.service][1]) + ', ' + tr(L.fr, L.en), p:L.p, per:L.o ? 'o' : 'm', info:'lvl:' + q.service + ':' + v});
     });
     if (d === 'ai-training') {
       var tp = trainingPrice(a);
       if (tp != null && a['tr-mode']) {
-        items.push({l:(a['tr-format'] === 'full' ? tr('Journée','Full day') : tr('Demi-journée','Half day')) + ' x ' + a['tr-sessions'], p:tp, per:'o'});
-        if (a['tr-mode'] === 'onsite') items.push({l:tr('Déplacement','Travel'), p:D.training.travel, per:'o'});
+        items.push({l:(a['tr-format'] === 'full' ? tr('Journée','Full day') : tr('Demi-journée','Half day')) + ' x ' + a['tr-sessions'], p:tp, per:'o', info:'train:' + a['tr-format']});
+        if (a['tr-mode'] === 'onsite') items.push({l:tr('Déplacement','Travel'), p:D.training.travel, per:'o', info:'train:onsite'});
       }
     }
     if (d === 'tracking-reporting') {
-      (a['trk-items'] || []).forEach(function(id){ var it = D.tracking.filter(function(x){ return x.id === id; })[0]; items.push({l:tr(it.fr, it.en), p:it.p, per:'o'}); });
+      (a['trk-items'] || []).forEach(function(id){ var it = D.tracking.filter(function(x){ return x.id === id; })[0]; items.push({l:tr(it.fr, it.en), p:it.p, per:'o', info:'trk:' + id}); });
     }
     var m = 0, o = 0;
     items.forEach(function(i){ if (i.per === 'm') m += i.p; else if (i.per === 'o') o += i.p; });
@@ -559,7 +805,7 @@ function devis(st){
 function optRow(o){
   var mark = o.multi ? '<span class="mk sq">' + (o.checked ? ICON.check : '') + '</span>' : '<span class="mk">' + (o.checked ? '<i></i>' : '') + '</span>';
   var price = o.price != null ? '<span class="pr">' + money(o.price) + '<small>' + (o.per === 'o' ? tr('une fois','one-off') : PM()) + '</small></span>' : '';
-  return '<button type="button" class="opt" role="' + (o.multi ? 'checkbox' : 'radio') + '" aria-checked="' + (o.checked ? 'true' : 'false') + '" ' + o.attrs + '>' + mark +
+  return '<button type="button" class="opt" role="' + (o.multi ? 'checkbox' : 'radio') + '" aria-checked="' + (o.checked ? 'true' : 'false') + '" ' + o.attrs + (o.info ? ' data-info="' + o.info + '"' : '') + '>' + mark +
     '<span class="tx"><span class="nm">' + esc(o.name) + '</span>' + (o.desc ? '<span class="ds">' + esc(o.desc) + '</span>' : '') + '</span>' + price + '</button>';
 }
 function budgetInner(q, st){
@@ -576,9 +822,9 @@ function qHTML(q, st, opt){
   if (q.help && !opt.noHelp) h += '<p class="q-h">' + esc(tr(q.help[0], q.help[1])) + '</p>';
   if (q.kind === 'level') {
     var v = a[q.id];
-    h += optRow({checked: v === null, name: tr('Non merci','No thanks'), attrs:'data-act="set" data-q="' + q.id + '" data-v="null"'});
+    h += optRow({checked: v === null, name: tr('Non merci','No thanks'), info:'svc:' + q.service, attrs:'data-act="set" data-q="' + q.id + '" data-v="null"'});
     D.services[q.service].forEach(function(L, i){
-      h += optRow({checked: v === i, name: tr(L.fr, L.en), desc: tr(L.ffr, L.fen), price: L.p, per: L.o ? 'o' : 'm', attrs:'data-act="set" data-q="' + q.id + '" data-v="' + i + '"'});
+      h += optRow({checked: v === i, name: tr(L.fr, L.en), desc: tr(L.ffr, L.fen), price: L.p, per: L.o ? 'o' : 'm', info:'lvl:' + q.service + ':' + i, attrs:'data-act="set" data-q="' + q.id + '" data-v="' + i + '"'});
     });
   } else if (q.kind === 'choice') {
     q.options.forEach(function(o){
@@ -586,27 +832,27 @@ function qHTML(q, st, opt){
       if (q.id === 'tr-sessions' && a['tr-format']) { var tier = o.v === 1 ? D.training.single : D.training.bulk; price = (a['tr-format'] === 'full' ? tier.full : tier.half) * o.v; }
       if (q.id === 'tr-format') { price = o.v === 'full' ? D.training.single.full : D.training.single.half; }
       if (o.p != null) price = o.p;
-      h += optRow({checked: a[q.id] === o.v, name: tr(o.l[0], o.l[1]), desc: o.d ? tr(o.d[0], o.d[1]) : '', price: price, per: per, attrs:'data-act="set" data-q="' + q.id + '" data-v="' + o.v + '"'});
+      h += optRow({checked: a[q.id] === o.v, name: tr(o.l[0], o.l[1]), desc: o.d ? tr(o.d[0], o.d[1]) : '', price: price, per: per, info: q.id === 'tr-mode' ? 'train:' + o.v : 'train:' + (q.id === 'tr-format' ? o.v : 'sessions'), attrs:'data-act="set" data-q="' + q.id + '" data-v="' + o.v + '"'});
     });
     if (q.id === 'tr-format') h += '<p class="q-h" style="margin-top:8px">' + esc(tr('Prix pour une session.','Price for one session.')) + '</p>';
   } else if (q.kind === 'budget') {
     var b = a[q.id] != null ? a[q.id] : D.budget.def;
     var idx = 0; STEPS.forEach(function(s, k){ if (Math.abs(s - b) < Math.abs(STEPS[idx] - b)) idx = k; });
     var parts = budgetInner(q, st).split('|');
-    h += '<div class="bud"><div data-bv>' + parts[0] + '</div>' +
+    h += '<div class="bud"><div data-bv data-info="media">' + parts[0] + '</div>' +
       '<input type="range" id="' + opt.uid + '-' + q.id + '" min="0" max="' + (STEPS.length - 1) + '" step="1" value="' + idx + '" data-act="budget" data-q="' + q.id + '" aria-label="' + esc(tr(q.title[0], q.title[1])) + '">' +
       '<div class="bud-scale"><span>' + money(STEPS[0]) + '</span><span>' + money(STEPS[STEPS.length - 1]) + '</span></div>' +
-      '<p class="bud-fee" data-bf>' + parts[1] + '</p></div>';
+      '<p class="bud-fee" data-bf data-info="fee">' + parts[1] + '</p></div>';
   } else if (q.kind === 'channels') {
     var ch = a[q.id] || [];
     h += '<div class="pills">' + D.channels.map(function(c){
       var on = ch.indexOf(c.id) >= 0;
-      return '<button type="button" class="pill" role="checkbox" aria-checked="' + on + '" data-act="toggle" data-q="' + q.id + '" data-v="' + c.id + '">' + (on ? ICON.check : '') + esc(tr(c.fr, c.en)) + '</button>';
+      return '<button type="button" class="pill" role="checkbox" aria-checked="' + on + '" data-act="toggle" data-q="' + q.id + '" data-v="' + c.id + '" data-info="ch:' + c.id + '">' + (on ? ICON.check : '') + esc(tr(c.fr, c.en)) + '</button>';
     }).join('') + '</div>';
   } else if (q.kind === 'multi') {
     var sel = a[q.id] || [];
     D.tracking.forEach(function(it){
-      h += optRow({multi:true, checked: sel.indexOf(it.id) >= 0, name: tr(it.fr, it.en), price: it.p, per:'o', attrs:'data-act="toggle" data-q="' + q.id + '" data-v="' + it.id + '"'});
+      h += optRow({multi:true, checked: sel.indexOf(it.id) >= 0, name: tr(it.fr, it.en), price: it.p, per:'o', info:'trk:' + it.id, attrs:'data-act="toggle" data-q="' + q.id + '" data-v="' + it.id + '"'});
     });
   }
   return h + '</div>';
@@ -614,7 +860,7 @@ function qHTML(q, st, opt){
 function chipsHTML(selected, locked){
   return '<div class="chips">' + ORDER.map(function(id){
     var on = selected.indexOf(id) >= 0, lock = locked && locked.indexOf(id) >= 0;
-    return '<button type="button" class="chip" role="checkbox" aria-checked="' + on + '"' + (lock ? ' disabled' : '') + ' data-act="pick" data-d="' + id + '"><span class="ok">' + (on ? ICON.check : '') + '</span><span class="nm">' + esc(dName(id)) + '</span><span class="ds">' + esc(dDesc(id)) + '</span></button>';
+    return '<button type="button" class="chip" role="checkbox" aria-checked="' + on + '"' + (lock ? ' disabled' : '') + ' data-act="pick" data-d="' + id + '" data-info="dom:' + id + '"><span class="ok">' + (on ? ICON.check : '') + '</span><span class="nm">' + esc(dName(id)) + '</span><span class="ds">' + esc(dDesc(id)) + '</span></button>';
   }).join('') + '</div>';
 }
 function totalHTML(st, q){
@@ -646,7 +892,7 @@ function recapHTML(st, q, uid){
     '<div><dt>' + tr('Honoraires mensuels','Monthly fees') + '</dt><dd>' + money(q.before) + PM() + '</dd></div>' +
     (q.disc ? '<div><dt>' + tr('Remise ' + st.duration + ' mois', st.duration + '-month discount') + '</dt><dd>-' + money(q.disc) + PM() + '</dd></div>' : '') +
     (q.one ? '<div><dt>' + tr('Frais uniques','One-off fees') + '</dt><dd>' + money(q.one) + '</dd></div>' : '') +
-    (q.media ? '<div class="media"><dt>' + tr('Budget média, payé aux plateformes','Media budget, paid to the platforms') + '</dt><dd>' + money(q.media) + PM() + '</dd></div>' : '') +
+    (q.media ? '<div class="media"><dt>' + tr('Budget média (non inclus)','Media budget (not included)') + '</dt><dd>' + money(q.media) + PM() + '</dd></div>' : '') +
     '<div class="tot"><dt>' + tr('Nos honoraires sur ' + st.duration + ' mois','Our fees over ' + st.duration + ' months') + '</dt><dd>' + money(q.mon * st.duration + q.one) + '</dd></div></dl>';
   h += '<form class="r-form" onsubmit="return false">' +
     '<label for="' + uid + '-nom">' + tr('Nom','Name') + '<input id="' + uid + '-nom" autocomplete="name" value="Clara Martin"></label>' +
@@ -944,6 +1190,12 @@ var C = (function(){
   };
 })();
 
+/* Les maquettes ordinateur (second script) réutilisent le même moteur. */
+window.CALC = {D:D, tr:tr, esc:esc, money:money, PM:PM, ICON:ICON, ORDER:ORDER, STEPS:STEPS, ALLQ:ALLQ, REDUCE:REDUCE,
+  questions:questions, devis:devis, qHTML:qHTML, optRow:optRow, chipsHTML:chipsHTML, totalHTML:totalHTML, durSeg:durSeg,
+  budgetInner:budgetInner, feeInfo:feeInfo, dName:dName, dShort:dShort, dDesc:dDesc, SVC:SVC, inOrder:inOrder,
+  setAnswer:setAnswer, toggleAnswer:toggleAnswer, recapHTML:recapHTML, lang:function(){ return LANG; }, renderers:[]};
+
 var protos = [Proto('proto-a', A), Proto('proto-b', B), Proto('proto-c', C)];
 var impls = [A, B, C];
 
@@ -953,6 +1205,7 @@ document.querySelectorAll('[data-lang]').forEach(function(b){
     LANG = b.getAttribute('data-lang');
     document.querySelectorAll('[data-lang]').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
     protos.forEach(function(p){ p.render(true); });
+    window.CALC.renderers.forEach(function(fn){ fn(); });
   });
 });
 document.querySelectorAll('[data-arch]').forEach(function(b){
@@ -973,3 +1226,465 @@ for (var i = 1; i <= 11; i++) {
 }
 })();
 </script>
+<script>
+(function(){
+'use strict';
+var C = window.CALC; if (!C) return;
+var EDU = {"svc":{"seo-audit":{"dom":"seo","fr":{"intro":"Un diagnostic complet de votre présence en ligne et de vos opportunités de croissance organique.","items":["Performance technique (Core Web Vitals, vitesse, mobile)","Architecture du site et structure des URLs","Métadonnées (titres, descriptions, H1-H6)","Maillage interne et navigation","Indexation, sitemap.xml, robots.txt","Erreurs 404, redirections, liens cassés"],"concl":"Livrable : Rapport d'audit complet avec recommandations actionnables et plan d'action."},"en":{"intro":"A complete diagnostic of your online presence and your organic growth opportunities.","items":["Technical performance (Core Web Vitals, speed, mobile)","Site architecture and URL structure","Metadata (titles, descriptions, H1-H6)","Internal linking and navigation","Indexing, sitemap.xml, robots.txt","404 errors, redirects, broken links"],"concl":"Deliverable: Complete audit report with actionable recommendations and action plan."},"lv":[{"p":400,"o":true,"fr":{"name":"Essentiel","feats":["Audit technique complet","20-30 mots-clés analysés","Liste des erreurs détectées","Recommandations générales"],"rec":"Sites récents ou petits budgets"},"en":{"name":"Essential","feats":["Complete technical audit","20-30 keywords analyzed","List of detected errors","General recommendations"],"rec":"New sites or small budgets"}},{"p":700,"o":true,"fr":{"name":"Avancé","feats":["Audit technique + concurrentiel","50+ mots-clés analysés","Corrections techniques incluses","Plan d'action priorisé sur 3 mois"],"rec":"Vision stratégique complète"},"en":{"name":"Advanced","feats":["Technical + competitive audit","50+ keywords analyzed","Technical fixes included","Prioritized 3-month action plan"],"rec":"Complete strategic view"}},{"p":1200,"o":true,"fr":{"name":"Premium","feats":["Audit exhaustif technique + sémantique","100+ mots-clés + analyse backlinks","Corrections techniques implémentées","Roadmap 6 mois + benchmark concurrentiel","Présentation et workshop stratégique"],"rec":"Sites ambitieux, marchés compétitifs"},"en":{"name":"Premium","feats":["Exhaustive technical + semantic audit","100+ keywords + backlink analysis","Technical fixes implemented","6-month roadmap + competitive benchmark","Presentation and strategic workshop"],"rec":"Ambitious sites, competitive markets"}}]},"seo-monthly":{"dom":"seo","fr":{"intro":"Un accompagnement complet pour faire croître votre trafic organique mois après mois.","items":["Recherche continue de mots-clés et opportunités","Suivi des positions et performances","Optimisation des pages existantes","Amélioration du maillage interne","Veille concurrentielle"],"concl":"Résultat moyen : +68% de trafic organique après 6 mois de publication régulière."},"en":{"intro":"Complete management to grow your organic traffic month after month.","items":["Ongoing keyword and opportunity research","Position and performance tracking","Optimization of existing pages","Internal linking improvements","Competitive monitoring"],"concl":"Average result: +68% organic traffic after 6 months of regular publishing."},"lv":[{"p":500,"o":false,"fr":{"name":"Starter","feats":["2 articles SEO/mois","Recherche de mots-clés mensuelle","5-10 pages suivies","Corrections techniques continues","Reporting email mensuel"],"rec":"Démarrage ou budget maîtrisé"},"en":{"name":"Starter","feats":["2 SEO articles/month","Monthly keyword research","5-10 pages tracked","Continuous technical fixes","Monthly email reporting"],"rec":"Getting started or controlled budget"}},{"p":1000,"o":false,"fr":{"name":"Growth","feats":["4 articles SEO/mois","Stratégie mots-clés bi-mensuelle","15-25 pages suivies","Optimisation pages existantes","Analyse concurrence trimestrielle","Meeting bi-mensuel + reporting"],"rec":"Croissance régulière"},"en":{"name":"Growth","feats":["4 SEO articles/month","Bi-monthly keyword strategy","15-25 pages tracked","Existing page optimization","Quarterly competitor analysis","Bi-monthly meeting + reporting"],"rec":"Regular growth"}},{"p":1800,"o":false,"fr":{"name":"Premium","feats":["8 articles SEO/mois","Veille mots-clés continue","40+ pages suivies","Netlinking ciblé (5-10 backlinks/mois)","Analyse concurrence mensuelle","Meeting mensuel + support réactif","Accompagnement stratégique dédié"],"rec":"Dominer votre secteur"},"en":{"name":"Premium","feats":["8 SEO articles/month","Continuous keyword monitoring","40+ pages tracked","Targeted link building (5-10 backlinks/month)","Monthly competitor analysis","Monthly meeting + responsive support","Dedicated strategic guidance"],"rec":"Dominate your industry"}}]},"social-creatives":{"dom":"paid-social","fr":{"intro":"Des créatives performantes sont essentielles - la créative représente 50-70% de la performance d'une campagne.","items":["Visuels statiques (carrousels, singles, stories)","Vidéos courtes (Reels, TikTok, Stories)","Animations et motion design","Déclinaisons par format et plateforme","UGC-style content"],"concl":"Des créatives qui convertissent, pas juste qui font joli."},"en":{"intro":"High-performing creatives are essential - they account for 50-70% of a campaign's performance.","items":["Static visuals (carousels, singles, stories)","Short videos (Reels, TikTok, Stories)","Animations and motion design","Variations per format and platform","UGC-style content"],"concl":"Creatives that convert, not just look good."},"lv":[{"p":400,"o":false,"fr":{"name":"Essentiel","feats":["5 visuels statiques/mois","Formats adaptés par plateforme","1 round de révisions","Livraison fichiers sources"],"rec":"Besoins ponctuels"},"en":{"name":"Essential","feats":["5 static visuals/month","Platform-adapted formats","1 round of revisions","Source files delivery"],"rec":"Occasional needs"}},{"p":800,"o":false,"fr":{"name":"Avancé","feats":["10 visuels + 2 vidéos/mois","Direction artistique","Déclinaisons multi-formats","Tests créatifs A/B","2 rounds de révisions"],"rec":"Campagnes régulières"},"en":{"name":"Advanced","feats":["10 visuals + 2 videos/month","Art direction","Multi-format variations","A/B creative tests","2 rounds of revisions"],"rec":"Regular campaigns"}},{"p":1500,"o":false,"fr":{"name":"Premium","feats":["20 visuels + 5 vidéos/mois","UGC-style + motion design","Direction artistique complète","Refresh mensuel automatique","Révisions illimitées"],"rec":"Volume important, tests continus"},"en":{"name":"Premium","feats":["20 visuals + 5 videos/month","UGC-style + motion design","Complete art direction","Automatic monthly refresh","Unlimited revisions"],"rec":"High volume, continuous testing"}}]},"social-feed-catalogue":{"dom":"paid-social","fr":{"intro":"Vos produits ou véhicules automatiquement synchronisés et optimisés sur toutes les plateformes publicitaires.","items":["Import et transformation du flux de données source","Mapping des champs vers le format requis (Meta, Google)","Synchronisation automatique quotidienne","Optimisation des titres et descriptions pour la performance","Gestion des images et médias","Monitoring et alertes en cas d'erreur"],"concl":"Indispensable pour le e-commerce et les concessionnaires automobiles."},"en":{"intro":"Your products or vehicles automatically synced and optimized across every ad platform.","items":["Source data feed import and transformation","Field mapping to required format (Meta, Google)","Automated daily synchronization","Title and description optimization for performance","Image and media handling","Monitoring and error alerts"],"concl":"Essential for e-commerce and automotive dealerships."},"lv":[{"p":500,"o":true,"fr":{"name":"1 plateforme","feats":["Setup flux pour 1 plateforme","Transformation et mapping des données","Synchronisation quotidienne automatique","Tests et validation","Maintenance : +100€/mois"],"rec":"Un seul canal (Meta ou Google)"},"en":{"name":"1 platform","feats":["Feed setup for 1 platform","Data transformation and mapping","Daily automatic synchronization","Testing and validation","Maintenance: +€100/month"],"rec":"Single channel (Meta or Google)"}},{"p":800,"o":true,"fr":{"name":"2 plateformes","feats":["Setup flux pour 2 plateformes","Optimisation des titres/descriptions","Synchronisation multi-canal","Monitoring + alertes","Maintenance : +150€/mois"],"rec":"Meta + Google Shopping"},"en":{"name":"2 platforms","feats":["Feed setup for 2 platforms","Title/description optimization","Multi-channel synchronization","Monitoring + alerts","Maintenance: +€150/month"],"rec":"Meta + Google Shopping"}},{"p":1200,"o":true,"fr":{"name":"3+ plateformes","feats":["Setup flux pour 3+ plateformes","Optimisation avancée par canal","Règles de filtrage et segmentation","Dashboard de monitoring","Maintenance : +200€/mois","Support prioritaire"],"rec":"E-commerce ou automobile multi-canal"},"en":{"name":"3+ platforms","feats":["Feed setup for 3+ platforms","Advanced per-channel optimization","Filtering rules and segmentation","Monitoring dashboard","Maintenance: +€200/month","Priority support"],"rec":"Multi-channel e-commerce or automotive"}}]},"email-management-package":{"dom":"emailing","fr":{"intro":"On prend en charge toute l'exécution de vos campagnes email pour que vous vous concentriez sur votre business.","items":["Calendrier éditorial mensuel","Rédaction du copywriting (objet, contenu, CTA)","Design responsive des emails","Programmation et envoi des campagnes","A/B testing systématique (objets, contenus, heures)","Monitoring de la délivrabilité"],"concl":"Résultat : +760% de revenus en moyenne grâce à une segmentation pertinente."},"en":{"intro":"We handle the full execution of your email campaigns so you can focus on your business.","items":["Monthly editorial calendar","Copywriting (subject, content, CTA)","Responsive email design","Campaign scheduling and sending","Systematic A/B testing (subjects, content, timing)","Deliverability monitoring"],"concl":"Result: +760% revenue on average through relevant segmentation."},"lv":[{"p":500,"o":false,"fr":{"name":"Essentiel","feats":["4 campagnes/mois","Copywriting + design","A/B testing basique","Reporting mensuel","Support email"],"rec":"Rythme régulier, budget maîtrisé"},"en":{"name":"Essential","feats":["4 campaigns/month","Copywriting + design","Basic A/B testing","Monthly reporting","Email support"],"rec":"Regular pace, controlled budget"}},{"p":800,"o":false,"fr":{"name":"Avancé","feats":["8 campagnes/mois","Copywriting + design premium","A/B testing avancé","Séquences automatisées","Dashboard Looker Studio","Call bi-mensuel"],"rec":"Croissance et engagement"},"en":{"name":"Advanced","feats":["8 campaigns/month","Premium copywriting + design","Advanced A/B testing","Automated sequences","Looker Studio dashboard","Bi-monthly call"],"rec":"Growth and engagement"}},{"p":1500,"o":false,"fr":{"name":"Premium","feats":["Campagnes illimitées","Stratégie complète + calendrier","Optimisation avancée + attribution","Séquences lifecycle complètes","Dashboard sur-mesure","Call mensuel + support prioritaire"],"rec":"Volume important, stratégie data-driven"},"en":{"name":"Premium","feats":["Unlimited campaigns","Complete strategy + calendar","Advanced optimization + attribution","Complete lifecycle sequences","Custom dashboard","Monthly call + priority support"],"rec":"High volume, data-driven strategy"}}]},"email-contacts-package":{"dom":"emailing","fr":{"intro":"Des contacts vérifiés et qualifiés pour alimenter tes campagnes email, outreach LinkedIn ou campagnes téléphoniques. Prix unitaire dégressif selon le volume.","items":["Email : adresse professionnelle vérifiée (bounce rate < 5%)","Email + IA : email + enrichissement IA (personnalisation automatique du message)","Téléphone : numéro direct vérifié (pour campagnes cold call / SMS)"],"concl":"Prix dégressif : tarif unitaire plus avantageux à partir de 500 contacts puis de 2500 contacts."},"en":{"intro":"Verified, qualified contacts to fuel your email campaigns, LinkedIn outreach or phone campaigns. Volume-based discount on the unit price.","items":["Email: verified professional address (bounce rate < 5%)","Email + AI: email + AI enrichment (automatic message personalization)","Phone: verified direct number (for cold call / SMS campaigns)"],"concl":"Volume discount: better unit price from 500 contacts and again from 2,500 contacts."},"lv":[{"p":0,"o":true,"fr":{"name":"Configurer","feats":["Email seul : dès 0.06€/contact","Email + IA personnalisée : dès 0.03€/contact","Téléphone direct : dès 0.51€/contact","Tarif dégressif à partir de 500 et 2500 contacts","Remplacement bounces inclus"],"rec":null},"en":{"name":"Configure","feats":["Email only: from €0.06/contact","Email + AI personalization: from €0.03/contact","Direct phone: from €0.51/contact","Volume discount at 500 and 2500 contacts","Bounce replacement included"],"rec":null}}]},"ai-chatbot":{"dom":"ai-solutions","fr":{"intro":"Un assistant IA personnalisé qui répond aux questions de vos clients et prospects en s'appuyant sur votre base de connaissances.","items":["Chatbot formé sur votre documentation (FAQ, guides, produits)","Intégration sur votre site web (widget personnalisé)","Compréhension du contexte et des intentions","Escalade vers un humain quand nécessaire","Multi-langue (FR/EN et autres sur demande)"],"concl":"Livrable : Chatbot déployé, documenté et testé. Formation de votre équipe incluse."},"en":{"intro":"A custom AI assistant that answers your customer and prospect questions based on your knowledge base.","items":["Chatbot trained on your documentation (FAQ, guides, products)","Integration on your website (custom widget)","Context and intent understanding","Escalation to a human when needed","Multilingual (FR/EN and others on request)"],"concl":"Deliverable: Deployed, documented and tested chatbot. Team training included."},"lv":[{"p":2000,"o":true,"fr":{"name":"Essentiel","feats":["Chatbot FAQ sur votre site","Formé sur 20-50 pages de documentation","Widget personnalisé à vos couleurs","Support 1 mois inclus"],"rec":"FAQ et support client basique"},"en":{"name":"Essential","feats":["FAQ chatbot on your site","Trained on 20-50 documentation pages","Custom-branded widget","1 month support included"],"rec":"Basic FAQ and customer support"}},{"p":4000,"o":true,"fr":{"name":"Avancé","feats":["Chatbot intelligent multi-sources","Intégration CRM (leads capturés)","Logique conditionnelle avancée","Escalade humaine configurée","Analytics des conversations","Support 2 mois inclus"],"rec":"Support client et génération de leads"},"en":{"name":"Advanced","feats":["Multi-source intelligent chatbot","CRM integration (leads captured)","Advanced conditional logic","Human escalation configured","Conversation analytics","2 months support included"],"rec":"Customer support and lead generation"}},{"p":8000,"o":true,"fr":{"name":"Premium","feats":["Agent IA conversationnel avancé","Multi-canal (site, WhatsApp, Messenger)","Intégrations API tierces","Personnalité et ton de marque","Multilingue","Support 3 mois + maintenance"],"rec":"Agent IA complet, multi-canal"},"en":{"name":"Premium","feats":["Advanced conversational AI agent","Multi-channel (site, WhatsApp, Messenger)","Third-party API integrations","Brand voice and personality","Multilingual","3 months support + maintenance"],"rec":"Complete AI agent, multi-channel"}}]},"ai-workflow":{"dom":"ai-solutions","fr":{"intro":"On identifie et automatise les tâches répétitives qui vous font perdre du temps, avec des workflows IA connectés à vos outils.","items":["Traitement automatique des leads entrants","Enrichissement de données CRM","Génération de rapports automatiques","Synchronisation entre outils (CRM, email, facturation)","Alertes et notifications intelligentes","Extraction et classement de documents"],"concl":"ROI typique : 10-20h/mois économisées par workflow automatisé."},"en":{"intro":"We identify and automate the repetitive tasks that drain your time, with AI workflows connected to your tools.","items":["Automatic processing of incoming leads","CRM data enrichment","Automated report generation","Sync between tools (CRM, email, billing)","Smart alerts and notifications","Document extraction and classification"],"concl":"Typical ROI: 10-20 hours/month saved per automated workflow."},"lv":[{"p":1500,"o":true,"fr":{"name":"Essentiel","feats":["1-2 workflows simples","Connexion de 2-3 outils","Documentation technique","Formation utilisation"],"rec":"Automatiser une tâche précise"},"en":{"name":"Essential","feats":["1-2 simple workflows","2-3 tool connections","Technical documentation","Usage training"],"rec":"Automate a specific task"}},{"p":3500,"o":true,"fr":{"name":"Avancé","feats":["3-5 workflows interconnectés","Logique IA intégrée (classification, extraction)","Intégrations multi-outils","Monitoring et alertes","Support 1 mois"],"rec":"Automatiser plusieurs processus"},"en":{"name":"Advanced","feats":["3-5 interconnected workflows","Integrated AI logic (classification, extraction)","Multi-tool integrations","Monitoring and alerts","1 month support"],"rec":"Automate multiple processes"}},{"p":7000,"o":true,"fr":{"name":"Premium","feats":["Système d'automatisation complet","Workflows complexes avec IA avancée","API custom + webhooks","Dashboard de monitoring","Support 2 mois + maintenance","Documentation complète"],"rec":"Transformation digitale complète"},"en":{"name":"Premium","feats":["Complete automation system","Complex workflows with advanced AI","Custom API + webhooks","Monitoring dashboard","2 months support + maintenance","Complete documentation"],"rec":"Complete digital transformation"}}]},"ai-maintenance":{"dom":"ai-solutions","fr":{"intro":"Vos solutions IA nécessitent un suivi pour rester performantes et évoluer avec vos besoins.","items":["Monitoring des performances","Mise à jour des modèles et bases de connaissances","Corrections de bugs et optimisations","Ajout de nouvelles fonctionnalités mineures","Support technique par email","Reporting mensuel d'utilisation"],"concl":"Gardez vos solutions IA à jour et performantes."},"en":{"intro":"Your AI solutions need ongoing care to stay performant and evolve with your needs.","items":["Performance monitoring","Model and knowledge base updates","Bug fixes and optimizations","Addition of minor new features","Email technical support","Monthly usage reporting"],"concl":"Keep your AI solutions up to date and performing well."},"lv":[{"p":200,"o":false,"fr":{"name":"Essentiel","feats":["Monitoring basique","Mises à jour trimestrielles","Support email (48h)","Corrections de bugs"],"rec":"Solutions simples, peu d'évolutions"},"en":{"name":"Essential","feats":["Basic monitoring","Quarterly updates","Email support (48h)","Bug fixes"],"rec":"Simple solutions, few changes"}},{"p":400,"o":false,"fr":{"name":"Avancé","feats":["Monitoring continu","Mises à jour mensuelles","Support email réactif (24h)","Évolutions mineures incluses","Call mensuel"],"rec":"Solutions en production active"},"en":{"name":"Advanced","feats":["Continuous monitoring","Monthly updates","Responsive email support (24h)","Minor evolutions included","Monthly call"],"rec":"Active production solutions"}},{"p":700,"o":false,"fr":{"name":"Premium","feats":["Monitoring temps réel + alertes","Mises à jour bi-hebdomadaires","Support prioritaire (4h)","Évolutions et nouvelles features","Call bi-mensuel + reporting","SLA garanti"],"rec":"Solutions critiques, évolutions fréquentes"},"en":{"name":"Premium","feats":["Real-time monitoring + alerts","Bi-weekly updates","Priority support (4h)","Evolutions and new features","Bi-monthly call + reporting","Guaranteed SLA"],"rec":"Critical solutions, frequent evolutions"}}]},"ai-content-blog":{"dom":"ai-content","fr":{"intro":"Du contenu de qualité produit à l'échelle grâce à notre pipeline IA propriétaire, avec validation humaine systématique.","items":["1. Brand Voice Training : analyse de 10+ contenus existants pour capturer votre ton","2. Stratégie data-driven : intégration Ahrefs + Search Console pour identifier les opportunités","3. Génération IA : articles structurés (H1-H6, meta, FAQ, liens internes)","4. Validation humaine : relecture, fact-checking, optimisation finale"],"concl":"Formé sur VOTRE voix de marque. Pas du ChatGPT générique."},"en":{"intro":"Quality content produced at scale through our proprietary AI pipeline, with systematic human validation.","items":["1. Brand Voice Training: analysis of 10+ existing pieces of content to capture your tone","2. Data-driven strategy: Ahrefs + Search Console integration to identify opportunities","3. AI generation: structured articles (H1-H6, meta, FAQ, internal links)","4. Human validation: proofreading, fact-checking, final optimization"],"concl":"Trained on YOUR brand voice. Not generic ChatGPT."},"lv":[{"p":500,"o":false,"fr":{"name":"4 articles","feats":["4 articles/mois (1500-2000 mots)","Optimisés SEO + LLMO","Brand voice training inclus","Livrés en document (Google Docs, Word)"],"rec":"Démarrage ou complément SEO"},"en":{"name":"4 articles","feats":["4 articles/month (1500-2000 words)","SEO + LLMO optimized","Brand voice training included","Delivered as document (Google Docs, Word)"],"rec":"Getting started or SEO complement"}},{"p":900,"o":false,"fr":{"name":"8 articles","feats":["8 articles/mois (1500-3000 mots)","Stratégie éditoriale mensuelle","Recherche mots-clés Ahrefs incluse","Publication CMS optionnelle (+100€)"],"rec":"Croissance organique régulière"},"en":{"name":"8 articles","feats":["8 articles/month (1500-3000 words)","Monthly editorial strategy","Ahrefs keyword research included","Optional CMS publishing (+€100)"],"rec":"Regular organic growth"}},{"p":1600,"o":false,"fr":{"name":"16+ articles","feats":["16+ articles/mois","Stratégie éditoriale complète","Calendrier de publication","Publication CMS incluse","Reporting performance mensuel"],"rec":"Dominer les résultats de recherche"},"en":{"name":"16+ articles","feats":["16+ articles/month","Complete editorial strategy","Publication calendar","CMS publishing included","Monthly performance reporting"],"rec":"Dominate search results"}}]},"ai-content-social":{"dom":"ai-content","fr":{"intro":"Du contenu varié pour tous vos canaux, avec la même qualité et cohérence de marque.","items":["Posts LinkedIn (thought leadership, engagement)","Posts Instagram/Facebook (carrousels, stories)","Landing pages haute conversion (headlines, bénéfices, CTA)","Case studies (problème-solution-résultats)","Descriptions produits SEO-friendly","Séquences email de nurturing"],"concl":"50+ clients servis dont Genesys, Quantum Metrics, OpenText, Edenred."},"en":{"intro":"Varied content for every channel, with the same quality and brand consistency.","items":["LinkedIn posts (thought leadership, engagement)","Instagram/Facebook posts (carousels, stories)","High-conversion landing pages (headlines, benefits, CTA)","Case studies (problem-solution-results)","SEO-friendly product descriptions","Email nurturing sequences"],"concl":"50+ clients served including Genesys, Quantum Metrics, OpenText, Edenred."},"lv":[{"p":400,"o":false,"fr":{"name":"Essentiel","feats":["20 posts sociaux/mois","Adapté par plateforme","Calendrier éditorial","Livraison document"],"rec":"Présence sociale régulière"},"en":{"name":"Essential","feats":["20 social posts/month","Platform-adapted","Editorial calendar","Document delivery"],"rec":"Regular social presence"}},{"p":800,"o":false,"fr":{"name":"Avancé","feats":["30 posts sociaux + 2 landing pages","Ou : 20 posts + 1 case study + 1 landing page","Stratégie de contenu mensuelle","Publication directe optionnelle"],"rec":"Contenu multi-format"},"en":{"name":"Advanced","feats":["30 social posts + 2 landing pages","Or: 20 posts + 1 case study + 1 landing page","Monthly content strategy","Optional direct publishing"],"rec":"Multi-format content"}},{"p":1500,"o":false,"fr":{"name":"Premium","feats":["Contenu illimité (blog + social + landing + email)","Stratégie éditoriale complète","Publication tous canaux","Reporting performance","Call mensuel stratégique"],"rec":"Content machine complète"},"en":{"name":"Premium","feats":["Unlimited content (blog + social + landing + email)","Complete editorial strategy","All-channel publishing","Performance reporting","Monthly strategy call"],"rec":"Complete content machine"}}]}},"ch":{"meta":{"fr":{"aud":"Grand public, jeunes professionnels, ciblage par intérêts et audiences lookalike","str":"Engagement + Conversion","ideal":"Pour un reach efficace sur plusieurs démographies avec tracking de conversion prouvé","cav":"Demande un pixel correctement configuré et une segmentation d'audience fine. Le ciblage large sous-performe."},"en":{"aud":"General public, young professionals, interest-based targeting and lookalike audiences","str":"Engagement + Conversion","ideal":"For cost-efficient reach across demographics with proven conversion tracking","cav":"Requires a properly configured pixel and fine audience segmentation. Broad targeting underperforms."}},"linkedin":{"fr":{"aud":"Décideurs B2B, dirigeants, conseillers stratégiques, cadres supérieurs","str":"Autorité B2B + Décideurs","ideal":"Pour toucher dirigeants et décideurs avec un positionnement d'expertise","cav":"CPM élevé et coût par prospect le plus cher du marché. Exige du contenu de thought leadership, pas du push produit."},"en":{"aud":"B2B decision makers, executives, strategic advisors, senior leaders","str":"B2B authority + Decision makers","ideal":"To reach executives and decision makers with expertise positioning","cav":"High CPM and the most expensive cost per lead on the market. Requires thought leadership content, not product push."}},"tiktok":{"fr":{"aud":"Gen Z et jeunes millennials 18-30, early adopters, natifs du format vidéo court","str":"Notoriété + Potentiel viral","ideal":"Pour élargir vers une démographie jeune ou tester des concepts créatifs viraux","cav":"Multiplicateur de conversion bas (0.6x) : l'audience est orientée découverte, pas conversion immédiate. Demande du contenu natif vidéo."},"en":{"aud":"Gen Z and young millennials 18-30, early adopters, short-form video natives","str":"Awareness + Viral potential","ideal":"To expand to younger demographics or test viral creative concepts","cav":"Low conversion multiplier (0.6x): audience is discovery-oriented, not immediate conversion. Requires native video content."}},"youtube":{"fr":{"aud":"Consommateurs de contenu long, tech-savvy, audiences verticales thématiques","str":"Notoriété + Construction de marque","ideal":"Pour campagnes notoriété ou amplifier du contenu vidéo éducatif","cav":"Multiplicateur de conversion à 0.75x : optimisé pour la vue complète, pas la conversion directe. Demande du contenu vidéo de qualité."},"en":{"aud":"Long-form content consumers, tech-savvy, vertical thematic audiences","str":"Awareness + Brand building","ideal":"For awareness campaigns or amplifying educational video content","cav":"Conversion multiplier at 0.75x: optimized for view completion, not direct conversion. Requires quality video content."}},"reddit":{"fr":{"aud":"Communautés tech, subreddits de niche, audiences sceptiques et analytiques","str":"Intent + Engagement profond","ideal":"Pour toucher des communautés tech/AI à haut intent ou construire de l'advocacy","cav":"CTR faible (0.5%) et demande de connaître la culture des subreddits. Une approche native est essentielle : le ton promo tue la performance."},"en":{"aud":"Tech communities, niche subreddits, skeptical and analytical audiences","str":"Intent + Deep engagement","ideal":"To reach high-intent tech/AI communities or build advocacy","cav":"Low CTR (0.5%) and requires knowledge of subreddit culture. Native approach is essential: promotional tone kills performance."}},"x":{"fr":{"aud":"Participants aux débats publics, leaders d'opinion, suivi des actus temps réel","str":"Engagement + Temps réel","ideal":"Pour insérer un message dans des discussions actives ou toucher des influenceurs sectoriels","cav":"Multiplicateur de conversion à 0.8x : l'algorithme favorise l'engagement pas la conversion. Demande un hook message fort."},"en":{"aud":"Public debate participants, opinion leaders, real-time news followers","str":"Engagement + Real-time","ideal":"To insert a message in active discussions or reach sector influencers","cav":"Conversion multiplier at 0.8x: algorithm favors engagement not conversion. Requires a strong message hook."}},"display":{"fr":{"aud":"Audiences de remarketing, visiteurs web, ciblage contextuel thématique","str":"Remarketing + Reach","ideal":"Pour campagnes remarketing ou reach massif au coût le plus bas","cav":"CTR bas (0.4%). Demande une infrastructure de tracking propre : inutile sans pixels et audiences bien configurés."},"en":{"aud":"Remarketing audiences, web visitors, contextual thematic targeting","str":"Remarketing + Reach","ideal":"For remarketing campaigns or massive reach at the lowest cost","cav":"Low CTR (0.4%). Requires clean tracking infrastructure: useless without well-configured pixels and audiences."}},"google-display":{"fr":{"aud":"Reach cross-canal, audiences affinitaires, remarketing et contextuel","str":"Reach + Remarketing","ideal":"Pour remarketing massif ou amplification de notoriété multi-format","cav":"Qualité variable des emplacements sans exclusions propres. Demande un travail de placement exclusion régulier."},"en":{"aud":"Cross-channel reach, affinity audiences, remarketing and contextual","str":"Reach + Remarketing","ideal":"For massive remarketing or multi-format awareness amplification","cav":"Variable placement quality without proper exclusions. Requires regular placement exclusion work."}},"google-ads":{"fr":{"aud":"Utilisateurs en recherche active, intent élevé, décideurs et chercheurs qualifiés","str":"Conversion + Intent","ideal":"Pour capturer les recherches à haut intent en phase de décision","cav":"CPM et CPC les plus élevés du portfolio sur les mots-clés concurrentiels. Demande une recherche de mots-clés et optimisation ad copy rigoureuse."},"en":{"aud":"Users in active search, high intent, qualified decision makers and researchers","str":"Conversion + Intent","ideal":"To capture high-intent searches in decision stage","cav":"Highest CPM and CPC of the portfolio on competitive keywords. Requires rigorous keyword research and ad copy optimization."}}},"trk":{"audit":{"p":300,"fr":{"t":"Audit Tracking","d":"Analyse complète de votre setup tracking actuel"},"en":{"t":"Tracking Audit","d":"Complete analysis of your current tracking setup"}},"ga4-setup":{"p":400,"fr":{"t":"Installation / Révision GA4","d":"Mise en place ou optimisation de Google Analytics 4"},"en":{"t":"GA4 Installation / Revision","d":"Set up or optimize your Google Analytics 4"}},"conversion-tracking":{"p":350,"fr":{"t":"Mise en place des Points de Conversion","d":"Trackez soumissions de formulaires, achats, appels et actions clés"},"en":{"t":"Conversion Points Setup","d":"Track form submissions, purchases, calls, and key actions"}},"cookie-consent":{"p":300,"fr":{"t":"Cookie Banner + Tracking du Consentement","d":"Gestion des cookies conforme RGPD avec Google Consent Mode v2"},"en":{"t":"Cookie Banner + Consent Tracking","d":"GDPR-compliant cookie management with Google Consent Mode v2"}},"crm-integration":{"p":500,"fr":{"t":"Intégration CRM","d":"Connectez vos analytics avec votre CRM pour une visibilité full-funnel"},"en":{"t":"CRM Integration","d":"Connect your analytics with your CRM for full-funnel visibility"}},"reporting-dashboard":{"p":600,"fr":{"t":"Dashboard Reporting Multicanal","d":"Dashboard personnalisé regroupant toutes vos données marketing"},"en":{"t":"Multi-Channel Reporting Dashboard","d":"Custom dashboard combining all your marketing data"}}},"half":{"fr":["Évaluation pré-formation pour analyser la maturité IA de l'équipe","Comprendre les concepts et outils IA clés","Maîtriser le framework CRAFT","Astuces de prompting avancées & garde-fous","Revue du contenu pré-session pour une pertinence maximale","Personnalisation des cas d'usage selon votre audience","Apprendre les techniques essentielles de prompting","Exercices pratiques individuels pour s'entraîner","Aspects éthiques & géopolitiques de l'IA","Collecte de feedback pour mesurer l'impact"],"en":["Pre-training needs assessment to analyse team AI maturity","Understand key AI concepts & tools","Master the CRAFT framework","Advanced prompting tips & fail-safes","Pre-session content review to ensure maximum relevance","Personalisation of use cases based on your audience","Learn essential prompting techniques","Hands-on individual exercises to practice prompting","Ethical & geopolitical aspects of AI","Participant feedback collection to measure impact"]},"full":{"fr":["Audit approfondi de votre utilisation actuelle de l'IA","Identification des besoins en cas d'usage IA","Exploration approfondie des stratégies de prompting avancées","Projet de groupe : créer des workflows IA internes adaptés à votre business","Exercices pratiques d'automatisation pour augmenter la productivité","Session de revue collective pour co-créer votre roadmap IA"],"en":["Further audit of your current AI use","Identification of AI use case requirements","In-depth exploration of advanced prompting strategies","Group project: build internal AI workflows tailored to your business","Practical automation exercises to scale productivity","Collective review session to co-create your AI roadmap"]},"fees":[{"max":2500,"type":"flat","value":500},{"max":7500,"type":"percentage","value":20},{"max":12500,"type":"percentage","value":15},{"max":30000,"type":"percentage","value":12},{"max":null,"type":"percentage","value":10}],"mult":{"1":1,"2":1.7,"3":2.2,"4":2.6,"5":2.9,"6":3.1,"default":3.3},"dur":[{"months":4,"discount":0},{"months":6,"discount":5},{"months":12,"discount":10}],"train":{"single":{"half":1500,"full":2800},"bulk":{"half":1150,"full":2200},"travel":{"min":300,"max":700,"def":500}},"contacts":{"tiers":["< 500 contacts","500 - 2500 contacts","> 2500 contacts"],"prices":{"email":[0.1,0.08,0.06],"email-ai":[0.05,0.04,0.03],"phone":[0.8,0.64,0.51]},"labels":{"email":"Email seul","email-ai":"Email + IA personnalisée","phone":"Téléphone direct"}},"dom":{"seo":{"fr":"SEO","en":"SEO","dfr":"Référencement naturel et visibilité organique","den":"Search engine optimization and organic visibility"},"google-ads":{"fr":"Google Ads","en":"Google Ads","dfr":"Publicité sur le réseau Google (Search, Display, YouTube)","den":"Advertising on Google network (Search, Display, YouTube)"},"paid-social":{"fr":"Paid Social","en":"Paid Social","dfr":"Publicité sur les réseaux sociaux (Meta, LinkedIn, TikTok)","den":"Social media advertising (Meta, LinkedIn, TikTok)"},"ai-training":{"fr":"Formation IA","en":"AI Training","dfr":"Formation IA pour vos équipes, en présentiel ou à distance","den":"In-person or remote AI training for your teams"},"emailing":{"fr":"Email Marketing","en":"Email Marketing","dfr":"Campagnes email alimentées par l'IA qui convertissent","den":"AI-powered email campaigns that convert"},"ai-solutions":{"fr":"Solutions IA","en":"AI Solutions","dfr":"Chatbots IA, automatisation de workflows et solutions sur-mesure","den":"AI chatbots, workflow automation and custom solutions"},"ai-content":{"fr":"Contenu IA","en":"AI Content","dfr":"Articles de blog SEO, contenu social et landing pages propulsés par l'IA","den":"AI-powered SEO blog articles, social content and landing pages"},"tracking-reporting":{"fr":"Tracking & Reporting","en":"Tracking & Reporting","dfr":"Mesurez, analysez et optimisez vos performances marketing","den":"Measure, analyze, and optimize your marketing performance"}}};
+var D = C.D, tr = C.tr, esc = C.esc, money = C.money, PM = C.PM, ICON = C.ICON;
+var W = 1120, H = 660;
+var PLAY = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>';
+var DISK = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2zM8 3v5h7V3M8 21v-7h8v7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+function fr(){ return C.lang() === 'fr'; }
+function L(o){ return o ? (fr() ? o.fr : (o.en || o.fr)) : null; }
+
+/* ---------- les explications au survol : uniquement des contenus déjà présents dans le code ---------- */
+var VID = {
+  'seo':['SEO','SEO',64,58], 'google-ads':['Google Ads','Google Ads',60,57], 'paid-social':['Paid Social','Paid Social',60,52],
+  'ai-training':['Formation IA','AI Training',56,54], 'emailing':['Email Marketing','Email Marketing',54,51],
+  'ai-solutions':['Solutions IA','AI Solutions',62,61], 'ai-content':['Contenu IA','AI Content',58,49],
+  'tracking-reporting':['Tracking & Reporting','Tracking & Reporting',59,54],
+  'media':['Budget média et honoraires','Media budget and fees',32,33],
+  'trk-first':['Le tracking avant la publicité','Tracking before advertising',23,21],
+  'duration':['La durée d’engagement','The commitment period',25,24]
+};
+function vid(k){ var v = VID[k]; return v ? {t: tr(v[0], v[1]), s: fr() ? v[2] : v[3]} : null; }
+var MAIN = {'seo':'seo-monthly','emailing':'email-management-package','ai-content':'ai-content-blog','ai-solutions':'ai-workflow'};
+function svcTitle(id){ return tr(C.SVC[id][0], C.SVC[id][1]); }
+function feeLines(){
+  var prev = 0;
+  return EDU.fees.map(function(t){
+    var range = t.max == null ? tr('Au-delà de ', 'Above ') + money(prev) : (prev ? tr('De ', 'From ') + money(prev) + tr(' à ', ' to ') + money(t.max) : tr('Moins de ', 'Under ') + money(t.max));
+    var v = t.type === 'flat' ? tr('forfait de ', 'flat ') + money(t.value) + PM() : t.value + tr(' % du budget', '% of spend');
+    prev = t.max;
+    return range + ' : ' + v;
+  });
+}
+function info(key){
+  if (!key) return null;
+  var p = key.split(':'), t = p[0], x, s;
+  if (t === 'intro') return {title: tr('Votre devis en quelques questions', 'Your quote in a few questions'),
+    text: tr('Choisissez vos services, répondez à deux à quatre questions par service, et le prix se calcule au fil des réponses.', 'Pick your services, answer two to four questions for each, and the price builds up as you go.'),
+    list: [tr('Aucun engagement à ce stade', 'No commitment at this stage'), tr('Survolez un service pour savoir ce qu’il comprend', 'Hover over a service to see what it includes'), tr('Un expert vous rappelle sous 24 à 48 h', 'An expert gets back to you within 24 to 48 hours')]};
+  if (t === 'next') return {title: tr('Ce qui se passe ensuite', 'What happens next'),
+    list: [tr('Vous recevez ce devis par email', 'You receive this quote by email'), tr('Un expert vous rappelle sous 24 à 48 h', 'An expert calls you back within 24 to 48 hours'), tr('On ajuste ensemble avant tout engagement', 'We fine-tune it together before any commitment')]};
+  if (t === 'dom') {
+    var d = p[1], dm = EDU.dom[d];
+    x = {kick: tr('Le service', 'The service'), title: C.dName(d), text: tr(dm.dfr, dm.den), video: vid(d), list: []};
+    if (MAIN[d]) x.list = L(EDU.svc[MAIN[d]]).items.slice(0, 4);
+    if (d === 'google-ads') x.list = [tr('Campagnes Search, Display et YouTube', 'Search, Display and YouTube campaigns'), tr('Optimisation, suivi, ajustements et reporting compris dans la gestion', 'Optimisation, tracking, adjustments and reporting included in management'), tr('Le budget média s’ajoute et n’est pas inclus', 'The media budget comes on top and is not included')];
+    if (d === 'paid-social') x.list = [tr('Meta, LinkedIn, TikTok, Google Display et YouTube', 'Meta, LinkedIn, TikTok, Google Display and YouTube'), tr('Création de visuels et catalogue produits en option', 'Visual creation and product catalogue as options'), tr('Le budget média s’ajoute et n’est pas inclus', 'The media budget comes on top and is not included')];
+    if (d === 'ai-training') x.list = L(EDU.half).slice(0, 4);
+    if (d === 'tracking-reporting') x.list = Object.keys(EDU.trk).map(function(k){ return L(EDU.trk[k]).t; }).slice(0, 5);
+    return x;
+  }
+  if (t === 'svc') { s = L(EDU.svc[p[1]]); return {kick: C.dName(EDU.svc[p[1]].dom), title: svcTitle(p[1]), text: s.intro, list: s.items, note: s.concl, video: vid(EDU.svc[p[1]].dom)}; }
+  if (t === 'lvl') {
+    var sv = EDU.svc[p[1]], lv = sv.lv[+p[2]], ll = L(lv);
+    return {kick: svcTitle(p[1]), title: ll.name, meta: money(lv.p) + (lv.o ? ' ' + tr('une fois', 'one-off') : PM()), list: ll.feats, note: ll.rec ? tr('Idéal pour : ', 'Best for: ') + ll.rec : '', video: vid(sv.dom)};
+  }
+  if (t === 'ch') {
+    x = L(EDU.ch[p[1]]); var ch = D.channels.filter(function(c){ return c.id === p[1]; })[0];
+    return {kick: tr('Réseau', 'Network'), title: tr(ch.fr, ch.en), text: x.aud, list: [tr('Force : ', 'Strength: ') + x.str, tr('Idéal pour : ', 'Best for: ') + x.ideal, tr('À savoir : ', 'Worth knowing: ') + x.cav], video: vid('paid-social')};
+  }
+  if (t === 'trk') { x = EDU.trk[p[1]]; s = L(x); return {kick: 'Tracking & Reporting', title: s.t, meta: money(x.p) + ' ' + tr('une fois', 'one-off'), text: s.d, video: vid('trk-first')}; }
+  if (t === 'fee') return {kick: tr('Comment on facture', 'How we charge'), title: tr('Honoraires de gestion', 'Management fee'),
+    text: tr('Ce que nous facturons pour piloter vos campagnes. Ils dépendent de votre budget média :', 'What we charge to run your campaigns. It depends on your media budget:'),
+    list: feeLines(), note: tr('Sur Paid Social, ils sont multipliés selon le nombre de réseaux (x1,7 pour deux).', 'On Paid Social, it is multiplied by the number of networks (x1.7 for two).'), video: vid('media')};
+  if (t === 'media') return {kick: tr('Comment on facture', 'How we charge'), title: tr('Budget média', 'Media budget'),
+    text: tr('Ce que vous dépensez en publicité sur Google ou sur les réseaux. Il s’ajoute à nos honoraires et n’est pas compris dans le devis.', 'What you spend on ads on Google or social networks. It comes on top of our fees and is not part of the quote.'),
+    list: [tr('Nos honoraires de gestion en dépendent', 'Our management fee depends on it'), tr('Le curseur avance par paliers, plus fins sous 5 000 €', 'The slider moves in steps, finer below €5,000')], video: vid('media')};
+  if (t === 'duration') return {kick: tr('Comment on facture', 'How we charge'), title: tr('Durée d’engagement', 'Commitment period'),
+    text: tr('Plus l’engagement est long, plus la remise sur les honoraires mensuels est forte.', 'The longer the commitment, the bigger the discount on monthly fees.'),
+    list: D.durations.map(function(x){ return x.m + ' ' + tr('mois', 'months') + ' : ' + (x.d ? '-' + x.d + ' %' : tr('sans remise', 'no discount')); }), video: vid('duration')};
+  if (t === 'train') {
+    var tp = D.training;
+    if (p[1] === 'half') return {kick: C.dName('ai-training'), title: tr('Demi-journée, 3 h', 'Half day, 3 hours'), meta: money(tp.single.half) + tr(' la session', ' per session'), list: L(EDU.half).slice(0, 5), video: vid('ai-training')};
+    if (p[1] === 'full') return {kick: C.dName('ai-training'), title: tr('Journée complète, 6 h 30', 'Full day, 6.5 hours'), meta: money(tp.single.full) + tr(' la session', ' per session'), text: tr('Le contenu de la demi-journée, et en plus :', 'Everything in the half day, plus:'), list: L(EDU.full).slice(0, 5), video: vid('ai-training')};
+    if (p[1] === 'sessions') return {kick: C.dName('ai-training'), title: tr('Tarif dégressif', 'Volume pricing'), list: [tr('1 session : ', '1 session: ') + money(tp.single.half) + ' / ' + money(tp.single.full), tr('À partir de 5 sessions : ', 'From 5 sessions: ') + money(tp.bulk.half) + ' / ' + money(tp.bulk.full) + tr(' la session', ' per session')], note: tr('Demi-journée / journée complète.', 'Half day / full day.')};
+    if (p[1] === 'remote') return {kick: C.dName('ai-training'), title: tr('À distance', 'Remote'), text: tr('En visio, sans frais de déplacement.', 'By video call, no travel costs.')};
+    if (p[1] === 'onsite') return {kick: C.dName('ai-training'), title: tr('Dans vos locaux', 'At your office'), text: tr('Frais de déplacement de ', 'Travel costs of ') + money(tp.travel) + tr(' en plus.', ' on top.')};
+  }
+  return null;
+}
+function videoHTML(v, small){
+  return '<div class="g-video' + (small ? ' sm' : '') + '"><span class="g-play">' + PLAY + '</span><span><b>' + esc(v.t) + '</b><br><span class="g-sub">' + tr('Vidéo à tourner, ', 'Video to record, ') + v.s + ' s</span></span></div>';
+}
+function infoHTML(I, compact){
+  var h = '';
+  if (I.video) h += videoHTML(I.video, compact);
+  if (I.kick) h += '<p class="g-kick">' + esc(I.kick) + '</p>';
+  h += '<h4 class="g-t">' + esc(I.title) + '</h4>';
+  if (I.meta) h += '<p class="g-meta"><strong>' + esc(I.meta) + '</strong></p>';
+  if (I.text) h += '<p class="g-p">' + esc(I.text) + '</p>';
+  var list = I.list || [];
+  if (compact) list = list.slice(0, 4);
+  if (list.length) h += '<ul class="g-list">' + list.map(function(li){ return '<li>' + esc(li) + '</li>'; }).join('') + '</ul>';
+  if (I.note && !compact) h += '<p class="g-meta">' + esc(I.note) + '</p>';
+  return h;
+}
+
+/* ---------- les maquettes ordinateur ---------- */
+var stage = document.getElementById('dk-stage'), scaler = document.getElementById('dk-scale'), root = document.getElementById('dk');
+if (root) {
+  var scale = 1, mode = 'd1', F, T, hoverKey = null, hideTimer = null, advTimer = null, seen = {};
+  var fit = function(){ scale = Math.min(1, stage.clientWidth / W); scaler.style.transform = 'scale(' + scale + ')'; stage.style.height = Math.ceil(H * scale + 2) + 'px'; };
+  window.addEventListener('resize', fit);
+  var resetAll = function(){ F = {domains:[], a:{}, discuss:{}, duration:4, i:0, draft:[]}; T = {domains:[], a:{}, discuss:{}, duration:4, open:null, qi:0, recap:false}; hoverKey = null; seen = {}; };
+  var seq = function(){ var s = ['pick']; F.domains.forEach(function(d){ if (F.discuss[d]) return; C.questions(d).forEach(function(q){ s.push(q.id); }); }); s.push('duration', 'recap'); return s; };
+  var restKey = function(cur){
+    if (cur === 'pick') return 'intro'; if (cur === 'duration') return 'duration'; if (cur === 'recap') return 'next';
+    var q = C.ALLQ[cur]; if (q.kind === 'level') return 'svc:' + q.service; if (q.id === 'ps-budget') return 'fee'; return 'dom:' + q.domain;
+  };
+  var gridKinds = {level:1, choice:1, multi:1};
+  var termsHTML = function(q){
+    var t = [];
+    if (q.kind === 'budget') { t.push(['media', tr('C’est quoi, le budget média ?', 'What is the media budget?')]); t.push(['fee', tr('Comment sont calculés les honoraires ?', 'How is the fee worked out?')]); }
+    else if (q.kind === 'level') t.push(['svc:' + q.service, tr('Ce que comprend ce service', 'What this service includes')]);
+    else if (q.kind === 'channels') t.push(['dom:paid-social', tr('Quel réseau choisir ?', 'Which network should I pick?')]);
+    else if (q.kind === 'multi') t.push(['dom:tracking-reporting', tr('Pourquoi le tracking d’abord ?', 'Why tracking first?')]);
+    else if (q.domain === 'ai-training') t.push(['dom:ai-training', tr('Le contenu de la formation', 'What the training covers')]);
+    return '<div class="terms">' + t.map(function(x){ return '<button type="button" class="term" data-info="' + x[0] + '">' + esc(x[1]) + '</button>'; }).join('') + '</div>';
+  };
+  var formHTML = function(){
+    return '<form class="r-form" onsubmit="return false">' +
+      '<label for="dk-nom">' + tr('Nom', 'Name') + '<input id="dk-nom" autocomplete="name" value="Clara Martin"></label>' +
+      '<label for="dk-mail">' + tr('Email professionnel', 'Work email') + '<input id="dk-mail" type="email" autocomplete="email" value="clara@atelier-riviere.fr"></label>' +
+      '<label for="dk-soc">' + tr('Entreprise', 'Company') + '<input id="dk-soc" autocomplete="organization" value="Atelier Rivière"></label></form>';
+  };
+  var questionArea = function(){
+    var s = seq(), cur = s[F.i], h = '', acts = '';
+    if (cur === 'pick') {
+      h = '<p class="b-ctx">' + tr('Votre devis en quelques questions', 'Your quote in a few questions') + '</p><h3 class="b-q">' + tr('De quoi avez-vous besoin ?', 'What do you need?') + '</h3><p class="b-help">' + tr('Plusieurs réponses possibles. Survolez un service pour savoir ce qu’il comprend.', 'Pick as many as you like. Hover over a service to see what it includes.') + '</p>' + C.chipsHTML(F.draft);
+      acts = '<button type="button" class="btn btn-primary" data-act="next"' + (F.draft.length ? '' : ' disabled') + '>' + tr('Continuer', 'Continue') + ICON.next + '</button>';
+    } else if (cur === 'duration') {
+      h = '<p class="b-ctx">' + tr('Dernière question', 'Last question') + '</p><h3 class="b-q">' + tr('Sur combien de mois ?', 'For how many months?') + '</h3>' + '<div class="terms"><button type="button" class="term" data-info="duration">' + tr('Pourquoi une remise ?', 'Why a discount?') + '</button></div><div class="opts2"><div class="q">' +
+        D.durations.map(function(x){ return C.optRow({checked: F.duration === x.m, name: x.m + ' ' + tr('mois', 'months'), desc: x.d ? tr('Remise de ' + x.d + ' % sur les honoraires mensuels', x.d + '% off monthly fees') : tr('Sans remise', 'No discount'), info:'duration', attrs:'data-act="dur" data-v="' + x.m + '"'}); }).join('') + '</div></div>';
+    } else if (cur === 'recap') {
+      h = mode === 'd2'
+        ? '<h3 class="v-t">' + tr('Votre devis est prêt', 'Your quote is ready') + '</h3><p class="v-s">' + tr('Choisissez la durée, laissez vos coordonnées, un expert vous rappelle sous 24 à 48 h.', 'Choose the duration, leave your details, and an expert gets back to you within 24 to 48 hours.') + '</p><p class="q-t">' + tr('Durée d’engagement', 'Commitment') + '</p><div class="r-seg">' + C.durSeg(F) + '</div>' + formHTML()
+        : C.recapHTML(F, C.devis(F), 'dk');
+      acts = '<button type="button" class="btn btn-primary" data-act="send">' + tr('Recevoir mon devis', 'Get my quote') + '</button>';
+    } else {
+      var q = C.ALLQ[cur], list = C.questions(q.domain), k = list.map(function(x){ return x.id; }).indexOf(cur);
+      h = '<p class="b-ctx">' + esc(C.dName(q.domain)) + (list.length > 1 ? tr(', question ' + (k + 1) + ' sur ' + list.length, ', question ' + (k + 1) + ' of ' + list.length) : '') + '</p>' +
+        '<h3 class="b-q">' + esc(tr(q.title[0], q.title[1])) + '</h3>' + (q.help ? '<p class="b-help">' + esc(tr(q.help[0], q.help[1])) + '</p>' : '') + termsHTML(q) +
+        '<div class="' + (gridKinds[q.kind] ? 'opts2' : '') + '">' + C.qHTML(q, F, {noTitle:true, noHelp:true, uid:'dk'}) + '</div>' +
+        '<div class="b-skip"><button type="button" class="lnk" data-act="skip" data-d="' + q.domain + '">' + tr('Passer ' + C.dShort(q.domain) + ', on en parle', 'Skip ' + C.dShort(q.domain) + ', let’s discuss it') + '</button></div>';
+      if (!(q.kind === 'level' || q.kind === 'choice')) acts = '<button type="button" class="btn btn-primary" data-act="next">' + tr('Continuer', 'Continue') + ICON.next + '</button>';
+      else if (F.a[cur] !== undefined) acts = '<button type="button" class="btn btn-ghost" data-act="next">' + tr('Question suivante', 'Next question') + ICON.next + '</button>';
+    }
+    return {s:s, cur:cur, body:h, acts:acts};
+  };
+  var headHTML = function(qa){
+    var pct = F.i / (qa.s.length - 1) * 100;
+    return '<div class="dk-head"><button type="button" class="b-back" data-act="back" aria-label="' + tr('Retour', 'Back') + '"' + (F.i ? '' : ' disabled') + '>' + ICON.back + '</button><div class="b-bar" aria-hidden="true"><i style="width:' + pct.toFixed(1) + '%"></i></div><span class="b-count">' + (F.i + 1) + '/' + qa.s.length + '</span></div>';
+  };
+  var paperHTML = function(q){
+    var now = {}, h = '<div class="paper"><h4>' + tr('Votre devis', 'Your quote') + '</h4><p class="pp-sub">' + tr('Il s’écrit au fil de vos réponses. Survolez une ligne pour en savoir plus.', 'It fills in as you answer. Hover over a line to learn more.') + '</p>';
+    if (!F.domains.length) h += '<p class="pp-empty">' + tr('Choisissez un service à gauche.', 'Pick a service on the left.') + '</p>';
+    q.lines.forEach(function(Ln){
+      h += '<div class="pp-dom"><strong>' + esc(C.dName(Ln.d)) + '</strong>';
+      if (Ln.discuss || Ln.empty) h += '<div class="pp-line" data-info="dom:' + Ln.d + '"><span>' + tr('À discuter ensemble', 'To discuss together') + '</span><span></span></div>';
+      else Ln.items.forEach(function(it){
+        var key = Ln.d + '|' + it.l + '|' + it.p; now[key] = 1;
+        h += '<div class="pp-line' + (seen[key] ? '' : ' fresh') + '" data-info="' + (it.info || 'dom:' + Ln.d) + '"><span>' + esc(it.l) + '</span><span>' + money(it.p) + (it.per === 'o' ? ' ' + tr('une fois', 'one-off') : PM()) + '</span></div>';
+      });
+      h += '</div>';
+    });
+    seen = now;
+    if (F.domains.length) h += '<dl class="r-sum"><div><dt>' + tr('Honoraires mensuels', 'Monthly fees') + '</dt><dd>' + money(q.before) + PM() + '</dd></div>' +
+      (q.disc ? '<div><dt>' + tr('Remise ' + F.duration + ' mois', F.duration + '-month discount') + '</dt><dd>-' + money(q.disc) + PM() + '</dd></div>' : '') +
+      (q.one ? '<div><dt>' + tr('Frais uniques', 'One-off fees') + '</dt><dd>' + money(q.one) + '</dd></div>' : '') +
+      (q.media ? '<div class="media" data-info="media"><dt>' + tr('Budget média (non inclus)', 'Media budget (not included)') + '</dt><dd>' + money(q.media) + PM() + '</dd></div>' : '') +
+      '<div class="tot"><dt>' + tr('Nos honoraires sur ' + F.duration + ' mois', 'Our fees over ' + F.duration + ' months') + '</dt><dd>' + money(q.mon * F.duration + q.one) + '</dd></div></dl>';
+    return h + '</div>';
+  };
+  var priceSummary = function(Ln){ return (Ln.m ? money(Ln.m) + PM() : '') + (Ln.m && Ln.o ? ' + ' : '') + (Ln.o ? money(Ln.o) : ''); };
+  var boardHTML = function(){
+    var q = C.devis(T), h = '<div class="d3-top"><h4>' + tr('Composez votre plan', 'Build your plan') + '</h4><p>' + tr('Survolez un service pour comprendre ce qu’il apporte. Cliquez pour l’ajouter à votre devis.', 'Hover over a service to see what it brings. Click to add it to your quote.') + '</p></div><div class="d3-grid">';
+    C.ORDER.forEach(function(d){
+      var on = T.domains.indexOf(d) >= 0, Ln = q.lines.filter(function(l){ return l.d === d; })[0], I = info('dom:' + d), v = vid(d);
+      var price = on ? ((!Ln || Ln.discuss || Ln.empty) ? tr('À préciser', 'To define') : priceSummary(Ln)) : tr('Ajouter', 'Add');
+      h += '<button type="button" class="tile' + (on ? ' on' : '') + '" data-act="open" data-d="' + d + '"><span class="t-n">' + esc(C.dName(d)) + '</span><span class="t-d">' + esc(C.dDesc(d)) + '</span><span class="t-p">' + esc(price) + '</span>' + (on ? '<span class="t-ok">' + ICON.ok + '</span>' : '') +
+        '<span class="t-back"><span class="t-n2">' + esc(C.dName(d)) + '</span>' + (v ? '<span class="t-vid"><i>' + PLAY + '</i>' + esc(tr('Vidéo, ', 'Video, ') + v.s + ' s') + '</span>' : '') + '<span class="t-list">' + I.list.slice(0, 3).map(function(li){ return '<span>' + esc(li) + '</span>'; }).join('') + '</span><span class="t-cta">' + (on ? tr('Modifier', 'Edit') : tr('Ajouter au devis', 'Add to quote')) + '</span></span></button>';
+    });
+    h += '</div><div class="d3-bar"><div class="d3-chips">' + (T.domains.length ? T.domains.map(function(d){ return '<span class="d3-chip">' + esc(C.dShort(d)) + '</span>'; }).join('') : '<span class="dk-hint">' + tr('Aucun service pour l’instant', 'No service yet') + '</span>') + '</div><div class="dk-tot" data-total>' + C.totalHTML(T, q) + '</div><button type="button" class="btn btn-primary" data-act="recap"' + (T.domains.length ? '' : ' disabled') + '>' + tr('Voir mon devis', 'See my quote') + ICON.next + '</button></div>';
+    if (T.open) {
+      var list = C.questions(T.open), qq = list[T.qi], last = T.qi === list.length - 1;
+      h += '<div class="ov"><div class="ov-card" role="dialog" aria-modal="true" aria-label="' + esc(C.dName(T.open)) + '"><div class="ov-h"><strong>' + esc(C.dName(T.open)) + '</strong><span class="dk-hint">' + (list.length > 1 ? tr('Question ' + (T.qi + 1) + ' sur ' + list.length, 'Question ' + (T.qi + 1) + ' of ' + list.length) : '') + '</span><span class="grow" style="flex:1"></span><button type="button" class="sheet-x" data-act="close" aria-label="' + tr('Fermer', 'Close') + '">' + ICON.close + '</button></div>' +
+        '<div class="ov-b"><h3 class="b-q">' + esc(tr(qq.title[0], qq.title[1])) + '</h3>' + (qq.help ? '<p class="b-help">' + esc(tr(qq.help[0], qq.help[1])) + '</p>' : '') + '<div class="' + (gridKinds[qq.kind] ? 'opts2' : '') + '">' + C.qHTML(qq, T, {noTitle:true, noHelp:true, uid:'d3'}) + '</div></div>' +
+        '<div class="ov-f"><button type="button" class="btn btn-ghost" data-act="remove">' + tr('Retirer ce service', 'Remove this service') + '</button><span class="grow"></span>' + (T.qi ? '<button type="button" class="btn btn-ghost" data-act="qprev">' + tr('Précédent', 'Back') + '</button>' : '') + '<button type="button" class="btn btn-primary" data-act="qnext">' + (last ? tr('Terminer', 'Done') : tr('Suivant', 'Next')) + '</button></div></div></div>';
+    } else if (T.recap) {
+      h += '<div class="ov"><div class="ov-card wide" role="dialog" aria-modal="true" aria-label="' + tr('Votre devis', 'Your quote') + '"><div class="ov-h"><strong>' + tr('Votre devis', 'Your quote') + '</strong><span class="grow" style="flex:1"></span><button type="button" class="sheet-x" data-act="close" aria-label="' + tr('Fermer', 'Close') + '">' + ICON.close + '</button></div><div class="ov-b">' + C.recapHTML(T, q, 'd3r') + '</div><div class="ov-f"><span class="grow"></span><button type="button" class="btn btn-primary" data-act="send">' + tr('Recevoir mon devis', 'Get my quote') + '</button></div></div></div>';
+    }
+    return h;
+  };
+  var render = function(keep){
+    var sc = root.querySelector('.dk-body, .ov-b'), top = keep && sc ? sc.scrollTop : 0;
+    if (mode === 'd3') { root.className = 'dk d3'; root.innerHTML = boardHTML(); }
+    else {
+      var qa = questionArea(), q = C.devis(F);
+      if (mode === 'd1') {
+        root.className = 'dk d1';
+        root.innerHTML = '<div class="dk-main">' + headHTML(qa) + '<div class="dk-body">' + qa.body + '</div><div class="dk-foot"><div class="dk-tot" data-total>' + C.totalHTML(F, q) + '</div><div class="acts">' + qa.acts + '</div></div></div>' +
+          '<aside class="guide" data-guide aria-live="polite"></aside>';
+        setGuide(hoverKey);
+      } else {
+        root.className = 'dk d2';
+        root.innerHTML = '<div class="dk-main">' + headHTML(qa) + '<div class="dk-body">' + qa.body + '</div><div class="dk-foot"><span class="dk-hint">' + tr('Survolez une option ou une ligne du devis pour en savoir plus.', 'Hover over an option or a quote line to learn more.') + '</span><div class="acts">' + qa.acts + '</div></div></div>' +
+          '<aside class="paper-wrap">' + paperHTML(q) + '</aside><div class="pop" hidden></div>';
+      }
+    }
+    var nsc = root.querySelector('.dk-body, .ov-b'); if (nsc) nsc.scrollTop = top;
+  };
+  var setGuide = function(k){
+    var g = root.querySelector('[data-guide]'); if (!g) return;
+    var key = k && info(k) ? k : restKey(seq()[F.i]);
+    if (g.getAttribute('data-k') === key + C.lang()) return;
+    g.setAttribute('data-k', key + C.lang());
+    g.innerHTML = infoHTML(info(key), false);
+  };
+  var showPop = function(el, k){
+    var pop = root.querySelector('.pop'), I = info(k); if (!pop || !I) return;
+    pop.innerHTML = infoHTML(I, true); pop.hidden = false;
+    var r = el.getBoundingClientRect(), R = root.getBoundingClientRect();
+    var x = (r.left - R.left) / scale, y = (r.top - R.top) / scale, w = r.width / scale, ph = pop.offsetHeight, pw = 320;
+    var left = el.closest('.paper-wrap') ? x - pw - 14 : x + w + 14;
+    if (left + pw > W - 8) left = x - pw - 14;
+    if (left < 8) left = 8;
+    pop.style.left = left + 'px';
+    pop.style.top = Math.max(8, Math.min(y - 8, H - ph - 8)) + 'px';
+  };
+  var hidePop = function(){ var pop = root.querySelector('.pop'); if (pop) pop.hidden = true; };
+  var toast = function(){
+    var t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = tr('Maquette : rien n’est envoyé.', 'Mock-up: nothing is sent.');
+    root.appendChild(t); setTimeout(function(){ t.remove(); }, 2600);
+  };
+  var enter = function(e){
+    var el = e.target.closest && e.target.closest('[data-info]'); if (!el || !root.contains(el) || mode === 'd3') return;
+    clearTimeout(hideTimer);
+    var k = el.getAttribute('data-info');
+    if (mode === 'd1') { hoverKey = k; setGuide(k); } else showPop(el, k);
+  };
+  var leave = function(e){
+    if (mode === 'd3') return;
+    var to = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest('[data-info]') : null;
+    if (to && root.contains(to)) return;
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(function(){ if (mode === 'd1') { hoverKey = null; setGuide(null); } else hidePop(); }, mode === 'd1' ? 400 : 60);
+  };
+  root.addEventListener('mouseover', enter); root.addEventListener('focusin', enter);
+  root.addEventListener('mouseout', leave); root.addEventListener('focusout', leave);
+  var flowAct = function(t, ds){
+    var s = seq(), keep = true;
+    clearTimeout(advTimer);
+    if (t === 'pick') { var i = F.draft.indexOf(ds.d); if (i >= 0) F.draft.splice(i, 1); else F.draft.push(ds.d); }
+    else if (t === 'next') { if (s[F.i] === 'pick') F.domains = C.inOrder(F.draft); F.i = Math.min(F.i + 1, seq().length - 1); keep = false; hoverKey = null; }
+    else if (t === 'back') { F.i = Math.max(0, F.i - 1); keep = false; hoverKey = null; }
+    else if (t === 'toggle') C.toggleAnswer(F, ds);
+    else if (t === 'set' || t === 'dur') {
+      if (t === 'set') C.setAnswer(F, ds); else F.duration = +ds.v;
+      var inRecap = s[F.i] === 'recap';
+      render(true);
+      if (!inRecap) advTimer = setTimeout(function(){ F.i = Math.min(F.i + 1, seq().length - 1); hoverKey = null; render(false); }, C.REDUCE ? 0 : 320);
+      return;
+    }
+    else if (t === 'skip') {
+      var d = ds.d, after = F.domains.slice(F.domains.indexOf(d) + 1).filter(function(x){ return !F.discuss[x]; })[0];
+      F.discuss[d] = true; var ns = seq(); F.i = after ? ns.indexOf(C.questions(after)[0].id) : ns.indexOf('duration'); keep = false; hoverKey = null;
+    }
+    else if (t === 'edit') { F.discuss[ds.d] = false; F.i = seq().indexOf(C.questions(ds.d)[0].id); keep = false; hoverKey = null; }
+    render(keep);
+  };
+  var boardAct = function(t, ds){
+    if (t === 'open') { if (T.domains.indexOf(ds.d) < 0) T.domains = C.inOrder(T.domains.concat([ds.d])); T.discuss[ds.d] = false; T.open = ds.d; T.qi = 0; }
+    else if (t === 'close') { T.open = null; T.recap = false; }
+    else if (t === 'remove') { var o = T.open; T.domains = T.domains.filter(function(x){ return x !== o; }); T.open = null; }
+    else if (t === 'qnext') { if (T.qi < C.questions(T.open).length - 1) T.qi++; else T.open = null; }
+    else if (t === 'qprev') T.qi = Math.max(0, T.qi - 1);
+    else if (t === 'set') C.setAnswer(T, ds);
+    else if (t === 'toggle') C.toggleAnswer(T, ds);
+    else if (t === 'dur') T.duration = +ds.v;
+    else if (t === 'recap') T.recap = true;
+    else if (t === 'edit') { T.recap = false; T.open = ds.d; T.qi = 0; }
+    render(t === 'set' || t === 'toggle' || t === 'dur');
+  };
+  root.addEventListener('click', function(e){
+    var el = e.target.closest('[data-act]');
+    if (!el) { var term = e.target.closest('.term'); if (term && mode === 'd1') { hoverKey = term.getAttribute('data-info'); setGuide(hoverKey); } return; }
+    if (el.disabled) return;
+    var t = el.getAttribute('data-act');
+    if (t === 'send') { toast(); return; }
+    if (mode === 'd3') boardAct(t, el.dataset); else flowAct(t, el.dataset);
+  });
+  root.addEventListener('input', function(e){
+    var el = e.target; if (el.getAttribute('data-act') !== 'budget') return;
+    var st = mode === 'd3' ? T : F;
+    st.a[el.dataset.q] = C.STEPS[+el.value];
+    var box = root.querySelector('[data-qid="' + el.dataset.q + '"]');
+    if (box) { var p = C.budgetInner(C.ALLQ[el.dataset.q], st).split('|'); box.querySelector('[data-bv]').innerHTML = p[0]; box.querySelector('[data-bf]').innerHTML = p[1]; }
+    var q = C.devis(st), tot = root.querySelector('[data-total]'); if (tot) tot.innerHTML = C.totalHTML(st, q);
+    var pw = root.querySelector('.paper-wrap'); if (pw) pw.innerHTML = paperHTML(q);
+  });
+  document.querySelectorAll('[data-dk]').forEach(function(b){
+    b.addEventListener('click', function(){
+      mode = b.getAttribute('data-dk'); hoverKey = null;
+      document.querySelectorAll('[data-dk]').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      document.querySelectorAll('[data-dkd]').forEach(function(x){ x.classList.toggle('on', x.getAttribute('data-dkd') === mode); });
+      render(false);
+    });
+  });
+  document.getElementById('dk-reset').addEventListener('click', function(){ resetAll(); render(false); });
+  C.renderers.push(function(){ seen = {}; render(true); });
+  resetAll(); fit(); render(false);
+}
+
+/* ---------- le tableau des prix : corrections enregistrées dans la page (capacité db) ---------- */
+var PX = document.getElementById('px');
+if (!PX) return;
+var eur = function(n){ return n < 1 ? n.toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €' : (n < 10 && n % 1 ? n.toLocaleString('fr-FR', {maximumFractionDigits:1}) + ' €' : Math.round(n).toLocaleString('fr-FR') + ' €'); };
+var SVCFR = function(id){ return C.SVC[id] ? C.SVC[id][0] : id; };
+var G = [], ROW = {};
+(function build(){
+  var prev = 0;
+  G.push({t:'Frais de gestion publicitaire', d:'Google Ads et Paid Social suivent la même grille. Le palier se lit sur le budget média mensuel.', rows: EDU.fees.map(function(f, i){
+    var lab = f.max == null ? 'Au-delà de ' + eur(prev) : (prev ? 'De ' + eur(prev) + ' à ' + eur(f.max) : 'Moins de ' + eur(f.max)); prev = f.max;
+    return {id:'fee-' + i, l:lab, cur:f.value, kind: f.type === 'flat' ? 'eur' : 'pct', suf: f.type === 'flat' ? '/mois, forfait' : ' du budget'};
+  })});
+  G.push({t:'Paid Social : multiplicateur des frais selon le nombre de réseaux', rows: ['2','3','4','5','6','default'].map(function(k){ return {id:'mult-' + k, l: k === 'default' ? '7 réseaux et plus' : k + ' réseaux', cur:EDU.mult[k], kind:'x', suf:''}; })});
+  G.push({t:'Remise d’engagement', d:'Appliquée aujourd’hui aux honoraires mensuels, frais de gestion compris (point 3).', rows: EDU.dur.filter(function(x){ return x.discount; }).map(function(x){ return {id:'dur-' + x.months, l:x.months + ' mois', cur:x.discount, kind:'pct', suf:' de remise'}; })});
+  C.ORDER.forEach(function(d){
+    var ids = Object.keys(EDU.svc).filter(function(id){ return EDU.svc[id].dom === d && C.SVC[id]; });
+    if (!ids.length) return;
+    var rows = [];
+    ids.forEach(function(id){ EDU.svc[id].lv.forEach(function(lv, i){ rows.push({id:'lvl-' + id + '-' + i, l:SVCFR(id) + ', ' + lv.fr.name, cur:lv.p, kind:'eur', suf: lv.o ? ' une fois' : '/mois', feats: lv.fr.feats}); }); });
+    G.push({t:EDU.dom[d].fr, rows:rows});
+  });
+  var tp = EDU.train;
+  G.push({t:'Formation IA', rows:[
+    {id:'trn-single-half', l:'Demi-journée, 1 session', cur:tp.single.half, kind:'eur', suf:' la session'},
+    {id:'trn-single-full', l:'Journée complète, 1 session', cur:tp.single.full, kind:'eur', suf:' la session'},
+    {id:'trn-bulk-half', l:'Demi-journée, à partir de 5 sessions', cur:tp.bulk.half, kind:'eur', suf:' la session'},
+    {id:'trn-bulk-full', l:'Journée complète, à partir de 5 sessions', cur:tp.bulk.full, kind:'eur', suf:' la session'},
+    {id:'trn-travel', l:'Déplacement, formation dans vos locaux', cur:tp.travel.def, kind:'eur', suf:' une fois'}]});
+  G.push({t:'Tracking & Reporting', rows: Object.keys(EDU.trk).map(function(k){ return {id:'trk-' + k, l:EDU.trk[k].fr.t, cur:EDU.trk[k].p, kind:'eur', suf:' une fois'}; })});
+  var ct = EDU.contacts, rows = [];
+  Object.keys(ct.prices).forEach(function(type){ ct.prices[type].forEach(function(p, i){ rows.push({id:'cnt-' + type + '-' + i, l:ct.labels[type] + ', ' + ct.tiers[i], cur:p, kind:'eur', suf:' le contact'}); }); });
+  G.push({t:'Acquisition de contacts', d:'Prix au contact, dégressif selon le volume. Service de l’offre Email Marketing.', rows:rows});
+  G.forEach(function(g){ g.rows.forEach(function(r){ ROW[r.id] = r; }); });
+})();
+var curTxt = function(r){ return r.kind === 'eur' ? eur(r.cur) + r.suf : (r.kind === 'pct' ? String(r.cur).replace('.', ',') + ' %' + r.suf : 'x' + String(r.cur).replace('.', ',')); };
+var saved = {}, draft = {}, dirty = {}, db = null, dbState = 'wait';
+var norm = function(v){ return {nouveau: v && v.nouveau != null && v.nouveau !== '' ? Number(v.nouveau) : null, inclus: v && v.inclus ? v.inclus : null, note: v && v.note ? v.note : ''}; };
+var same = function(a, b){ a = norm(a); b = norm(b); return a.nouveau === b.nouveau && a.inclus === b.inclus && a.note === b.note; };
+var hasChange = function(v){ v = norm(v); return v.nouveau != null || v.inclus != null || !!v.note; };
+(function renderPx(){
+  var h = '';
+  G.forEach(function(g){
+    var withFeats = g.rows.some(function(r){ return r.feats; });
+    h += '<div class="px-group"><h3>' + esc(g.t) + '</h3>' + (g.d ? '<p class="muted small">' + esc(g.d) + '</p>' : '') + '<div class="tbl-wrap"><table class="px"><thead><tr><th>Ligne</th><th>Aujourd’hui</th><th>Nouveau</th>' + (withFeats ? '<th>Ce qui est inclus</th>' : '') + '<th>Note</th></tr></thead><tbody>';
+    g.rows.forEach(function(r){
+      var unit = r.kind === 'eur' ? '€' : (r.kind === 'pct' ? '%' : 'x');
+      h += '<tr data-row="' + r.id + '"><td data-l="Ligne">' + esc(r.l) + '</td><td data-l="Aujourd’hui" class="cur">' + esc(curTxt(r)) + '</td>' +
+        '<td data-l="Nouveau (' + unit + ')"><input type="number" inputmode="decimal" step="any" min="0" id="px-' + r.id + '" data-f="nouveau" aria-label="Nouvelle valeur en ' + unit + ', ' + esc(r.l) + '"></td>' +
+        (withFeats ? '<td data-l="Ce qui est inclus">' + (r.feats ? '<textarea id="px-' + r.id + '-inc" data-f="inclus" rows="' + Math.min(6, Math.max(3, r.feats.length)) + '" aria-label="Ce qui est inclus, ' + esc(r.l) + '">' + esc(r.feats.join('\n')) + '</textarea>' : '') + '</td>' : '') +
+        '<td data-l="Note"><input type="text" class="note" id="px-' + r.id + '-note" data-f="note" aria-label="Note, ' + esc(r.l) + '"></td></tr>';
+    });
+    h += '</tbody></table></div></div>';
+  });
+  PX.innerHTML = h;
+})();
+var btn = document.createElement('button');
+btn.type = 'button'; btn.className = 'save-btn idle'; btn.id = 'save-btn';
+document.body.appendChild(btn);
+var statusEl = document.getElementById('px-status');
+var setStatus = function(m){ if (statusEl) statusEl.textContent = m; };
+var updBtn = function(){
+  var n = Object.keys(dirty).length;
+  if (dbState === 'off') { btn.innerHTML = DISK + '<span>Copier mes corrections' + (n ? ' (' + n + ')' : '') + '</span>'; btn.className = 'save-btn' + (n ? ' pulse' : ' idle'); btn.disabled = false; return; }
+  btn.innerHTML = DISK + '<span>' + (dbState === 'wait' ? 'Connexion...' : (n ? 'Enregistrer (' + n + ')' : 'Enregistré')) + '</span>';
+  btn.className = 'save-btn' + (n ? ' pulse' : ' idle');
+  btn.disabled = dbState === 'wait';
+};
+var readRow = function(id){
+  var r = ROW[id], tr_ = PX.querySelector('[data-row="' + id + '"]'), v = tr_.querySelector('[data-f="nouveau"]').value.trim().replace(',', '.');
+  var inc = tr_.querySelector('[data-f="inclus"]'), incV = inc ? inc.value.replace(/\r/g, '').trim() : null;
+  return norm({nouveau: v === '' ? null : v, inclus: inc && incV !== r.feats.join('\n') ? incV : null, note: tr_.querySelector('[data-f="note"]').value.trim()});
+};
+var paint = function(id){
+  var tr_ = PX.querySelector('[data-row="' + id + '"]'); if (!tr_) return;
+  tr_.classList.toggle('dirty', !!dirty[id]);
+  tr_.classList.toggle('chg', !dirty[id] && hasChange(saved[id]));
+};
+var fillRow = function(id){
+  var r = ROW[id], v = norm(draft[id]), tr_ = PX.querySelector('[data-row="' + id + '"]'); if (!tr_ || !r) return;
+  tr_.querySelector('[data-f="nouveau"]').value = v.nouveau != null ? v.nouveau : '';
+  var inc = tr_.querySelector('[data-f="inclus"]'); if (inc) inc.value = v.inclus != null ? v.inclus : r.feats.join('\n');
+  tr_.querySelector('[data-f="note"]').value = v.note;
+  paint(id);
+};
+PX.addEventListener('input', function(e){
+  var tr_ = e.target.closest('[data-row]'); if (!tr_) return;
+  var id = tr_.getAttribute('data-row');
+  draft[id] = readRow(id);
+  if (same(draft[id], saved[id])) delete dirty[id]; else dirty[id] = 1;
+  paint(id); updBtn();
+});
+var copyText = function(){
+  var lines = [];
+  Object.keys(ROW).forEach(function(id){
+    var v = norm(draft[id] || saved[id]); if (!hasChange(v)) return;
+    var r = ROW[id], s = r.l + ' : ' + curTxt(r);
+    if (v.nouveau != null) s += ' -> ' + v.nouveau;
+    if (v.inclus != null) s += '\n  Inclus : ' + v.inclus.replace(/\n/g, ' ; ');
+    if (v.note) s += '\n  Note : ' + v.note;
+    lines.push(s);
+  });
+  var text = lines.length ? 'Corrections de prix du calculateur\n\n' + lines.join('\n') : 'Aucune correction.';
+  var done = function(){ setStatus('Corrections copiées : colle-les-moi dans la conversation.'); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text); done(); });
+  else { fallbackCopy(text); done(); }
+};
+var fallbackCopy = function(text){ var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} ta.remove(); };
+var saving = false;
+var save = async function(){
+  if (dbState === 'off') { copyText(); return; }
+  if (!db || saving) return;
+  var ids = Object.keys(dirty); if (!ids.length) return;
+  saving = true; btn.disabled = true; setStatus('Enregistrement...');
+  for (var k = 0; k < ids.length; k++) {
+    var id = ids[k], v = norm(draft[id]), r = ROW[id];
+    try {
+      if (!hasChange(v)) await db.doc('prix/' + id).delete();
+      else await db.doc('prix/' + id).set({ligne:r.l, actuel:r.cur, unite:r.kind, nouveau:v.nouveau, inclus:v.inclus, note:v.note, maj:new Date().toISOString()});
+      saved[id] = v; delete dirty[id]; paint(id);
+    } catch (e) {
+      setStatus('L’enregistrement a échoué (' + ((e && e.code) || 'erreur') + '). Réessaie dans un instant.');
+      saving = false; updBtn(); return;
+    }
+  }
+  saving = false; updBtn();
+  setStatus('Enregistré à ' + new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) + '.');
+};
+btn.addEventListener('click', save);
+document.addEventListener('keydown', function(e){ if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); save(); } });
+window.addEventListener('beforeunload', function(e){ if (Object.keys(dirty).length) { e.preventDefault(); e.returnValue = ''; } });
+updBtn();
+(async function(){
+  try { db = window.claude && window.claude.use ? await window.claude.use('db') : null; } catch (e) { db = null; }
+  if (!db) { dbState = 'off'; updBtn(); setStatus('L’enregistrement n’est pas disponible dans cette vue : le bouton copie tes corrections, colle-les-moi dans la conversation.'); return; }
+  dbState = 'on'; updBtn();
+  db.collection('prix').onSnapshot(function(snap){
+    snap.docChanges().forEach(function(ch){
+      var id = ch.doc.id; if (!ROW[id]) return;
+      saved[id] = ch.type === 'removed' ? norm(null) : norm(ch.doc.data());
+      if (!dirty[id]) { draft[id] = saved[id]; fillRow(id); }
+    });
+    var n = Object.keys(saved).filter(function(id){ return hasChange(saved[id]); }).length;
+    if (n && !statusEl.textContent) setStatus(n + ' correction' + (n > 1 ? 's' : '') + ' déjà enregistrée' + (n > 1 ? 's' : '') + ' dans cette page.');
+  }, function(err){ setStatus('Lecture des corrections impossible (' + err.code + ').'); });
+})();
+})();
+</script>
+
