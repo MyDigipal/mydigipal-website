@@ -16,8 +16,8 @@ import type { Lang } from '../calculator-v6/engine';
 export const PHOTO = '/images/team/Team_Paul_Andre.webp';
 export const BOOKING_URL = 'https://calendar.app.google/ofYHfRHbFoMpVxf79';
 
-/** Le calculateur qui reçoit un plan par l'ancre `#plan=`. À la bascule, il deviendra `/calculator`. */
-export const cheminCalculateur = (lang: Lang) => `/${lang}/calculator-v6`;
+/** Le calculateur qui reçoit un plan par l'ancre `#plan=`. */
+export const cheminCalculateur = (lang: Lang) => `/${lang}/calculator`;
 
 export type Champ = 'industry' | 'goals' | 'monthlyBudget';
 

@@ -542,6 +542,38 @@ export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, curre
     trackingNotSure: !!st.discuss['tracking-reporting'],
     departmentBreakdown,
     currency,
-    metadata: { timestamp: new Date().toISOString(), source: 'marketing-calculator-v6', usedGuidedMode: false, callPreference: false, lang }
+    // Ce que le prospect a vu, déjà mis en forme dans SA devise et avec la règle d'arrondi
+    // (22/09/2026) : le mail n'a plus à refaire les conversions, il montre les chiffres de l'écran.
+    // Les montants en euros restent dans `pricing` et `departmentBreakdown`, pour Paul et le Sheet.
+    display: {
+      currency,
+      monthly: money(q.monthly, currency, lang),
+      beforeDiscount: money(q.beforeDiscount, currency, lang),
+      discount: q.discount ? money(q.discount, currency, lang) : '',
+      oneOff: q.oneOff ? money(q.oneOff, currency, lang) : '',
+      media: q.media ? money(q.media, currency, lang) : '',
+      totalFees: money(q.totalFees, currency, lang),
+      perMonth: perLabel('month', lang),
+      domains: q.domains.map((dq) => ({
+        name: domainName(dq.domain, lang),
+        discuss: dq.discuss || dq.empty,
+        lines: dq.discuss ? [] : dq.lines.map((l) => ({
+          label: t(l.label, lang),
+          level: l.level ? t(l.level, lang) : '',
+          amount: l.per === 'quote' ? (lang === 'fr' ? 'Sur devis' : 'On quote') : `${money(l.amount, currency, lang)}${perLabel(l.per, lang)}`,
+          kind: l.kind
+        }))
+      }))
+    },
+    metadata: {
+      timestamp: new Date().toISOString(),
+      source: 'marketing-calculator-v6',
+      usedGuidedMode: false,
+      callPreference: false,
+      lang,
+      // Le devis rouvert tel quel dans le calculateur : bouton « Revoir mon devis » du mail.
+      planUrl: `https://mydigipal.com/${lang}/calculator#plan=${encodePlan(st)}`,
+      provenance: {} as Record<string, string>
+    }
   };
 }

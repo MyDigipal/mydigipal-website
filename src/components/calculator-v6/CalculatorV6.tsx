@@ -18,6 +18,7 @@ import { CURRENCY_CONFIGS, DURATION_CONFIG } from '../calculator/data';
 import type { ContactType } from '../calculator/data/emailing-services';
 import { guidedQuestions } from '../calculator/guided-data';
 import { track, trackBudget, trackChannel, trackDomain, trackService, trackStep, trackAbandon } from '../calculator/tracking';
+import { provenance } from '../academy/track';
 import {
   AI_CUSTOM_FIELDS, BUDGET_STEPS, CONTACT_VOLUMES, DEFAULT_BUDGET, DEFAULT_CONTACT_VOLUME, DOMAIN_ORDER, QUESTION_INDEX,
   buildPayload, channelsOf, decodePlan, devis, domainDesc, domainName, emptyState, guidedProposal, inOrder, money, optionsFor, perLabel,
@@ -326,6 +327,9 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     go(sequence(plan).indexOf('recap'));
   }, [go]);
   useEffect(() => {
+    // `?service=seo` : les boutons « Calculer mon budget » des pages services cochent le service.
+    const service = new URLSearchParams(window.location.search).get('service');
+    if (service && (DOMAIN_ORDER as string[]).includes(service)) setDraft((d) => (d.length ? d : [service as ServiceDomain]));
     const m = /[#&]plan=([A-Za-z0-9_-]+)(?:&b=(\d+))?/.exec(window.location.hash);
     if (m) {
       appliquerPlan(m[1], m[2] ? Number(m[2]) : undefined);
@@ -376,6 +380,8 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       guidedRecommendation: proposalBudget ? { selectedDomains: st.domains, estimatedMonthly: proposalBudget } : null
     };
     payload.metadata.usedGuidedMode = !!proposalBudget;
+    // D'où vient la personne (annonce, source, page d'entrée) : Paul le lit dans son mail.
+    payload.metadata.provenance = provenance();
     if (dryRun) {
       // eslint-disable-next-line no-console
       console.info('[calculateur v6, mode test] envoi non effectué', payload);

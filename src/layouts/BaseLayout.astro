@@ -348,15 +348,17 @@ const canonical = canonicalURL || Astro.url.href;
       document.addEventListener('astro:page-load', wireAll);
     </script>
 
-    <!-- L'assistant du site (22/09/2026) : la bulle avec le visage de Paul. Pendant la
-         relecture, il ne s'affiche que sur le calculateur de test et pour qui ouvre une
-         page avec ?assistant=1 (jusqu'à la fin de la visite ; ?assistant=0 l'éteint).
+    <!-- L'assistant du site (22/09/2026) : la bulle avec le visage de Paul. Pour l'instant,
+         il ne s'affiche que sur le calculateur et pour qui ouvre une page avec ?assistant=1
+         (jusqu'à la fin de la visite ; ?assistant=0 l'éteint). Pour l'ouvrir à tout le site :
+         `let actif = true`.
          Jamais sur les pages Academy, qui ont leur propre panneau. Son code n'est
          chargé que là où il s'affiche. -->
     <script>
       const cheminPage = location.pathname;
       const academie = /^\/(fr|en)\/academy/.test(cheminPage) || cheminPage.startsWith('/admin');
-      let actif = /^\/(fr|en)\/calculator-v6/.test(cheminPage);
+      const calculateur = /^\/(fr|en)\/calculator\/?$/.test(cheminPage);
+      let actif = calculateur;
       try {
         const q = new URLSearchParams(location.search).get('assistant');
         if (q === '1') sessionStorage.setItem('mdp_assistant_on', '1');
@@ -367,7 +369,7 @@ const canonical = canonicalURL || Astro.url.href;
       }
       if (actif && !academie) {
         const charger = () => import('@/components/site-assistant/mount').then((m) => m.monter());
-        if (/^\/(fr|en)\/calculator-v6/.test(cheminPage)) charger();
+        if (calculateur) charger();
         else if ('requestIdleCallback' in window) window.requestIdleCallback(charger, { timeout: 2500 });
         else setTimeout(charger, 1200);
       }

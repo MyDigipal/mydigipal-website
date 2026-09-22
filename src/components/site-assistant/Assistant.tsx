@@ -95,7 +95,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   const debut = useRef(Date.now());
   const chemin = typeof window !== 'undefined' ? window.location.pathname : '/';
   const service = useMemo(() => serviceDeLaPage(chemin), [chemin]);
-  const surCalculateur = /^\/(?:fr|en)\/calculator-v6/.test(chemin);
+  const surCalculateur = /^\/(?:fr|en)\/calculator\/?$/.test(chemin);
 
   const [s, setS] = useState<Sauve>(() => lire(CLE, VIDE));
   const sRef = useRef(s);

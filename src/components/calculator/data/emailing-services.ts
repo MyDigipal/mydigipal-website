@@ -270,8 +270,10 @@ export const CONTACT_PRICING_CONFIG = {
     { maxVolume: Infinity, label: '> 2500 contacts', labelEn: '> 2500 contacts' }
   ],
   prices: {
-    email:      [0.10, 0.08, 0.06],
-    'email-ai': [0.05, 0.04, 0.03],
+    // Inversés le 22/09/2026 (retour de Jordan, validé par Paul) : « Email + IA » coûtait moins
+    // cher que « Email seul », alors qu'il comprend l'adresse ET l'enrichissement.
+    email:      [0.05, 0.04, 0.03],
+    'email-ai': [0.10, 0.08, 0.06],
     phone:      [0.80, 0.64, 0.51]
   } as Record<ContactType, number[]>,
   labels: {
