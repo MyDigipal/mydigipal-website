@@ -348,6 +348,31 @@ const canonical = canonicalURL || Astro.url.href;
       document.addEventListener('astro:page-load', wireAll);
     </script>
 
+    <!-- L'assistant du site (22/09/2026) : la bulle avec le visage de Paul. Pendant la
+         relecture, il ne s'affiche que sur le calculateur de test et pour qui ouvre une
+         page avec ?assistant=1 (jusqu'à la fin de la visite ; ?assistant=0 l'éteint).
+         Jamais sur les pages Academy, qui ont leur propre panneau. Son code n'est
+         chargé que là où il s'affiche. -->
+    <script>
+      const cheminPage = location.pathname;
+      const academie = /^\/(fr|en)\/academy/.test(cheminPage) || cheminPage.startsWith('/admin');
+      let actif = /^\/(fr|en)\/calculator-v6/.test(cheminPage);
+      try {
+        const q = new URLSearchParams(location.search).get('assistant');
+        if (q === '1') sessionStorage.setItem('mdp_assistant_on', '1');
+        if (q === '0') sessionStorage.removeItem('mdp_assistant_on');
+        actif = actif || sessionStorage.getItem('mdp_assistant_on') === '1';
+      } catch {
+        /* stockage indisponible : l'assistant reste limité au calculateur */
+      }
+      if (actif && !academie) {
+        const charger = () => import('@/components/site-assistant/mount').then((m) => m.monter());
+        if (/^\/(fr|en)\/calculator-v6/.test(cheminPage)) charger();
+        else if ('requestIdleCallback' in window) window.requestIdleCallback(charger, { timeout: 2500 });
+        else setTimeout(charger, 1200);
+      }
+    </script>
+
     <!-- Analytics slot -->
     <slot name="analytics" />
 

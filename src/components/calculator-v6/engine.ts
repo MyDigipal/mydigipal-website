@@ -380,14 +380,19 @@ const nearestStep = (v: number) => BUDGET_STEPS.reduce((b, x) => (Math.abs(x - v
  * le service mensuel le plus cher, puis on retire le service le moins prioritaire, jusqu'à tenir
  * le budget annoncé à 10 % près. Les frais de mise en place optionnels (catalogue, chatbot,
  * workflows) ne sont pas proposés d'office : le visiteur les ajoute s'il le souhaite.
+ *
+ * `focus` : le service de la page où l'assistant du site a été ouvert (22/09/2026). Il passe en
+ * tête de la proposition, au premier niveau s'il n'était pas recommandé, et n'est jamais retiré
+ * pour tenir le budget : quelqu'un qui lit la page Google Ads doit voir Google Ads dans son plan.
  */
-export function guidedProposal(industry: string, goal: string, budgetOption: string): { state: QuoteState; budget: number } {
+export function guidedProposal(industry: string, goal: string, budgetOption: string, focus?: ServiceDomain): { state: QuoteState; budget: number } {
   const budget = budgetOptionToValue[budgetOption] ?? 3500;
   const rec = generateRecommendation({ industry, goals: [goal], monthlyBudget: budget, currentEfforts: [], freeTextContext: '' });
   const priority = [...rec.selectedDomains];
+  if (focus) priority.splice(0, priority.length, focus, ...priority.filter((d) => d !== focus));
   const answers: Answers = {};
   for (const d of priority) {
-    const lvl = rec.selections[d];
+    const lvl = rec.selections[d] ?? (d === focus ? 0 : undefined);
     for (const q of questionsFor(d)) {
       if (q.kind !== 'level' || lvl == null) continue;
       const service = domainConfigs[d].services.find((x) => x.id === q.service)!;
@@ -395,8 +400,8 @@ export function guidedProposal(industry: string, goal: string, budgetOption: str
       answers[q.id] = once ? (q.service === 'seo-audit' ? 0 : null) : Math.min(lvl, service.levels.length - 1);
     }
   }
-  if (priority.includes('google-ads')) answers['ga-budget'] = nearestStep(rec.adBudgets['google-ads']);
-  if (priority.includes('paid-social')) { answers['ps-budget'] = nearestStep(rec.adBudgets['paid-social']); answers['ps-channels'] = rec.recommendedChannels ?? []; }
+  if (priority.includes('google-ads')) answers['ga-budget'] = nearestStep(rec.adBudgets['google-ads'] ?? DEFAULT_BUDGET);
+  if (priority.includes('paid-social')) { answers['ps-budget'] = nearestStep(rec.adBudgets['paid-social'] ?? DEFAULT_BUDGET); answers['ps-channels'] = rec.recommendedChannels ?? []; }
   if (priority.includes('tracking-reporting')) {
     answers['trk-items'] = [...(rec.trackingAudit ? ['tracking-audit'] : []), ...Object.entries(rec.trackingPreselections ?? {}).filter(([, v]) => v).map(([k]) => k)];
   }
@@ -411,13 +416,47 @@ export function guidedProposal(industry: string, goal: string, budgetOption: str
       continue;
     }
     if (st.domains.length > 2) {
-      const drop = [...priority].reverse().find((d) => st.domains.includes(d));
+      const drop = [...priority].reverse().find((d) => st.domains.includes(d) && d !== focus);
+      if (!drop) break;
       st.domains = st.domains.filter((d) => d !== drop);
       continue;
     }
     break;
   }
   return { state: st, budget };
+}
+
+// --- un devis transmis par lien ------------------------------------------------------------
+// L'assistant du site (22/09/2026) propose un plan sur n'importe quelle page ; « Voir le devis
+// détaillé » ouvre le calculateur avec ce plan dans l'ancre (`#plan=...`). L'ancre ne part jamais
+// au serveur, et un plan illisible ou trafiqué est simplement ignoré.
+
+const versB64 = (texte: string) => {
+  let bin = '';
+  new TextEncoder().encode(texte).forEach((o) => { bin += String.fromCharCode(o); });
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+const depuisB64 = (code: string) => {
+  const bin = atob(code.replace(/-/g, '+').replace(/_/g, '/'));
+  return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
+};
+
+export function encodePlan(st: QuoteState): string {
+  return versB64(JSON.stringify({ d: st.domains, a: st.answers, u: st.duration }));
+}
+
+export function decodePlan(code: string): QuoteState | null {
+  try {
+    const o = JSON.parse(depuisB64(code)) as { d?: unknown; a?: Record<string, unknown>; u?: unknown };
+    const domains = inOrder((Array.isArray(o.d) ? o.d : []).filter((x): x is ServiceDomain => DOMAIN_ORDER.includes(x as ServiceDomain)));
+    if (!domains.length) return null;
+    const answers: Answers = {};
+    for (const [k, v] of Object.entries(o.a ?? {})) if (QUESTION_INDEX[k]) answers[k] = v as Answers[string];
+    const duration = DURATION_CONFIG.options.some((x) => x.months === o.u) ? (o.u as number) : 4;
+    return { domains, answers, discuss: {}, duration };
+  } catch {
+    return null;
+  }
 }
 
 // --- affichage des montants ----------------------------------------------------------

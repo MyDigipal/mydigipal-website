@@ -20,7 +20,7 @@ import { guidedQuestions } from '../calculator/guided-data';
 import { track, trackBudget, trackChannel, trackDomain, trackService, trackStep, trackAbandon } from '../calculator/tracking';
 import {
   AI_CUSTOM_FIELDS, BUDGET_STEPS, CONTACT_VOLUMES, DEFAULT_BUDGET, DEFAULT_CONTACT_VOLUME, DOMAIN_ORDER, QUESTION_INDEX,
-  buildPayload, channelsOf, devis, domainDesc, domainName, emptyState, guidedProposal, inOrder, money, optionsFor, perLabel,
+  buildPayload, channelsOf, decodePlan, devis, domainDesc, domainName, emptyState, guidedProposal, inOrder, money, optionsFor, perLabel,
   questionsFor, sequence, t, unitContactPrice, visibleQuestions,
   type Contact, type DomainQuote, type Lang, type Question, type QuoteState
 } from './engine';
@@ -190,6 +190,17 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   const seq = useMemo(() => sequence(st), [st]);
   const cur = guided ? `g-${guided.step}` : seq[Math.min(i, seq.length - 1)];
   const quote = useMemo(() => devis(st), [st]);
+  const onRecap = !guided && seq[Math.min(i, seq.length - 1)] === 'recap';
+  useEffect(() => {
+    const w = window as unknown as { __mdpDevis?: string | null };
+    const e = (v: number) => money(v, 'EUR', 'fr');
+    const resume = onRecap && quote.domains.length
+      ? `${quote.domains.map((d) => domainName(d.domain, 'fr')).join(', ')} : ${e(quote.monthly)}/mois${quote.oneOff ? ` + ${e(quote.oneOff)} de mise en place` : ''}${quote.media ? ` + ${e(quote.media)} de média par mois` : ''}, ${st.duration} mois`
+      : null;
+    if (w.__mdpDevis === resume) return;
+    w.__mdpDevis = resume;
+    window.dispatchEvent(new CustomEvent('mdp-assistant:devis', { detail: { resume } }));
+  }, [onRecap, quote, st.duration]);
   const fmt = useCallback((eur: number) => money(eur, currency, lang), [currency, lang]);
   // Composant stable (mémorisé) : sans ça, chaque rendu du bloc refermerait la bulle ouverte.
   const H = useMemo(() => function HintBound({ k, children, className, tone }: { k?: string; children: React.ReactNode; className?: string; tone?: 'light' | 'dark' }) {
@@ -296,6 +307,37 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     setGuided({ step: 0 });
     if (tracking) { track('calculator_mode_selected', { calculator_mode: 'guided' }); trackStep('guided'); }
   };
+  // « Aidez-moi à choisir » ouvre l'assistant du site (Paul, 22/09/2026 : un seul assistant, pas
+  // deux). S'il n'est pas encore chargé, le parcours guidé du calculateur prend le relais.
+  const openGuide = () => {
+    if (!(window as unknown as { __mdpAssistant?: boolean }).__mdpAssistant) { startGuided(); return; }
+    window.dispatchEvent(new CustomEvent('mdp-assistant:open', { detail: { mode: 'guide' } }));
+    if (tracking) track('calculator_mode_selected', { calculator_mode: 'assistant' });
+  };
+  // Un plan venu de l'assistant : sur cette page par un événement, depuis une autre page par
+  // l'ancre `#plan=...&b=...`. Il s'affiche directement en devis, tout reste modifiable.
+  const appliquerPlan = useCallback((code: string, budget?: number) => {
+    const plan = decodePlan(code);
+    if (!plan) return;
+    setSt(plan);
+    setDraft(plan.domains);
+    setProposalBudget(budget && Number.isFinite(budget) ? budget : null);
+    setGuided(null);
+    go(sequence(plan).indexOf('recap'));
+  }, [go]);
+  useEffect(() => {
+    const m = /[#&]plan=([A-Za-z0-9_-]+)(?:&b=(\d+))?/.exec(window.location.hash);
+    if (m) {
+      appliquerPlan(m[1], m[2] ? Number(m[2]) : undefined);
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    const surPlan = (e: Event) => {
+      const d = (e as CustomEvent<{ plan?: string; budget?: number }>).detail;
+      if (d?.plan) appliquerPlan(d.plan, d.budget);
+    };
+    window.addEventListener('mdp-assistant:plan', surPlan);
+    return () => window.removeEventListener('mdp-assistant:plan', surPlan);
+  }, [appliquerPlan]);
   const answerGuided = (field: 'industry' | 'goals' | 'monthlyBudget', value: string) => {
     const g = { ...(guided as Guided), [field]: value };
     setGuided(g);
@@ -620,7 +662,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
               </button>
             );
           })}
-          <button type="button" onClick={startGuided}
+          <button type="button" onClick={openGuide}
             className="col-span-2 flex items-center justify-between gap-4 rounded-xl border border-primary-200 bg-primary-50 p-4 text-left transition-colors hover:border-primary-400 lg:col-span-4">
             <span>
               <span className="block text-[15px] font-bold text-slate-900">{L(lang, 'Je ne sais pas encore, aidez-moi à choisir', 'Not sure yet? Help me choose')}</span>
