@@ -1,0 +1,436 @@
+<meta charset="utf-8">
+<title>Chat du site</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+<style>
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --surface-2:#edf1f6; --ink:#0f1b29; --ink-2:#394859; --muted:#5f7084;
+  --line:#dae1ea; --line-2:#c3cedb; --accent:#1d71b8; --accent-hover:#175e99; --accent-ink:#ffffff; --accent-soft:#e8f1fa;
+  --ok:#1a7a51; --ok-soft:#e2f2e9; --talk:#855700; --talk-soft:#fbf0d8; --warn:#a1331b; --warn-soft:#fbe8e2;
+  --paul:#0f1b29; --paul-ink:#ffffff;
+  --shadow:0 1px 2px rgba(16,42,72,.06),0 12px 32px rgba(16,42,72,.08);
+  --r-card:16px; --r-ctl:10px;
+  --f-display:"Plus Jakarta Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b1219; --surface:#111a24; --surface-2:#18232f; --ink:#e6edf4; --ink-2:#b8c5d2; --muted:#8a9bad;
+  --line:#223141; --line-2:#304154; --accent:#4f9fe1; --accent-hover:#6daee7; --accent-ink:#04111d; --accent-soft:#12283c;
+  --ok:#4dbf89; --ok-soft:#0f2a1f; --talk:#e3b24f; --talk-soft:#2a2112; --warn:#ef8b72; --warn-soft:#2c1712;
+  --paul:#e6edf4; --paul-ink:#0b1219;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --bg:#0b1219; --surface:#111a24; --surface-2:#18232f; --ink:#e6edf4; --ink-2:#b8c5d2; --muted:#8a9bad;
+  --line:#223141; --line-2:#304154; --accent:#4f9fe1; --accent-hover:#6daee7; --accent-ink:#04111d; --accent-soft:#12283c;
+  --ok:#4dbf89; --ok-soft:#0f2a1f; --talk:#e3b24f; --talk-soft:#2a2112; --warn:#ef8b72; --warn-soft:#2c1712;
+  --paul:#e6edf4; --paul-ink:#0b1219;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1250px;margin:0 auto;padding-inline:20px;padding-block:44px 90px}
+.prose{max-width:700px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,4.6vw,46px);line-height:1.08;letter-spacing:-.022em;font-weight:800}
+h2{font-size:clamp(23px,3vw,30px);line-height:1.18;letter-spacing:-.015em;font-weight:700;margin-bottom:14px}
+h3{font-size:18px;line-height:1.3;font-weight:700}
+p{margin:0 0 14px}
+a{color:var(--accent)}
+code{font-size:.9em;background:var(--surface-2);padding:1px 5px;border-radius:5px;overflow-wrap:anywhere}
+.kicker{font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px}
+.lede{font-size:18px;line-height:1.55;color:var(--ink-2);margin-top:16px;max-width:660px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;padding:0;list-style:none}
+.toc a{display:inline-block;font-size:13.5px;font-weight:500;text-decoration:none;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.toc a:hover{border-color:var(--accent);color:var(--accent)}
+section{margin-top:72px;scroll-margin-top:20px}
+.muted{color:var(--muted)}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* état */
+.etat{margin:8px 0 0;display:grid;gap:0}
+.etat-row{display:grid;grid-template-columns:190px 1fr;gap:6px 22px;padding:14px 0;border-top:1px solid var(--line)}
+.etat-row:last-child{border-bottom:1px solid var(--line)}
+.etat dt{font-weight:600;font-size:15px}
+.etat dd{margin:0;font-size:15px;color:var(--ink-2)}
+.pill-st{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;margin-right:8px;vertical-align:1px}
+.st-done{background:var(--ok-soft);color:var(--ok)}
+.st-open{background:var(--accent-soft);color:var(--accent)}
+.st-wait{background:var(--talk-soft);color:var(--talk)}
+@media (max-width:640px){.etat-row{grid-template-columns:1fr}}
+
+/* tableau */
+.tbl-wrap{overflow-x:auto;margin:6px 0 18px}
+.tbl{width:100%;border-collapse:collapse;font-size:15px;min-width:560px}
+.tbl th{font-size:12.5px;font-weight:600;color:var(--muted);text-align:left;padding:0 14px 8px 0}
+.tbl td{padding:11px 14px 11px 0;border-top:1px solid var(--line);vertical-align:top}
+.tbl td:first-child{font-weight:600;white-space:nowrap}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:1px 7px;white-space:nowrap}
+.tag.keep{background:var(--ok-soft);color:var(--ok)}
+.tag.adapt{background:var(--accent-soft);color:var(--accent)}
+.tag.new{background:var(--talk-soft);color:var(--talk)}
+
+/* directions */
+.pick{display:none;margin:18px 0 20px}
+.seg{display:flex;background:var(--surface-2);border-radius:12px;padding:3px;gap:3px;width:100%;max-width:420px}
+.seg button{flex:1 1 0;border:0;background:none;font:600 13.5px/1.2 var(--f-body);color:var(--ink-2);padding:10px 6px;border-radius:9px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(16,42,72,.12)}
+.dirs{display:grid;grid-template-columns:repeat(3,minmax(0,390px));justify-content:space-between;gap:30px;margin-top:26px}
+@media (max-width:1279px){
+  .pick{display:block}
+  .dirs{grid-template-columns:minmax(0,420px);justify-content:start}
+  .dirs>.dir:not(.on){display:none}
+}
+.dir-h{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+.dir-h .letter{font:800 15px/1 var(--f-display);color:var(--accent-ink);background:var(--accent);border-radius:8px;padding:6px 8px}
+.dir-h h3{font-size:19px}
+.dir-sub{font-size:14.5px;color:var(--ink-2);margin:0 0 16px;min-height:68px}
+@media (max-width:1279px){.dir-sub{min-height:0}}
+.dir-txt{margin-top:18px;font-size:15px;color:var(--ink-2)}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.pc h4{font:700 13px/1.3 var(--f-body);margin:0 0 6px;color:var(--ink)}
+.pc ul{margin:0;padding-left:17px;font-size:14px}
+.pc li{margin-bottom:5px}
+.reco-flag{display:inline-block;font-size:12px;font-weight:700;color:var(--ok);background:var(--ok-soft);border-radius:999px;padding:2px 9px;margin-left:4px}
+
+/* téléphone */
+.frame{position:relative;width:100%;max-width:390px;height:720px;border:1px solid var(--line-2);border-radius:26px;box-shadow:var(--shadow);overflow:hidden;background:#fff;isolation:isolate}
+.site{position:absolute;inset:0;background:#fff;color:#0f1b29}
+.site-bar{display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 16px;border-bottom:1px solid #e6ebf1}
+.logo{font:700 17px var(--f-display);letter-spacing:-.01em}
+.logo i{font-style:normal;color:#1d71b8}
+.burger{width:22px;height:14px;border-top:2px solid #0f1b29;border-bottom:2px solid #0f1b29;position:relative}
+.burger:after{content:"";position:absolute;left:0;right:0;top:4px;border-top:2px solid #0f1b29}
+.site-hero{padding:26px 18px}
+.site-badge{display:inline-block;font-size:12px;font-weight:600;color:#1d71b8;background:#e8f1fa;border-radius:999px;padding:3px 10px}
+.site-hero b{display:block;font:800 27px/1.12 var(--f-display);letter-spacing:-.02em;margin-top:12px}
+.site-hero p{font-size:14px;color:#5f7084;margin:10px 0 0}
+.scrim{position:absolute;inset:0;background:rgba(15,27,41,.28)}
+.sheet{position:absolute;left:0;right:0;bottom:0;height:84%;background:#fff;color:#0f1b29;border-radius:20px 20px 0 0;display:flex;flex-direction:column;box-shadow:0 -10px 30px rgba(15,27,41,.18)}
+.sheet-head{flex:none;display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #e6ebf1}
+.av{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--f-display);color:#fff;background:#1d71b8}
+.av.paul{background:#0f1b29}
+.who{flex:1;min-width:0}
+.who strong{display:block;font:700 15px/1.2 var(--f-display)}
+.who small{display:flex;align-items:center;gap:6px;font-size:12px;color:#5f7084}
+.dot{width:7px;height:7px;border-radius:50%;background:#1a7a51}
+.x{flex:none;width:30px;height:30px;border-radius:50%;background:#edf1f6;display:grid;place-items:center}
+.x svg{width:12px;height:12px}
+.sheet-body{flex:1;overflow-y:auto;padding:14px 14px 10px;display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:1.45}
+.sheet-foot{flex:none;display:flex;gap:8px;align-items:center;padding:10px 12px 14px;border-top:1px solid #e6ebf1}
+.field{flex:1;height:42px;border:1px solid #c3cedb;border-radius:12px;padding:0 12px;display:flex;align-items:center;font-size:14px;color:#8a9bad}
+.send{flex:none;width:42px;height:42px;border-radius:12px;background:#1d71b8;display:grid;place-items:center}
+.send svg{width:16px;height:16px}
+.m{max-width:86%;padding:9px 12px;border-radius:14px}
+.m.bot{background:#edf1f6;border-bottom-left-radius:4px}
+.m.me{align-self:flex-end;background:#1d71b8;color:#fff;border-bottom-right-radius:4px}
+.m.paul{background:#0f1b29;color:#fff;border-bottom-left-radius:4px}
+.m b{font-weight:700}
+.from{font-size:11.5px;font-weight:600;color:#5f7084;margin:0 0 -6px 2px}
+.event{align-self:center;font-size:12px;color:#5f7084;background:#f3f5f8;border-radius:999px;padding:3px 10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:13px;font-weight:500;border:1px solid #c3cedb;border-radius:999px;padding:6px 11px;background:#fff}
+.chip.on{border-color:#1d71b8;background:#e8f1fa;color:#175e99;font-weight:600}
+.faq{border:1px solid #dae1ea;border-radius:12px;overflow:hidden}
+.faq-q{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;font-weight:600;font-size:13.5px;border-top:1px solid #dae1ea}
+.faq-q:first-child{border-top:0}
+.faq-q span{color:#8a9bad;font-weight:500}
+.faq-a{padding:0 12px 12px;font-size:13.5px;color:#394859}
+.card{border:1px solid #dae1ea;border-radius:12px;padding:11px 12px;background:#fff}
+.card .row{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:3px 0}
+.card .row b{font-variant-numeric:tabular-nums}
+.card .cta{display:flex;align-items:center;justify-content:center;height:38px;border-radius:10px;background:#1d71b8;color:#fff;font-weight:600;font-size:13.5px;margin-top:9px}
+.card .cta.ghost{background:#edf1f6;color:#0f1b29}
+.lnk{color:#1d71b8;font-weight:600}
+.hint{font-size:12px;color:#5f7084;text-align:center}
+.eg{position:absolute;top:66px;right:12px;z-index:2;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#855700;background:#fbf0d8;border-radius:6px;padding:2px 7px}
+
+/* flux */
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0 10px;padding:0;list-style:none;counter-reset:f}
+.flow li{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px}
+.flow li:before{counter-increment:f;content:counter(f);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);font:700 13px var(--f-display);margin-bottom:10px}
+.flow b{display:block;font-family:var(--f-display);font-size:16px;margin-bottom:4px}
+.flow span{font-size:14px;color:var(--ink-2)}
+@media (max-width:900px){.flow{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.flow{grid-template-columns:1fr}}
+
+.aside{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px 18px;margin-top:22px;font-size:15px}
+.aside p:last-child{margin-bottom:0}
+.qs{margin:8px 0 0;padding-left:22px}
+.qs li{margin-bottom:12px}
+.qs li b{font-family:var(--f-display)}
+.never{columns:2;column-gap:28px;padding-left:18px;margin:8px 0 0;font-size:15px}
+.never li{break-inside:avoid;margin-bottom:6px}
+@media (max-width:640px){.never{columns:1}}
+</style>
+
+<main class="wrap">
+  <header class="prose">
+    <p class="kicker">MyDigipal, site</p>
+    <h1>Le chat du site</h1>
+    <p class="lede">Un chat sur toutes les pages de mydigipal.com, qui sait sur quelle page il s’ouvre, qui connaît le calculateur, et qui te fait suivre la conversation dans Google Chat pour que tu puisses répondre en direct. Trois façons de le faire, une recommandation, et ce qu’il te faudra trancher.</p>
+    <ul class="toc">
+      <li><a href="#etat">Où on en est</a></li>
+      <li><a href="#existant">Ce qui existe déjà</a></li>
+      <li><a href="#directions">Trois directions</a></li>
+      <li><a href="#reco">Ma recommandation</a></li>
+      <li><a href="#page">Ce qu’il sait de la page</a></li>
+      <li><a href="#trancher">À trancher</a></li>
+      <li><a href="#docs">Les documents</a></li>
+    </ul>
+  </header>
+
+  <section id="etat" class="prose">
+    <h2>Où on en est</h2>
+    <dl class="etat">
+      <div class="etat-row"><dt>Direction</dt><dd><span class="pill-st st-open">À choisir</span>Trois directions plus bas. Je recommande la B, construite en deux temps.</dd></div>
+      <div class="etat-row"><dt>Tuyauterie</dt><dd><span class="pill-st st-done">Existe</span>Le chat de l’Academy fait déjà l’aller et le retour avec Google Chat, et le serveur accepte déjà les appels venus de mydigipal.com. On le réutilise.</dd></div>
+      <div class="etat-row"><dt>Espace Google Chat</dt><dd><span class="pill-st st-wait">À créer</span>Un nouvel espace pour le site, comme tu l’avais demandé le 15/09, avec son webhook. L’app Chat « MyDigipal » existante y est ajoutée : on n’en crée pas une deuxième.</dd></div>
+      <div class="etat-row"><dt>Calculateur</dt><dd><span class="pill-st st-open">Prévu</span>Sur la page de résultat, le chat reçoit le devis en cours : tu le vois dans Google Chat dès que le visiteur écrit.</dd></div>
+      <div class="etat-row"><dt>Construction</dt><dd><span class="pill-st st-wait">Pas commencée</span>Rien n’est codé tant que la direction n’est pas choisie.</dd></div>
+    </dl>
+  </section>
+
+  <section id="existant">
+    <div class="prose">
+      <h2>Ce qui existe déjà</h2>
+      <p>Le panneau « Une question ? » de la page Academy fait déjà la moitié du chemin. Le visiteur écrit, le message arrive dans l’espace « Academy - Chat », tu réponds en écrivant <code>@MyDigipal</code> dans le fil, et ta réponse apparaît chez lui en quelques secondes. S’il est parti et qu’il a laissé une adresse, elle part aussi par e-mail. Aucun modèle ne répond aujourd’hui : la FAQ est écrite à la main.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Brique</th><th>Pour le site</th><th>Détail</th></tr></thead>
+        <tbody>
+          <tr><td>Fils de conversation</td><td><span class="tag keep">Tel quel</span></td><td>Base Firestore de l’Academy, avec un nouveau type de fil « site ». Le chemin de ta réponse ne change pas.</td></tr>
+          <tr><td>Ta réponse depuis Google Chat</td><td><span class="tag keep">Tel quel</span></td><td>La même app « MyDigipal ». Elle retrouve le fil quel que soit l’espace.</td></tr>
+          <tr><td>E-mail si le visiteur est parti</td><td><span class="tag adapt">À adapter</span></td><td>Les textes parlent aujourd’hui de « MyDigipal Academy ».</td></tr>
+          <tr><td>Accès depuis mydigipal.com</td><td><span class="tag keep">Tel quel</span></td><td>Le serveur autorise déjà mydigipal.com et www.mydigipal.com.</td></tr>
+          <tr><td>Le panneau</td><td><span class="tag adapt">À adapter</span></td><td>Il porte les couleurs nocturnes de l’Academy et sa FAQ de vente. Pour le site : aux couleurs du site, sur toutes les pages sauf celles de l’Academy, qui gardent le leur.</td></tr>
+          <tr><td>Notification Google Chat</td><td><span class="tag adapt">À adapter</span></td><td>Un seul espace est prévu aujourd’hui. Il faut une deuxième adresse d’envoi pour l’espace du site.</td></tr>
+          <tr><td>Limite anti-abus</td><td><span class="tag new">À ajouter</span></td><td>Il n’y a aucune limite par adresse IP. C’est acceptable quand seul toi réponds, pas si un modèle répond, parce que chaque réponse a un coût.</td></tr>
+          <tr><td>Connaître la page et le site</td><td><span class="tag new">À ajouter</span></td><td>Le panneau envoie déjà l’adresse de la page. Il faut en plus un résumé de chaque page et le plan du site.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="directions">
+    <div class="prose">
+      <h2>Trois directions</h2>
+      <p>Même page dans les trois maquettes : un visiteur sur la page Google Ads, sur téléphone. Les conversations sont des exemples. Les montants, eux, viennent de la vraie grille du calculateur : pour 3 000 € de budget mensuel, la gestion Google Ads est à 20 % du budget, donc 600 € par mois.</p>
+    </div>
+    <div class="pick">
+      <div class="seg" role="group" aria-label="Direction affichée">
+        <button type="button" data-show="a" aria-pressed="false">A. Guichet</button>
+        <button type="button" data-show="b" aria-pressed="true">B. Assistant</button>
+        <button type="button" data-show="c" aria-pressed="false">C. Calculateur</button>
+      </div>
+    </div>
+
+    <div class="dirs">
+      <!-- A -->
+      <article class="dir" data-dir="a">
+        <div class="dir-h"><span class="letter">A</span><h3>Le guichet</h3></div>
+        <p class="dir-sub">Des réponses écrites par nous, page par page, et toi en direct pour tout le reste. Comme l’Academy aujourd’hui.</p>
+        <div class="frame" aria-label="Maquette de la direction A">
+          <div class="site">
+            <div class="site-bar"><span class="logo">my<i>digipal</i>.</span><span class="burger"></span></div>
+            <div class="site-hero"><span class="site-badge">Google Ads</span><b>Dominez les résultats de recherche instantanément</b><p>Stratégie PPC optimisée par l’IA</p></div>
+          </div>
+          <span class="eg">Exemple</span>
+          <div class="scrim"></div>
+          <div class="sheet">
+            <div class="sheet-head">
+              <span class="av">MD</span>
+              <div class="who"><strong>Une question sur Google Ads ?</strong><small>Réponse ici, ou par e-mail si vous partez</small></div>
+              <span class="x"><svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="#394859" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            </div>
+            <div class="sheet-body">
+              <div class="faq">
+                <div class="faq-q">Combien coûte la gestion ? <span>−</span></div>
+                <div class="faq-a">500 € par mois jusqu’à 2 500 € de budget, puis 20 % du budget jusqu’à 7 500 €, et un pourcentage qui baisse au-delà. <span class="lnk">Calculer mon prix</span></div>
+                <div class="faq-q">Quel budget pour commencer ? <span>+</span></div>
+                <div class="faq-q">En combien de temps des résultats ? <span>+</span></div>
+                <div class="faq-q">Vous travaillez dans mon secteur ? <span>+</span></div>
+              </div>
+              <p class="from">Vous</p>
+              <div class="m me">On est une PME industrielle, on vend surtout à l’export. Ça marche aussi à l’étranger ?</div>
+              <div class="event">Paul a reçu votre message</div>
+            </div>
+            <div class="sheet-foot"><span class="field">Écrire à Paul…</span><span class="send"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          </div>
+        </div>
+        <div class="dir-txt">
+          <p>Chaque type de page a ses quatre ou cinq questions, écrites en français et en anglais. Tout ce qui sort de la FAQ va chez toi.</p>
+          <div class="pc">
+            <div><h4>Pour</h4><ul><li>Aucun risque de réponse fausse</li><li>Aucun coût par conversation</li><li>La plus rapide à mettre en ligne</li></ul></div>
+            <div><h4>Contre</h4><ul><li>Neuf FAQ à écrire en deux langues</li><li>Hors FAQ, le visiteur attend ta réponse</li><li>Ne redirige pas vers une autre page de lui-même</li></ul></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- B -->
+      <article class="dir on" data-dir="b">
+        <div class="dir-h"><span class="letter">B</span><h3>L’assistant, toi en relais</h3><span class="reco-flag">Recommandé</span></div>
+        <p class="dir-sub">Un modèle répond tout de suite, avec la page et le calculateur sous les yeux. Tu vois tout dans Google Chat et tu reprends la main quand tu veux.</p>
+        <div class="frame" aria-label="Maquette de la direction B">
+          <div class="site">
+            <div class="site-bar"><span class="logo">my<i>digipal</i>.</span><span class="burger"></span></div>
+            <div class="site-hero"><span class="site-badge">Google Ads</span><b>Dominez les résultats de recherche instantanément</b><p>Stratégie PPC optimisée par l’IA</p></div>
+          </div>
+          <span class="eg">Exemple</span>
+          <div class="scrim"></div>
+          <div class="sheet">
+            <div class="sheet-head">
+              <span class="av">MD</span>
+              <div class="who"><strong>MyDigipal</strong><small><span class="dot"></span>Assistant, Paul voit la conversation</small></div>
+              <span class="x"><svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="#394859" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            </div>
+            <div class="sheet-body">
+              <p class="from">Vous</p>
+              <div class="m me">On a 3 000 € par mois à mettre sur Google. Ça coûte combien chez vous ?</div>
+              <p class="from">MyDigipal</p>
+              <div class="m bot">Pour 3 000 € de budget, notre gestion est à <b>600 € par mois</b>, soit 20 %. Le budget, lui, est payé directement à Google.</div>
+              <div class="card">
+                <div class="row"><span>Gestion Google Ads</span><b>600 €/mois</b></div>
+                <div class="row"><span>Budget média</span><b>3 000 €/mois</b></div>
+                <span class="cta">Ouvrir ce devis dans le calculateur</span>
+              </div>
+              <div class="event">Paul a rejoint la conversation</div>
+              <p class="from">Paul</p>
+              <div class="m paul">Bonjour, c’est Paul. Vous vendez en France seulement, ou aussi à l’export ? Ça change la façon de répartir le budget.</div>
+            </div>
+            <div class="sheet-foot"><span class="field">Votre message…</span><span class="send"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          </div>
+        </div>
+        <div class="dir-txt">
+          <p>Les prix ne sortent jamais de la tête du modèle : il appelle le même calcul que le calculateur. Dès que tu écris dans le fil, l’assistant se tait dans cette conversation.</p>
+          <div class="pc">
+            <div><h4>Pour</h4><ul><li>Une réponse immédiate, même le soir</li><li>Oriente vers la bonne page du site</li><li>Tu gardes la main sur chaque fil</li></ul></div>
+            <div><h4>Contre</h4><ul><li>Un coût par conversation, à plafonner</li><li>Des règles strictes à écrire et à tester</li><li>Un peu plus long à construire</li></ul></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- C -->
+      <article class="dir" data-dir="c">
+        <div class="dir-h"><span class="letter">C</span><h3>Le calculateur qui parle</h3></div>
+        <p class="dir-sub">Le chat ouvre la conversation sur le service de la page et chiffre en deux questions, sans quitter la page.</p>
+        <div class="frame" aria-label="Maquette de la direction C">
+          <div class="site">
+            <div class="site-bar"><span class="logo">my<i>digipal</i>.</span><span class="burger"></span></div>
+            <div class="site-hero"><span class="site-badge">Google Ads</span><b>Dominez les résultats de recherche instantanément</b><p>Stratégie PPC optimisée par l’IA</p></div>
+          </div>
+          <span class="eg">Exemple</span>
+          <div class="scrim"></div>
+          <div class="sheet">
+            <div class="sheet-head">
+              <span class="av">MD</span>
+              <div class="who"><strong>Votre prix Google Ads</strong><small>Deux questions, puis Paul si vous voulez</small></div>
+              <span class="x"><svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="#394859" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            </div>
+            <div class="sheet-body">
+              <div class="m bot">Vous regardez Google Ads. Quel budget publicitaire par mois ?</div>
+              <div class="chips"><span class="chip">1 000 €</span><span class="chip on">3 000 €</span><span class="chip">5 000 €</span><span class="chip">Je ne sais pas</span></div>
+              <div class="m bot">Sur combien de mois ?</div>
+              <div class="chips"><span class="chip">4 mois</span><span class="chip">6 mois</span><span class="chip on">12 mois</span></div>
+              <div class="card">
+                <div class="row"><span>Gestion, remise de 10 %</span><b>540 €/mois</b></div>
+                <div class="row"><span>Budget média</span><b>3 000 €/mois</b></div>
+                <span class="cta">Voir le devis détaillé</span>
+                <span class="cta ghost">Parler à Paul</span>
+              </div>
+            </div>
+            <div class="sheet-foot"><span class="field">Ou posez votre question…</span><span class="send"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          </div>
+        </div>
+        <div class="dir-txt">
+          <p>Les questions sont celles du calculateur, le prix aussi. Pas de modèle : les boutons suffisent, et la question libre part chez toi.</p>
+          <div class="pc">
+            <div><h4>Pour</h4><ul><li>Le lien le plus direct vers un devis</li><li>Aucun coût par conversation</li><li>Réutilise le moteur du calculateur</li></ul></div>
+            <div><h4>Contre</h4><ul><li>Double le calculateur sur chaque page</li><li>Ne répond pas à « vous connaissez mon secteur ? »</li><li>Rien à chiffrer sur un article de blog</li></ul></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="reco" class="prose">
+    <h2>Ma recommandation : B, en deux temps</h2>
+    <p>La B est la seule qui fait tout ce que tu as demandé : répondre sur la page où l’on est, rediriger vers le bon endroit du site, connaître le calculateur et te mettre en direct. Elle garde aussi le meilleur de la C : quand un prix est en jeu, l’assistant chiffre avec le moteur du calculateur et propose d’ouvrir le devis prérempli.</p>
+    <p><b>Premier temps, sans modèle.</b> Le panneau aux couleurs du site sur toutes les pages, l’espace Google Chat du site, ta réponse en direct, le devis du calculateur transmis. C’est déjà utile tel quel, et ça ne coûte rien par conversation.</p>
+    <p><b>Second temps, le modèle.</b> Il répond pendant que tu n’es pas là, avec la limite par IP et un plafond de messages par conversation posés avant la mise en ligne.</p>
+    <ol class="flow">
+      <li><b>Le visiteur écrit</b><span>Le panneau envoie son message avec la page, la langue et le devis du calculateur s’il en a un.</span></li>
+      <li><b>L’assistant répond</b><span>Avec la page, le plan du site et le calcul du calculateur. Jamais un prix de tête.</span></li>
+      <li><b>Tu vois le fil</b><span>Chaque conversation arrive dans l’espace du site, avec la page et le devis en tête.</span></li>
+      <li><b>Tu reprends</b><span><code>@MyDigipal</code> dans le fil : ta réponse part chez le visiteur et l’assistant se tait.</span></li>
+    </ol>
+    <div class="aside">
+      <p><b>Ce que l’assistant ne fera jamais</b></p>
+      <ul class="never">
+        <li>Donner un prix qui ne sort pas du calculateur</li>
+        <li>Accorder une remise ou un geste commercial</li>
+        <li>Promettre un résultat ou un délai</li>
+        <li>Citer un client absent des études de cas</li>
+        <li>Parler de nos coûts ou de nos marges</li>
+        <li>Répondre dans une autre langue que celle de la page</li>
+      </ul>
+      <p class="muted" style="margin-top:10px">Quand il ne sait pas, il le dit, et il propose ton lien de rendez-vous ou de te laisser un message.</p>
+    </div>
+  </section>
+
+  <section id="page">
+    <div class="prose">
+      <h2>Ce qu’il sait de la page</h2>
+      <p>Chaque page embarque au moment du build une petite fiche : son type, son titre, son service, ses intertitres. Le plan du site vient du même endroit que <code>llms.txt</code>, déjà généré à chaque build : services, études de cas, derniers articles. Rien n’est à tenir à jour à la main.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Page</th><th>Ce qu’il sait</th><th>Où il oriente</th></tr></thead>
+        <tbody>
+          <tr><td>Un service</td><td>Le service, ce qu’il comprend, sa grille de prix</td><td>Le calculateur prérempli, l’étude de cas du même service</td></tr>
+          <tr><td>Le calculateur</td><td>Les réponses données et le devis en cours</td><td>La question qui bloque, puis toi</td></tr>
+          <tr><td>Un article de blog</td><td>Le sujet de l’article</td><td>Le service qui correspond, les articles voisins</td></tr>
+          <tr><td>Une étude de cas</td><td>Le client et les résultats publiés</td><td>Le service utilisé, le calculateur</td></tr>
+          <tr><td>Automobile</td><td>Les pages du secteur automobile</td><td>Les offres automobile, toi</td></tr>
+          <tr><td>Accueil, contact</td><td>Le plan du site</td><td>Le bon service selon la question</td></tr>
+          <tr><td>Academy</td><td colspan="2">Pas de chat du site : ces pages gardent leur panneau à elles.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="trancher" class="prose">
+    <h2>À trancher</h2>
+    <ol class="qs">
+      <li><b>La direction.</b> A, B ou C. Je recommande B en deux temps.</li>
+      <li><b>Quand tu n’es pas là.</b> L’assistant répond seul, ou il se contente d’orienter vers une page et de prendre une adresse ?</li>
+      <li><b>L’ouverture.</b> Un bouton discret partout, ou une ouverture automatique comme sur l’Academy ? Ma proposition : bouton discret partout, ouverture automatique seulement sur la page de résultat du calculateur.</li>
+      <li><b>L’espace Google Chat.</b> Un nom, par exemple « Site - Chat ». Il faudra que tu crées l’espace et son webhook toi-même : dans l’espace, menu du nom de l’espace, <b>Apps &amp; integrations</b>, puis <b>Webhooks</b>. Je te guiderai au moment de le faire.</li>
+    </ol>
+  </section>
+
+  <section id="docs" class="prose">
+    <h2>Les documents du projet</h2>
+    <ul>
+      <li>Ce document, le seul qui porte l’état du chat : <code>docs/site-chat/chat-du-site.html</code>.</li>
+      <li>Le calculateur, dont le chat reprend le moteur de prix : <code>docs/calculator/refonte-2026-09/calculateur-en-etapes.html</code>.</li>
+      <li>Le panneau de l’Academy, point de départ du code : <code>src/components/academy-v2/Question.tsx</code>.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+(function () {
+  var btns = document.querySelectorAll('.seg button[data-show]');
+  var dirs = document.querySelectorAll('.dir');
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      btns.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      dirs.forEach(function (d) { d.classList.toggle('on', d.getAttribute('data-dir') === b.getAttribute('data-show')); });
+    });
+  });
+})();
+</script>
