@@ -709,7 +709,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
           <div className="sticky bottom-0 z-10 flex flex-col gap-3 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur sm:px-7 lg:static lg:flex-row-reverse lg:items-center lg:justify-between lg:py-4">
             {actions && <div className="flex gap-2">{actions}</div>}
             <div className="min-w-0" aria-live="polite">
-              {st.domains.length ? (
+              {st.domains.length && (quote.monthly > 0 || quote.oneOff > 0 || quote.media > 0 || talk > 0 || quote.domains.some((d) => d.lines.some((l) => l.per === 'quote'))) ? (
                 <>
                   <div className="flex items-baseline gap-3">
                     <span className="text-[13px] text-slate-500">{L(lang, 'Votre estimation', 'Your estimate')}{quote.discountPct ? <em className="ml-1 font-semibold not-italic text-emerald-700">-{quote.discountPct}&nbsp;%</em> : null}</span>
@@ -724,7 +724,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
                   )}
                 </>
               ) : (
-                <p className="text-sm text-slate-500">{L(lang, 'Choisissez un service pour voir le prix.', 'Pick a service to see the price.')}</p>
+                <p className="text-sm text-slate-500">{st.domains.length ? L(lang, 'Le prix s’affiche dès votre première réponse.', 'The price shows up with your first answer.') : L(lang, 'Choisissez un service pour voir le prix.', 'Pick a service to see the price.')}</p>
               )}
             </div>
           </div>
