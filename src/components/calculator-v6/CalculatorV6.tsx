@@ -121,7 +121,7 @@ function Hint({ k, lang, currency, children, className = '', tone = 'light' }: {
           {data.text && <span className="mt-1 block text-[13px] font-normal leading-snug">{data.text}</span>}
           {data.list && data.list.length > 0 && (
             <span className="mt-1.5 block space-y-0.5 text-[12.5px] font-normal leading-snug text-slate-600">
-              {data.list.slice(0, 3).map((li) => <span key={li} className="block pl-3 -indent-3">{'• '}{li}</span>)}
+              {data.list.slice(0, 5).map((li) => <span key={li} className="block pl-3 -indent-3">{'• '}{li}</span>)}
             </span>
           )}
         </span>
@@ -174,7 +174,6 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   const [sheetKey, setSheetKey] = useState<string | null>(null);
   const [guided, setGuided] = useState<Guided | null>(null);
   const [proposalBudget, setProposalBudget] = useState<number | null>(null);
-  const [resultStyle, setResultStyle] = useState<'a' | 'b'>('a');
   const [audit, setAudit] = useState({ website: '', clients: '', works: '', priority: '' });
   const pendingKey = useRef<number | null>(null);
   const inGuide = useRef(false);
@@ -520,7 +519,8 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     );
   };
 
-  const Terms = ({ step }: { step: string }) => {
+  // Fonction de rendu et non composant : un composant recréé à chaque rendu refermerait la bulle ouverte
+  const renderTerms = (step: string) => {
     const terms = termsFor(step, lang);
     const rk = restKey(step);
     const vid = info(rk, lang, currency)?.video;
@@ -529,9 +529,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     return (
       <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
         {terms.map((x) => (
-          <button key={x.key} type="button" data-info={x.key}
-            onClick={() => { setHoverKey(x.key); if (window.matchMedia('(max-width: 1023px)').matches) setSheetKey(x.key); }}
-            className="cursor-help border-b border-dashed border-current pb-px font-medium text-primary-600">{x.label}</button>
+          <Hint key={x.key} k={x.key} lang={lang} currency={currency} className="pb-px font-medium text-primary-600">{x.label}</Hint>
         ))}
         {hasVideo && (
           <button type="button" onClick={() => setSheetKey(rk)} className="inline-flex items-center gap-1.5 font-medium text-slate-700 lg:hidden">
@@ -621,11 +619,16 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
               </button>
             );
           })}
+          <button type="button" onClick={startGuided}
+            className="col-span-2 flex items-center justify-between gap-4 rounded-xl border border-primary-200 bg-primary-50 p-4 text-left transition-colors hover:border-primary-400 lg:col-span-4">
+            <span>
+              <span className="block text-[15px] font-bold text-slate-900">{L(lang, 'Je ne sais pas encore, aidez-moi à choisir', 'Not sure yet? Help me choose')}</span>
+              <span className="mt-0.5 block text-[13px] text-slate-600">{L(lang, 'Trois questions sur votre entreprise, et on vous propose un plan chiffré.', 'Three questions about your business, and we suggest a costed plan.')}</span>
+            </span>
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary-600 text-white"><IconNext /></span>
+          </button>
         </div>
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <button type="button" onClick={startGuided} className="text-[14px] font-semibold text-primary-600 underline underline-offset-2">{L(lang, 'Je ne sais pas encore, aidez-moi à choisir', 'Not sure yet? Help me choose')}</button>
-          <span className="flex flex-wrap items-center gap-2 text-sm text-slate-500">{L(lang, 'Prix en', 'Prices in')} <CurrencySwitch /></span>
-        </div>
+        <div className="mt-5 flex flex-wrap items-center justify-end gap-2 text-sm text-slate-500">{L(lang, 'Prix en', 'Prices in')} <CurrencySwitch /></div>
       </>
     );
     actions = <button type="button" className={primaryBtn} disabled={!draft.length} onClick={startFromPick}>{L(lang, 'Continuer', 'Continue')}{draft.length ? ` (${draft.length})` : ''}<IconNext /></button>;
@@ -635,18 +638,20 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         {kicker(L(lang, 'Dernière question', 'Last question'))}
         {title(L(lang, 'Sur combien de mois ?', 'For how many months?'))}
         <p className="mb-3 mt-1.5 text-sm text-slate-500">{L(lang, 'Plus l’engagement est long, plus la remise est forte.', 'The longer the commitment, the bigger the discount.')}</p>
-        <Terms step="duration" />
+        {renderTerms('duration')}
         <div className="grid gap-2 lg:grid-cols-2">
           {DURATION_CONFIG.options.map((o) => (
-            <button key={o.months} type="button" role="radio" aria-checked={st.duration === o.months} data-info="duration" className={optionClass(st.duration === o.months)} onClick={() => setDuration(o.months, true)}>
+            <button key={o.months} type="button" role="radio" aria-checked={st.duration === o.months} data-info="duration" className={optionClass(st.duration === o.months)} onClick={() => setDuration(o.months, false)}>
               <Mark checked={st.duration === o.months} />
               <span className="min-w-0 flex-1"><span className="block text-[14.5px] font-semibold">{o.months} {L(lang, 'mois', 'months')}</span>
                 <span className="mt-0.5 block text-[12.5px] text-slate-500">{o.discount ? L(lang, `Remise de ${o.discount} % sur les honoraires mensuels`, `${o.discount}% off monthly fees`) : L(lang, 'Sans remise', 'No discount')}</span></span>
+              <Price amount={devis({ ...st, duration: o.months }).monthly} />
             </button>
           ))}
         </div>
       </>
     );
+    actions = <button type="button" className={primaryBtn} onClick={() => go(i + 1)}>{L(lang, 'Voir mon devis', 'See my quote')}<IconNext /></button>;
   } else if (cur === 'recap') {
     body = null;
   } else {
@@ -660,10 +665,15 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         {kicker(`${domainName(q.domain, lang)}${list.length > 1 ? L(lang, `, question ${k + 1} sur ${list.length}`, `, question ${k + 1} of ${list.length}`) : ''}`)}
         {title(t(q.title, lang))}
         {q.help && <p className="mt-1.5 text-sm text-slate-500">{t(q.help, lang)}</p>}
-        <div className="mt-3"><Terms step={cur} /></div>
+        <div className="mt-3">{renderTerms(cur)}</div>
         {renderQuestion(q)}
-        <button type="button" className="mt-6 text-[13.5px] font-semibold text-primary-600 underline underline-offset-2" onClick={() => skipDomain(q.domain)}>
-          {L(lang, `Passer ${domainName(q.domain, 'fr')}, on en parle`, `Skip ${domainName(q.domain, 'en')}, let’s discuss it`)}
+        <button type="button" onClick={() => skipDomain(q.domain)}
+          className="mt-2 flex w-full items-center gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3.5 py-3 text-left transition-colors hover:border-slate-400">
+          <span className="min-w-0 flex-1">
+            <span className="block text-[14.5px] font-semibold text-slate-900">{L(lang, 'Vous hésitez ? On en parle', 'Not sure? Let’s talk it through')}</span>
+            <span className="mt-0.5 block text-[12.5px] text-slate-500">{L(lang, `On définira la partie ${domainName(q.domain, 'fr')} ensemble, lors d’un échange.`, `We’ll work out ${domainName(q.domain, 'en')} together on a call.`)}</span>
+          </span>
+          <span className="shrink-0 text-slate-400"><IconNext /></span>
         </button>
       </>
     );
@@ -682,8 +692,6 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   // --- la page de résultat : on quitte le bloc qui défile (retour de Paul du 22/09) --------------
   const renderResults = () => {
     const nb = quote.domains.length;
-    const linesOf = (per: 'month' | 'once' | 'media' | 'quote') => quote.domains.flatMap((dq) => (dq.discuss ? [] : dq.lines.filter((l) => l.per === per).map((l) => ({ d: dq.domain, l }))));
-    const talkDomains = quote.domains.filter((dq) => dq.discuss || dq.empty);
     const firstName = contact.name.trim().split(/\s+/)[0];
     const rise = (k: number) => ({ className: 'motion-safe:animate-fade-in-up [animation-fill-mode:both]', style: { animationDelay: `${k * 120}ms` } });
     const inputCls = `${inputClass} h-11`;
@@ -736,38 +744,6 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         ))}
       </div>
     );
-    const phase = (title: string, amount: string, rows: { d: ServiceDomain; l: DomainQuote['lines'][number] }[], extra?: React.ReactNode) => (
-      <li className="grid gap-3 border-t border-slate-200 py-5 first:border-t-0 first:pt-0 md:grid-cols-[220px_1fr]">
-        <div>
-          <p className="font-display text-lg font-bold text-slate-900">{title}</p>
-          <p className="text-sm font-semibold tabular-nums text-primary-700">{amount}</p>
-        </div>
-        <ul className="space-y-2 text-[14px] text-slate-700">
-          {rows.map(({ d, l }) => (
-            <li key={d + l.label.fr} className="flex justify-between gap-4">
-              <span><span className="block text-[12px] font-medium text-slate-500">{domainName(d, lang)}</span><H k={l.info}>{t(l.label, lang)}</H></span>
-              <span className="whitespace-nowrap tabular-nums">{amountText(l.amount, l.per)}</span>
-            </li>
-          ))}
-          {extra}
-        </ul>
-      </li>
-    );
-    const plan = (
-      <ol>
-        {linesOf('once').length > 0 && phase(L(lang, 'Au démarrage', 'To start'), `${fmt(quote.oneOff)}${perLabel('once', lang)}`, linesOf('once'))}
-        {phase(L(lang, 'Chaque mois', 'Every month'), `${fmt(quote.monthly)}${perLabel('month', lang)}`, linesOf('month'))}
-        {(linesOf('media').length > 0 || linesOf('quote').length > 0 || talkDomains.length > 0) && phase(
-          L(lang, 'En parallèle', 'Alongside'),
-          quote.media ? `${fmt(quote.media)}${perLabel('month', lang)} ${L(lang, 'de média', 'media')}` : L(lang, 'À voir ensemble', 'To discuss'),
-          [...linesOf('media'), ...linesOf('quote')],
-          talkDomains.map((dq) => (
-            <li key={dq.domain} className="flex justify-between gap-4"><span><span className="block text-[12px] font-medium text-slate-500">{domainName(dq.domain, lang)}</span>{L(lang, 'À discuter ensemble', 'To discuss together')}</span></li>
-          ))
-        )}
-      </ol>
-    );
-
     const auditPanel = status === 'sent' ? (
       <div className="rounded-3xl bg-slate-900 p-6 text-white sm:p-10">
         <h3 className="font-display text-2xl font-bold sm:text-3xl">{L(lang, `Merci ${firstName}, c’est parti`, `Thank you ${firstName}, we’re on it`)}</h3>
@@ -836,14 +812,6 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
             <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-100"><IconBack /></span>{L(lang, 'Modifier mes réponses', 'Edit my answers')}
           </button>
           <div className="flex flex-wrap items-center gap-2">
-            {dryRun && (
-              <div className="inline-flex rounded-xl bg-amber-50 p-1" role="radiogroup" aria-label={L(lang, 'Mise en page à comparer', 'Layout to compare')}>
-                {([['a', L(lang, 'A. Le tableau', 'A. The board')], ['b', L(lang, 'B. Le plan', 'B. The plan')]] as const).map(([v, lab]) => (
-                  <button key={v} type="button" role="radio" aria-checked={resultStyle === v} onClick={() => setResultStyle(v)}
-                    className={`rounded-lg px-3 py-1.5 text-[13px] font-semibold ${resultStyle === v ? 'bg-white text-slate-900 shadow-sm' : 'text-amber-800'}`}>{lab}</button>
-                ))}
-              </div>
-            )}
             <CurrencySwitch />
           </div>
         </div>
@@ -860,43 +828,18 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
             </p>
           </div>
 
-          {resultStyle === 'a' ? (
-            <>
-              <section className="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
-                {monthlyCard}
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-                  {tile(2, 'g:once', L(lang, 'Mise en place', 'Set-up'), fmt(quote.oneOff), L(lang, 'Une seule fois, au démarrage', 'Once, at the start'))}
-                  {tile(3, 'media', L(lang, 'Budget média', 'Media budget'), `${fmt(quote.media)}${perLabel('month', lang)}`, L(lang, 'En plus, dépensé sur les plateformes', 'On top, spent on the platforms'))}
-                </div>
-              </section>
-              <div {...rise(4)}>{totalLine}</div>
-              <section {...rise(5)}>
-                <h3 className="mb-4 font-display text-xl font-bold text-slate-900">{L(lang, 'Le détail, service par service', 'Service by service')}</h3>
-                {serviceCards}
-              </section>
-            </>
-          ) : (
-            <>
-              <section {...rise(1)} className={`rounded-3xl bg-primary-600 px-6 py-10 text-center text-white sm:px-10 ${rise(1).className}`}>
-                <p className="text-sm font-medium text-primary-100"><H k="g:monthly" tone="dark">{L(lang, 'Nos honoraires, par mois', 'Our fees, per month')}</H></p>
-                <p className="mt-3 font-display text-6xl font-extrabold leading-none tabular-nums sm:text-7xl"><CountUp value={quote.monthly} format={fmt} /></p>
-                <p className="mx-auto mt-4 flex max-w-xl flex-wrap justify-center gap-x-6 gap-y-1 text-sm text-primary-100">
-                  <span>+ {fmt(quote.oneOff)} <H k="g:once" tone="dark">{L(lang, 'de mise en place', 'set-up')}</H></span>
-                  <span><H k="media" tone="dark">{L(lang, 'budget média', 'media budget')}</H> {fmt(quote.media)}{perLabel('month', lang)}</span>
-                </p>
-                <div className="mx-auto mt-6 max-w-md"><DurationSwitch dark /></div>
-              </section>
-              <div {...rise(2)}>{totalLine}</div>
-              <section {...rise(3)}>
-                <h3 className="mb-5 font-display text-xl font-bold text-slate-900">{L(lang, 'Votre plan', 'Your plan')}</h3>
-                {plan}
-                <p className="mt-4 flex flex-wrap gap-2 text-[13px]">
-                  <span className="text-slate-500">{L(lang, 'Modifier :', 'Edit:')}</span>
-                  {quote.domains.map((dq) => <button key={dq.domain} type="button" onClick={() => editDomain(dq.domain)} className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700 hover:bg-slate-200">{domainName(dq.domain, lang)}</button>)}
-                </p>
-              </section>
-            </>
-          )}
+          <section className="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
+            {monthlyCard}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              {tile(2, 'g:once', L(lang, 'Mise en place', 'Set-up'), fmt(quote.oneOff), L(lang, 'Une seule fois, au démarrage', 'Once, at the start'))}
+              {tile(3, 'media', L(lang, 'Budget média', 'Media budget'), `${fmt(quote.media)}${perLabel('month', lang)}`, L(lang, 'En plus, dépensé sur les plateformes', 'On top, spent on the platforms'))}
+            </div>
+          </section>
+          <div {...rise(4)}>{totalLine}</div>
+          <section {...rise(5)}>
+            <h3 className="mb-4 font-display text-xl font-bold text-slate-900">{L(lang, 'Le détail, service par service', 'Service by service')}</h3>
+            {serviceCards}
+          </section>
 
           <section {...rise(6)}>{auditPanel}</section>
 
