@@ -1,0 +1,975 @@
+<meta charset="utf-8">
+<title>Calculateur en étapes</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+<style>
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --surface-2:#edf1f6; --ink:#0f1b29; --ink-2:#394859; --muted:#5f7084;
+  --line:#dae1ea; --line-2:#c3cedb; --accent:#1d71b8; --accent-hover:#175e99; --accent-ink:#ffffff; --accent-soft:#e8f1fa;
+  --ok:#1a7a51; --ok-soft:#e2f2e9; --talk:#855700; --talk-soft:#fbf0d8; --warn:#a1331b; --warn-soft:#fbe8e2;
+  --shadow:0 1px 2px rgba(16,42,72,.06),0 12px 32px rgba(16,42,72,.08);
+  --r-card:16px; --r-ctl:10px;
+  --f-display:"Plus Jakarta Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b1219; --surface:#111a24; --surface-2:#18232f; --ink:#e6edf4; --ink-2:#b8c5d2; --muted:#8a9bad;
+  --line:#223141; --line-2:#304154; --accent:#4f9fe1; --accent-hover:#6daee7; --accent-ink:#04111d; --accent-soft:#12283c;
+  --ok:#4dbf89; --ok-soft:#0f2a1f; --talk:#e3b24f; --talk-soft:#2a2112; --warn:#ef8b72; --warn-soft:#2c1712;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --bg:#0b1219; --surface:#111a24; --surface-2:#18232f; --ink:#e6edf4; --ink-2:#b8c5d2; --muted:#8a9bad;
+  --line:#223141; --line-2:#304154; --accent:#4f9fe1; --accent-hover:#6daee7; --accent-ink:#04111d; --accent-soft:#12283c;
+  --ok:#4dbf89; --ok-soft:#0f2a1f; --talk:#e3b24f; --talk-soft:#2a2112; --warn:#ef8b72; --warn-soft:#2c1712;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1250px;margin:0 auto;padding-inline:20px;padding-block:44px 110px}
+.prose{max-width:700px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,4.6vw,46px);line-height:1.08;letter-spacing:-.022em;font-weight:800}
+h2{font-size:clamp(23px,3vw,30px);line-height:1.18;letter-spacing:-.015em;font-weight:700;margin-bottom:14px}
+h3{font-size:18px;line-height:1.3;font-weight:700}
+p{margin:0 0 14px}
+a{color:var(--accent)}
+code{font-size:.9em;background:var(--surface-2);padding:1px 5px;border-radius:5px}
+.kicker{font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px}
+.lede{font-size:18px;line-height:1.55;color:var(--ink-2);margin-top:16px;max-width:640px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;padding:0;list-style:none}
+.toc a{display:inline-block;font-size:13.5px;font-weight:500;text-decoration:none;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.toc a:hover{border-color:var(--accent);color:var(--accent)}
+section{margin-top:76px;scroll-margin-top:20px}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+/* tableau des montants */
+.tbl-wrap{overflow-x:auto;margin:6px 0 18px}
+.tbl{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums;min-width:460px}
+.tbl th{font-size:12.5px;font-weight:600;color:var(--muted);text-align:left;padding:0 12px 8px 0}
+.tbl td{padding:10px 12px 10px 0;border-top:1px solid var(--line);vertical-align:top}
+.tbl td.n,.tbl th.n{text-align:right;white-space:nowrap;padding-right:0}
+.tbl tr.sum td{font-weight:700}
+.tbl tr.bad td{color:var(--warn);font-weight:700}
+.tbl .note{display:block;font-size:13px;color:var(--muted);font-weight:400}
+.done{display:flex;gap:10px;align-items:flex-start;background:var(--ok-soft);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:15px;margin:4px 0 16px}
+.done svg{color:var(--ok);flex:none;margin-top:4px}
+
+/* aujourd'hui */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 28px;margin:22px 0 30px}
+.stat b{display:block;font:800 clamp(28px,3.4vw,38px)/1 var(--f-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat span{display:block;font-size:14px;color:var(--ink-2);margin-top:8px;line-height:1.45}
+.shots{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;margin:6px 0 10px}
+.shots figure{margin:0;width:186px;max-width:calc(50% - 7px)}
+.shots img{display:block;width:100%;border:1px solid var(--line);border-radius:14px}
+figcaption{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.45}
+.strip{margin:26px 0 8px}
+.strip-row{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start}
+.strip-row img{width:56px;height:auto;border:1px solid var(--line);border-radius:6px;display:block}
+.issues{padding-left:20px;margin:18px 0 0}
+.issues li{margin-bottom:8px}
+.aside{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px 18px;margin-top:22px;font-size:15px}
+.aside p:last-child{margin-bottom:0}
+
+/* maquettes : contrôles */
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:20px 0 22px}
+.seg{display:flex;background:var(--surface-2);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:none;font:600 14px/1 var(--f-body);color:var(--ink-2);padding:10px 12px;border-radius:9px;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"],.seg button[aria-checked="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(16,42,72,.12)}
+.seg button small{display:block;font-size:11.5px;font-weight:600;color:var(--ok);margin-top:3px}
+.ctl .spacer{flex:1}
+.pick-arch{display:none}
+.reset{border:1px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:10px;height:40px;padding:0 14px;font:600 14px var(--f-body);cursor:pointer}
+
+.protos{display:grid;grid-template-columns:repeat(3,390px);justify-content:space-between;gap:30px}
+.col-h{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.col-h .letter{font:800 15px/1 var(--f-display);color:var(--accent-ink);background:var(--accent);border-radius:8px;padding:6px 8px}
+.col-h h3{font-size:19px}
+.col-txt{margin-top:18px;font-size:15px;color:var(--ink-2)}
+.col-txt p{margin-bottom:10px}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.pc h4{font:700 13px/1.3 var(--f-body);margin:0 0 6px;color:var(--ink)}
+.pc ul{margin:0;padding-left:17px;font-size:14px}
+.pc li{margin-bottom:5px}
+@media (max-width:1279px){
+  .pick-arch{display:flex}
+  .protos{grid-template-columns:minmax(0,420px);justify-content:start}
+  .protos>.col:not(.on){display:none}
+}
+
+/* cadre téléphone */
+.frame{position:relative;width:100%;max-width:390px;height:clamp(560px,calc(100svh - 150px),744px);background:var(--surface);border:1px solid var(--line-2);border-radius:26px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;isolation:isolate}
+.p-head{flex:none;border-bottom:1px solid var(--line);background:var(--surface)}
+.p-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:20px 18px 26px}
+.p-foot{flex:none;border-top:1px solid var(--line);background:var(--surface);padding:12px 16px 14px}
+.p-actions{display:flex;gap:8px;margin-bottom:12px}
+.p-actions .btn{flex:1}
+.p-titlebar{display:flex;align-items:baseline;gap:8px;padding:15px 18px}
+.p-titlebar strong{font:700 16px var(--f-display)}
+.p-titlebar span{font-size:13px;color:var(--muted)}
+.btn{height:44px;border-radius:var(--r-ctl);font:600 15px/1 var(--f-body);padding:0 14px;border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;transition:background .15s,transform .1s}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-ghost{background:var(--surface-2);color:var(--ink)}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+.btn:active:not(:disabled){transform:translateY(1px)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.p-total{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.p-total .lbl{font-size:13px;color:var(--muted)}
+.p-total .lbl em{font-style:normal;color:var(--ok);font-weight:600}
+.p-total strong{font:800 23px/1.1 var(--f-display);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.p-total strong small{font:500 13px var(--f-body);color:var(--muted);margin-left:2px}
+.p-total .nil{font-size:14px;color:var(--muted)}
+.p-total-sub{font-size:12.5px;color:var(--muted);margin:4px 0 0;line-height:1.4}
+.v-t{font:700 20px/1.25 var(--f-display);margin:0 0 4px}
+.v-s{font-size:14px;color:var(--muted);margin:0 0 18px}
+
+/* questions */
+.q{margin-top:26px}
+.q:first-of-type{margin-top:0}
+.q-t{font:700 15.5px/1.35 var(--f-display);margin:0 0 3px}
+.q-h{font-size:13px;color:var(--muted);margin:0 0 4px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-top:8px;cursor:pointer;font:inherit;color:inherit}
+.opt:hover{border-color:var(--line-2)}
+.opt[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.mk{flex:none;width:18px;height:18px;border-radius:999px;border:1.5px solid var(--line-2);display:grid;place-items:center;color:var(--accent-ink)}
+.mk.sq{border-radius:5px}
+.opt[aria-checked="true"] .mk{border-color:var(--accent)}
+.opt[aria-checked="true"] .mk i{width:8px;height:8px;border-radius:999px;background:var(--accent)}
+.opt[aria-checked="true"] .mk.sq{background:var(--accent)}
+.tx{flex:1;min-width:0}
+.nm{display:block;font-weight:600;font-size:14.5px;line-height:1.3}
+.ds{display:block;font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:2px}
+.pr{flex:none;text-align:right;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums;line-height:1.25}
+.pr small{display:block;font-size:11.5px;font-weight:500;color:var(--muted)}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.chip{position:relative;text-align:left;padding:11px 12px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;font:inherit;color:inherit}
+.chip .nm{font-size:14.5px;padding-right:20px}
+.chip .ds{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.chip .ok{position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:999px;border:1.5px solid var(--line-2);display:grid;place-items:center;color:var(--accent-ink)}
+.chip[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-checked="true"] .ok{background:var(--accent);border-color:var(--accent)}
+.chip:disabled{cursor:default;opacity:.6}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.pill{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 13px;font:500 14px var(--f-body);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.pill[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.bud{margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:12px}
+.bud-val{font:800 25px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.bud-val small{font:500 13px var(--f-body);color:var(--muted);margin-left:2px}
+.bud input{width:100%;margin:14px 0 4px;accent-color:var(--accent)}
+.bud-scale{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.bud-fee{font-size:13.5px;color:var(--ink-2);margin:10px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+.bud-fee span{color:var(--muted)}
+
+/* A : onglets */
+.a-tabs{display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;padding:0 6px}
+.a-tabs::-webkit-scrollbar{display:none}
+.a-tab{flex:none;height:50px;padding:0 11px;background:none;border:0;border-bottom:2px solid transparent;font:600 14px var(--f-body);color:var(--muted);display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.a-tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.a-tab .st-ok{color:var(--ok);display:inline-flex}
+.a-tab .st-talk{color:var(--talk);display:inline-flex}
+.a-add{flex:none;width:34px;height:34px;margin:0 6px;border-radius:999px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer}
+
+/* B : une question */
+.b-head{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.b-back{flex:none;width:34px;height:34px;border-radius:999px;border:0;background:var(--surface-2);color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.b-back:disabled{opacity:.35;cursor:default}
+.b-bar{flex:1;height:4px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.b-bar i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .3s ease}
+.b-count{flex:none;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+.b-ctx{font-size:13px;font-weight:600;color:var(--accent);margin:0 0 6px}
+.b-q{font:750 21px/1.25 var(--f-display);font-weight:700;margin:0 0 6px}
+.b-help{font-size:14px;color:var(--muted);margin:0 0 8px}
+.lnk{background:none;border:0;padding:0;font:600 13.5px var(--f-body);color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.b-skip{margin-top:22px}
+
+/* C : proposition */
+.c-fit{border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.45;margin:0 0 6px;background:var(--surface-2);color:var(--ink-2)}
+.c-fit.over{background:var(--talk-soft);color:var(--talk)}
+.c-line{border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-top:10px}
+.c-line-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.c-line-h strong{font:700 15.5px var(--f-display)}
+.c-line-h span{font-weight:600;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.c-items{list-style:none;margin:8px 0 0;padding:0;font-size:13px;color:var(--muted)}
+.c-items li{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+.c-items li span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.c-acts{display:flex;gap:8px;margin-top:10px}
+.c-acts .btn{height:36px;font-size:13.5px;flex:1}
+.c-add{width:100%;margin-top:12px;border:1px dashed var(--line-2);background:none;border-radius:14px;height:48px;font:600 14px var(--f-body);color:var(--ink);display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
+.scrim{position:absolute;inset:0;background:rgba(8,18,30,.42);z-index:5}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:88%;background:var(--surface);border-radius:20px 20px 0 0;z-index:6;display:flex;flex-direction:column;box-shadow:0 -14px 40px rgba(8,18,30,.25)}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.sheet-h strong{font:700 16px var(--f-display)}
+.sheet-x{width:34px;height:34px;border-radius:999px;border:0;background:var(--surface-2);color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.sheet-b{overflow-y:auto;padding:16px 16px 22px}
+.sheet-f{border-top:1px solid var(--line);padding:12px 16px 14px}
+.sheet-f .btn{width:100%}
+
+/* récapitulatif */
+.r-lines{margin-top:18px}
+.r-line{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.r-line:first-child{border-top:0;padding-top:0}
+.r-l{flex:1;min-width:0}
+.r-l strong{font:700 15px var(--f-display)}
+.r-l ul{list-style:none;margin:6px 0 0;padding:0;font-size:13px;color:var(--muted)}
+.r-l li{display:flex;justify-content:space-between;gap:10px;padding:1px 0}
+.r-l li span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.tag-talk{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:12.5px;font-weight:600;color:var(--talk);background:var(--talk-soft);border-radius:999px;padding:3px 9px}
+.r-sum{margin:18px 0 0;padding:14px;background:var(--surface-2);border-radius:12px;font-size:14px}
+.r-sum div{display:flex;justify-content:space-between;gap:12px;padding:3px 0}
+.r-sum dt{color:var(--ink-2)}
+.r-sum dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.r-sum .media dt,.r-sum .media dd{color:var(--muted);font-weight:500}
+.r-sum .tot{border-top:1px solid var(--line-2);margin-top:6px;padding-top:9px}
+.r-sum .tot dt{font-weight:700;color:var(--ink)}
+.r-sum .tot dd{font:800 17px var(--f-display)}
+.r-form{margin-top:22px;display:grid;gap:12px}
+.r-form label{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.r-form input{height:44px;border:1px solid var(--line-2);border-radius:10px;padding:0 12px;font:400 15px var(--f-body);color:var(--ink);background:var(--surface)}
+.r-seg{margin-top:8px}
+.r-seg .seg{width:100%}
+.r-seg .seg button{flex:1}
+.toast{position:absolute;left:16px;right:16px;bottom:128px;z-index:9;background:var(--ink);color:var(--bg);border-radius:12px;padding:11px 14px;font-size:13.5px;line-height:1.4;box-shadow:var(--shadow)}
+
+/* comparaison, reco */
+.cmp{width:100%;border-collapse:collapse;font-size:14.5px;min-width:700px}
+.cmp th,.cmp td{text-align:left;vertical-align:top;padding:11px 14px 11px 0;border-top:1px solid var(--line)}
+.cmp thead th{border-top:0;font:700 14px var(--f-display);color:var(--ink)}
+.cmp tbody th{font-weight:600;color:var(--ink-2);width:24%}
+.reco{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:22px 24px;box-shadow:var(--shadow)}
+.reco h2{margin-bottom:12px}
+.reco p:last-child{margin-bottom:0}
+.under dl{margin:0;display:grid;gap:16px}
+.under dt{font:700 16px var(--f-display);margin-bottom:4px}
+.under dd{margin:0;color:var(--ink-2)}
+.todo{padding-left:22px}
+.todo li{margin-bottom:12px}
+.todo b{color:var(--ink)}
+footer.end{margin-top:70px;font-size:13px;color:var(--muted)}
+
+@media (max-width:760px){
+  .wrap{padding-inline:16px;padding-block:28px 90px}
+  .stats{grid-template-columns:1fr 1fr;gap:20px}
+  .lede{font-size:16.5px}
+  .strip-row img{width:46px}
+  .pc{grid-template-columns:1fr}
+  section{margin-top:60px}
+  .reco{padding:18px}
+  .seg button{padding:9px 9px;font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<main class="wrap">
+  <header class="prose">
+    <p class="kicker">Calculateur de devis, 22 septembre 2026</p>
+    <h1>Un bloc, une étape par service</h1>
+    <p class="lede">Trois architectures pour remplacer le grand tableau du calculateur. Les maquettes plus bas fonctionnent avec les vrais services et les vrais prix : clique dedans comme un visiteur.</p>
+    <ul class="toc">
+      <li><a href="#lead">Le lead ai-coustics</a></li>
+      <li><a href="#aujourdhui">Le calculateur aujourd’hui</a></li>
+      <li><a href="#maquettes">Les trois maquettes</a></li>
+      <li><a href="#comparaison">Comparaison</a></li>
+      <li><a href="#reco">Recommandation</a></li>
+      <li><a href="#capot">Sous le capot</a></li>
+      <li><a href="#trancher">À trancher</a></li>
+    </ul>
+  </header>
+
+  <section id="lead" class="prose">
+    <h2>D’où viennent les 1 750 € et les 7 000 €</h2>
+    <p>Les deux chiffres sortent du même calcul. 7 000 €, c’est 1 750 € multiplié par les 4 mois d’engagement : l’objet du mail qui t’arrive affiche le total sur la durée, celui du prospect affiche le mensuel. Le vrai problème était ailleurs, parce que 1 750 € était faux.</p>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Dans le détail du mail envoyé à Thom</th><th class="n">Par mois</th></tr></thead>
+        <tbody>
+          <tr><td>Gestion Google Ads<span class="note">budget média de 1 500 €, forfait jusqu’à 2 500 €</span></td><td class="n">500 €</td></tr>
+          <tr><td>Gestion Paid Social<span class="note">LinkedIn seul, budget média de 1 500 €</span></td><td class="n">500 €</td></tr>
+          <tr><td>Création de visuels, niveau Essentiel</td><td class="n">400 €</td></tr>
+          <tr class="sum"><td>Somme des lignes</td><td class="n">1 400 €</td></tr>
+          <tr class="bad"><td>Total annoncé (« Monthly after discount »)<span class="note">la gestion Paid Social comptée pour deux réseaux : 500 € x 1,7 = 850 €</span></td><td class="n">1 750 €</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Thom a coché un second réseau, puis l’a retiré. Le détail s’est mis à jour, le total non : le calcul du prix n’écoutait pas la liste des réseaux. Le bon devis était de 1 400 € par mois, soit 5 600 € sur 4 mois.</p>
+    <div class="done"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Corrigé et poussé ce matin (commit <code>8e259ff</code>). Ta réponse de 10 h 29 ne cite que les 3 000 € de budget média, qui étaient justes : rien à rattraper auprès de Thom.</span></div>
+    <p>La cause est une question d’architecture : le prix est calculé deux fois, une fois pour l’écran et une fois pour le mail, et les deux calculs ont divergé. Les trois propositions plus bas partent d’un seul calcul.</p>
+    <p class="muted small">Deux défauts restent dans le mail n8n, indépendants de ce bug : la ligne « Monthly services » n’additionne que les services (400 €) et oublie la gestion publicitaire, donc le récapitulatif saute de 400 € à 1 400 € sans explication. Et l’objet de ton mail donne le total sur la durée quand celui du prospect donne le mensuel.</p>
+  </section>
+
+  <section id="aujourdhui">
+    <div class="prose">
+      <h2>Le calculateur aujourd’hui, sur un téléphone</h2>
+      <p>Relevé ce matin sur <code>/en/calculator</code> à 390 px de large, en cochant Google Ads puis Paid Social.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>8&nbsp;819&nbsp;px</b><span>de page avec deux services cochés, soit 10,4 écrans de téléphone (4&nbsp;277&nbsp;px au repos)</span></div>
+      <div class="stat"><b>51</b><span>boutons et curseurs affichés à ce moment-là</span></div>
+      <div class="stat"><b>2&nbsp;606&nbsp;px</b><span>pour la seule section Paid Social</span></div>
+      <div class="stat"><b>95</b><span>vues de la page du 4 août au 21 septembre, 52 en anglais et 43 en français</span></div>
+    </div>
+    <div class="shots">
+      <figure><img src="avant-premier-ecran.jpg" alt="Premier écran du calculateur sur téléphone : titre et introduction, aucun service visible" width="390" height="844" loading="lazy"><figcaption>Le premier écran ne montre aucun service : la grille commence à 770&nbsp;px.</figcaption></figure>
+      <figure><img src="avant-paid-social.jpg" alt="Section Paid Social ouverte : budget, frais de gestion, et barre du bas à 0 dollar" width="390" height="844" loading="lazy"><figcaption>La section affiche 550&nbsp;$ de gestion, la barre du bas reste à 0&nbsp;$.</figcaption></figure>
+    </div>
+    <figure class="strip">
+      <div class="strip-row" id="strip"></div>
+      <figcaption>La page entière avec deux services cochés, découpée en écrans de téléphone, dans l’ordre.</figcaption>
+    </figure>
+    <div class="prose">
+      <ul class="issues">
+        <li>Chaque service s’ouvre sous toute la grille : le défilement saute de 1 500 à 2 000&nbsp;px, et il faut remonter d’autant pour cocher le suivant.</li>
+        <li>Tracking &amp; Reporting s’ouvre sans avoir été coché : 1 218&nbsp;px et 14 boutons de plus.</li>
+        <li>Le récapitulatif reste à zéro tant qu’on n’a pas touché au curseur de budget, alors que la section annonce déjà des frais de gestion.</li>
+        <li>Le bouton « Calculate my budget » de l’en-tête renvoie vers la page où l’on se trouve déjà.</li>
+        <li>« CPC ~$0 » affiché pour Meta, TikTok et Display.</li>
+      </ul>
+      <div class="aside">
+        <p><b>Ce que la refonte ne changera pas : le volume.</b> 95 vues en sept semaines, dont une partie sont nos propres tests (le 4 août, jour de la publication GTM, et les 24 août et 14 septembre), et une seule soumission mesurée par GA4 avant celle de Thom. La refonte joue sur le taux de passage, le trafic se règle ailleurs.</p>
+        <p class="muted small">Et la mesure a trois trous : l’étape <code>submitted</code> n’est jamais envoyée, <code>generate_lead</code> est à zéro sur tout le site depuis le 4 août, et la propriété GA4 n’a pas d’export BigQuery, donc impossible de voir étape par étape où les visiteurs décrochent.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="maquettes">
+    <div class="prose">
+      <h2>Trois architectures, à la taille d’un téléphone</h2>
+      <p>Chaque maquette est le bloc du calculateur seul, en 390&nbsp;px de large, avec les huit services, leurs niveaux et leurs prix réels. Le total du bas se recalcule à chaque réponse. Rien n’est envoyé.</p>
+    </div>
+    <div class="ctl">
+      <div class="seg pick-arch" role="group" aria-label="Maquette affichée">
+        <button type="button" data-arch="a" aria-pressed="true">A. Onglets</button>
+        <button type="button" data-arch="b" aria-pressed="false">B. Une question</button>
+        <button type="button" data-arch="c" aria-pressed="false">C. Budget d’abord</button>
+      </div>
+      <div class="seg" role="group" aria-label="Langue des maquettes">
+        <button type="button" data-lang="fr" aria-pressed="true">FR</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button type="button" class="reset" id="reset">Recommencer</button>
+    </div>
+
+    <div class="protos">
+      <div class="col on" data-col="a">
+        <div class="col-h"><span class="letter">A</span><h3>Des onglets</h3></div>
+        <div class="frame" id="proto-a"></div>
+        <div class="col-txt">
+          <p>Ton idée. Le visiteur coche ses services et chacun devient un onglet en tête du bloc. Un onglet pose deux à quatre questions, « Valider » le coche et ouvre le suivant. Le « + » ajoute un service à tout moment, le dernier onglet est le récapitulatif.</p>
+          <div class="pc">
+            <div><h4>Ce qui marche</h4><ul><li>Les onglets sont la carte du devis : on voit ce qui est fait et ce qui reste.</li><li>On revient sur un service sans rien refaire.</li></ul></div>
+            <div><h4>Ce qui coince</h4><ul><li>Au-delà de trois services, les onglets défilent sur téléphone.</li><li>Paid Social reste l’onglet long : quatre questions sur un écran.</li></ul></div>
+          </div>
+        </div>
+      </div>
+      <div class="col" data-col="b">
+        <div class="col-h"><span class="letter">B</span><h3>Une question à la fois</h3></div>
+        <div class="frame" id="proto-b"></div>
+        <div class="col-txt">
+          <p>Le même parcours, découpé plus fin : un écran par question, une barre de progression en haut. Un choix simple fait avancer tout seul, « Continuer » sert aux curseurs et aux choix multiples. Le mode « Aidez-moi à choisir » devient une autre série de questions dans le même moteur.</p>
+          <div class="pc">
+            <div><h4>Ce qui marche</h4><ul><li>Le plus lisible sur téléphone : un écran, une décision.</li><li>Mode guidé et calculateur ne font plus qu’un seul code.</li></ul></div>
+            <div><h4>Ce qui coince</h4><ul><li>Dix écrans pour Google Ads, Paid Social et SEO, contre cinq en A.</li><li>On ne voit l’ensemble qu’au récapitulatif.</li></ul></div>
+          </div>
+        </div>
+      </div>
+      <div class="col" data-col="c">
+        <div class="col-h"><span class="letter">C</span><h3>Le budget d’abord</h3></div>
+        <div class="frame" id="proto-c"></div>
+        <div class="col-txt">
+          <p>Le visiteur ne choisit pas de services : il donne son secteur, sa priorité et son budget, et reçoit une proposition chiffrée, calculée par le moteur actuel du mode guidé. Chaque ligne s’ajuste ensuite dans un panneau, sans quitter la proposition.</p>
+          <div class="pc">
+            <div><h4>Ce qui marche</h4><ul><li>Parle à celui qui ne sait pas ce qu’est un niveau « Avancé » de visuels.</li><li>Trois réponses, et un devis complet.</li></ul></div>
+            <div><h4>Ce qui coince</h4><ul><li>Le moteur choisit sans regarder les prix : B2B, leads, 2 à 5 k€ donne 5 450 € par mois média compris, plus 2 550 € de frais uniques.</li><li>Moins de contrôle pour qui sait ce qu’il veut.</li></ul></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="comparaison">
+    <div class="prose"><h2>Côte à côte</h2></div>
+    <div class="tbl-wrap">
+      <table class="cmp">
+        <thead><tr><th></th><th>A. Des onglets</th><th>B. Une question à la fois</th><th>C. Le budget d’abord</th></tr></thead>
+        <tbody>
+          <tr><th>Ce que le visiteur voit</th><td>Un service, avec toutes ses questions</td><td>Une seule question</td><td>Une proposition complète, ajustable ligne par ligne</td></tr>
+          <tr><th>Écrans pour Google Ads, Paid Social et SEO</th><td>5 : choix, trois onglets, récapitulatif</td><td>10 : choix, sept questions, durée, récapitulatif</td><td>5 : trois questions, proposition, récapitulatif</td></tr>
+          <tr><th>Premier prix affiché</th><td>Dès la première réponse</td><td>Dès la première réponse</td><td>Après la troisième question</td></tr>
+          <tr><th>Sur téléphone</th><td>Les onglets défilent au-delà de trois services</td><td>Aucune contrainte</td><td>Panneau d’ajustement en bas d’écran</td></tr>
+          <tr><th>Pour qui ne sait pas quoi choisir</th><td>Faible</td><td>Faible, sauf la branche « Aidez-moi »</td><td>Fort</td></tr>
+          <tr><th>Ce qui se réutilise</th><td>Les fichiers de données et les prix</td><td>Données, prix, questions du mode guidé</td><td>Données, prix, moteur du mode guidé</td></tr>
+          <tr><th>Effort</th><td>Moyen</td><td>Moyen</td><td>Élevé : le moteur doit d’abord tenir le budget annoncé</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="reco" class="prose">
+    <div class="reco">
+      <h2>Ma recommandation : A, puis C comme porte d’entrée</h2>
+      <p><b>A d’abord</b>, ton idée, parce que les onglets donnent ce que ni la page actuelle ni B ne donnent : la carte du devis. Le visiteur sait à tout moment ce qu’il a choisi, ce qu’il lui reste, et combien ça coûte. Paid Social, le seul onglet long, garde l’ordre des questions du visiteur (réseaux, budget, visuels, catalogue), et le budget passe sur un curseur par paliers : sur un curseur linéaire de 500 à 50 000 €, tout ce qui se joue entre 500 et 5 000 € tient dans le premier dixième.</p>
+      <p><b>C ensuite</b>, pas comme un second calculateur mais comme le bouton « Aidez-moi à choisir » qui préremplit les onglets de A. À condition de recaler d’abord le moteur pour qu’il tienne le budget annoncé : aujourd’hui il propose 56 % de plus que ce que le visiteur a dit pouvoir dépenser.</p>
+      <p><b>B</b> est la plus propre sur téléphone, mais demande deux fois plus d’écrans pour le même devis, sur une page qui reçoit environ deux vues par jour. Chaque écran de plus coûte des visiteurs qu’on n’a pas.</p>
+    </div>
+  </section>
+
+  <section id="capot" class="prose under">
+    <h2>Sous le capot, commun aux trois</h2>
+    <dl>
+      <div><dt>Un seul calcul de prix</dt><dd>Une fonction <code>devis(état)</code> qui rend les lignes, le mensuel, les frais uniques et le budget média. L’écran, le récapitulatif, le mail, GA4 et le pixel Meta lisent tous le même résultat. C’est ce qui rend impossible le 1 750 € contre 1 400 € de ce matin.</dd></div>
+      <div><dt>Un seul état de parcours</dt><dd><code>{ services, réponses, validés, à discuter, durée }</code> dans un reducer, à la place des 36 états React séparés de <code>Calculator.tsx</code> (2 918 lignes).</dd></div>
+      <div><dt>Les questions sont des données</dt><dd>Un fichier <code>questions.ts</code> décrit, service par service, les questions et leurs options à partir des fichiers <code>data/*.ts</code> existants. Les prix ne bougent pas. Ajouter une question devient une ligne, pas un bloc de JSX.</dd></div>
+      <div><dt>Le mail reçoit des lignes prêtes</dt><dd>Le webhook envoie chaque ligne avec son libellé, son montant et sa périodicité. n8n les affiche sans rien additionner, ce qui règle aussi la ligne « Monthly services » incomplète.</dd></div>
+      <div><dt>Le tracking garde ses noms</dt><dd>Mêmes events, donc la version 75 du conteneur GTM reste valable. <code>calculator_step</code> prend les valeurs <code>service:google-ads</code> et <code>recap</code>, un event <code>calculator_service_validated</code> s’ajoute, et l’étape <code>submitted</code> part enfin.</dd></div>
+      <div><dt>Le budget compte dès le choix du service</dt><dd>Le budget par défaut entre dans le total dès que le service est coché, au lieu d’attendre qu’on touche au curseur. C’est le « 0 $ » de la capture plus haut.</dd></div>
+    </dl>
+  </section>
+
+  <section id="trancher" class="prose">
+    <h2>À trancher</h2>
+    <ol class="todo">
+      <li><b>L’architecture.</b> A, B ou C. Je pars sur A si tu valides, en commençant par une page de test en noindex, comme pour les composants V2.</li>
+      <li><b>Les frais uniques.</b> Affichés à part, comme dans les maquettes (« + 500 € de mise en place »), ou lissés sur la durée d’engagement comme dans la barre actuelle (choix de la V5.6).</li>
+      <li><b>Le formulaire.</b> Dans le bloc, en dernière étape (maquettes), ou dans la fenêtre qui s’ouvre aujourd’hui.</li>
+      <li><b>Le mail n8n.</b> Je corrige maintenant la ligne « Monthly services » et je mets le mensuel et le total dans l’objet de ton mail, sans attendre la refonte ?</li>
+      <li><b>La mesure.</b> Relier la propriété GA4 281550532 à BigQuery (<b>Admin</b>, <b>Product links</b>, <b>BigQuery links</b>, <b>Link</b>). L’export ne remonte pas dans le passé, donc à faire avant la mise en ligne pour comparer avant et après. Et vérifier dans GTM pourquoi <code>generate_lead</code> ne part plus.</li>
+    </ol>
+  </section>
+
+  <footer class="end">Sources : mails du 22/09/2026, workflow n8n « Marketing Calculator - Quote Request V7 », <code>Calculator.tsx</code> et <code>data/*.ts</code> au commit <code>8e259ff</code>, relevé Playwright de la production le 22/09, table <code>googleAnalytics_v2.events</code> du 04/08 au 21/09.</footer>
+</main>
+
+<script>
+(function(){
+'use strict';
+var D = {"domains":[{"id":"seo","fr":"SEO","en":"SEO","dfr":"Référencement naturel et visibilité organique","den":"Search engine optimization and organic visibility"},{"id":"google-ads","fr":"Google Ads","en":"Google Ads","dfr":"Publicité sur le réseau Google (Search, Display, YouTube)","den":"Advertising on Google network (Search, Display, YouTube)"},{"id":"paid-social","fr":"Paid Social","en":"Paid Social","dfr":"Publicité sur les réseaux sociaux (Meta, LinkedIn, TikTok)","den":"Social media advertising (Meta, LinkedIn, TikTok)"},{"id":"ai-training","fr":"Formation IA","en":"AI Training","dfr":"Formation IA pour vos équipes, en présentiel ou à distance","den":"In-person or remote AI training for your teams"},{"id":"emailing","fr":"Email Marketing","en":"Email Marketing","dfr":"Campagnes email alimentées par l'IA qui convertissent","den":"AI-powered email campaigns that convert"},{"id":"ai-solutions","fr":"Solutions IA","en":"AI Solutions","dfr":"Chatbots IA, automatisation de workflows et solutions sur-mesure","den":"AI chatbots, workflow automation and custom solutions"},{"id":"ai-content","fr":"Contenu IA","en":"AI Content","dfr":"Articles de blog SEO, contenu social et landing pages propulsés par l'IA","den":"AI-powered SEO blog articles, social content and landing pages"},{"id":"tracking-reporting","fr":"Tracking & Reporting","en":"Tracking & Reporting","dfr":"Mesurez, analysez et optimisez vos performances marketing","den":"Measure, analyze, and optimize your marketing performance"}],"services":{"seo-audit":[{"fr":"Essentiel","en":"Essential","p":400,"o":true,"ffr":"Audit technique complet","fen":"Complete technical audit"},{"fr":"Avancé","en":"Advanced","p":700,"o":true,"ffr":"Audit technique + concurrentiel","fen":"Technical + competitive audit"},{"fr":"Premium","en":"Premium","p":1200,"o":true,"ffr":"Audit exhaustif technique + sémantique","fen":"Exhaustive technical + semantic audit"}],"seo-monthly":[{"fr":"Starter","en":"Starter","p":500,"o":false,"ffr":"2 articles SEO/mois","fen":"2 SEO articles/month"},{"fr":"Growth","en":"Growth","p":1000,"o":false,"ffr":"4 articles SEO/mois","fen":"4 SEO articles/month"},{"fr":"Premium","en":"Premium","p":1800,"o":false,"ffr":"8 articles SEO/mois","fen":"8 SEO articles/month"}],"social-creatives":[{"fr":"Essentiel","en":"Essential","p":400,"o":false,"ffr":"5 visuels statiques/mois","fen":"5 static visuals/month"},{"fr":"Avancé","en":"Advanced","p":800,"o":false,"ffr":"10 visuels + 2 vidéos/mois","fen":"10 visuals + 2 videos/month"},{"fr":"Premium","en":"Premium","p":1500,"o":false,"ffr":"20 visuels + 5 vidéos/mois","fen":"20 visuals + 5 videos/month"}],"social-feed-catalogue":[{"fr":"1 plateforme","en":"1 platform","p":500,"o":true,"ffr":"Setup flux pour 1 plateforme","fen":"Feed setup for 1 platform"},{"fr":"2 plateformes","en":"2 platforms","p":800,"o":true,"ffr":"Setup flux pour 2 plateformes","fen":"Feed setup for 2 platforms"},{"fr":"3+ plateformes","en":"3+ platforms","p":1200,"o":true,"ffr":"Setup flux pour 3+ plateformes","fen":"Feed setup for 3+ platforms"}],"email-management-package":[{"fr":"Essentiel","en":"Essential","p":500,"o":false,"ffr":"4 campagnes/mois","fen":"4 campaigns/month"},{"fr":"Avancé","en":"Advanced","p":800,"o":false,"ffr":"8 campagnes/mois","fen":"8 campaigns/month"},{"fr":"Premium","en":"Premium","p":1500,"o":false,"ffr":"Campagnes illimitées","fen":"Unlimited campaigns"}],"ai-chatbot":[{"fr":"Essentiel","en":"Essential","p":2000,"o":true,"ffr":"Chatbot FAQ sur votre site","fen":"FAQ chatbot on your site"},{"fr":"Avancé","en":"Advanced","p":4000,"o":true,"ffr":"Chatbot intelligent multi-sources","fen":"Multi-source intelligent chatbot"},{"fr":"Premium","en":"Premium","p":8000,"o":true,"ffr":"Agent IA conversationnel avancé","fen":"Advanced conversational AI agent"}],"ai-workflow":[{"fr":"Essentiel","en":"Essential","p":1500,"o":true,"ffr":"1-2 workflows simples","fen":"1-2 simple workflows"},{"fr":"Avancé","en":"Advanced","p":3500,"o":true,"ffr":"3-5 workflows interconnectés","fen":"3-5 interconnected workflows"},{"fr":"Premium","en":"Premium","p":7000,"o":true,"ffr":"Système d'automatisation complet","fen":"Complete automation system"}],"ai-maintenance":[{"fr":"Essentiel","en":"Essential","p":200,"o":false,"ffr":"Monitoring basique","fen":"Basic monitoring"},{"fr":"Avancé","en":"Advanced","p":400,"o":false,"ffr":"Monitoring continu","fen":"Continuous monitoring"},{"fr":"Premium","en":"Premium","p":700,"o":false,"ffr":"Monitoring temps réel + alertes","fen":"Real-time monitoring + alerts"}],"ai-content-blog":[{"fr":"4 articles","en":"4 articles","p":500,"o":false,"ffr":"4 articles/mois (1500-2000 mots)","fen":"4 articles/month (1500-2000 words)"},{"fr":"8 articles","en":"8 articles","p":900,"o":false,"ffr":"8 articles/mois (1500-3000 mots)","fen":"8 articles/month (1500-3000 words)"},{"fr":"16+ articles","en":"16+ articles","p":1600,"o":false,"ffr":"16+ articles/mois","fen":"16+ articles/month"}],"ai-content-social":[{"fr":"Essentiel","en":"Essential","p":400,"o":false,"ffr":"20 posts sociaux/mois","fen":"20 social posts/month"},{"fr":"Avancé","en":"Advanced","p":800,"o":false,"ffr":"30 posts sociaux + 2 landing pages","fen":"30 social posts + 2 landing pages"},{"fr":"Premium","en":"Premium","p":1500,"o":false,"ffr":"Contenu illimité (blog + social + landing + email)","fen":"Unlimited content (blog + social + landing + email)"}]},"budget":{"min":500,"max":50000,"step":500,"def":2000},"fees":[[2500,"flat",500],[7500,"percentage",20],[12500,"percentage",15],[30000,"percentage",12],[null,"percentage",10]],"mult":{"1":1,"2":1.7,"3":2.2,"4":2.6,"5":2.9,"6":3.1,"default":3.3},"channels":[{"id":"meta","fr":"Meta (Facebook & Instagram)","en":"Meta (Facebook & Instagram)"},{"id":"linkedin","fr":"LinkedIn Ads","en":"LinkedIn Ads"},{"id":"tiktok","fr":"TikTok Ads","en":"TikTok Ads"},{"id":"google-display","fr":"Google Display & YouTube","en":"Google Display & YouTube"}],"training":{"single":{"half":1500,"full":2800},"bulk":{"half":1150,"full":2200},"travel":500},"tracking":[{"id":"audit","fr":"Audit Tracking","en":"Tracking Audit","p":300},{"id":"ga4-setup","fr":"Installation / Révision GA4","en":"GA4 Installation / Revision","p":400},{"id":"conversion-tracking","fr":"Mise en place des Points de Conversion","en":"Conversion Points Setup","p":350},{"id":"cookie-consent","fr":"Cookie Banner + Tracking du Consentement","en":"Cookie Banner + Consent Tracking","p":300},{"id":"crm-integration","fr":"Intégration CRM","en":"CRM Integration","p":500},{"id":"reporting-dashboard","fr":"Dashboard Reporting Multicanal","en":"Multi-Channel Reporting Dashboard","p":600}],"durations":[{"m":4,"d":0},{"m":6,"d":5},{"m":12,"d":10}]};
+var REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var LANG = 'fr';
+function tr(fr, en){ return LANG === 'fr' ? fr : en; }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function money(n){ n = Math.round(n); return LANG === 'fr' ? n.toLocaleString('fr-FR') + ' €' : '€' + n.toLocaleString('en-GB'); }
+function PM(){ return tr('/mois', '/mo'); }
+function num(x){ return LANG === 'fr' ? String(x).replace('.', ',') : String(x); }
+
+var ICON = {
+  check:'<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  plus:'<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  back:'<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  next:'<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  close:'<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  talk:'<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+  ok:'<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="currentColor"/><path d="M4.8 8.3l2.2 2.2 4.2-4.8" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+};
+
+var DOM = {}; D.domains.forEach(function(d){ DOM[d.id] = d; });
+var ORDER = D.domains.map(function(d){ return d.id; });
+var SHORT = {'seo':['SEO','SEO'],'google-ads':['Google Ads','Google Ads'],'paid-social':['Paid Social','Paid Social'],'ai-training':['Formation IA','AI Training'],'emailing':['Emailing','Email'],'ai-solutions':['Solutions IA','AI Solutions'],'ai-content':['Contenu IA','AI Content'],'tracking-reporting':['Tracking','Tracking']};
+function dName(id){ return tr(DOM[id].fr, DOM[id].en); }
+function dShort(id){ return tr(SHORT[id][0], SHORT[id][1]); }
+function dDesc(id){ return tr(DOM[id].dfr, DOM[id].den); }
+var SVC = {'seo-audit':['Audit SEO','SEO audit'],'seo-monthly':['SEO mensuel','Monthly SEO'],'social-creatives':['Création de visuels','Visual creation'],'social-feed-catalogue':['Catalogue produits','Product catalogue'],'email-management-package':['Campagnes email','Email campaigns'],'ai-content-blog':['Articles de blog','Blog articles'],'ai-content-social':['Contenu social et landing pages','Social content and landing pages'],'ai-chatbot':['Chatbot IA','AI chatbot'],'ai-workflow':['Workflows automatisés','Automated workflows'],'ai-maintenance':['Maintenance IA','AI maintenance']};
+var QT = {'seo-audit':['Un audit SEO pour démarrer ?','Start with an SEO audit?'],'seo-monthly':['Un accompagnement SEO chaque mois ?','Monthly SEO support?'],'social-creatives':['Des visuels publicitaires chaque mois ?','Ad creatives every month?'],'social-feed-catalogue':['Un catalogue produits à connecter ?','A product catalogue to connect?'],'email-management-package':['Vos campagnes email gérées chaque mois ?','Monthly email campaign management?'],'ai-content-blog':['Des articles de blog SEO chaque mois ?','SEO blog articles every month?'],'ai-content-social':['Du contenu social et des landing pages ?','Social content and landing pages?'],'ai-chatbot':['Un chatbot IA ?','An AI chatbot?'],'ai-workflow':['Des tâches automatisées ?','Automated workflows?'],'ai-maintenance':['Un suivi une fois en place ?','Ongoing maintenance?']};
+var STEPS = [500,1000,1500,2000,2500,3000,4000,5000,6000,7500,10000,12500,15000,20000,25000,30000,40000,50000];
+
+function levelQ(domain, service){ return {id:service, domain:domain, kind:'level', service:service, title:QT[service]}; }
+function questions(domain){
+  switch(domain){
+    case 'google-ads': return [{id:'ga-budget', domain:domain, kind:'budget', title:['Quel budget média par mois sur Google ?','Monthly media budget on Google?'], help:['Payé directement à Google, en plus de nos honoraires.','Paid straight to Google, on top of our fees.']}];
+    case 'paid-social': return [
+      {id:'ps-channels', domain:domain, kind:'channels', title:['Sur quels réseaux ?','Which networks?'], help:['Nos frais de gestion augmentent avec chaque réseau ajouté.','Our management fee grows with each extra network.']},
+      {id:'ps-budget', domain:domain, kind:'budget', title:['Quel budget média par mois sur ces réseaux ?','Monthly media budget across these networks?'], help:['Payé directement aux réseaux, en plus de nos honoraires.','Paid straight to the networks, on top of our fees.']},
+      levelQ(domain,'social-creatives'), levelQ(domain,'social-feed-catalogue')];
+    case 'seo': return [levelQ(domain,'seo-audit'), levelQ(domain,'seo-monthly')];
+    case 'emailing': return [levelQ(domain,'email-management-package')];
+    case 'ai-content': return [levelQ(domain,'ai-content-blog'), levelQ(domain,'ai-content-social')];
+    case 'ai-solutions': return [levelQ(domain,'ai-chatbot'), levelQ(domain,'ai-workflow'), levelQ(domain,'ai-maintenance')];
+    case 'ai-training': return [
+      {id:'tr-format', domain:domain, kind:'choice', title:['Quel format ?','Which format?'], options:[{v:'half', l:['Demi-journée','Half day'], d:['3 heures','3 hours']},{v:'full', l:['Journée complète','Full day'], d:['6 h 30','6.5 hours']}]},
+      {id:'tr-sessions', domain:domain, kind:'choice', title:['Combien de sessions ?','How many sessions?'], help:['Tarif dégressif à partir de 5 sessions.','Lower rate from 5 sessions.'], options:[{v:1, l:['1 session','1 session']},{v:5, l:['5 sessions','5 sessions']},{v:10, l:['10 sessions','10 sessions']}]},
+      {id:'tr-mode', domain:domain, kind:'choice', title:['Où ?','Where?'], options:[{v:'remote', l:['À distance','Remote'], d:['En visio','Video call']},{v:'onsite', l:['Dans vos locaux','At your office'], d:['Frais de déplacement','Travel costs'], p:D.training.travel}]}];
+    case 'tracking-reporting': return [{id:'trk-items', domain:domain, kind:'multi', title:['Qu’est-ce qu’il faut mettre en place ?','What needs setting up?'], help:['Plusieurs réponses possibles. Frais uniques.','Pick as many as you need. One-off fees.']}];
+  }
+  return [];
+}
+var ALLQ = {}; ORDER.forEach(function(d){ questions(d).forEach(function(q){ ALLQ[q.id] = q; }); });
+
+function mult(n){ return n <= 1 ? 1 : (D.mult[String(n)] || D.mult['default']); }
+function feeInfo(b, n){
+  var t = D.fees.filter(function(t){ return t[0] === null || b < t[0]; })[0];
+  var m = mult(n);
+  var base = t[1] === 'flat' ? t[2] : b * t[2] / 100;
+  var txt = t[1] === 'flat' ? tr('forfait jusqu’à ' + money(t[0]) + ' de budget', 'flat fee up to ' + money(t[0]) + ' of spend') : tr(t[2] + ' % du budget', t[2] + '% of spend');
+  if (m > 1) txt += tr(', x' + num(m) + ' pour ' + n + ' réseaux', ', x' + m + ' for ' + n + ' networks');
+  return {fee: base * m, txt: txt};
+}
+function trainingPrice(a){
+  if (!a['tr-format'] || !a['tr-sessions']) return null;
+  var tier = a['tr-sessions'] === 1 ? D.training.single : D.training.bulk;
+  return (a['tr-format'] === 'full' ? tier.full : tier.half) * a['tr-sessions'];
+}
+
+/* Le seul calcul de prix : l'écran, le récapitulatif et le mail liraient tous ce résultat. */
+function devis(st){
+  var lines = [], mon = 0, one = 0, media = 0, a = st.a;
+  st.domains.forEach(function(d){
+    if (st.discuss[d]) { lines.push({d:d, discuss:true, items:[], m:0, o:0}); return; }
+    var items = [];
+    if (d === 'google-ads') {
+      var b = a['ga-budget'] != null ? a['ga-budget'] : D.budget.def; media += b;
+      items.push({l:tr('Gestion des campagnes','Campaign management'), p:feeInfo(b,1).fee, per:'m'});
+      items.push({l:tr('Budget média, payé à Google','Media budget, paid to Google'), p:b, per:'media'});
+    }
+    if (d === 'paid-social') {
+      var ch = a['ps-channels'] || [], b2 = a['ps-budget'] != null ? a['ps-budget'] : D.budget.def; media += b2;
+      var n = Math.max(ch.length, 1);
+      items.push({l:tr('Gestion des campagnes','Campaign management') + (n > 1 ? tr(', ' + n + ' réseaux', ', ' + n + ' networks') : ''), p:feeInfo(b2,n).fee, per:'m'});
+      items.push({l:tr('Budget média, payé aux réseaux','Media budget, paid to the networks'), p:b2, per:'media'});
+    }
+    questions(d).forEach(function(q){
+      if (q.kind !== 'level') return;
+      var v = a[q.id];
+      if (v == null) return;
+      var L = D.services[q.service][v];
+      items.push({l:tr(SVC[q.service][0], SVC[q.service][1]) + ', ' + tr(L.fr, L.en), p:L.p, per:L.o ? 'o' : 'm'});
+    });
+    if (d === 'ai-training') {
+      var tp = trainingPrice(a);
+      if (tp != null && a['tr-mode']) {
+        items.push({l:(a['tr-format'] === 'full' ? tr('Journée','Full day') : tr('Demi-journée','Half day')) + ' x ' + a['tr-sessions'], p:tp, per:'o'});
+        if (a['tr-mode'] === 'onsite') items.push({l:tr('Déplacement','Travel'), p:D.training.travel, per:'o'});
+      }
+    }
+    if (d === 'tracking-reporting') {
+      (a['trk-items'] || []).forEach(function(id){ var it = D.tracking.filter(function(x){ return x.id === id; })[0]; items.push({l:tr(it.fr, it.en), p:it.p, per:'o'}); });
+    }
+    var m = 0, o = 0;
+    items.forEach(function(i){ if (i.per === 'm') m += i.p; else if (i.per === 'o') o += i.p; });
+    mon += m; one += o;
+    lines.push({d:d, items:items, m:m, o:o, empty:(m + o) === 0});
+  });
+  var pct = (D.durations.filter(function(x){ return x.m === st.duration; })[0] || {d:0}).d;
+  var disc = mon * pct / 100;
+  return {lines:lines, before:mon, disc:disc, pct:pct, mon:mon - disc, one:one, media:media};
+}
+
+/* ---------- briques d'interface partagées ---------- */
+function optRow(o){
+  var mark = o.multi ? '<span class="mk sq">' + (o.checked ? ICON.check : '') + '</span>' : '<span class="mk">' + (o.checked ? '<i></i>' : '') + '</span>';
+  var price = o.price != null ? '<span class="pr">' + money(o.price) + '<small>' + (o.per === 'o' ? tr('une fois','one-off') : PM()) + '</small></span>' : '';
+  return '<button type="button" class="opt" role="' + (o.multi ? 'checkbox' : 'radio') + '" aria-checked="' + (o.checked ? 'true' : 'false') + '" ' + o.attrs + '>' + mark +
+    '<span class="tx"><span class="nm">' + esc(o.name) + '</span>' + (o.desc ? '<span class="ds">' + esc(o.desc) + '</span>' : '') + '</span>' + price + '</button>';
+}
+function budgetInner(q, st){
+  var b = st.a[q.id] != null ? st.a[q.id] : D.budget.def;
+  var n = q.domain === 'paid-social' ? Math.max((st.a['ps-channels'] || []).length, 1) : 1;
+  var fi = feeInfo(b, n);
+  return '<span class="bud-val">' + money(b) + '<small>' + PM() + '</small></span>' + '|' +
+    tr('Nos honoraires de gestion : ','Our management fee: ') + '<strong>' + money(fi.fee) + PM() + '</strong> <span>(' + fi.txt + ')</span>';
+}
+function qHTML(q, st, opt){
+  opt = opt || {};
+  var a = st.a, h = '<div class="q" data-qid="' + q.id + '">';
+  if (!opt.noTitle) h += '<h4 class="q-t">' + esc(tr(q.title[0], q.title[1])) + '</h4>';
+  if (q.help && !opt.noHelp) h += '<p class="q-h">' + esc(tr(q.help[0], q.help[1])) + '</p>';
+  if (q.kind === 'level') {
+    var v = a[q.id];
+    h += optRow({checked: v === null, name: tr('Non merci','No thanks'), attrs:'data-act="set" data-q="' + q.id + '" data-v="null"'});
+    D.services[q.service].forEach(function(L, i){
+      h += optRow({checked: v === i, name: tr(L.fr, L.en), desc: tr(L.ffr, L.fen), price: L.p, per: L.o ? 'o' : 'm', attrs:'data-act="set" data-q="' + q.id + '" data-v="' + i + '"'});
+    });
+  } else if (q.kind === 'choice') {
+    q.options.forEach(function(o){
+      var price = null, per = 'o';
+      if (q.id === 'tr-sessions' && a['tr-format']) { var tier = o.v === 1 ? D.training.single : D.training.bulk; price = (a['tr-format'] === 'full' ? tier.full : tier.half) * o.v; }
+      if (q.id === 'tr-format') { price = o.v === 'full' ? D.training.single.full : D.training.single.half; }
+      if (o.p != null) price = o.p;
+      h += optRow({checked: a[q.id] === o.v, name: tr(o.l[0], o.l[1]), desc: o.d ? tr(o.d[0], o.d[1]) : '', price: price, per: per, attrs:'data-act="set" data-q="' + q.id + '" data-v="' + o.v + '"'});
+    });
+    if (q.id === 'tr-format') h += '<p class="q-h" style="margin-top:8px">' + esc(tr('Prix pour une session.','Price for one session.')) + '</p>';
+  } else if (q.kind === 'budget') {
+    var b = a[q.id] != null ? a[q.id] : D.budget.def;
+    var idx = 0; STEPS.forEach(function(s, k){ if (Math.abs(s - b) < Math.abs(STEPS[idx] - b)) idx = k; });
+    var parts = budgetInner(q, st).split('|');
+    h += '<div class="bud"><div data-bv>' + parts[0] + '</div>' +
+      '<input type="range" id="' + opt.uid + '-' + q.id + '" min="0" max="' + (STEPS.length - 1) + '" step="1" value="' + idx + '" data-act="budget" data-q="' + q.id + '" aria-label="' + esc(tr(q.title[0], q.title[1])) + '">' +
+      '<div class="bud-scale"><span>' + money(STEPS[0]) + '</span><span>' + money(STEPS[STEPS.length - 1]) + '</span></div>' +
+      '<p class="bud-fee" data-bf>' + parts[1] + '</p></div>';
+  } else if (q.kind === 'channels') {
+    var ch = a[q.id] || [];
+    h += '<div class="pills">' + D.channels.map(function(c){
+      var on = ch.indexOf(c.id) >= 0;
+      return '<button type="button" class="pill" role="checkbox" aria-checked="' + on + '" data-act="toggle" data-q="' + q.id + '" data-v="' + c.id + '">' + (on ? ICON.check : '') + esc(tr(c.fr, c.en)) + '</button>';
+    }).join('') + '</div>';
+  } else if (q.kind === 'multi') {
+    var sel = a[q.id] || [];
+    D.tracking.forEach(function(it){
+      h += optRow({multi:true, checked: sel.indexOf(it.id) >= 0, name: tr(it.fr, it.en), price: it.p, per:'o', attrs:'data-act="toggle" data-q="' + q.id + '" data-v="' + it.id + '"'});
+    });
+  }
+  return h + '</div>';
+}
+function chipsHTML(selected, locked){
+  return '<div class="chips">' + ORDER.map(function(id){
+    var on = selected.indexOf(id) >= 0, lock = locked && locked.indexOf(id) >= 0;
+    return '<button type="button" class="chip" role="checkbox" aria-checked="' + on + '"' + (lock ? ' disabled' : '') + ' data-act="pick" data-d="' + id + '"><span class="ok">' + (on ? ICON.check : '') + '</span><span class="nm">' + esc(dName(id)) + '</span><span class="ds">' + esc(dDesc(id)) + '</span></button>';
+  }).join('') + '</div>';
+}
+function totalHTML(st, q){
+  if (!st.domains.length) return '<div class="p-total"><span class="lbl">' + tr('Votre estimation','Your estimate') + '</span><span class="nil">' + tr('Choisissez un service','Pick a service') + '</span></div>';
+  var sub = [];
+  if (q.one) sub.push(tr('+ ' + money(q.one) + ' de mise en place', '+ ' + money(q.one) + ' one-off'));
+  if (q.media) sub.push(tr('budget média de ' + money(q.media) + PM() + ' en plus', 'plus ' + money(q.media) + PM() + ' media budget'));
+  var talk = q.lines.filter(function(l){ return l.discuss; }).length;
+  if (talk) sub.push(tr(talk + ' à discuter', talk + ' to discuss'));
+  return '<div class="p-total"><span class="lbl">' + tr('Votre estimation','Your estimate') + (q.pct ? ' <em>-' + q.pct + ' %</em>' : '') + '</span><strong>' + money(q.mon) + '<small>' + PM() + '</small></strong></div>' +
+    (sub.length ? '<p class="p-total-sub">' + sub.join(', ') + '</p>' : '');
+}
+function durSeg(st){
+  return '<div class="seg" role="radiogroup" aria-label="' + tr('Durée d’engagement','Commitment') + '">' + D.durations.map(function(x){
+    return '<button type="button" role="radio" aria-checked="' + (st.duration === x.m) + '" data-act="dur" data-v="' + x.m + '">' + x.m + ' ' + tr('mois','months') + (x.d ? '<small>-' + x.d + ' %</small>' : '') + '</button>';
+  }).join('') + '</div>';
+}
+function recapHTML(st, q, uid){
+  var h = '<h3 class="v-t">' + tr('Votre devis','Your quote') + '</h3><p class="v-s">' + tr('Tout est modifiable. Un expert vous rappelle sous 24 à 48 h.','Everything can still change. An expert gets back to you within 24 to 48 hours.') + '</p>';
+  h += '<p class="q-t">' + tr('Durée d’engagement','Commitment') + '</p><div class="r-seg">' + durSeg(st) + '</div>';
+  h += '<div class="r-lines">';
+  q.lines.forEach(function(L){
+    h += '<div class="r-line"><div class="r-l"><strong>' + esc(dName(L.d)) + '</strong>';
+    if (L.discuss || L.empty) h += '<br><span class="tag-talk">' + ICON.talk + tr('À discuter ensemble','To discuss together') + '</span>';
+    else h += '<ul>' + L.items.map(function(i){ return '<li><span>' + esc(i.l) + '</span><span>' + money(i.p) + (i.per === 'o' ? ' ' + tr('une fois','one-off') : PM()) + '</span></li>'; }).join('') + '</ul>';
+    h += '</div><button type="button" class="lnk" data-act="edit" data-d="' + L.d + '">' + tr('Modifier','Edit') + '</button></div>';
+  });
+  h += '</div><dl class="r-sum">' +
+    '<div><dt>' + tr('Honoraires mensuels','Monthly fees') + '</dt><dd>' + money(q.before) + PM() + '</dd></div>' +
+    (q.disc ? '<div><dt>' + tr('Remise ' + st.duration + ' mois', st.duration + '-month discount') + '</dt><dd>-' + money(q.disc) + PM() + '</dd></div>' : '') +
+    (q.one ? '<div><dt>' + tr('Frais uniques','One-off fees') + '</dt><dd>' + money(q.one) + '</dd></div>' : '') +
+    (q.media ? '<div class="media"><dt>' + tr('Budget média, payé aux plateformes','Media budget, paid to the platforms') + '</dt><dd>' + money(q.media) + PM() + '</dd></div>' : '') +
+    '<div class="tot"><dt>' + tr('Nos honoraires sur ' + st.duration + ' mois','Our fees over ' + st.duration + ' months') + '</dt><dd>' + money(q.mon * st.duration + q.one) + '</dd></div></dl>';
+  h += '<form class="r-form" onsubmit="return false">' +
+    '<label for="' + uid + '-nom">' + tr('Nom','Name') + '<input id="' + uid + '-nom" autocomplete="name" value="Clara Martin"></label>' +
+    '<label for="' + uid + '-mail">' + tr('Email professionnel','Work email') + '<input id="' + uid + '-mail" type="email" autocomplete="email" value="clara@atelier-riviere.fr"></label>' +
+    '<label for="' + uid + '-soc">' + tr('Entreprise','Company') + '<input id="' + uid + '-soc" autocomplete="organization" value="Atelier Rivière"></label></form>';
+  return h;
+}
+
+/* ---------- moteur commun d'un prototype ---------- */
+function Proto(id, impl){
+  var root = document.getElementById(id);
+  var self = {root:root, uid:id};
+  var toastTimer = null;
+  self.toast = function(msg){
+    var t = root.querySelector('.toast'); if (t) t.remove();
+    t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role','status'); t.textContent = msg; root.appendChild(t);
+    clearTimeout(toastTimer); toastTimer = setTimeout(function(){ t.remove(); }, 2600);
+  };
+  self.render = function(keep){
+    var body = root.querySelector('.p-body'), top = keep && body ? body.scrollTop : 0;
+    root.innerHTML = impl.html(self);
+    var nb = root.querySelector('.p-body'); if (nb) nb.scrollTop = top;
+    if (impl.after) impl.after(self);
+  };
+  self.refreshBudget = function(qid){
+    var q = ALLQ[qid], box = root.querySelector('[data-qid="' + qid + '"]');
+    if (box) { var p = budgetInner(q, impl.state()).split('|'); box.querySelector('[data-bv]').innerHTML = p[0]; box.querySelector('[data-bf]').innerHTML = p[1]; }
+    var tot = root.querySelector('[data-total]'); if (tot) tot.innerHTML = totalHTML(impl.state(), devis(impl.state()));
+    if (impl.onBudget) impl.onBudget(self);
+  };
+  root.addEventListener('click', function(e){
+    var el = e.target.closest('[data-act]'); if (!el || el.disabled) return;
+    if (el.getAttribute('data-act') === 'send') { self.toast(tr('Maquette : rien n’est envoyé.','Mock-up: nothing is sent.')); return; }
+    impl.act(el.getAttribute('data-act'), el.dataset, self);
+  });
+  root.addEventListener('input', function(e){
+    var el = e.target; if (el.getAttribute('data-act') !== 'budget') return;
+    impl.state().a[el.dataset.q] = STEPS[+el.value];
+    self.refreshBudget(el.dataset.q);
+  });
+  impl.reset(); self.render();
+  return self;
+}
+function parseV(v){ if (v === 'null') return null; if (/^\d+$/.test(v)) return +v; return v; }
+function setAnswer(st, ds){ var q = ALLQ[ds.q]; st.a[ds.q] = parseV(ds.v); if (q) st.discuss[q.domain] = false; }
+function toggleAnswer(st, ds){ var arr = (st.a[ds.q] || []).slice(), i = arr.indexOf(ds.v); if (i >= 0) arr.splice(i, 1); else arr.push(ds.v); st.a[ds.q] = arr; var q = ALLQ[ds.q]; if (q) st.discuss[q.domain] = false; }
+function inOrder(list){ return ORDER.filter(function(d){ return list.indexOf(d) >= 0; }); }
+
+/* ---------- A : des onglets ---------- */
+var A = (function(){
+  var st;
+  function next(from){
+    var i = st.domains.indexOf(from);
+    for (var k = i + 1; k < st.domains.length; k++) if (!st.done[st.domains[k]]) return st.domains[k];
+    for (var j = 0; j < st.domains.length; j++) if (!st.done[st.domains[j]]) return st.domains[j];
+    return 'recap';
+  }
+  return {
+    state:function(){ return st; },
+    reset:function(){ st = {domains:[], a:{}, discuss:{}, done:{}, duration:4, view:'pick', draft:[], adding:false, prev:null}; },
+    html:function(P){
+      var q = devis(st), h = '<div class="p-head">';
+      if (!st.domains.length) h += '<div class="p-titlebar"><strong>' + tr('Votre devis','Your quote') + '</strong><span>' + tr('en quelques étapes','in a few steps') + '</span></div>';
+      else {
+        h += '<div class="a-tabs" role="tablist">';
+        st.domains.forEach(function(d){
+          var mark = st.discuss[d] ? '<span class="st-talk">' + ICON.talk + '</span>' : (st.done[d] ? '<span class="st-ok">' + ICON.ok + '</span>' : '');
+          h += '<button type="button" class="a-tab" role="tab" aria-selected="' + (st.view === d) + '" data-act="tab" data-v="' + d + '">' + esc(dShort(d)) + mark + '</button>';
+        });
+        h += '<button type="button" class="a-add" data-act="add" aria-label="' + tr('Ajouter un service','Add a service') + '">' + ICON.plus + '</button>';
+        h += '<button type="button" class="a-tab" role="tab" aria-selected="' + (st.view === 'recap') + '" data-act="tab" data-v="recap">' + tr('Récap','Summary') + '</button></div>';
+      }
+      h += '</div><div class="p-body">';
+      var acts = '';
+      if (st.view === 'pick') {
+        h += '<h3 class="v-t">' + (st.adding ? tr('Ajouter un service','Add a service') : tr('Quels services vous intéressent ?','Which services do you need?')) + '</h3>';
+        h += '<p class="v-s">' + (st.adding ? tr('Ceux déjà dans votre devis sont grisés.','Services already in your quote are greyed out.') : tr('Cochez-en autant que vous voulez, vous pourrez en ajouter ensuite.','Pick as many as you like, you can add more later.')) + '</p>';
+        h += chipsHTML(st.draft, st.adding ? st.domains : null);
+        var nNew = st.draft.filter(function(d){ return st.domains.indexOf(d) < 0; }).length;
+        acts = st.adding
+          ? '<button type="button" class="btn btn-ghost" data-act="cancel-add">' + tr('Annuler','Cancel') + '</button><button type="button" class="btn btn-primary" data-act="start"' + (nNew ? '' : ' disabled') + '>' + tr('Ajouter','Add') + (nNew ? ' (' + nNew + ')' : '') + '</button>'
+          : '<button type="button" class="btn btn-primary" data-act="start"' + (st.draft.length ? '' : ' disabled') + '>' + tr('Commencer','Start') + (st.draft.length ? ' (' + st.draft.length + ')' : '') + ICON.next + '</button>';
+      } else if (st.view === 'recap') {
+        h += recapHTML(st, q, P.uid);
+        acts = '<button type="button" class="btn btn-primary" data-act="send">' + tr('Recevoir mon devis','Get my quote') + '</button>';
+      } else {
+        var d = st.view;
+        h += '<h3 class="v-t">' + esc(dName(d)) + '</h3><p class="v-s">' + esc(dDesc(d)) + '</p>';
+        questions(d).forEach(function(qq){ h += qHTML(qq, st, {uid:P.uid}); });
+        var nxt = next(d);
+        acts = '<button type="button" class="btn btn-ghost" data-act="unsure">' + tr('On en parle','Let’s discuss') + '</button>' +
+          '<button type="button" class="btn btn-primary" data-act="validate">' + tr('Valider','Confirm') + (nxt === 'recap' ? '' : ICON.next) + '</button>';
+      }
+      h += '</div><div class="p-foot"><div class="p-actions">' + acts + '</div><div data-total>' + totalHTML(st, q) + '</div></div>';
+      return h;
+    },
+    after:function(P){
+      var tabs = P.root.querySelector('.a-tabs'), on = P.root.querySelector('.a-tab[aria-selected="true"]');
+      if (tabs && on) tabs.scrollLeft = Math.max(0, on.offsetLeft - tabs.clientWidth / 2 + on.clientWidth / 2);
+    },
+    act:function(t, ds, P){
+      var keep = true;
+      if (t === 'pick') { var i = st.draft.indexOf(ds.d); if (i >= 0) st.draft.splice(i, 1); else st.draft.push(ds.d); }
+      else if (t === 'start') {
+        if (st.adding) { var fresh = inOrder(st.draft).filter(function(d){ return st.domains.indexOf(d) < 0; }); st.domains = st.domains.concat(fresh); st.view = fresh[0]; st.adding = false; }
+        else { st.domains = inOrder(st.draft); st.view = st.domains[0]; }
+        keep = false;
+      }
+      else if (t === 'add') { st.prev = st.view; st.adding = true; st.draft = st.domains.slice(); st.view = 'pick'; keep = false; }
+      else if (t === 'cancel-add') { st.adding = false; st.view = st.prev || st.domains[0]; keep = false; }
+      else if (t === 'tab') { st.view = ds.v; keep = false; }
+      else if (t === 'set') setAnswer(st, ds);
+      else if (t === 'toggle') toggleAnswer(st, ds);
+      else if (t === 'validate') { var cur = st.view, ln = devis(st).lines.filter(function(l){ return l.d === cur; })[0]; if (ln && ln.empty) st.discuss[cur] = true; st.done[cur] = true; st.view = next(cur); keep = false; }
+      else if (t === 'unsure') { st.discuss[st.view] = true; st.done[st.view] = true; st.view = next(st.view); keep = false; }
+      else if (t === 'dur') st.duration = +ds.v;
+      else if (t === 'edit') { st.view = ds.d; keep = false; }
+      P.render(keep);
+    }
+  };
+})();
+
+/* ---------- B : une question à la fois ---------- */
+var B = (function(){
+  var st, timer = null;
+  function seq(){
+    var s = ['pick'];
+    st.domains.forEach(function(d){ if (st.discuss[d]) return; questions(d).forEach(function(q){ s.push(q.id); }); });
+    s.push('duration', 'recap');
+    return s;
+  }
+  function auto(q){ return q && (q.kind === 'level' || q.kind === 'choice'); }
+  return {
+    state:function(){ return st; },
+    reset:function(){ st = {domains:[], a:{}, discuss:{}, duration:4, i:0, draft:[]}; },
+    html:function(P){
+      var s = seq(), cur = s[st.i], q = devis(st), pct = st.i / (s.length - 1) * 100;
+      var h = '<div class="p-head"><div class="b-head"><button type="button" class="b-back" data-act="back" aria-label="' + tr('Retour','Back') + '"' + (st.i ? '' : ' disabled') + '>' + ICON.back + '</button>' +
+        '<div class="b-bar" aria-hidden="true"><i style="width:' + pct.toFixed(1) + '%"></i></div><span class="b-count">' + (st.i + 1) + '/' + s.length + '</span></div></div><div class="p-body">';
+      var acts = '';
+      if (cur === 'pick') {
+        h += '<p class="b-ctx">' + tr('Votre devis en quelques questions','Your quote in a few questions') + '</p><h3 class="b-q">' + tr('De quoi avez-vous besoin ?','What do you need?') + '</h3><p class="b-help">' + tr('Plusieurs réponses possibles.','Pick as many as you like.') + '</p>';
+        h += chipsHTML(st.draft);
+        h += '<div class="b-skip"><button type="button" class="lnk" data-act="guide">' + tr('Je ne sais pas, aidez-moi à choisir','Not sure, help me choose') + '</button></div>';
+        acts = '<button type="button" class="btn btn-primary" data-act="next"' + (st.draft.length ? '' : ' disabled') + '>' + tr('Continuer','Continue') + ICON.next + '</button>';
+      } else if (cur === 'duration') {
+        h += '<p class="b-ctx">' + tr('Dernière question','Last question') + '</p><h3 class="b-q">' + tr('Sur combien de mois ?','For how many months?') + '</h3><p class="b-help">' + tr('Plus l’engagement est long, plus la remise est forte.','The longer the commitment, the bigger the discount.') + '</p>';
+        D.durations.forEach(function(x){ h += optRow({checked: st.duration === x.m, name: x.m + ' ' + tr('mois','months'), desc: x.d ? tr('Remise de ' + x.d + ' % sur les honoraires mensuels', x.d + '% off monthly fees') : tr('Sans remise','No discount'), attrs:'data-act="dur" data-v="' + x.m + '"'}); });
+      } else if (cur === 'recap') {
+        h += recapHTML(st, q, P.uid);
+        acts = '<button type="button" class="btn btn-primary" data-act="send">' + tr('Recevoir mon devis','Get my quote') + '</button>';
+      } else {
+        var qq = ALLQ[cur], list = questions(qq.domain), k = list.map(function(x){ return x.id; }).indexOf(cur);
+        h += '<p class="b-ctx">' + esc(dName(qq.domain)) + (list.length > 1 ? tr(', question ' + (k + 1) + ' sur ' + list.length, ', question ' + (k + 1) + ' of ' + list.length) : '') + '</p>';
+        h += '<h3 class="b-q">' + esc(tr(qq.title[0], qq.title[1])) + '</h3>' + (qq.help ? '<p class="b-help">' + esc(tr(qq.help[0], qq.help[1])) + '</p>' : '');
+        h += qHTML(qq, st, {noTitle:true, noHelp:true, uid:P.uid});
+        h += '<div class="b-skip"><button type="button" class="lnk" data-act="skip" data-d="' + qq.domain + '">' + tr('Passer ' + dShort(qq.domain) + ', on en parle', 'Skip ' + dShort(qq.domain) + ', let’s discuss it') + '</button></div>';
+        if (!auto(qq)) acts = '<button type="button" class="btn btn-primary" data-act="next">' + tr('Continuer','Continue') + ICON.next + '</button>';
+        else if (st.a[cur] !== undefined) acts = '<button type="button" class="btn btn-ghost" data-act="next">' + tr('Question suivante','Next question') + ICON.next + '</button>';
+      }
+      h += '</div><div class="p-foot">' + (acts ? '<div class="p-actions">' + acts + '</div>' : '') + '<div data-total>' + totalHTML(st, q) + '</div></div>';
+      return h;
+    },
+    act:function(t, ds, P){
+      var s = seq(), keep = true;
+      clearTimeout(timer);
+      if (t === 'pick') { var i = st.draft.indexOf(ds.d); if (i >= 0) st.draft.splice(i, 1); else st.draft.push(ds.d); }
+      else if (t === 'guide') { P.toast(tr('Cette branche est la maquette C.','That branch is mock-up C.')); return; }
+      else if (t === 'next') { if (s[st.i] === 'pick') st.domains = inOrder(st.draft); st.i = Math.min(st.i + 1, seq().length - 1); keep = false; }
+      else if (t === 'back') { st.i = Math.max(0, st.i - 1); keep = false; }
+      else if (t === 'toggle') toggleAnswer(st, ds);
+      else if (t === 'set' || t === 'dur') {
+        if (t === 'set') setAnswer(st, ds); else st.duration = +ds.v;
+        var inRecap = s[st.i] === 'recap';
+        P.render(true);
+        if (!inRecap) timer = setTimeout(function(){ st.i = Math.min(st.i + 1, seq().length - 1); P.render(false); }, REDUCE ? 0 : 260);
+        return;
+      }
+      else if (t === 'skip') {
+        var d = ds.d, after = st.domains.slice(st.domains.indexOf(d) + 1).filter(function(x){ return !st.discuss[x]; })[0];
+        st.discuss[d] = true;
+        var ns = seq(); st.i = after ? ns.indexOf(questions(after)[0].id) : ns.indexOf('duration'); keep = false;
+      }
+      else if (t === 'edit') { st.discuss[ds.d] = false; st.i = seq().indexOf(questions(ds.d)[0].id); keep = false; }
+      P.render(keep);
+    }
+  };
+})();
+
+/* ---------- C : le budget d'abord (moteur du mode guidé actuel, guided-data.ts) ---------- */
+var C = (function(){
+  var st;
+  var IND = {
+    'b2b-saas':{'seo':.9,'google-ads':.85,'paid-social':.75,'emailing':.7,'ai-content':.8,'ai-solutions':.5,'ai-training':.3,'tracking-reporting':.9},
+    'ecommerce':{'seo':.8,'google-ads':.95,'paid-social':.9,'emailing':.85,'ai-content':.6,'ai-solutions':.4,'ai-training':.15,'tracking-reporting':.95},
+    'automotive':{'seo':.7,'google-ads':.9,'paid-social':.75,'emailing':.5,'ai-content':.5,'ai-solutions':.65,'ai-training':.4,'tracking-reporting':.85},
+    'other':{'seo':.7,'google-ads':.65,'paid-social':.6,'emailing':.5,'ai-content':.5,'ai-solutions':.4,'ai-training':.3,'tracking-reporting':.7}
+  };
+  var BOOST = {
+    'leads':{'google-ads':.4,'paid-social':.35,'emailing':.35,'tracking-reporting':.3,'seo':.15},
+    'sales':{'google-ads':.45,'paid-social':.35,'emailing':.35,'tracking-reporting':.3,'seo':.1},
+    'ai-training':{'ai-training':.8,'ai-solutions':.3,'ai-content':.2}
+  };
+  var SPLIT = {'b2b-saas':[.6,.4],'ecommerce':[.5,.5],'automotive':[.65,.35],'other':[.5,.5]};
+  var CH = {'b2b-saas':['linkedin','meta'],'ecommerce':['meta','tiktok'],'automotive':['meta','google-display'],'other':['meta','linkedin']};
+  var Q1 = [['b2b-saas','B2B / SaaS','B2B / SaaS'],['automotive','Automobile','Automotive'],['ecommerce','E-commerce / Retail','E-commerce / Retail'],['other','Autre chose','Something else']];
+  var Q2 = [['leads','Plus de leads B2B','More B2B leads'],['sales','Plus de ventes en ligne','More online sales'],['ai-training','Former l’équipe à l’IA','Train the team on AI']];
+  var Q3 = [[1500,'< 2 k€','< €2K'],[3500,'2 à 5 k€','€2-5K'],[7500,'5 à 10 k€','€5-10K'],[15000,'> 10 k€','> €10K']];
+  function propose(){
+    var all = ['seo','google-ads','paid-social','emailing','ai-content','ai-solutions','ai-training','tracking-reporting'];
+    var sc = {};
+    all.forEach(function(d){ sc[d] = (IND[st.ind][d] != null ? IND[st.ind][d] : .5) + ((BOOST[st.goal] || {})[d] || 0); });
+    sc['tracking-reporting'] = Math.max(sc['tracking-reporting'], .8);
+    var sel = all.filter(function(d){ return sc[d] > .6; }).sort(function(x, y){ return sc[y] - sc[x]; });
+    var B = st.budget;
+    if (B <= 1500) sel = sel.slice(0, 3); else if (B <= 3000) sel = sel.slice(0, 4); else if (B <= 5000) sel = sel.slice(0, 5);
+    if (sel.length < 2) sel = all.slice().sort(function(x, y){ return sc[y] - sc[x]; }).slice(0, 2);
+    var li = B <= 2500 ? 0 : (B <= 6000 ? 1 : 2), a = {};
+    sel.forEach(function(d){ questions(d).forEach(function(q){ if (q.kind === 'level') a[q.id] = Math.min(li, D.services[q.service].length - 1); }); });
+    var hasG = sel.indexOf('google-ads') >= 0, hasS = sel.indexOf('paid-social') >= 0;
+    if (hasG || hasS) {
+      var pool = Math.max(500, Math.min(Math.round(B * .45 / 500) * 500, 15000)), sp = SPLIT[st.ind];
+      if (hasG && hasS) { a['ga-budget'] = Math.max(500, Math.round(pool * sp[0] / 500) * 500); a['ps-budget'] = Math.max(500, Math.round(pool * sp[1] / 500) * 500); }
+      else if (hasG) a['ga-budget'] = pool; else a['ps-budget'] = pool;
+    }
+    if (hasS) a['ps-channels'] = CH[st.ind].slice();
+    if (sel.indexOf('tracking-reporting') >= 0) a['trk-items'] = ['ga4-setup','conversion-tracking','cookie-consent'];
+    st.domains = inOrder(sel); st.a = a; st.discuss = {};
+  }
+  function choice(list, cur, act){ return list.map(function(o){ return optRow({checked: cur === o[0], name: tr(o[1], o[2]), attrs:'data-act="' + act + '" data-v="' + o[0] + '"'}); }).join(''); }
+  var PH = ['industry','goal','budget','proposal','recap'];
+  return {
+    state:function(){ return st; },
+    reset:function(){ st = {phase:0, ind:null, goal:null, budget:null, domains:[], a:{}, discuss:{}, duration:4, sheet:null}; },
+    html:function(P){
+      var q = devis(st), ph = PH[st.phase], pct = st.phase / (PH.length - 1) * 100;
+      var h = '<div class="p-head"><div class="b-head"><button type="button" class="b-back" data-act="back" aria-label="' + tr('Retour','Back') + '"' + (st.phase ? '' : ' disabled') + '>' + ICON.back + '</button>' +
+        '<div class="b-bar" aria-hidden="true"><i style="width:' + pct.toFixed(1) + '%"></i></div><span class="b-count">' + (st.phase + 1) + '/' + PH.length + '</span></div></div><div class="p-body">';
+      var acts = '', foot = '';
+      if (ph === 'industry') { h += '<p class="b-ctx">' + tr('Trois questions, puis une proposition chiffrée','Three questions, then a costed plan') + '</p><h3 class="b-q">' + tr('Votre secteur ?','Your industry?') + '</h3>' + choice(Q1, st.ind, 'ind'); }
+      else if (ph === 'goal') { h += '<p class="b-ctx">' + tr('Question 2 sur 3','Question 2 of 3') + '</p><h3 class="b-q">' + tr('Votre priorité ?','Your main goal?') + '</h3>' + choice(Q2, st.goal, 'goal'); }
+      else if (ph === 'budget') { h += '<p class="b-ctx">' + tr('Question 3 sur 3','Question 3 of 3') + '</p><h3 class="b-q">' + tr('Votre budget mensuel ?','Your monthly budget?') + '</h3><p class="b-help">' + tr('Services et budget média, à la louche. On ajuste après.','Services and media budget, roughly. We fine-tune after.') + '</p>' + choice(Q3, st.budget, 'bud'); }
+      else if (ph === 'proposal') {
+        var lbl = Q3.filter(function(o){ return o[0] === st.budget; })[0], all = q.mon + q.media, over = all > st.budget * 1.1;
+        h += '<h3 class="v-t">' + tr('Notre proposition','Our proposal') + '</h3><p class="v-s">' + tr('Pour un budget de ' + lbl[1] + ' par mois. Ajustez chaque ligne.','For a budget of ' + lbl[2] + ' a month. Adjust any line.') + '</p>';
+        h += '<p class="c-fit' + (over ? ' over' : '') + '">' + tr('Cette proposition : ' + money(all) + ' par mois, budget média compris' + (q.one ? ', plus ' + money(q.one) + ' de frais uniques' : '') + '.', 'This plan: ' + money(all) + ' a month including media' + (q.one ? ', plus ' + money(q.one) + ' one-off' : '') + '.') + '</p>';
+        q.lines.forEach(function(L){
+          var price = L.discuss || L.empty ? tr('À préciser','To define') : (L.m ? money(L.m) + PM() : '') + (L.m && L.o ? ' + ' : '') + (L.o ? money(L.o) : '');
+          h += '<div class="c-line"><div class="c-line-h"><strong>' + esc(dName(L.d)) + '</strong><span>' + price + '</span></div>';
+          if (L.items.length) h += '<ul class="c-items">' + L.items.map(function(i){ return '<li><span>' + esc(i.l) + '</span><span>' + money(i.p) + (i.per === 'o' ? ' ' + tr('une fois','one-off') : PM()) + '</span></li>'; }).join('') + '</ul>';
+          h += '<div class="c-acts"><button type="button" class="btn btn-ghost" data-act="adjust" data-d="' + L.d + '">' + tr('Ajuster','Adjust') + '</button><button type="button" class="btn btn-ghost" data-act="remove" data-d="' + L.d + '">' + tr('Retirer','Remove') + '</button></div></div>';
+        });
+        h += '<button type="button" class="c-add" data-act="add">' + ICON.plus + tr('Ajouter un service','Add a service') + '</button>';
+        acts = '<button type="button" class="btn btn-primary" data-act="go-recap">' + tr('Voir mon devis','See my quote') + ICON.next + '</button>';
+      } else {
+        h += recapHTML(st, q, P.uid);
+        acts = '<button type="button" class="btn btn-primary" data-act="send">' + tr('Recevoir mon devis','Get my quote') + '</button>';
+      }
+      h += '</div>';
+      foot = st.phase < 3 ? '<div class="p-total"><span class="lbl">' + tr('Votre estimation','Your estimate') + '</span><span class="nil">' + tr('Après trois questions','After three questions') + '</span></div>' : totalHTML(st, q);
+      h += '<div class="p-foot">' + (acts ? '<div class="p-actions">' + acts + '</div>' : '') + '<div data-total>' + foot + '</div></div>';
+      if (st.sheet) {
+        h += '<div class="scrim" data-act="close"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(st.sheet === '+' ? tr('Ajouter un service','Add a service') : dName(st.sheet)) + '">';
+        if (st.sheet === '+') {
+          h += '<div class="sheet-h"><strong>' + tr('Ajouter un service','Add a service') + '</strong><button type="button" class="sheet-x" data-act="close" aria-label="' + tr('Fermer','Close') + '">' + ICON.close + '</button></div><div class="sheet-b">' + chipsHTML(st.domains, st.domains) + '</div>';
+        } else {
+          h += '<div class="sheet-h"><strong>' + esc(dName(st.sheet)) + '</strong><button type="button" class="sheet-x" data-act="close" aria-label="' + tr('Fermer','Close') + '">' + ICON.close + '</button></div><div class="sheet-b">';
+          questions(st.sheet).forEach(function(qq){ h += qHTML(qq, st, {uid:P.uid}); });
+          h += '</div><div class="sheet-f"><button type="button" class="btn btn-primary" data-act="close">' + tr('OK','Done') + '</button></div>';
+        }
+        h += '</div>';
+      }
+      return h;
+    },
+    onBudget:function(P){ /* le panneau reste ouvert, la proposition se recalcule en fond */ },
+    act:function(t, ds, P){
+      var keep = true, sheetScroll = P.root.querySelector('.sheet-b'), sTop = sheetScroll ? sheetScroll.scrollTop : 0;
+      if (t === 'ind') { st.ind = ds.v; P.render(true); setTimeout(function(){ st.phase = 1; P.render(false); }, REDUCE ? 0 : 260); return; }
+      if (t === 'goal') { st.goal = ds.v; P.render(true); setTimeout(function(){ st.phase = 2; P.render(false); }, REDUCE ? 0 : 260); return; }
+      if (t === 'bud') { st.budget = +ds.v; P.render(true); setTimeout(function(){ propose(); st.phase = 3; P.render(false); }, REDUCE ? 0 : 260); return; }
+      if (t === 'back') { st.phase = Math.max(0, st.phase - 1); st.sheet = null; keep = false; }
+      else if (t === 'adjust') st.sheet = ds.d;
+      else if (t === 'edit') { st.phase = 3; st.sheet = ds.d; }
+      else if (t === 'remove') { st.domains = st.domains.filter(function(d){ return d !== ds.d; }); }
+      else if (t === 'add') st.sheet = '+';
+      else if (t === 'pick') { if (st.domains.indexOf(ds.d) < 0) { st.domains = inOrder(st.domains.concat([ds.d])); } st.sheet = ds.d; }
+      else if (t === 'close') st.sheet = null;
+      else if (t === 'set') setAnswer(st, ds);
+      else if (t === 'toggle') toggleAnswer(st, ds);
+      else if (t === 'dur') st.duration = +ds.v;
+      else if (t === 'go-recap') { st.phase = 4; keep = false; }
+      P.render(keep);
+      var ns = P.root.querySelector('.sheet-b'); if (ns && (t === 'set' || t === 'toggle')) ns.scrollTop = sTop;
+    }
+  };
+})();
+
+var protos = [Proto('proto-a', A), Proto('proto-b', B), Proto('proto-c', C)];
+var impls = [A, B, C];
+
+document.getElementById('reset').addEventListener('click', function(){ impls.forEach(function(im, i){ im.reset(); protos[i].render(false); }); });
+document.querySelectorAll('[data-lang]').forEach(function(b){
+  b.addEventListener('click', function(){
+    LANG = b.getAttribute('data-lang');
+    document.querySelectorAll('[data-lang]').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    protos.forEach(function(p){ p.render(true); });
+  });
+});
+document.querySelectorAll('[data-arch]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var k = b.getAttribute('data-arch');
+    document.querySelectorAll('[data-arch]').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    document.querySelectorAll('.protos > .col').forEach(function(c){ c.classList.toggle('on', c.getAttribute('data-col') === k); });
+  });
+});
+
+var strip = document.getElementById('strip');
+for (var i = 1; i <= 11; i++) {
+  var im = document.createElement('img');
+  im.src = 'ecran-' + (i < 10 ? '0' : '') + i + '.jpg';
+  im.alt = 'Écran ' + i + ' sur 11 de la page actuelle';
+  im.loading = 'lazy';
+  strip.appendChild(im);
+}
+})();
+</script>
