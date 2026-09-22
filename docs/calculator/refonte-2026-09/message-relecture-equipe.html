@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Message relecture calculateur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --navy:#0f1a2e; --blue:#2563eb; --ink:#1f2733; --muted:#6b7686; --line:#e6e9ef; --green:#1d7a4d; --bg:#f4f6fa; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.55;}
+  .wrap{max-width:720px;margin:0 auto;padding:34px 22px 60px;}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;}
+  h1{font-size:20px;font-weight:800;letter-spacing:-.3px;margin:0 0 4px;color:var(--navy);}
+  p.sub{margin:0 0 18px;color:var(--muted);font-size:13.5px;}
+  .bar{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+  .btn{background:var(--navy);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-family:inherit;font-weight:600;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:background .15s,transform .05s;}
+  .btn:hover{background:#16233c;} .btn:active{transform:translateY(1px);} .btn.ok{background:var(--green);}
+  .hint{font-size:12.5px;color:var(--muted);}
+  textarea{width:100%;min-height:520px;border:1px solid var(--line);border-radius:12px;padding:16px 18px;font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.6;color:#222;background:#fff;resize:vertical;box-shadow:0 4px 18px -12px rgba(15,26,46,.3);}
+  textarea:focus{outline:none;border-color:var(--blue);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Calculateur de devis</div>
+  <h1>Message à Juliette, Alexandre et Jordan : relecture de la nouvelle version</h1>
+  <p class="sub">Clique « Copier le message », puis colle-le dans Google Chat.</p>
+  <div class="bar">
+    <button class="btn" id="copyBtn" onclick="copyMsg()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      <span id="lbl">Copier le message</span>
+    </button>
+    <span class="hint">Texte brut, sans espaces parasites.</span>
+  </div>
+  <textarea id="msg" spellcheck="false">Hello Juliette, Alexandre et Jordan,
+
+J’ai refait le calculateur de devis du site. Avant qu’il remplace l’actuel, j’aimerais votre regard, comptez un quart d’heure.
+
+Nouvelle version : https://mydigipal.com/fr/calculator-v6
+Version actuelle, pour comparer : https://mydigipal.com/fr/calculator
+
+C’est une page de test : rien n’est envoyé, vous pouvez cliquer partout. Les vidéos ne sont pas encore tournées, leurs emplacements sont vides pour l’instant.
+
+Faites un devis complet sur votre téléphone, puis un autre sur ordinateur, comme le ferait un prospect. Ensuite, dites-moi :
+
+1. À quel moment avez-vous hésité, ou auriez-vous abandonné ?
+2. Quelle question un client ne comprendrait pas ? Comment la diriez-vous ?
+3. Un prix vous a-t-il surpris par rapport à ce qu’on vend vraiment ?
+4. Testez « Je ne sais pas encore, aidez-moi à choisir » en pensant à un client que vous connaissez : la proposition tient-elle la route ?
+5. Manque-t-il un service ou une option qu’un prospect nous demande souvent ?
+6. Entre l’ancienne et la nouvelle version, laquelle enverriez-vous à un prospect, et pourquoi ?
+
+Répondez directement ici, avec une capture d’écran quand c’est visuel. Merci !</textarea>
+</div>
+<script>
+function copyMsg(){
+  var ta=document.getElementById('msg'), btn=document.getElementById('copyBtn'), lbl=document.getElementById('lbl');
+  function done(){ btn.classList.add('ok'); lbl.textContent='Copié'; setTimeout(function(){btn.classList.remove('ok'); lbl.textContent='Copier le message';},2000); }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(ta.value).then(done).catch(function(){ ta.select(); document.execCommand('copy'); done(); });
+  } else { ta.select(); document.execCommand('copy'); done(); }
+}
+</script>
+</body>
+</html>
