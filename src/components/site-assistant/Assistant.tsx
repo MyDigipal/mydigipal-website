@@ -55,6 +55,12 @@ interface Sauve {
   page?: string;
   /** La question du calculateur posée pour le service de la page (étape « service »). */
   sq?: string;
+  /** Quand le premier message est parti chez Paul, pour la relance de cinq minutes. */
+  ecritA?: number;
+  /** La relance « Paul n'est pas là » a déjà été dite. */
+  relance?: boolean;
+  /** Une adresse a déjà été donnée : on ne la redemande pas. */
+  adresse?: boolean;
 }
 
 const CLE = 'mdp_assistant_v1';
@@ -334,6 +340,20 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     return () => { arret = true; window.clearTimeout(minuteur); };
   }, [s.fil, s.prevenu, c.paulRejoint, maj]);
 
+  // Cinq minutes sans réponse de Paul : on le dit, et on prend l'adresse pour lui répondre
+  // par courriel (sa demande du 23/09/2026). Le compte part de l'envoi du premier message et
+  // survit au changement de page, puisqu'il est gardé avec la conversation.
+  useEffect(() => {
+    if (!s.ecritA || s.relance || s.adresse || s.paulVus > 0) return;
+    const reste = Math.max(0, s.ecritA + 5 * 60_000 - Date.now());
+    const t = window.setTimeout(() => {
+      if (sRef.current.paulVus > 0 || sRef.current.relance || sRef.current.adresse) return;
+      maj((x) => ({ ...x, relance: true, etape: 'libre', items: [...x.items, { k: 'bot', texte: `${c.absent}\n\n${c.absentPlus}` }] }));
+      pousser('site_assistant_absent');
+    }, reste);
+    return () => window.clearTimeout(t);
+  }, [s.ecritA, s.relance, s.adresse, s.paulVus, c.absent, c.absentPlus, maj]);
+
   // Le fil défile jusqu'au dernier message.
   useEffect(() => {
     if (ouvert) fondRef.current?.scrollIntoView({ block: 'end' });
@@ -531,12 +551,14 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
       ...x,
       prevenu: true,
       messages: x.messages + 1,
+      ecritA: x.ecritA ?? Date.now(),
+      adresse: x.adresse || !!email,
       // Une question en cours reste posée : écrire à Paul n'annule pas le parcours.
       etape: x.etape === 'menu' || x.etape === 'accueil' ? 'libre' : x.etape,
       items: [
         ...x.items,
-        ...(premier ? [{ k: 'bot', texte: c.apresMessage } as Item] : []),
-        ...(email ? [{ k: 'bot', texte: c.emailMerci } as Item] : []),
+        ...(premier && !email ? [{ k: 'bot', texte: c.apresMessage } as Item] : []),
+        ...(email ? [{ k: 'bot', texte: `${c.emailRecu}\n\n${c.emailSpam}` } as Item] : []),
       ],
     }));
   };

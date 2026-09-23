@@ -105,6 +105,12 @@ const FR = {
   envoyer: 'Envoyer',
   apresMessage: 'C’est parti chez Paul. Il vous répond ici même. Si vous devez partir, écrivez votre e-mail : sa réponse vous suivra.',
   emailMerci: 'Merci. Si vous n’êtes plus là quand Paul répond, sa réponse partira à cette adresse.',
+  // Le relais par courriel (Paul, 23/09/2026) : « si je ne réponds pas dans 5 minutes, ça dit à
+  // la personne qu'on n'est pas dispo », et on prend son adresse pour lui répondre par mail.
+  absent: 'Paul n’est pas devant son écran là, tout de suite. Laissez-moi votre adresse e-mail : il vous répond de sa boîte, souvent dans la journée.',
+  absentPlus: 'Ajoutez ce qui peut aider, aussi : votre site, votre budget, votre échéance.',
+  emailRecu: 'Merci. Un courriel de confirmation part vers vous à l’instant : répondez-y, il arrive directement chez Paul.',
+  emailSpam: 'S’il n’apparaît pas d’ici deux minutes, regardez dans vos spams.',
   erreur: 'Le message n’est pas parti. Réessayez dans un instant.',
   paulRejoint: 'Paul a rejoint la conversation',
   devisTitre: 'Une question sur ce devis ?',
@@ -192,6 +198,10 @@ const EN: Copy = {
   envoyer: 'Send',
   apresMessage: 'Sent to Paul. He replies right here. If you need to leave, type your email and his answer will follow you.',
   emailMerci: 'Thank you. If you are gone when Paul replies, his answer will go to this address.',
+  absent: 'Paul is away from his screen right now. Leave me your email address: he will reply from his mailbox, usually the same day.',
+  absentPlus: 'Add anything that helps, too: your website, your budget, your deadline.',
+  emailRecu: 'Thank you. A confirmation email is on its way: just reply to it, it lands straight with Paul.',
+  emailSpam: 'If it has not arrived within two minutes, have a look in your spam folder.',
   erreur: 'The message did not go through. Please try again in a moment.',
   paulRejoint: 'Paul joined the conversation',
   devisTitre: 'A question about this quote?',
