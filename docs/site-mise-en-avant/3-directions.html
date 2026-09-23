@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mettre l'Academy et le calculateur en avant - trois directions</title>
+<style>
+  :root {
+    --encre: #0f1b29;
+    --texte: #394859;
+    --doux: #5f7084;
+    --trait: #dfe5ee;
+    --fond: #f4f6fa;
+    --carte: #ffffff;
+    --accent: #4f46e5;
+    --accent-doux: #eef2ff;
+    --vert: #0f7b5f;
+    --ambre: #8a6a12;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--fond);
+    color: var(--texte);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1320px; margin: 0 auto; padding: 40px 20px 80px; }
+  h1 { font-size: 30px; line-height: 1.2; color: var(--encre); margin: 0 0 8px; letter-spacing: -0.02em; }
+  h2 { font-size: 20px; color: var(--encre); margin: 44px 0 14px; letter-spacing: -0.01em; }
+  .chapeau { font-size: 17px; max-width: 70ch; margin: 0 0 4px; }
+  .date { color: var(--doux); font-size: 14px; }
+
+  .constat { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 22px 0 0; }
+  .chiffre { background: var(--carte); border: 1px solid var(--trait); border-radius: 12px; padding: 16px 18px; }
+  .chiffre b { display: block; font-size: 26px; color: var(--encre); letter-spacing: -0.02em; }
+  .chiffre span { display: block; font-size: 13.5px; color: var(--doux); margin-top: 2px; }
+
+  .barre { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 26px 0 8px; }
+  .bouton {
+    border: 1px solid var(--trait); background: var(--carte); color: var(--texte);
+    border-radius: 999px; padding: 8px 16px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .bouton[aria-pressed="true"] { background: var(--encre); color: #fff; border-color: var(--encre); }
+
+  .directions { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 22px; margin-top: 18px; align-items: start; }
+  .direction { background: var(--carte); border: 1px solid var(--trait); border-radius: 16px; padding: 18px; }
+  .direction h3 { margin: 0 0 2px; font-size: 18px; color: var(--encre); }
+  /* la même hauteur de chapeau partout, sinon les trois cadres démarrent en escalier */
+  .direction .sous { color: var(--doux); font-size: 14px; margin: 0 0 14px; min-height: 44px; }
+
+  /* le cadre téléphone */
+  .tel {
+    width: 100%; max-width: 390px; height: 560px; margin: 0 auto;
+    border: 9px solid #101826; border-radius: 26px; overflow-y: auto; overflow-x: hidden;
+    background: #fff; box-shadow: 0 12px 28px rgba(15, 27, 41, 0.14);
+  }
+  .tel.large { max-width: 100%; height: 480px; }
+  .tel::-webkit-scrollbar { width: 6px; }
+  .tel::-webkit-scrollbar-thumb { background: #c7cfdb; border-radius: 3px; }
+
+  /* les sections de la page d'accueil, en schéma */
+  .sec { border-bottom: 1px solid #eef1f6; padding: 14px 16px; font-size: 12.5px; color: #93a1b3; }
+  .sec b { display: block; font-size: 13px; color: #64748b; font-weight: 600; }
+  .sec.creuse { min-height: 54px; display: flex; flex-direction: column; justify-content: center; }
+  .sec.haute { min-height: 92px; }
+  .rang { font-variant-numeric: tabular-nums; color: #b4bfcd; margin-right: 6px; }
+
+  /* le hero, rendu pour de vrai */
+  .hero { padding: 22px 16px 20px; background: linear-gradient(180deg, #ffffff 0%, #f7f8fc 100%); }
+  .pastille { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); background: var(--accent-doux); border-radius: 999px; padding: 5px 10px; }
+  .hero h4 { font-size: 25px; line-height: 1.15; color: var(--encre); margin: 12px 0 8px; letter-spacing: -0.02em; }
+  .hero p { font-size: 14px; color: var(--doux); margin: 0 0 14px; }
+  .cta { display: inline-block; border-radius: 10px; padding: 11px 16px; font-size: 14px; font-weight: 700; text-decoration: none; }
+  .cta.sombre { background: var(--encre); color: #fff; }
+  .cta.clair { background: #eef1f6; color: var(--encre); }
+
+  /* les blocs proposés */
+  .porte { border: 1px solid var(--trait); border-radius: 14px; padding: 14px 15px; background: #fff; }
+  .porte + .porte { margin-top: 10px; }
+  .porte .quoi { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--doux); }
+  .porte h5 { margin: 4px 0 4px; font-size: 16.5px; color: var(--encre); line-height: 1.25; letter-spacing: -0.01em; }
+  .porte p { margin: 0 0 10px; font-size: 13.5px; color: var(--texte); }
+  .porte .prix { font-size: 13px; color: var(--encre); font-weight: 700; }
+  .neuf { background: #f7f9ff; }
+  .marque { border-left: 0; box-shadow: inset 0 0 0 1.5px var(--accent); }
+  .bandeau-aca { background: #101826; color: #dfe6f2; border-radius: 0; padding: 20px 16px; }
+  .bandeau-aca h5 { color: #fff; margin: 6px 0 6px; font-size: 19px; line-height: 1.2; }
+  .bandeau-aca p { color: #b8c4d6; font-size: 13.5px; margin: 0 0 12px; }
+  .bandeau-aca .cta.sombre { background: #c8a951; color: #101826; }
+  .duo { display: grid; grid-template-columns: 1fr; gap: 10px; }
+
+  .changements { margin: 14px 0 0; padding: 0; list-style: none; font-size: 14px; }
+  .changements li { padding: 7px 0 7px 22px; position: relative; border-top: 1px solid var(--trait); }
+  .changements li:first-child { border-top: 0; }
+  .changements li::before { content: ''; position: absolute; left: 4px; top: 15px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .changements li.moins::before { background: #c2cad6; }
+  .meta { display: flex; gap: 16px; font-size: 13px; color: var(--doux); margin-top: 12px; border-top: 1px solid var(--trait); padding-top: 12px; }
+  .meta b { color: var(--encre); font-weight: 700; }
+
+  .note { background: #fffaf0; border: 1px solid #f0e2c4; border-radius: 12px; padding: 16px 18px; margin-top: 30px; font-size: 15px; }
+  .note b { color: var(--encre); }
+  table.ailleurs { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14.5px; background: var(--carte); border: 1px solid var(--trait); border-radius: 12px; overflow: hidden; }
+  table.ailleurs th, table.ailleurs td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--trait); vertical-align: top; }
+  table.ailleurs th { background: #f8fafc; font-size: 13px; color: var(--doux); font-weight: 600; }
+  table.ailleurs tr:last-child td { border-bottom: 0; }
+  @media (max-width: 720px) {
+    .page { padding: 24px 14px 60px; }
+    h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Mettre l'Academy et le calculateur en avant</h1>
+  <p class="chapeau">Trois directions pour la page d'accueil, à comparer à la largeur d'un téléphone. Les chiffres sont ceux des trente derniers jours, relevés le 23 septembre 2026.</p>
+  <p class="date">Le choix porte sur la page d'accueil. Ce qu'on fait ailleurs (articles, pages services) est en bas de ce document et ne dépend pas de la direction retenue.</p>
+
+  <h2>Ce que disent les chiffres</h2>
+  <div class="constat">
+    <div class="chiffre"><b>1 911</b><span>vues des pages Academy, soit près des deux tiers du site</span></div>
+    <div class="chiffre"><b>358</b><span>vues de la page d'accueil, les deux langues réunies</span></div>
+    <div class="chiffre"><b>74</b><span>vues du calculateur</span></div>
+    <div class="chiffre"><b>0</b><span>fois où l'Academy apparaît dans le CORPS de la page d'accueil</span></div>
+  </div>
+  <p style="margin-top:14px;max-width:80ch;">L'Academy n'existe aujourd'hui sur la page d'accueil que dans le menu déroulant « IA » et dans le pied de page. Le calculateur, lui, est déjà en bouton principal du hero, puis une deuxième fois en <b>position 10 sur 14</b>, dans un bandeau violet à dégradé. Le trafic, lui, arrive massivement par la publicité, directement sur l'Academy : la page d'accueil n'est pas le point d'entrée du site, c'est le point de passage de ceux qui nous cherchent.</p>
+
+  <div class="barre">
+    <span style="font-size:14px;color:var(--doux);margin-right:4px;">Langue des maquettes :</span>
+    <button class="bouton" data-langue="en" aria-pressed="true">English</button>
+    <button class="bouton" data-langue="fr" aria-pressed="false">Français</button>
+    <span style="flex:1"></span>
+    <button class="bouton" id="largeur" aria-pressed="false">Voir en largeur d'écran</button>
+  </div>
+
+  <div class="directions">
+
+    <!-- ================= A ================= -->
+    <section class="direction">
+      <h3>A. Deux portes sous le hero</h3>
+      <p class="sous">Une bande neuve en position 2, avant tout le reste.</p>
+      <div class="tel">
+        <div class="hero">
+          <span class="pastille" data-t="badge"></span>
+          <h4 data-t="titre"></h4>
+          <p data-t="soustitre"></p>
+          <a class="cta sombre" data-t="ctaCalc"></a>
+          <a class="cta clair" style="margin-left:6px" data-t="ctaContact"></a>
+        </div>
+        <div class="sec" style="padding:16px;background:#f9fbff;">
+          <div class="porte neuf marque">
+            <span class="quoi" data-t="quoiAca"></span>
+            <h5 data-t="titreAca"></h5>
+            <p data-t="texteAca"></p>
+            <span class="prix" data-t="prixAca"></span>
+            <div style="margin-top:10px"><a class="cta sombre" data-t="ctaAca"></a></div>
+          </div>
+          <div class="porte neuf marque">
+            <span class="quoi" data-t="quoiCalc"></span>
+            <h5 data-t="titreCalc"></h5>
+            <p data-t="texteCalc"></p>
+            <span class="prix" data-t="prixCalc"></span>
+            <div style="margin-top:10px"><a class="cta sombre" data-t="ctaCalc2"></a></div>
+          </div>
+        </div>
+        <div class="sec creuse"><b><span class="rang">3</span><span data-t="s_logos"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">4</span><span data-t="s_equipe"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">5</span><span data-t="s_chiffres"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">6</span><span data-t="s_aqui"></span></b></div>
+        <div class="sec haute"><b><span class="rang">7</span><span data-t="s_services"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">8</span><span data-t="s_30j"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">9</span><span data-t="s_secteurs"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">10</span><span data-t="s_contenu"></span></b></div>
+        <div class="sec creuse" style="background:#fdf2f2;color:#a04040;"><b style="color:#a04040"><span class="rang">-</span><span data-t="s_calcSupprime"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">11</span><span data-t="s_avis"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">12</span><span data-t="s_blog"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">13</span><span data-t="s_final"></span></b></div>
+      </div>
+      <ul class="changements">
+        <li>Les deux produits sont vus avant même les logos clients.</li>
+        <li>Le bandeau violet de la position 10 disparaît : il disait la même chose, plus bas et plus mal.</li>
+        <li class="moins">Retarde la preuve sociale, qui passe en position 3.</li>
+      </ul>
+      <div class="meta"><span>Travail : <b>une demi-journée</b></span><span>Risque : <b>faible</b></span></div>
+    </section>
+
+    <!-- ================= B ================= -->
+    <section class="direction">
+      <h3>B. L'Academy prend le bandeau vedette</h3>
+      <p class="sous">Le bandeau « contenu par l'IA » devient l'Academy ; le calculateur remonte en position 3.</p>
+      <div class="tel">
+        <div class="hero">
+          <span class="pastille" data-t="badge"></span>
+          <h4 data-t="titre"></h4>
+          <p data-t="soustitre"></p>
+          <a class="cta sombre" data-t="ctaCalc"></a>
+          <a class="cta clair" style="margin-left:6px" data-t="ctaContact"></a>
+        </div>
+        <div class="sec creuse"><b><span class="rang">2</span><span data-t="s_logos"></span></b></div>
+        <div class="sec" style="padding:16px;background:#f9fbff;">
+          <div class="porte neuf marque">
+            <span class="quoi" data-t="quoiCalc"></span>
+            <h5 data-t="titreCalc"></h5>
+            <p data-t="texteCalc"></p>
+            <span class="prix" data-t="prixCalc"></span>
+            <div style="margin-top:10px"><a class="cta sombre" data-t="ctaCalc2"></a></div>
+          </div>
+        </div>
+        <div class="sec creuse"><b><span class="rang">4</span><span data-t="s_equipe"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">5</span><span data-t="s_chiffres"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">6</span><span data-t="s_aqui"></span></b></div>
+        <div class="sec haute"><b><span class="rang">7</span><span data-t="s_services"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">8</span><span data-t="s_30j"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">9</span><span data-t="s_secteurs"></span></b></div>
+        <div class="bandeau-aca">
+          <span class="quoi" style="color:#c8a951" data-t="quoiAca"></span>
+          <h5 data-t="titreAca"></h5>
+          <p data-t="texteAcaLong"></p>
+          <span class="prix" style="color:#fff" data-t="prixAca"></span>
+          <div style="margin-top:12px"><a class="cta sombre" data-t="ctaAca"></a></div>
+        </div>
+        <div class="sec creuse" style="background:#fdf2f2;color:#a04040;"><b style="color:#a04040"><span class="rang">-</span><span data-t="s_calcSupprime"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">11</span><span data-t="s_avis"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">12</span><span data-t="s_blog"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">13</span><span data-t="s_final"></span></b></div>
+      </div>
+      <ul class="changements">
+        <li>L'Academy hérite du seul emplacement de la page qui a déjà une vraie présence visuelle.</li>
+        <li>Le calculateur est vu tôt, sans écraser la preuve sociale.</li>
+        <li class="moins">On perd le bandeau « création de contenu par l'IA », qui ne se vend pas seul aujourd'hui.</li>
+      </ul>
+      <div class="meta"><span>Travail : <b>une journée</b></span><span>Risque : <b>faible</b></span></div>
+    </section>
+
+    <!-- ================= C ================= -->
+    <section class="direction">
+      <h3>C. Le hero porte les deux produits</h3>
+      <p class="sous">Les deux cartes entrent DANS le hero, à la place de l'illustration.</p>
+      <div class="tel">
+        <div class="hero" style="padding-bottom:16px">
+          <span class="pastille" data-t="badge"></span>
+          <h4 data-t="titre"></h4>
+          <p data-t="soustitreCourt"></p>
+          <div class="duo">
+            <div class="porte marque">
+              <span class="quoi" data-t="quoiAca"></span>
+              <h5 data-t="titreAcaCourt"></h5>
+              <p data-t="texteAcaCourt"></p>
+              <span class="prix" data-t="prixAca"></span>
+              <div style="margin-top:10px"><a class="cta sombre" data-t="ctaAca"></a></div>
+            </div>
+            <div class="porte marque">
+              <span class="quoi" data-t="quoiCalc"></span>
+              <h5 data-t="titreCalcCourt"></h5>
+              <p data-t="texteCalcCourt"></p>
+              <span class="prix" data-t="prixCalc"></span>
+              <div style="margin-top:10px"><a class="cta sombre" data-t="ctaCalc2"></a></div>
+            </div>
+          </div>
+          <p style="margin:14px 0 0;font-size:13px;"><a href="#" style="color:var(--accent);font-weight:600;text-decoration:none" data-t="lienTout"></a></p>
+        </div>
+        <div class="sec creuse"><b><span class="rang">2</span><span data-t="s_logos"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">3</span><span data-t="s_equipe"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">4</span><span data-t="s_chiffres"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">5</span><span data-t="s_aqui"></span></b></div>
+        <div class="sec haute"><b><span class="rang">6</span><span data-t="s_services"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">7</span><span data-t="s_30j"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">8</span><span data-t="s_secteurs"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">9</span><span data-t="s_contenu"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">10</span><span data-t="s_calc"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">11</span><span data-t="s_avis"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">12</span><span data-t="s_blog"></span></b></div>
+        <div class="sec creuse"><b><span class="rang">13</span><span data-t="s_final"></span></b></div>
+      </div>
+      <ul class="changements">
+        <li>Sur téléphone, les deux produits sont visibles sans défiler d'un pixel.</li>
+        <li>Le reste de la page ne bouge pas : aucune section déplacée, aucune supprimée.</li>
+        <li class="moins">Le hero devient long ; c'est le seul endroit de la page où l'on a le droit de l'être.</li>
+      </ul>
+      <div class="meta"><span>Travail : <b>une journée</b></span><span>Risque : <b>moyen</b></span></div>
+    </section>
+
+  </div>
+
+  <div class="note">
+    <b>Ma recommandation : B.</b> C'est la seule direction où l'Academy obtient une vraie place, et pas une carte de plus. Le bandeau de la position 10 est aujourd'hui la seule section de la page d'accueil qui ressemble à une publicité : il est fait pour ça, et il vend « la création de contenu par l'IA », qui n'est pas ce qu'on vend. A est plus rapide mais empile deux encadrés au même endroit, ce que tu n'aimes pas sur téléphone. C est la plus visible, et la plus risquée : le hero est la seule chose que voient la moitié des visiteurs, le charger de deux offres peut brouiller le message d'agence.
+  </div>
+
+  <h2>Ce qu'on fait en plus, quelle que soit la direction</h2>
+  <table class="ailleurs">
+    <tr><th style="width:26%">Où</th><th style="width:30%">Quoi</th><th>Pourquoi</th></tr>
+    <tr>
+      <td>Fin des articles du blog</td>
+      <td>Un encart choisi selon le sujet : Academy sur un article IA, calculateur sur un article publicité ou SEO</td>
+      <td>473 vues d'articles par mois, et un article lu jusqu'au bout est le meilleur moment pour proposer la suite</td>
+    </tr>
+    <tr>
+      <td>Pages services</td>
+      <td>Le bouton « Calculer mon budget » coche déjà le service ; l'ajouter sur les trois pages IA</td>
+      <td>Le visiteur d'une page service a une intention précise, le devis part rempli</td>
+    </tr>
+    <tr>
+      <td>Menu « IA »</td>
+      <td>L'Academy passe en tête du menu, avec une ligne de description</td>
+      <td>Elle y est déjà, mais au milieu d'une liste, sans rien qui dise ce que c'est</td>
+    </tr>
+    <tr>
+      <td>Pied de page</td>
+      <td>Une colonne « En libre-service » : l'Academy et le calculateur</td>
+      <td>Aujourd'hui ils sont rangés dans deux colonnes différentes, comme deux pages parmi trente</td>
+    </tr>
+  </table>
+
+</div>
+
+<script>
+  const T = {
+    fr: {
+      badge: 'Agence marketing digital',
+      titre: "Marketing multi-canal, co-piloté par l'IA",
+      soustitre: "Une équipe qui prolonge la vôtre, du SEO à la publicité, avec l'IA dans les mains.",
+      soustitreCourt: "Une équipe qui prolonge la vôtre, du SEO à la publicité.",
+      ctaCalc: 'Calculer mon budget',
+      ctaContact: 'Nous contacter',
+      quoiAca: 'Se former',
+      quoiCalc: 'Chiffrer',
+      titreAca: "Formez votre équipe à l'IA, sans nous",
+      titreAcaCourt: "Formez votre équipe à l'IA",
+      texteAca: "21 modules, 20 heures, à votre rythme. Le parcours qu'on donne en salle chez Kering ou La Poste, en ligne.",
+      texteAcaCourt: "21 modules, 20 heures, à votre rythme.",
+      texteAcaLong: "21 modules, 20 heures, à votre rythme, avec l'outil de votre choix. Le parcours qu'on donne en salle chez Kering, La Poste ou Pierre Fabre, en ligne et à votre main.",
+      prixAca: 'À partir de 290 € par personne',
+      ctaAca: 'Voir le programme',
+      titreCalc: 'Votre budget marketing, en 2 minutes',
+      titreCalcCourt: 'Votre budget, en 2 minutes',
+      texteCalc: "Huit services, vos réponses, un devis chiffré qui arrive par mail.",
+      texteCalcCourt: "Vos réponses, un devis chiffré par mail.",
+      prixCalc: 'Gratuit, sans rendez-vous',
+      ctaCalc2: 'Composer mon plan',
+      lienTout: 'Voir tout ce qu’on fait',
+      s_logos: 'Ils nous font confiance (logos)',
+      s_equipe: "Une équipe d'experts passionnés",
+      s_chiffres: 'Les chiffres qui comptent',
+      s_aqui: 'À qui on parle ?',
+      s_services: 'Marketing digital complet (8 services)',
+      s_30j: 'En 30 jours avec MyDigipal',
+      s_secteurs: "Spécialistes du B2B et de l'automobile",
+      s_contenu: "Bandeau : création de contenu par l'IA",
+      s_calc: 'Bandeau violet : obtenez votre budget',
+      s_calcSupprime: 'Bandeau violet du budget : supprimé',
+      s_avis: 'La confiance des leaders marketing',
+      s_blog: 'Derniers articles du blog',
+      s_final: 'Prêt à développer votre business ?'
+    },
+    en: {
+      badge: 'Digital marketing agency',
+      titre: 'Multi-channel marketing, AI co-piloted',
+      soustitre: 'A team that extends yours, from SEO to paid media, with AI in hand.',
+      soustitreCourt: 'A team that extends yours, from SEO to paid media.',
+      ctaCalc: 'Calculate my budget',
+      ctaContact: 'Contact us',
+      quoiAca: 'Learn',
+      quoiCalc: 'Price it',
+      titreAca: 'Train your team on AI, without us',
+      titreAcaCourt: 'Train your team on AI',
+      texteAca: '21 modules, 20 hours, at your own pace. The programme we run in the room at Kering or La Poste, online.',
+      texteAcaCourt: '21 modules, 20 hours, at your own pace.',
+      texteAcaLong: '21 modules, 20 hours, at your own pace, with the tool you choose. The programme we run in the room at Kering, La Poste or Pierre Fabre, online and in your hands.',
+      prixAca: 'From 290 EUR per person',
+      ctaAca: 'See the programme',
+      titreCalc: 'Your marketing budget, in 2 minutes',
+      titreCalcCourt: 'Your budget, in 2 minutes',
+      texteCalc: 'Eight services, your answers, a costed quote in your inbox.',
+      texteCalcCourt: 'Your answers, a costed quote by email.',
+      prixCalc: 'Free, no call needed',
+      ctaCalc2: 'Build my plan',
+      lienTout: 'See everything we do',
+      s_logos: 'Trusted by (logos)',
+      s_equipe: 'A team of passionate experts',
+      s_chiffres: 'The numbers that matter',
+      s_aqui: 'Who we talk to',
+      s_services: 'Full-stack digital marketing (8 services)',
+      s_30j: 'In 30 days with MyDigipal',
+      s_secteurs: 'Specialists in B2B and automotive',
+      s_contenu: 'Banner: AI-powered content creation',
+      s_calc: 'Purple banner: get your budget',
+      s_calcSupprime: 'Purple budget banner: removed',
+      s_avis: 'Trusted by marketing leaders',
+      s_blog: 'Latest from our blog',
+      s_final: 'Ready to grow your business?'
+    }
+  };
+
+  function appliquer(langue) {
+    const d = T[langue];
+    document.querySelectorAll('[data-t]').forEach((el) => {
+      const v = d[el.getAttribute('data-t')];
+      if (v !== undefined) el.textContent = v;
+    });
+    document.querySelectorAll('[data-langue]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-langue') === langue));
+    });
+    document.documentElement.setAttribute('data-langue-maquette', langue);
+  }
+
+  document.querySelectorAll('[data-langue]').forEach((b) => {
+    b.addEventListener('click', () => appliquer(b.getAttribute('data-langue')));
+  });
+
+  const bLargeur = document.getElementById('largeur');
+  bLargeur.addEventListener('click', () => {
+    const actif = bLargeur.getAttribute('aria-pressed') === 'true';
+    bLargeur.setAttribute('aria-pressed', String(!actif));
+    document.querySelectorAll('.tel').forEach((t) => t.classList.toggle('large', !actif));
+    bLargeur.textContent = actif ? "Voir en largeur d'écran" : 'Revenir à 390 px';
+  });
+
+  appliquer('en');
+</script>
+</body>
+</html>
