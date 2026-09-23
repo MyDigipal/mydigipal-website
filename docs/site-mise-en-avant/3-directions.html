@@ -14,8 +14,6 @@
     --carte: #ffffff;
     --accent: #4f46e5;
     --accent-doux: #eef2ff;
-    --vert: #0f7b5f;
-    --ambre: #8a6a12;
   }
   * { box-sizing: border-box; }
   body {
@@ -25,10 +23,10 @@
     font: 16px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  .page { max-width: 1320px; margin: 0 auto; padding: 40px 20px 80px; }
+  .page { max-width: 1340px; margin: 0 auto; padding: 40px 20px 90px; }
   h1 { font-size: 30px; line-height: 1.2; color: var(--encre); margin: 0 0 8px; letter-spacing: -0.02em; }
-  h2 { font-size: 20px; color: var(--encre); margin: 44px 0 14px; letter-spacing: -0.01em; }
-  .chapeau { font-size: 17px; max-width: 70ch; margin: 0 0 4px; }
+  h2 { font-size: 20px; color: var(--encre); margin: 46px 0 14px; letter-spacing: -0.01em; }
+  .chapeau { font-size: 17px; max-width: 74ch; margin: 0 0 4px; }
   .date { color: var(--doux); font-size: 14px; }
 
   .constat { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 22px 0 0; }
@@ -36,86 +34,143 @@
   .chiffre b { display: block; font-size: 26px; color: var(--encre); letter-spacing: -0.02em; }
   .chiffre span { display: block; font-size: 13.5px; color: var(--doux); margin-top: 2px; }
 
-  .barre { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 26px 0 8px; }
-  .bouton {
-    border: 1px solid var(--trait); background: var(--carte); color: var(--texte);
-    border-radius: 999px; padding: 8px 16px; font-size: 14px; font-weight: 600; cursor: pointer;
+  /* ---- la barre d'outils ---- */
+  .outils {
+    position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    margin: 28px 0 6px; padding: 12px 0; background: var(--fond);
   }
-  .bouton[aria-pressed="true"] { background: var(--encre); color: #fff; border-color: var(--encre); }
+  .groupe { display: inline-flex; background: var(--carte); border: 1px solid var(--trait); border-radius: 999px; padding: 3px; }
+  .bouton { border: 0; background: transparent; color: var(--texte); border-radius: 999px; padding: 7px 15px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .bouton[aria-pressed="true"] { background: var(--encre); color: #fff; }
+  .etiquette { font-size: 13.5px; color: var(--doux); margin-right: 2px; }
 
-  .directions { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 22px; margin-top: 18px; align-items: start; }
-  .direction { background: var(--carte); border: 1px solid var(--trait); border-radius: 16px; padding: 18px; }
-  .direction h3 { margin: 0 0 2px; font-size: 18px; color: var(--encre); }
-  /* la même hauteur de chapeau partout, sinon les trois cadres démarrent en escalier */
-  .direction .sous { color: var(--doux); font-size: 14px; margin: 0 0 14px; min-height: 44px; }
+  /* ---- la grille des directions ---- */
+  .directions { display: grid; gap: 26px; margin-top: 10px; }
+  body[data-vue="tel"] .directions { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); align-items: start; }
+  .direction { background: var(--carte); border: 1px solid var(--trait); border-radius: 16px; padding: 20px; }
+  .entete { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; margin-bottom: 14px; }
+  .direction h3 { margin: 0; font-size: 19px; color: var(--encre); }
+  .direction .sous { color: var(--doux); font-size: 14.5px; margin: 0; }
+  body[data-vue="tel"] .entete { display: block; }
+  body[data-vue="tel"] .direction .sous { min-height: 44px; margin-top: 2px; }
 
-  /* le cadre téléphone */
-  .tel {
-    width: 100%; max-width: 390px; height: 560px; margin: 0 auto;
-    border: 9px solid #101826; border-radius: 26px; overflow-y: auto; overflow-x: hidden;
-    background: #fff; box-shadow: 0 12px 28px rgba(15, 27, 41, 0.14);
+  .dessous { display: grid; gap: 18px; margin-top: 16px; }
+  body[data-vue="ordi"] .dessous { grid-template-columns: 1.3fr 1fr; align-items: start; }
+
+  .changements { margin: 0; padding: 0; list-style: none; font-size: 14.5px; }
+  .changements li { padding: 8px 0 8px 22px; position: relative; border-top: 1px solid var(--trait); }
+  .changements li:first-child { border-top: 0; padding-top: 0; }
+  .changements li::before { content: ''; position: absolute; left: 4px; top: 16px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .changements li:first-child::before { top: 8px; }
+  .changements li.moins::before { background: #c2cad6; }
+  .meta { display: flex; gap: 18px; font-size: 13.5px; color: var(--doux); margin-top: 14px; border-top: 1px solid var(--trait); padding-top: 12px; }
+  .meta b { color: var(--encre); font-weight: 700; }
+
+  /* ================== LE CADRE DE LA MAQUETTE ==================
+     `container-type: inline-size` : la maquette se met en page d'après la largeur du
+     CADRE, pas de la fenêtre. Passer de 1280 px à 390 px rejoue donc exactement ce que
+     fait le vrai site, sans rien simuler. */
+  .cadre {
+    container-type: inline-size;
+    width: 100%; max-width: 1280px;
+    border: 1px solid #d3dae5; border-radius: 12px; overflow: hidden; background: #fff;
+    box-shadow: 0 10px 26px rgba(15, 27, 41, 0.10);
   }
-  .tel.large { max-width: 100%; height: 480px; }
-  .tel::-webkit-scrollbar { width: 6px; }
-  .tel::-webkit-scrollbar-thumb { background: #c7cfdb; border-radius: 3px; }
+  body[data-vue="tel"] .cadre {
+    max-width: 390px; margin: 0 auto;
+    border: 9px solid #101826; border-radius: 26px;
+    max-height: 560px; overflow-y: auto;
+  }
+  .cadre::-webkit-scrollbar { width: 6px; }
+  .cadre::-webkit-scrollbar-thumb { background: #c7cfdb; border-radius: 3px; }
 
-  /* les sections de la page d'accueil, en schéma */
+  /* la barre de navigation du site */
+  .nav { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid #eef1f6; }
+  .nav .logo { font-weight: 800; color: var(--encre); letter-spacing: -0.02em; font-size: 15px; }
+  .nav .liens { display: none; gap: 14px; font-size: 13px; color: #64748b; }
+  .nav .bouton-nav { margin-left: auto; background: var(--encre); color: #fff; font-size: 12.5px; font-weight: 700; border-radius: 999px; padding: 7px 13px; white-space: nowrap; }
+  @container (min-width: 760px) { .nav .liens { display: flex; } .nav { padding: 14px 28px; } }
+
+  /* le hero */
+  .hero { padding: 22px 16px 20px; background: linear-gradient(180deg, #ffffff 0%, #f7f8fc 100%); }
+  .pastille { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); background: var(--accent-doux); border-radius: 999px; padding: 5px 10px; }
+  .hero h4 { font-size: 25px; line-height: 1.15; color: var(--encre); margin: 12px 0 8px; letter-spacing: -0.02em; }
+  .hero p.sst { font-size: 14px; color: var(--doux); margin: 0 0 14px; max-width: 46ch; }
+  .cta { display: inline-block; border-radius: 10px; padding: 11px 16px; font-size: 14px; font-weight: 700; text-decoration: none; }
+  .cta.sombre { background: var(--encre); color: #fff; }
+  .cta.clair { background: #eef1f6; color: var(--encre); margin-left: 8px; }
+  .visuel { display: none; border-radius: 14px; background: linear-gradient(140deg, #eef2ff, #e6f7fb); border: 1px solid #e2e8f5; min-height: 210px; }
+  @container (min-width: 760px) {
+    .hero { padding: 40px 28px 36px; }
+    .hero h4 { font-size: 40px; }
+    .hero p.sst { font-size: 16px; }
+    .hero-deux { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 28px; align-items: center; }
+    .visuel { display: block; }
+  }
+
+  /* les sections schématiques */
   .sec { border-bottom: 1px solid #eef1f6; padding: 14px 16px; font-size: 12.5px; color: #93a1b3; }
   .sec b { display: block; font-size: 13px; color: #64748b; font-weight: 600; }
   .sec.creuse { min-height: 54px; display: flex; flex-direction: column; justify-content: center; }
   .sec.haute { min-height: 92px; }
+  .sec.retiree { background: #fdf2f2; }
+  .sec.retiree b { color: #a04040; }
   .rang { font-variant-numeric: tabular-nums; color: #b4bfcd; margin-right: 6px; }
-
-  /* le hero, rendu pour de vrai */
-  .hero { padding: 22px 16px 20px; background: linear-gradient(180deg, #ffffff 0%, #f7f8fc 100%); }
-  .pastille { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); background: var(--accent-doux); border-radius: 999px; padding: 5px 10px; }
-  .hero h4 { font-size: 25px; line-height: 1.15; color: var(--encre); margin: 12px 0 8px; letter-spacing: -0.02em; }
-  .hero p { font-size: 14px; color: var(--doux); margin: 0 0 14px; }
-  .cta { display: inline-block; border-radius: 10px; padding: 11px 16px; font-size: 14px; font-weight: 700; text-decoration: none; }
-  .cta.sombre { background: var(--encre); color: #fff; }
-  .cta.clair { background: #eef1f6; color: var(--encre); }
+  @container (min-width: 760px) {
+    .sec { padding: 20px 28px; text-align: center; }
+    .sec.creuse { min-height: 74px; }
+    .sec.haute { min-height: 120px; }
+    .sec b { font-size: 14px; }
+  }
 
   /* les blocs proposés */
-  .porte { border: 1px solid var(--trait); border-radius: 14px; padding: 14px 15px; background: #fff; }
-  .porte + .porte { margin-top: 10px; }
+  .zone { padding: 16px; background: #f9fbff; border-bottom: 1px solid #eef1f6; }
+  @container (min-width: 760px) { .zone { padding: 30px 28px; } }
+  .duo { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  @container (min-width: 760px) { .duo { grid-template-columns: 1fr 1fr; gap: 20px; } }
+  .porte { border: 1px solid var(--trait); border-radius: 14px; padding: 15px; background: #fff; box-shadow: inset 0 0 0 1.5px var(--accent); }
   .porte .quoi { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--doux); }
-  .porte h5 { margin: 4px 0 4px; font-size: 16.5px; color: var(--encre); line-height: 1.25; letter-spacing: -0.01em; }
+  .porte h5 { margin: 5px 0 5px; font-size: 16.5px; color: var(--encre); line-height: 1.25; letter-spacing: -0.01em; }
   .porte p { margin: 0 0 10px; font-size: 13.5px; color: var(--texte); }
   .porte .prix { font-size: 13px; color: var(--encre); font-weight: 700; }
-  .neuf { background: #f7f9ff; }
-  .marque { border-left: 0; box-shadow: inset 0 0 0 1.5px var(--accent); }
-  .bandeau-aca { background: #101826; color: #dfe6f2; border-radius: 0; padding: 20px 16px; }
-  .bandeau-aca h5 { color: #fff; margin: 6px 0 6px; font-size: 19px; line-height: 1.2; }
-  .bandeau-aca p { color: #b8c4d6; font-size: 13.5px; margin: 0 0 12px; }
-  .bandeau-aca .cta.sombre { background: #c8a951; color: #101826; }
-  .duo { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  @container (min-width: 760px) {
+    .porte { padding: 24px; }
+    .porte h5 { font-size: 21px; }
+    .porte p { font-size: 15px; }
+  }
 
-  .changements { margin: 14px 0 0; padding: 0; list-style: none; font-size: 14px; }
-  .changements li { padding: 7px 0 7px 22px; position: relative; border-top: 1px solid var(--trait); }
-  .changements li:first-child { border-top: 0; }
-  .changements li::before { content: ''; position: absolute; left: 4px; top: 15px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-  .changements li.moins::before { background: #c2cad6; }
-  .meta { display: flex; gap: 16px; font-size: 13px; color: var(--doux); margin-top: 12px; border-top: 1px solid var(--trait); padding-top: 12px; }
-  .meta b { color: var(--encre); font-weight: 700; }
+  /* le bandeau sombre de l'Academy */
+  .bandeau { background: #101826; color: #b8c4d6; padding: 22px 16px; border-bottom: 1px solid #101826; }
+  .bandeau h5 { color: #fff; margin: 7px 0 7px; font-size: 20px; line-height: 1.2; letter-spacing: -0.01em; }
+  .bandeau p { color: #b8c4d6; font-size: 13.5px; margin: 0 0 14px; }
+  .bandeau .quoi { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #c8a951; }
+  .bandeau .cta.sombre { background: #c8a951; color: #101826; }
+  .bandeau .prix { color: #fff; font-weight: 700; font-size: 13.5px; }
+  .bandeau .dedans { display: grid; gap: 18px; }
+  .bandeau .capture { display: none; border-radius: 12px; background: #162034; border: 1px solid #253150; min-height: 170px; }
+  @container (min-width: 760px) {
+    .bandeau { padding: 44px 28px; }
+    .bandeau .dedans { grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: 30px; }
+    .bandeau h5 { font-size: 30px; }
+    .bandeau p { font-size: 15.5px; }
+    .bandeau .capture { display: block; }
+  }
 
-  .note { background: #fffaf0; border: 1px solid #f0e2c4; border-radius: 12px; padding: 16px 18px; margin-top: 30px; font-size: 15px; }
+  .note { background: #fffaf0; border: 1px solid #f0e2c4; border-radius: 12px; padding: 18px 20px; margin-top: 32px; font-size: 15.5px; max-width: 95ch; }
   .note b { color: var(--encre); }
   table.ailleurs { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14.5px; background: var(--carte); border: 1px solid var(--trait); border-radius: 12px; overflow: hidden; }
-  table.ailleurs th, table.ailleurs td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--trait); vertical-align: top; }
+  table.ailleurs th, table.ailleurs td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--trait); vertical-align: top; }
   table.ailleurs th { background: #f8fafc; font-size: 13px; color: var(--doux); font-weight: 600; }
   table.ailleurs tr:last-child td { border-bottom: 0; }
-  @media (max-width: 720px) {
-    .page { padding: 24px 14px 60px; }
-    h1 { font-size: 24px; }
-  }
+  @media (max-width: 720px) { .page { padding: 24px 14px 60px; } h1 { font-size: 24px; } }
 </style>
 </head>
-<body>
+<body data-vue="ordi">
 <div class="page">
 
   <h1>Mettre l'Academy et le calculateur en avant</h1>
-  <p class="chapeau">Trois directions pour la page d'accueil, à comparer à la largeur d'un téléphone. Les chiffres sont ceux des trente derniers jours, relevés le 23 septembre 2026.</p>
-  <p class="date">Le choix porte sur la page d'accueil. Ce qu'on fait ailleurs (articles, pages services) est en bas de ce document et ne dépend pas de la direction retenue.</p>
+  <p class="chapeau">Trois directions pour la page d'accueil. Les maquettes se mettent en page d'après la largeur du cadre, donc « Téléphone » rejoue exactement ce que fait le vrai site à 390 px.</p>
+  <p class="date">Chiffres des trente derniers jours, relevés le 23 septembre 2026. Ce qu'on fait ailleurs (articles, pages services) est en bas et ne dépend pas de la direction retenue.</p>
 
   <h2>Ce que disent les chiffres</h2>
   <div class="constat">
@@ -124,44 +179,59 @@
     <div class="chiffre"><b>74</b><span>vues du calculateur</span></div>
     <div class="chiffre"><b>0</b><span>fois où l'Academy apparaît dans le CORPS de la page d'accueil</span></div>
   </div>
-  <p style="margin-top:14px;max-width:80ch;">L'Academy n'existe aujourd'hui sur la page d'accueil que dans le menu déroulant « IA » et dans le pied de page. Le calculateur, lui, est déjà en bouton principal du hero, puis une deuxième fois en <b>position 10 sur 14</b>, dans un bandeau violet à dégradé. Le trafic, lui, arrive massivement par la publicité, directement sur l'Academy : la page d'accueil n'est pas le point d'entrée du site, c'est le point de passage de ceux qui nous cherchent.</p>
+  <p style="margin-top:14px;max-width:84ch;">L'Academy n'existe aujourd'hui sur la page d'accueil que dans le menu déroulant « IA » et dans le pied de page. Le calculateur, lui, est déjà en bouton principal du hero, puis une deuxième fois en <b>position 10 sur 14</b>, dans un bandeau violet à dégradé. Le trafic arrive massivement par la publicité, directement sur l'Academy : la page d'accueil n'est pas le point d'entrée du site, c'est le point de passage de ceux qui nous cherchent.</p>
 
-  <div class="barre">
-    <span style="font-size:14px;color:var(--doux);margin-right:4px;">Langue des maquettes :</span>
-    <button class="bouton" data-langue="en" aria-pressed="true">English</button>
-    <button class="bouton" data-langue="fr" aria-pressed="false">Français</button>
-    <span style="flex:1"></span>
-    <button class="bouton" id="largeur" aria-pressed="false">Voir en largeur d'écran</button>
+  <div class="outils">
+    <span class="etiquette">Vue :</span>
+    <div class="groupe">
+      <button class="bouton" data-vue="ordi" aria-pressed="true">Ordinateur</button>
+      <button class="bouton" data-vue="tel" aria-pressed="false">Téléphone (390 px)</button>
+    </div>
+    <span class="etiquette" style="margin-left:14px">Langue :</span>
+    <div class="groupe">
+      <button class="bouton" data-langue="en" aria-pressed="true">English</button>
+      <button class="bouton" data-langue="fr" aria-pressed="false">Français</button>
+    </div>
   </div>
 
   <div class="directions">
 
     <!-- ================= A ================= -->
     <section class="direction">
-      <h3>A. Deux portes sous le hero</h3>
-      <p class="sous">Une bande neuve en position 2, avant tout le reste.</p>
-      <div class="tel">
-        <div class="hero">
-          <span class="pastille" data-t="badge"></span>
-          <h4 data-t="titre"></h4>
-          <p data-t="soustitre"></p>
-          <a class="cta sombre" data-t="ctaCalc"></a>
-          <a class="cta clair" style="margin-left:6px" data-t="ctaContact"></a>
+      <div class="entete"><h3>A. Deux portes sous le hero</h3><p class="sous">Une bande neuve en position 2, avant tout le reste.</p></div>
+      <div class="cadre">
+        <div class="nav">
+          <span class="logo">MyDigipal</span>
+          <span class="liens"><span data-t="n_services"></span><span data-t="n_ia"></span><span data-t="n_cas"></span><span data-t="n_blog"></span></span>
+          <span class="bouton-nav" data-t="ctaCalc"></span>
         </div>
-        <div class="sec" style="padding:16px;background:#f9fbff;">
-          <div class="porte neuf marque">
-            <span class="quoi" data-t="quoiAca"></span>
-            <h5 data-t="titreAca"></h5>
-            <p data-t="texteAca"></p>
-            <span class="prix" data-t="prixAca"></span>
-            <div style="margin-top:10px"><a class="cta sombre" data-t="ctaAca"></a></div>
+        <div class="hero">
+          <div class="hero-deux">
+            <div>
+              <span class="pastille" data-t="badge"></span>
+              <h4 data-t="titre"></h4>
+              <p class="sst" data-t="soustitre"></p>
+              <a class="cta sombre" data-t="ctaCalc"></a><a class="cta clair" data-t="ctaContact"></a>
+            </div>
+            <div class="visuel"></div>
           </div>
-          <div class="porte neuf marque">
-            <span class="quoi" data-t="quoiCalc"></span>
-            <h5 data-t="titreCalc"></h5>
-            <p data-t="texteCalc"></p>
-            <span class="prix" data-t="prixCalc"></span>
-            <div style="margin-top:10px"><a class="cta sombre" data-t="ctaCalc2"></a></div>
+        </div>
+        <div class="zone">
+          <div class="duo">
+            <div class="porte">
+              <span class="quoi" data-t="quoiAca"></span>
+              <h5 data-t="titreAca"></h5>
+              <p data-t="texteAca"></p>
+              <span class="prix" data-t="prixAca"></span>
+              <div style="margin-top:12px"><a class="cta sombre" data-t="ctaAca"></a></div>
+            </div>
+            <div class="porte">
+              <span class="quoi" data-t="quoiCalc"></span>
+              <h5 data-t="titreCalc"></h5>
+              <p data-t="texteCalc"></p>
+              <span class="prix" data-t="prixCalc"></span>
+              <div style="margin-top:12px"><a class="cta sombre" data-t="ctaCalc2"></a></div>
+            </div>
           </div>
         </div>
         <div class="sec creuse"><b><span class="rang">3</span><span data-t="s_logos"></span></b></div>
@@ -172,39 +242,50 @@
         <div class="sec creuse"><b><span class="rang">8</span><span data-t="s_30j"></span></b></div>
         <div class="sec creuse"><b><span class="rang">9</span><span data-t="s_secteurs"></span></b></div>
         <div class="sec creuse"><b><span class="rang">10</span><span data-t="s_contenu"></span></b></div>
-        <div class="sec creuse" style="background:#fdf2f2;color:#a04040;"><b style="color:#a04040"><span class="rang">-</span><span data-t="s_calcSupprime"></span></b></div>
+        <div class="sec creuse retiree"><b><span class="rang">-</span><span data-t="s_calcSupprime"></span></b></div>
         <div class="sec creuse"><b><span class="rang">11</span><span data-t="s_avis"></span></b></div>
         <div class="sec creuse"><b><span class="rang">12</span><span data-t="s_blog"></span></b></div>
         <div class="sec creuse"><b><span class="rang">13</span><span data-t="s_final"></span></b></div>
       </div>
-      <ul class="changements">
-        <li>Les deux produits sont vus avant même les logos clients.</li>
-        <li>Le bandeau violet de la position 10 disparaît : il disait la même chose, plus bas et plus mal.</li>
-        <li class="moins">Retarde la preuve sociale, qui passe en position 3.</li>
-      </ul>
-      <div class="meta"><span>Travail : <b>une demi-journée</b></span><span>Risque : <b>faible</b></span></div>
+      <div class="dessous">
+        <ul class="changements">
+          <li>Les deux produits sont vus avant même les logos clients.</li>
+          <li>Le bandeau violet de la position 10 disparaît : il disait la même chose, plus bas et plus mal.</li>
+          <li class="moins">Retarde la preuve sociale, qui passe en position 3.</li>
+          <li class="moins">Sur téléphone, deux encadrés se suivent au même endroit.</li>
+        </ul>
+        <div class="meta"><span>Travail : <b>une demi-journée</b></span><span>Risque : <b>faible</b></span></div>
+      </div>
     </section>
 
     <!-- ================= B ================= -->
     <section class="direction">
-      <h3>B. L'Academy prend le bandeau vedette</h3>
-      <p class="sous">Le bandeau « contenu par l'IA » devient l'Academy ; le calculateur remonte en position 3.</p>
-      <div class="tel">
+      <div class="entete"><h3>B. L'Academy prend le bandeau vedette</h3><p class="sous">Le bandeau « contenu par l'IA » devient l'Academy ; le calculateur remonte en position 3.</p></div>
+      <div class="cadre">
+        <div class="nav">
+          <span class="logo">MyDigipal</span>
+          <span class="liens"><span data-t="n_services"></span><span data-t="n_ia"></span><span data-t="n_cas"></span><span data-t="n_blog"></span></span>
+          <span class="bouton-nav" data-t="ctaCalc"></span>
+        </div>
         <div class="hero">
-          <span class="pastille" data-t="badge"></span>
-          <h4 data-t="titre"></h4>
-          <p data-t="soustitre"></p>
-          <a class="cta sombre" data-t="ctaCalc"></a>
-          <a class="cta clair" style="margin-left:6px" data-t="ctaContact"></a>
+          <div class="hero-deux">
+            <div>
+              <span class="pastille" data-t="badge"></span>
+              <h4 data-t="titre"></h4>
+              <p class="sst" data-t="soustitre"></p>
+              <a class="cta sombre" data-t="ctaCalc"></a><a class="cta clair" data-t="ctaContact"></a>
+            </div>
+            <div class="visuel"></div>
+          </div>
         </div>
         <div class="sec creuse"><b><span class="rang">2</span><span data-t="s_logos"></span></b></div>
-        <div class="sec" style="padding:16px;background:#f9fbff;">
-          <div class="porte neuf marque">
+        <div class="zone">
+          <div class="porte">
             <span class="quoi" data-t="quoiCalc"></span>
             <h5 data-t="titreCalc"></h5>
             <p data-t="texteCalc"></p>
             <span class="prix" data-t="prixCalc"></span>
-            <div style="margin-top:10px"><a class="cta sombre" data-t="ctaCalc2"></a></div>
+            <div style="margin-top:12px"><a class="cta sombre" data-t="ctaCalc2"></a></div>
           </div>
         </div>
         <div class="sec creuse"><b><span class="rang">4</span><span data-t="s_equipe"></span></b></div>
@@ -213,52 +294,67 @@
         <div class="sec haute"><b><span class="rang">7</span><span data-t="s_services"></span></b></div>
         <div class="sec creuse"><b><span class="rang">8</span><span data-t="s_30j"></span></b></div>
         <div class="sec creuse"><b><span class="rang">9</span><span data-t="s_secteurs"></span></b></div>
-        <div class="bandeau-aca">
-          <span class="quoi" style="color:#c8a951" data-t="quoiAca"></span>
-          <h5 data-t="titreAca"></h5>
-          <p data-t="texteAcaLong"></p>
-          <span class="prix" style="color:#fff" data-t="prixAca"></span>
-          <div style="margin-top:12px"><a class="cta sombre" data-t="ctaAca"></a></div>
+        <div class="bandeau">
+          <div class="dedans">
+            <div>
+              <span class="quoi" data-t="quoiAca"></span>
+              <h5 data-t="titreAca"></h5>
+              <p data-t="texteAcaLong"></p>
+              <span class="prix" data-t="prixAca"></span>
+              <div style="margin-top:14px"><a class="cta sombre" data-t="ctaAca"></a></div>
+            </div>
+            <div class="capture"></div>
+          </div>
         </div>
-        <div class="sec creuse" style="background:#fdf2f2;color:#a04040;"><b style="color:#a04040"><span class="rang">-</span><span data-t="s_calcSupprime"></span></b></div>
+        <div class="sec creuse retiree"><b><span class="rang">-</span><span data-t="s_calcSupprime"></span></b></div>
         <div class="sec creuse"><b><span class="rang">11</span><span data-t="s_avis"></span></b></div>
         <div class="sec creuse"><b><span class="rang">12</span><span data-t="s_blog"></span></b></div>
         <div class="sec creuse"><b><span class="rang">13</span><span data-t="s_final"></span></b></div>
       </div>
-      <ul class="changements">
-        <li>L'Academy hérite du seul emplacement de la page qui a déjà une vraie présence visuelle.</li>
-        <li>Le calculateur est vu tôt, sans écraser la preuve sociale.</li>
-        <li class="moins">On perd le bandeau « création de contenu par l'IA », qui ne se vend pas seul aujourd'hui.</li>
-      </ul>
-      <div class="meta"><span>Travail : <b>une journée</b></span><span>Risque : <b>faible</b></span></div>
+      <div class="dessous">
+        <ul class="changements">
+          <li>L'Academy hérite du seul emplacement de la page qui a déjà une vraie présence visuelle, et qui porte la salle de nuit de la formation.</li>
+          <li>Le calculateur est vu tôt, seul dans son bloc, sans écraser la preuve sociale.</li>
+          <li class="moins">On perd le bandeau « création de contenu par l'IA », qui ne se vend pas seul aujourd'hui.</li>
+        </ul>
+        <div class="meta"><span>Travail : <b>une journée</b></span><span>Risque : <b>faible</b></span></div>
+      </div>
     </section>
 
     <!-- ================= C ================= -->
     <section class="direction">
-      <h3>C. Le hero porte les deux produits</h3>
-      <p class="sous">Les deux cartes entrent DANS le hero, à la place de l'illustration.</p>
-      <div class="tel">
-        <div class="hero" style="padding-bottom:16px">
-          <span class="pastille" data-t="badge"></span>
-          <h4 data-t="titre"></h4>
-          <p data-t="soustitreCourt"></p>
-          <div class="duo">
-            <div class="porte marque">
-              <span class="quoi" data-t="quoiAca"></span>
-              <h5 data-t="titreAcaCourt"></h5>
-              <p data-t="texteAcaCourt"></p>
-              <span class="prix" data-t="prixAca"></span>
-              <div style="margin-top:10px"><a class="cta sombre" data-t="ctaAca"></a></div>
+      <div class="entete"><h3>C. Le hero porte les deux produits</h3><p class="sous">Les deux cartes entrent DANS le hero, à la place de l'illustration.</p></div>
+      <div class="cadre">
+        <div class="nav">
+          <span class="logo">MyDigipal</span>
+          <span class="liens"><span data-t="n_services"></span><span data-t="n_ia"></span><span data-t="n_cas"></span><span data-t="n_blog"></span></span>
+          <span class="bouton-nav" data-t="ctaCalc"></span>
+        </div>
+        <div class="hero">
+          <div class="hero-deux">
+            <div>
+              <span class="pastille" data-t="badge"></span>
+              <h4 data-t="titre"></h4>
+              <p class="sst" data-t="soustitreCourt"></p>
+              <p style="margin:0;font-size:14px;"><a href="#" style="color:var(--accent);font-weight:600;text-decoration:none" data-t="lienTout"></a></p>
             </div>
-            <div class="porte marque">
-              <span class="quoi" data-t="quoiCalc"></span>
-              <h5 data-t="titreCalcCourt"></h5>
-              <p data-t="texteCalcCourt"></p>
-              <span class="prix" data-t="prixCalc"></span>
-              <div style="margin-top:10px"><a class="cta sombre" data-t="ctaCalc2"></a></div>
+            <div>
+              <div class="porte" style="margin-bottom:12px">
+                <span class="quoi" data-t="quoiAca"></span>
+                <h5 data-t="titreAcaCourt"></h5>
+                <p data-t="texteAcaCourt"></p>
+                <span class="prix" data-t="prixAca"></span>
+                <div style="margin-top:10px"><a class="cta sombre" data-t="ctaAca"></a></div>
+              </div>
+              <div class="porte">
+                <span class="quoi" data-t="quoiCalc"></span>
+                <h5 data-t="titreCalcCourt"></h5>
+                <p data-t="texteCalcCourt"></p>
+                <span class="prix" data-t="prixCalc"></span>
+                <div style="margin-top:10px"><a class="cta sombre" data-t="ctaCalc2"></a></div>
+              </div>
             </div>
           </div>
-          <p style="margin:14px 0 0;font-size:13px;"><a href="#" style="color:var(--accent);font-weight:600;text-decoration:none" data-t="lienTout"></a></p>
         </div>
         <div class="sec creuse"><b><span class="rang">2</span><span data-t="s_logos"></span></b></div>
         <div class="sec creuse"><b><span class="rang">3</span><span data-t="s_equipe"></span></b></div>
@@ -273,23 +369,26 @@
         <div class="sec creuse"><b><span class="rang">12</span><span data-t="s_blog"></span></b></div>
         <div class="sec creuse"><b><span class="rang">13</span><span data-t="s_final"></span></b></div>
       </div>
-      <ul class="changements">
-        <li>Sur téléphone, les deux produits sont visibles sans défiler d'un pixel.</li>
-        <li>Le reste de la page ne bouge pas : aucune section déplacée, aucune supprimée.</li>
-        <li class="moins">Le hero devient long ; c'est le seul endroit de la page où l'on a le droit de l'être.</li>
-      </ul>
-      <div class="meta"><span>Travail : <b>une journée</b></span><span>Risque : <b>moyen</b></span></div>
+      <div class="dessous">
+        <ul class="changements">
+          <li>Sur ordinateur, les deux produits occupent la moitié droite du hero, à la place d'une illustration qui ne dit rien.</li>
+          <li>Sur téléphone, ils sont juste sous le titre, avant tout le reste.</li>
+          <li>Le reste de la page ne bouge pas : aucune section déplacée, aucune supprimée.</li>
+          <li class="moins">Le hero perd son image, et les deux boutons d'origine (budget et contact) disparaissent au profit des cartes.</li>
+        </ul>
+        <div class="meta"><span>Travail : <b>une journée</b></span><span>Risque : <b>moyen</b></span></div>
+      </div>
     </section>
 
   </div>
 
   <div class="note">
-    <b>Ma recommandation : B.</b> C'est la seule direction où l'Academy obtient une vraie place, et pas une carte de plus. Le bandeau de la position 10 est aujourd'hui la seule section de la page d'accueil qui ressemble à une publicité : il est fait pour ça, et il vend « la création de contenu par l'IA », qui n'est pas ce qu'on vend. A est plus rapide mais empile deux encadrés au même endroit, ce que tu n'aimes pas sur téléphone. C est la plus visible, et la plus risquée : le hero est la seule chose que voient la moitié des visiteurs, le charger de deux offres peut brouiller le message d'agence.
+    <b>Ma recommandation : B.</b> C'est la seule direction où l'Academy obtient une vraie place, et pas une carte de plus. Le bandeau de la position 10 est aujourd'hui la seule section de la page d'accueil qui ressemble à une publicité : il est fait pour ça, et il vend « la création de contenu par l'IA », qui n'est pas ce qu'on vend. A est plus rapide mais empile deux encadrés au même endroit sur téléphone. C est la plus visible, et la plus risquée : le hero est la seule chose que voit la moitié des visiteurs, le charger de deux offres peut brouiller le message d'agence.
   </div>
 
   <h2>Ce qu'on fait en plus, quelle que soit la direction</h2>
   <table class="ailleurs">
-    <tr><th style="width:26%">Où</th><th style="width:30%">Quoi</th><th>Pourquoi</th></tr>
+    <tr><th style="width:22%">Où</th><th style="width:32%">Quoi</th><th>Pourquoi</th></tr>
     <tr>
       <td>Fin des articles du blog</td>
       <td>Un encart choisi selon le sujet : Academy sur un article IA, calculateur sur un article publicité ou SEO</td>
@@ -317,10 +416,11 @@
 <script>
   const T = {
     fr: {
+      n_services: 'Services', n_ia: 'IA', n_cas: 'Études de cas', n_blog: 'Blog',
       badge: 'Agence marketing digital',
       titre: "Marketing multi-canal, co-piloté par l'IA",
       soustitre: "Une équipe qui prolonge la vôtre, du SEO à la publicité, avec l'IA dans les mains.",
-      soustitreCourt: "Une équipe qui prolonge la vôtre, du SEO à la publicité.",
+      soustitreCourt: "Une équipe qui prolonge la vôtre, du SEO à la publicité. Deux façons de commencer.",
       ctaCalc: 'Calculer mon budget',
       ctaContact: 'Nous contacter',
       quoiAca: 'Se former',
@@ -338,7 +438,7 @@
       texteCalcCourt: "Vos réponses, un devis chiffré par mail.",
       prixCalc: 'Gratuit, sans rendez-vous',
       ctaCalc2: 'Composer mon plan',
-      lienTout: 'Voir tout ce qu’on fait',
+      lienTout: "Voir tout ce qu'on fait",
       s_logos: 'Ils nous font confiance (logos)',
       s_equipe: "Une équipe d'experts passionnés",
       s_chiffres: 'Les chiffres qui comptent',
@@ -354,10 +454,11 @@
       s_final: 'Prêt à développer votre business ?'
     },
     en: {
+      n_services: 'Services', n_ia: 'AI', n_cas: 'Case studies', n_blog: 'Blog',
       badge: 'Digital marketing agency',
       titre: 'Multi-channel marketing, AI co-piloted',
       soustitre: 'A team that extends yours, from SEO to paid media, with AI in hand.',
-      soustitreCourt: 'A team that extends yours, from SEO to paid media.',
+      soustitreCourt: 'A team that extends yours, from SEO to paid media. Two ways to start.',
       ctaCalc: 'Calculate my budget',
       ctaContact: 'Contact us',
       quoiAca: 'Learn',
@@ -392,7 +493,7 @@
     }
   };
 
-  function appliquer(langue) {
+  function appliquerLangue(langue) {
     const d = T[langue];
     document.querySelectorAll('[data-t]').forEach((el) => {
       const v = d[el.getAttribute('data-t')];
@@ -401,22 +502,24 @@
     document.querySelectorAll('[data-langue]').forEach((b) => {
       b.setAttribute('aria-pressed', String(b.getAttribute('data-langue') === langue));
     });
-    document.documentElement.setAttribute('data-langue-maquette', langue);
   }
 
-  document.querySelectorAll('[data-langue]').forEach((b) => {
-    b.addEventListener('click', () => appliquer(b.getAttribute('data-langue')));
+  function appliquerVue(vue) {
+    document.body.setAttribute('data-vue', vue);
+    document.querySelectorAll('[data-vue]').forEach((b) => {
+      if (b.tagName === 'BUTTON') b.setAttribute('aria-pressed', String(b.getAttribute('data-vue') === vue));
+    });
+  }
+
+  document.querySelectorAll('button[data-langue]').forEach((b) => {
+    b.addEventListener('click', () => appliquerLangue(b.getAttribute('data-langue')));
+  });
+  document.querySelectorAll('button[data-vue]').forEach((b) => {
+    b.addEventListener('click', () => appliquerVue(b.getAttribute('data-vue')));
   });
 
-  const bLargeur = document.getElementById('largeur');
-  bLargeur.addEventListener('click', () => {
-    const actif = bLargeur.getAttribute('aria-pressed') === 'true';
-    bLargeur.setAttribute('aria-pressed', String(!actif));
-    document.querySelectorAll('.tel').forEach((t) => t.classList.toggle('large', !actif));
-    bLargeur.textContent = actif ? "Voir en largeur d'écran" : 'Revenir à 390 px';
-  });
-
-  appliquer('en');
+  appliquerLangue('en');
+  appliquerVue('ordi');
 </script>
 </body>
 </html>
