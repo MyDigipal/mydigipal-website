@@ -128,7 +128,7 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   `node scripts/n8n-calculateur/test-mails.cjs scripts/n8n-calculateur/envois-exemple.json`
   (aperçus HTML dans `apercus/`), puis `python scripts/n8n-calculateur/publier.py`. Jamais
   d'édition à la main dans n8n : la copie du dépôt deviendrait fausse.
-- **Anciennes adresses** : `/{lang}/calculator-v5` sert l'ancien calculateur en noindex ;
+- **Anciennes adresses** : l'ancien calculateur est supprimé (section 3 bis) ;
   `/{lang}/calculator-v6` renvoie vers `/calculator` en gardant l'ancre.
 - **Assistant du site** (`src/components/site-assistant/`) : il connaît la page où il s'ouvre.
   `src/pages/assistant-pages.json.ts` génère au build une carte des pages (type, titre, service du
@@ -146,66 +146,31 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   l'action flottants, pas un de plus**, « Calculer mon budget » (`StickyCalculatorCTA`, décalé à
   gauche de la bulle par `html[data-assistant='on']`) et son visage. Mémoire : `site_chat_sept2026.md`.
 
-## 3 bis. L'ancien calculateur (v5, noindex sur `/{lang}/calculator-v5`)
+## 3 bis. Ce qui reste de la v5 (le reste est supprimé)
 
-### Fichiers principaux
-- **Composant** : `src/components/calculator/Calculator.tsx` (~2200 lignes)
-- **Data** : 8 fichiers dans `data/` (seo, google-ads, paid-social, emailing, ai-training, ai-solutions, ai-content, tracking-reporting)
-- **Config centrale** : `data/index.ts` - domainConfigs, BUDGET_CONFIG, DURATION_CONFIG, MANAGEMENT_FEE_CONFIG, CURRENCY_CONFIGS
-- **Types** : `types.ts` - ServiceDomain (8 domaines incluant 'ai-content'), Currency ('EUR' | 'USD' | 'GBP')
-- **Traductions** : `translations.ts` - clés EN/FR, fonction `t()`
-- **Docs** : `docs/calculator/CALCULATOR-AUDIT.md`
+L'ancien calculateur a été supprimé le 23/09/2026 (commit `dcb146d`, 6 035 lignes) :
+`Calculator.tsx`, `CaptureModal`, `ChannelCard`, `GuidedMode`, `HowWeWork`,
+`PerformanceEstimation`, `StickySummary`, `TrackingJourney`, `translations.ts` et les
+pages `/{lang}/calculator-v5`. Ces adresses répondent 404, vérifié en production.
 
-### Écran unique depuis le 04/08/2026
-Il n'y a plus d'étape intermédiaire ni de bouton "Continuer". La grille de domaines
-(`domainPicker`) et la configuration partagent le même écran : cocher un domaine
-déplie sa section juste en dessous. `step` ne vaut plus que `'guided' | 'configure'
-| 'summary'` et démarre sur `'configure'`.
+**Ce qui vit encore dans `src/components/calculator/` et sert à la v6** :
+- `data/` : les grilles de prix des huit domaines et `data/index.ts` (domainConfigs,
+  BUDGET_CONFIG, DURATION_CONFIG, MANAGEMENT_FEE_CONFIG, CURRENCY_CONFIGS). **C'est
+  toujours là qu'un prix se change.**
+- `types.ts` (ServiceDomain, Currency), `tracking.ts` (les événements dataLayer),
+  `guided-data.ts` (les questions et le scoring du mode guidé, lus par `guidedProposal`
+  dans `calculator-v6/engine.ts`).
 
-**Piège** : les sections portent une ancre `data-domain-section={domainId}` et un
-`scrollMarginTop` de 112 px. C'est ce qui fait défiler l'écran vers la section qui
-s'ouvre. Sans l'ancre, la section s'ouvre hors écran et le clic paraît sans effet.
+`/{lang}/calculator-v6` renvoie vers `/{lang}/calculator` en gardant le devis de l'ancre.
 
-### Patterns importants
-- Prix affichés via `fp()` (formatPrice) pour support multi-devises
-- **`formatPrice(priceEUR, currency)` convertit DÉJÀ depuis l'EUR.** Ne jamais lui
-  passer `convertPrice(...)` : c'était le bug de double conversion (+9% USD, -12% GBP)
-  corrigé le 04/08/2026 dans StickySummary et CaptureModal
-- `pricing.grandTotal` = total hors budget média. C'est la valeur de conversion
-  envoyée au webhook, à GA4 et au pixel Meta
-- AI Solutions a des packages concrets + formulaire custom (showAiCustomForm)
-- Paid Social a `socialChannels` export pour la sélection de canaux
+### Le mode guidé, version v6
+Trois questions (secteur, objectif, budget mensuel) posées dans le calculateur lui-même,
+puis `guidedProposal(industry, goal, budget, focus?)` compose l'état et le budget. Le
+scoring vient de `guided-data.ts` : pertinence du secteur, bonus d'objectif, seuil
+d'inclusion, et un plafond de domaines selon le budget. L'assistant du site appelle la
+même fonction et envoie le résultat par `#plan=`.
 
-### Tracking du funnel
-`tracking.ts` pousse les events dans le dataLayer : `calculator_step`,
-`_domain_toggle`, `_service_toggle` (avec niveau et prix), `_channel_toggle`,
-`_budget_set`, `_abandon`. Côté GTM, container `GTM-P4TSQ9Q`, version 75 publiée le
-04/08/2026 avec 15 variables, 6 triggers et 6 tags. Property GA4 du site =
-**281550532**, pas 523618980 qui est le Client Portal.
-
-## 4. Mode guide conversationnel (v1)
-
-### Fichiers
-- `GuidedMode.tsx` (chat UI), `guided-data.ts` (questions + scoring)
-- Intégration : step `'guided'`, accessible depuis le bouton "Aidez-moi à choisir"
-  de la sticky card
-
-### Logique
-- 5 questions : industrie, objectifs (multi), budget (slider), efforts actuels (multi), contexte libre
-- Scoring : pertinence industrie (0-1) + boost objectifs (+0.2 à +0.5) - seuil inclusion > 0.6
-- Contrainte budget : max 3 domaines si <=1500 EUR, max 5 si <=3000 EUR
-- Mapping budget vers niveaux : <=1500 EUR = Starter, 1500-4000 EUR = Growth, >4000 EUR = Premium
-
-### Référence business : Propale ControlAI
-- 7+1 canaux : Meta, Reddit, Google, LinkedIn, YouTube, TikTok, Display, Community Management
-- 3 packs : Essentials (£4-5.3K/mois), Growth (£9.6-12.8K/mois), Impact (£15.5-20.1K/mois)
-- Évolution : Mois 1-2 Essentials, Mois 3-4 Growth, Mois 5-6 Impact
-
-## 5. Points techniques importants
-
-### Bugs corrigés (à retenir)
-- `handleGuidedComplete` : les clés de sélection doivent être `service.id` seul, PAS `${domainId}-${service.id}`
-- `budgetActivated` : activer pour tout domaine ads recommandé (pas seulement si budget > 500)
+## 4. Points techniques importants
 
 ### Pages services - switch par slug
 - Toutes les pages `/services/*` sont générées par `src/pages/[lang]/services/[slug].astro`
@@ -236,7 +201,7 @@ Commit `e206566`.
 - Les CTAs MCP vers `/contact` passent un `?topic=` : `mcp`, `mcp-build`, `mcp-package`, `parcours-technique`
 - Pas encore exploité par le formulaire, prévu pour segmenter les leads entrants par intention
 
-## 6. Améliorations futures (mode guide)
+## 5. Améliorations futures (mode guidé)
 1. Ajouter les canaux sociaux spécifiques (Reddit, TikTok, LinkedIn) dans les recommandations
 2. Intégrer la notion de "chemin d'évolution" (starter vers growth vers impact)
 3. Ajouter community management comme option
@@ -258,7 +223,7 @@ Deux constats de l'audit du 04/08/2026 qui restent entiers :
   faisait 71 112 impressions pour 8 clics, `claude-code-developer-productivity` 9 406 pour 2.
   En position moyenne 9, on attendrait 2-3 %. Gisement plus gros que le calculateur.
 
-## 7. Refonte design V2 (mai 2026 - handoff Claude Design)
+## 6. Refonte design V2 (mai 2026 - handoff Claude Design)
 
 Plan de refonte : `~/.claude/plans/serene-drifting-riddle.md`. Source : `Claude design handoffs/` (7 patterns + production-refs).
 
