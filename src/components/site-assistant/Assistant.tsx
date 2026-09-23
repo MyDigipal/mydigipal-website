@@ -93,6 +93,34 @@ const pousser = (event: string, params: Record<string, unknown> = {}) => {
   w.dataLayer.push({ event, ...params });
 };
 
+/** Les deux drapeaux du sélecteur de langue, en SVG : sous Windows, les drapeaux emoji ne
+ * s'affichent pas du tout. Mêmes tracés que la barre des pages outils de l'Academy. */
+function Drapeau({ locale }: { locale: Lang }) {
+  const classe = 'block h-[13px] w-[19px] flex-none rounded-[2px]';
+  if (locale === 'fr') {
+    return (
+      <svg viewBox="0 0 3 2" className={classe} aria-hidden="true" focusable="false">
+        <rect width="1" height="2" x="0" fill="#0055A4" />
+        <rect width="1" height="2" x="1" fill="#FFFFFF" />
+        <rect width="1" height="2" x="2" fill="#EF4135" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 60 30" className={classe} aria-hidden="true" focusable="false">
+      <clipPath id="as-uk-cadre"><path d="M0,0 v30 h60 v-30 z" /></clipPath>
+      <clipPath id="as-uk-diag"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" /></clipPath>
+      <g clipPath="url(#as-uk-cadre)">
+        <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#FFFFFF" strokeWidth="6" />
+        <path d="M0,0 L60,30 M60,0 L0,30" clipPath="url(#as-uk-diag)" stroke="#C8102E" strokeWidth="4" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#FFFFFF" strokeWidth="10" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" />
+      </g>
+    </svg>
+  );
+}
+
 const VIDE: Sauve = { items: [], etape: 'accueil', g: {}, prevenu: false, paulVus: 0, messages: 0, faits: [] };
 
 export interface AssistantProps {
@@ -430,7 +458,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     maj((x) => ({ ...x, prevenu: true }));
   };
 
-  const direPrix = async () => {
+  const direPrix = async (avecSuite = true) => {
     const d = domaineRef.current;
     if (!d) { versLibre(); return; }
     const px = prixDeDepart(d);
@@ -439,7 +467,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     if (px.monthly) lignes.push(c.prixMensuel(m(px.monthly)));
     if (px.once) lignes.push(c.prixUneFois(m(px.once)));
     if (!lignes.length) lignes.push(c.prixInconnu);
-    lignes.push(c.prixSuite);
+    if (avecSuite) lignes.push(c.prixSuite);
     await direEtNoter(lignes.join('\n\n'), 'A demandé les prix', domainName(d, 'fr'));
   };
 
@@ -556,22 +584,38 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     if (!f || f.k === 'home' || f.k === 'services' || f.k === 'cases' || f.k === 'blogs') {
       liste.push({ id: 'but:leads', label: c.butLeads }, { id: 'but:sales', label: c.butVentes }, { id: 'but:seo', label: c.butVisible }, { id: 'but:ai-training', label: c.butFormer });
     } else if (f.k === 'case') {
-      liste.push({ id: 'plan', label: c.pareil });
-      if (d) liste.push({ id: 'prix', label: c.combien });
+      if (d) liste.push({ id: 'plan', label: c.pareil }, { id: 'inclus', label: c.ceQuonFait(domainName(d, lang)) });
+      else liste.push({ id: 'plan', label: c.aide });
     } else if (f.k === 'blog') {
-      liste.push({ id: 'plan', label: c.pareil });
-      if (d) liste.push({ id: 'prix', label: c.combien });
-      if (f.c) liste.push({ id: 'aller', label: c.voirService(d ? domainName(d, lang) : f.t), href: f.c });
+      if (d) liste.push({ id: 'inclus', label: c.ceQuonFait(domainName(d, lang)) }, { id: 'plan', label: c.votrePrix });
+      else liste.push({ id: 'plan', label: c.aide });
     } else if (f.k === 'contact') {
       liste.push({ id: 'plan', label: c.aide });
     } else {
-      if (d) liste.push({ id: 'prix', label: c.combien }, { id: 'inclus', label: c.comprend });
-      if (f.c) liste.push({ id: 'cas', label: c.resultats });
-      liste.push({ id: 'plan', label: d ? c.chiffrer : c.aide });
+      if (d) liste.push({ id: 'inclus', label: c.ceQuonFait(domainName(d, lang)) });
+      if (f.c) liste.push({ id: 'cas', label: c.chezUnClient });
+      liste.push({ id: 'plan', label: d ? c.votrePrix : c.votrePlan });
     }
     liste.push({ id: 'paul', label: c.poser });
     const faits = sRef.current.faits ?? [];
     return liste.filter((x) => !faits.includes(x.id));
+  };
+
+  /** Les pages à proposer en plus : l'étude de cas du service, le service de l'article, le calculateur. */
+  const recommandations = (): Choix[] => {
+    const f = ficheRef.current;
+    const d = domaineRef.current;
+    const liens: Choix[] = [];
+    if (f?.c) {
+      const cible = suiteRef.current;
+      liens.push({
+        id: 'lien-page',
+        label: cible?.k === 'case' ? c.lireCas : c.voirService(d ? domainName(d, lang) : (cible?.t ?? '')),
+        href: f.c,
+      });
+    }
+    if (!surCalculateur) liens.push({ id: 'lien-calc', label: c.calculateur, href: `${cheminCalculateur(lang)}${d ? `?service=${d}` : ''}` });
+    return liens;
   };
 
   const agir = async (x: Choix) => {
@@ -579,7 +623,10 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     if (x.id === 'paul') { versLibre(); return; }
     if (x.id === 'plan') {
       const d = domaineRef.current;
-      if (d) chiffrerService(d); else demarrer({});
+      if (!d) { demarrer({}); return; }
+      // La grille d'abord, la question ensuite : la personne a une réponse avant de répondre.
+      await direPrix(false);
+      chiffrerService(d);
       return;
     }
     if (x.id.startsWith('but:')) {
@@ -596,14 +643,28 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   const puceForte = 'rounded-full border border-primary-600 bg-primary-600 px-3.5 py-2 text-left text-[14px] font-semibold text-white transition-colors hover:bg-primary-700';
   const choix = () => {
     const e = s.etape;
-    if (e === 'menu' || e === 'accueil') {
-      const liste = menu();
+    if (e === 'menu' || e === 'accueil' || e === 'fin') {
+      const liste = e === 'fin' ? [] : menu();
+      const liens = recommandations();
       return (
-        <div className="flex flex-wrap gap-2">
-          {liste.map((x, i) => (x.href
-            ? <a key={x.id} href={x.href} className={puce} onClick={() => pousser('site_assistant_lien', { assistant_lien: x.href })}>{x.label}</a>
-            : <button key={x.id} type="button" className={i === 0 ? puceForte : puce} onClick={() => void agir(x)}>{x.label}</button>))}
-          {!surCalculateur && <a href={`${cheminCalculateur(lang)}${domaine ? `?service=${domaine}` : ''}`} className={puce} onClick={() => pousser('site_assistant_calculator')}>{c.calculateur}</a>}
+        <div className="flex flex-col gap-3">
+          {liste.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {liste.map((x, i) => <button key={x.id} type="button" className={i === 0 ? puceForte : puce} onClick={() => void agir(x)}>{x.label}</button>)}
+            </div>
+          )}
+          {e === 'fin' && (
+            <div className="flex flex-wrap gap-x-4 gap-y-2 text-[13.5px]">
+              <a href={BOOKING_URL} target="_blank" rel="noopener" className="font-semibold text-primary-600 underline underline-offset-2">{c.reserver}</a>
+              <button type="button" onClick={recommencer} className="font-semibold text-slate-600 underline underline-offset-2">{c.recommencer}</button>
+            </div>
+          )}
+          {liens.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[12.5px] font-semibold uppercase tracking-wide text-slate-400">{c.voirAussi}</span>
+              {liens.map((x) => <a key={x.id} href={x.href} className={puce} onClick={() => pousser('site_assistant_lien', { assistant_lien: x.href })}>{x.label}</a>)}
+            </div>
+          )}
         </div>
       );
     }
@@ -620,14 +681,6 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
       return (
         <div className="flex flex-wrap gap-2">
           {ids.map((id) => <button key={id} type="button" className={puce} onClick={() => repondre(e, id)}>{libelle(e, id, lang)}</button>)}
-        </div>
-      );
-    }
-    if (e === 'fin') {
-      return (
-        <div className="flex flex-wrap gap-x-4 gap-y-2 text-[13.5px]">
-          <a href={BOOKING_URL} target="_blank" rel="noopener" className="font-semibold text-primary-600 underline underline-offset-2">{c.reserver}</a>
-          <button type="button" onClick={recommencer} className="font-semibold text-slate-600 underline underline-offset-2">{c.recommencer}</button>
         </div>
       );
     }
@@ -700,6 +753,12 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
                 <p className="font-display text-[15px] font-bold leading-tight text-slate-900">{c.nom}</p>
                 <p className="flex items-center gap-1.5 text-[12.5px] text-slate-500"><span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />{c.sousTitre}</p>
               </div>
+              {/* La langue suit la page ; ce drapeau ouvre la même page dans l'autre langue. */}
+              <a href={`/${lang === 'fr' ? 'en' : 'fr'}${chemin.replace(/^\/(fr|en)/, '')}`} aria-label={c.changerLangue} title={c.changerLangue}
+                className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 hover:bg-slate-200"
+                onClick={() => pousser('site_assistant_langue', { assistant_langue: lang === 'fr' ? 'en' : 'fr' })}>
+                <Drapeau locale={lang === 'fr' ? 'en' : 'fr'} />
+              </a>
               <button type="button" aria-label={c.fermer} onClick={() => setOuvert(false)} className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">
                 <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
               </button>
