@@ -14,6 +14,7 @@
 import {
   domainConfigs,
   DURATION_CONFIG,
+  MANAGEMENT_FEE_CONFIG,
   calculateManagementFee,
   socialChannels,
   aiTrainingPricing,
@@ -424,6 +425,29 @@ export function guidedProposal(industry: string, goal: string, budgetOption: str
     break;
   }
   return { state: st, budget };
+}
+
+/**
+ * Le prix d'entrée d'un service, pour l'assistant du site (23/09/2026) : le premier niveau de
+ * chaque offre du domaine, et pour la publicité les honoraires de gestion du premier palier.
+ * Tout vient des grilles du calculateur : aucun prix n'est réécrit ailleurs.
+ */
+export function prixDeDepart(d: ServiceDomain): { monthly?: number; once?: number; fee?: number; feeMax?: number; pct?: number } {
+  let monthly: number | undefined;
+  let once: number | undefined;
+  for (const s of domainConfigs[d].services ?? []) {
+    const niveau = s.levels?.[0];
+    const p = niveau?.price;
+    if (typeof p !== 'number' || p <= 0) continue;
+    if (s.isOneOff || niveau?.isOneOff) once = once === undefined ? p : Math.min(once, p);
+    else monthly = monthly === undefined ? p : Math.min(monthly, p);
+  }
+  if (d === 'ai-training') once = aiTrainingPricing.single.halfDay.price;
+  if (d === 'google-ads' || d === 'paid-social') {
+    const paliers = MANAGEMENT_FEE_CONFIG[d === 'google-ads' ? 'googleAds' : 'paidSocial'];
+    return { monthly, once, fee: paliers[0].value, feeMax: paliers[0].maxBudget, pct: paliers[1].value };
+  }
+  return { monthly, once };
 }
 
 // --- un devis transmis par lien ------------------------------------------------------------

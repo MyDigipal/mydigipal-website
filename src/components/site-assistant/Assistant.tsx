@@ -19,15 +19,20 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  decodePlan, devis, domainName, encodePlan, guidedProposal, money, type Lang, type QuoteState,
+  QUESTION_INDEX, decodePlan, devis, domainName, encodePlan, guidedProposal, money, optionsFor, prixDeDepart, t,
+  visibleQuestions, type Lang, type Question, type QuoteState,
 } from '../calculator-v6/engine';
+import { info } from '../calculator-v6/content';
 import { guidedQuestions } from '../calculator/guided-data';
 import type { Currency, ServiceDomain } from '../calculator/types';
 import { provenance } from '../academy/track';
 import { envoyerMessage, envoyerReponse, lireMessages, ouvrirFil, type Contexte, type Fil } from './api';
+import { ficheDe, type Fiche } from './pages';
 import { BOOKING_URL, PHOTO, QUESTIONS, cheminCalculateur, copie, type Champ } from './copy';
 
-type Etape = 'accueil' | Champ | 'fin' | 'libre';
+type Etape = 'accueil' | 'menu' | 'service' | Champ | 'fin' | 'libre';
+/** Un choix proposé dans le panneau : soit une action, soit un lien vers une page. */
+type Choix = { id: string; label: string; href?: string };
 type Item =
   | { k: 'bot'; texte: string }
   | { k: 'moi'; texte: string }
@@ -44,6 +49,12 @@ interface Sauve {
   prevenu: boolean;
   paulVus: number;
   messages: number;
+  /** Les choix du menu déjà utilisés : on ne les repropose pas. */
+  faits?: string[];
+  /** La page où la conversation en est : en changer relance le menu de la nouvelle page. */
+  page?: string;
+  /** La question du calculateur posée pour le service de la page (étape « service »). */
+  sq?: string;
 }
 
 const CLE = 'mdp_assistant_v1';
@@ -51,6 +62,8 @@ const CLE_INVITE = 'mdp_assistant_invite';
 const CLE_DEVIS = 'mdp_assistant_devis_vu';
 const EMAIL = /[^\s@<>()]+@[^\s@<>()]+\.[a-z]{2,}/i;
 const ORDRE: Champ[] = ['industry', 'goals', 'monthlyBudget'];
+/** Les budgets publicitaires proposés dans le panneau : la moitié des paliers du calculateur suffit. */
+const BUDGETS = [1000, 2000, 3000, 5000, 10000];
 
 /** Service de la page : /{lang}/services/{slug}. Le slug est l'identifiant du domaine, sauf l'ABM. */
 const SERVICES: ServiceDomain[] = ['seo', 'google-ads', 'paid-social', 'emailing', 'ai-training', 'ai-solutions', 'ai-content', 'tracking-reporting'];
@@ -80,7 +93,7 @@ const pousser = (event: string, params: Record<string, unknown> = {}) => {
   w.dataLayer.push({ event, ...params });
 };
 
-const VIDE: Sauve = { items: [], etape: 'accueil', g: {}, prevenu: false, paulVus: 0, messages: 0 };
+const VIDE: Sauve = { items: [], etape: 'accueil', g: {}, prevenu: false, paulVus: 0, messages: 0, faits: [] };
 
 export interface AssistantProps {
   lang: Lang;
@@ -96,6 +109,36 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   const chemin = typeof window !== 'undefined' ? window.location.pathname : '/';
   const service = useMemo(() => serviceDeLaPage(chemin), [chemin]);
   const surCalculateur = /^\/(?:fr|en)\/calculator\/?$/.test(chemin);
+
+  // Ce que l'assistant sait de la page ouverte (carte générée au build, `/assistant-pages.json`).
+  const [fiche, setFiche] = useState<Fiche | null>(null);
+  const [suite, setSuite] = useState<Fiche | null>(null);
+  const ficheRef = useRef<Fiche | null>(null);
+  ficheRef.current = fiche;
+  const suiteRef = useRef<Fiche | null>(null);
+  suiteRef.current = suite;
+  useEffect(() => {
+    let vivant = true;
+    void ficheDe(chemin).then(async (f) => {
+      if (!vivant) return;
+      setFiche(f);
+      if (f?.c) {
+        const g = await ficheDe(f.c);
+        if (vivant) setSuite(g);
+      }
+    });
+    return () => { vivant = false; };
+  }, [chemin]);
+  /** Le service du calculateur qui correspond à la page, s'il y en a un. */
+  const domaine = (fiche?.s as ServiceDomain | undefined) ?? service;
+  const domaineRef = useRef<ServiceDomain | undefined>(undefined);
+  domaineRef.current = domaine;
+  /** Le secteur que la page trahit : une page automobile n'a pas besoin de poser la question. */
+  const secteurDeLaPage = fiche?.i === 'automotive' ? 'automotive' : fiche?.i === 'b2b-tech' ? 'b2b-saas' : undefined;
+  const secteurRef = useRef<string | undefined>(undefined);
+  secteurRef.current = secteurDeLaPage;
+  /** Le service mis en avant dans la proposition (celui de la page, ou celui d'un choix du menu). */
+  const focusRef = useRef<ServiceDomain | undefined>(undefined);
 
   const [s, setS] = useState<Sauve>(() => lire(CLE, VIDE));
   const sRef = useRef(s);
@@ -137,6 +180,19 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     return fil;
   };
 
+  // Ce que l'assistant dit en s'ouvrant, selon la page (Paul, 22/09 : « le choix de base sur la
+  // page d'accueil est quand même assez basique »).
+  const accueilTexte = () => {
+    const f = ficheRef.current;
+    if (!f) return service ? c.accueilService(domainName(service, lang)) : c.accueil;
+    if (f.k === 'case') return c.accueilCas(f.cl || f.t, f.r);
+    if (f.k === 'blog') return c.accueilArticle(f.t);
+    if (f.k === 'auto') return c.accueilAuto;
+    if (f.k === 'contact') return c.accueilContact;
+    if (f.k === 'service' || f.k === 'ia') return c.accueilPage(domaineRef.current ? domainName(domaineRef.current, lang) : f.t, f.d);
+    return c.accueilHome;
+  };
+
   // --- ouverture --------------------------------------------------------------------------
   const ouvrir = useCallback((mode: 'normal' | 'guide' | 'devis' = 'normal') => {
     setInvite(false);
@@ -154,10 +210,17 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
         items.push({ k: 'bot', texte: c.accueilDevis });
         return { ...x, items, etape: 'libre' };
       }
-      if (items.length) return x;
-      items.push({ k: 'bot', texte: service ? c.accueilService(domainName(service, lang)) : c.accueil });
-      return { ...x, items, etape: 'accueil' };
+      if (items.length) {
+        // Conversation déjà ouverte : on ne recommence pas, mais si la personne a changé de page,
+        // l'assistant repart de cette page-là plutôt que de rester sur la précédente.
+        if (x.page === chemin) return x;
+        items.push({ k: 'bot', texte: accueilTexte() });
+        return { ...x, items, etape: 'menu', faits: [], page: chemin };
+      }
+      items.push({ k: 'bot', texte: accueilTexte() });
+      return { ...x, items, etape: 'menu', page: chemin };
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [c, lang, maj, service]);
 
   // Le calculateur : « Aidez-moi à choisir » ouvre l'assistant, la page de résultat lui passe le devis.
@@ -258,39 +321,128 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     ].filter(Boolean).join(' + ');
   };
 
-  const repondre = async (champ: Champ, id: string) => {
-    const g = { ...sRef.current.g, [champ]: id };
-    const suivant = ORDRE[ORDRE.indexOf(champ) + 1];
-    pousser('site_assistant_answer', { assistant_step: champ, assistant_value: id });
-    const p = suivant ? null : guidedProposal(g.industry as string, g.goals as string, id, service);
-    if (suivant) {
-      maj((x) => ({
-        ...x,
-        g,
-        etape: suivant,
-        items: [...x.items, { k: 'moi', texte: libelle(champ, id, lang) }, { k: 'bot', texte: QUESTIONS[suivant][lang] }],
-      }));
-    } else if (p) {
-      const plan = encodePlan(p.state);
-      maj((x) => ({
-        ...x,
-        g,
-        etape: 'fin',
-        items: [...x.items, { k: 'moi', texte: libelle(champ, id, lang) }, { k: 'bot', texte: c.propIntro }, { k: 'plan', plan, budget: p.budget }],
-      }));
-      pousser('site_assistant_proposal', { assistant_domains: p.state.domains.join(','), assistant_monthly: devis(p.state).monthly });
-    }
+  /** La proposition, une fois les trois réponses connues (certaines viennent de la page). */
+  const proposer = async (g: Partial<Record<Champ, string>>) => {
+    const p = guidedProposal(g.industry as string, g.goals as string, g.monthlyBudget as string, focusRef.current ?? domaineRef.current);
+    const plan = encodePlan(p.state);
+    maj((x) => ({ ...x, g, etape: 'fin', items: [...x.items, { k: 'bot', texte: c.propIntro }, { k: 'plan', plan, budget: p.budget }] }));
+    pousser('site_assistant_proposal', { assistant_domains: p.state.domains.join(','), assistant_monthly: devis(p.state).monthly });
     const fil = await assurerFil();
     if (!fil) return;
-    await envoyerReponse(fil, { question: QUESTIONS[champ].fr, reponse: libelle(champ, id, 'fr'), secondes: ctx().secondes });
+    await envoyerReponse(fil, {
+      question: 'Proposition',
+      reponse: p.state.domains.map((d) => domainName(d, 'fr')).join(', '),
+      estimation: resumeDevis(p.state),
+    });
     maj((x) => ({ ...x, prevenu: true }));
-    if (p) {
-      await envoyerReponse(fil, {
-        question: 'Proposition',
-        reponse: p.state.domains.map((d) => domainName(d, 'fr')).join(', '),
-        estimation: resumeDevis(p.state),
-      });
+  };
+
+  /**
+   * Sur une page service, chiffrer ne demande pas trois questions de cadrage : l'assistant pose LA
+   * question du calculateur pour ce service (le budget publicitaire, le niveau d'accompagnement)
+   * et rend le prix. C'est le calculateur qui parle, avec la page comme point de départ.
+   */
+  const chiffrerService = (d: ServiceDomain) => {
+    const questions = visibleQuestions(d, {});
+    // Le budget publicitaire d'abord ; sinon la première offre récurrente (l'accompagnement
+    // mensuel parle mieux qu'un audit de démarrage) ; sinon la première question tout court.
+    const q = questions.find((x) => x.kind === 'budget')
+      ?? questions.find((x) => (x.kind === 'level' || x.kind === 'choice') && optionsFor(x, {}).some((o) => o.price && !o.oneOff))
+      ?? questions[0];
+    if (!q || (q.kind !== 'budget' && q.kind !== 'level' && q.kind !== 'choice')) { demarrer({}); return; }
+    maj((x) => ({ ...x, etape: 'service', sq: q.id, items: [...x.items, { k: 'bot', texte: t(q.title, lang) }] }));
+  };
+
+  const optionsService = (q: Question): Choix[] => {
+    if (q.kind === 'budget') return BUDGETS.map((v) => ({ id: String(v), label: m(v) }));
+    return optionsFor(q, {}).map((o) => ({
+      id: String(o.value),
+      label: `${t(o.label, lang)}${o.price ? ` · ${m(o.price)}${o.oneOff ? '' : c.parMois}` : ''}`,
+    }));
+  };
+
+  const repondreService = async (q: Question, x: Choix) => {
+    const valeur = q.kind === 'budget' ? Number(x.id) : /^-?\d+$/.test(x.id) ? Number(x.id) : x.id;
+    const etat: QuoteState = { domains: [q.domain], answers: { [q.id]: valeur }, discuss: {}, duration: 4 };
+    const plan = encodePlan(etat);
+    maj((y) => ({
+      ...y,
+      etape: 'fin',
+      items: [...y.items, { k: 'moi', texte: x.label }, { k: 'bot', texte: c.propIntro }, { k: 'plan', plan, budget: devis(etat).monthly }],
+    }));
+    pousser('site_assistant_proposal', { assistant_domains: q.domain, assistant_monthly: devis(etat).monthly });
+    const fil = await assurerFil();
+    if (!fil) return;
+    await envoyerReponse(fil, { question: `${domainName(q.domain, 'fr')} : ${t(q.title, 'fr')}`, reponse: x.label, estimation: resumeDevis(etat), secondes: ctx().secondes });
+    maj((y) => ({ ...y, prevenu: true }));
+  };
+
+  /** Démarre les questions en gardant ce que la page ou le choix du menu ont déjà appris. */
+  const demarrer = (pre: { goals?: string; industry?: string; focus?: ServiceDomain }) => {
+    focusRef.current = pre.focus ?? domaineRef.current;
+    const g: Partial<Record<Champ, string>> = {};
+    if (pre.goals) g.goals = pre.goals;
+    const secteur = pre.industry ?? secteurRef.current;
+    if (secteur) g.industry = secteur;
+    const suivant = ORDRE.find((ch) => !g[ch]);
+    if (!suivant) { void proposer(g); return; }
+    maj((x) => ({ ...x, g, etape: suivant, items: [...x.items, { k: 'bot', texte: QUESTIONS[suivant][lang] }] }));
+  };
+
+  const repondre = async (champ: Champ, id: string) => {
+    const g = { ...sRef.current.g, [champ]: id };
+    const suivant = ORDRE.find((ch) => !g[ch]);
+    pousser('site_assistant_answer', { assistant_step: champ, assistant_value: id });
+    maj((x) => ({
+      ...x,
+      g,
+      etape: suivant ?? x.etape,
+      items: [...x.items, { k: 'moi', texte: libelle(champ, id, lang) }, ...(suivant ? [{ k: 'bot', texte: QUESTIONS[suivant][lang] } as Item] : [])],
+    }));
+    const fil = await assurerFil();
+    if (fil) {
+      await envoyerReponse(fil, { question: QUESTIONS[champ].fr, reponse: libelle(champ, id, 'fr'), secondes: ctx().secondes });
+      maj((x) => ({ ...x, prevenu: true }));
     }
+    if (!suivant) await proposer(g);
+  };
+
+  // --- les réponses écrites du menu -------------------------------------------------------------
+  const direEtNoter = async (texte: string, question: string, reponse: string) => {
+    maj((x) => ({ ...x, etape: 'menu', items: [...x.items, { k: 'bot', texte }] }));
+    const fil = await assurerFil();
+    if (!fil) return;
+    await envoyerReponse(fil, { question, reponse, secondes: ctx().secondes });
+    maj((x) => ({ ...x, prevenu: true }));
+  };
+
+  const direPrix = async () => {
+    const d = domaineRef.current;
+    if (!d) { versLibre(); return; }
+    const px = prixDeDepart(d);
+    const lignes: string[] = [];
+    if (px.fee && px.feeMax && px.pct) lignes.push(c.prixGestion(m(px.fee), m(px.feeMax), px.pct));
+    if (px.monthly) lignes.push(c.prixMensuel(m(px.monthly)));
+    if (px.once) lignes.push(c.prixUneFois(m(px.once)));
+    if (!lignes.length) lignes.push(c.prixInconnu);
+    lignes.push(c.prixSuite);
+    await direEtNoter(lignes.join('\n\n'), 'A demandé les prix', domainName(d, 'fr'));
+  };
+
+  const direInclus = async () => {
+    const d = domaineRef.current;
+    const data = d ? info(`dom:${d}`, lang, currency) : null;
+    if (!d || !data) { versLibre(); return; }
+    const texte = [data.text, ...(data.list ?? []).slice(0, 5).map((x) => `• ${x}`)].filter(Boolean).join('\n');
+    await direEtNoter(texte, 'A regardé ce qui est compris', domainName(d, 'fr'));
+  };
+
+  const direCas = async () => {
+    const f = ficheRef.current;
+    const cas = suiteRef.current;
+    if (!f?.c) { versLibre(); return; }
+    const texte = cas?.cl && cas.r ? c.casChiffre(cas.cl, cas.r) : (cas?.d ?? cas?.t ?? '');
+    await direEtNoter(texte, 'A demandé un résultat client', cas?.cl || f.c);
   };
 
   const ouvrirDevis = async (plan: string, budget: number) => {
@@ -337,7 +489,8 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
       ...x,
       prevenu: true,
       messages: x.messages + 1,
-      etape: 'libre',
+      // Une question en cours reste posée : écrire à Paul n'annule pas le parcours.
+      etape: x.etape === 'menu' || x.etape === 'accueil' ? 'libre' : x.etape,
       items: [
         ...x.items,
         ...(premier ? [{ k: 'bot', texte: c.apresMessage } as Item] : []),
@@ -381,17 +534,70 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     );
   };
 
+  /** Les choix proposés, selon ce que la page raconte. */
+  const menu = (): Choix[] => {
+    const f = ficheRef.current;
+    const d = domaine;
+    const liste: Choix[] = [];
+    if (!f || f.k === 'home' || f.k === 'services' || f.k === 'cases' || f.k === 'blogs') {
+      liste.push({ id: 'but:leads', label: c.butLeads }, { id: 'but:sales', label: c.butVentes }, { id: 'but:seo', label: c.butVisible }, { id: 'but:ai-training', label: c.butFormer });
+    } else if (f.k === 'case') {
+      liste.push({ id: 'plan', label: c.pareil });
+      if (d) liste.push({ id: 'prix', label: c.combien });
+    } else if (f.k === 'blog') {
+      liste.push({ id: 'plan', label: c.pareil });
+      if (d) liste.push({ id: 'prix', label: c.combien });
+      if (f.c) liste.push({ id: 'aller', label: c.voirService(d ? domainName(d, lang) : f.t), href: f.c });
+    } else if (f.k === 'contact') {
+      liste.push({ id: 'plan', label: c.aide });
+    } else {
+      if (d) liste.push({ id: 'prix', label: c.combien }, { id: 'inclus', label: c.comprend });
+      if (f.c) liste.push({ id: 'cas', label: c.resultats });
+      liste.push({ id: 'plan', label: d ? c.chiffrer : c.aide });
+    }
+    liste.push({ id: 'paul', label: c.poser });
+    const faits = sRef.current.faits ?? [];
+    return liste.filter((x) => !faits.includes(x.id));
+  };
+
+  const agir = async (x: Choix) => {
+    maj((y) => ({ ...y, items: [...y.items, { k: 'moi', texte: x.label }], faits: [...(y.faits ?? []), x.id] }));
+    if (x.id === 'paul') { versLibre(); return; }
+    if (x.id === 'plan') {
+      const d = domaineRef.current;
+      if (d) chiffrerService(d); else demarrer({});
+      return;
+    }
+    if (x.id.startsWith('but:')) {
+      const but = x.id.slice(4);
+      demarrer(but === 'seo' ? { goals: 'leads', focus: 'seo' } : but === 'ai-training' ? { goals: 'ai-training', focus: 'ai-training' } : { goals: but });
+      return;
+    }
+    if (x.id === 'prix') { await direPrix(); return; }
+    if (x.id === 'inclus') { await direInclus(); return; }
+    if (x.id === 'cas') { await direCas(); return; }
+  };
+
   const puce = 'rounded-full border border-slate-300 bg-white px-3.5 py-2 text-left text-[14px] font-medium text-slate-900 transition-colors hover:border-primary-600 hover:bg-primary-50';
   const puceForte = 'rounded-full border border-primary-600 bg-primary-600 px-3.5 py-2 text-left text-[14px] font-semibold text-white transition-colors hover:bg-primary-700';
   const choix = () => {
     const e = s.etape;
-    if (e === 'accueil') {
+    if (e === 'menu' || e === 'accueil') {
+      const liste = menu();
       return (
         <div className="flex flex-wrap gap-2">
-          <button type="button" className={puceForte} onClick={() => maj((x) => ({ ...x, etape: 'industry', items: [...x.items, { k: 'moi', texte: service ? c.go : c.aide }, { k: 'bot', texte: QUESTIONS.industry[lang] }] }))}>{service ? c.go : c.aide}</button>
-          <button type="button" className={puce} onClick={() => { maj((x) => ({ ...x, items: [...x.items, { k: 'moi', texte: c.poser }] })); versLibre(); }}>{c.poser}</button>
-          {/* Le bouton collant « Calculer mon budget » est retiré là où la bulle s'affiche : son accès passe ici. */}
-          {!surCalculateur && <a href={`${cheminCalculateur(lang)}${service ? `?service=${service}` : ''}`} className={puce} onClick={() => pousser('site_assistant_calculator')}>{c.calculateur}</a>}
+          {liste.map((x, i) => (x.href
+            ? <a key={x.id} href={x.href} className={puce} onClick={() => pousser('site_assistant_lien', { assistant_lien: x.href })}>{x.label}</a>
+            : <button key={x.id} type="button" className={i === 0 ? puceForte : puce} onClick={() => void agir(x)}>{x.label}</button>))}
+          {!surCalculateur && <a href={`${cheminCalculateur(lang)}${domaine ? `?service=${domaine}` : ''}`} className={puce} onClick={() => pousser('site_assistant_calculator')}>{c.calculateur}</a>}
+        </div>
+      );
+    }
+    if (e === 'service' && s.sq && QUESTION_INDEX[s.sq]) {
+      const q = QUESTION_INDEX[s.sq];
+      return (
+        <div className="flex flex-wrap gap-2">
+          {optionsService(q).map((x) => <button key={x.id} type="button" className={puce} onClick={() => void repondreService(q, x)}>{x.label}</button>)}
         </div>
       );
     }

@@ -130,7 +130,14 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   d'édition à la main dans n8n : la copie du dépôt deviendrait fausse.
 - **Anciennes adresses** : `/{lang}/calculator-v5` sert l'ancien calculateur en noindex ;
   `/{lang}/calculator-v6` renvoie vers `/calculator` en gardant l'ancre.
-- **Assistant du site** (`src/components/site-assistant/`) : la bulle avec la photo de Paul,
+- **Assistant du site** (`src/components/site-assistant/`) : il connaît la page où il s'ouvre.
+  `src/pages/assistant-pages.json.ts` génère au build une carte des pages (type, titre, service du
+  calculateur, secteur, page à proposer ensuite, résultat client) ; `pages.ts` la lit une fois par
+  visite. Selon la page : accueil et choix différents, prix d'entrée du service (`prixDeDepart`
+  dans `engine.ts`), ce qui est compris (`content.ts`, clé `dom:<service>`), le résultat d'une
+  étude de cas, et surtout **« Chiffrer mon cas » pose LA question du calculateur pour ce service**
+  (budget publicitaire, niveau d'accompagnement) et rend le prix en une question. Le secteur d'une
+  page automobile n'est plus demandé. La bulle avec la photo de Paul,
   sans modèle, reliée à Google Chat (espace « Website Chat ») par l'application Academy.
   Sur tout le site depuis le 22/09/2026, sauf `/academy*` et `/admin` (script de
   `BaseLayout.astro` ; `?assistant=0` l'éteint pour la visite). Règle de Paul : **deux appels à
