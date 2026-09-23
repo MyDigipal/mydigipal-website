@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Refonte de la page d'accueil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+/* ============ LE DOCUMENT ============ */
+:root{
+  --d-encre:#0B1B2B; --d-texte:#3A4A5C; --d-doux:#627386; --d-trait:#E1E7EE;
+  --d-fond:#F4F6F9; --d-carte:#fff; --d-bleu:#1D71B8; --d-bleu-doux:#EAF3FB;
+  --d-rouge:#B4412F; --d-vert:#1F7A4D;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{margin:0;background:var(--d-fond);color:var(--d-texte);font:16px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1360px;margin:0 auto;padding:44px 20px 100px}
+.page h1,.page h2,.page h3{font-family:'Plus Jakarta Sans',Inter,sans-serif;color:var(--d-encre);letter-spacing:-.02em}
+.page>header h1{font-size:34px;line-height:1.15;margin:0 0 10px}
+.chapeau{font-size:17.5px;max-width:78ch;margin:0 0 8px}
+.date{font-size:14px;color:var(--d-doux)}
+.page h2.titre-doc{font-size:25px;margin:64px 0 8px}
+.intro{max-width:80ch;margin:0 0 18px}
+a{color:var(--d-bleu)}
+
+.constats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:22px 0 8px}
+.constat{background:var(--d-carte);border:1px solid var(--d-trait);border-radius:16px;padding:18px 20px}
+.constat b{display:block;font:700 30px/1.1 'Plus Jakarta Sans';color:var(--d-encre);letter-spacing:-.02em}
+.constat span{display:block;font-size:14px;color:var(--d-doux);margin-top:6px}
+
+/* les cinq gestes */
+.gestes{display:grid;gap:14px;grid-template-columns:repeat(6,1fr);margin-top:20px}
+.geste{background:var(--d-carte);border:1px solid var(--d-trait);border-radius:16px;padding:20px;grid-column:span 2;display:flex;flex-direction:column;gap:10px}
+.geste:nth-child(1),.geste:nth-child(2){grid-column:span 3}
+.geste h3{margin:0;font-size:17px}
+.geste p{margin:0;font-size:14.5px}
+.geste .ou{font-size:13.5px;color:var(--d-doux)}
+.scene{height:150px;border-radius:12px;background:#F7F9FB;border:1px solid var(--d-trait);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.rejouer{align-self:flex-start;border:1px solid var(--d-trait);background:#fff;border-radius:999px;padding:5px 12px;font:600 13px Inter;color:var(--d-encre);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.rejouer:hover{border-color:var(--d-encre)}
+.barres{display:flex;gap:10px;align-items:flex-end;height:96px}
+.barres i{display:block;width:42px;border-radius:8px;background:var(--d-bleu)}
+.barres i:nth-child(1){height:50%;opacity:.45}.barres i:nth-child(2){height:75%;opacity:.7}.barres i:nth-child(3){height:100%}
+.demo-compteur{font:800 54px/1 'Plus Jakarta Sans';color:var(--d-encre);letter-spacing:-.03em}
+.demo-compteur small{display:block;font:500 13px Inter;color:var(--d-doux);letter-spacing:0;margin-top:6px;text-align:center}
+.projecteur{position:absolute;inset:14px;border-radius:12px;background:#fff;border:1px solid var(--d-trait);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--d-encre);
+  background-image:radial-gradient(220px circle at var(--x,50%) var(--y,50%),rgba(29,113,184,.16),transparent 70%)}
+.projecteur::after{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:radial-gradient(160px circle at var(--x,50%) var(--y,50%),rgba(29,113,184,.9),transparent 70%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.demo-titre{font:800 26px/1.15 'Plus Jakarta Sans';color:var(--d-encre);letter-spacing:-.02em;text-align:left}
+.demo-image{width:70%;height:110px;border-radius:12px;object-fit:cover}
+
+.corrections{width:100%;border-collapse:collapse;background:var(--d-carte);border:1px solid var(--d-trait);border-radius:16px;overflow:hidden;margin-top:18px;font-size:14.5px}
+.corrections th{text-align:left;font:600 13px Inter;color:var(--d-doux);padding:12px 16px;background:#FAFBFC;border-bottom:1px solid var(--d-trait)}
+.corrections td{padding:13px 16px;vertical-align:top;border-top:1px solid var(--d-trait)}
+.corrections tr:first-child td{border-top:0}
+.corrections td:first-child{font-weight:600;color:var(--d-encre);width:22%}
+
+/* barre d'outils */
+.outils{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:30px 0 6px;padding:12px 0;background:var(--d-fond)}
+.groupe{display:inline-flex;background:#fff;border:1px solid var(--d-trait);border-radius:999px;padding:3px}
+.bouton{border:0;background:transparent;color:var(--d-texte);border-radius:999px;padding:7px 15px;font:600 14px Inter;cursor:pointer}
+.bouton[aria-pressed="true"]{background:var(--d-encre);color:#fff}
+.etiquette{font-size:13.5px;color:var(--d-doux)}
+.sommaire{margin-left:auto;display:flex;gap:6px}
+.sommaire a{font:600 13.5px Inter;text-decoration:none;color:var(--d-encre);padding:7px 12px;border-radius:999px;border:1px solid var(--d-trait);background:#fff}
+
+/* les directions */
+.directions{display:grid;gap:30px;margin-top:10px}
+body[data-vue="tel"] .directions{grid-template-columns:repeat(auto-fit,minmax(410px,1fr));align-items:start}
+.direction{background:var(--d-carte);border:1px solid var(--d-trait);border-radius:20px;padding:22px;scroll-margin-top:70px}
+.direction>h3{margin:0;font-size:22px}
+.pari{margin:6px 0 16px;font-size:15.5px;max-width:92ch}
+.pari b{color:var(--d-encre)}
+.cadre{position:relative;overflow:clip;contain:paint;border-radius:14px;border:1px solid var(--d-trait);background:#fff}
+.ecran{transform-origin:0 0;position:absolute;top:0;left:0}
+.bilan{display:grid;gap:14px;margin-top:18px}
+body[data-vue="ordi"] .bilan{grid-template-columns:1fr 1fr 1fr}
+.bilan>div{border:1px solid var(--d-trait);border-radius:14px;padding:16px 18px;font-size:14.5px}
+.bilan h4{margin:0 0 8px;font:700 14.5px 'Plus Jakarta Sans';color:var(--d-encre)}
+.bilan ul{margin:0;padding-left:18px}
+.bilan li{margin:3px 0}
+.bilan .risque{background:#FDF6F4;border-color:#F1D9D3}
+.bilan .risque h4{color:var(--d-rouge)}
+.effort{font-size:14px;color:var(--d-doux);margin-top:10px}
+
+.reco{background:var(--d-carte);border:1px solid var(--d-trait);border-radius:20px;padding:26px 28px;margin-top:18px}
+.reco p{max-width:84ch}
+.questions{margin:10px 0 0;padding-left:20px}
+.questions li{margin:8px 0;max-width:90ch}
+
+@media (max-width:900px){.gestes{grid-template-columns:1fr}.geste,.geste:nth-child(1),.geste:nth-child(2){grid-column:auto}body[data-vue="ordi"] .bilan{grid-template-columns:1fr}.sommaire{margin-left:0}}
+
+/* ============ LES MAQUETTES : socle commun ============ */
+.ecran{--bleu:#1D71B8;--bleu-f:#155A93;--bleu-doux:#EAF3FB;--encre:#0B1B2B;--gris:#566779;--trait:#E3E8EF;--fond:#fff;--fond2:#F5F8FB;
+  --nuit:#0A121D;--nuit2:#111D2B;--ivoire:#EEF2F6;--brume:#A3B1C0;--bleu-c:#58A9E8;
+  container:ecran/inline-size;background:var(--fond);color:var(--encre);font:16px/1.55 Inter,system-ui,sans-serif}
+.ecran *{box-sizing:border-box}
+.ecran h1,.ecran h2,.ecran h3,.ecran h4{font-family:'Plus Jakarta Sans',Inter,sans-serif;letter-spacing:-.025em;margin:0;color:inherit}
+.ecran p{margin:0}
+.ecran a{color:inherit;text-decoration:none}
+.ecran img{display:block;max-width:100%}
+.m-in{padding-left:16px;padding-right:16px}
+.m-nav{display:flex;align-items:center;justify-content:space-between;height:60px;border-bottom:1px solid var(--trait)}
+.m-nav .logo{height:28px;width:auto}
+.m-liens{display:none;gap:30px;font-size:14.5px;font-weight:500}
+.m-menu{font-size:26px;line-height:1}
+.m-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:42px;padding:0 16px;border-radius:999px;font:600 14px/1 Inter;white-space:nowrap;transition:transform .25s cubic-bezier(.16,1,.3,1),background .25s;cursor:pointer;border:0}
+.m-btn:hover{transform:translateY(-2px)}
+.m-btn:active{transform:translateY(1px)}
+.m-btn.plein{background:var(--bleu);color:#fff}
+.m-btn.plein:hover{background:var(--bleu-f)}
+.m-btn.creux{background:transparent;box-shadow:inset 0 0 0 1.5px currentColor}
+.m-btn i{font-size:16px;transition:transform .25s}
+.m-btn:hover i{transform:translateX(3px)}
+.m-nav .m-btn{display:none}
+.m-boutons{display:flex;gap:8px;flex-wrap:nowrap}
+.ecran .m-lien{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--bleu)}
+.m-lien i{transition:transform .25s}.m-lien:hover i{transform:translateX(4px)}
+.m-pied{display:flex;flex-wrap:wrap;gap:10px 28px;justify-content:space-between;align-items:center;padding-top:26px;padding-bottom:30px;border-top:1px solid var(--trait);font-size:13.5px;color:var(--gris)}
+.m-pied .logo{height:22px}
+.m-pied nav{display:flex;flex-wrap:wrap;gap:8px 18px}
+.ecran [lang="en"]{display:none!important}
+body[data-langue="en"] .ecran [lang="en"]{display:revert!important}
+body[data-langue="en"] .ecran .ligne>[lang="en"]{display:block!important}
+body[data-langue="en"] .ecran [lang="fr"]{display:none!important}
+.logos-mur img{height:30px;width:auto;object-fit:contain;filter:grayscale(1) contrast(1.1);mix-blend-mode:multiply;opacity:.8}
+.logos-mur img.blanc{filter:brightness(0);mix-blend-mode:normal;opacity:.7}
+
+@container ecran (min-width:768px){
+  .m-in{padding-left:64px;padding-right:64px}
+  .m-nav{height:72px}
+  .m-nav .logo{height:34px}
+  .m-liens{display:flex}
+  .m-menu{display:none}
+  .m-nav .m-btn{display:inline-flex;height:40px}
+  .m-btn{height:48px;padding:0 22px;font-size:15px}
+}
+
+/* mouvement : apparition, entrée du hero, lignes masquées */
+[data-r]{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);transition-delay:calc(var(--i,0) * 70ms)}
+[data-r].vu{opacity:1;transform:none}
+.joue .h-entre{animation:entre .9s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0) * 90ms + 150ms)}
+@keyframes entre{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.ligne{display:block;overflow:hidden;padding-bottom:.08em}
+.ligne>span{display:block}
+.joue .ligne>span{animation:monte 1s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0) * 120ms + 100ms)}
+@keyframes monte{from{transform:translateY(108%)}to{transform:none}}
+.joue .h-visage{animation:visage .9s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0) * 45ms + 250ms)}
+@keyframes visage{from{opacity:0;transform:scale(.86) translateY(14px)}to{opacity:1;transform:none}}
+.defile{overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.defile>div{display:flex;width:max-content;animation:defile 50s linear infinite}
+.defile:hover>div{animation-play-state:paused}
+@keyframes defile{to{transform:translateX(-50%)}}
+
+/* ============ DIRECTION A : Les visages ============ */
+.ma-hero{display:grid;gap:26px;padding-top:28px;padding-bottom:34px}
+.ma-hero h1{font-size:38px;line-height:1.06;font-weight:800}
+.ma-hero .sous{font-size:16.5px;color:var(--gris);margin-top:14px;max-width:44ch}
+.ma-hero .m-boutons{margin-top:22px}
+.ma-mosaique{display:grid;gap:6px}
+.ma-rang{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.ma-rang.decale{grid-template-columns:repeat(4,1fr);padding:0 10%}
+.ma-visage{position:relative;cursor:pointer;transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .35s,filter .35s}
+.ma-visage img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:12px;background:var(--fond2)}
+.ma-mosaique:hover .ma-visage{opacity:.5;filter:grayscale(.6)}
+.ma-mosaique .ma-visage:hover{opacity:1;filter:none;transform:translateY(-6px) scale(1.04);z-index:2}
+.ma-legende{margin-top:12px;font-size:14px;color:var(--gris);min-height:22px}
+.ma-legende b{color:var(--encre)}
+.ma-logos{padding:22px 0;border-top:1px solid var(--trait);border-bottom:1px solid var(--trait)}
+.ma-logos .defile>div{gap:48px;align-items:center;padding-right:48px}
+.ma-res{padding-top:56px;padding-bottom:56px;display:grid;gap:26px}
+.ma-res h2{font-size:30px;line-height:1.1;font-weight:800}
+.ma-res-tete p{color:var(--gris);margin-top:12px;max-width:40ch}
+.ma-res-tete .m-lien{margin-top:16px}
+.ma-liste{list-style:none;margin:0 -16px;padding:0 16px 6px;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.ma-cas{flex:0 0 78%;scroll-snap-align:start;border:1px solid var(--trait);border-radius:18px;overflow:hidden;background:#fff;transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
+.ma-cas:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px rgba(11,27,43,.35)}
+.ma-cas img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.ma-cas .corps{padding:14px 16px 16px;display:grid;gap:2px}
+.ma-cas .client{font-weight:600}
+.ma-cas .secteur{font-size:13px;color:var(--gris)}
+.ma-cas .nombre{font:800 40px/1.05 'Plus Jakarta Sans';letter-spacing:-.03em;color:var(--bleu);margin-top:10px;font-variant-numeric:tabular-nums}
+.ma-cas .quoi{font-size:14px;color:var(--gris)}
+.ma-portes{padding-top:8px;padding-bottom:56px;display:grid;gap:12px}
+.ma-portes>h2{font-size:30px;font-weight:800;margin-bottom:10px}
+.porte{border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;transition:transform .4s cubic-bezier(.16,1,.3,1)}
+.porte:hover{transform:translateY(-3px)}
+.porte h3{font-size:22px;font-weight:800;line-height:1.15}
+.porte .txt{font-size:15px}
+.porte .m-btn{align-self:flex-start;margin-top:auto}
+.ma-calc{background:var(--bleu-doux)}
+.ma-calc .txt{color:var(--gris)}
+.prix{list-style:none;margin:4px 0 6px;padding:0;display:grid;gap:0}
+.prix li{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-top:1px solid rgba(29,113,184,.18);font-size:14.5px}
+.prix li:first-child{border-top:0}
+.prix li b{font-weight:600;white-space:nowrap;text-align:right}
+.prix li small{display:block;font-size:12.5px;color:var(--gris);font-weight:400}
+.ma-aca{background:var(--nuit);color:var(--ivoire)}
+.ma-aca .txt{color:var(--brume)}
+.ma-aca .capture{border-radius:12px;border:1px solid rgba(255,255,255,.12);transform:rotate(-2deg) translateY(6px);transition:transform .5s cubic-bezier(.16,1,.3,1);margin:4px 0 6px}
+.ma-aca:hover .capture{transform:none}
+.ma-aca .m-btn.plein{background:var(--bleu-c);color:#06121F}
+.ma-contact{background:var(--fond2)}
+.ma-contact .qui{display:flex;gap:14px;align-items:center}
+.ma-contact .qui img{width:64px;height:64px;border-radius:50%;object-fit:cover}
+.ma-contact .txt{color:var(--gris)}
+.ma-avis{background:var(--fond2);padding-top:56px;padding-bottom:56px;display:grid;gap:24px}
+.ma-avis .note{font:800 84px/1 'Plus Jakarta Sans';letter-spacing:-.04em;color:var(--encre)}
+.ma-avis .note span{font-size:.4em;color:var(--gris);letter-spacing:0}
+.ma-avis .note-txt{color:var(--gris);margin-top:22px;max-width:30ch}
+.ma-citations{position:relative;min-height:190px}
+.ma-citation{position:absolute;inset:0;opacity:0;transform:translateY(12px);transition:opacity .7s,transform .7s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.ma-citation.active{opacity:1;transform:none;pointer-events:auto}
+.ma-citation blockquote{margin:0;font:600 22px/1.35 'Plus Jakarta Sans';letter-spacing:-.015em}
+.ma-citation .auteur{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--gris)}
+.ma-citation .auteur b{color:var(--encre)}
+.ma-fleches{display:flex;gap:8px}
+.ma-fleches button{width:40px;height:40px;border-radius:50%;border:1px solid var(--trait);background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;color:var(--encre)}
+.ma-index{padding-top:56px;padding-bottom:56px;display:grid;gap:30px}
+.ma-index h2{font-size:30px;font-weight:800}
+.ma-groupe h3{font-size:15px;font-weight:700;color:var(--gris);margin-bottom:6px;letter-spacing:0}
+.ma-groupe a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:13px 10px;margin:0 -10px;border-radius:10px;border-bottom:1px solid var(--trait);transition:background .25s}
+.ma-groupe a:last-child{border-bottom:0}
+.ma-groupe a:hover{background:var(--fond2)}
+.ma-groupe .nom{font:700 18px 'Plus Jakarta Sans';letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.ma-groupe .nom i{opacity:0;transform:translateX(-6px);transition:.25s;color:var(--bleu)}
+.ma-groupe a:hover .nom i{opacity:1;transform:none}
+.ma-groupe .des{font-size:13.5px;color:var(--gris);white-space:nowrap}
+.ma-blog{padding-bottom:56px;display:grid;gap:14px}
+.ma-blog>h2{font-size:30px;font-weight:800;margin-bottom:6px}
+.ma-art img{width:100%;aspect-ratio:1200/630;object-fit:cover;border-radius:14px;transition:transform .5s cubic-bezier(.16,1,.3,1)}
+.ma-art:hover img{transform:scale(1.02)}
+.ma-art h3{font-size:17px;line-height:1.3;margin-top:10px;font-weight:700}
+.ma-art .quand{font-size:13px;color:var(--gris);margin-top:4px}
+.ma-art.petit{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center}
+.ma-art.petit h3{margin-top:0;font-size:15.5px}
+.ma-fin{background:var(--bleu-doux);padding-top:48px;padding-bottom:48px;display:grid;gap:18px;justify-items:start}
+.ma-fin img{width:84px;height:84px;border-radius:50%;object-fit:cover}
+.ma-fin h2{font-size:30px;font-weight:800;line-height:1.1}
+.ma-fin p{color:var(--gris);max-width:46ch}
+
+@container ecran (min-width:768px){
+  .ma-hero{grid-template-columns:1fr 1.05fr;gap:64px;align-items:center;padding-top:72px;padding-bottom:80px;min-height:720px}
+  .ma-hero h1{font-size:64px;line-height:1.02}
+  .ma-hero .sous{font-size:19px}
+  .ma-hero .m-boutons{margin-top:30px}
+  .ma-mosaique,.ma-rang{gap:10px}
+  .ma-visage img{border-radius:16px}
+  .ma-logos{padding:30px 0}
+  .ma-logos .defile>div{gap:72px;padding-right:72px}
+  .logos-mur img{height:36px}
+  .ma-res{grid-template-columns:5fr 7fr;gap:64px;padding-top:110px;padding-bottom:110px;align-items:start}
+  .ma-res-tete{position:sticky;top:180px}
+  .ma-res h2,.ma-portes>h2,.ma-index h2,.ma-blog>h2,.ma-fin h2{font-size:44px;line-height:1.05}
+  .ma-liste{display:grid;margin:0;padding:0;gap:14px;overflow:visible}
+  .ma-cas{display:grid;grid-template-columns:220px 1fr auto;align-items:center}
+  .ma-cas img{height:100%;aspect-ratio:auto}
+  .ma-cas .corps{padding:22px 26px}
+  .ma-cas>div:last-child{padding-right:30px;text-align:right}
+  .ma-cas .nombre{margin:0;font-size:52px}
+  .ma-portes{grid-template-columns:repeat(12,1fr);grid-template-rows:auto minmax(290px,auto) minmax(250px,auto);gap:16px;padding-bottom:110px}
+  .ma-portes>h2{grid-column:1/-1;margin-bottom:14px}
+  .ma-calc{grid-column:1/8;grid-row:2/4;padding:36px}
+  .ma-aca{grid-column:8/13;grid-row:2;padding:30px}
+  .ma-contact{grid-column:8/13;grid-row:3;padding:30px}
+  .porte h3{font-size:28px}
+  .ma-calc h3{font-size:36px}
+  .ma-aca>*{position:relative;z-index:1}
+  .ma-aca .capture{position:absolute;z-index:0;right:-36px;bottom:-34px;width:46%;margin:0}
+  .ma-aca .txt{max-width:24ch}
+  .ma-aca h3{max-width:14ch}
+  .ma-avis{grid-template-columns:5fr 7fr;gap:64px;align-items:center;padding-top:110px;padding-bottom:110px}
+  .ma-avis .note{font-size:150px}
+  .ma-citation blockquote{font-size:32px}
+  .ma-citations{min-height:230px}
+  .ma-index{grid-template-columns:1fr 1fr;gap:26px 64px;padding-top:110px;padding-bottom:110px}
+  .ma-index h2{grid-column:1/-1}
+  .ma-groupe .nom{font-size:21px}
+  .ma-blog{grid-template-columns:7fr 5fr;gap:18px 32px;padding-bottom:110px}
+  .ma-blog>h2{grid-column:1/-1}
+  .ma-blog .ma-art:first-of-type{grid-row:2/4}
+  .ma-art.petit{grid-template-columns:180px 1fr}
+  .ma-art h3{font-size:22px}
+  .ma-art.petit h3{font-size:17px}
+  .ma-fin{grid-template-columns:auto 1fr auto;align-items:center;gap:32px;padding-top:80px;padding-bottom:80px}
+  .ma-fin img{width:120px;height:120px}
+}
+
+/* ============ DIRECTION B : L'aiguillage ============ */
+.mb-hero{padding-top:26px;padding-bottom:40px}
+.mb-hero h1{font-size:36px;line-height:1.06;font-weight:800}
+.mb-hero .sous{font-size:16px;color:var(--gris);margin-top:12px;max-width:52ch}
+.mb-portes{display:grid;gap:12px;margin-top:24px}
+.mb-calc{background:#fff;border:1.5px solid var(--trait)}
+.mb-calc .txt{color:var(--gris)}
+.puces{display:flex;flex-wrap:wrap;gap:7px}
+.puce{border:1.5px solid var(--trait);background:#fff;border-radius:999px;padding:7px 13px;font:600 13.5px Inter;color:var(--encre);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:border-color .2s,background .2s,transform .2s}
+.puce:hover{border-color:var(--bleu)}
+.puce[aria-pressed="true"]{background:var(--bleu);border-color:var(--bleu);color:#fff}
+.puce i{font-size:14px}
+.mb-choix{min-height:118px;border-radius:14px;background:var(--fond2);padding:6px 14px}
+.mb-choix .vide{padding:12px 0;font-size:14px;color:var(--gris)}
+.mb-choix li{animation:entre .45s cubic-bezier(.16,1,.3,1) both}
+.mb-choix .prix li{border-top-color:var(--trait)}
+.mb-note{font-size:13px;color:var(--gris)}
+.mb-aca{background:var(--nuit);color:var(--ivoire);min-height:330px}
+.mb-aca .txt{color:var(--brume)}
+.mb-aca .prix-aca{font:700 15px Inter;color:var(--ivoire)}
+.mb-aca .capture{position:absolute;right:-30px;bottom:-40px;width:78%;border-radius:12px;border:1px solid rgba(255,255,255,.12);transform:rotate(-4deg);transition:transform .6s cubic-bezier(.16,1,.3,1);opacity:.95}
+.mb-aca:hover .capture{transform:rotate(0) translateY(-8px)}
+.mb-aca .m-btn.plein{background:var(--bleu-c);color:#06121F;margin-top:0}
+.mb-aca .haut{position:relative;z-index:1;display:flex;flex-direction:column;gap:12px;max-width:30ch}
+.mb-equipe{background:var(--bleu-doux)}
+.mb-equipe .txt{color:var(--gris)}
+.pile{display:flex}
+.pile img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:3px solid var(--bleu-doux);margin-left:-10px;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.pile img:first-child{margin-left:0}
+.mb-equipe:hover .pile img{transform:translateY(-4px)}
+.mb-equipe:hover .pile img:nth-child(2n){transform:translateY(2px)}
+.mb-preuve{padding-top:56px;padding-bottom:40px;display:grid;gap:22px}
+.mb-phrase{font:700 26px/1.25 'Plus Jakarta Sans';letter-spacing:-.02em;color:var(--encre)}
+.mb-phrase em{font-style:normal;color:var(--bleu);font-variant-numeric:tabular-nums}
+.mb-phrase .client{color:var(--gris);font-weight:600}
+.mb-logos{padding-bottom:56px}
+.mb-logos h2{font-size:15px;font-weight:600;color:var(--gris);letter-spacing:0;margin-bottom:18px}
+.mb-logos .grille{display:flex;flex-wrap:wrap;gap:22px 30px;align-items:center}
+.mb-avis{background:var(--fond2);padding:56px 0}
+.mb-avis h2{font-size:28px;font-weight:800;margin-bottom:24px}
+.mb-avis .defile>div{gap:14px;padding-right:14px}
+.mb-carte{width:300px;flex:none;background:#fff;border:1px solid var(--trait);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.mb-carte p{font-size:15.5px;line-height:1.5;color:var(--encre)}
+.mb-carte .auteur{font-size:13.5px;color:var(--gris);margin-top:auto}
+.mb-carte .auteur b{color:var(--encre)}
+.mb-gens{padding-top:56px;padding-bottom:56px}
+.mb-gens h2{font-size:28px;font-weight:800;margin-bottom:6px}
+.mb-gens>p{color:var(--gris);margin-bottom:24px}
+.mb-grille{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 10px}
+.mb-pers img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;filter:grayscale(1);transition:filter .5s,transform .5s cubic-bezier(.16,1,.3,1)}
+.mb-pers:hover img{filter:none;transform:translateY(-4px)}
+.mb-pers b{display:block;font-size:13.5px;margin-top:8px;line-height:1.25}
+.mb-pers span{display:block;font-size:12.5px;color:var(--gris)}
+.mb-gens .m-btn{margin-top:28px}
+.mb-lire{padding-bottom:56px}
+.mb-lire h2{font-size:28px;font-weight:800;margin-bottom:12px}
+.mb-lire a{display:grid;grid-template-columns:1fr auto;gap:4px 20px;padding:16px 0;border-top:1px solid var(--trait);align-items:center}
+.mb-lire a:hover h3{color:var(--bleu)}
+.mb-lire h3{font-size:17px;line-height:1.3;font-weight:700;transition:color .2s}
+.mb-lire .quand{font-size:13px;color:var(--gris)}
+.mb-lire i{font-size:20px;color:var(--bleu);grid-row:1/3;grid-column:2}
+
+@container ecran (min-width:768px){
+  .mb-hero{padding-top:56px;padding-bottom:90px}
+  .mb-hero h1{font-size:60px;line-height:1.02}
+  .mb-hero .sous{font-size:18.5px}
+  .mb-portes{grid-template-columns:7fr 5fr;grid-template-rows:auto auto;gap:16px;margin-top:40px}
+  .mb-calc{grid-row:1/3;padding:34px}
+  .mb-calc h3{font-size:34px}
+  .mb-aca{min-height:300px;padding:30px}
+  .mb-aca .capture{width:58%;right:-40px;bottom:-50px}
+  .mb-equipe{padding:30px}
+  .puce{padding:9px 15px;font-size:14.5px}
+  .mb-choix{min-height:148px}
+  .mb-preuve{padding-top:110px;padding-bottom:70px;gap:30px}
+  .mb-phrase{font-size:44px;line-height:1.15;max-width:22ch}
+  .mb-logos{padding-bottom:110px}
+  .mb-logos .grille{gap:34px 56px}
+  .mb-avis{padding:110px 0}
+  .mb-avis h2{font-size:44px;margin-bottom:36px}
+  .mb-carte{width:380px;padding:26px}
+  .mb-carte p{font-size:17px}
+  .mb-gens{padding-top:110px;padding-bottom:110px}
+  .mb-gens h2,.mb-lire h2{font-size:44px}
+  .mb-grille{grid-template-columns:repeat(7,1fr);gap:24px 16px}
+  .mb-lire{padding-bottom:110px}
+  .mb-lire h3{font-size:22px}
+}
+
+/* ============ DIRECTION C : La nuit ============ */
+.mc{background:var(--nuit);color:var(--ivoire)}
+.mc .m-nav{border-bottom-color:rgba(255,255,255,.08)}
+.mc .m-btn.plein{background:var(--bleu-c);color:#06121F}
+.mc .m-btn.plein:hover{background:#7BBDF0}
+.ecran.mc .m-lien{color:var(--bleu-c)}
+.mc-hero{position:relative;overflow:hidden}
+.mc-hero .photo{position:relative;height:250px}
+.mc-hero .photo img{width:100%;height:100%;object-fit:cover;object-position:65% 45%}
+.mc-hero .photo::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,18,29,.1) 30%,var(--nuit) 100%)}
+.joue .mc-hero .photo img{animation:pose-photo 2.2s cubic-bezier(.16,1,.3,1) both}
+@keyframes pose-photo{from{transform:scale(1.12);opacity:.3}to{transform:none;opacity:1}}
+.mc-hero .texte{position:relative;padding-top:4px;padding-bottom:44px}
+.mc-hero h1{font-size:38px;line-height:1.04;font-weight:800}
+.mc-hero h1 .b{color:var(--bleu-c)}
+.mc-hero .sous{color:var(--brume);font-size:16.5px;margin-top:14px;max-width:44ch}
+.mc-hero .m-boutons{margin-top:22px}
+.mc-hero .m-btn.creux{color:var(--ivoire)}
+.mc-mesure{padding-top:56px;padding-bottom:56px;border-top:1px solid rgba(255,255,255,.08)}
+.mc-mesure h2,.mc-ens h2,.mc-cout h2,.mc-gens h2,.mc-fin h2{font-size:30px;font-weight:800;line-height:1.1}
+.mc-panneau{display:none}
+.mc-rangs{list-style:none;margin:26px 0 0;padding:0}
+.mc-rang{padding:22px 0;border-top:1px solid rgba(255,255,255,.1);transition:opacity .5s}
+.mc-rang .nombre{font:800 44px/1 'Plus Jakarta Sans';letter-spacing:-.03em;color:var(--bleu-c);font-variant-numeric:tabular-nums}
+.mc-rang .quoi{font-size:14px;color:var(--brume);margin-top:4px}
+.mc-rang h3{font-size:21px;font-weight:700;margin-top:14px}
+.mc-rang .secteur{font-size:13px;color:var(--brume)}
+.mc-rang p{color:var(--brume);font-size:15px;margin-top:6px}
+.mc-ens{padding-top:56px;padding-bottom:56px;background:var(--nuit2);display:grid;gap:26px}
+.mc-ens .txt{color:var(--brume);margin-top:14px}
+.mc-offres{list-style:none;margin:20px 0;padding:0}
+.mc-offres li{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0;border-top:1px solid rgba(255,255,255,.1)}
+.mc-offres li b{font:800 24px 'Plus Jakarta Sans';letter-spacing:-.02em}
+.mc-offres li span small{display:block;font-size:13px;color:var(--brume)}
+.mc-note{display:flex;gap:10px;align-items:baseline;margin-bottom:22px;color:var(--brume);font-size:14px}
+.mc-note b{font:800 34px 'Plus Jakarta Sans';color:var(--ivoire);letter-spacing:-.03em}
+.mc-capture{border-radius:16px;border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 80px -30px rgba(0,0,0,.8)}
+.mc-logos{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:20px 30px;align-items:center;padding-top:10px}
+.mc-logos img{height:26px;width:auto;object-fit:contain;filter:grayscale(1) invert(1);mix-blend-mode:screen;opacity:.75}
+.mc-logos img.blanc{filter:grayscale(1);mix-blend-mode:normal}
+.mc-cout{padding-top:56px;padding-bottom:56px}
+.mc-cout .txt{color:var(--brume);margin-top:12px;max-width:44ch}
+.mc-lignes{list-style:none;margin:24px 0;padding:0}
+.mc-lignes li{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:16px 0;border-top:1px solid rgba(255,255,255,.1)}
+.mc-lignes .srv{font:700 18px 'Plus Jakarta Sans'}
+.mc-lignes .srv small{display:block;font:400 13px Inter;color:var(--brume)}
+.mc-lignes .montant{font:800 30px 'Plus Jakarta Sans';letter-spacing:-.02em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mc-lignes .montant small{font:500 13px Inter;color:var(--brume);margin-left:4px}
+.mc-gens{padding-top:56px;padding-bottom:30px}
+.mc-bande{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:24px -16px 0;padding:0 16px}
+.mc-bande figure{margin:0;flex:0 0 120px}
+.mc-bande img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:14px;filter:grayscale(1) brightness(.7);transition:filter 1s cubic-bezier(.16,1,.3,1);transition-delay:calc(var(--i,0) * 80ms)}
+.mc-bande.vu img{filter:none}
+.mc-bande figcaption{font-size:13px;margin-top:8px;line-height:1.3}
+.mc-bande figcaption span{display:block;color:var(--brume);font-size:12px}
+.mc-avis{padding:40px 0 56px}
+.mc-avis .defile>div{gap:40px;padding-right:40px;align-items:baseline}
+.mc-avis blockquote{margin:0;flex:none;max-width:420px;font:600 19px/1.4 'Plus Jakarta Sans';letter-spacing:-.01em}
+.mc-avis blockquote cite{display:block;font:400 13.5px Inter;color:var(--brume);margin-top:8px;font-style:normal}
+.mc-fin{padding-top:56px;padding-bottom:56px;border-top:1px solid rgba(255,255,255,.08);display:grid;gap:18px;justify-items:start}
+.mc-fin img{width:84px;height:84px;border-radius:50%;object-fit:cover}
+.mc-fin p{color:var(--brume);max-width:46ch}
+.mc .m-pied{border-top-color:rgba(255,255,255,.08);color:var(--brume)}
+.mc-capture-scroll{transform-origin:50% 100%}
+@supports (animation-timeline: view()){
+  .mc-capture-scroll{animation:pose-capture linear both;animation-timeline:view();animation-range:entry 0% cover 45%}
+  @keyframes pose-capture{from{transform:scale(.84) translateY(50px);opacity:.35}to{transform:none;opacity:1}}
+}
+
+@container ecran (min-width:768px){
+  .mc-hero{min-height:760px;display:flex;align-items:center}
+  .mc-hero .photo{position:absolute;inset:0;height:auto}
+  .mc-hero .photo img{object-position:70% 40%}
+  .mc-hero .photo::after{background:linear-gradient(90deg,var(--nuit) 0%,rgba(10,18,29,.92) 38%,rgba(10,18,29,.25) 72%,rgba(10,18,29,.1) 100%)}
+  .mc-hero .texte{padding-top:0;padding-bottom:0;width:100%}
+  .mc-hero h1{font-size:72px;line-height:1}
+  .mc-hero .sous{font-size:19px}
+  .mc-hero .m-boutons{margin-top:32px}
+  .mc-mesure{display:grid;grid-template-columns:5fr 7fr;gap:0 64px;padding-top:120px;padding-bottom:120px}
+  .mc-mesure h2,.mc-ens h2,.mc-cout h2,.mc-gens h2,.mc-fin h2{font-size:48px;line-height:1.04}
+  .mc-mesure>h2{grid-column:1/-1}
+  .mc-panneau{display:block;position:sticky;top:260px;align-self:start;margin-top:60px}
+  .mc-panneau .grand{font:800 150px/1 'Plus Jakarta Sans';letter-spacing:-.05em;color:var(--bleu-c);font-variant-numeric:tabular-nums}
+  .mc-panneau .quoi{font-size:18px;color:var(--ivoire);margin-top:10px}
+  .mc-panneau .qui{font-size:15px;color:var(--brume);margin-top:4px}
+  .mc-rangs{margin-top:60px}
+  .mc-rang{padding:44px 0;opacity:.32}
+  .mc-rang.active{opacity:1}
+  .mc-rang .nombre,.mc-rang .quoi{display:none}
+  .mc-rang h3{font-size:34px;margin-top:0}
+  .mc-rang p{font-size:17px;max-width:44ch}
+  .mc-ens{grid-template-columns:5fr 7fr;gap:30px 64px;align-items:center;padding-top:120px;padding-bottom:120px}
+  .mc-cout{display:grid;grid-template-columns:5fr 7fr;gap:64px;padding-top:120px;padding-bottom:120px;align-items:start}
+  .mc-cout .gauche{position:sticky;top:200px}
+  .mc-lignes{margin:0}
+  .mc-lignes li{padding:24px 0}
+  .mc-lignes .srv{font-size:22px}
+  .mc-lignes .montant{font-size:44px}
+  .mc-gens{padding-top:120px}
+  .mc-bande{display:grid;grid-template-columns:repeat(7,1fr);gap:22px 14px;margin:36px 0 0;padding:0;overflow:visible}
+  .mc-avis{padding:70px 0 110px}
+  .mc-avis blockquote{font-size:24px;max-width:560px}
+  .mc-fin{grid-template-columns:auto 1fr auto;align-items:center;gap:32px;padding-top:90px;padding-bottom:90px}
+  .mc-fin img{width:120px;height:120px}
+  .mc-logos img{height:30px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  [data-r]{opacity:1;transform:none;transition:none}
+  .joue .h-entre,.joue .ligne>span,.joue .h-visage,.joue .mc-hero .photo img{animation:none}
+  .defile>div{animation:none}
+  .mc-capture-scroll{animation:none!important}
+  .mc-bande img{filter:none}
+}
+</style>
+</head>
+<body data-vue="ordi" data-langue="fr">
+<div class="page">
+
+<header>
+  <h1>Refaire la page d'accueil, et sortir le site du statique</h1>
+  <p class="chapeau">Trois directions complètes pour la page d'accueil, chacune rendue avec le vrai contenu à 1440 px et à 390 px, puis le socle de mouvement qui s'applique à tout le site, quelle que soit la direction retenue. Les maquettes bougent vraiment : on descend dedans comme sur le site.</p>
+  <p class="date">23 septembre 2026. Prix, verbatims et chiffres relevés dans le code et dans l'API de l'Academy le même jour. Ce document prolonge <a href="3-directions.html">le comparatif du matin</a>, qui ne touchait qu'à la place de l'Academy et du calculateur.</p>
+</header>
+
+<!-- ================= LE SOCLE ================= -->
+<h2 class="titre-doc" id="socle">Ce qui change sur tout le site</h2>
+<p class="intro">Le site paraît statique pour une raison mesurable : les gestes de mouvement existent déjà (<code>src/lib/scroll.ts</code>, posé en mai), mais presque aucune section ne s'en sert. Et le style que la refonte V2 voulait quitter est toujours là, section par section.</p>
+
+<div class="constats">
+  <div class="constat"><b>8 sur 76</b><span>sections qui apparaissent au défilement. Les 68 autres sont posées d'un bloc.</span></div>
+  <div class="constat"><b>49</b><span>fichiers de sections qui portent encore un dégradé indigo ou violet (pages IA, B2B, automobile).</span></div>
+  <div class="constat"><b>183</b><span>icônes centrées dans un rond ou un carré de couleur, au-dessus d'un titre.</span></div>
+  <div class="constat"><b>4 libellés</b><span>pour une seule page, le calculateur : « Calculer mon budget », « Essayer le Calculateur », « Devis Interactif », « Devis Gratuit ».</span></div>
+</div>
+
+<h3 style="margin:34px 0 4px;font-size:19px">Un vocabulaire de cinq gestes, écrit une fois, utilisé partout</h3>
+<p class="intro" style="margin-bottom:0">Chaque geste a une raison d'être, et c'est elle qui décide où il va. Aucun n'est décoratif. Tous s'éteignent pour les visiteurs qui ont demandé moins d'animation à leur système.</p>
+<div class="gestes">
+  <div class="geste">
+    <h3>L'apparition au défilement</h3>
+    <p>Les blocs d'une section montent de quelques pixels, l'un après l'autre, au moment où on y arrive.</p>
+    <p class="ou">Sert à : dire dans quel ordre lire. Où : toutes les sections du site, pas 8 sur 76.</p>
+    <div class="scene"><div class="barres" data-demo="barres"><i data-r style="--i:0"></i><i data-r style="--i:2"></i><i data-r style="--i:4"></i></div></div>
+    <button class="rejouer" data-rejoue="barres"><i class="ph ph-arrow-counter-clockwise"></i>Rejouer</button>
+  </div>
+  <div class="geste">
+    <h3>Le compteur</h3>
+    <p>Un chiffre sourcé monte de zéro à sa valeur quand il entre dans l'écran, en 1,4 seconde.</p>
+    <p class="ou">Sert à : faire lire le chiffre. Où : résultats des études de cas, note de l'Academy, prix de départ. Jamais sur un chiffre sans source.</p>
+    <div class="scene"><div class="demo-compteur"><span data-compte="170" data-pre="+" data-suf=" %">+170 %</span><small>conversions, Groupe DMD</small></div></div>
+    <button class="rejouer" data-rejoue="compteur"><i class="ph ph-arrow-counter-clockwise"></i>Rejouer</button>
+  </div>
+  <div class="geste">
+    <h3>Le projecteur</h3>
+    <p>Une lumière bleue suit la souris sur une carte cliquable, et son bord s'allume là où elle passe.</p>
+    <p class="ou">Sert à : montrer ce qui se clique. Où : cartes des services, des études de cas, des articles.</p>
+    <div class="scene"><div class="projecteur" data-projecteur>Passez la souris</div></div>
+  </div>
+  <div class="geste">
+    <h3>Le titre révélé</h3>
+    <p>Les lignes d'un grand titre sortent d'un masque, une par une.</p>
+    <p class="ou">Sert à : poser le message avant tout le reste. Où : le hero de chaque page, une fois.</p>
+    <div class="scene" data-demo="titre"><div class="demo-titre joue"><span class="ligne"><span style="--i:0">Le marketing</span></span><span class="ligne"><span style="--i:1">qu'on mesure.</span></span></div></div>
+    <button class="rejouer" data-rejoue="titre"><i class="ph ph-arrow-counter-clockwise"></i>Rejouer</button>
+  </div>
+  <div class="geste">
+    <h3>L'image qui se pose</h3>
+    <p>Une capture ou une photo arrive un peu plus petite et se pose à sa taille pendant qu'on défile.</p>
+    <p class="ou">Sert à : donner du poids à une preuve visuelle. Où : captures de l'Academy, photos de formation.</p>
+    <div class="scene" data-demo="image"><img class="demo-image" data-r src="../../public/academy/captures/tableau-de-bord.jpg" alt="Tableau de bord de l'Academy"></div>
+    <button class="rejouer" data-rejoue="image"><i class="ph ph-arrow-counter-clockwise"></i>Rejouer</button>
+  </div>
+</div>
+
+<table class="corrections">
+  <thead><tr><th>Correction</th><th>Aujourd'hui</th><th>Après</th></tr></thead>
+  <tbody>
+    <tr><td>Un seul bleu</td><td>Le bleu du logo (#1D71B8), le bleu Tailwind (#2563EB), puis l'indigo et le violet des dégradés, selon la page.</td><td>Le bleu du logo, partout, comme seule couleur d'accent. Les couleurs par service restent pour les pastilles de catégorie, jamais en fond.</td></tr>
+    <tr><td>Fin des pastilles d'icône</td><td>183 icônes dans un rond coloré au-dessus d'un titre : c'est la signature la plus reconnaissable d'une page générée.</td><td>Une icône Phosphor en ligne avec le texte quand elle aide à lire, rien sinon.</td></tr>
+    <tr><td>Un libellé par intention</td><td>Quatre noms pour le calculateur, deux pour le contact.</td><td>« Calculer mon budget », « Réserver un appel », « Voir l'Academy ». En-tête, pied de page, pages services et articles.</td></tr>
+    <tr><td>Des chiffres sourcés, ou pas de chiffre</td><td>« 50+ clients, 8+ pays, 12+ secteurs, 5+ ans » sur l'accueil, « 300 %, 50+, 100+ » sur la page IA.</td><td>Les résultats des sept études de cas, avec leur lien, et la note 9,4 sur 497 retours servie par l'Academy.</td></tr>
+    <tr><td>Des photos réelles</td><td>Illustrations décoratives en tête des pages.</td><td>Les quatorze portraits, les photos de formation (La Poste, E.Leclerc), les captures de l'Academy.</td></tr>
+    <tr><td>Un rythme de page</td><td>Chaque section : badge centré, titre centré, grille de cartes égales.</td><td>Titres à gauche, pas plus d'un sur-titre toutes les trois sections, aucune famille de mise en page répétée deux fois sur une page.</td></tr>
+    <tr><td>Les transitions entre pages</td><td>Coupure sèche d'une page à l'autre.</td><td>Les View Transitions d'Astro, déjà branchées dans <code>BaseLayout.astro</code> : le titre et l'image d'une carte glissent vers la page qu'elle ouvre.</td></tr>
+  </tbody>
+</table>
+<p class="intro" style="margin-top:14px;font-size:15px">Techniquement : les cinq gestes vivent dans <code>global.css</code> et <code>scroll.ts</code>, en CSS natif (<code>animation-timeline: view()</code> là où le navigateur le sait, un IntersectionObserver sinon). Aucune bibliothèque d'animation n'entre sur les pages statiques : Motion ou GSAP pèseraient sur chaque page pour des effets que le CSS fait seul.</p>
+
+<!-- ================= LES DIRECTIONS ================= -->
+<h2 class="titre-doc" id="directions">Trois directions pour la page d'accueil</h2>
+<p class="intro">Même matière pour les trois : les quatorze portraits, les sept études de cas, les logos de formation, les verbatims mot pour mot, les prix de l'Academy et les prix de départ du calculateur lus dans <code>engine.ts</code>. Ce qui change, c'est le pari sur la personne qui arrive.</p>
+
+<div class="outils">
+  <span class="etiquette">Vue</span>
+  <div class="groupe"><button class="bouton" data-vue="ordi" aria-pressed="true">Ordinateur, 1440 px</button><button class="bouton" data-vue="tel" aria-pressed="false">Téléphone, 390 px</button></div>
+  <span class="etiquette">Hero</span>
+  <div class="groupe"><button class="bouton" data-langue="fr" aria-pressed="true">Français</button><button class="bouton" data-langue="en" aria-pressed="false">English</button></div>
+  <button class="rejouer" id="tout-rejouer" style="padding:8px 14px"><i class="ph ph-arrow-counter-clockwise"></i>Rejouer les animations</button>
+  <nav class="sommaire"><a href="#dir-a">A</a><a href="#dir-b">B</a><a href="#dir-c">C</a><a href="#reco">Recommandation</a></nav>
+</div>
+
+<div class="directions">
+
+<!-- ================= A ================= -->
+<section class="direction" id="dir-a">
+  <h3>A. Les visages</h3>
+  <p class="pari"><b>Le pari :</b> ceux qui arrivent sur l'accueil viennent vérifier à qui ils vont confier leur budget. On leur montre d'abord des gens, puis ce que ces gens ont obtenu. <b>Pour qui :</b> le directeur marketing qui nous a trouvés par notre nom et compare deux ou trois agences.</p>
+  <div class="cadre"><div class="ecran joue">
+    <nav class="m-nav m-in"><img class="logo" src="../../public/images/Logos/MyDigipal%20Logo_Full%20Main.png" alt="MyDigipal"><div class="m-liens"><span>Services</span><span>IA</span><span>Academy</span><span>Études de cas</span><span>Blog</span></div><a class="m-btn plein">Calculer mon budget</a><i class="ph ph-list m-menu"></i></nav>
+
+    <section class="ma-hero m-in">
+      <div>
+        <h1><span class="ligne"><span style="--i:0" lang="fr">Votre équipe marketing,</span><span style="--i:0" lang="en">Your marketing team,</span></span><span class="ligne"><span style="--i:1" lang="fr">en plus grand.</span><span style="--i:1" lang="en">only bigger.</span></span></h1>
+        <p class="sous h-entre" style="--i:3"><span lang="fr">Quatorze spécialistes du B2B et de l'automobile, à Paris et à Londres, qui travaillent dans vos comptes.</span><span lang="en">Fourteen B2B and automotive specialists in London and Paris, working inside your accounts.</span></p>
+        <div class="m-boutons h-entre" style="--i:4"><a class="m-btn plein"><span lang="fr">Réserver un appel</span><span lang="en">Book a call</span></a><a class="m-btn creux"><span lang="fr">Calculer mon budget</span><span lang="en">Calculate my budget</span></a></div>
+      </div>
+      <div>
+        <div class="ma-mosaique" data-mosaique>
+          <div class="ma-rang">
+            <div class="ma-visage h-visage" style="--i:0" data-nom="Paul André" data-role="Fondateur"><img src="../../public/images/team/Team_Paul_Andre.webp" alt="Paul André"></div>
+            <div class="ma-visage h-visage" style="--i:1" data-nom="Alexandre Echement" data-role="Performance Lead"><img src="../../public/images/team/Team_Alexandre_Echement.avif" alt="Alexandre Echement"></div>
+            <div class="ma-visage h-visage" style="--i:2" data-nom="Jordan Langlois" data-role="Digital Strategist"><img src="../../public/images/team/Team_Jordan_Langlois.avif" alt="Jordan Langlois"></div>
+            <div class="ma-visage h-visage" style="--i:3" data-nom="Alizée Varloud" data-role="Project Manager"><img src="../../public/images/team/Team_Alizee_Varloud.avif" alt="Alizée Varloud"></div>
+            <div class="ma-visage h-visage" style="--i:4" data-nom="Juliette Joire" data-role="Content Specialist"><img src="../../public/images/team/Team_Juliette_Joire.avif" alt="Juliette Joire"></div>
+          </div>
+          <div class="ma-rang decale">
+            <div class="ma-visage h-visage" style="--i:5" data-nom="Sophie Roe" data-role="SEO Specialist"><img src="../../public/images/team/Team_Sophie_Roe.avif" alt="Sophie Roe"></div>
+            <div class="ma-visage h-visage" style="--i:6" data-nom="Callum Dunbar" data-role="PPC Specialist"><img src="../../public/images/team/Team_Callum_Dunbar.avif" alt="Callum Dunbar"></div>
+            <div class="ma-visage h-visage" style="--i:7" data-nom="Heather Mann" data-role="Social Media"><img src="../../public/images/team/Team_Heather_Mann.avif" alt="Heather Mann"></div>
+            <div class="ma-visage h-visage" style="--i:8" data-nom="Victoria Doherty" data-role="Account Manager"><img src="../../public/images/team/Team_Victoria_Doherty.avif" alt="Victoria Doherty"></div>
+          </div>
+          <div class="ma-rang">
+            <div class="ma-visage h-visage" style="--i:9" data-nom="Amna Khan" data-role="Digital Marketer"><img src="../../public/images/team/Team_Amna_Khan.avif" alt="Amna Khan"></div>
+            <div class="ma-visage h-visage" style="--i:10" data-nom="Diksha Mishra" data-role="Marketing Analyst"><img src="../../public/images/team/Team_Diksha_Mishra.avif" alt="Diksha Mishra"></div>
+            <div class="ma-visage h-visage" style="--i:11" data-nom="Chirag Solanki" data-role="Tech Lead"><img src="../../public/images/team/Team_Chirag_Solanki.avif" alt="Chirag Solanki"></div>
+            <div class="ma-visage h-visage" style="--i:12" data-nom="Shuai Yang" data-role="Developer"><img src="../../public/images/team/Team_Shuai_Yang.avif" alt="Shuai Yang"></div>
+            <div class="ma-visage h-visage" style="--i:13" data-nom="Bruce Eidsvik" data-role="Consultant"><img src="../../public/images/team/Team_Bruce_Eidsvik.avif" alt="Bruce Eidsvik"></div>
+          </div>
+        </div>
+        <p class="ma-legende h-entre" style="--i:6" data-legende><span lang="fr">Survolez un visage : c'est la personne qui ouvrira vos comptes.</span><span lang="en">Hover a face: that's who opens your accounts.</span></p>
+      </div>
+    </section>
+
+    <div class="ma-logos logos-mur"><div class="defile"><div>
+      <img src="../../public/images/Training%20Logo/Kering.svg" alt="Kering"><img src="../../public/images/Training%20Logo/La%20poste.png" alt="La Poste"><img src="../../public/images/Training%20Logo/Pierre%20fabre.avif" alt="Pierre Fabre"><img src="../../public/images/Training%20Logo/Yves%20saint%20laurent.avif" alt="Yves Saint Laurent"><img src="../../public/images/Training%20Logo/Balenciaga-logo.jpg" alt="Balenciaga"><img src="../../public/images/Training%20Logo/Gucci.avif" alt="Gucci"><img src="../../public/images/Training%20Logo/Leclerc.png" alt="E.Leclerc"><img src="../../public/images/Training%20Logo/GL%20events.png" alt="GL Events"><img src="../../public/images/Training%20Logo/CBTW.png" alt="CBTW"><img class="blanc" src="../../public/images/Training%20Logo/Datawords.png" alt="Datawords"><img src="../../public/images/Client%20logo/genesys-vector-logo.png" alt="Genesys"><img src="../../public/images/Client%20logo/GWI.webp" alt="GWI"><img src="../../public/images/Client%20logo/DMD.png" alt="Groupe DMD">
+      <img src="../../public/images/Training%20Logo/Kering.svg" alt=""><img src="../../public/images/Training%20Logo/La%20poste.png" alt=""><img src="../../public/images/Training%20Logo/Pierre%20fabre.avif" alt=""><img src="../../public/images/Training%20Logo/Yves%20saint%20laurent.avif" alt=""><img src="../../public/images/Training%20Logo/Balenciaga-logo.jpg" alt=""><img src="../../public/images/Training%20Logo/Gucci.avif" alt=""><img src="../../public/images/Training%20Logo/Leclerc.png" alt=""><img src="../../public/images/Training%20Logo/GL%20events.png" alt=""><img src="../../public/images/Training%20Logo/CBTW.png" alt=""><img class="blanc" src="../../public/images/Training%20Logo/Datawords.png" alt=""><img src="../../public/images/Client%20logo/genesys-vector-logo.png" alt=""><img src="../../public/images/Client%20logo/GWI.webp" alt=""><img src="../../public/images/Client%20logo/DMD.png" alt="">
+    </div></div></div>
+
+    <section class="ma-res m-in">
+      <div class="ma-res-tete" data-r>
+        <h2>Sept clients. Leurs chiffres, pas les nôtres.</h2>
+        <p>Des groupes de concessions et des éditeurs B2B, suivis de la stratégie jusqu'au rapport mensuel.</p>
+        <a class="m-lien">Toutes les études de cas <i class="ph ph-arrow-right"></i></a>
+      </div>
+      <ol class="ma-liste">
+        <li class="ma-cas" data-r style="--i:0"><img src="../../public/images/Case%20study%20thumbnail/Theobald.avif" alt=""><div class="corps"><span class="client">Groupe Théobald</span><span class="secteur">Automobile, 31 concessions</span></div><div><div class="nombre" data-compte="-50" data-suf=" %">-50 %</div><div class="quoi">coût par conversion</div></div></li>
+        <li class="ma-cas" data-r style="--i:1"><img src="../../public/images/Case%20study%20thumbnail/DMD.avif" alt=""><div class="corps"><span class="client">Groupe DMD</span><span class="secteur">Automobile</span></div><div><div class="nombre" data-compte="170" data-pre="+" data-suf=" %">+170 %</div><div class="quoi">conversions</div></div></li>
+        <li class="ma-cas" data-r style="--i:2"><img src="../../public/images/Case%20study%20thumbnail/Vulcain.avif" alt=""><div class="corps"><span class="client">Groupe Vulcain</span><span class="secteur">Automobile</span></div><div><div class="nombre" data-compte="145" data-pre="+" data-suf=" %">+145 %</div><div class="quoi">volume de leads</div></div></li>
+        <li class="ma-cas" data-r style="--i:3"><img src="../../public/images/Case%20study%20thumbnail/Genesys.avif" alt=""><div class="corps"><span class="client">Genesys</span><span class="secteur">B2B, logiciel</span></div><div><div class="nombre" data-compte="3" data-suf="x">3x</div><div class="quoi">rendez-vous réservés</div></div></li>
+        <li class="ma-cas" data-r style="--i:4"><img src="../../public/images/Case%20study%20thumbnail/Symbl.avif" alt=""><div class="corps"><span class="client">Symbl.ai</span><span class="secteur">B2B, IA</span></div><div><div class="nombre" data-compte="4.5" data-dec="1" data-suf="x">4,5x</div><div class="quoi">demandes de démo</div></div></li>
+        <li class="ma-cas" data-r style="--i:5"><img src="../../public/images/Case%20study%20thumbnail/GWI.avif" alt=""><div class="corps"><span class="client">GWI</span><span class="secteur">B2B, données</span></div><div><div class="nombre" data-compte="2.5" data-dec="1" data-suf="x">2,5x</div><div class="quoi">pipeline influencé</div></div></li>
+        <li class="ma-cas" data-r style="--i:6"><img src="../../public/images/Case%20study%20thumbnail/Quantum.avif" alt=""><div class="corps"><span class="client">Quantum Metrics</span><span class="secteur">B2B, analytics</span></div><div><div class="nombre" data-compte="-25" data-suf=" %">-25 %</div><div class="quoi">coût par lead</div></div></li>
+      </ol>
+    </section>
+
+    <section class="ma-portes m-in">
+      <h2 data-r>Trois façons de commencer.</h2>
+      <div class="porte ma-calc" data-r style="--i:1">
+        <h3>Chiffrer votre marketing, sur nos vraies grilles.</h3>
+        <p class="txt">Huit services, vos réponses, un devis détaillé qui arrive par mail. Sans rendez-vous.</p>
+        <ul class="prix">
+          <li><span>SEO</span><b>dès 500 € par mois</b></li>
+          <li><span>Google Ads<small>gestion, jusqu'à 2 500 € de budget média, puis 20 %</small></span><b>dès 500 € par mois</b></li>
+          <li><span>Publicité sociale</span><b>dès 400 € par mois</b></li>
+          <li><span>Emailing</span><b>dès 500 € par mois</b></li>
+          <li><span>Automatisations IA</span><b>dès 200 € par mois</b></li>
+        </ul>
+        <a class="m-btn plein">Calculer mon budget <i class="ph ph-arrow-right"></i></a>
+      </div>
+      <div class="porte ma-aca" data-r style="--i:2">
+        <h3>Former votre équipe à l'IA, en ligne.</h3>
+        <p class="txt">21 modules, près de 18 heures, avec Claude, ChatGPT, Copilot ou Gemini. Dès 290 €.</p>
+        <img class="capture" src="../../public/academy/captures/tableau-de-bord.jpg" alt="Tableau de bord de l'Academy">
+        <a class="m-btn plein">Voir l'Academy <i class="ph ph-arrow-right"></i></a>
+      </div>
+      <div class="porte ma-contact" data-r style="--i:3">
+        <div class="qui"><img src="../../public/images/team/Team_Paul_Andre.webp" alt="Paul André"><h3>Nous confier vos campagnes.</h3></div>
+        <p class="txt">Un appel avec Paul, le fondateur, pour regarder vos comptes et vos objectifs.</p>
+        <a class="m-btn plein">Réserver un appel <i class="ph ph-arrow-right"></i></a>
+      </div>
+    </section>
+
+    <section class="ma-avis m-in" data-citations>
+      <div data-r>
+        <div class="note"><span data-compte="9.4" data-dec="1" style="font-size:inherit;color:inherit;letter-spacing:inherit">9,4</span><span>/10</span></div>
+        <p class="note-txt">La moyenne des 497 retours de nos formations, en salle et à distance.</p>
+      </div>
+      <div data-r style="--i:1">
+        <div class="ma-citations">
+          <figure class="ma-citation active" style="margin:0"><blockquote>« Formation hyper concrète et utile pour mon quotidien. »</blockquote><div class="auteur"><b>Véronique F.</b> Pierre Fabre</div></figure>
+          <figure class="ma-citation" style="margin:0"><blockquote>« Très bonne animation, dynamique et vivante, qui fait apprendre sans effort. Bon équilibre entre la théorie et la pratique. »</blockquote><div class="auteur"><b>Delphine M.</b> La Poste</div></figure>
+          <figure class="ma-citation" style="margin:0"><blockquote>« Concret, pratique, applicable, excellente communication et de vrais échanges. »</blockquote><div class="auteur"><b>Alexandra</b> CBTW</div></figure>
+        </div>
+        <div class="ma-fleches"><button data-cit="-1" aria-label="Précédent"><i class="ph ph-caret-left"></i></button><button data-cit="1" aria-label="Suivant"><i class="ph ph-caret-right"></i></button></div>
+      </div>
+    </section>
+
+    <section class="ma-index m-in">
+      <h2 data-r>Ce qu'on fait, et à partir de combien.</h2>
+      <div class="ma-groupe" data-r style="--i:1">
+        <h3>L'agence, au mois</h3>
+        <a><span class="nom">SEO<i class="ph ph-arrow-right"></i></span><span class="des">dès 500 € par mois</span></a>
+        <a><span class="nom">Google Ads<i class="ph ph-arrow-right"></i></span><span class="des">gestion dès 500 € par mois</span></a>
+        <a><span class="nom">Publicité sociale<i class="ph ph-arrow-right"></i></span><span class="des">dès 400 € par mois</span></a>
+        <a><span class="nom">Emailing<i class="ph ph-arrow-right"></i></span><span class="des">dès 500 € par mois</span></a>
+        <a><span class="nom">B2B et ABM<i class="ph ph-arrow-right"></i></span><span class="des">sur devis</span></a>
+        <a><span class="nom">Tracking et reporting<i class="ph ph-arrow-right"></i></span><span class="des">selon vos outils</span></a>
+      </div>
+      <div class="ma-groupe" data-r style="--i:2">
+        <h3>L'IA, appliquée</h3>
+        <a><span class="nom">AI Academy<i class="ph ph-arrow-right"></i></span><span class="des">dès 290 € par personne</span></a>
+        <a><span class="nom">Formation en salle ou à distance<i class="ph ph-arrow-right"></i></span><span class="des">1 500 € la demi-journée</span></a>
+        <a><span class="nom">Automatisations sur mesure<i class="ph ph-arrow-right"></i></span><span class="des">dès 200 € par mois</span></a>
+        <a><span class="nom">Contenu produit avec l'IA<i class="ph ph-arrow-right"></i></span><span class="des">dès 400 € par mois</span></a>
+      </div>
+    </section>
+
+    <section class="ma-blog m-in">
+      <h2 data-r>À lire cette semaine.</h2>
+      <a class="ma-art" data-r style="--i:1"><img src="../../public/images/Blog%20Thumbnails/meta-end-to-end-ai-andromeda-marketer-role-2026-fr.jpg" alt=""><h3>Meta pilotera tout votre funnel d'ici fin 2026. Que restera-t-il à faire ?</h3><p class="quand">31 août 2026</p></a>
+      <a class="ma-art petit" data-r style="--i:2"><img src="../../public/images/Blog%20Thumbnails/ga4-ai-assistant-channel-measure-chatgpt-gemini-traffic-fr.jpg" alt=""><div><h3>Le nouveau canal AI Assistant de GA4 : enfin mesurer le trafic ChatGPT, Gemini et Claude</h3><p class="quand">31 août 2026</p></div></a>
+      <a class="ma-art petit" data-r style="--i:3"><img src="../../public/images/Blog%20Thumbnails/meta-advantage-shopping-app-campaigns-deprecation-migration-fr.jpg" alt=""><div><h3>Meta retire les campagnes Advantage+ Shopping et App : le guide de migration</h3><p class="quand">31 août 2026</p></div></a>
+    </section>
+
+    <section class="ma-fin m-in">
+      <img src="../../public/images/team/Team_Paul_Andre.webp" alt="Paul André" data-r>
+      <div data-r style="--i:1"><h2>Parlons de votre prochain trimestre.</h2><p style="margin-top:10px">Un appel avec Paul, pour regarder vos comptes, vos objectifs et ce qu'on changerait en premier.</p></div>
+      <a class="m-btn plein" data-r style="--i:2">Réserver un appel <i class="ph ph-arrow-right"></i></a>
+    </section>
+    <footer class="m-pied m-in"><img class="logo" src="../../public/images/Logos/MyDigipal%20Logo_Full%20Main.png" alt="MyDigipal"><nav><span>Services</span><span>AI Academy</span><span>Calculer mon budget</span><span>Études de cas</span><span>Blog</span><span>Contact</span></nav><span>Paris et Londres</span></footer>
+  </div></div>
+  <div class="bilan">
+    <div><h4>Ce qu'elle garde</h4><ul><li>Les quatorze portraits, qui passent de la section 3 au hero</li><li>Les logos et les études de cas</li><li>Les verbatims et les trois derniers articles</li><li>La grille des services, réduite à un index avec les prix de départ</li></ul></div>
+    <div><h4>Ce qu'elle jette</h4><ul><li>L'illustration du hero et « co-piloté par l'IA »</li><li>Les valeurs et les chiffres « 50+, 8+, 12+, 5+ »</li><li>Les quatre personas et « en 30 jours »</li><li>Les deux bandeaux, dont le violet du calculateur</li><li>« Devis Interactif » et l'appel final générique</li></ul></div>
+    <div class="risque"><h4>Le risque</h4><ul><li>La page repose sur les visages : chaque arrivée ou départ se voit dans le hero, et la mosaïque doit être tenue à jour le jour même.</li><li>Les portraits n'ont pas le même cadrage ni la même lumière : une série refaite, ou au moins recadrée, est nécessaire pour que la mosaïque tienne.</li><li>Sur téléphone, le visiteur qui veut un prix doit descendre jusqu'à la quatrième section.</li></ul></div>
+  </div>
+  <p class="effort">Travail estimé : trois jours, dont une demi-journée pour recadrer les portraits.</p>
+</section>
+
+<!-- ================= B ================= -->
+<section class="direction" id="dir-b">
+  <h3>B. L'aiguillage</h3>
+  <p class="pari"><b>Le pari :</b> la page d'accueil n'a pas à raconter l'agence, elle doit envoyer chacun au bon endroit en un geste. Le hero est le choix lui-même, et le calculateur commence dès la première seconde. <b>Pour qui :</b> le visiteur qui sait déjà ce qu'il veut, qu'il vienne pour un prix, une formation ou un interlocuteur.</p>
+  <div class="cadre"><div class="ecran joue">
+    <nav class="m-nav m-in"><img class="logo" src="../../public/images/Logos/MyDigipal%20Logo_Full%20Main.png" alt="MyDigipal"><div class="m-liens"><span>Services</span><span>IA</span><span>Academy</span><span>Études de cas</span><span>Blog</span></div><a class="m-btn plein">Calculer mon budget</a><i class="ph ph-list m-menu"></i></nav>
+
+    <section class="mb-hero m-in">
+      <h1><span class="ligne"><span style="--i:0" lang="fr">Qu'est-ce qu'on fait pour vous ?</span><span style="--i:0" lang="en">What can we do for you?</span></span></h1>
+      <p class="sous h-entre" style="--i:2"><span lang="fr">Agence marketing B2B et automobile, à Paris et à Londres. Choisissez par où commencer.</span><span lang="en">A B2B and automotive marketing agency in London and Paris. Pick where to start.</span></p>
+      <div class="mb-portes">
+        <div class="porte mb-calc h-entre" style="--i:3" data-calc>
+          <h3><span lang="fr">Chiffrer mon marketing</span><span lang="en">Price my marketing</span></h3>
+          <p class="txt"><span lang="fr">Cochez ce qui vous intéresse. Le calculateur part de là.</span><span lang="en">Tick what you need. The calculator starts from there.</span></p>
+          <div class="puces">
+            <button class="puce" aria-pressed="true" data-srv="seo"><i class="ph ph-check"></i>SEO</button>
+            <button class="puce" aria-pressed="true" data-srv="google-ads"><i class="ph ph-check"></i>Google Ads</button>
+            <button class="puce" aria-pressed="false" data-srv="paid-social"><i class="ph ph-plus"></i><span lang="fr">Publicité sociale</span><span lang="en">Paid social</span></button>
+            <button class="puce" aria-pressed="false" data-srv="emailing"><i class="ph ph-plus"></i>Emailing</button>
+            <button class="puce" aria-pressed="false" data-srv="tracking"><i class="ph ph-plus"></i>Tracking</button>
+            <button class="puce" aria-pressed="false" data-srv="ai-solutions"><i class="ph ph-plus"></i><span lang="fr">Automatisations IA</span><span lang="en">AI automations</span></button>
+            <button class="puce" aria-pressed="false" data-srv="ai-content"><i class="ph ph-plus"></i><span lang="fr">Contenu IA</span><span lang="en">AI content</span></button>
+            <button class="puce" aria-pressed="false" data-srv="ai-training"><i class="ph ph-plus"></i><span lang="fr">Formation en salle</span><span lang="en">In-room training</span></button>
+          </div>
+          <div class="mb-choix"><ul class="prix" data-choix></ul></div>
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:auto"><a class="m-btn plein" style="margin-top:0"><span lang="fr">Calculer mon budget</span><span lang="en">Calculate my budget</span> <i class="ph ph-arrow-right"></i></a><span class="mb-note"><span lang="fr">Gratuit, devis détaillé par mail.</span><span lang="en">Free, detailed quote by email.</span></span></div>
+        </div>
+        <div class="porte mb-aca h-entre" style="--i:4">
+          <div class="haut">
+            <h3><span lang="fr">Former mon équipe à l'IA</span><span lang="en">Train my team on AI</span></h3>
+            <p class="txt"><span lang="fr">21 modules en ligne, à votre rythme, avec Claude, ChatGPT, Copilot ou Gemini.</span><span lang="en">21 online modules, at your pace, with Claude, ChatGPT, Copilot or Gemini.</span></p>
+            <p class="prix-aca"><span lang="fr">Dès 290 € par personne</span><span lang="en">From €290 per person</span></p>
+            <a class="m-btn plein" style="align-self:flex-start"><span lang="fr">Voir l'Academy</span><span lang="en">See the Academy</span> <i class="ph ph-arrow-right"></i></a>
+          </div>
+          <img class="capture" src="../../public/academy/captures/tableau-de-bord.jpg" alt="Tableau de bord de l'Academy">
+        </div>
+        <div class="porte mb-equipe h-entre" style="--i:5">
+          <div class="pile"><img src="../../public/images/team/Team_Paul_Andre.webp" alt=""><img src="../../public/images/team/Team_Alexandre_Echement.avif" alt=""><img src="../../public/images/team/Team_Alizee_Varloud.avif" alt=""><img src="../../public/images/team/Team_Jordan_Langlois.avif" alt=""><img src="../../public/images/team/Team_Sophie_Roe.avif" alt=""><img src="../../public/images/team/Team_Callum_Dunbar.avif" alt=""></div>
+          <h3><span lang="fr">Nous confier mon marketing</span><span lang="en">Hand us my marketing</span></h3>
+          <p class="txt"><span lang="fr">Quatorze personnes, dans vos comptes au quotidien.</span><span lang="en">Fourteen people, in your accounts every day.</span></p>
+          <a class="m-btn plein"><span lang="fr">Réserver un appel</span><span lang="en">Book a call</span> <i class="ph ph-arrow-right"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-preuve m-in">
+      <p class="mb-phrase" data-r><span class="client">Chez Théobald, sur 31 concessions,</span> le coût par conversion a baissé de <em data-compte="50" data-suf=" %">50 %</em>.</p>
+      <p class="mb-phrase" data-r><span class="client">Chez Genesys,</span> les rendez-vous commerciaux ont été multipliés par <em data-compte="3">3</em>.</p>
+      <p class="mb-phrase" data-r><span class="client">Chez DMD,</span> les conversions ont progressé de <em data-compte="170" data-suf=" %">170 %</em>.</p>
+      <p class="mb-phrase" data-r><span class="client">Chez Symbl.ai,</span> les demandes de démo ont été multipliées par <em data-compte="4.5" data-dec="1">4,5</em>.</p>
+      <a class="m-lien" data-r>Les sept études de cas <i class="ph ph-arrow-right"></i></a>
+    </section>
+
+    <section class="mb-logos m-in logos-mur">
+      <h2 data-r>Ils nous ont confié leurs campagnes ou leurs équipes</h2>
+      <div class="grille" data-r style="--i:1">
+        <img src="../../public/images/Training%20Logo/Kering.svg" alt="Kering"><img src="../../public/images/Training%20Logo/La%20poste.png" alt="La Poste"><img src="../../public/images/Training%20Logo/Pierre%20fabre.avif" alt="Pierre Fabre"><img src="../../public/images/Training%20Logo/Yves%20saint%20laurent.avif" alt="Yves Saint Laurent"><img src="../../public/images/Training%20Logo/Balenciaga-logo.jpg" alt="Balenciaga"><img src="../../public/images/Training%20Logo/Gucci.avif" alt="Gucci"><img src="../../public/images/Training%20Logo/Leclerc.png" alt="E.Leclerc"><img src="../../public/images/Training%20Logo/GL%20events.png" alt="GL Events"><img src="../../public/images/Training%20Logo/CBTW.png" alt="CBTW"><img class="blanc" src="../../public/images/Training%20Logo/Datawords.png" alt="Datawords"><img src="../../public/images/Client%20logo/genesys-vector-logo.png" alt="Genesys"><img src="../../public/images/Client%20logo/GWI.webp" alt="GWI"><img src="../../public/images/Client%20logo/quantum.png" alt="Quantum Metrics"><img src="../../public/images/Client%20logo/Symbl.ai.png" alt="Symbl.ai"><img src="../../public/images/Client%20logo/DMD.png" alt="Groupe DMD">
+      </div>
+    </section>
+
+    <section class="mb-avis">
+      <h2 class="m-in" data-r>9,4 sur 10, sur 497 retours de formation.</h2>
+      <div class="defile"><div>
+        <div class="mb-carte"><p>« Formation hyper concrète et utile pour mon quotidien. »</p><div class="auteur"><b>Véronique F.</b> Pierre Fabre</div></div>
+        <div class="mb-carte"><p>« Une boîte à outils simple qui permet d'être plus à l'aise et lève les freins à l'utilisation de l'IA. »</p><div class="auteur"><b>Christophe C.</b> GL Events</div></div>
+        <div class="mb-carte"><p>« Découverte, apprentissage des méthodes de prompt, très utile, que je vais mettre en œuvre dès aujourd'hui. »</p><div class="auteur"><b>Véronique B.</b> La Poste</div></div>
+        <div class="mb-carte"><p>« Génial, la meilleure formation que j'ai reçue chez MH jusqu'ici, très utile pour mon quotidien, très engageante. »</p><div class="auteur"><b>Marine</b> Moët Hennessy</div></div>
+        <div class="mb-carte"><p>« Concret, pratique, applicable, excellente communication et de vrais échanges. »</p><div class="auteur"><b>Alexandra</b> CBTW</div></div>
+        <div class="mb-carte"><p>« Bien organisé, informatif et inspirant. »</p><div class="auteur"><b>Emma L.</b> Balenciaga</div></div>
+        <div class="mb-carte"><p>« Formation hyper concrète et utile pour mon quotidien. »</p><div class="auteur"><b>Véronique F.</b> Pierre Fabre</div></div>
+        <div class="mb-carte"><p>« Une boîte à outils simple qui permet d'être plus à l'aise et lève les freins à l'utilisation de l'IA. »</p><div class="auteur"><b>Christophe C.</b> GL Events</div></div>
+        <div class="mb-carte"><p>« Découverte, apprentissage des méthodes de prompt, très utile, que je vais mettre en œuvre dès aujourd'hui. »</p><div class="auteur"><b>Véronique B.</b> La Poste</div></div>
+        <div class="mb-carte"><p>« Génial, la meilleure formation que j'ai reçue chez MH jusqu'ici, très utile pour mon quotidien, très engageante. »</p><div class="auteur"><b>Marine</b> Moët Hennessy</div></div>
+        <div class="mb-carte"><p>« Concret, pratique, applicable, excellente communication et de vrais échanges. »</p><div class="auteur"><b>Alexandra</b> CBTW</div></div>
+        <div class="mb-carte"><p>« Bien organisé, informatif et inspirant. »</p><div class="auteur"><b>Emma L.</b> Balenciaga</div></div>
+      </div></div>
+    </section>
+
+    <section class="mb-gens m-in">
+      <h2 data-r>Les gens qui ouvriront vos comptes.</h2>
+      <p data-r style="--i:1">Paris et Londres, en français et en anglais.</p>
+      <div class="mb-grille">
+        <div class="mb-pers" data-r style="--i:0"><img src="../../public/images/team/Team_Paul_Andre.webp" alt=""><b>Paul André</b><span>Fondateur</span></div>
+        <div class="mb-pers" data-r style="--i:1"><img src="../../public/images/team/Team_Alexandre_Echement.avif" alt=""><b>Alexandre Echement</b><span>Performance Lead</span></div>
+        <div class="mb-pers" data-r style="--i:2"><img src="../../public/images/team/Team_Jordan_Langlois.avif" alt=""><b>Jordan Langlois</b><span>Digital Strategist</span></div>
+        <div class="mb-pers" data-r style="--i:3"><img src="../../public/images/team/Team_Alizee_Varloud.avif" alt=""><b>Alizée Varloud</b><span>Project Manager</span></div>
+        <div class="mb-pers" data-r style="--i:4"><img src="../../public/images/team/Team_Juliette_Joire.avif" alt=""><b>Juliette Joire</b><span>Content Specialist</span></div>
+        <div class="mb-pers" data-r style="--i:5"><img src="../../public/images/team/Team_Sophie_Roe.avif" alt=""><b>Sophie Roe</b><span>SEO Specialist</span></div>
+        <div class="mb-pers" data-r style="--i:6"><img src="../../public/images/team/Team_Callum_Dunbar.avif" alt=""><b>Callum Dunbar</b><span>PPC Specialist</span></div>
+        <div class="mb-pers" data-r style="--i:7"><img src="../../public/images/team/Team_Heather_Mann.avif" alt=""><b>Heather Mann</b><span>Social Media</span></div>
+        <div class="mb-pers" data-r style="--i:8"><img src="../../public/images/team/Team_Victoria_Doherty.avif" alt=""><b>Victoria Doherty</b><span>Account Manager</span></div>
+        <div class="mb-pers" data-r style="--i:9"><img src="../../public/images/team/Team_Amna_Khan.avif" alt=""><b>Amna Khan</b><span>Digital Marketer</span></div>
+        <div class="mb-pers" data-r style="--i:10"><img src="../../public/images/team/Team_Diksha_Mishra.avif" alt=""><b>Diksha Mishra</b><span>Marketing Analyst</span></div>
+        <div class="mb-pers" data-r style="--i:11"><img src="../../public/images/team/Team_Chirag_Solanki.avif" alt=""><b>Chirag Solanki</b><span>Tech Lead</span></div>
+        <div class="mb-pers" data-r style="--i:12"><img src="../../public/images/team/Team_Shuai_Yang.avif" alt=""><b>Shuai Yang</b><span>Developer</span></div>
+        <div class="mb-pers" data-r style="--i:13"><img src="../../public/images/team/Team_Bruce_Eidsvik.avif" alt=""><b>Bruce Eidsvik</b><span>Consultant</span></div>
+      </div>
+    </section>
+
+    <section class="mb-lire m-in">
+      <h2 data-r>Dernières analyses</h2>
+      <a data-r style="--i:1"><h3>Meta pilotera tout votre funnel d'ici fin 2026. Que restera-t-il à faire ?</h3><span class="quand">31 août 2026</span><i class="ph ph-arrow-up-right"></i></a>
+      <a data-r style="--i:2"><h3>Le nouveau canal AI Assistant de GA4 : enfin mesurer le trafic ChatGPT, Gemini et Claude</h3><span class="quand">31 août 2026</span><i class="ph ph-arrow-up-right"></i></a>
+      <a data-r style="--i:3"><h3>Meta retire les campagnes Advantage+ Shopping et App : le guide de migration</h3><span class="quand">31 août 2026</span><i class="ph ph-arrow-up-right"></i></a>
+    </section>
+    <footer class="m-pied m-in"><img class="logo" src="../../public/images/Logos/MyDigipal%20Logo_Full%20Main.png" alt="MyDigipal"><nav><span>Services</span><span>AI Academy</span><span>Calculer mon budget</span><span>Études de cas</span><span>Réserver un appel</span></nav><span>Paris et Londres</span></footer>
+  </div></div>
+  <div class="bilan">
+    <div><h4>Ce qu'elle garde</h4><ul><li>Les logos, en grille fixe</li><li>Les études de cas, réécrites en phrases</li><li>Les verbatims, en défilé</li><li>L'équipe, en entier, plus bas dans la page</li><li>Le paramètre <code>?service=</code> du calculateur, que les puces remplissent</li></ul></div>
+    <div><h4>Ce qu'elle jette</h4><ul><li>Le hero actuel et son illustration</li><li>Les quatre personas, que les trois portes remplacent (c'était la bonne idée, mal placée)</li><li>La grille des huit services, « en 30 jours », les deux bandeaux</li><li>Les chiffres non sourcés et l'appel final</li></ul></div>
+    <div class="risque"><h4>Le risque</h4><ul><li>La page ne dit plus ce qu'est MyDigipal avant de demander de choisir : celui qui arrive sans intention précise n'a rien à quoi se raccrocher.</li><li>Sur téléphone, seule la première porte tient dans l'écran : l'Academy passe sous la ligne de flottaison.</li><li>Les prix « dès » des puces doivent venir de <code>prixDeDepart()</code> au build, jamais être recopiés, sinon ils divergent du calculateur au premier changement de grille.</li></ul></div>
+  </div>
+  <p class="effort">Travail estimé : trois jours, dont un pour l'îlot des puces branché sur le moteur du calculateur.</p>
+</section>
+
+<!-- ================= C ================= -->
+<section class="direction" id="dir-c">
+  <h3>C. La nuit</h3>
+  <p class="pari"><b>Le pari :</b> faire de la page d'accueil ce que l'Academy fait déjà, une page sombre qui se découvre en descendant, et tenir une seule phrase pour les deux métiers : ce qu'on mesure pour les clients, ce qu'on enseigne à leurs équipes. <b>Pour qui :</b> celui qui doit être impressionné avant d'accorder un rendez-vous.</p>
+  <div class="cadre"><div class="ecran mc joue">
+    <nav class="m-nav m-in"><img class="logo" src="../../public/images/Logos/03_Full%20white.png" alt="MyDigipal"><div class="m-liens"><span>Services</span><span>IA</span><span>Academy</span><span>Études de cas</span><span>Blog</span></div><a class="m-btn plein">Calculer mon budget</a><i class="ph ph-list m-menu"></i></nav>
+
+    <section class="mc-hero">
+      <div class="photo"><img src="../../public/images/Traning%20pictures/AI%20Training%20La%20poste%201.jpg" alt="Formation IA chez La Poste"></div>
+      <div class="texte m-in">
+        <h1><span class="ligne"><span style="--i:0" lang="fr">Le marketing</span><span style="--i:0" lang="en">Marketing</span></span><span class="ligne"><span style="--i:1" lang="fr">qu'on mesure.</span><span style="--i:1" lang="en">we measure.</span></span><span class="ligne"><span class="b" style="--i:2" lang="fr">L'IA qu'on enseigne.</span><span class="b" style="--i:2" lang="en">AI we teach.</span></span></h1>
+        <p class="sous h-entre" style="--i:4"><span lang="fr">Agence B2B et automobile à Paris et à Londres. On pilote vos campagnes, et on forme vos équipes.</span><span lang="en">A B2B and automotive agency in London and Paris. We run your campaigns and train your teams.</span></p>
+        <div class="m-boutons h-entre" style="--i:5"><a class="m-btn plein"><span lang="fr">Calculer mon budget</span><span lang="en">Calculate my budget</span></a><a class="m-btn creux"><span lang="fr">Voir l'Academy</span><span lang="en">See the Academy</span></a></div>
+      </div>
+    </section>
+
+    <section class="mc-mesure m-in" data-epingle>
+      <h2 data-r>Ce qu'on mesure.</h2>
+      <div class="mc-panneau"><div class="grand" data-grand>-50 %</div><div class="quoi" data-grand-quoi>coût par conversion</div><div class="qui" data-grand-qui>Groupe Théobald</div></div>
+      <ol class="mc-rangs">
+        <li class="mc-rang active" data-cas='{"n":-50,"suf":" %","quoi":"coût par conversion","qui":"Groupe Théobald"}'><div class="nombre" data-compte="-50" data-suf=" %">-50 %</div><div class="quoi">coût par conversion</div><h3>Groupe Théobald</h3><div class="secteur">Automobile, 31 concessions</div><p>Google Ads et Facebook pilotés ensemble, concession par concession.</p></li>
+        <li class="mc-rang" data-cas='{"n":170,"pre":"+","suf":" %","quoi":"conversions","qui":"Groupe DMD"}'><div class="nombre" data-compte="170" data-pre="+" data-suf=" %">+170 %</div><div class="quoi">conversions</div><h3>Groupe DMD</h3><div class="secteur">Automobile</div><p>SEO, Google Ads, Facebook et Waze réunis dans un seul parcours.</p></li>
+        <li class="mc-rang" data-cas='{"n":145,"pre":"+","suf":" %","quoi":"volume de leads","qui":"Groupe Vulcain"}'><div class="nombre" data-compte="145" data-pre="+" data-suf=" %">+145 %</div><div class="quoi">volume de leads</div><h3>Groupe Vulcain</h3><div class="secteur">Automobile</div><p>Les concessions du groupe ne se disputent plus les mêmes clients.</p></li>
+        <li class="mc-rang" data-cas='{"n":3,"suf":"x","quoi":"rendez-vous réservés","qui":"Genesys"}'><div class="nombre" data-compte="3" data-suf="x">3x</div><div class="quoi">rendez-vous réservés</div><h3>Genesys</h3><div class="secteur">B2B, logiciel</div><p>ABM auprès des DSI et des directions de l'expérience client.</p></li>
+        <li class="mc-rang" data-cas='{"n":4.5,"dec":1,"suf":"x","quoi":"demandes de démo","qui":"Symbl.ai"}'><div class="nombre" data-compte="4.5" data-dec="1" data-suf="x">4,5x</div><div class="quoi">demandes de démo</div><h3>Symbl.ai</h3><div class="secteur">B2B, IA</div><p>Une croissance tirée par les développeurs, puis par les entreprises.</p></li>
+        <li class="mc-rang" data-cas='{"n":2.5,"dec":1,"suf":"x","quoi":"pipeline influencé","qui":"GWI"}'><div class="nombre" data-compte="2.5" data-dec="1" data-suf="x">2,5x</div><div class="quoi">pipeline influencé</div><h3>GWI</h3><div class="secteur">B2B, données</div><p>Des campagnes sur mesure pour les directions marketing et insights.</p></li>
+        <li class="mc-rang" data-cas='{"n":-25,"suf":" %","quoi":"coût par lead","qui":"Quantum Metrics"}'><div class="nombre" data-compte="-25" data-suf=" %">-25 %</div><div class="quoi">coût par lead</div><h3>Quantum Metrics</h3><div class="secteur">B2B, analytics</div><p>L'ABM concentré sur les comptes à plus forte valeur.</p></li>
+      </ol>
+    </section>
+
+    <section class="mc-ens m-in">
+      <div data-r>
+        <h2>Ce qu'on enseigne.</h2>
+        <p class="txt">Le programme donné en salle chez Kering, La Poste et Pierre Fabre, mis en ligne : 21 modules, près de 18 heures, avec l'outil de votre choix.</p>
+        <ul class="mc-offres">
+          <li><span>La méthode<small>CRAFT et le parcours de votre outil</small></span><b>290 €</b></li>
+          <li><span>Les automatisations<small>agents et chaînes MCP</small></span><b>250 €</b></li>
+          <li><span>Les deux<small>la méthode et les automatisations</small></span><b>440 €</b></li>
+        </ul>
+        <div class="mc-note"><b data-compte="9.4" data-dec="1">9,4</b> sur 10, moyenne de 497 retours</div>
+        <a class="m-btn plein">Voir l'Academy <i class="ph ph-arrow-right"></i></a>
+      </div>
+      <img class="mc-capture mc-capture-scroll" src="../../public/academy/captures/tableau-de-bord.jpg" alt="Tableau de bord de l'Academy">
+      <div class="mc-logos" data-r><img src="../../public/images/Training%20Logo/Kering.svg" alt="Kering"><img src="../../public/images/Training%20Logo/La%20poste.png" alt="La Poste"><img src="../../public/images/Training%20Logo/Pierre%20fabre.avif" alt="Pierre Fabre"><img src="../../public/images/Training%20Logo/Yves%20saint%20laurent.avif" alt="Yves Saint Laurent"><img src="../../public/images/Training%20Logo/Balenciaga-logo.jpg" alt="Balenciaga"><img src="../../public/images/Training%20Logo/Gucci.avif" alt="Gucci"><img src="../../public/images/Training%20Logo/Leclerc.png" alt="E.Leclerc"><img src="../../public/images/Training%20Logo/GL%20events.png" alt="GL Events"><img src="../../public/images/Training%20Logo/CBTW.png" alt="CBTW"><img class="blanc" src="../../public/images/Training%20Logo/Datawords.png" alt="Datawords"></div>
+    </section>
+
+    <section class="mc-cout m-in">
+      <div class="gauche" data-r>
+        <h2>Ce que ça coûte.</h2>
+        <p class="txt">Nos grilles sont publiques. Composez votre plan, le devis détaillé arrive par mail, sans rendez-vous.</p>
+        <a class="m-btn plein" style="margin-top:24px">Calculer mon budget <i class="ph ph-arrow-right"></i></a>
+      </div>
+      <ul class="mc-lignes">
+        <li data-r><span class="srv">SEO</span><span class="montant"><span data-compte="500">500</span> €<small>par mois</small></span></li>
+        <li data-r style="--i:1"><span class="srv">Google Ads<small>gestion, jusqu'à 2 500 € de budget média, puis 20 %</small></span><span class="montant"><span data-compte="500">500</span> €<small>par mois</small></span></li>
+        <li data-r style="--i:2"><span class="srv">Publicité sociale</span><span class="montant"><span data-compte="400">400</span> €<small>par mois</small></span></li>
+        <li data-r style="--i:3"><span class="srv">Emailing</span><span class="montant"><span data-compte="500">500</span> €<small>par mois</small></span></li>
+        <li data-r style="--i:4"><span class="srv">Automatisations IA</span><span class="montant"><span data-compte="200">200</span> €<small>par mois</small></span></li>
+      </ul>
+    </section>
+
+    <section class="mc-gens m-in">
+      <h2 data-r>Quatorze personnes, pas un logo.</h2>
+      <div class="mc-bande" data-bande>
+        <figure style="--i:0"><img src="../../public/images/team/Team_Paul_Andre.webp" alt=""><figcaption>Paul André<span>Fondateur</span></figcaption></figure>
+        <figure style="--i:1"><img src="../../public/images/team/Team_Alexandre_Echement.avif" alt=""><figcaption>Alexandre Echement<span>Performance Lead</span></figcaption></figure>
+        <figure style="--i:2"><img src="../../public/images/team/Team_Jordan_Langlois.avif" alt=""><figcaption>Jordan Langlois<span>Digital Strategist</span></figcaption></figure>
+        <figure style="--i:3"><img src="../../public/images/team/Team_Alizee_Varloud.avif" alt=""><figcaption>Alizée Varloud<span>Project Manager</span></figcaption></figure>
+        <figure style="--i:4"><img src="../../public/images/team/Team_Juliette_Joire.avif" alt=""><figcaption>Juliette Joire<span>Content Specialist</span></figcaption></figure>
+        <figure style="--i:5"><img src="../../public/images/team/Team_Sophie_Roe.avif" alt=""><figcaption>Sophie Roe<span>SEO Specialist</span></figcaption></figure>
+        <figure style="--i:6"><img src="../../public/images/team/Team_Callum_Dunbar.avif" alt=""><figcaption>Callum Dunbar<span>PPC Specialist</span></figcaption></figure>
+        <figure style="--i:7"><img src="../../public/images/team/Team_Heather_Mann.avif" alt=""><figcaption>Heather Mann<span>Social Media</span></figcaption></figure>
+        <figure style="--i:8"><img src="../../public/images/team/Team_Victoria_Doherty.avif" alt=""><figcaption>Victoria Doherty<span>Account Manager</span></figcaption></figure>
+        <figure style="--i:9"><img src="../../public/images/team/Team_Amna_Khan.avif" alt=""><figcaption>Amna Khan<span>Digital Marketer</span></figcaption></figure>
+        <figure style="--i:10"><img src="../../public/images/team/Team_Diksha_Mishra.avif" alt=""><figcaption>Diksha Mishra<span>Marketing Analyst</span></figcaption></figure>
+        <figure style="--i:11"><img src="../../public/images/team/Team_Chirag_Solanki.avif" alt=""><figcaption>Chirag Solanki<span>Tech Lead</span></figcaption></figure>
+        <figure style="--i:12"><img src="../../public/images/team/Team_Shuai_Yang.avif" alt=""><figcaption>Shuai Yang<span>Developer</span></figcaption></figure>
+        <figure style="--i:13"><img src="../../public/images/team/Team_Bruce_Eidsvik.avif" alt=""><figcaption>Bruce Eidsvik<span>Consultant</span></figcaption></figure>
+      </div>
+    </section>
+
+    <section class="mc-avis">
+      <div class="defile"><div>
+        <blockquote>« Inspirant, enrichissant, ouvre de vraies perspectives pour notre métier. »<cite>Delphine L., Pierre Fabre</cite></blockquote>
+        <blockquote>« Au-delà de mes attentes. Le contenu a pu être partagé avec des niveaux de maîtrise différents. »<cite>Filipa N., La Redoute</cite></blockquote>
+        <blockquote>« Très bonne expérience et je vais appliquer dès aujourd'hui ce que j'ai appris ! »<cite>Emma D., Kaufman &amp; Broad</cite></blockquote>
+        <blockquote>« Très intéressant, j'ai découvert un outil qui peut alléger les tâches routinières. »<cite>Valentina A., Balenciaga</cite></blockquote>
+        <blockquote>« Inspirant, enrichissant, ouvre de vraies perspectives pour notre métier. »<cite>Delphine L., Pierre Fabre</cite></blockquote>
+        <blockquote>« Au-delà de mes attentes. Le contenu a pu être partagé avec des niveaux de maîtrise différents. »<cite>Filipa N., La Redoute</cite></blockquote>
+        <blockquote>« Très bonne expérience et je vais appliquer dès aujourd'hui ce que j'ai appris ! »<cite>Emma D., Kaufman &amp; Broad</cite></blockquote>
+        <blockquote>« Très intéressant, j'ai découvert un outil qui peut alléger les tâches routinières. »<cite>Valentina A., Balenciaga</cite></blockquote>
+      </div></div>
+    </section>
+
+    <section class="mc-fin m-in">
+      <img src="../../public/images/team/Team_Paul_Andre.webp" alt="Paul André" data-r>
+      <div data-r style="--i:1"><h2>Le reste se dit de vive voix.</h2><p style="margin-top:10px">Un appel avec Paul, pour regarder vos comptes, vos objectifs et ce qu'on changerait en premier.</p></div>
+      <a class="m-btn plein" data-r style="--i:2">Réserver un appel <i class="ph ph-arrow-right"></i></a>
+    </section>
+    <footer class="m-pied m-in"><img class="logo" src="../../public/images/Logos/03_Full%20white.png" alt="MyDigipal"><nav><span>Services</span><span>AI Academy</span><span>Calculer mon budget</span><span>Études de cas</span><span>Blog</span></nav><span>Paris et Londres</span></footer>
+  </div></div>
+  <div class="bilan">
+    <div><h4>Ce qu'elle garde</h4><ul><li>Les études de cas, qui deviennent le cœur de la page</li><li>La photo de la formation La Poste, en plein cadre</li><li>Les logos de formation, les verbatims, l'équipe</li><li>Les prix de départ, cette fois affichés en grand</li></ul></div>
+    <div><h4>Ce qu'elle jette</h4><ul><li>Le fond clair de la page d'accueil</li><li>Toutes les sections actuelles sauf les logos, l'équipe et les verbatims</li><li>Les articles de blog (le menu y mène déjà)</li><li>Les chiffres non sourcés et les bandeaux</li></ul></div>
+    <div class="risque"><h4>Le risque</h4><ul><li>L'accueil devient la seule page sombre du site avec l'Academy : un clic vers une page service, et on change de site. Soit on accepte la rupture, soit on engage la même bascule sur les pages services, qui est un chantier de plusieurs semaines.</li><li>La section épinglée des résultats demande du soin : elle est coupée sous 768 px, donc le téléphone voit une liste simple.</li><li>La photo plein cadre devient l'élément le plus lourd de la page : AVIF de 1600 px, 150 Ko au plus.</li></ul></div>
+  </div>
+  <p class="effort">Travail estimé : cinq jours pour l'accueil, sans compter la suite sur les pages services.</p>
+</section>
+
+</div>
+
+<!-- ================= RECOMMANDATION ================= -->
+<h2 class="titre-doc" id="reco">Ma recommandation</h2>
+<div class="reco">
+  <p><b>A, les visages, avec le socle de mouvement posé sur tout le site en même temps.</b> Les chiffres disent que la page d'accueil reçoit surtout ceux qui nous cherchent par notre nom et viennent vérifier à qui ils ont affaire. A répond exactement à ça : des gens d'abord, leurs résultats ensuite, puis les trois portes au moment où on a envie d'agir. C'est aussi la seule des trois qui ne ressemble à aucune autre agence, parce qu'aucune autre n'a nos quatorze visages.</p>
+  <p>B est la plus utile pour quelqu'un qui sait déjà ce qu'il veut, mais la page d'accueil n'est justement pas le point d'entrée de ceux-là : la publicité les envoie directement sur l'Academy. C est la plus spectaculaire et la plus proche de ce que tu aimes dans l'Academy, mais elle engage le reste du site dans une bascule sombre qu'il faut décider pour elle-même, pas pour une page qui fait 358 vues par mois.</p>
+  <p>On peut prendre à C sa section des résultats épinglée pour l'ordinateur, elle remplace sans difficulté la liste de A, et à B ses puces de services, qui peuvent vivre dans la porte du calculateur.</p>
+  <h3 style="font-size:17px;margin:22px 0 4px">À trancher avant de construire</h3>
+  <ol class="questions">
+    <li><b>Bruce Eidsvik</b> figure dans l'équipe du site comme « Consultant ». C'est aussi le Chief Growth Officer de Servion, un client. On le garde parmi les quatorze, ou l'équipe passe à treize ?</li>
+    <li><b>« 20 heures »</b> : l'Academy sert aujourd'hui 21 modules et 17 h 41 de contenu. Les maquettes disent « près de 18 heures » ; le site devra lire la valeur dans l'API, comme la page Academy.</li>
+    <li><b>Les portraits</b> (direction A surtout) : on recadre la série actuelle, ou on refait des photos homogènes ?</li>
+    <li><b>Le socle de mouvement</b> peut partir seul, avant la page d'accueil : il ne dépend d'aucune direction et touche les 76 sections.</li>
+  </ol>
+</div>
+
+</div>
+
+<script>
+(function(){
+  const corps = document.body;
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* --- mise à l'échelle des maquettes --- */
+  const cadres = [...document.querySelectorAll('.cadre')];
+  function poser(){
+    const w = corps.dataset.vue === 'tel' ? 390 : 1440;
+    cadres.forEach(c => {
+      const e = c.firstElementChild;
+      e.style.width = w + 'px';
+      const s = Math.min(1, c.clientWidth / w);
+      e.style.transform = 'scale(' + s + ')';
+      c.style.height = Math.ceil(e.offsetHeight * s) + 'px';
+    });
+  }
+  const ro = new ResizeObserver(() => requestAnimationFrame(poser));
+  cadres.forEach(c => { ro.observe(c); ro.observe(c.firstElementChild); });
+  document.querySelectorAll('.ecran img').forEach(i => i.addEventListener('load', poser));
+
+  /* --- bascules vue et langue --- */
+  document.querySelectorAll('[data-vue].bouton').forEach(b => b.addEventListener('click', () => {
+    corps.dataset.vue = b.dataset.vue;
+    document.querySelectorAll('[data-vue].bouton').forEach(x => x.setAttribute('aria-pressed', x === b));
+    poser(); rejouerTout();
+  }));
+  document.querySelectorAll('[data-langue].bouton').forEach(b => b.addEventListener('click', () => {
+    corps.dataset.langue = b.dataset.langue;
+    document.querySelectorAll('[data-langue].bouton').forEach(x => x.setAttribute('aria-pressed', x === b));
+    poser(); rejouerHero();
+  }));
+
+  /* --- compteurs --- */
+  function formater(v, dec){ return v.toLocaleString('fr-FR', {minimumFractionDigits: dec, maximumFractionDigits: dec}); }
+  function texteCompte(el, v){
+    const dec = +(el.dataset.dec || 0), pre = el.dataset.pre || '', suf = (el.dataset.suf || '').replace(' ', ' ');
+    const signe = v < 0 ? '-' : pre;
+    return signe + formater(Math.abs(v), dec) + suf;
+  }
+  function compter(el, cible){
+    const fin = cible !== undefined ? cible : parseFloat(el.dataset.compte);
+    if (reduit){ el.textContent = texteCompte(el, fin); return; }
+    const t0 = performance.now(), d = 1400;
+    const pas = t => { const p = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = texteCompte(el, fin * e); if (p < 1) requestAnimationFrame(pas); };
+    requestAnimationFrame(pas);
+  }
+
+  /* --- apparition au défilement --- */
+  const io = new IntersectionObserver(entrees => entrees.forEach(en => {
+    if (!en.isIntersecting) return;
+    const el = en.target;
+    el.classList.add('vu');
+    if (el.hasAttribute('data-compte')) compter(el);
+    el.querySelectorAll('[data-compte]').forEach(c => compter(c));
+    io.unobserve(el);
+  }), {threshold: 0.15});
+  function observer(racine){
+    racine.querySelectorAll('[data-r], [data-compte], [data-bande]').forEach(el => {
+      if (el.hasAttribute('data-compte') && !el.hasAttribute('data-r') && el.closest('[data-r]')) return;
+      el.classList.remove('vu');
+      if (el.hasAttribute('data-compte') && !el.closest('[data-r]')) el.textContent = texteCompte(el, 0);
+      io.observe(el);
+    });
+  }
+  observer(document);
+
+  function rejouerHero(){
+    document.querySelectorAll('.ecran').forEach(e => { e.classList.remove('joue'); void e.offsetWidth; e.classList.add('joue'); });
+  }
+  function rejouerTout(){ rejouerHero(); observer(document); }
+  document.getElementById('tout-rejouer').addEventListener('click', rejouerTout);
+
+  /* --- démos du socle --- */
+  document.querySelectorAll('[data-rejoue]').forEach(b => b.addEventListener('click', () => {
+    const g = b.closest('.geste');
+    g.querySelectorAll('.joue').forEach(e => { e.classList.remove('joue'); void e.offsetWidth; e.classList.add('joue'); });
+    observer(g);
+  }));
+  document.querySelectorAll('[data-projecteur]').forEach(p => p.addEventListener('pointermove', ev => {
+    const r = p.getBoundingClientRect();
+    p.style.setProperty('--x', ((ev.clientX - r.left) / r.width * 100) + '%');
+    p.style.setProperty('--y', ((ev.clientY - r.top) / r.height * 100) + '%');
+  }));
+
+  /* --- A : mosaïque des visages --- */
+  document.querySelectorAll('[data-mosaique]').forEach(m => {
+    const leg = m.parentElement.querySelector('[data-legende]');
+    const init = leg.innerHTML;
+    m.querySelectorAll('.ma-visage').forEach(v => {
+      const montrer = () => { leg.innerHTML = '<b>' + v.dataset.nom + '</b>, ' + v.dataset.role; };
+      v.addEventListener('mouseenter', montrer); v.addEventListener('click', montrer);
+    });
+    m.addEventListener('mouseleave', () => { leg.innerHTML = init; });
+  });
+
+  /* --- A : citations --- */
+  document.querySelectorAll('[data-citations]').forEach(s => {
+    const cits = [...s.querySelectorAll('.ma-citation')]; let i = 0, pause = false;
+    const aller = n => { cits[i].classList.remove('active'); i = (i + n + cits.length) % cits.length; cits[i].classList.add('active'); };
+    s.querySelectorAll('[data-cit]').forEach(b => b.addEventListener('click', () => aller(+b.dataset.cit)));
+    s.addEventListener('mouseenter', () => pause = true); s.addEventListener('mouseleave', () => pause = false);
+    if (!reduit) setInterval(() => { if (!pause) aller(1); }, 5500);
+  });
+
+  /* --- B : puces du calculateur (prix de départ lus dans engine.ts, prixDeDepart) --- */
+  const PRIX = {
+    'seo': ['SEO', 'dès 500 € par mois'],
+    'google-ads': ['Google Ads<small>gestion, jusqu\'à 2 500 € de budget média, puis 20 %</small>', 'dès 500 € par mois'],
+    'paid-social': ['Publicité sociale', 'dès 400 € par mois'],
+    'emailing': ['Emailing', 'dès 500 € par mois'],
+    'tracking': ['Tracking et reporting', 'selon vos outils'],
+    'ai-solutions': ['Automatisations IA', 'dès 200 € par mois'],
+    'ai-content': ['Contenu IA', 'dès 400 € par mois'],
+    'ai-training': ['Formation en salle', '1 500 € la demi-journée']
+  };
+  const PRIX_EN = {
+    'seo': ['SEO', 'from €500 a month'],
+    'google-ads': ['Google Ads<small>management, up to €2,500 ad spend, then 20%</small>', 'from €500 a month'],
+    'paid-social': ['Paid social', 'from €400 a month'],
+    'emailing': ['Email marketing', 'from €500 a month'],
+    'tracking': ['Tracking and reporting', 'depends on your stack'],
+    'ai-solutions': ['AI automations', 'from €200 a month'],
+    'ai-content': ['AI content', 'from €400 a month'],
+    'ai-training': ['In-room training', '€1,500 per half day']
+  };
+  const majCalcs = [];
+  document.querySelectorAll('[data-calc]').forEach(c => {
+    const liste = c.querySelector('[data-choix]');
+    const maj = () => {
+      const pris = [...c.querySelectorAll('.puce[aria-pressed="true"]')].map(p => p.dataset.srv);
+      const T = corps.dataset.langue === 'en' ? PRIX_EN : PRIX;
+      liste.innerHTML = pris.length ? pris.slice(-3).map(k => '<li><span>' + T[k][0] + '</span><b>' + T[k][1] + '</b></li>').join('')
+        : '<li class="vide">' + (corps.dataset.langue === 'en' ? 'Tick a service to see its starting price.' : 'Cochez un service pour voir son prix de départ.') + '</li>';
+      requestAnimationFrame(poser);
+    };
+    c.querySelectorAll('.puce').forEach(p => p.addEventListener('click', () => {
+      const on = p.getAttribute('aria-pressed') !== 'true';
+      p.setAttribute('aria-pressed', on);
+      p.querySelector('i').className = 'ph ' + (on ? 'ph-check' : 'ph-plus');
+      maj();
+    }));
+    maj(); majCalcs.push(maj);
+  });
+  document.querySelectorAll('[data-langue].bouton').forEach(b => b.addEventListener('click', () => majCalcs.forEach(f => f())));
+
+  /* --- C : panneau épinglé des résultats --- */
+  document.querySelectorAll('[data-epingle]').forEach(s => {
+    const grand = s.querySelector('[data-grand]'), quoi = s.querySelector('[data-grand-quoi]'), qui = s.querySelector('[data-grand-qui]');
+    const rangs = [...s.querySelectorAll('.mc-rang')];
+    const io2 = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      rangs.forEach(r => r.classList.toggle('active', r === e.target));
+      const d = JSON.parse(e.target.dataset.cas);
+      grand.dataset.pre = d.pre || ''; grand.dataset.suf = d.suf || ''; grand.dataset.dec = d.dec || 0;
+      quoi.textContent = d.quoi; qui.textContent = d.qui;
+      compter(grand, d.n);
+    }), {rootMargin: '-45% 0px -45% 0px'});
+    rangs.forEach(r => io2.observe(r));
+  });
+
+  poser();
+})();
+</script>
+</body>
+</html>
