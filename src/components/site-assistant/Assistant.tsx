@@ -193,6 +193,20 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     return c.accueilHome;
   };
 
+  /** La question d'une ligne posée au-dessus du visage, selon la page (Paul, 23/09/2026). */
+  const inviteTexte = () => {
+    const f = ficheRef.current;
+    const d = domaineRef.current;
+    if (surCalculateur) return c.inviteCalcul;
+    if (!f) return d ? c.inviteService(domainName(d, lang)) : c.invite;
+    if (f.k === 'case') return c.inviteCas(f.cl || f.t);
+    if (f.k === 'blog') return c.inviteArticle;
+    if (f.k === 'auto') return c.inviteAuto;
+    if (f.k === 'contact') return c.inviteContact;
+    if (f.k === 'service' || f.k === 'ia') return c.inviteService(d ? domainName(d, lang) : f.t);
+    return c.inviteHome;
+  };
+
   // --- ouverture --------------------------------------------------------------------------
   const ouvrir = useCallback((mode: 'normal' | 'guide' | 'devis' = 'normal') => {
     setInvite(false);
@@ -239,11 +253,11 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     };
   }, [ouvrir]);
 
-  // Sur ordinateur : une phrase discrète près du visage, une fois par visite.
+  // La question de la page, au bout de dix secondes, tant qu'aucune conversation n'a commencé
+  // et tant que la personne ne l'a pas fermée pendant sa visite. Sur téléphone comme sur ordinateur.
   useEffect(() => {
-    if (!window.matchMedia('(min-width: 1024px) and (pointer: fine)').matches) return;
     if (lire(CLE_INVITE, false) || sRef.current.items.length) return;
-    const t = window.setTimeout(() => { if (!ouvertRef.current) setInvite(true); }, 15000);
+    const t = window.setTimeout(() => { if (!ouvertRef.current && !lire(CLE_INVITE, false)) setInvite(true); }, 10000);
     return () => window.clearTimeout(t);
   }, []);
 
@@ -656,7 +670,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
             </div>
           ) : (invite || nonLu) ? (
             <div className="flex items-center gap-1 rounded-2xl rounded-br-md border border-slate-200 bg-white py-2 pl-3.5 pr-1.5 shadow-lg">
-              <button type="button" onClick={() => ouvrir(devisCourant ? 'devis' : 'normal')} className="text-left text-[14px] font-semibold text-slate-900">{nonLu ? c.paulARepondu : c.invite}</button>
+              <button type="button" onClick={() => ouvrir(devisCourant ? 'devis' : 'normal')} className="max-w-[calc(100vw-7.5rem)] text-left text-[14px] font-semibold leading-snug text-slate-900 sm:max-w-[17rem]">{nonLu ? c.paulARepondu : inviteTexte()}</button>
               {!nonLu && (
                 <button type="button" aria-label={c.fermer} onClick={() => { setInvite(false); ecrire(CLE_INVITE, true); }} className="grid h-7 w-7 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700">
                   <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>

@@ -137,7 +137,9 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   dans `engine.ts`), ce qui est compris (`content.ts`, clé `dom:<service>`), le résultat d'une
   étude de cas, et surtout **« Chiffrer mon cas » pose LA question du calculateur pour ce service**
   (budget publicitaire, niveau d'accompagnement) et rend le prix en une question. Le secteur d'une
-  page automobile n'est plus demandé. La bulle avec la photo de Paul,
+  page automobile n'est plus demandé. Au bout de **dix secondes**, une question d'une ligne
+  s'affiche au-dessus du visage, elle aussi tirée de la page (« Vous voulez un prix pour Google
+  Ads ? », « Faire comme GWI chez vous ? ») ; un clic ouvre le panneau. La bulle avec la photo de Paul,
   sans modèle, reliée à Google Chat (espace « Website Chat ») par l'application Academy.
   Sur tout le site depuis le 22/09/2026, sauf `/academy*` et `/admin` (script de
   `BaseLayout.astro` ; `?assistant=0` l'éteint pour la visite). Règle de Paul : **deux appels à
