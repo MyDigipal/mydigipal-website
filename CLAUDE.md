@@ -101,6 +101,17 @@ Quatre bilans Google Ads clients y ont été servis publiquement jusqu'au 31/08/
 Ils vivent dans `docs/client-reports/`, hors du build. `check-seo.mjs` échoue si un
 HTML réapparaît sous `/images` ou `/videos`.
 
+### Le formulaire de contact aussi est sorti de n8n (23/09/2026)
+`/{lang}/contact` poste sur `https://academy.mydigipal.com/api/site/contact` : le
+contact entre dans `prospection.contacts` (source `contact-form`), les deux courriels
+partent (gabarits refaits dans `mydigipal-academy/src/lib/site/contact-mails.ts`) et
+la bulle « Website Chat » annonce le lead.
+⚠️ `website` est un CHAMP VISIBLE de ce formulaire (« Site web »), jamais un piège
+anti-robot : le traiter comme tel rejetterait en silence les leads qui le remplissent.
+⚠️ La provenance de la visite est relevée par `BaseLayout.astro` sur TOUTES les pages
+depuis cette date (clé `academy_provenance`) ; avant, elle ne l'était que sur les pages
+Academy, donc le devis partait sans provenance depuis le reste du site.
+
 ### Redirections
 Elles ne se configurent PAS dans `render.yaml` : le service Render n'est rattaché à
 aucun Blueprint (son buildCommand réel diffère de celui du fichier). Elles se
