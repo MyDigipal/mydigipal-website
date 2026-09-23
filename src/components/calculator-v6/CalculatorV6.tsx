@@ -28,7 +28,12 @@ import {
 import { info, restKey, termsFor, type Info } from './content';
 import { VIDEOS } from './videos';
 
-const WEBHOOK = 'https://n8n.mydigipal.com/webhook/calculateur-marketing';
+// Depuis le 23/09/2026, la demande de devis ne passe plus par n8n : notre serveur
+// (l'application Academy, qui porte déjà le chat du site) enregistre le devis dans le
+// CRM, envoie les deux courriels et annonce le lead dans Google Chat. L'ancien webhook
+// `https://n8n.mydigipal.com/webhook/calculateur-marketing` reste en place, inutilisé,
+// le temps de vérifier que rien ne manque.
+const WEBHOOK = 'https://academy.mydigipal.com/api/site/devis';
 const AUTO_ADVANCE_MS = 280;
 
 interface Props {

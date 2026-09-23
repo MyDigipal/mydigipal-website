@@ -6,7 +6,7 @@
 |-----|--------|
 | Stack | Astro 6.2.2 + Tailwind 4.2.4 + React islands |
 | Calculateur | `/en/calculator` et `/fr/calculator` : la v6 depuis le 22/09/2026 (section 3) |
-| Webhook | `https://n8n.mydigipal.com/webhook/calculateur-marketing` |
+| Envoi du devis | `POST https://academy.mydigipal.com/api/site/devis` (CRM + les deux mails + Google Chat) |
 | Build | `npm run build` (~14s, 200 pages) |
 | Hosting | **Render** (auto-deploy GitHub via `render.yaml`) - Cloudflare = DNS proxy/CDN devant uniquement |
 | Déploiement | `git push origin main` → Render webhook → build → publish (~2-3 min) |
@@ -123,11 +123,15 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   devis » des mails.
 - **Envoi** : même format qu'avant pour n8n, plus `display` (les montants déjà mis en forme
   dans la devise du visiteur), `auditRequest`, `metadata.planUrl` et `metadata.provenance`.
-- **Mails** : le code du nœud n8n « Generate Email HTML » est versionné dans
-  `scripts/n8n-calculateur/generate-email.js`. On le modifie là, on le teste avec
-  `node scripts/n8n-calculateur/test-mails.cjs scripts/n8n-calculateur/envois-exemple.json`
-  (aperçus HTML dans `apercus/`), puis `python scripts/n8n-calculateur/publier.py`. Jamais
-  d'édition à la main dans n8n : la copie du dépôt deviendrait fausse.
+- **Mails et CRM** : depuis le 23/09/2026, l'envoi ne passe plus par n8n. La route
+  `POST /api/site/devis` de l'application Academy (dépôt `mydigipal-academy`) écrit le
+  devis dans `mydigipal.prospection.calculator_quotes`, crée le contact dans
+  `prospection.contacts` (source `calculator`, visible dans sales.mydigipal.com), envoie
+  le devis au prospect et le lead à Paul, puis annonce le lead dans l'espace Google Chat
+  « Website Chat ». Les gabarits vivent dans `src/lib/site/devis-mails.ts` de ce dépôt-là.
+  ⚠️ Les espaces INSÉCABLES comptent (montants, « 10 % ») : le portage a d'abord différé
+  là-dessus, invisible à l'œil. `scripts/n8n-calculateur/` reste dans le site pour rejouer
+  l'ancien workflow en cas de retour arrière, et son Google Sheet n'est plus alimenté.
 - **Anciennes adresses** : l'ancien calculateur est supprimé (section 3 bis) ;
   `/{lang}/calculator-v6` renvoie vers `/calculator` en gardant l'ancre.
 - **Assistant du site** (`src/components/site-assistant/`) : il connaît la page où il s'ouvre.
