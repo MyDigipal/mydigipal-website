@@ -469,7 +469,7 @@ const seo = {
   }
 </style>
 
-<script define:vars={{ webhookUrl: 'https://n8n.mydigipal.com/webhook/mydigipal-contact', pageLang: lang }}>
+<script define:vars={{ webhookUrl: 'https://academy.mydigipal.com/api/site/contact', pageLang: lang }}>
   const form = document.getElementById('contact-form');
   const messageField = document.getElementById('message');
   const optionalGroup = document.getElementById('optional-fields-group');
@@ -584,14 +584,26 @@ const seo = {
       services.push(checkbox.value);
     });
 
+    // D'où vient la personne, relevé à l'arrivée sur le site par BaseLayout.
+    let provenance = {};
+    try {
+      provenance = JSON.parse(sessionStorage.getItem('academy_provenance') || '{}');
+    } catch {
+      /* stockage indisponible : le lead part sans provenance */
+    }
+
     const data = {
       name: formData.get('name'),
       email: formData.get('email'),
       company: formData.get('company'),
+      // Le site de l'entreprise : le champ existait depuis toujours, il n'était pas envoyé.
+      website: formData.get('website'),
       services: services,
       message: formData.get('message'),
       timestamp: new Date().toISOString(),
       source: window.location.href,
+      language: pageLang,
+      provenance,
     };
 
     try {

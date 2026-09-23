@@ -355,6 +355,33 @@ const canonical = canonicalURL || Astro.url.href;
          « Calculer mon budget » et son visage. Là où la bulle s'affiche, `data-assistant="on"`
          sur <html> décale le bouton collant du calculateur (StickyCalculatorCTA) juste à gauche
          de la bulle, sur la même ligne. Son code n'est chargé qu'après le premier affichage. -->
+    <!-- D'où vient la visite, gardé pour toute la visite. Jusqu'au 23/09/2026 ce relevé
+         n'existait que sur les pages Academy : le calculateur lisait donc une provenance
+         toujours vide sur le reste du site, et le mail de lead ne disait jamais d'où
+         venait la personne. Même clé et même règle que `academy/track.ts`, pour qu'il n'y
+         ait qu'un seul endroit où cette information vit. -->
+    <script>
+      (() => {
+        try {
+          const q = new URLSearchParams(location.search);
+          const vus = {};
+          for (const k of ['gclid', 'fbclid', 'gbraid', 'wbraid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'matchtype', 'device', 'network']) {
+            const v = q.get(k);
+            if (v) vus[k] = v.slice(0, 300);
+          }
+          // Une arrivée par une annonce remplace la précédente ; sans annonce, la première
+          // page de la visite fait foi.
+          if (!Object.keys(vus).length && sessionStorage.getItem('academy_provenance')) return;
+          let referent;
+          const r = document.referrer ? new URL(document.referrer) : null;
+          if (r && r.hostname !== location.hostname) referent = r.origin;
+          sessionStorage.setItem('academy_provenance', JSON.stringify({ ...vus, ...(referent ? { referrer: referent } : {}), landing: location.pathname }));
+        } catch {
+          /* stockage indisponible : on continue sans */
+        }
+      })();
+    </script>
+
     <script>
       const cheminPage = location.pathname;
       const exclue = /^\/(fr|en)\/academy/.test(cheminPage) || cheminPage.startsWith('/admin');
