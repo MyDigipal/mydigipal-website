@@ -342,7 +342,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, frise, photo
                 pixels, et `objectPosition` garde le regard dans le cadre. */}
             <figure className="m-0 aspect-[16/9] overflow-hidden rounded-carte border border-filet-nuit bg-encre lg:aspect-[4/5]">
               <img
-                src="/academy/visuels/apprenante-regard_4-5.jpg"
+                src="/academy/visuels/apprenante-regard_4-5.webp"
                 alt={c.claraAlt}
                 width={900}
                 height={1124}
@@ -367,7 +367,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, frise, photo
               <div className="h-[3px]" style={{ background: 'linear-gradient(90deg,#c8a951,#dcbc66)' }} />
               <div className="relative aspect-video">
                 <img
-                  src="/academy/visuels/rencontre_jour1.jpg"
+                  src="/academy/visuels/rencontre_jour1.webp"
                   alt={c.j1.alt}
                   width={1400}
                   height={788}
@@ -605,7 +605,7 @@ export default function LeCompte({ locale, etats, faits, jeu, avis, frise, photo
           <Jour n={22} ton="avance" label={c.jour(22)} phrase={c.j22.phrase} note={c.j22.note}>
             <div className="relative max-w-[560px] overflow-hidden rounded-carte border border-filet-nuit bg-encre">
               <img
-                src="/academy/references/session-la-poste.jpg"
+                src="/academy/references/session-la-poste.webp"
                 alt={c.j22.alt}
                 loading="lazy"
                 width={1400}
@@ -1266,7 +1266,7 @@ function Comparateur({ c }: { c: Jour30Copy['compte']['j15'] }) {
       >
         <img src="/academy/exercices/visuel-carre.jpg" alt={c.altAvant} loading="lazy" width={1080} height={1080} className="block aspect-square h-auto w-full object-cover" />
         <div ref={top} className="absolute inset-0" style={{ clipPath: 'inset(0 0 0 50%)' }}>
-          <img src="/academy/exercices/visuel-carre-retouche-auto.jpg" alt={c.altApres} loading="lazy" width={1080} height={1080} className="block h-full w-full object-cover" />
+          <img src="/academy/exercices/visuel-carre-retouche-auto.webp" alt={c.altApres} loading="lazy" width={1080} height={1080} className="block h-full w-full object-cover" />
         </div>
         <div ref={line} className="pointer-events-none absolute bottom-0 top-0 w-px bg-or" style={{ left: '50%' }}>
           <span className="absolute left-1/2 top-1/2 flex h-[34px] w-[34px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-or bg-salle text-or">

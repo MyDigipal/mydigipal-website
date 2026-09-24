@@ -29,20 +29,22 @@ import type { Jour30Data, Locale, Avis } from './data';
  * Paul a tranché le contraire le même jour : « pas besoin, c'est juste Kering
  * et Chanel ». Les maisons se citent, le groupe non.
  */
-const LOGOS: Array<{ src: string; alt: string; h: number; c: number }> = [
-  { src: '/images/Training Logo/Gucci.avif', alt: 'Gucci', h: 54, c: 44 },
-  { src: '/images/Training Logo/Yves saint laurent.avif', alt: 'Yves Saint Laurent', h: 58, c: 46 },
-  { src: '/images/Training Logo/Balenciaga-logo.jpg', alt: 'Balenciaga', h: 70, c: 60 },
-  { src: '/images/Training Logo/Moet_Hennessy_Logo.png', alt: 'Moët Hennessy', h: 17, c: 15 },
-  { src: '/images/Training Logo/La poste.png', alt: 'La Poste', h: 38, c: 34 },
-  { src: '/images/Training Logo/Leclerc.png', alt: 'E.Leclerc', h: 26, c: 22 },
-  { src: '/images/Training Logo/La Redoute.svg', alt: 'La Redoute', h: 32, c: 28 },
-  { src: '/images/Training Logo/Pierre fabre.avif', alt: 'Pierre Fabre', h: 28, c: 24 },
-  { src: '/images/Training Logo/Pernod Ricard.avif', alt: 'Pernod Ricard', h: 32, c: 28 },
-  { src: '/images/Training Logo/Kaufman broad.avif', alt: 'Kaufman & Broad', h: 24, c: 20 },
-  { src: '/images/Training Logo/GL events.png', alt: 'GL Events', h: 40, c: 36 },
-  { src: '/images/Training Logo/Datawords.png', alt: 'Datawords', h: 24, c: 20 },
-  { src: '/images/Training Logo/CBTW.png', alt: 'CBTW', h: 34, c: 30 },
+/** `nw` et `nh` : les dimensions du fichier, pour poser width et height sur
+ *  chaque logo et réserver sa place avant le chargement (24/09/2026). */
+const LOGOS: Array<{ src: string; alt: string; h: number; c: number; nw: number; nh: number }> = [
+  { src: '/images/Training Logo/Gucci.avif', alt: 'Gucci', h: 54, c: 44, nw: 3000, nh: 2000 },
+  { src: '/images/Training Logo/Yves saint laurent.avif', alt: 'Yves Saint Laurent', h: 58, c: 46, nw: 1624, nh: 1000 },
+  { src: '/images/Training Logo/Balenciaga-logo.webp', alt: 'Balenciaga', h: 70, c: 60, nw: 2540, nh: 1408 },
+  { src: '/images/Training Logo/Moet_Hennessy_Logo.png', alt: 'Moët Hennessy', h: 17, c: 15, nw: 2799, nh: 436 },
+  { src: '/images/Training Logo/La poste.png', alt: 'La Poste', h: 38, c: 34, nw: 1080, nh: 679 },
+  { src: '/images/Training Logo/Leclerc.png', alt: 'E.Leclerc', h: 26, c: 22, nw: 452, nh: 111 },
+  { src: '/images/Training Logo/La Redoute.svg', alt: 'La Redoute', h: 32, c: 28, nw: 700, nh: 700 },
+  { src: '/images/Training Logo/Pierre fabre.avif', alt: 'Pierre Fabre', h: 28, c: 24, nw: 1020, nh: 328 },
+  { src: '/images/Training Logo/Pernod Ricard.avif', alt: 'Pernod Ricard', h: 32, c: 28, nw: 2560, nh: 943 },
+  { src: '/images/Training Logo/Kaufman broad.avif', alt: 'Kaufman & Broad', h: 24, c: 20, nw: 2801, nh: 718 },
+  { src: '/images/Training Logo/GL events.png', alt: 'GL Events', h: 40, c: 36, nw: 480, nh: 480 },
+  { src: '/images/Training Logo/Datawords.png', alt: 'Datawords', h: 24, c: 20, nw: 795, nh: 93 },
+  { src: '/images/Training Logo/CBTW.png', alt: 'CBTW', h: 34, c: 30, nw: 641, nh: 344 },
 ];
 
 /** Le nombre d'avis montrés avant le bouton : trois rangées de trois dès lg. */
@@ -83,7 +85,7 @@ function Logos({ copie }: { copie?: boolean }) {
   return (
     <div className="flex items-center gap-14 pr-14" aria-hidden={copie ? 'true' : undefined}>
       {LOGOS.map((l) => (
-        <img key={l.src} src={l.src} alt={copie ? '' : l.alt} loading="lazy" className="w-auto flex-none" style={{ height: l.h, mixBlendMode: 'multiply' }} />
+        <img key={l.src} src={l.src} alt={l.alt} width={Math.round((l.h * l.nw) / l.nh)} height={l.h} loading="lazy" className="w-auto flex-none" style={{ height: l.h, mixBlendMode: 'multiply' }} />
       ))}
     </div>
   );
@@ -178,7 +180,7 @@ export default function Maison({ locale, temoignages, avis: preuve }: { locale: 
                 className="m-0 flex w-[min(390px,84vw)] flex-none snap-start flex-col gap-3.5 rounded-carte border border-lin bg-craie px-6 py-[22px] md:w-auto"
               >
                 {logo ? (
-                  <img src={logo.src} alt={t.societe} loading="lazy" className="w-auto max-w-[150px] self-start object-contain object-left" style={{ height: logo.c, mixBlendMode: 'multiply' }} />
+                  <img src={logo.src} alt={t.societe} width={Math.round((logo.c * logo.nw) / logo.nh)} height={logo.c} loading="lazy" className="w-auto max-w-[150px] self-start object-contain object-left" style={{ height: logo.c, mixBlendMode: 'multiply' }} />
                 ) : (
                   <span className="font-ac-mono text-[11px] font-bold uppercase tracking-[0.16em] text-brume">{t.societe}</span>
                 )}

@@ -119,8 +119,8 @@ export default function Hero({
             <img
               src={cheminCapture('tableau-de-bord', locale)}
               alt={c.alt}
-              width={1204}
-              height={753}
+              width={1024}
+              height={640}
               fetchPriority="high"
               className="block h-full w-full object-cover object-left-top sm:object-top"
             />

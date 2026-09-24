@@ -110,7 +110,7 @@ export default function Mention({
         {!sansPhoto && (
         <figure className="m-0 mt-9 overflow-hidden rounded-carte border border-filet-nuit bg-encre">
           <img
-            src="/academy/visuels/apprenante-cartes_paysage.jpg"
+            src="/academy/visuels/apprenante-cartes_paysage.webp"
             alt={c.bandeAlt}
             width={1600}
             height={837}

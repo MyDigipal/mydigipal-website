@@ -751,9 +751,9 @@ const FR = {
     texte:
       'Paul André l’a enseignée pendant trois ans devant de vraies équipes, de la direction financière au service client, et l’a corrigée session après session jusqu’à ce qu’elle tienne. C’est cette version-là qui est en ligne.',
     photos: [
-      { src: '/academy/references/session-la-poste-2.jpg', alt: 'Session de formation IA chez La Poste', legende: 'La Poste', w: 1400, h: 787 },
-      { src: '/academy/references/session-leclerc.jpg', alt: 'Session de formation IA chez E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
-      { src: '/academy/references/session-abm.jpg', alt: 'Atelier en petit groupe', legende: 'Atelier en petit groupe', w: 1200, h: 900 },
+      { src: '/academy/references/session-la-poste-2.webp', alt: 'Session de formation IA chez La Poste', legende: 'La Poste', w: 1200, h: 900 },
+      { src: '/academy/references/session-leclerc.webp', alt: 'Session de formation IA chez E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
+      { src: '/academy/references/session-abm.webp', alt: 'Atelier en petit groupe', legende: 'Atelier en petit groupe', w: 1200, h: 900 },
     ],
     chiffres: (avis: Avis) => [
       { valeur: '2 500+', libelle: 'professionnels formés' },
@@ -1583,9 +1583,9 @@ const EN: Jour30Copy = {
     texte:
       'Paul André taught it for three years in front of real teams, from finance to customer service, and corrected it session after session until it held. That is the version now online.',
     photos: [
-      { src: '/academy/references/session-la-poste-2.jpg', alt: 'AI training session at La Poste', legende: 'La Poste', w: 1400, h: 787 },
-      { src: '/academy/references/session-leclerc.jpg', alt: 'AI training session at E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
-      { src: '/academy/references/session-abm.jpg', alt: 'Small-group workshop', legende: 'Small-group workshop', w: 1200, h: 900 },
+      { src: '/academy/references/session-la-poste-2.webp', alt: 'AI training session at La Poste', legende: 'La Poste', w: 1200, h: 900 },
+      { src: '/academy/references/session-leclerc.webp', alt: 'AI training session at E.Leclerc', legende: 'E.Leclerc', w: 1200, h: 900 },
+      { src: '/academy/references/session-abm.webp', alt: 'Small-group workshop', legende: 'Small-group workshop', w: 1200, h: 900 },
     ],
     chiffres: (avis: Avis) => [
       { valeur: '2,500+', libelle: 'professionals trained' },

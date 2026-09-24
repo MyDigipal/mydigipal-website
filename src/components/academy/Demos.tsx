@@ -108,8 +108,8 @@ export const CAPTURES_FR = new Set<string>([]);
 
 export function cheminCapture(nom: string, locale: Locale): string {
   return locale === 'fr' && CAPTURES_FR.has(nom)
-    ? `/academy/captures/fr/${nom}.jpg`
-    : `/academy/captures/${nom}.jpg`;
+    ? `/academy/captures/fr/${nom}.webp`
+    : `/academy/captures/${nom}.webp`;
 }
 
 /**

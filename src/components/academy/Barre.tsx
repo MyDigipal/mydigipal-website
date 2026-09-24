@@ -156,7 +156,7 @@ export default function Barre({
     <header className="fixed inset-x-0 top-0 z-40 border-b border-filet-nuit bg-salle/92 backdrop-blur" data-theme="nuit">
       <div className="mx-auto flex h-16 max-w-[1280px] items-center gap-4 px-4 sm:px-6">
         <a href={`/${locale}`} className="flex flex-none items-center gap-2.5" aria-label="MyDigipal">
-          <img src="/images/Logos/03_Full white.png" alt="" width={140} height={40} className="h-7 w-auto" loading="eager" />
+          <img src="/images/Logos/03_Full white.png" alt="MyDigipal" width={111} height={40} className="h-7 w-auto" loading="eager" />
           <span className="hidden font-ac-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-brume-nuit sm:inline">{c.marque}</span>
         </a>
 

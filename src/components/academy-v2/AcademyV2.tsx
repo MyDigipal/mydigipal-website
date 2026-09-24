@@ -209,7 +209,7 @@ export default function AcademyV2({
         }}
         jeu={data.jeu}
         frise
-        photoQuinzaine2="/academy/visuels/apprenante-cartes_paysage.jpg"
+        photoQuinzaine2="/academy/visuels/apprenante-cartes_paysage.webp"
         titreQuinzaine2={c.trajet.quinzaine2}
       />
 
