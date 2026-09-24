@@ -277,10 +277,27 @@ Le Hub MyDigipal a son propre handoff Claude Design (KPI cards, charts ECharts, 
 part, pour que Paul la regarde sur le vrai site avant de trancher. `index.astro` est
 toujours l'ancienne accueil. Pilotage : `docs/site-mise-en-avant/refonte-accueil-directions.html`.
 
-La page assemble `src/components/accueil/` : `Visages` (hero), `Bandeau` (logos),
-`Resultats` (sept études de cas), `Offre` (services et prix de départ), `Avis` (note et
-verbatims de formation), `Articles`, `Portes` (calculateur, Academy, appel). Styles
+La page assemble `src/components/accueil/`, dans cet ordre depuis les retours de Paul du
+24/09/2026 : `Visages` (hero), `Bandeau` (logos), `Academie` (l'AI Academy, les boucles
+filmées de l'app en onglets), `Avis` (note, photo de La Poste, verbatims), `Offre` (« Ce
+qu'on fait » : dix services, une phrase chacun, fiche au survol), `Resultats` (sept études
+de cas, descendues exprès), `Articles`, `Portes` (calculateur, Academy, appel). Styles
 communs dans `accueil.css`.
+
+- **Plus aucun prix dans `Offre`** (Paul : « je pense pas que ça soit une bonne chose de
+  mettre le prix »). Une phrase par service ; sur ordinateur, un repère blanc glisse sur la
+  ligne survolée ou atteinte au clavier, et la fiche collée à droite dit ce qui est compris,
+  un résultat client quand une étude de cas a employé le service (lu dans la collection),
+  la page et « Chiffrer ce service » (`/calculator?service=`). Au téléphone, la liste seule.
+  Les prix de départ ne restent que dans la porte du calculateur (`Portes`).
+- **`Academie`** : titre et fiches des écrans repris de la page de vente
+  (`academy/copy.ts`, `hero.titre`, `visite.spots`), chiffres de l'API. Une seule
+  `<video>`, rien de chargé avant l'approche de la section, un tour qui passe d'une boucle
+  à la suivante jusqu'au premier geste, bouton pause, rien d'automatique sous
+  prefers-reduced-motion. ⚠️ Pas les images de `public/academy/visuels/` : composées, avec
+  des chiffres inventés (35 %, 2 650 points), contraires à la règle de la page.
+- **Prix de l'Academy en dollars sur la page anglaise** (`prixAffiche()`), comme sa page de
+  vente (Paul, 16/09/2026).
 
 - **L'option `refonte`** (`PageLayout` → `BaseLayout`, `Header`, `Footer`,
   `StickyCalculatorCTA`) montre la nouvelle version du reste de la page : le bleu du
@@ -302,10 +319,12 @@ communs dans `accueil.css`.
   les prix de `prixDeDepart()` du moteur v6, jamais additionnés ; prix, note, modules,
   heures et verbatims de l'Academy de son API (instantané en secours), relus dans le
   navigateur par `data-fait` comme les pages outils.
-- **Trois scripts d'images**, à relancer après tout changement de source :
+- **Quatre scripts d'images**, à relancer après tout changement de source :
   `scripts/visages-accueil.mjs` (les portraits recadrés sur le visage, repères relevés à
   la main), `scripts/logos-accueil.mjs` (logos détourés + `src/data/accueil/logos.json`,
-  affichés à SURFACE égale), `scripts/cas-accueil.mjs` (visuels des études de cas allégés).
+  affichés à SURFACE égale), `scripts/cas-accueil.mjs` (visuels des études de cas allégés),
+  `scripts/photos-accueil.mjs` (la salle de La Poste coupée en 16:9 sans perdre personne,
+  le logo de l'Academy sur fond de nuit).
   ⚠️ Ni Kering ni Chanel dans les logos ni les verbatims (décision du 01/09/2026).
   Portraits à redemander (moins de 200 px de visage, flous sur écran Retina) : Juliette
   Joire, Callum Dunbar ; limites : Diksha Mishra, Amna Khan, Alizée Varloud ; cadrage :
