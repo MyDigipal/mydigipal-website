@@ -25,6 +25,19 @@
   background: #fff;
 }
 
+/* L'apparition au défilement, plus ample et plus lente que la valeur par
+   défaut du site (global.css) : la courbe de sortie de toute la page. */
+.accueil [data-reveal] {
+  transform: translateY(18px);
+  transition:
+    opacity 0.8s var(--ease-sortie),
+    transform 0.8s var(--ease-sortie);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+.accueil [data-reveal].is-revealed {
+  transform: none;
+}
+
 .accueil h2,
 .accueil h3 {
   text-wrap: balance;

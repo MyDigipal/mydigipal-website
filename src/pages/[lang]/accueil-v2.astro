@@ -1,0 +1,66 @@
+---
+/**
+ * La page d'accueil refaite (septembre 2026), EN APERÇU.
+ *
+ * ⚠️ Cette page n'est pas l'accueil : elle vit sur `/{lang}/accueil-v2`, en
+ * `noindex`, hors du sitemap et liée de nulle part, pour que Paul la regarde
+ * sur le vrai site avant la bascule. L'accueil en ligne reste `index.astro`.
+ * À la bascule : ce fichier remplace `index.astro` (sans `noindex` ni
+ * `refonte`), et la liste de CLAUDE.md, section 7, dit le reste.
+ *
+ * Point de départ : la direction A (« Les visages ») du document
+ * docs/site-mise-en-avant/refonte-accueil-directions.html, choisie parce que
+ * la page d'accueil reçoit surtout ceux qui nous cherchent par notre nom et
+ * viennent vérifier à qui ils vont confier leur budget. Donc, dans l'ordre :
+ * des gens, ce qu'ils ont obtenu, ce que ça coûte, ce qu'en disent ceux
+ * qu'on a formés, et trois façons de commencer.
+ *
+ * Aucun chiffre écrit à la main : voir `components/accueil/donnees.ts`.
+ * Le mouvement vient du socle commun (global.css et lib/scroll.ts) ; chaque
+ * section documente le geste qu'elle emploie et pourquoi.
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import { type Language, languages } from '@/i18n/config';
+import Visages from '@/components/accueil/Visages.astro';
+import Bandeau from '@/components/accueil/Bandeau.astro';
+import Resultats from '@/components/accueil/Resultats.astro';
+import Offre from '@/components/accueil/Offre.astro';
+import Avis from '@/components/accueil/Avis.astro';
+import Articles from '@/components/accueil/Articles.astro';
+import Portes from '@/components/accueil/Portes.astro';
+import { EQUIPE, enLettres, faitsAcademy, lireAcademy, type Lang } from '@/components/accueil/donnees';
+import '@/components/accueil/accueil.css';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang: langue } = Astro.params as { lang: Language };
+const lang = langue as Lang;
+const academy = await lireAcademy(lang);
+const { prix: prixAcademy } = faitsAcademy(academy, lang);
+const nombre = enLettres(EQUIPE.length, lang);
+
+const meta =
+  lang === 'fr'
+    ? {
+        titre: 'Agence marketing digital B2B et automobile',
+        description: `${nombre} spécialistes du B2B et de l’automobile à Paris et Londres : SEO, Google Ads, social ads, formation IA. Nos résultats clients et nos prix, en clair.`,
+      }
+    : {
+        titre: 'B2B and Automotive Digital Marketing Agency',
+        description: `${nombre} B2B and automotive marketing specialists in London and Paris: SEO, Google Ads, paid social, AI training. Our client results and prices, in plain view.`,
+      };
+---
+
+<PageLayout lang={langue} title={meta.titre} description={meta.description} noindex refonte>
+  <div class="accueil">
+    <Visages lang={lang} />
+    <Bandeau lang={lang} />
+    <Resultats lang={lang} />
+    <Offre lang={lang} prixAcademy={prixAcademy} />
+    <Avis lang={lang} academy={academy} />
+    <Articles lang={lang} />
+    <Portes lang={lang} academy={academy} />
+  </div>
+</PageLayout>

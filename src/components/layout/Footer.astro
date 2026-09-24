@@ -5,9 +5,13 @@ import Icon from '@/components/ui/Icon.astro';
 
 interface Props {
   lang: Language;
+  /** Version de la refonte de l'accueil (24/09/2026) : un seul libellé pour le
+   *  calculateur et le bleu du logo. Seul l'aperçu `/{lang}/accueil-v2` la
+   *  demande ; à la bascule, elle devient la seule version. */
+  refonte?: boolean;
 }
 
-const { lang } = Astro.props;
+const { lang, refonte = false } = Astro.props;
 
 const currentYear = new Date().getFullYear();
 
@@ -36,7 +40,7 @@ const footerLinks = {
     { label: t(lang, 'nav.blog'), href: `/${lang}/blog` },
     { label: t(lang, 'nav.contact'), href: `/${lang}/contact` },
     // Un seul libellé pour le calculateur sur tout le site (document de refonte, 23/09/2026).
-    { label: t(lang, 'nav.quote'), href: `/${lang}/calculator` },
+    { label: refonte ? t(lang, 'nav.quote') : lang === 'fr' ? 'Devis Gratuit' : 'Get a Quote', href: `/${lang}/calculator` },
     { label: lang === 'fr' ? 'Recrutement' : 'Careers', href: `/${lang}/careers` },
   ],
 };
@@ -66,7 +70,7 @@ const socialLinks = [
             class="h-10 w-auto"
           />
         </a>
-        <p class="text-[#58A9E8] font-medium mb-3">
+        <p class:list={['font-medium mb-3', refonte ? 'text-[#58A9E8]' : 'text-primary-400']}>
           {t(lang, 'site.tagline')}
         </p>
         <p class="text-slate-400 text-sm leading-relaxed mb-6 max-w-sm">
@@ -83,7 +87,7 @@ const socialLinks = [
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              class="w-10 h-10 rounded-lg bg-slate-800 hover:bg-marque flex items-center justify-center transition-colors"
+              class:list={['w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center transition-colors', refonte ? 'hover:bg-marque' : 'hover:bg-indigo-600']}
               aria-label={social.label}
             >
               <Icon name={social.icon} size={20} class="text-slate-400 hover:text-white" />
