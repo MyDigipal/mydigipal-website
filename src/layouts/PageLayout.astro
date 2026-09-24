@@ -18,12 +18,15 @@ interface Props {
   articleAuthor?: string;
   articleSection?: string;
   articleTags?: string[];
+  /** L'aperçu de la refonte de l'accueil : en-tête, pied de page et bouton
+   *  collant dans leur nouvelle version (voir CLAUDE.md, section 7). */
+  refonte?: boolean;
 }
 
-const { lang = 'en', ...props } = Astro.props;
+const { lang = 'en', refonte = false, ...props } = Astro.props;
 ---
 
-<BaseLayout lang={lang} {...props}>
+<BaseLayout lang={lang} refonte={refonte} {...props}>
   <slot name="head" slot="head" />
 
   <!-- Lien d'évitement : au clavier, la première tabulation mène au contenu
@@ -35,16 +38,16 @@ const { lang = 'en', ...props } = Astro.props;
     {lang === 'fr' ? 'Aller au contenu' : 'Skip to content'}
   </a>
 
-  <Header lang={lang} />
+  <Header lang={lang} refonte={refonte} />
 
   <main id="contenu" class="flex-grow">
     <slot />
   </main>
 
-  <Footer lang={lang} />
+  <Footer lang={lang} refonte={refonte} />
 
   <!-- Sticky Calculator CTA -->
-  <StickyCalculatorCTA lang={lang} />
+  <StickyCalculatorCTA lang={lang} refonte={refonte} />
 
   <slot name="analytics" slot="analytics" />
 </BaseLayout>

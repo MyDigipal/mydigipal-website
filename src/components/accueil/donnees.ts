@@ -56,9 +56,9 @@ export const serrer = (texte: string) =>
 /**
  * Les quatorze, dans l'ordre de l'ancienne section « Qui sommes-nous ».
  *
- * ⚠️ Question ouverte du document de refonte : Bruce Eidsvik est aussi Chief
- * Growth Officer de Servion, un client. S'il sort de l'équipe, supprimer sa
- * ligne suffit : le nombre écrit dans le hero se recalcule.
+ * Bruce Eidsvik est aussi Chief Growth Officer de Servion, un client : Paul
+ * le garde parmi les quatorze (24/09/2026). S'il sort un jour de l'équipe,
+ * supprimer sa ligne suffit, le nombre écrit dans le hero se recalcule.
  */
 export const EQUIPE: Array<{ slug: string; nom: string; role: Txt }> = [
   { slug: 'paul-andre', nom: 'Paul André', role: { fr: 'Fondateur', en: 'Founder' } },

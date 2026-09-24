@@ -20,6 +20,10 @@ interface Props {
   articleAuthor?: string;
   articleSection?: string;
   articleTags?: string[];
+  /** L'aperçu de la refonte de l'accueil (`/{lang}/accueil-v2`) : pose
+   *  `data-refonte` sur <html> (couleur de la barre de progression) et règle
+   *  la couleur du navigateur sur le fond de la page. */
+  refonte?: boolean;
 }
 
 const {
@@ -35,6 +39,7 @@ const {
   articleAuthor,
   articleSection,
   articleTags = [],
+  refonte = false,
 } = Astro.props;
 
 const siteTitle = t(lang, 'site.name');
@@ -56,7 +61,7 @@ const canonical = canonicalURL || Astro.url.href;
 ---
 
 <!doctype html>
-<html lang={lang} class="scroll-smooth">
+<html lang={lang} class="scroll-smooth" data-refonte={refonte ? '' : undefined}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -123,7 +128,7 @@ const canonical = canonicalURL || Astro.url.href;
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/images/Logos/Favicon logo_256px.png" />
     <link rel="apple-touch-icon" href="/images/Logos/Favicon logo_256px.png" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content={refonte ? '#ffffff' : '#4F46E5'} />
 
     <!-- RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title={lang === 'fr' ? 'Blog MyDigipal' : 'MyDigipal Blog'} href={`/${lang}/rss.xml`} />
