@@ -133,7 +133,7 @@ export default function Console({
             Une fiche qui se vide dès que la souris quitte la zone oblige à
             désigner et lire en même temps (leçon de la visite, 29/08/2026). */}
         <aside className="self-start rounded-carte border border-filet-nuit bg-salle-2 px-5 py-4.5">
-          <p className="mb-2 font-ac-mono text-[10.5px] uppercase tracking-[0.16em] text-or-texte">
+          <p className="mb-2 font-ac-mono text-[10.5px] uppercase tracking-[0.16em] text-or-texte-nuit">
             {ecran.onglet}
           </p>
           <h3 className="mb-2 text-base font-semibold text-ivoire">{fiche.titre}</h3>

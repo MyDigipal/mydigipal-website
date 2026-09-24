@@ -54,7 +54,7 @@ export default function Demo({ copy }: { copy: CopyOutil['demo'] }) {
         </header>
         <div className="px-5 py-4.5 font-ac-mono text-[13.5px] leading-[1.7] lg:min-h-[420px]">
           <p className="mb-4 whitespace-pre-wrap text-terminal-texte">
-            <span className="mb-1.5 block text-[11px] uppercase tracking-[0.12em] text-or-texte">
+            <span className="mb-1.5 block text-[11px] uppercase tracking-[0.12em] text-or-texte-nuit">
               {copy.vous}
             </span>
             {copy.avantPrompt}
@@ -71,7 +71,7 @@ export default function Demo({ copy }: { copy: CopyOutil['demo'] }) {
         </header>
         <div className="px-5 py-4.5 font-ac-mono text-[13.5px] leading-[1.7] lg:min-h-[420px]">
           <p className="mb-4 whitespace-pre-wrap text-terminal-texte">
-            <span className="mb-1.5 block text-[11px] uppercase tracking-[0.12em] text-or-texte">
+            <span className="mb-1.5 block text-[11px] uppercase tracking-[0.12em] text-or-texte-nuit">
               {copy.vous}
             </span>
             {ecrit}

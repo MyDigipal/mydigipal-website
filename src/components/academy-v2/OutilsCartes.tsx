@@ -75,7 +75,7 @@ export default function OutilsCartes({ locale, outils }: { locale: Locale; outil
                 <b className="text-[17px] font-semibold leading-[1.2] text-ivoire">{o.nom}</b>
               </span>
               <span className="mt-2.5 flex-1 text-[14px] leading-[1.55] text-brume-nuit">{o.phrase}</span>
-              <span className="mt-4 font-ac-mono text-[12px] uppercase tracking-[0.1em] text-or-texte transition-colors group-hover:text-or-vif">
+              <span className="mt-4 font-ac-mono text-[12px] uppercase tracking-[0.1em] text-or-texte-nuit transition-colors group-hover:text-or-vif">
                 {c.lien} -&gt;
               </span>
             </a>
