@@ -306,6 +306,14 @@ const FR = {
     ],
     rassureAutre: 'Besoin d’un virement, d’un bon de commande ou d’une facture avant paiement ?',
     rassureAutreLien: 'Écrivez-moi',
+    /**
+     * Les conditions générales de vente de l'application (24/09/2026). Elles
+     * portent la garantie de l'article 6 ; les CGU de l'agence ne disent rien
+     * d'un achat de formation. Liées sous la grille et dans le pied de page.
+     */
+    cgv: 'Conditions générales de vente',
+    cgvLien: 'https://academy.mydigipal.com/fr/terms',
+    cgvAvant: 'L’achat est régi par nos',
 
     gratuitTag: 'Essayer d’abord',
     gratuitTitre: (lecons: number) => `${lecons} leçons offertes, pendant 48 heures`,
@@ -551,6 +559,9 @@ const EN: typeof FR = {
     ],
     rassureAutre: 'Need a bank transfer, a purchase order, or an invoice before you pay?',
     rassureAutreLien: 'Write to me',
+    cgv: 'Terms of sale',
+    cgvLien: 'https://academy.mydigipal.com/terms',
+    cgvAvant: 'Your purchase is governed by our',
 
     gratuitTag: 'Try first',
     gratuitTitre: (lecons) => `${lecons} free lessons, for 48 hours`,

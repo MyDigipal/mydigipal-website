@@ -709,7 +709,16 @@ export default function Tarifs({
           </a>
         </div>
 
-        <p className="mt-5 text-[14px] leading-[1.6] text-brume-nuit">{c.rappel(devise)}</p>
+        <p className="mt-5 text-[14px] leading-[1.6] text-brume-nuit">
+          {c.rappel(devise)} {c.cgvAvant}{' '}
+          <a
+            href={c.cgvLien}
+            className="text-or underline decoration-or/50 underline-offset-4 hover:decoration-or"
+          >
+            {c.cgv.toLowerCase()}
+          </a>
+          .
+        </p>
       </div>
     </section>
   );

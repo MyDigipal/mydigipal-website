@@ -9,9 +9,13 @@ interface Props {
    *  calculateur et le bleu du logo. Seul l'aperçu `/{lang}/accueil-v2` la
    *  demande ; à la bascule, elle devient la seule version. */
   refonte?: boolean;
+  /** Remplace le lien vers les CGU de l'agence. La page de vente de l'Academy
+   *  y met les conditions générales de vente de l'application (24/09/2026) :
+   *  on y achète une formation, pas une prestation d'agence. */
+  termsLink?: { label: string; href: string };
 }
 
-const { lang, refonte = false } = Astro.props;
+const { lang, refonte = false, termsLink } = Astro.props;
 
 const currentYear = new Date().getFullYear();
 
@@ -47,7 +51,7 @@ const footerLinks = {
 
 const legalLinks = [
   { label: lang === 'fr' ? 'Politique de Confidentialité' : 'Privacy Policy', href: `/${lang}/privacy-policy` },
-  { label: lang === 'fr' ? 'Conditions d\'Utilisation' : 'Terms of Service', href: `/${lang}/terms-of-service` },
+  termsLink ?? { label: lang === 'fr' ? 'Conditions d\'Utilisation' : 'Terms of Service', href: `/${lang}/terms-of-service` },
 ];
 
 const socialLinks = [
