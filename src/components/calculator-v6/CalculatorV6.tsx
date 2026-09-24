@@ -333,8 +333,12 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   }, [go]);
   useEffect(() => {
     // `?service=seo` : les boutons « Calculer mon budget » des pages services cochent le service.
-    const service = new URLSearchParams(window.location.search).get('service');
-    if (service && (DOMAIN_ORDER as string[]).includes(service)) setDraft((d) => (d.length ? d : [service as ServiceDomain]));
+    // Plusieurs services séparés par des virgules (`?service=seo,google-ads`) depuis la page
+    // d'accueil, dont la porte du calculateur laisse cocher plusieurs puces (24/09/2026).
+    const services = (new URLSearchParams(window.location.search).get('service') || '')
+      .split(',')
+      .filter((s): s is ServiceDomain => (DOMAIN_ORDER as string[]).includes(s));
+    if (services.length) setDraft((d) => (d.length ? d : DOMAIN_ORDER.filter((x) => services.includes(x))));
     const m = /[#&]plan=([A-Za-z0-9_-]+)(?:&b=(\d+))?/.exec(window.location.hash);
     if (m) {
       appliquerPlan(m[1], m[2] ? Number(m[2]) : undefined);

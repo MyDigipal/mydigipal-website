@@ -1,0 +1,160 @@
+---
+/**
+ * Les trois derniers articles de la langue, sans filtre par catégorie : la
+ * page d'accueil n'est pas le blog. Le premier en grand, les deux suivants en
+ * vignettes à côté ; au téléphone, une liste.
+ */
+import { getCollection } from 'astro:content';
+import Icon from '@/components/ui/Icon.astro';
+import { serrer, type Lang } from './donnees';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const fr = lang === 'fr';
+
+const articles = (await getCollection('blog'))
+  .filter((p) => p.id.startsWith(`${lang}/`) && !p.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3)
+  .map((p) => ({
+    titre: p.data.title,
+    lien: `/${lang}/blog/${p.id.replace(/^(en|fr)\//, '')}`,
+    image: p.data.image,
+    date: p.data.date,
+  }));
+
+const date = (d: Date) =>
+  d.toLocaleDateString(fr ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const t = fr
+  ? { titre: 'Derniers articles.', tous: 'Tous les articles' }
+  : { titre: 'Latest articles.', tous: 'All articles' };
+---
+
+{articles.length > 0 && (
+  <section class="articles bloc" aria-labelledby="articles-titre">
+    <div class="container-custom">
+      <div class="articles-tete" data-reveal>
+        <h2 id="articles-titre" class="titre-section" set:html={serrer(t.titre)} />
+        <a href={`/${lang}/blog`} class="lien-fleche">
+          <span>{t.tous}</span>
+          <Icon name="arrow-right" size={18} />
+        </a>
+      </div>
+
+      <ul class="articles-grille">
+        {articles.map((a, i) => (
+          <li class:list={['article', { 'article-grand': i === 0 }]} data-reveal style={`--i:${i}`}>
+            <a href={a.lien} class="article-lien">
+              <span class="article-image">
+                <img
+                  src={a.image}
+                  alt=""
+                  width="1200"
+                  height="630"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </span>
+              <span class="article-texte">
+                <span class="article-titre">{a.titre}</span>
+                <time class="article-date" datetime={a.date.toISOString().slice(0, 10)}>{date(a.date)}</time>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .articles {
+    background: var(--brume);
+  }
+  .articles-tete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+  }
+  .articles-grille {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1.75rem;
+  }
+  @media (min-width: 1024px) {
+    .articles-grille {
+      grid-template-columns: 7fr 5fr;
+      grid-template-rows: auto 1fr;
+      gap: 2rem 2.5rem;
+      margin-top: 3.5rem;
+    }
+    .article-grand {
+      grid-row: 1 / span 2;
+    }
+  }
+
+  .article-lien {
+    display: grid;
+    gap: 1rem;
+    color: inherit;
+  }
+  .article:not(.article-grand) .article-lien {
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .article:not(.article-grand) .article-lien {
+      grid-template-columns: 12rem minmax(0, 1fr);
+      gap: 1.5rem;
+    }
+  }
+  .article-image {
+    display: block;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--brume);
+  }
+  .article-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1200 / 630;
+    object-fit: cover;
+    transition: transform 0.7s var(--ease-sortie);
+  }
+  .article-lien:hover .article-image img {
+    transform: scale(1.03);
+  }
+  .article-texte {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .article-titre {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.0625rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    transition: color 0.3s var(--ease-sortie);
+  }
+  .article-grand .article-titre {
+    font-size: clamp(1.375rem, 1rem + 1vw, 1.75rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .article-lien:hover .article-titre {
+    color: var(--color-marque);
+  }
+  .article-date {
+    font-size: 0.875rem;
+    color: var(--gris);
+  }
+</style>

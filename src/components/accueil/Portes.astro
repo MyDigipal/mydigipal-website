@@ -1,0 +1,539 @@
+---
+/**
+ * Trois façons de commencer : la fin de la page, là où on a envie d'agir.
+ *
+ * Une grille asymétrique, pas trois cartes égales : le calculateur et
+ * l'Academy côte à côte (7 et 5 colonnes), puis l'appel en bande sur toute la
+ * largeur, qui ferme la page. Le calculateur prend la plus grande place parce
+ * qu'il répond sans rendez-vous ; l'Academy porte sa salle de nuit (sa couleur
+ * à elle, la seule surface sombre de la page) ; l'appel porte le visage de
+ * celui qu'on aura au téléphone.
+ *
+ * La porte du calculateur reprend l'idée de la direction B : on coche des
+ * services, leur prix de départ s'affiche en dessous (`lignePrix()`, donc le
+ * moteur du calculateur), et le bouton part avec eux
+ * (`?service=seo,google-ads`, lu par CalculatorV6). Aucun prix n'est
+ * additionné ici : le total, c'est le calculateur qui le fait.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { BOOKING_URL } from '@/components/site-assistant/copy';
+import { MARQUES } from '@/components/academy-tools/logos';
+import type { Jour30Data } from '@/components/academy/data';
+import { DOMAINES, faitsAcademy, lignePrix, portrait, serrer, type Lang } from './donnees';
+
+interface Props {
+  lang: Lang;
+  academy: Jour30Data;
+}
+const { lang, academy } = Astro.props;
+const fr = lang === 'fr';
+const f = faitsAcademy(academy, lang);
+
+const OUTILS = [
+  { id: 'claude', nom: 'Claude' },
+  { id: 'chatgpt', nom: 'ChatGPT' },
+  { id: 'copilot', nom: 'Copilot' },
+  { id: 'gemini', nom: 'Gemini' },
+].filter((o) => MARQUES[o.id]);
+
+const t = fr
+  ? {
+      titre: 'Trois façons de commencer.',
+      calcTitre: 'Chiffrer votre marketing, sur nos vraies grilles.',
+      calcTexte: 'Cochez ce qui vous intéresse\u00a0: le calculateur part de là, et le devis détaillé arrive par mail. Sans rendez-vous.',
+      calcChoix: 'Les services à chiffrer',
+      calcVide: 'Cochez un service pour voir son prix de départ.',
+      calcBouton: 'Calculer mon budget',
+      acaTitre: 'Former votre équipe à l’IA, en ligne.',
+      acaTexte: `${f.modules} modules, ${f.heures} de lecture et d’exercices, avec l’outil de votre choix.`,
+      acaTexteGabarit: '{} de lecture et d’exercices, avec l’outil de votre choix.',
+      acaPrix: 'À partir de {} par personne.',
+      acaBouton: 'Voir l’Academy',
+      acaCapture: 'Le tableau de bord de l’Academy',
+      appelTitre: 'Nous confier vos campagnes.',
+      appelTexte: 'Trente minutes avec Paul, le fondateur, pour regarder vos comptes et vos objectifs.',
+      appelBouton: 'Réserver un appel',
+      nouvelOnglet: '(nouvel onglet)',
+    }
+  : {
+      titre: 'Three ways to start.',
+      calcTitre: 'Price your marketing on our real rate cards.',
+      calcTexte: 'Tick what you need: the calculator starts from there and emails you a detailed quote. No meeting needed.',
+      calcChoix: 'Services to price',
+      calcVide: 'Tick a service to see its starting price.',
+      calcBouton: 'Calculate my budget',
+      acaTitre: 'Train your team on AI, online.',
+      acaTexte: `${f.modules} modules, ${f.heures} of reading and exercises, with the tool of your choice.`,
+      acaTexteGabarit: '{} of reading and exercises, with the tool of your choice.',
+      acaPrix: 'From {} per person.',
+      acaBouton: 'See the Academy',
+      acaCapture: 'The Academy dashboard',
+      appelTitre: 'Hand us your campaigns.',
+      appelTexte: 'Thirty minutes with Paul, the founder, to look at your accounts and your goals.',
+      appelBouton: 'Book a call',
+      nouvelOnglet: '(opens in a new tab)',
+    };
+const calculateur = `/${lang}/calculator`;
+---
+
+<section class="portes bloc" aria-labelledby="portes-titre">
+  <div class="container-custom">
+    <h2 id="portes-titre" class="titre-section" data-reveal set:html={serrer(t.titre)} />
+
+    <div class="portes-grille">
+      <!-- Le calculateur -->
+      <article class="porte porte-calc" data-projecteur data-reveal style="--i:1" data-porte-calc>
+        <h3 class="porte-titre" set:html={serrer(t.calcTitre)} />
+        <p class="porte-texte">{t.calcTexte}</p>
+        <fieldset class="puces">
+          <legend class="sr-only">{t.calcChoix}</legend>
+          {DOMAINES.map((d) => (
+            <button type="button" class="puce" aria-pressed="false" data-domaine={d.id}>
+              <svg class="puce-coche" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>{d.nom(lang)}</span>
+            </button>
+          ))}
+        </fieldset>
+        <div class="prix-choisis" aria-live="polite">
+          <p class="prix-vide" data-prix-vide>{t.calcVide}</p>
+          <ul>
+            {DOMAINES.map((d) => {
+              const l = lignePrix(d.id, lang);
+              return (
+                <li data-prix-de={d.id} hidden>
+                  <span class="prix-nom">{d.nom(lang)}</span>
+                  <span class="prix-valeur">
+                    {l.principal}
+                    {l.detail && <small>{l.detail}</small>}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        <a href={calculateur} class="bouton-plein porte-bouton" data-lien-calc data-base={calculateur}>
+          <span>{t.calcBouton}</span>
+          <Icon name="arrow-right" size={18} />
+        </a>
+      </article>
+
+      <!-- L'Academy -->
+      <article class="porte porte-aca" data-reveal style="--i:2">
+        <div class="porte-aca-texte">
+          <h3 class="porte-titre" set:html={serrer(t.acaTitre)} />
+          <p class="porte-texte">
+            {f.modules} modules,{' '}
+            <span data-fait="heures" data-gabarit={t.acaTexteGabarit}>{t.acaTexteGabarit.replace('{}', f.heures)}</span>
+          </p>
+          <ul class="outils">
+            {OUTILS.map((o) => (
+              <li>
+                <svg viewBox={MARQUES[o.id].viewBox} aria-hidden="true" focusable="false">
+                  <path d={MARQUES[o.id].trace} fill="currentColor" />
+                </svg>
+                <span>{o.nom}</span>
+              </li>
+            ))}
+          </ul>
+          {f.prix && (
+            <p class="porte-prix" data-fait="prix" data-gabarit={t.acaPrix}>{t.acaPrix.replace('{}', f.prix)}</p>
+          )}
+          <div class="porte-aca-capture" data-pose>
+            <img
+              src="/academy/captures/tableau-de-bord.jpg"
+              alt={t.acaCapture}
+              width="1024"
+              height="640"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <a href={`/${lang}/academy`} class="bouton-plein bouton-clair porte-bouton">
+            <span>{t.acaBouton}</span>
+            <Icon name="arrow-right" size={18} />
+          </a>
+        </div>
+      </article>
+
+      <!-- L'appel -->
+      <article class="porte porte-appel" data-projecteur data-reveal style="--i:3">
+        <img class="appel-photo" src={portrait('paul-andre')} alt="Paul André" width="320" height="400" loading="lazy" decoding="async" />
+        <div class="appel-texte">
+          <h3 class="porte-titre" set:html={serrer(t.appelTitre)} />
+          <p class="porte-texte">{t.appelTexte}</p>
+        </div>
+        <a href={BOOKING_URL} target="_blank" rel="noopener" class="bouton-plein porte-bouton">
+          <span>{t.appelBouton}</span>
+          <Icon name="arrow-up-right" size={18} />
+          <span class="sr-only">{t.nouvelOnglet}</span>
+        </a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .portes {
+    background: #fff;
+  }
+  .portes-grille {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+  @media (min-width: 1024px) {
+    .portes-grille {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-template-rows: auto auto;
+      gap: 1.25rem;
+      margin-top: 3.5rem;
+    }
+    .porte-calc {
+      grid-column: 1 / span 7;
+      grid-row: 1;
+    }
+    .porte-aca {
+      grid-column: 8 / span 5;
+      grid-row: 1;
+    }
+    .porte-appel {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+
+  .porte {
+    border-radius: 20px;
+    padding: 1.75rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+  }
+  @media (min-width: 1024px) {
+    .porte {
+      padding: 2.5rem;
+    }
+  }
+  .porte-titre {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+  .porte-texte {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 44ch;
+  }
+  .porte-bouton {
+    align-self: flex-start;
+    margin-top: auto;
+  }
+
+  /* ---------------------------------------------------------- le calculateur */
+  .porte-calc {
+    background: var(--color-marque-doux);
+  }
+  @media (min-width: 1024px) {
+    .porte-calc {
+      gap: 1.25rem;
+    }
+    .porte-calc .porte-titre {
+      font-size: clamp(2rem, 1.2rem + 1.6vw, 2.75rem);
+      max-width: 16ch;
+    }
+  }
+  .porte-calc .porte-texte {
+    color: var(--texte);
+  }
+  .puces {
+    border: 0;
+    margin: 0.5rem 0 0.5rem;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .puce {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 2.75rem;
+    padding: 0 1.1rem;
+    border-radius: 999px;
+    border: 1px solid rgb(29 113 184 / 0.28);
+    background: #fff;
+    color: var(--color-encre);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease-sortie),
+      border-color 0.25s var(--ease-sortie),
+      color 0.25s var(--ease-sortie),
+      transform 0.2s var(--ease-sortie);
+  }
+  .puce:hover {
+    border-color: var(--color-marque);
+  }
+  .puce:active {
+    transform: scale(0.97);
+  }
+  .puce-coche {
+    display: none;
+    width: 1rem;
+    height: 1rem;
+  }
+  .puce[aria-pressed='true'] {
+    background: var(--color-marque);
+    border-color: var(--color-marque);
+    color: #fff;
+  }
+  .puce[aria-pressed='true'] .puce-coche {
+    display: block;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .puce[aria-pressed='true'] .puce-coche {
+      animation: coche 0.35s var(--ease-sortie) both;
+    }
+  }
+  @keyframes coche {
+    from {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .prix-choisis {
+    margin-bottom: 1.5rem;
+  }
+  .prix-vide {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--gris);
+  }
+  .prix-choisis ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .prix-choisis li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    font-size: 0.9375rem;
+  }
+  .prix-choisis li[hidden] {
+    display: none;
+  }
+  .prix-choisis li:not([hidden]) ~ li:not([hidden]) {
+    border-top: 1px solid rgb(29 113 184 / 0.16);
+  }
+  .prix-nom {
+    font-weight: 600;
+  }
+  .prix-valeur {
+    display: grid;
+    justify-items: end;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .prix-valeur small {
+    font-size: 0.8125rem;
+    color: var(--gris);
+    max-width: 30ch;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .prix-choisis li:not([hidden]) {
+      animation: coche 0.4s var(--ease-sortie) both;
+    }
+  }
+
+  /* ------------------------------------------------------------ l'Academy */
+  .porte-aca {
+    position: relative;
+    overflow: hidden;
+    background: var(--nuit);
+    color: #eef2f6;
+  }
+  .porte-aca-texte {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+  }
+  .porte-aca .porte-texte {
+    color: #a3b1c0;
+    max-width: 30ch;
+  }
+  .outils {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.1rem;
+    font-size: 0.875rem;
+    color: #dbe3ec;
+  }
+  .outils li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .outils svg {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+  }
+  .porte-prix {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.125rem;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+  /* La capture se pose (geste 5) sur son cadre et déborde du bord droit de
+     la porte, comme un écran qu'on entrevoit ; l'image penche dans le cadre :
+     deux éléments, parce que l'animation du cadre réécrit son transform.
+     Sur ordinateur elle se tient au-dessus de la ligne des boutons, pour que
+     « Voir l'Academy » reste aligné sur « Calculer mon budget ». */
+  .porte-aca-capture {
+    margin: 0.5rem -4rem 0.75rem 1.5rem;
+  }
+  .porte-aca-capture img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    transform: rotate(-3deg);
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.8);
+  }
+  @media (min-width: 1024px) {
+    .porte-aca {
+      min-height: 31rem;
+    }
+    .porte-aca-capture {
+      position: absolute;
+      right: -5.5rem;
+      bottom: 2rem;
+      width: 60%;
+      margin: 0;
+    }
+  }
+
+  /* -------------------------------------------------------------- l'appel */
+  .porte-appel {
+    background: var(--brume);
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .appel-photo {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 12px;
+    align-self: start;
+  }
+  .appel-texte {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .porte-appel .porte-texte {
+    color: var(--texte);
+  }
+  .porte-appel .porte-bouton {
+    grid-column: 1 / -1;
+    margin-top: 0.25rem;
+  }
+  @media (min-width: 768px) {
+    .porte-appel {
+      grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+      gap: 2rem;
+    }
+    .appel-photo {
+      align-self: center;
+    }
+    .porte-appel .porte-bouton {
+      grid-column: auto;
+      margin: 0;
+      align-self: center;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * 1. Les puces du calculateur : le bouton emporte les services cochés.
+   * 2. Les chiffres de l'Academy, relus dans le navigateur : le site est
+   *    statique, une page construite hier porterait les prix d'hier (même
+   *    mécanique que les pages outils de l'Academy). Chaque valeur porte
+   *    `data-fait`, et son gabarit `data-gabarit` où `{}` reçoit la valeur.
+   */
+  import { AVIS_REPLI, ENDPOINT, noteLocale, prixDe, type Jour30Data } from '@/components/academy/data';
+  import { formatPrice } from '@/components/academy/offres';
+
+  document.querySelectorAll<HTMLElement>('[data-porte-calc]').forEach((porte) => {
+    const lien = porte.querySelector<HTMLAnchorElement>('[data-lien-calc]');
+    const puces = Array.from(porte.querySelectorAll<HTMLButtonElement>('[data-domaine]'));
+    if (!lien) return;
+    const base = lien.dataset.base || lien.href;
+    puces.forEach((p) =>
+      p.addEventListener('click', () => {
+        p.setAttribute('aria-pressed', String(p.getAttribute('aria-pressed') !== 'true'));
+        const choisis = puces.filter((x) => x.getAttribute('aria-pressed') === 'true').map((x) => x.dataset.domaine);
+        lien.href = choisis.length ? `${base}?service=${choisis.join(',')}` : base;
+        porte.querySelectorAll<HTMLElement>('[data-prix-de]').forEach((li) => {
+          li.hidden = !choisis.includes(li.dataset.prixDe);
+        });
+        const vide = porte.querySelector<HTMLElement>('[data-prix-vide]');
+        if (vide) vide.hidden = choisis.length > 0;
+      }),
+    );
+  });
+
+  const locale = document.documentElement.lang === 'fr' ? 'fr' : 'en';
+  if (document.querySelector('[data-fait]')) {
+    fetch(`${ENDPOINT}?lang=${locale}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: Jour30Data | null) => {
+        if (!d || d.lang !== locale || !d.faits?.lessons) return;
+        const programme = d.offres.find((o) => o.id === 'programme');
+        const avis = d.avis ?? AVIS_REPLI;
+        const valeurs: Record<string, string> = {
+          heures: d.faits.heures,
+          note: noteLocale(avis.note, locale),
+          retours: String(avis.nombre),
+        };
+        if (programme) valeurs.prix = `${formatPrice(prixDe(programme, 'EUR'), locale)}\u00a0€`;
+        for (const el of document.querySelectorAll<HTMLElement>('[data-fait]')) {
+          const v = valeurs[el.dataset.fait || ''];
+          if (!v) continue;
+          const gabarit = el.dataset.gabarit;
+          el.textContent = gabarit ? gabarit.replace('{}', v) : v;
+        }
+      })
+      .catch(() => {
+        /* les chiffres du build restent affichés */
+      });
+  }
+</script>

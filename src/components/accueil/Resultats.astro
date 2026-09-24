@@ -1,0 +1,358 @@
+---
+/**
+ * Les sept études de cas, par leur chiffre.
+ *
+ * Le chiffre est le titre de chaque ligne (Ramp titre ses histoires clients
+ * par leur résultat ; Locomotive range ses cas en lignes de texte plutôt qu'en
+ * cartes à images). Il monte de zéro quand la ligne entre dans l'écran : le
+ * compteur du socle, sur des chiffres sourcés, jamais ailleurs.
+ *
+ * Sur ordinateur, l'en-tête de section reste collé à gauche pendant qu'on
+ * descend la liste, avec le visuel de la campagne qu'on est en train de lire :
+ * la ligne qui passe au milieu de l'écran (ou celle qu'on survole) devient
+ * la ligne active, son chiffre passe au bleu et son visuel s'affiche à gauche.
+ * C'est la section épinglée de la direction C, que le document de refonte
+ * proposait de reprendre dans A. Au téléphone, une liste simple, sans visuel.
+ *
+ * Chiffres, clients, canaux et images : `lireResultats()` (collection
+ * `case-studies`). Ici, rien que la mise en page.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { LOGOS, hauteurLogo, lireResultats, serrer, type Lang } from './donnees';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const fr = lang === 'fr';
+const resultats = await lireResultats(lang);
+
+const t = fr
+  ? {
+      titre: 'Sept clients. Leurs chiffres, pas les nôtres.',
+      chapeau: 'Des groupes de concessions et des éditeurs B2B, suivis de la stratégie jusqu’au rapport mensuel.',
+      tous: 'Toutes les études de cas',
+      lire: 'Lire l’étude de cas',
+    }
+  : {
+      titre: 'Seven clients. Their numbers, not ours.',
+      chapeau: 'Dealer groups and B2B software companies, from the strategy to the monthly report.',
+      tous: 'All case studies',
+      lire: 'Read the case study',
+    };
+---
+
+<section class="resultats bloc" aria-labelledby="resultats-titre">
+  <div class="container-custom resultats-grille">
+    <header class="resultats-tete" data-reveal>
+      <h2 id="resultats-titre" class="titre-section" set:html={serrer(t.titre)} />
+      <p class="chapeau">{t.chapeau}</p>
+      <a href={`/${lang}/case-studies`} class="lien-fleche resultats-tous">
+        <span>{t.tous}</span>
+        <Icon name="arrow-right" size={18} />
+      </a>
+      <figure class="resultats-visuel" aria-hidden="true">
+        {resultats.map((r, i) => (
+          <img
+            src={`/images/accueil/cas/${r.slug}.avif`}
+            alt=""
+            width="720"
+            height="450"
+            loading="lazy"
+            decoding="async"
+            class:list={{ 'est-actif': i === 0 }}
+            data-visuel={i}
+          />
+        ))}
+      </figure>
+    </header>
+
+    <div class="resultats-zone" data-resultats>
+      <ol class="resultats-liste">
+        {resultats.map((r, i) => (
+          <li class="cas" data-counter-section="zero" data-reveal style={`--i:${i % 2}`}>
+            <a href={r.lien} class="cas-lien" data-cas={i}>
+              <p class="cas-chiffre">
+                <span class="cas-signe">{r.signe}</span><span
+                  data-target={r.valeur}
+                  data-decimals={r.decimales}
+                  data-locale={lang}
+                >{r.valeur.toLocaleString(fr ? 'fr-FR' : 'en-GB', { minimumFractionDigits: r.decimales, maximumFractionDigits: r.decimales })}</span><span class="cas-unite">{r.unite.trim()}</span>
+              </p>
+              <p class="cas-libelle">{r.libelle}</p>
+              <div class="cas-client">
+                {LOGOS[r.logo] && (
+                  <img
+                    src={LOGOS[r.logo].src}
+                    alt=""
+                    width={LOGOS[r.logo].largeur}
+                    height={LOGOS[r.logo].hauteur}
+                    style={`height:${hauteurLogo(r.logo, 1500, 16, 34)}px`}
+                    class:list={['cas-logo', { 'fond-blanc': LOGOS[r.logo].fondBlanc }]}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+                <p class="cas-nom">{r.client}</p>
+                <p class="cas-secteur">{r.secteur}</p>
+                <p class="cas-canaux">{r.canaux}</p>
+              </div>
+              <span class="cas-fleche" aria-hidden="true"><Icon name="arrow-right" size={20} /></span>
+              <span class="sr-only">{t.lire}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .resultats {
+    background: #fff;
+  }
+  .resultats-grille {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 1024px) {
+    .resultats-grille {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 2rem;
+      align-items: start;
+    }
+    .resultats-tete {
+      grid-column: 1 / span 4;
+      position: sticky;
+      top: calc(72px + 3rem);
+    }
+    /* collé à gauche sur quatre colonnes : trois lignes, pas quatre */
+    .resultats-tete :global(.titre-section) {
+      font-size: clamp(2.25rem, 1.2rem + 1.9vw, 3rem);
+    }
+    .resultats-zone {
+      grid-column: 6 / span 7;
+    }
+  }
+  .resultats-tous {
+    margin-top: 1.75rem;
+  }
+
+  .resultats-zone {
+    position: relative;
+  }
+  .resultats-liste {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cas + .cas {
+    border-top: 1px solid var(--trait);
+  }
+  /* Téléphone : le chiffre et son client côte à côte, la ligne entière est
+     le lien (pas de flèche, pas de canaux : la fiche les donne). */
+  .cas-lien {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'chiffre client'
+      'libelle client';
+    column-gap: 1.25rem;
+    align-items: start;
+    padding: 1.5rem 0;
+    color: inherit;
+  }
+  @media (max-width: 767px) {
+    .cas-lien .cas-fleche,
+    .cas-lien .cas-canaux {
+      display: none;
+    }
+    .cas-logo {
+      margin-bottom: 0.5rem;
+    }
+  }
+  @media (min-width: 768px) {
+    .cas-lien {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) auto;
+      grid-template-areas:
+        'chiffre client fleche'
+        'libelle client fleche';
+      column-gap: 2rem;
+      align-items: center;
+      padding: 2.25rem 0;
+    }
+  }
+
+  .cas-chiffre {
+    grid-area: chiffre;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.75rem, 1.6rem + 4.4vw, 5.75rem);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-encre);
+    white-space: nowrap;
+    transition: color 0.35s var(--ease-sortie);
+  }
+  .cas-signe {
+    margin-right: -0.01em;
+  }
+  .cas-unite {
+    font-size: 0.5em;
+    vertical-align: 0.72em;
+    margin-left: 0.08em;
+    letter-spacing: -0.02em;
+    color: var(--color-marque);
+  }
+  .cas-libelle {
+    grid-area: libelle;
+    margin: 0.6rem 0 0;
+    font-size: 1rem;
+    color: var(--texte);
+  }
+  @media (min-width: 768px) {
+    .cas-libelle {
+      align-self: start;
+    }
+  }
+
+  .cas-client {
+    grid-area: client;
+    padding-top: 0.25rem;
+  }
+  .cas-logo {
+    display: block;
+    width: auto;
+    margin-bottom: 0.75rem;
+    filter: grayscale(1) contrast(1.1);
+    opacity: 0.8;
+    transition:
+      filter 0.4s var(--ease-sortie),
+      opacity 0.4s var(--ease-sortie);
+  }
+  .cas-logo.fond-blanc {
+    mix-blend-mode: multiply;
+  }
+  .cas-nom {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.0625rem;
+  }
+  .cas-secteur,
+  .cas-canaux {
+    margin: 0.15rem 0 0;
+    font-size: 0.9375rem;
+    color: var(--gris);
+  }
+
+  .cas-fleche {
+    grid-area: fleche;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--trait);
+    color: var(--color-encre);
+    transition:
+      background-color 0.35s var(--ease-sortie),
+      border-color 0.35s var(--ease-sortie),
+      color 0.35s var(--ease-sortie),
+      transform 0.35s var(--ease-sortie);
+  }
+
+  .cas-lien:hover .cas-chiffre,
+  .cas-lien:focus-visible .cas-chiffre {
+    color: var(--color-marque);
+  }
+  .cas-lien:hover .cas-logo,
+  .cas-lien:focus-visible .cas-logo {
+    filter: none;
+    opacity: 1;
+  }
+  .cas-lien:hover .cas-fleche,
+  .cas-lien:focus-visible .cas-fleche {
+    background: var(--color-marque);
+    border-color: var(--color-marque);
+    color: #fff;
+    transform: translateX(4px);
+  }
+
+  /* ------------------------------------------ le visuel de la ligne active */
+  .resultats-visuel {
+    display: none;
+  }
+  @media (min-width: 1024px) and (min-height: 760px) {
+    .resultats-visuel {
+      display: block;
+      position: relative;
+      margin: 2.5rem 0 0;
+      aspect-ratio: 16 / 10;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--brume);
+    }
+    .resultats-visuel img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(1.04);
+      transition:
+        opacity 0.5s var(--ease-sortie),
+        transform 0.9s var(--ease-sortie);
+    }
+    .resultats-visuel img.est-actif {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .cas.est-actif .cas-chiffre {
+    color: var(--color-marque);
+  }
+  .cas.est-actif .cas-logo {
+    filter: none;
+    opacity: 1;
+  }
+</style>
+
+<script>
+  /**
+   * La ligne active : celle qui traverse la bande du milieu de l'écran, ou
+   * celle que la souris survole. Son chiffre passe au bleu et son visuel
+   * s'affiche dans la colonne collée. Un IntersectionObserver, aucun écouteur
+   * de défilement.
+   */
+  document.querySelectorAll<HTMLElement>('.resultats').forEach((section) => {
+    const lignes = Array.from(section.querySelectorAll<HTMLElement>('.cas'));
+    const visuels = Array.from(section.querySelectorAll<HTMLElement>('[data-visuel]'));
+    if (!lignes.length) return;
+    let active = -1;
+    const activer = (n: number) => {
+      if (n === active) return;
+      active = n;
+      lignes.forEach((l, i) => l.classList.toggle('est-actif', i === n));
+      visuels.forEach((v, i) => v.classList.toggle('est-actif', i === n));
+    };
+    const io = new IntersectionObserver(
+      (entrees) => {
+        entrees.forEach((e) => {
+          if (e.isIntersecting) activer(lignes.indexOf(e.target as HTMLElement));
+        });
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    lignes.forEach((l, i) => {
+      io.observe(l);
+      l.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse') activer(i);
+      });
+    });
+  });
+</script>
