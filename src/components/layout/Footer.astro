@@ -35,7 +35,8 @@ const footerLinks = {
     { label: t(lang, 'nav.caseStudies'), href: `/${lang}/case-studies` },
     { label: t(lang, 'nav.blog'), href: `/${lang}/blog` },
     { label: t(lang, 'nav.contact'), href: `/${lang}/contact` },
-    { label: lang === 'fr' ? 'Devis Gratuit' : 'Get a Quote', href: `/${lang}/calculator` },
+    // Un seul libellé pour le calculateur sur tout le site (document de refonte, 23/09/2026).
+    { label: t(lang, 'nav.quote'), href: `/${lang}/calculator` },
     { label: lang === 'fr' ? 'Recrutement' : 'Careers', href: `/${lang}/careers` },
   ],
 };
@@ -65,7 +66,7 @@ const socialLinks = [
             class="h-10 w-auto"
           />
         </a>
-        <p class="text-primary-400 font-medium mb-3">
+        <p class="text-[#58A9E8] font-medium mb-3">
           {t(lang, 'site.tagline')}
         </p>
         <p class="text-slate-400 text-sm leading-relaxed mb-6 max-w-sm">
@@ -82,7 +83,7 @@ const socialLinks = [
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              class="w-10 h-10 rounded-lg bg-slate-800 hover:bg-indigo-600 flex items-center justify-center transition-colors"
+              class="w-10 h-10 rounded-lg bg-slate-800 hover:bg-marque flex items-center justify-center transition-colors"
               aria-label={social.label}
             >
               <Icon name={social.icon} size={20} class="text-slate-400 hover:text-white" />

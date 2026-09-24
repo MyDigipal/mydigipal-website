@@ -5,7 +5,7 @@
  *   - initRevealOnScroll()      fade/slide elements with [data-reveal] in
  *   - initCountUp()             count-up numbers with [data-target] under [data-counter-section]
  *   - initScrollProgress()      grow a top-of-page bar as the user scrolls
- *   - initMagneticPointer()     radial gradient that follows the pointer ([data-magnetic])
+ *   - initMagneticPointer()     radial gradient that follows the pointer ([data-magnetic], [data-projecteur])
  *   - initMagneticButton()      translate the button toward the pointer ([data-magnetic-btn])
  *   - initSlidingNavMarker()    sliding pill marker under the active nav link ([data-nav-pill])
  *   - initAll()                 convenience: run them all (used by BaseLayout)
@@ -70,9 +70,21 @@ export function initCountUp(): void {
     const prefix = el.dataset.prefix || '';
     const suffix = el.dataset.suffix || '';
     const decimals = parseInt(el.dataset.decimals || '0', 10);
+    // `data-locale="fr"` écrit 4,5 et non 4.5 (page d'accueil, sept. 2026).
+    // Sans l'attribut, le rendu reste celui d'avant : toFixed.
+    const locale = el.dataset.locale;
+    const format = locale
+      ? new Intl.NumberFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        })
+      : null;
+    const write = (v: number) => {
+      el.textContent = prefix + (format ? format.format(v) : v.toFixed(decimals)) + suffix;
+    };
 
     if (reduce) {
-      el.textContent = prefix + target.toFixed(decimals) + suffix;
+      write(target);
       return;
     }
 
@@ -81,8 +93,7 @@ export function initCountUp(): void {
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / duration);
       const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
-      const value = target * eased;
-      el.textContent = prefix + value.toFixed(decimals) + suffix;
+      write(target * eased);
       if (t < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
@@ -104,7 +115,21 @@ export function initCountUp(): void {
   );
 
   sections.forEach((s) => {
-    if (!countedSections.has(s)) io.observe(s);
+    if (countedSections.has(s)) return;
+    // `data-counter-section="zero"` : le HTML porte le chiffre final (lu sans
+    // JavaScript et par les moteurs), on le ramène à zéro avant qu'il entre
+    // dans l'écran pour qu'il monte sous les yeux au lieu de sauter.
+    if (!reduce && s.dataset.counterSection === 'zero') {
+      s.querySelectorAll<HTMLElement>('[data-target]').forEach((el) => {
+        const d = parseInt(el.dataset.decimals || '0', 10);
+        const loc = el.dataset.locale;
+        const zero = loc
+          ? (0).toLocaleString(loc === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: d, maximumFractionDigits: d })
+          : (0).toFixed(d);
+        el.textContent = (el.dataset.prefix || '') + zero + (el.dataset.suffix || '');
+      });
+    }
+    io.observe(s);
   });
 }
 
@@ -122,6 +147,10 @@ export function initScrollProgress(): void {
     fill.style.width = '100%';
     return;
   }
+
+  // Le navigateur remplit la barre lui-même (animation-timeline: scroll(),
+  // global.css) : pas d'écouteur de défilement à entretenir.
+  if (window.CSS?.supports?.('animation-timeline: scroll()')) return;
 
   const update = () => {
     const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -161,7 +190,8 @@ const magneticBound = new WeakSet<Element>();
 export function initMagneticPointer(): void {
   if (prefersReducedMotion()) return;
 
-  const cells = document.querySelectorAll<HTMLElement>('[data-magnetic]');
+  // [data-projecteur] : le geste 3 du socle de mouvement, même mécanique.
+  const cells = document.querySelectorAll<HTMLElement>('[data-magnetic], [data-projecteur]');
   cells.forEach((cell) => {
     if (magneticBound.has(cell)) return;
     magneticBound.add(cell);

@@ -1,7 +1,6 @@
 ---
 import { languages, type Language } from '@/i18n/config';
 import { t } from '@/i18n/utils';
-import Button from '@/components/ui/Button.astro';
 import Icon from '@/components/ui/Icon.astro';
 
 interface Props {
@@ -84,7 +83,7 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
               aria-current={isActive ? 'page' : undefined}
               class={`
                 flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors
-                ${isActive ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}
+                ${isActive ? 'text-marque' : 'text-slate-600 hover:text-slate-900'}
               `}
             >
               {item.label}
@@ -101,7 +100,7 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
                       href={child.href}
                       class={`
                         block px-4 py-2.5 text-sm transition-colors
-                        ${currentPath === child.href ? 'text-primary-500 bg-primary-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}
+                        ${currentPath === child.href ? 'text-marque bg-marque-doux' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}
                       `}
                     >
                       {child.label}
@@ -122,7 +121,7 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
         href="https://app.mydigipal.com/login"
         target="_blank"
         rel="noopener noreferrer"
-        class="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+        class="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-600 hover:text-marque hover:bg-marque-doux rounded-lg transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
         {t(lang, 'nav.login')}
@@ -136,19 +135,27 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
         {t(lang, 'nav.contact')}
       </a>
 
-      <!-- Calculator Button (primary CTA) -->
-      <Button href={ctaHref} variant="primary" size="sm" class="hidden sm:inline-flex">
+      <!-- Calculator Button (primary CTA). Au bleu du logo, comme tout
+           l'en-tête, depuis la refonte de l'accueil (24/09/2026). -->
+      <a
+        href={ctaHref}
+        class="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg bg-marque text-white hover:bg-marque-fonce active:scale-[0.98] transition-colors"
+      >
         {cta}
-      </Button>
+      </a>
 
-      <!-- Language switcher - Flag only -->
+      <!-- Sélecteur de langue : le code de la langue, plus le drapeau emoji
+           (Windows n'affiche pas les drapeaux emoji, et un drapeau n'est pas
+           une langue). -->
       <a
         href={alternateUrl}
-        class="hidden sm:flex items-center justify-center w-10 h-10 text-xl hover:bg-slate-50 rounded-lg transition-colors"
+        class="hidden sm:flex items-center justify-center w-10 h-10 text-xs font-semibold tracking-wide text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
         title={languages[alternateLang].name}
         aria-label={`Switch to ${languages[alternateLang].name}`}
+        hreflang={alternateLang}
+        lang={alternateLang}
       >
-        {languages[alternateLang].flag}
+        {alternateLang.toUpperCase()}
       </a>
 
       <!-- Mobile menu button -->
@@ -183,7 +190,7 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
                   </button>
                   <a
                     href={item.href}
-                    class="flex-shrink-0 p-3 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                    class="flex-shrink-0 p-3 text-slate-400 hover:text-marque hover:bg-marque-doux rounded-lg transition-colors"
                     title={lang === 'fr' ? 'Voir tout' : 'View all'}
                   >
                     <Icon name="arrow-right" size={18} />
@@ -198,7 +205,7 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
                       href={child.href}
                       class={`
                         block px-4 py-2.5 text-sm rounded-lg transition-colors
-                        ${currentPath === child.href ? 'text-primary-500 bg-primary-50' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}
+                        ${currentPath === child.href ? 'text-marque bg-marque-doux' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}
                       `}
                     >
                       {child.label}
@@ -211,7 +218,7 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
                 href={item.href}
                 class={`
                   flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors
-                  ${currentPath.startsWith(item.href) ? 'text-primary-500 bg-primary-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}
+                  ${currentPath.startsWith(item.href) ? 'text-marque bg-marque-doux' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}
                 `}
               >
                 {item.label}
@@ -227,7 +234,7 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
           href="https://app.mydigipal.com/login"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
+          class="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-marque bg-marque-doux hover:bg-[#dcebf8] rounded-lg transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           {t(lang, 'nav.login')}
@@ -239,17 +246,22 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
           >
             {t(lang, 'nav.contact')}
           </a>
-          <Button href={ctaHref} variant="primary" class="flex-1">
+          <a
+            href={ctaHref}
+            class="flex-1 flex items-center justify-center px-4 py-3 text-sm font-medium rounded-lg bg-marque text-white hover:bg-marque-fonce transition-colors"
+          >
             {cta}
-          </Button>
+          </a>
         </div>
         <a
           href={alternateUrl}
-          class="flex items-center justify-center w-12 h-12 text-2xl hover:bg-slate-50 rounded-lg transition-colors"
+          class="flex items-center justify-center gap-2 h-12 px-4 text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
           title={languages[alternateLang].name}
           aria-label={`Switch to ${languages[alternateLang].name}`}
+          hreflang={alternateLang}
+          lang={alternateLang}
         >
-          {languages[alternateLang].flag}
+          {languages[alternateLang].name}
         </a>
       </div>
     </div>
