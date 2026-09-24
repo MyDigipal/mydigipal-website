@@ -11,6 +11,10 @@
  * Les logos sont les onglets : on choisit une entreprise, on lit ce qu'une
  * personne de chez elle a écrit. Sans JavaScript, le premier verbatim reste
  * affiché. Le tour automatique s'arrête au premier geste.
+ *
+ * La photo : Paul face à la salle, chez La Poste, et toute la salle dans le
+ * cadre (demande de Paul du 24/09/2026, à la place de la photo de E.Leclerc
+ * recadrée en portrait). En paysage, à son format.
  */
 import type { Jour30Data } from '@/components/academy/data';
 import { LOGOS, faitsAcademy, hauteurLogo, verbatims, type Lang } from './donnees';
@@ -31,15 +35,15 @@ const t = fr
       titre: (n: number) => `La moyenne des ${n} retours de nos formations, en salle et à distance.`,
       gabarit: 'La moyenne des {} retours de nos formations, en salle et à distance.',
       onglets: 'Choisir une entreprise',
-      photo: 'Formation IA chez E.Leclerc',
-      legende: 'Une formation IA chez E.Leclerc.',
+      photo: 'Paul André anime une formation IA chez La Poste, face à la salle.',
+      legende: 'Une formation IA chez La Poste.',
     }
   : {
       titre: (n: number) => `The average of ${n} reviews of our training sessions, in the room and remote.`,
       gabarit: 'The average of {} reviews of our training sessions, in the room and remote.',
       onglets: 'Pick a company',
-      photo: 'AI training session at E.Leclerc',
-      legende: 'An AI training session at E.Leclerc.',
+      photo: 'Paul André running an AI training session at La Poste, facing the room.',
+      legende: 'An AI training session at La Poste.',
     };
 ---
 
@@ -60,10 +64,12 @@ const t = fr
 
     <figure class="avis-photo" data-reveal style="--i:1">
       <img
-        src="/academy/references/session-leclerc.jpg"
+        src="/images/accueil/formation-la-poste-1440.avif"
+        srcset="/images/accueil/formation-la-poste-800.avif 800w, /images/accueil/formation-la-poste-1440.avif 1440w"
+        sizes="(min-width: 1024px) 58vw, calc(100vw - 2rem)"
         alt={t.photo}
-        width="1200"
-        height="900"
+        width="1440"
+        height="810"
         loading="lazy"
         decoding="async"
         data-pose
@@ -133,22 +139,18 @@ const t = fr
       align-items: start;
     }
     .avis-note {
-      grid-column: 1 / span 7;
+      grid-column: 1 / span 5;
       grid-row: 1;
-    }
-    .avis-citations {
-      grid-column: 1 / span 7;
-      grid-row: 2;
-    }
-    .avis-photo {
-      grid-column: 9 / span 4;
-      grid-row: 1 / span 2;
       align-self: center;
     }
-  }
-  @media (max-width: 1023px) {
     .avis-photo {
-      order: 3;
+      grid-column: 6 / span 7;
+      grid-row: 1;
+    }
+    /* sur toute la largeur : la rangée de logos tient sur une ligne */
+    .avis-citations {
+      grid-column: 1 / -1;
+      grid-row: 2;
     }
   }
 
@@ -182,20 +184,15 @@ const t = fr
   .avis-photo {
     margin: 0;
   }
+  /* La salle entière, à son format : le fichier est déjà coupé en 16:9
+     (scripts/photos-accueil.mjs), jamais recadré ici. */
   .avis-photo img {
     display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    object-position: 30% 50%;
+    aspect-ratio: 16 / 9;
     border-radius: 14px;
     background: var(--brume);
-  }
-  @media (min-width: 1024px) {
-    .avis-photo img {
-      aspect-ratio: 4 / 5;
-    }
   }
   .avis-photo figcaption {
     margin-top: 0.75rem;
@@ -257,6 +254,7 @@ const t = fr
       flex-wrap: nowrap;
       overflow-x: auto;
       scroll-snap-type: x proximity;
+      scroll-padding-inline: 1rem;
       scrollbar-width: none;
       margin-inline: -1rem;
       padding: 2px 1rem;

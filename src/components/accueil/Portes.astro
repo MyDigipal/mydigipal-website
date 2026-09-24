@@ -520,11 +520,21 @@ const calculateur = `/${lang}/calculator`;
         const programme = d.offres.find((o) => o.id === 'programme');
         const avis = d.avis ?? AVIS_REPLI;
         const valeurs: Record<string, string> = {
+          lecons: String(d.faits.lessons),
+          modules: String(d.faits.modules),
+          prompts: String(d.faits.prompts),
           heures: d.faits.heures,
           note: noteLocale(avis.note, locale),
           retours: String(avis.nombre),
         };
-        if (programme) valeurs.prix = `${formatPrice(prixDe(programme, 'EUR'), locale)}\u00a0€`;
+        if (d.faits.lessonsGratuit) valeurs.gratuites = String(d.faits.lessonsGratuit);
+        // En dollars sur la page anglaise, comme `prixAffiche()` au build.
+        if (programme) {
+          valeurs.prix =
+            locale === 'fr'
+              ? `${formatPrice(prixDe(programme, 'EUR'), locale)}\u00a0€`
+              : `$${formatPrice(prixDe(programme, 'USD'), locale)}`;
+        }
         for (const el of document.querySelectorAll<HTMLElement>('[data-fait]')) {
           const v = valeurs[el.dataset.fait || ''];
           if (!v) continue;

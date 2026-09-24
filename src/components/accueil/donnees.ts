@@ -276,6 +276,10 @@ export const DOMAINES = DOMAIN_ORDER.map((d) => ({ id: d, nom: (lang: Lang) => d
 
 /* -------------------------------------------------------------- l'Academy */
 
+/** « 290 € » en français, « $340 » en anglais. */
+export const prixAffiche = (minor: number, lang: Lang) =>
+  lang === 'fr' ? `${formatPrice(minor, lang)}${NBSP}€` : `$${formatPrice(minor, lang)}`;
+
 /** Même lecture que `pages/[lang]/academy.astro` : l'API, sinon l'instantané. */
 export async function lireAcademy(lang: Lang): Promise<Jour30Data> {
   try {
@@ -292,15 +296,22 @@ export async function lireAcademy(lang: Lang): Promise<Jour30Data> {
 
 export function faitsAcademy(d: Jour30Data, lang: Lang) {
   const programme = d.offres.find((o) => o.id === 'programme');
-  const minor = programme ? prixDe(programme, 'EUR') : undefined;
+  // En dollars sur la page anglaise, comme la page de vente de l'Academy
+  // (Paul, 16/09/2026 : « pour la page anglaise, […] ça devrait être en dollar »).
+  const minor = programme ? prixDe(programme, lang === 'fr' ? 'EUR' : 'USD') : undefined;
   const avis = d.avis ?? AVIS_REPLI;
   return {
-    prix: minor ? `${formatPrice(minor, lang)}${NBSP}€` : null,
+    prix: minor ? prixAffiche(minor, lang) : null,
+    lecons: d.faits.lessons,
     modules: d.faits.modules,
+    prompts: d.faits.prompts,
     heures: d.faits.heures,
+    gratuites: d.faits.lessonsGratuit,
     note: noteLocale(avis.note, lang),
     noteValeur: avis.note,
     retours: avis.nombre,
+    /** Le module gratuit, dans l'application (même lien que la page de vente). */
+    lienGratuit: `${d.urls?.base ?? 'https://academy.mydigipal.com'}${lang === 'fr' ? '/fr' : ''}/start`,
   };
 }
 
