@@ -12,8 +12,10 @@
  * docs/site-mise-en-avant/refonte-accueil-directions.html, choisie parce que
  * la page d'accueil reçoit surtout ceux qui nous cherchent par notre nom et
  * viennent vérifier à qui ils vont confier leur budget. Donc, dans l'ordre :
- * des gens, ce qu'ils ont obtenu, ce que ça coûte, ce qu'en disent ceux
- * qu'on a formés, et trois façons de commencer.
+ * des gens ; l'AI Academy, ce que MyDigipal veut mettre en avant le plus, et
+ * ce qu'en disent ceux qu'on a formés ; ce qu'on fait ; ce que nos clients ont
+ * obtenu ; et trois façons de commencer. (Ordre revu avec Paul le 24/09/2026 :
+ * les résultats clients descendent, l'Academy monte, les prix sortent.)
  *
  * Aucun chiffre écrit à la main : voir `components/accueil/donnees.ts`.
  * Le mouvement vient du socle commun (global.css et lib/scroll.ts) ; chaque
@@ -25,10 +27,11 @@ import Visages from '@/components/accueil/Visages.astro';
 import Bandeau from '@/components/accueil/Bandeau.astro';
 import Resultats from '@/components/accueil/Resultats.astro';
 import Offre from '@/components/accueil/Offre.astro';
+import Academie from '@/components/accueil/Academie.astro';
 import Avis from '@/components/accueil/Avis.astro';
 import Articles from '@/components/accueil/Articles.astro';
 import Portes from '@/components/accueil/Portes.astro';
-import { EQUIPE, enLettres, faitsAcademy, lireAcademy, type Lang } from '@/components/accueil/donnees';
+import { EQUIPE, enLettres, lireAcademy, type Lang } from '@/components/accueil/donnees';
 import '@/components/accueil/accueil.css';
 
 export function getStaticPaths() {
@@ -38,7 +41,6 @@ export function getStaticPaths() {
 const { lang: langue } = Astro.params as { lang: Language };
 const lang = langue as Lang;
 const academy = await lireAcademy(lang);
-const { prix: prixAcademy } = faitsAcademy(academy, lang);
 const nombre = enLettres(EQUIPE.length, lang);
 
 const meta =
@@ -57,9 +59,10 @@ const meta =
   <div class="accueil">
     <Visages lang={lang} />
     <Bandeau lang={lang} />
-    <Resultats lang={lang} />
-    <Offre lang={lang} prixAcademy={prixAcademy} />
+    <Academie lang={lang} academy={academy} />
     <Avis lang={lang} academy={academy} />
+    <Offre lang={lang} academy={academy} />
+    <Resultats lang={lang} />
     <Articles lang={lang} />
     <Portes lang={lang} academy={academy} />
   </div>

@@ -1,0 +1,729 @@
+---
+/**
+ * L'AI Academy, mise en avant : ce qu'elle est, et l'application qui tourne.
+ *
+ * Demande de Paul du 24/09/2026 : « une petite section sur l'Académie […] avec
+ * une belle photo et une vidéo […] quelque chose qui fasse la promotion de la
+ * MyDigipal AI Academy. C'est un des trucs qu'on veut mettre en avant le plus. »
+ *
+ * La « vidéo », ce sont les boucles filmées de l'application
+ * (`public/academy/demos/`, en français quand elles existent : `baseDemo()`),
+ * les mêmes que sur la page de vente, en onglets : une boucle par écran, le
+ * tour avance seul d'un écran à l'autre tant qu'on ne touche à rien, et
+ * s'arrête au premier geste. Le bouton pause est toujours là (une vidéo qui
+ * bouge plus de cinq secondes doit pouvoir s'arrêter), et sous
+ * prefers-reduced-motion rien ne démarre seul : l'affiche, et le bouton.
+ *
+ * ⚠️ Pas les visuels de `public/academy/visuels/` : ce sont des images
+ * composées (une apprenante, des cartes flottantes) qui portent des chiffres
+ * inventés (35 %, 2 650 points, « 7 day streak »). La règle de la page est
+ * « contenu réel, aucun chiffre inventé ». La photo réelle d'une formation est
+ * dans la section suivante (La Poste).
+ *
+ * Textes : le titre et les fiches des écrans sont ceux de la page de vente
+ * (`academy/copy.ts`, `hero.titre` et `visite.spots`), chiffres compris, lus
+ * dans l'API de l'Academy (instantané en secours, relus dans le navigateur par
+ * `data-fait`).
+ *
+ * Performance : aucune vidéo avant que la section approche de l'écran ;
+ * une seule balise `<video>` dont on change la source, pas six.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import type { Jour30Data } from '@/components/academy/data';
+import { jour30Copy } from '@/components/academy/copy';
+import { baseDemo } from '@/components/academy/demos-fr';
+import { MARQUES } from '@/components/academy-tools/logos';
+import { OUTILS_PUBLIES, lienOutil } from '@/components/academy-tools';
+import { faitsAcademy, serrer, type Lang } from './donnees';
+
+interface Props {
+  lang: Lang;
+  academy: Jour30Data;
+}
+const { lang, academy } = Astro.props;
+const fr = lang === 'fr';
+const f = faitsAcademy(academy, lang);
+const c = jour30Copy(lang);
+const spots = c.visite.spots(academy.faits);
+
+// L'écran filmé, et la fiche de la page de vente qui le décrit.
+const ECRANS = [
+  { demo: 'atelier', spot: spots.atelier },
+  { demo: 'prompts', spot: spots.prompts },
+  { demo: 'cas', spot: spots.cas },
+  { demo: 'quiz', spot: spots.exercices },
+  { demo: 'assistant', spot: spots.assistant },
+  { demo: 'avance', spot: spots.parcours2 },
+].map((e) => ({ ...e, base: baseDemo(e.demo, lang) }));
+
+const outils = OUTILS_PUBLIES.filter((o) => MARQUES[o.id]);
+
+const t = fr
+  ? {
+      logo: 'MyDigipal AI Academy',
+      chapeau: `${f.lecons} leçons à votre rythme : la méthode de prompting, le parcours de votre outil, des exercices sur vos propres cas, jusqu’aux agents et aux serveurs MCP.`,
+      chapeauGabarit: '{} leçons à votre rythme : la méthode de prompting, le parcours de votre outil, des exercices sur vos propres cas, jusqu’aux agents et aux serveurs MCP.',
+      faits: {
+        lecons: 'leçons',
+        modules: 'modules',
+        prompts: 'prompts prêts à copier',
+        heures: 'de lecture et d’exercices',
+      },
+      voir: 'Voir l’Academy',
+      outils: 'Un parcours pour votre outil',
+      ecrans: 'Les écrans de l’Academy',
+      pause: 'Mettre la vidéo en pause',
+      lire: 'Lire la vidéo',
+    }
+  : {
+      logo: 'MyDigipal AI Academy',
+      chapeau: `${f.lecons} lessons at your own pace: the prompting method, the path for your own tool, exercises on your own cases, all the way to agents and MCP servers.`,
+      chapeauGabarit: '{} lessons at your own pace: the prompting method, the path for your own tool, exercises on your own cases, all the way to agents and MCP servers.',
+      faits: {
+        lecons: 'lessons',
+        modules: 'modules',
+        prompts: 'prompts ready to copy',
+        heures: 'of reading and exercises',
+      },
+      voir: 'See the Academy',
+      outils: 'A path for your tool',
+      ecrans: 'Academy screens',
+      pause: 'Pause the video',
+      lire: 'Play the video',
+    };
+
+const faits = [
+  { cle: 'lecons', valeur: String(f.lecons), libelle: t.faits.lecons },
+  { cle: 'modules', valeur: String(f.modules), libelle: t.faits.modules },
+  { cle: 'prompts', valeur: String(f.prompts), libelle: t.faits.prompts },
+  { cle: 'heures', valeur: f.heures, libelle: t.faits.heures },
+];
+---
+
+<section class="academie" aria-labelledby="academie-titre" data-academie>
+  <div class="container-custom">
+    <div class="academie-tete">
+      <div class="academie-intro" data-reveal>
+        <img
+          class="academie-logo"
+          src="/images/accueil/academy-logo-nuit.webp"
+          alt={t.logo}
+          width="214"
+          height="88"
+          loading="lazy"
+          decoding="async"
+        />
+        <h2 id="academie-titre" class="titre-section academie-titre" set:html={serrer(c.hero.titre)} />
+        <p class="chapeau academie-chapeau" data-fait="lecons" data-gabarit={t.chapeauGabarit}>{t.chapeau}</p>
+      </div>
+
+      <div class="academie-cote" data-reveal style="--i:1">
+        <dl class="academie-faits">
+          {faits.map((x) => (
+            <div>
+              <dt data-fait={x.cle}>{x.valeur}</dt>
+              <dd>{x.libelle}</dd>
+            </div>
+          ))}
+        </dl>
+        <div class="academie-actions">
+          <a href={`/${lang}/academy`} class="bouton-plein bouton-clair">
+            <span>{t.voir}</span>
+            <Icon name="arrow-right" size={18} />
+          </a>
+          <a href={f.lienGratuit} class="lien-fleche academie-gratuit">
+            <span data-fait="gratuites" data-gabarit={c.hero.cta2(0).replace('0', '{}')}>{c.hero.cta2(f.gratuites)}</span>
+            <Icon name="arrow-up-right" size={17} />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="academie-demo" data-demo data-reveal style="--i:2">
+      <div class="academie-onglets" role="tablist" aria-label={t.ecrans}>
+        {ECRANS.map((e, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`aca-onglet-${i}`}
+            aria-controls="aca-panneau"
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            class="academie-onglet"
+            data-base={e.base}
+          >
+            <span class="onglet-kicker">{e.spot.kicker}</span>
+            <span class="onglet-titre" set:html={serrer(e.spot.titre)} />
+            <span class="onglet-barre" aria-hidden="true"><span data-barre></span></span>
+          </button>
+        ))}
+      </div>
+
+      <figure class="academie-panneau" id="aca-panneau" role="tabpanel" aria-labelledby="aca-onglet-0">
+        <div class="academie-ecran">
+          <img
+            class="academie-affiche"
+            src={`${ECRANS[0].base}.jpg`}
+            alt=""
+            width="940"
+            height="734"
+            loading="lazy"
+            decoding="async"
+            data-affiche
+          />
+          <video class="academie-video" muted playsinline preload="none" disablepictureinpicture aria-hidden="true" data-video></video>
+          <button type="button" class="academie-lecture" aria-label={t.pause} data-lecture data-pause={t.pause} data-lire={t.lire}>
+            <Icon name="pause" size={16} class="icone-pause" />
+            <Icon name="play" size={16} class="icone-lire" />
+          </button>
+        </div>
+        <figcaption class="academie-legende">
+          {ECRANS.map((e, i) => (
+            <p data-aca-legende={i} hidden={i !== 0}>
+              <b set:html={serrer(e.spot.titre)} />
+              <span>{e.spot.texte}</span>
+            </p>
+          ))}
+        </figcaption>
+      </figure>
+    </div>
+
+    {outils.length > 0 && (
+      <div class="academie-outils" data-reveal style="--i:3">
+        <p>{t.outils}</p>
+        <ul>
+          {outils.map((o) => (
+            <li>
+              <a href={lienOutil(o, lang)}>
+                <svg viewBox={MARQUES[o.id].viewBox} aria-hidden="true" focusable="false">
+                  <path d={MARQUES[o.id].trace} fill="currentColor" />
+                </svg>
+                <span>{o.nom}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* La salle de nuit de l'Academy : sa couleur à elle, la seule grande
+     surface sombre de la page. L'or reste dans son logo ; les actions gardent
+     le blanc et le bleu du site. */
+  .academie {
+    position: relative;
+    overflow: hidden;
+    background: var(--nuit);
+    color: #eef2f6;
+    padding: 5rem 0;
+  }
+  @media (min-width: 1024px) {
+    .academie {
+      padding: 7.5rem 0 8rem;
+    }
+  }
+  .academie :is(a, button):focus-visible {
+    outline-color: #fff;
+  }
+
+  .academie-tete {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 1024px) {
+    .academie-tete {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 2rem;
+      align-items: end;
+    }
+    .academie-intro {
+      grid-column: 1 / span 7;
+    }
+    .academie-cote {
+      grid-column: 9 / span 4;
+    }
+  }
+  .academie-logo {
+    display: block;
+    height: 44px;
+    width: auto;
+    margin-bottom: 2rem;
+  }
+  /* `.academie` devant : le style commun (`.accueil .titre-section`,
+     `.accueil .chapeau`) a la même spécificité et passe après. */
+  .academie .academie-titre {
+    color: #fff;
+  }
+  .academie .academie-chapeau {
+    color: #a9b6c4;
+    max-width: 52ch;
+  }
+
+  .academie-faits {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 1.25rem;
+    margin: 0;
+  }
+  .academie-faits div {
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+    padding-top: 0.85rem;
+  }
+  .academie-faits dt {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2rem, 1.5rem + 1.6vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .academie-faits dd {
+    margin: 0.4rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: #a9b6c4;
+  }
+  .academie-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: 2rem;
+  }
+  .academie .lien-fleche {
+    color: #fff;
+  }
+  .academie .lien-fleche:hover {
+    color: #fff;
+    text-decoration-color: currentColor;
+  }
+
+  /* ------------------------------------------------------ l'application */
+  .academie-demo {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 3.5rem;
+  }
+  @media (min-width: 1024px) {
+    .academie-demo {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 2rem;
+      align-items: start;
+      margin-top: 5rem;
+    }
+    .academie-panneau {
+      grid-column: 1 / span 8;
+      grid-row: 1;
+    }
+    .academie-onglets {
+      grid-column: 9 / span 4;
+      grid-row: 1;
+    }
+  }
+
+  .academie-panneau {
+    position: relative;
+    margin: 0;
+  }
+  /* Une lueur du bleu du logo derrière l'écran, pas un dégradé de fond. */
+  .academie-panneau::before {
+    content: '';
+    position: absolute;
+    inset: -12% -8% 10%;
+    background: radial-gradient(closest-side, rgb(29 113 184 / 0.28), transparent);
+    filter: blur(20px);
+    pointer-events: none;
+  }
+  .academie-ecran {
+    position: relative;
+    aspect-ratio: 940 / 734;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #f3f1ea;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    box-shadow: 0 50px 90px -40px rgb(0 0 0 / 0.85);
+  }
+  .academie-affiche,
+  .academie-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .academie-video {
+    opacity: 0;
+    transition: opacity 0.35s var(--ease-sortie);
+  }
+  .academie-video.est-visible {
+    opacity: 1;
+  }
+  .academie-lecture {
+    position: absolute;
+    right: 0.85rem;
+    bottom: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    border: 0;
+    background: rgb(10 18 29 / 0.78);
+    color: #fff;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition: background-color 0.25s var(--ease-sortie);
+  }
+  .academie-lecture:hover {
+    background: rgb(10 18 29 / 0.95);
+  }
+  .academie-lecture :global(.icone-lire) {
+    display: none;
+  }
+  .academie-lecture.est-arretee :global(.icone-pause) {
+    display: none;
+  }
+  .academie-lecture.est-arretee :global(.icone-lire) {
+    display: block;
+  }
+
+  .academie-legende {
+    position: relative;
+    margin-top: 1.25rem;
+    min-height: 4.5rem;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: #a9b6c4;
+    max-width: 62ch;
+  }
+  .academie-legende p {
+    margin: 0;
+  }
+  .academie-legende b {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #fff;
+  }
+  @media (min-width: 1024px) {
+    /* le titre est déjà dans l'onglet */
+    .academie-legende b {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .academie-legende p:not([hidden]) {
+      animation: legende-entre 0.6s var(--ease-sortie) both;
+    }
+  }
+  @keyframes legende-entre {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Les onglets : au téléphone une bande qu'on fait glisser au-dessus de
+     l'écran ; sur ordinateur une liste à droite, le titre en clair, et la
+     barre qui se remplit au rythme de la boucle. */
+  .academie-onglets {
+    position: relative;
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: -1rem;
+    padding: 2px 1rem;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 1rem;
+  }
+  .academie-onglet {
+    flex: none;
+    position: relative;
+    display: grid;
+    gap: 0.35rem;
+    text-align: left;
+    padding: 0.7rem 1rem 0.9rem;
+    border-radius: 12px;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    background: transparent;
+    color: #8d9cad;
+    cursor: pointer;
+    scroll-snap-align: start;
+    overflow: hidden;
+    transition:
+      color 0.3s var(--ease-sortie),
+      background-color 0.3s var(--ease-sortie),
+      border-color 0.3s var(--ease-sortie);
+  }
+  .onglet-kicker {
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .onglet-titre {
+    display: none;
+  }
+  .onglet-barre {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: rgb(255 255 255 / 0.08);
+    opacity: 0;
+  }
+  .onglet-barre span {
+    display: block;
+    height: 100%;
+    background: #fff;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .academie-onglet:hover {
+    color: #dfe6ee;
+  }
+  .academie-onglet[aria-selected='true'] {
+    color: #fff;
+    background: rgb(255 255 255 / 0.06);
+    border-color: rgb(255 255 255 / 0.22);
+  }
+  .academie-onglet[aria-selected='true'] .onglet-barre {
+    opacity: 1;
+  }
+  @media (min-width: 1024px) {
+    .academie-onglets {
+      display: grid;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+      border-top: 1px solid rgb(255 255 255 / 0.12);
+    }
+    .academie-onglet {
+      padding: 1.1rem 0.25rem 1.2rem;
+      border: 0;
+      border-bottom: 1px solid rgb(255 255 255 / 0.12);
+      border-radius: 0;
+    }
+    .academie-onglet[aria-selected='true'] {
+      background: transparent;
+    }
+    .onglet-kicker {
+      font-size: 0.8125rem;
+    }
+    .onglet-titre {
+      display: block;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.0625rem;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      word-spacing: 0.04em;
+      text-wrap: balance;
+    }
+    .onglet-barre {
+      bottom: -1px;
+    }
+  }
+
+  /* ---------------------------------------------------- les pages outils */
+  .academie-outils {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    margin-top: 3rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+  }
+  .academie-outils p {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: #a9b6c4;
+  }
+  .academie-outils ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .academie-outils a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding: 0 1rem;
+    border-radius: 999px;
+    border: 1px solid rgb(255 255 255 / 0.16);
+    color: #eef2f6;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition:
+      background-color 0.25s var(--ease-sortie),
+      border-color 0.25s var(--ease-sortie);
+  }
+  .academie-outils a:hover {
+    background: rgb(255 255 255 / 0.08);
+    border-color: rgb(255 255 255 / 0.32);
+  }
+  .academie-outils svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: none;
+  }
+</style>
+
+<script>
+  /**
+   * Le lecteur des écrans de l'Academy.
+   *
+   * - Rien ne se charge avant que le lecteur approche de l'écran ; la vidéo
+   *   se met en pause quand il en sort.
+   * - Le tour : chaque boucle joue une fois, puis l'onglet suivant, tant
+   *   qu'on n'a touché à rien. Un clic sur un onglet l'arrête et fait
+   *   tourner en boucle l'écran choisi.
+   * - Sous prefers-reduced-motion, rien ne démarre seul : l'affiche de
+   *   l'écran, et le bouton lecture.
+   * - Modèle ARIA des onglets : flèches, Début, Fin.
+   */
+  const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
+    const bande = demo.querySelector<HTMLElement>('[role="tablist"]');
+    const onglets = Array.from(demo.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const legendes = Array.from(demo.querySelectorAll<HTMLElement>('[data-aca-legende]'));
+    const panneau = demo.querySelector<HTMLElement>('[role="tabpanel"]');
+    const video = demo.querySelector<HTMLVideoElement>('[data-video]');
+    const affiche = demo.querySelector<HTMLImageElement>('[data-affiche]');
+    const bouton = demo.querySelector<HTMLButtonElement>('[data-lecture]');
+    if (!bande || !onglets.length || !video || !affiche || !bouton || !panneau) return;
+
+    let courant = 0;
+    let tour = !reduit;
+    let arretee = reduit;
+    let visible = false;
+    let chargee = -1;
+
+    const barre = (i: number) => onglets[i].querySelector<HTMLElement>('[data-barre]');
+
+    const majBouton = () => {
+      bouton.classList.toggle('est-arretee', arretee);
+      bouton.setAttribute('aria-label', (arretee ? bouton.dataset.lire : bouton.dataset.pause) || '');
+    };
+    majBouton();
+
+    const charger = (i: number) => {
+      if (chargee === i) return;
+      chargee = i;
+      const base = onglets[i].dataset.base;
+      video.classList.remove('est-visible');
+      video.replaceChildren(
+        Object.assign(document.createElement('source'), { src: `${base}.webm`, type: 'video/webm' }),
+        Object.assign(document.createElement('source'), { src: `${base}.mp4`, type: 'video/mp4' }),
+      );
+      video.load();
+    };
+
+    const lire = () => {
+      if (arretee || !visible) return;
+      charger(courant);
+      video.loop = !tour;
+      video.play().catch(() => {
+        /* lecture refusée : l'affiche reste */
+      });
+    };
+
+    const choisir = (n: number, focus = false) => {
+      courant = (n + onglets.length) % onglets.length;
+      onglets.forEach((o, i) => {
+        const oui = i === courant;
+        o.setAttribute('aria-selected', String(oui));
+        o.tabIndex = oui ? 0 : -1;
+        const b = barre(i);
+        if (b) b.style.transform = 'scaleX(0)';
+      });
+      legendes.forEach((l, i) => (l.hidden = i !== courant));
+      panneau.setAttribute('aria-labelledby', onglets[courant].id);
+      affiche.src = `${onglets[courant].dataset.base}.jpg`;
+      if (focus) onglets[courant].focus({ preventScroll: true });
+      // Au téléphone, l'onglet choisi reste visible dans la bande qu'on fait
+      // glisser. Jamais `scrollIntoView` : pendant le tour, il ferait défiler
+      // la PAGE vers un onglet sorti de l'écran.
+      if (bande.scrollWidth > bande.clientWidth) {
+        bande.scrollTo({ left: onglets[courant].offsetLeft - 16, behavior: reduit ? 'instant' : 'smooth' });
+      }
+      if (visible && !arretee) lire();
+      else {
+        chargee = -1;
+        video.pause();
+        video.classList.remove('est-visible');
+      }
+    };
+
+    video.addEventListener('playing', () => video.classList.add('est-visible'));
+    video.addEventListener('ended', () => {
+      if (tour) choisir(courant + 1);
+    });
+
+    // La barre de l'onglet suit la lecture.
+    let trame = 0;
+    const suivre = () => {
+      const b = barre(courant);
+      if (b && video.duration) b.style.transform = `scaleX(${Math.min(1, video.currentTime / video.duration)})`;
+      trame = video.paused ? 0 : requestAnimationFrame(suivre);
+    };
+    video.addEventListener('play', () => {
+      if (!trame) trame = requestAnimationFrame(suivre);
+    });
+
+    new IntersectionObserver(
+      ([e]) => {
+        visible = e.isIntersecting;
+        if (visible) lire();
+        else video.pause();
+      },
+      { threshold: 0.3 },
+    ).observe(demo);
+
+    bouton.addEventListener('click', () => {
+      arretee = !arretee;
+      tour = false;
+      majBouton();
+      if (arretee) video.pause();
+      else lire();
+    });
+
+    onglets.forEach((o, i) => {
+      o.addEventListener('click', () => {
+        tour = false;
+        choisir(i);
+      });
+      o.addEventListener('keydown', (e) => {
+        const cible =
+          e.key === 'ArrowRight' || e.key === 'ArrowDown' ? courant + 1
+          : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? courant - 1
+          : e.key === 'Home' ? 0
+          : e.key === 'End' ? onglets.length - 1
+          : null;
+        if (cible === null) return;
+        e.preventDefault();
+        tour = false;
+        choisir(cible, true);
+      });
+    });
+  });
+</script>

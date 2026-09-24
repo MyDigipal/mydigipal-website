@@ -1,96 +1,352 @@
 ---
 /**
- * Ce qu'on fait, et à partir de combien.
+ * Ce qu'on fait : les dix services, une phrase chacun, et la fiche de celui
+ * qu'on survole.
  *
- * Un index, pas une grille de cartes : deux colonnes (l'agence au mois, l'IA
- * appliquée), une ligne par service, son prix de départ en face, et le lien
- * vers sa page. Les prix sortent de `lignePrix()`, donc du moteur du
- * calculateur et du catalogue de l'Academy : changer une grille les change
- * ici au build suivant, et le prix de l'Academy se relit même dans le
- * navigateur (`data-fait`, script de Portes.astro).
+ * Retour de Paul du 24/09/2026 : plus de prix ici (« je pense pas que ça soit
+ * une bonne chose de mettre le prix »), une petite description à la place, et
+ * quelque chose qui apparaît au survol pour en dire un peu plus ; le clic mène
+ * à la page du service. Le tableau d'avant était « un peu brut ».
+ *
+ * Sur ordinateur : la liste à gauche, un repère blanc qui glisse d'une ligne
+ * à l'autre (le même geste que la pilule du menu), et à droite une fiche
+ * collée qui change avec la ligne survolée ou atteinte au clavier : ce que le
+ * service comprend, un résultat client quand une étude de cas l'a employé, la
+ * page et le calculateur. Au téléphone : la liste seule, chaque ligne mène à
+ * sa page.
+ *
+ * Les listes « ce qui est compris » reprennent les pages services et les
+ * fiches du calculateur (`calculator-v6/content.ts`), reformulées. Les
+ * chiffres viennent de la collection `case-studies` et de l'API de l'Academy,
+ * jamais d'ici.
  */
 import Icon from '@/components/ui/Icon.astro';
-import { lignePrix, serrer, type Lang, type LignePrix } from './donnees';
+import type { Jour30Data } from '@/components/academy/data';
+import { LOGOS, faitsAcademy, hauteurLogo, lireResultats, serrer, type Lang, type Resultat } from './donnees';
 
 interface Props {
   lang: Lang;
-  prixAcademy: string | null;
+  academy: Jour30Data;
 }
-const { lang, prixAcademy } = Astro.props;
+const { lang, academy } = Astro.props;
 const fr = lang === 'fr';
+const f = faitsAcademy(academy, lang);
+const resultats = await lireResultats(lang);
+const cas = (slug: string) => resultats.find((r) => r.slug === slug);
 
-type Ligne = { nom: string; lien: string; prix: LignePrix; fait?: string; gabarit?: string };
+type Service = {
+  id: string;
+  nom: string;
+  lien: string;
+  court: string;
+  texte: string;
+  compris: string[];
+  /** Une étude de cas où le service a été employé. */
+  preuve?: Resultat;
+  /** Le domaine du calculateur, s'il le chiffre. */
+  chiffrer?: boolean;
+};
 
-const agence: Ligne[] = [
-  { nom: 'SEO', lien: `/${lang}/services/seo`, prix: lignePrix('seo', lang) },
-  { nom: 'Google Ads', lien: `/${lang}/services/google-ads`, prix: lignePrix('google-ads', lang) },
-  { nom: fr ? 'Publicité sociale' : 'Paid social', lien: `/${lang}/services/paid-social`, prix: lignePrix('paid-social', lang) },
-  { nom: 'Emailing', lien: `/${lang}/services/emailing`, prix: lignePrix('emailing', lang) },
-  { nom: fr ? 'B2B et ABM' : 'B2B and ABM', lien: `/${lang}/services/b2b-abm`, prix: { principal: fr ? 'sur devis' : 'on quote' } },
-  { nom: fr ? 'Tracking et reporting' : 'Tracking and reporting', lien: `/${lang}/services/tracking-reporting`, prix: lignePrix('tracking-reporting', lang) },
-];
+const agence: Service[] = fr
+  ? [
+      {
+        id: 'seo',
+        nom: 'SEO',
+        court: 'Être trouvé sur Google, et désormais dans les réponses de ChatGPT ou de Perplexity.',
+        texte: 'Un audit technique, des mots-clés rangés par thème, des pages optimisées et du contenu chaque mois. Et le travail pour apparaître dans les réponses des IA : données structurées, questions fréquentes, suivi des mentions.',
+        compris: ['Audit technique et suivi des positions', 'Stratégie de mots-clés par thème', 'Optimisation des pages et maillage interne', 'Contenu et netlinking', 'Visibilité dans ChatGPT, Perplexity et Copilot'],
+        preuve: cas('dmd-group'),
+      },
+      {
+        id: 'google-ads',
+        nom: 'Google Ads',
+        court: 'Search, Performance Max, Shopping et YouTube : être là quand on vous cherche.',
+        texte: 'Des campagnes construites sur l’intention de recherche et mesurées jusqu’à la vente, conversions hors ligne comprises. L’optimisation, les ajustements et le rapport mensuel font partie de la gestion.',
+        compris: ['Campagnes Search et Performance Max', 'Shopping et Merchant Center', 'Display, remarketing et YouTube', 'Suivi des conversions avec Tag Manager et GA4', 'Le budget média se paie directement à Google'],
+        preuve: cas('theobald-group'),
+      },
+      {
+        id: 'paid-social',
+        nom: 'Publicité sociale',
+        court: 'LinkedIn, Meta, TikTok et YouTube, pour toucher les décideurs là où ils passent leur temps.',
+        texte: 'Sur LinkedIn, un ciblage par entreprise, par poste et par secteur ; sur Meta, les catalogues de véhicules et de produits. Les visuels peuvent être créés chez nous.',
+        compris: ['LinkedIn Ads : ciblage de comptes, formulaires de leads', 'Meta : Facebook et Instagram', 'TikTok Ads et YouTube', 'Création des visuels en option', 'Le budget média se paie directement aux plateformes'],
+        preuve: cas('symbl-ai'),
+      },
+      {
+        id: 'emailing',
+        nom: 'Emailing',
+        court: 'Des campagnes et des séquences écrites pour chaque segment, reliées à votre CRM.',
+        texte: 'La mise en place de l’outil et la segmentation, puis chaque mois le calendrier, la rédaction, le design et l’envoi. Et si la base manque de contacts, leur acquisition, conforme au RGPD.',
+        compris: ['Mise en place de l’outil et intégration au CRM', 'Segmentation des audiences', 'Calendrier éditorial mensuel', 'Rédaction, design et envoi des campagnes', 'Acquisition de contacts conforme au RGPD'],
+      },
+      {
+        id: 'b2b-abm',
+        nom: 'B2B et ABM',
+        court: 'Choisir les comptes à gagner, et mettre le marketing au service des ventes.',
+        texte: 'L’account-based marketing : une liste de comptes cibles, des campagnes et des contenus pensés pour eux sur LinkedIn, sur Google et par email, et un suivi partagé avec l’équipe commerciale.',
+        compris: ['Stratégie 1-to-1, 1-to-few ou 1-to-many', 'LinkedIn Ads : ciblage de comptes', 'Google Ads et retargeting display', 'Séquences de nurturing par email', 'Études de cas, livres blancs, webinaires'],
+        preuve: cas('genesys'),
+      },
+      {
+        id: 'tracking-reporting',
+        nom: 'Tracking et reporting',
+        court: 'GA4, Tag Manager, suivi côté serveur et tableaux de bord : savoir ce que rapporte chaque euro.',
+        texte: 'On commence par un audit, puis on remet la mesure d’aplomb : conversions, consentement, liaison avec le CRM. Le tableau de bord rassemble tous vos canaux au même endroit.',
+        compris: ['Audit du tracking', 'Installation ou révision de GA4', 'Mise en place des conversions', 'Bannière cookies et suivi du consentement', 'Intégration au CRM', 'Tableau de bord multicanal'],
+      },
+    ]
+  : [
+      {
+        id: 'seo',
+        nom: 'SEO',
+        court: 'Getting found on Google, and now in the answers of ChatGPT or Perplexity.',
+        texte: 'A technical audit, keywords grouped by theme, optimised pages and fresh content every month. Plus the work to show up in AI answers: structured data, FAQs, mention tracking.',
+        compris: ['Technical audit and rank tracking', 'Keyword strategy by theme', 'Page optimisation and internal linking', 'Content and link building', 'Visibility in ChatGPT, Perplexity and Copilot'],
+        preuve: cas('dmd-group'),
+      },
+      {
+        id: 'google-ads',
+        nom: 'Google Ads',
+        court: 'Search, Performance Max, Shopping and YouTube: be there when people look for you.',
+        texte: 'Campaigns built on search intent and measured all the way to the sale, offline conversions included. Optimisation, adjustments and the monthly report are part of the management.',
+        compris: ['Search and Performance Max campaigns', 'Shopping and Merchant Center', 'Display, remarketing and YouTube', 'Conversion tracking with Tag Manager and GA4', 'Media spend is paid directly to Google'],
+        preuve: cas('theobald-group'),
+      },
+      {
+        id: 'paid-social',
+        nom: 'Paid social',
+        court: 'LinkedIn, Meta, TikTok and YouTube, to reach decision-makers where they spend their time.',
+        texte: 'On LinkedIn, targeting by company, job title and industry; on Meta, vehicle and product catalogues. We can create the visuals too.',
+        compris: ['LinkedIn Ads: account targeting, lead gen forms', 'Meta: Facebook and Instagram', 'TikTok Ads and YouTube', 'Visual creation as an option', 'Media spend is paid directly to the platforms'],
+        preuve: cas('symbl-ai'),
+      },
+      {
+        id: 'emailing',
+        nom: 'Emailing',
+        court: 'Campaigns and sequences written for each segment, connected to your CRM.',
+        texte: 'Setting up the tool and the segments, then every month the calendar, the copy, the design and the sending. And if the list runs short, GDPR-compliant contact acquisition.',
+        compris: ['Tool set-up and CRM integration', 'Audience segmentation', 'Monthly editorial calendar', 'Copy, design and sending of campaigns', 'GDPR-compliant contact acquisition'],
+      },
+      {
+        id: 'b2b-abm',
+        nom: 'B2B and ABM',
+        court: 'Choosing the accounts to win, and putting marketing to work for sales.',
+        texte: 'Account-based marketing: a list of target accounts, campaigns and content built for them on LinkedIn, on Google and by email, and reporting shared with the sales team.',
+        compris: ['1-to-1, 1-to-few or 1-to-many strategy', 'LinkedIn Ads: account targeting', 'Google Ads and display retargeting', 'Email nurturing sequences', 'Case studies, white papers, webinars'],
+        preuve: cas('genesys'),
+      },
+      {
+        id: 'tracking-reporting',
+        nom: 'Tracking and reporting',
+        court: 'GA4, Tag Manager, server-side tracking and dashboards: knowing what your spend brings in.',
+        texte: 'We start with an audit, then put measurement right: conversions, consent, the link with your CRM. The dashboard brings every channel together in one place.',
+        compris: ['Tracking audit', 'GA4 installation or review', 'Conversion set-up', 'Cookie banner and consent tracking', 'CRM integration', 'Multichannel reporting dashboard'],
+      },
+    ];
 
-const gabaritAcademy = fr ? `dès {} par personne` : `from {} per person`;
-const ia: Ligne[] = [
-  {
-    nom: 'AI Academy',
-    lien: `/${lang}/academy`,
-    prix: { principal: prixAcademy ? gabaritAcademy.replace('{}', prixAcademy) : fr ? 'en ligne' : 'online' },
-    fait: prixAcademy ? 'prix' : undefined,
-    gabarit: gabaritAcademy,
-  },
-  { nom: fr ? 'Formation en salle ou à distance' : 'In-room or remote training', lien: `/${lang}/services/ai-training`, prix: lignePrix('ai-training', lang) },
-  { nom: fr ? 'Automatisations sur mesure' : 'Custom automations', lien: `/${lang}/services/ai-solutions`, prix: lignePrix('ai-solutions', lang) },
-  { nom: fr ? 'Contenu produit avec l’IA' : 'AI-assisted content', lien: `/${lang}/services/ai-content`, prix: lignePrix('ai-content', lang) },
-];
+const ia: Service[] = fr
+  ? [
+      {
+        id: 'academy',
+        nom: 'AI Academy',
+        court: 'La formation IA en ligne, à votre rythme, avec l’outil de votre choix.',
+        texte: `${f.lecons} leçons à votre rythme, de la méthode de prompting jusqu’aux agents et aux serveurs MCP, avec des exercices sur vos propres cas.`,
+        compris: [`${f.modules} modules, ${f.heures} de lecture et d’exercices`, 'Un parcours pour ChatGPT, Claude, Copilot ou Gemini', `${f.prompts} prompts prêts à copier`, 'Un assistant qui répond à partir des leçons', 'Une attestation en fin de parcours'],
+      },
+      {
+        id: 'ai-training',
+        nom: 'Formation en salle ou à distance',
+        court: 'Des ateliers pour vos équipes, dans vos locaux ou en visio, sur leurs propres dossiers.',
+        texte: 'Une demi-journée ou une journée, précédée d’une évaluation de la maturité de l’équipe. On y apprend la méthode CRAFT, et chacun l’applique à des cas de son métier.',
+        compris: ['Évaluation de la maturité IA avant la formation', 'Les concepts et les outils clés', 'La méthode CRAFT', 'Le prompting avancé et ses garde-fous'],
+      },
+      {
+        id: 'ai-solutions',
+        nom: 'Automatisations sur mesure',
+        court: 'Des assistants, des automatisations et des agents branchés sur vos outils.',
+        texte: 'On repère les tâches répétitives, on les automatise, et un humain garde la main là où il le faut : demandes entrantes, comptes rendus, relances, reporting.',
+        compris: ['Traitement automatique des demandes entrantes', 'Enrichissement des données du CRM', 'Rapports générés automatiquement', 'Synchronisation entre outils : CRM, email, facturation', 'Assistants et bases de connaissances sur vos documents'],
+      },
+      {
+        id: 'ai-content',
+        nom: 'Contenu produit avec l’IA',
+        court: 'Des articles et des pages écrits avec l’IA, dans votre ton, relus par un humain.',
+        texte: 'L’IA apprend votre ton sur vos contenus existants, les sujets viennent des données de recherche, et chaque texte est relu et vérifié avant publication.',
+        compris: ['Apprentissage de votre ton sur vos contenus', 'Sujets choisis avec Ahrefs et Search Console', 'Articles structurés : titres, méta, FAQ, liens internes', 'Relecture et vérification humaines'],
+      },
+    ]
+  : [
+      {
+        id: 'academy',
+        nom: 'AI Academy',
+        court: 'The online AI course, at your own pace, with the tool of your choice.',
+        texte: `${f.lecons} lessons at your own pace, from the prompting method all the way to agents and MCP servers, with exercises on your own cases.`,
+        compris: [`${f.modules} modules, ${f.heures} of reading and exercises`, 'A path for ChatGPT, Claude, Copilot or Gemini', `${f.prompts} prompts ready to copy`, 'An assistant that answers from the lessons', 'A certificate at the end of the course'],
+      },
+      {
+        id: 'ai-training',
+        nom: 'In-room or remote training',
+        court: 'Workshops for your teams, at your office or by video call, on their own work.',
+        texte: 'A half day or a full day, preceded by an assessment of the team’s AI maturity. People learn the CRAFT method and apply it to cases from their own job.',
+        compris: ['Pre-training AI maturity assessment', 'Key AI concepts and tools', 'The CRAFT framework', 'Advanced prompting and safeguards'],
+      },
+      {
+        id: 'ai-solutions',
+        nom: 'Custom automations',
+        court: 'Assistants, automations and agents plugged into your tools.',
+        texte: 'We find the repetitive tasks, automate them, and keep a human in charge where it matters: incoming requests, meeting notes, follow-ups, reporting.',
+        compris: ['Automatic handling of incoming leads', 'CRM data enrichment', 'Automatically generated reports', 'Sync between tools: CRM, email, billing', 'Assistants and knowledge bases on your documents'],
+      },
+      {
+        id: 'ai-content',
+        nom: 'AI-assisted content',
+        court: 'Articles and pages written with AI, in your voice, checked by a human.',
+        texte: 'The AI learns your voice from your existing content, topics come from search data, and every piece is proofread and fact-checked before it goes live.',
+        compris: ['Learning your voice from your content', 'Topics chosen with Ahrefs and Search Console', 'Structured articles: headings, meta, FAQ, internal links', 'Human proofreading and fact-checking'],
+      },
+    ];
+
+// Le lien de chaque service, et ceux que le calculateur chiffre.
+const CALCULATEUR = new Set(['seo', 'google-ads', 'paid-social', 'emailing', 'tracking-reporting', 'ai-training', 'ai-solutions', 'ai-content']);
+for (const s of [...agence, ...ia]) {
+  s.lien = s.id === 'academy' ? `/${lang}/academy` : `/${lang}/services/${s.id}`;
+  s.chiffrer = CALCULATEUR.has(s.id);
+}
 
 const t = fr
   ? {
-      titre: 'Ce qu’on fait, et à partir de combien.',
-      chapeau: 'Les prix de départ de nos grilles, les mêmes que dans le calculateur. Le budget publicitaire, lui, est payé directement aux plateformes.',
+      titre: 'Ce qu’on fait.',
+      chapeau: 'Six métiers d’agence et quatre façons de mettre l’IA au travail, tenus par la même équipe.',
       agence: 'L’agence, au mois',
       ia: 'L’IA, appliquée',
+      compris: 'Ce qui est compris',
+      voir: 'Voir la page',
+      voirAcademy: 'Voir l’Academy',
+      chiffrer: 'Chiffrer ce service',
+      gratuit: `Essayer ${f.gratuites} leçons, gratuitement`,
+      avec: 'avec',
+      etude: 'Lire l’étude de cas',
+      noteGabarit: 'La moyenne des {} retours de nos formations.',
+      note: `La moyenne des ${f.retours} retours de nos formations.`,
     }
   : {
-      titre: 'What we do, and what it starts at.',
-      chapeau: 'The starting prices from our rate cards, the same as in the calculator. Ad spend itself is paid directly to the platforms.',
+      titre: 'What we do.',
+      chapeau: 'Six agency disciplines and four ways to put AI to work, run by the same team.',
       agence: 'The agency, monthly',
       ia: 'Applied AI',
+      compris: 'What’s included',
+      voir: 'See the page',
+      voirAcademy: 'See the Academy',
+      chiffrer: 'Price this service',
+      gratuit: `Try ${f.gratuites} lessons for free`,
+      avec: 'with',
+      etude: 'Read the case study',
+      noteGabarit: 'The average of {} reviews of our training sessions.',
+      note: `The average of ${f.retours} reviews of our training sessions.`,
     };
+const groupes = [
+  { titre: t.agence, services: agence },
+  { titre: t.ia, services: ia },
+];
+const premier = agence[0].id;
 ---
 
-<section class="offre bloc" aria-labelledby="offre-titre">
+<section class="offre bloc" aria-labelledby="offre-titre" data-offre>
   <div class="container-custom">
     <div class="offre-tete" data-reveal>
       <h2 id="offre-titre" class="titre-section" set:html={serrer(t.titre)} />
       <p class="chapeau">{t.chapeau}</p>
     </div>
 
-    <div class="offre-colonnes">
-      {[
-        { titre: t.agence, lignes: agence },
-        { titre: t.ia, lignes: ia },
-      ].map((groupe, g) => (
-        <div class="offre-groupe" data-reveal style={`--i:${g + 1}`}>
-          <h3 class="offre-groupe-titre">{groupe.titre}</h3>
-          <ul class="offre-liste">
-            {groupe.lignes.map((l) => (
-              <li>
-                <a href={l.lien} class="offre-ligne">
-                  <span class="offre-nom">
-                    {l.nom}
-                    <Icon name="arrow-right" size={18} class="offre-fleche" />
-                  </span>
-                  <span class="offre-prix">
-                    <span data-fait={l.fait} data-gabarit={l.fait ? l.gabarit : undefined}>{l.prix.principal}</span>
-                    {l.prix.detail && <span class="offre-detail">{l.prix.detail}</span>}
-                  </span>
+    <div class="offre-grille">
+      <!-- L'apparition sur tout le bloc, pas sur chaque groupe : le repère est
+           placé d'après la position des lignes, qu'un décalage en cours
+           fausserait. -->
+      <div class="offre-listes" data-listes data-reveal style="--i:1">
+        <span class="offre-marqueur" aria-hidden="true" data-marqueur></span>
+        {groupes.map((groupe) => (
+          <div class="offre-groupe">
+            <h3 class="offre-groupe-titre">{groupe.titre}</h3>
+            <ul class="offre-liste">
+              {groupe.services.map((s) => (
+                <li>
+                  <a href={s.lien} class:list={['offre-ligne', { 'est-active': s.id === premier }]} data-service={s.id}>
+                    <span class="offre-nom">{s.nom}</span>
+                    <span class="offre-court">{s.court}</span>
+                    <span class="offre-fleche" aria-hidden="true"><Icon name="arrow-right" size={18} /></span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <!-- La fiche du service survolé : un complément de la liste, sur ordinateur. -->
+      <div class="offre-fiches" data-reveal style="--i:2">
+        {groupes.flatMap((g) => g.services).map((s) => (
+          <article class:list={['fiche', { 'est-active': s.id === premier }]} data-fiche={s.id} aria-label={s.nom}>
+            <p class="fiche-nom" set:html={serrer(s.nom)} />
+            <p class="fiche-texte">{s.texte}</p>
+            <p class="fiche-compris-titre">{t.compris}</p>
+            <ul class="fiche-compris">
+              {s.compris.map((c) => (
+                <li>
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  <span>{c}</span>
+                </li>
+              ))}
+            </ul>
+
+            {s.preuve && (
+              <a href={s.preuve.lien} class="fiche-preuve">
+                {LOGOS[s.preuve.logo] && (
+                  <img
+                    src={LOGOS[s.preuve.logo].src}
+                    alt=""
+                    width={LOGOS[s.preuve.logo].largeur}
+                    height={LOGOS[s.preuve.logo].hauteur}
+                    style={`height:${hauteurLogo(s.preuve.logo, 1100, 14, 28)}px`}
+                    class:list={['preuve-logo', { 'fond-blanc': LOGOS[s.preuve.logo].fondBlanc }]}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+                <span class="preuve-chiffre">{s.preuve.texte}</span>
+                <span class="preuve-libelle">{s.preuve.libelle}</span>
+                <span class="preuve-client">{s.preuve.client}, {t.avec} {s.preuve.canaux}</span>
+                <span class="preuve-lire">{t.etude}<Icon name="arrow-right" size={15} /></span>
+              </a>
+            )}
+            {s.id === 'ai-training' && (
+              <p class="fiche-preuve fiche-note">
+                <span class="preuve-chiffre"><span data-fait="note">{f.note}</span>/10</span>
+                <span class="preuve-libelle" data-fait="retours" data-gabarit={t.noteGabarit}>{t.note}</span>
+              </p>
+            )}
+
+            <div class="fiche-actions">
+              <a href={s.lien} class="bouton-plein fiche-bouton">
+                <span>{s.id === 'academy' ? t.voirAcademy : t.voir}</span>
+                <Icon name="arrow-right" size={17} />
+              </a>
+              {s.chiffrer && (
+                <a href={`/${lang}/calculator?service=${s.id}`} class="lien-fleche">
+                  <span>{t.chiffrer}</span>
+                  <Icon name="arrow-right" size={16} />
                 </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+              )}
+              {s.id === 'academy' && (
+                <a href={f.lienGratuit} class="lien-fleche">
+                  <span>{t.gratuit}</span>
+                  <Icon name="arrow-up-right" size={16} />
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   </div>
 </section>
@@ -102,17 +358,33 @@ const t = fr
   .offre-tete {
     max-width: 44rem;
   }
-  .offre-colonnes {
+  .offre-grille {
     display: grid;
     gap: 3rem;
     margin-top: 3rem;
   }
   @media (min-width: 1024px) {
-    .offre-colonnes {
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      margin-top: 4.5rem;
+    .offre-grille {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 2rem;
+      align-items: start;
+      margin-top: 4rem;
     }
+    .offre-listes {
+      grid-column: 1 / span 7;
+    }
+    .offre-fiches {
+      grid-column: 8 / span 5;
+      position: sticky;
+      top: calc(72px + 2rem);
+    }
+  }
+
+  /* ------------------------------------------------------------ la liste */
+  .offre-listes {
+    position: relative;
+    display: grid;
+    gap: 2.5rem;
   }
   .offre-groupe-titre {
     font-family: var(--font-sans);
@@ -127,71 +399,335 @@ const t = fr
     padding: 0;
     border-top: 1px solid #d6dee7;
   }
-  .offre-liste li + li {
-    border-top: 1px solid #d6dee7;
+  .offre-liste li {
+    border-bottom: 1px solid #d6dee7;
   }
   .offre-ligne {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 0.35rem 1.5rem;
-    align-items: baseline;
+    grid-template-areas:
+      'nom fleche'
+      'court fleche';
+    column-gap: 1.25rem;
+    row-gap: 0.3rem;
+    align-items: center;
     padding: 1.15rem 0;
     color: inherit;
   }
-  @media (max-width: 479px) {
-    .offre-ligne {
-      grid-template-columns: 1fr;
-    }
-  }
   .offre-nom {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    grid-area: nom;
     font-family: var(--font-display);
     font-weight: 700;
     font-size: clamp(1.25rem, 1rem + 0.8vw, 1.5rem);
     letter-spacing: -0.02em;
     line-height: 1.2;
-    transition: transform 0.35s var(--ease-sortie), color 0.35s var(--ease-sortie);
+    transition: color 0.35s var(--ease-sortie);
   }
-  .offre-nom :global(.offre-fleche) {
-    flex: none;
-    color: var(--color-marque);
-    opacity: 0;
-    transform: translateX(-8px);
-    transition:
-      opacity 0.3s var(--ease-sortie),
-      transform 0.35s var(--ease-sortie);
-  }
-  .offre-prix {
-    display: grid;
-    justify-items: end;
-    text-align: right;
+  .offre-court {
+    grid-area: court;
     font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--texte);
+    max-width: 52ch;
+  }
+  .offre-fleche {
+    grid-area: fleche;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    border: 1px solid #cfd8e2;
     color: var(--color-encre);
-    font-weight: 500;
-    font-variant-numeric: tabular-nums;
-  }
-  @media (max-width: 479px) {
-    .offre-prix {
-      justify-items: start;
-      text-align: left;
-    }
-  }
-  .offre-detail {
-    font-size: 0.8125rem;
-    font-weight: 400;
-    color: var(--gris);
-    max-width: 30ch;
+    transition:
+      background-color 0.35s var(--ease-sortie),
+      border-color 0.35s var(--ease-sortie),
+      color 0.35s var(--ease-sortie),
+      transform 0.35s var(--ease-sortie);
   }
   .offre-ligne:hover .offre-nom,
   .offre-ligne:focus-visible .offre-nom {
     color: var(--color-marque);
-    transform: translateX(4px);
   }
-  .offre-ligne:hover :global(.offre-fleche),
-  .offre-ligne:focus-visible :global(.offre-fleche) {
+  .offre-ligne:hover .offre-fleche,
+  .offre-ligne:focus-visible .offre-fleche {
+    background: var(--color-marque);
+    border-color: var(--color-marque);
+    color: #fff;
+    transform: translateX(3px);
+  }
+
+  /* Sur ordinateur, la ligne active porte un repère blanc qui glisse d'une
+     ligne à l'autre (placé par le script), et le texte se décolle du bord. */
+  .offre-marqueur {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .offre-ligne {
+      padding: 1.2rem 1.25rem;
+      margin: 0 -1.25rem;
+    }
+    .offre-liste {
+      border-top: 0;
+    }
+    .offre-liste li {
+      border-bottom: 0;
+    }
+    .offre-liste li + li {
+      border-top: 1px solid #dde4ec;
+    }
+    .offre-marqueur {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: -1.25rem;
+      right: -1.25rem;
+      height: 0;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow:
+        0 1px 2px rgb(11 27 43 / 0.05),
+        0 12px 32px -18px rgb(11 27 43 / 0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        transform 0.5s var(--ease-sortie),
+        height 0.5s var(--ease-sortie),
+        opacity 0.3s var(--ease-sortie);
+    }
+    .offre-marqueur.est-pret {
+      opacity: 1;
+    }
+    /* Le trait sous la ligne active et au-dessus de la suivante disparaît
+       derrière le repère. */
+    .offre-liste li:has(.est-active),
+    .offre-liste li:has(.est-active) + li {
+      border-top-color: transparent;
+    }
+    .offre-ligne.est-active .offre-nom {
+      color: var(--color-marque);
+    }
+    .offre-ligne.est-active .offre-fleche {
+      background: var(--color-marque);
+      border-color: var(--color-marque);
+      color: #fff;
+    }
+  }
+
+  /* ------------------------------------------------------------- la fiche */
+  .offre-fiches {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    /* Toutes les fiches dans la même case : le cadre prend la hauteur de la
+       plus longue et ne saute pas d'une ligne à l'autre. */
+    .offre-fiches {
+      display: grid;
+      padding: 2rem 2rem 1.75rem;
+      border-radius: 20px;
+      background: #fff;
+      border: 1px solid #e1e7ee;
+    }
+  }
+  .fiche {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  .fiche.est-active {
+    visibility: visible;
     opacity: 1;
     transform: none;
+    transition:
+      opacity 0.45s var(--ease-sortie),
+      transform 0.6s var(--ease-sortie);
+  }
+  .fiche-nom {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.75rem;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    word-spacing: 0.06em;
+  }
+  .fiche-texte {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--texte);
+  }
+  .fiche-compris-titre {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gris);
+  }
+  .fiche-compris {
+    list-style: none;
+    margin: -0.35rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+  .fiche-compris li {
+    display: grid;
+    grid-template-columns: 1rem minmax(0, 1fr);
+    gap: 0.6rem;
+    align-items: start;
+  }
+  .fiche-compris svg {
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.15rem;
+    color: var(--color-marque);
+  }
+
+  /* Le résultat d'un client qui a pris ce service : son logo, son chiffre. */
+  .fiche-preuve {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 0.75rem;
+    row-gap: 0.2rem;
+    margin: 0.25rem 0 0;
+    padding: 0.9rem 1rem;
+    border-radius: 14px;
+    background: var(--brume);
+    color: inherit;
+    transition: background-color 0.3s var(--ease-sortie);
+  }
+  a.fiche-preuve:hover {
+    background: #e9eff5;
+  }
+  .preuve-logo {
+    grid-column: 1 / -1;
+    display: block;
+    width: auto;
+    margin-bottom: 0.35rem;
+    filter: grayscale(1) contrast(1.1);
+    opacity: 0.85;
+  }
+  .preuve-logo.fond-blanc {
+    mix-blend-mode: multiply;
+  }
+  .preuve-chiffre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.75rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--color-marque);
+    white-space: nowrap;
+  }
+  .preuve-libelle {
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+  .preuve-client {
+    grid-column: 1 / -1;
+    font-size: 0.8125rem;
+    color: var(--gris);
+  }
+  .preuve-lire {
+    grid-column: 1 / -1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .preuve-lire :global(svg) {
+    transition: transform 0.3s var(--ease-sortie);
+  }
+  a.fiche-preuve:hover .preuve-lire :global(svg) {
+    transform: translateX(3px);
+  }
+
+  .fiche-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
+  }
+  .fiche-bouton {
+    height: 3rem;
+    padding: 0 1.25rem;
+    font-size: 0.9375rem;
+  }
+  .fiche-actions .lien-fleche {
+    font-size: 0.9375rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .offre-marqueur,
+    .fiche.est-active {
+      transition: none;
+    }
+    .fiche {
+      transform: none;
+    }
   }
 </style>
+
+<script>
+  /**
+   * Le repère qui glisse et la fiche qui suit : la ligne survolée à la
+   * souris, ou atteinte au clavier, devient la ligne active. On garde la
+   * dernière quand le pointeur quitte la liste (la fiche ne se vide jamais).
+   * Au doigt, rien ne change : la ligne mène directement à sa page.
+   */
+  document.querySelectorAll<HTMLElement>('[data-offre]').forEach((section) => {
+    const zone = section.querySelector<HTMLElement>('[data-listes]');
+    const marqueur = section.querySelector<HTMLElement>('[data-marqueur]');
+    const lignes = Array.from(section.querySelectorAll<HTMLElement>('[data-service]'));
+    const fiches = Array.from(section.querySelectorAll<HTMLElement>('[data-fiche]'));
+    if (!zone || !marqueur || !lignes.length) return;
+
+    let active = lignes.find((l) => l.classList.contains('est-active')) ?? lignes[0];
+
+    const placer = () => {
+      const z = zone.getBoundingClientRect();
+      const r = active.getBoundingClientRect();
+      if (!r.height) return;
+      marqueur.style.transform = `translateY(${r.top - z.top}px)`;
+      marqueur.style.height = `${r.height}px`;
+      marqueur.classList.add('est-pret');
+    };
+
+    const activer = (ligne: HTMLElement) => {
+      if (ligne === active) return;
+      active.classList.remove('est-active');
+      active = ligne;
+      ligne.classList.add('est-active');
+      fiches.forEach((f) => f.classList.toggle('est-active', f.dataset.fiche === ligne.dataset.service));
+      placer();
+    };
+
+    lignes.forEach((l) => {
+      l.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse') activer(l);
+      });
+      l.addEventListener('focus', () => activer(l));
+    });
+
+    // Le premier placement sans glissade, puis à chaque changement de taille
+    // (polices chargées, fenêtre redimensionnée).
+    marqueur.style.transition = 'none';
+    placer();
+    requestAnimationFrame(() => (marqueur.style.transition = ''));
+    new ResizeObserver(placer).observe(zone);
+  });
+</script>
