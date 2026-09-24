@@ -791,7 +791,7 @@ const FR = {
     avanceeNom: 'La méthode avancée',
     avanceeLigne: (n: number) =>
       `La méthode, plus ${n} leçons d’agents, de chaînes MCP et de cas montés de bout en bout.`,
-    assistantInclus: (q: string) => `L’assistant IA compris, environ ${q} questions par mois.`,
+    assistantInclus: (q: string, jours: number) => `L’assistant IA compris, environ ${q} questions pendant vos ${jours} jours d’accès.`,
     /**
      * Ce que chaque formule contient, ligne par ligne.
      *
@@ -1619,7 +1619,7 @@ const EN: Jour30Copy = {
     avanceeNom: 'The advanced method',
     avanceeLigne: (n: number) =>
       `The method, plus ${n} lessons on agents, MCP chains and cases wired end to end.`,
-    assistantInclus: (q: string) => `The AI assistant included, about ${q} questions a month.`,
+    assistantInclus: (q: string, jours: number) => `The AI assistant included, about ${q} questions over your ${jours} days of access.`,
     contenuMethode: (f: { lecons: number; prompts: number; trophees: number }) => [
       `${f.lecons} written lessons, across three stages`,
       'The CRAFT workshop: build a prompt, and audit your own',

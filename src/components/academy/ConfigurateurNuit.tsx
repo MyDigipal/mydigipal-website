@@ -535,7 +535,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
                       })}
                     </span>
                     <span className="mt-3.5 block border-t border-filet-nuit pt-3 text-[13.5px] leading-[1.5] text-assistant">
-                      {c.assistantInclus(nombre(questions))}
+                      {c.assistantInclus(nombre(questions), data.acces_jours ?? 60)}
                     </span>
                   </button>
                 );
