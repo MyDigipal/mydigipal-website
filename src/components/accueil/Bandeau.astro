@@ -1,0 +1,230 @@
+---
+/**
+ * Le bandeau des logos, sous le hero : les entreprises dont on a formé les
+ * équipes, puis celles dont on pilote les campagnes.
+ *
+ * Le seul défilé de la page (une page qui en a deux n'en a aucun). Il
+ * s'arrête au survol et par son bouton pause (un mouvement qui dure plus de
+ * cinq secondes doit pouvoir s'arrêter, WCAG 2.2.2), et sous
+ * prefers-reduced-motion il devient une grille immobile. Les logos sont ceux
+ * de `scripts/logos-accueil.mjs` : détourés, allégés, et à surface égale
+ * plutôt qu'à hauteur égale.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { BANDEAU, LOGOS, hauteurLogo, type Lang } from './donnees';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const fr = lang === 'fr';
+const titre = fr
+  ? 'Ils nous ont confié leurs campagnes ou leurs équipes'
+  : 'They trusted us with their campaigns or their teams';
+const pause = fr ? 'Arrêter le défilement des logos' : 'Pause the logo scroll';
+
+const logos = BANDEAU.filter((s) => LOGOS[s]).map((s) => ({ slug: s, ...LOGOS[s], h: hauteurLogo(s) }));
+---
+
+<section class="bandeau" aria-labelledby="bandeau-titre" data-bandeau>
+  <div class="container-custom bandeau-grille">
+    <div class="bandeau-tete">
+      <h2 id="bandeau-titre" class="bandeau-titre">{titre}</h2>
+      <button
+        type="button"
+        class="bandeau-pause"
+        aria-pressed="false"
+        aria-label={pause}
+        data-pause
+      >
+        <Icon name="pause" size={14} class="icone-pause" />
+        <Icon name="play" size={14} class="icone-lecture" />
+      </button>
+    </div>
+    <div class="defile">
+      <div class="defile-piste">
+        {[0, 1].map((copie) => (
+          <ul class="defile-liste" aria-hidden={copie === 1 ? 'true' : undefined}>
+            {logos.map((l) => (
+              <li>
+                <img
+                  src={l.src}
+                  alt={copie === 0 ? l.nom : ''}
+                  width={l.largeur}
+                  height={l.hauteur}
+                  style={`height:${l.h}px`}
+                  class:list={[{ 'fond-blanc': l.fondBlanc }]}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </li>
+            ))}
+          </ul>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bandeau {
+    border-top: 1px solid var(--trait);
+    padding: 1.75rem 0 1.5rem;
+    background: #fff;
+  }
+  .bandeau-grille {
+    display: grid;
+    gap: 1rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .bandeau {
+      padding: 2.25rem 0;
+    }
+    .bandeau-grille {
+      grid-template-columns: 13rem minmax(0, 1fr);
+      gap: 2.5rem;
+    }
+  }
+  .bandeau-tete {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .bandeau-pause {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    border: 1px solid var(--trait);
+    background: #fff;
+    color: var(--gris);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+      color 0.25s var(--ease-sortie),
+      border-color 0.25s var(--ease-sortie);
+  }
+  .bandeau-pause:hover {
+    color: var(--color-encre);
+    border-color: #c5d0dc;
+  }
+  .bandeau-pause :global(.icone-lecture),
+  .bandeau-pause[aria-pressed='true'] :global(.icone-pause) {
+    display: none;
+  }
+  .bandeau-pause[aria-pressed='true'] :global(.icone-lecture) {
+    display: block;
+  }
+  .bandeau.est-arrete .defile-piste {
+    animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bandeau-pause {
+      display: none;
+    }
+  }
+  .bandeau-titre {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    font-weight: 500;
+    color: var(--gris);
+    margin: 0;
+    max-width: 30ch;
+  }
+
+  .defile {
+    overflow: hidden;
+    -webkit-mask: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    mask: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  }
+  .defile-piste {
+    display: flex;
+    width: max-content;
+  }
+  .defile-liste {
+    display: flex;
+    align-items: center;
+    gap: 3.25rem;
+    padding: 0.5rem 3.25rem 0.5rem 0;
+    margin: 0;
+    list-style: none;
+  }
+  @media (min-width: 1024px) {
+    .defile-liste {
+      gap: 4.25rem;
+      padding-right: 4.25rem;
+    }
+  }
+  .defile-liste li {
+    flex: none;
+    display: flex;
+    align-items: center;
+    height: 48px;
+  }
+  .defile-liste img {
+    display: block;
+    width: auto;
+    max-width: none;
+    filter: grayscale(1) contrast(1.1);
+    opacity: 0.72;
+    transition:
+      filter 0.4s var(--ease-sortie),
+      opacity 0.4s var(--ease-sortie);
+  }
+  .defile-liste img.fond-blanc {
+    mix-blend-mode: multiply;
+  }
+  .defile-liste img:hover {
+    filter: none;
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .defile-piste {
+      animation: defile 60s linear infinite;
+    }
+    .defile:hover .defile-piste {
+      animation-play-state: paused;
+    }
+  }
+  @keyframes defile {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  /* Immobile : la première copie seulement, en grille qui passe à la ligne. */
+  @media (prefers-reduced-motion: reduce) {
+    .defile {
+      -webkit-mask: none;
+      mask: none;
+    }
+    .defile-piste {
+      width: auto;
+    }
+    .defile-liste {
+      flex-wrap: wrap;
+      gap: 1.5rem 2.5rem;
+      padding-right: 0;
+    }
+    .defile-liste[aria-hidden='true'] {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-bandeau]').forEach((bandeau) => {
+    const bouton = bandeau.querySelector<HTMLButtonElement>('[data-pause]');
+    bouton?.addEventListener('click', () => {
+      const arrete = bouton.getAttribute('aria-pressed') !== 'true';
+      bouton.setAttribute('aria-pressed', String(arrete));
+      bandeau.classList.toggle('est-arrete', arrete);
+    });
+  });
+</script>

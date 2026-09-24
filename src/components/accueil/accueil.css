@@ -1,0 +1,149 @@
+/*
+ * La page d'accueil : ce que ses sections partagent.
+ *
+ * Réglages (skill design-taste-frontend) : DESIGN_VARIANCE 8, MOTION_INTENSITY 6,
+ * VISUAL_DENSITY 4. Voir la description de la PR de refonte pour le raisonnement.
+ *
+ * Système de formes, écrit une fois pour toute la page :
+ *   - ce qui se clique seul (boutons, puces) : pilule ;
+ *   - les blocs (les trois portes, la capture de l'Academy) : 20 px ;
+ *   - les photos : 12 à 14 px.
+ * Une seule couleur d'accent, le bleu du logo (--color-marque, #1D71B8),
+ * réservée aux actions et aux chiffres qu'on veut faire lire.
+ * Deux familles, quatre styles : Plus Jakarta Sans 800 et 600 pour les titres
+ * et les chiffres, Inter 400 et 600 pour le texte.
+ */
+
+.accueil {
+  --gris: #566779;
+  --texte: #3a4a5c;
+  --trait: #e3e8ef;
+  --brume: #f3f6f9;
+  --nuit: #0a121d;
+  --ease-sortie: cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--color-encre);
+  background: #fff;
+}
+
+.accueil h2,
+.accueil h3 {
+  text-wrap: balance;
+}
+.accueil p {
+  text-wrap: pretty;
+}
+
+/* Le titre d'une section : à gauche, gros, serré. Pas de sur-titre. */
+.accueil .titre-section {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.125rem, 1.4rem + 3vw, 3.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--color-encre);
+  margin: 0;
+}
+
+/* L'interlettrage serré des grands titres resserre aussi les espaces entre
+   les mots (« queje », « enœuvre ») : on les rend. Et la ponctuation revient
+   contre son mot (voir `serrer()` dans donnees.ts). */
+.accueil :is(.titre-section, .visages-titre, .porte-titre, .avis-texte, .offre-nom, .article-titre, .avis-titre) {
+  word-spacing: 0.06em;
+}
+.accueil .p {
+  margin-left: -0.06em;
+}
+.accueil .chapeau {
+  margin-top: 1rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--texte);
+  max-width: 46ch;
+}
+@media (min-width: 1024px) {
+  .accueil .chapeau {
+    font-size: 1.125rem;
+  }
+}
+
+.accueil .bloc {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+@media (min-width: 1024px) {
+  .accueil .bloc {
+    padding-top: 8rem;
+    padding-bottom: 8.5rem;
+  }
+}
+
+/* ------------------------------------------------------------- les boutons */
+.accueil .bouton-plein {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  height: 3.25rem;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  background: var(--color-marque);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  white-space: nowrap;
+  transition:
+    background-color 0.25s var(--ease-sortie),
+    transform 0.25s var(--ease-sortie);
+}
+.accueil .bouton-plein:hover {
+  background: var(--color-marque-fonce);
+  transform: translateY(-1px);
+}
+.accueil .bouton-plein:active {
+  transform: translateY(1px) scale(0.98);
+}
+.accueil .bouton-plein svg {
+  transition: transform 0.3s var(--ease-sortie);
+}
+.accueil .bouton-plein:hover svg {
+  transform: translate(2px, -1px);
+}
+.accueil .bouton-clair {
+  background: #fff;
+  color: var(--color-encre);
+}
+.accueil .bouton-clair:hover {
+  background: #e7eef5;
+}
+
+.accueil .lien-fleche {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+  color: var(--color-encre);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 0.25s var(--ease-sortie), color 0.25s var(--ease-sortie);
+}
+.accueil .lien-fleche:hover {
+  color: var(--color-marque);
+  text-decoration-color: currentColor;
+}
+.accueil .lien-fleche svg {
+  transition: transform 0.3s var(--ease-sortie);
+}
+.accueil .lien-fleche:hover svg {
+  transform: translateX(3px);
+}
+
+.accueil :is(a, button):focus-visible {
+  outline: 2px solid var(--color-marque);
+  outline-offset: 3px;
+}
+
+/* Pas de délai du double-tap sur ce qui se touche. */
+.accueil :is(a, button) {
+  touch-action: manipulation;
+}

@@ -1,0 +1,197 @@
+---
+/**
+ * Ce qu'on fait, et à partir de combien.
+ *
+ * Un index, pas une grille de cartes : deux colonnes (l'agence au mois, l'IA
+ * appliquée), une ligne par service, son prix de départ en face, et le lien
+ * vers sa page. Les prix sortent de `lignePrix()`, donc du moteur du
+ * calculateur et du catalogue de l'Academy : changer une grille les change
+ * ici au build suivant, et le prix de l'Academy se relit même dans le
+ * navigateur (`data-fait`, script de Portes.astro).
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { lignePrix, serrer, type Lang, type LignePrix } from './donnees';
+
+interface Props {
+  lang: Lang;
+  prixAcademy: string | null;
+}
+const { lang, prixAcademy } = Astro.props;
+const fr = lang === 'fr';
+
+type Ligne = { nom: string; lien: string; prix: LignePrix; fait?: string; gabarit?: string };
+
+const agence: Ligne[] = [
+  { nom: 'SEO', lien: `/${lang}/services/seo`, prix: lignePrix('seo', lang) },
+  { nom: 'Google Ads', lien: `/${lang}/services/google-ads`, prix: lignePrix('google-ads', lang) },
+  { nom: fr ? 'Publicité sociale' : 'Paid social', lien: `/${lang}/services/paid-social`, prix: lignePrix('paid-social', lang) },
+  { nom: 'Emailing', lien: `/${lang}/services/emailing`, prix: lignePrix('emailing', lang) },
+  { nom: fr ? 'B2B et ABM' : 'B2B and ABM', lien: `/${lang}/services/b2b-abm`, prix: { principal: fr ? 'sur devis' : 'on quote' } },
+  { nom: fr ? 'Tracking et reporting' : 'Tracking and reporting', lien: `/${lang}/services/tracking-reporting`, prix: lignePrix('tracking-reporting', lang) },
+];
+
+const gabaritAcademy = fr ? `dès {} par personne` : `from {} per person`;
+const ia: Ligne[] = [
+  {
+    nom: 'AI Academy',
+    lien: `/${lang}/academy`,
+    prix: { principal: prixAcademy ? gabaritAcademy.replace('{}', prixAcademy) : fr ? 'en ligne' : 'online' },
+    fait: prixAcademy ? 'prix' : undefined,
+    gabarit: gabaritAcademy,
+  },
+  { nom: fr ? 'Formation en salle ou à distance' : 'In-room or remote training', lien: `/${lang}/services/ai-training`, prix: lignePrix('ai-training', lang) },
+  { nom: fr ? 'Automatisations sur mesure' : 'Custom automations', lien: `/${lang}/services/ai-solutions`, prix: lignePrix('ai-solutions', lang) },
+  { nom: fr ? 'Contenu produit avec l’IA' : 'AI-assisted content', lien: `/${lang}/services/ai-content`, prix: lignePrix('ai-content', lang) },
+];
+
+const t = fr
+  ? {
+      titre: 'Ce qu’on fait, et à partir de combien.',
+      chapeau: 'Les prix de départ de nos grilles, les mêmes que dans le calculateur. Le budget publicitaire, lui, est payé directement aux plateformes.',
+      agence: 'L’agence, au mois',
+      ia: 'L’IA, appliquée',
+    }
+  : {
+      titre: 'What we do, and what it starts at.',
+      chapeau: 'The starting prices from our rate cards, the same as in the calculator. Ad spend itself is paid directly to the platforms.',
+      agence: 'The agency, monthly',
+      ia: 'Applied AI',
+    };
+---
+
+<section class="offre bloc" aria-labelledby="offre-titre">
+  <div class="container-custom">
+    <div class="offre-tete" data-reveal>
+      <h2 id="offre-titre" class="titre-section" set:html={serrer(t.titre)} />
+      <p class="chapeau">{t.chapeau}</p>
+    </div>
+
+    <div class="offre-colonnes">
+      {[
+        { titre: t.agence, lignes: agence },
+        { titre: t.ia, lignes: ia },
+      ].map((groupe, g) => (
+        <div class="offre-groupe" data-reveal style={`--i:${g + 1}`}>
+          <h3 class="offre-groupe-titre">{groupe.titre}</h3>
+          <ul class="offre-liste">
+            {groupe.lignes.map((l) => (
+              <li>
+                <a href={l.lien} class="offre-ligne">
+                  <span class="offre-nom">
+                    {l.nom}
+                    <Icon name="arrow-right" size={18} class="offre-fleche" />
+                  </span>
+                  <span class="offre-prix">
+                    <span data-fait={l.fait} data-gabarit={l.fait ? l.gabarit : undefined}>{l.prix.principal}</span>
+                    {l.prix.detail && <span class="offre-detail">{l.prix.detail}</span>}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .offre {
+    background: var(--brume);
+  }
+  .offre-tete {
+    max-width: 44rem;
+  }
+  .offre-colonnes {
+    display: grid;
+    gap: 3rem;
+    margin-top: 3rem;
+  }
+  @media (min-width: 1024px) {
+    .offre-colonnes {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-top: 4.5rem;
+    }
+  }
+  .offre-groupe-titre {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--gris);
+    margin: 0 0 0.5rem;
+  }
+  .offre-liste {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid #d6dee7;
+  }
+  .offre-liste li + li {
+    border-top: 1px solid #d6dee7;
+  }
+  .offre-ligne {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.35rem 1.5rem;
+    align-items: baseline;
+    padding: 1.15rem 0;
+    color: inherit;
+  }
+  @media (max-width: 479px) {
+    .offre-ligne {
+      grid-template-columns: 1fr;
+    }
+  }
+  .offre-nom {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.25rem, 1rem + 0.8vw, 1.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    transition: transform 0.35s var(--ease-sortie), color 0.35s var(--ease-sortie);
+  }
+  .offre-nom :global(.offre-fleche) {
+    flex: none;
+    color: var(--color-marque);
+    opacity: 0;
+    transform: translateX(-8px);
+    transition:
+      opacity 0.3s var(--ease-sortie),
+      transform 0.35s var(--ease-sortie);
+  }
+  .offre-prix {
+    display: grid;
+    justify-items: end;
+    text-align: right;
+    font-size: 0.9375rem;
+    color: var(--color-encre);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  @media (max-width: 479px) {
+    .offre-prix {
+      justify-items: start;
+      text-align: left;
+    }
+  }
+  .offre-detail {
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--gris);
+    max-width: 30ch;
+  }
+  .offre-ligne:hover .offre-nom,
+  .offre-ligne:focus-visible .offre-nom {
+    color: var(--color-marque);
+    transform: translateX(4px);
+  }
+  .offre-ligne:hover :global(.offre-fleche),
+  .offre-ligne:focus-visible :global(.offre-fleche) {
+    opacity: 1;
+    transform: none;
+  }
+</style>
