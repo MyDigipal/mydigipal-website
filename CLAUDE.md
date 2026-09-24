@@ -270,6 +270,40 @@ Le Hub MyDigipal a son propre handoff Claude Design (KPI cards, charts ECharts, 
 - Patterns site-only : magnetic services grid, testimonial marquee, layered industry cards, calc inline preview
 - Patterns hub-only : KPI variants A/B/C, ECharts trend/funnel/heatmap/donut, benchmark bars, campaign tables filtered/sorted/paginated
 
+## 7. La page d'accueil refaite (24/09/2026, direction A « Les visages »)
+
+Pilotage : `docs/site-mise-en-avant/refonte-accueil-directions.html`. Une seule page,
+`src/pages/[lang]/index.astro`, qui assemble `src/components/accueil/` : `Visages`
+(hero), `Bandeau` (logos), `Resultats` (sept études de cas), `Offre` (services et prix
+de départ), `Avis` (note et verbatims de formation), `Articles`, `Portes` (calculateur,
+Academy, appel). Styles communs dans `accueil.css`.
+
+- **Aucun chiffre écrit à la main** (`accueil/donnees.ts`) : les résultats viennent de la
+  collection `case-studies` (le build s'arrête si l'ordre des KPI d'une fiche change),
+  les prix de `prixDeDepart()` du moteur v6, jamais additionnés ; prix, note, modules,
+  heures et verbatims de l'Academy de son API (instantané en secours), relus dans le
+  navigateur par `data-fait` comme les pages outils.
+- **Trois scripts d'images**, à relancer après tout changement de source :
+  `scripts/visages-accueil.mjs` (les portraits recadrés sur le visage, repères relevés à
+  la main), `scripts/logos-accueil.mjs` (logos détourés + `src/data/accueil/logos.json`,
+  affichés à SURFACE égale), `scripts/cas-accueil.mjs` (visuels des études de cas allégés).
+  ⚠️ Ni Kering ni Chanel dans les logos ni les verbatims (décision du 01/09/2026).
+- **Le socle de mouvement** est dans `global.css` et `lib/scroll.ts`, en attributs
+  réutilisables partout : `[data-reveal]` (avec `--i` pour échelonner), `[data-target]`
+  (compteur, `data-locale` pour 4,5 et non 4.5, `data-counter-section="zero"` pour partir
+  de zéro), `[data-projecteur]`, `[data-titre] .ligne`, `[data-pose]` (piloté par le
+  défilement là où le navigateur le sait). `@view-transition { navigation: auto }` fond
+  les pages les unes dans les autres sans JavaScript (Chrome, Safari).
+- **Performance** : les portraits du hero sont en `loading="lazy"` et le paragraphe du
+  hero monte sans fondu, exprès : en 4G lente, des portraits chargés d'emblée retardaient
+  le premier rendu de 250 ms, et un élément parti d'opacité nulle n'est compté comme LCP
+  qu'une fois visible.
+- `?service=seo,google-ads` : le calculateur accepte désormais plusieurs services (porte
+  du calculateur, puces à cocher).
+- Orphelins depuis la refonte : `HeroUseCases.astro` et `Timeline30Days.astro` (plus
+  aucune page ne les importe). `StatsRail`, `IndustryCardV2`, `FeaturedServiceBanner` et
+  `ServicesGridV2` ne vivent plus que dans `test.astro`.
+
 ## AI Academy : la page de vente de la formation en ligne (25/08/2026)
 
 Décision de Paul du 25/08/2026 : **mydigipal.com vend, academy.mydigipal.com est l'application.**
