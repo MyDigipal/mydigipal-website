@@ -66,7 +66,9 @@ const outils = OUTILS_PUBLIES.map((o) => ({
 }));
 ---
 
-<BaseLayout lang={lang} title={c.meta.titre} description={c.meta.description}>
+{/* L'image de partage propre à l'Academy (24/09/2026) : aucun prix ni nombre
+    de leçons dedans, ils bougent et l'image ne se régénère pas au build. */}
+<BaseLayout lang={lang} title={c.meta.titre} description={c.meta.description} image={`/academy/og/academy-${lang}.jpg`}>
   <main class="flex-grow">
     <AcademyV2 client:load locale={lang as 'fr' | 'en'} initial={data} outils={outils} />
   </main>
