@@ -168,6 +168,8 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   `BaseLayout.astro` ; `?assistant=0` l'éteint pour la visite). Règle de Paul : **deux appels à
   l'action flottants, pas un de plus**, « Calculer mon budget » (`StickyCalculatorCTA`, décalé à
   gauche de la bulle par `html[data-assistant='on']`) et son visage. Mémoire : `site_chat_sept2026.md`.
+  Depuis le 25/09/2026, l'assistant a le style du site : bleu du logo (`marque`) au lieu de
+  `primary-*`, boutons en pilule, « EN » / « FR » au lieu du drapeau, comme l'en-tête.
 
 ## 3 bis. Ce qui reste de la v5 (le reste est supprimé)
 
