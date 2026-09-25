@@ -8,6 +8,8 @@
 // 28/08/2026 : un fait chiffré, une source. `npm run check:chiffres` échoue si
 // un nombre est écrit à la main dans une copie.
 
+import type { FilmsCopy } from './SectionsFilms';
+
 export type Locale = 'fr' | 'en';
 
 const FR = {
@@ -346,6 +348,31 @@ const FR = {
     economie: (montant: string, places: number) =>
       places > 1 ? `Vous économisez ${montant} au total` : `Vous économisez ${montant}`,
   },
+  // Les films parlants (25/09/2026). En français, deux extraits de la
+  // conférence donnée pour SeLoger (Paul accepte que le nom s'entende) : les
+  // données montrées sont fictives. Aucun nombre dans les légendes.
+  films: {
+    lire: 'Lire la vidéo',
+    salle: {
+      titre: 'La méthode, devant une vraie salle.',
+      chapeau:
+        'Deux extraits d’une conférence donnée pour les équipes de SeLoger. Les données sont fictives, les réflexes sont ceux de la formation.',
+      films: [
+        {
+          id: 'conference-reclamation-fr',
+          titre: 'Répondre à une réclamation',
+          legende:
+            'L’IA promet un geste commercial qu’on n’a pas le droit de faire, on la recadre, puis elle tire le tableau de bord de toutes les réclamations.',
+        },
+        {
+          id: 'conference-rendez-vous-fr',
+          titre: 'Préparer un rendez-vous à enjeu',
+          legende:
+            'Le prompt CRAFT, un rapport trop long qu’on recadre, puis l’IA qui joue la cliente agacée pour s’entraîner.',
+        },
+      ],
+    },
+  } as FilmsCopy,
 };
 
 const EN: typeof FR = {
@@ -581,6 +608,22 @@ const EN: typeof FR = {
       lot: 'on both programmes together',
     },
     economie: (montant, places) => (places > 1 ? `You save ${montant} in total` : `You save ${montant}`),
+  },
+  // The talking films (25/09/2026): Paul walking through the product, in English.
+  films: {
+    lire: 'Play the video',
+    produit: {
+      id: 'interieur-lecon-en',
+      titre: 'Inside a lesson',
+      legende:
+        'Paul opens a lesson: the audio, the content blocks, the exercises, saving a prompt to your library, and the trophies.',
+    },
+    mcp: {
+      id: 'automatisations-mcp-en',
+      titre: 'Automations and MCP, on a real setup',
+      legende:
+        'The Automations path, then the MCP server Paul runs his own agency on, with every tool it plugs into.',
+    },
   },
 };
 

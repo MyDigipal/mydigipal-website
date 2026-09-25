@@ -37,6 +37,10 @@ import Programme from './Programme';
 import Tarifs from './Tarifs';
 import Question from './Question';
 import OutilsCartes, { type CarteOutil } from './OutilsCartes';
+import Preuves, { type LogoPreuve } from './Preuves';
+import { FilmSeul, FilmsSalle } from './SectionsFilms';
+import { jour30Copy } from '../academy/copy';
+import './vente.css';
 
 /**
  * La page de vente, seconde formule.
@@ -66,11 +70,14 @@ export default function AcademyV2({
   locale,
   initial,
   outils = [],
+  logos = [],
 }: {
   locale: Locale;
   initial: Jour30Data;
   /** Les pages outils publiées, passées par la page Astro. */
   outils?: CarteOutil[];
+  /** Les logos de la bande sous le hero, préparés par la page Astro. */
+  logos?: LogoPreuve[];
 }) {
   const [data, setData] = useState(initial);
   // La devise du visiteur : l'euro sur la page française, le DOLLAR sur la page
@@ -82,6 +89,27 @@ export default function AcademyV2({
   const gratuit = useLienApp(
     `https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`,
   );
+
+  // Les apparitions au défilement (vente.css) ne s'arment qu'une fois React
+  // monté : sans JavaScript, rien ne reste invisible.
+  const [anime, setAnime] = useState(false);
+  useEffect(() => {
+    setAnime(true);
+    if (typeof IntersectionObserver === 'undefined') return;
+    const o = new IntersectionObserver(
+      (entrees) =>
+        entrees.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('est-la');
+            o.unobserve(e.target);
+          }
+        }),
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+    );
+    document.querySelectorAll('.vente-v2 .v2-reveal').forEach((el) => o.observe(el));
+    return () => o.disconnect();
+  }, []);
+  const maison = jour30Copy(locale).maison;
 
   useEffect(() => {
     captureAdClickIds();
@@ -125,7 +153,7 @@ export default function AcademyV2({
   }));
 
   return (
-    <div data-theme="nuit" className="j30 overflow-x-clip bg-salle text-corps-nuit">
+    <div data-theme="nuit" data-anime={anime ? '' : undefined} className="vente-v2 j30 overflow-x-clip bg-salle text-corps-nuit">
       <Barre
         locale={locale}
         chemin="academy"
@@ -150,6 +178,12 @@ export default function AcademyV2({
         cta2={c.tarifs.gratuitCourt(leconsGratuit(data))}
         prixAffiche={`${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, devise), locale)} ${SYMBOLE[devise]}`}
       />
+
+      {/* La preuve sous le hero : la note et les logos, repris de la nouvelle
+          page d'accueil (25/09/2026). */}
+      {logos.length ? (
+        <Preuves locale={locale} avis={avis} logos={logos} titreLogos={maison.logosTitre} ligne={maison.avisLigne(avis)} />
+      ) : null}
 
       {/* La section qui manquait, et la raison d'être de cette page. */}
       <Programme
@@ -189,8 +223,16 @@ export default function AcademyV2({
           quatre parcours sont de toute façon nommés dans Le programme. */}
       <Visite locale={locale} data={data} titre={c.preuves.visiteTitre} />
 
+      {/* Page anglaise : Paul ouvre une leçon, juste sous le tableau de bord
+          qu'on vient de survoler. */}
+      {c.films.produit ? <FilmSeul film={c.films.produit} lire={c.films.lire} fond="nuit" /> : null}
+
       {/* Le câblage MCP animé, tel quel. */}
       <Mcp locale={locale} titre={c.mcp.titre} texte={c.mcp.texte} />
+
+      {/* Page anglaise : la vraie installation, sur la même feuille claire
+          que le schéma qu'elle prouve. L'écran passe à gauche. */}
+      {c.films.mcp ? <FilmSeul film={c.films.mcp} lire={c.films.lire} fond="feuille" inverse /> : null}
 
       {/* Le ruban sans sa grande photo : elle descend à la frontière de la
           quinzaine 2, pour qu'il y ait une image par quinzaine. */}
@@ -250,6 +292,10 @@ export default function AcademyV2({
         ancreTarifs="tarifs"
         libelleGratuit={c.tarifs.gratuitCourt(leconsGratuit(data))}
       />
+
+      {/* Page française : la méthode devant une salle, juste avant « Une
+          méthode née en salle », dont elle est la preuve. */}
+      {c.films.salle ? <FilmsSalle salle={c.films.salle} lire={c.films.lire} /> : null}
 
       {/* Qui enseigne : les logos clients et les verbatims. */}
       <Maison locale={locale} temoignages={temoignagesPublics(data.temoignages)} avis={avis} />

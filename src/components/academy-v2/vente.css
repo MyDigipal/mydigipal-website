@@ -1,0 +1,203 @@
+/*
+ * La page de vente : ce qu'elle reprend de la nouvelle page d'accueil
+ * (`components/accueil/`, 24/09/2026). Écrit le 25/09/2026.
+ *
+ * Tout est rangé sous `.vente-v2`, la racine d'AcademyV2 : les sections
+ * importées de `academy/` servent aussi à la première page de vente
+ * (`/academy-v1`), qui ne doit pas bouger.
+ *
+ * Ce qui est repris, et pourquoi :
+ *   1. Les titres. L'accueil pose UN style de titre de section, gros, serré,
+ *      équilibré, et s'y tient ; la page de vente en avait neuf, de 22 à 50 px,
+ *      tous en graisse moyenne. Même police (Space Grotesk, jamais Fraunces
+ *      pour un chiffre), une seule échelle, graisse 600.
+ *   2. Pas de sur-titre au-dessus d'un titre qui dit déjà la même chose
+ *      (« Pas de sur-titre », accueil.css). On garde les deux qui portent une
+ *      information : « Compte de démonstration » et « Fin de la démonstration »
+ *      disent que Clara n'existe pas.
+ *   3. Les chiffres en grand, dans la police des titres, pas en petites
+ *      capitales à chasse fixe.
+ *   4. Les apparitions au défilement, avec la courbe de sortie de l'accueil,
+ *      et les boutons qui s'enfoncent sous le doigt.
+ *   5. L'écran filmé : coins à 14 px, filet clair, ombre longue et une lueur
+ *      derrière (dans l'or de l'Academy, pas le bleu du site).
+ */
+
+.vente-v2 {
+  --ease-sortie: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ------------------------------------------------------------- 1. titres */
+.vente-v2 h1 {
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.03;
+}
+
+.vente-v2 h2 {
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+/* Les titres de section. Le récit (#compte) et le ruban (fond profond)
+   gardent leur taille : ce sont des intertitres dans une section. */
+.vente-v2 h2:not(#compte h2):not(.bg-profond h2) {
+  font-size: clamp(2.125rem, 1.35rem + 2.6vw, 3.5rem);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+/* Deux titres qui partagent leur ligne avec une image ou une carte : une
+   marche plus bas, sinon ils passent à cinq lignes dans leur demi-colonne. */
+.vente-v2 :is(#retournement, #maison) h2 {
+  font-size: clamp(2rem, 1.3rem + 2.2vw, 3rem);
+}
+.vente-v2 :is(#compte, .bg-profond) h2 {
+  letter-spacing: -0.03em;
+}
+
+/* ------------------------------------------------------- 2. sur-titres */
+.vente-v2 :is(#programme, #outils, #diagnostic, #tarifs) :is(div, p).font-ac-mono.uppercase:has(+ h2) {
+  display: none;
+}
+.vente-v2 :is(#programme, #outils, #diagnostic, #tarifs) h2 {
+  margin-top: 0;
+}
+
+/* ---------------------------------------------------------- 3. chiffres */
+.vente-v2 #maison b.font-ac-mono {
+  font-family: var(--font-ac-grotesk);
+  font-weight: 600;
+  font-size: clamp(2.5rem, 1.9rem + 1.8vw, 3.25rem);
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-encre);
+  margin-bottom: 0.45rem;
+}
+
+/* ------------------------------------------------ 4. mouvement, boutons */
+.vente-v2 :is(a, button).bg-or {
+  transition:
+    background-color 0.2s var(--ease-sortie),
+    transform 0.25s var(--ease-sortie);
+}
+.vente-v2 :is(a, button).bg-or:hover {
+  transform: translateY(-1px);
+}
+.vente-v2 :is(a, button).bg-or:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vente-v2[data-anime] .v2-reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.8s var(--ease-sortie),
+      transform 0.8s var(--ease-sortie);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+  .vente-v2[data-anime] .v2-reveal.est-la {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------- logos sous le hero */
+.vente-v2 .v2-logo {
+  filter: brightness(0) invert(1);
+  opacity: 0.66;
+  transition: opacity 0.3s var(--ease-sortie);
+}
+/* Livrés sur fond blanc : inversés, le blanc devient noir, et `screen` le
+   rend transparent sur la salle de nuit. */
+.vente-v2 .v2-logo.v2-logo-fond {
+  filter: grayscale(1) invert(1) contrast(1.4);
+  mix-blend-mode: screen;
+}
+.vente-v2 .v2-logo:hover {
+  opacity: 1;
+}
+
+/* -------------------------------------------------------------- 5. films */
+.vente-v2 .film-ecran {
+  position: relative;
+  isolation: isolate;
+}
+.vente-v2 .film-ecran::before {
+  content: '';
+  position: absolute;
+  inset: -10% -6% 8%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgb(200 169 81 / 0.2), transparent);
+  filter: blur(22px);
+  pointer-events: none;
+}
+.vente-v2 .film-ecran video {
+  border-radius: 14px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  box-shadow: 0 50px 90px -40px rgb(0 0 0 / 0.85);
+}
+.vente-v2 .film-feuille::before {
+  background: radial-gradient(closest-side, rgb(200 169 81 / 0.16), transparent);
+}
+.vente-v2 .film-feuille video {
+  border-color: var(--color-lin);
+  box-shadow: 0 40px 70px -40px rgb(15 26 46 / 0.45);
+}
+
+.vente-v2 .film-lire {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgb(10 16 30 / 0.05) 30%, rgb(10 16 30 / 0.55));
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.vente-v2 .film-rond {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 999px;
+  background: var(--color-or);
+  color: var(--color-encre);
+  box-shadow: 0 18px 40px -12px rgb(0 0 0 / 0.6);
+  transition:
+    transform 0.3s var(--ease-sortie),
+    background-color 0.2s var(--ease-sortie);
+}
+/* Le triangle a son centre de gravité à gauche de sa boîte. */
+.vente-v2 .film-rond svg {
+  margin-left: 3px;
+}
+.vente-v2 .film-lire:hover .film-rond {
+  transform: scale(1.06);
+  background: var(--color-or-vif);
+}
+.vente-v2 .film-lire:active .film-rond {
+  transform: scale(0.97);
+}
+.vente-v2 .film-libelle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.5);
+}
+.vente-v2 .film-lire:focus-visible {
+  outline: 2px solid var(--color-or);
+  outline-offset: 3px;
+}
+@media (max-width: 639px) {
+  .vente-v2 .film-rond {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}

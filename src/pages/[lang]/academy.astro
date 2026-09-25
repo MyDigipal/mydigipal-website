@@ -6,6 +6,7 @@ import AcademyV2 from '@/components/academy-v2/AcademyV2';
 import { copyV2 } from '@/components/academy-v2/copy-v2';
 import { ENDPOINT, type Jour30Data } from '@/components/academy/data';
 import { OUTILS_PUBLIES, lienOutil } from '@/components/academy-tools';
+import { LOGOS, hauteurLogo } from '@/components/accueil/donnees';
 import secoursFr from '@/data/academy/jour30-fr.json';
 import secoursEn from '@/data/academy/jour30-en.json';
 import '@fontsource-variable/space-grotesk';
@@ -64,13 +65,43 @@ const outils = OUTILS_PUBLIES.map((o) => ({
   lien: lienOutil(o, lang as 'fr' | 'en'),
   phrase: o.renvoi[lang as 'fr' | 'en'],
 }));
+
+/**
+ * Les logos de la bande sous le hero : ceux de la nouvelle page d'accueil
+ * (détourés, à surface égale), limités aux entreprises dont on a FORMÉ les
+ * équipes, puisque la page vend une formation. Ni Kering ni Chanel.
+ * GL Events est écarté ici : son logo est un carré plein, qui ne donne qu'un
+ * bloc blanc une fois ramené au blanc. La Poste passe par l'inversion (comme
+ * les logos livrés sur fond blanc) : ramené au blanc, son disque jaune
+ * mangeait l'oiseau et le nom.
+ */
+const FORMES = [
+  'la-poste',
+  'leclerc',
+  'pierre-fabre',
+  'moet-hennessy',
+  'yves-saint-laurent',
+  'la-redoute',
+  'balenciaga',
+  'pernod-ricard',
+  'gucci',
+  'kaufman-broad',
+];
+const logos = FORMES.filter((s) => LOGOS[s]).map((s) => ({
+  src: LOGOS[s].src,
+  nom: LOGOS[s].nom,
+  largeur: LOGOS[s].largeur,
+  hauteur: LOGOS[s].hauteur,
+  fondBlanc: LOGOS[s].fondBlanc || s === 'la-poste',
+  h: hauteurLogo(s),
+}));
 ---
 
 {/* L'image de partage propre à l'Academy (24/09/2026) : aucun prix ni nombre
     de leçons dedans, ils bougent et l'image ne se régénère pas au build. */}
 <BaseLayout lang={lang} title={c.meta.titre} description={c.meta.description} image={`/academy/og/academy-${lang}.jpg`}>
   <main class="flex-grow">
-    <AcademyV2 client:load locale={lang as 'fr' | 'en'} initial={data} outils={outils} />
+    <AcademyV2 client:load locale={lang as 'fr' | 'en'} initial={data} outils={outils} logos={logos} />
   </main>
   <Footer lang={lang} termsLink={{ label: c.tarifs.cgv, href: c.tarifs.cgvLien }} />
 </BaseLayout>
