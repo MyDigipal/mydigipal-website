@@ -240,7 +240,7 @@ const FR = {
 
   mention: {
     kicker: 'Compte de démonstration',
-    titre: 'Trente jours, deux quinzaines, un compte qui se remplit.',
+    titre: 'Trente jours, deux quinzaines, un compte qui se remplit.', // chiffre-libre : les trente jours du récit, pas la durée d'accès
     etapes: [
       {
         jours: 'Jours 1 à 15',
@@ -267,7 +267,7 @@ const FR = {
       { kicker: 'Quinzaine 2', nom: 'Les automatisations', titre: 'Elle arrête de faire. Elle fait faire.' },
     ],
     jour: (n: number) => `Jour ${n}`,
-    claraAlt: 'Clara, l’apprenante dont ce récit suit les trente jours',
+    claraAlt: 'Clara, l’apprenante dont ce récit suit les trente jours', // chiffre-libre : les trente jours du récit, pas la durée d'accès
     j1: {
       phrase: 'Elle ouvre son compte. Paul l’accueille, en face caméra.',
       badge: 'Bienvenue',
@@ -420,14 +420,14 @@ const FR = {
       kicker: 'Mon relevé de la semaine',
       colonnes: ['Avant', 'Après'],
       taches: [
-        { nom: 'Relances clients du lundi', avant: '1 h 30', apres: '15 min' },
+        { nom: 'Relances clients du lundi', avant: '1 h 30', apres: '15 min' }, // chiffre-libre : les heures de Clara, un exemple
         { nom: 'Comptes rendus de réunion', avant: '2 h', apres: '20 min' },
         { nom: 'Visuels et déclinaisons', avant: '3 h', apres: '45 min' },
         { nom: 'Tri des réclamations', avant: '1 h', apres: '10 min' },
       ],
       total: 'Sur la semaine',
-      totalAvant: '7 h 30',
-      totalApres: '1 h 30',
+      totalAvant: '7 h 30', // chiffre-libre : les heures de Clara, un exemple
+      totalApres: '1 h 30', // chiffre-libre : les heures de Clara, un exemple
       note: 'C’est l’exercice du dernier module : on mesure sur ses propres tâches avant de conclure quoi que ce soit. Ces heures sont celles de Clara, pas une moyenne.',
     },
     rail: {
@@ -714,13 +714,13 @@ const FR = {
     kicker: 'Fin de la démonstration',
     titre: 'Vous avez regardé le compte de Clara se remplir. Au tour du vôtre.',
     texte:
-      'Trente jours plus tard, il ressemblera à celui-là. Ce n’est pas une promesse de résultat : c’est ce que fait le produit quand on s’en sert.',
+      'Trente jours plus tard, il ressemblera à celui-là. Ce n’est pas une promesse de résultat : c’est ce que fait le produit quand on s’en sert.', // chiffre-libre : les trente jours du récit, pas la durée d'accès
     ouvrir: 'Commencer',
     enseigne: 'Qui enseigne',
     gratuit: (n: number) => `Essayer les ${n} leçons gratuites`,
     jour30: (rang: string) => `Jour 30 · ${rang}`,
     points: 'points',
-    cap: (trophees: number, total: number) => `Trente jours actifs · ${trophees} trophées sur ${total}`,
+    cap: (trophees: number, total: number) => `Trente jours actifs · ${trophees} trophées sur ${total}`, // chiffre-libre : les trente jours du récit, pas la durée d'accès
     vous: 'Vous',
     jour0: 'Jour 0',
     capVide: 'Le premier carré s’allume à la première leçon terminée.',
@@ -845,8 +845,9 @@ const FR = {
     // ⚠️ Soixante jours pour tout le monde depuis le 11/09/2026, et non plus
     // « un mois ». Cette page est la première version, gardée en ligne hors index :
     // elle ne doit pas annoncer une durée d'accès que le tunnel ne vend plus.
-    unique: 'pour 60 jours',
-    uniquePlaces: (n: number) => `pour 60 jours, ${n} places`,
+    // La durée vient de l'app (`acces_jours`) depuis le 25/09/2026.
+    unique: (jours: number) => `pour ${jours} jours`,
+    uniquePlaces: (n: number, jours: number) => `pour ${jours} jours, ${n} places`,
     mensuel: 'par mois, assistant',
     sansAbo: 'assistant compris, rien à résilier',
     placesRecap: (n: number) => `× ${n} places`,
@@ -1078,7 +1079,7 @@ const EN: Jour30Copy = {
 
   mention: {
     kicker: 'Demonstration account',
-    titre: 'Thirty days, two fortnights, an account that fills up.',
+    titre: 'Thirty days, two fortnights, an account that fills up.', // chiffre-libre : les trente jours du récit, pas la durée d'accès
     etapes: [
       {
         jours: 'Days 1 to 15',
@@ -1105,7 +1106,7 @@ const EN: Jour30Copy = {
       { kicker: 'Fortnight 2', nom: 'Automations', titre: 'She stops doing. She has it done.' },
     ],
     jour: (n: number) => `Day ${n}`,
-    claraAlt: 'Clara, the learner whose thirty days this story follows',
+    claraAlt: 'Clara, the learner whose thirty days this story follows', // chiffre-libre : les trente jours du récit, pas la durée d'accès
     j1: {
       phrase: 'She opens her account. Paul welcomes her, on camera.',
       badge: 'Welcome',
@@ -1255,14 +1256,14 @@ const EN: Jour30Copy = {
       kicker: 'My log for the week',
       colonnes: ['Before', 'After'],
       taches: [
-        { nom: 'Monday customer follow-ups', avant: '1 h 30', apres: '15 min' },
+        { nom: 'Monday customer follow-ups', avant: '1 h 30', apres: '15 min' }, // chiffre-libre : les heures de Clara, un exemple
         { nom: 'Meeting minutes', avant: '2 h', apres: '20 min' },
         { nom: 'Visuals and variants', avant: '3 h', apres: '45 min' },
         { nom: 'Sorting complaints', avant: '1 h', apres: '10 min' },
       ],
       total: 'Over the week',
-      totalAvant: '7 h 30',
-      totalApres: '1 h 30',
+      totalAvant: '7 h 30', // chiffre-libre : les heures de Clara, un exemple
+      totalApres: '1 h 30', // chiffre-libre : les heures de Clara, un exemple
       note: 'This is the last module’s exercise: you measure on your own tasks before concluding anything. These hours are Clara’s, not an average.',
     },
     rail: {
@@ -1546,7 +1547,7 @@ const EN: Jour30Copy = {
     kicker: 'End of the demonstration',
     titre: 'You have been watching Clara’s account fill up. Time to start yours.',
     texte:
-      'Thirty days from now, it will look like this one. That is not a promise of results: it is what the product does when you use it.',
+      'Thirty days from now, it will look like this one. That is not a promise of results: it is what the product does when you use it.', // chiffre-libre : les trente jours du récit, pas la durée d'accès
     ouvrir: 'Get started',
     enseigne: 'Who teaches',
     gratuit: (n: number) => `Try the ${n} free lessons`,
@@ -1663,8 +1664,8 @@ const EN: Jour30Copy = {
     dejaAcquis: 'Not included',
     panierVide: 'Pick at least one course.',
     remiseCode: (code: string, pct: number) => `Code ${code}: −${pct}% on the method and Automations`,
-    unique: 'for 60 days',
-    uniquePlaces: (n: number) => `for 60 days, ${n} seats`,
+    unique: (jours: number) => `for ${jours} days`,
+    uniquePlaces: (n: number, jours: number) => `for ${jours} days, ${n} seats`,
     mensuel: 'per month, assistant',
     sansAbo: 'assistant included, nothing to cancel',
     placesRecap: (n: number) => `× ${n} seats`,

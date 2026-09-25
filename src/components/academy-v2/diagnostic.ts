@@ -1,4 +1,4 @@
-import { MODULES, type Module } from './modules';
+import { MODULES, minutesDu, minutesOutil, type Durees, type Module } from './modules';
 import type { Locale } from '../academy/data';
 
 /**
@@ -235,7 +235,7 @@ export interface Resultat {
 }
 
 /** Le profil qui l'emporte, et ce que la grille doit montrer. */
-export function resoudre(scores: Record<ProfilId, number>): Resultat {
+export function resoudre(scores: Record<ProfilId, number>, durees?: Durees): Resultat {
   // ⚠️ À égalité, c'est l'ordre de PROFILS qui tranche, et il va du plus
   // prudent au plus engageant : on ne pousse pas vers la formule la plus chère
   // quand rien ne le justifie.
@@ -243,10 +243,13 @@ export function resoudre(scores: Record<ProfilId, number>): Resultat {
   const profil = clefs.reduce((a, b) => (scores[b] > scores[a] ? b : a), clefs[0]);
   const p = PROFILS[profil];
   const ecarte = new Set(p.ecarte);
-  const minutesCoeur = p.coeur.reduce(
-    (s, id) => s + (MODULES_SUIVIS.find((m) => m.id === id)?.minutes ?? 0),
-    0
-  );
+  // Les durées servies par l'app quand elles existent (25/09/2026) ; `M4` est
+  // le parcours outil fondu, qui vaut la moyenne des quatre.
+  const minutesCoeur = p.coeur.reduce((s, id) => {
+    if (id === 'M4') return s + minutesOutil(durees);
+    const m = MODULES_SUIVIS.find((x) => x.id === id);
+    return s + (m ? minutesDu(m, durees) : 0);
+  }, 0);
   return {
     profil,
     coeur: p.coeur,

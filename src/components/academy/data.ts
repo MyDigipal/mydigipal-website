@@ -72,6 +72,12 @@ export interface Avis {
 export interface Jour30Data {
   lang: Locale;
   generated_at: string;
+  /**
+   * Leçons et durée de chaque module des deux parcours, par identifiant de
+   * module en base (25/09/2026). Absent d'un instantané plus ancien : le
+   * programme retombe alors sur le relevé de `academy-v2/modules.ts`.
+   */
+  modulesDurees?: Record<string, { lecons: number; minutes: number }>;
   faits: {
     /** Le volume du parcours vendu, tous paliers confondus. */
     lessons: number;

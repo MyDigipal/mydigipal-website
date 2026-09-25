@@ -4,6 +4,7 @@ import { formatPrice } from '../academy/offres';
 import { paramGarde, useLienApp } from '../academy/track';
 import { copyV2 } from './copy-v2';
 import Glyphe from './Glyphe';
+import type { Durees } from './modules';
 import {
   MODULES_SUIVIS,
   PROFILS,
@@ -40,6 +41,7 @@ export default function Questionnaire({
   prixMethodeMinor,
   prixAvanceeMinor,
   accesJours = 60,
+  durees,
 }: {
   locale: Locale;
   devise: Devise;
@@ -52,6 +54,8 @@ export default function Questionnaire({
    * jours à La méthode quatre écrans au-dessus d'une grille qui en dit soixante.
    */
   accesJours?: number;
+  /** Les durées de chaque module, servies par l'app (25/09/2026). */
+  durees?: Durees;
 }) {
   const c = copyV2(locale).diagnostic;
 
@@ -165,7 +169,7 @@ export default function Questionnaire({
     return out;
   }, [reponses]);
 
-  const res = useMemo(() => resoudre(scores), [scores]);
+  const res = useMemo(() => resoudre(scores, durees), [scores, durees]);
 
   /**
    * ⚠️ Sous lg, la grille passe SOUS le panneau : sans ce défilement, on répond

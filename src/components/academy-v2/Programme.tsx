@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { pointeurGrossier } from '../academy/motion';
 import Glyphe from './Glyphe';
-import { ETAPES, MODULES, minutesDe, modulesDe, nombreSuivi, type Module } from './modules';
+import { ETAPES, MODULES, minutesDe, minutesDu, modulesDe, nombreSuivi, type Durees, type Module } from './modules';
 import { copyV2, type Locale } from './copy-v2';
 import { Boucle, estDemo, Visionneuse, type Demo } from './Video';
 
@@ -37,12 +37,15 @@ export default function Programme({
   heures,
   leconsGratuit,
   minutesGratuit,
+  durees,
 }: {
   locale: Locale;
   modules: number;
   heures: string;
   leconsGratuit: number;
   minutesGratuit: number;
+  /** Les durées de chaque module, servies par l'app (25/09/2026). */
+  durees?: Durees;
 }) {
   /**
    * ⚠️ L'EN-TÊTE LIT L'API DEPUIS LE 15/09/2026, comme le hero et l'attestation.
@@ -122,7 +125,7 @@ export default function Programme({
                     </h3>
                     <span className="text-[13.5px] text-brume">{e.jours[locale]}</span>
                     <span className="ml-auto font-ac-mono text-[12px] text-brume">
-                      {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id), locale)}
+                      {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id, durees), locale)}
                     </span>
                   </div>
                   <p className="mb-1 mt-1.5 max-w-[62ch] text-[15.5px] leading-[1.6] text-brume">
@@ -175,7 +178,7 @@ export default function Programme({
                               )}
                             </span>
                             <span className="flex-none font-ac-mono text-[12px] text-brume">
-                              {duree(m.minutes, locale)}
+                              {duree(minutesDu(m, durees), locale)}
                             </span>
                           </button>
                         </li>
@@ -237,7 +240,7 @@ export default function Programme({
                   {actif.texte[locale]}
                 </p>
                 <p className="mb-3.5 font-ac-mono text-[12px] text-brume">
-                  {duree(actif.minutes, locale)} {c.deLecons}
+                  {duree(minutesDu(actif, durees), locale)} {c.deLecons}
                 </p>
                 {estDemo(actif.demo) && (
                   <button

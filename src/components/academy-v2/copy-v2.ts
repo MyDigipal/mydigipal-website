@@ -19,7 +19,7 @@ const FR = {
     // campagnes achètent « formation chatgpt », « formation copilot »,
     // « formation gemini » et « formation claude ia ». Voir le hero.
     description:
-      'Formation IA en ligne : la méthode de prompting, le parcours de votre outil (ChatGPT, Claude, Copilot, Gemini) et les automatisations. Deux modules offerts.',
+      'Formation IA en ligne : la méthode de prompting, le parcours de votre outil (ChatGPT, Claude, Copilot, Gemini) et les automatisations. Essai gratuit.',
   },
   barre: {
     programme: 'Le programme',
@@ -35,13 +35,13 @@ const FR = {
     cta: 'Commencer',
     exProgramme: (lecons: number, modules: number, heures: string) =>
       `${lecons} leçons, ${modules} modules, ${heures}. Ce que vous apprenez, et ce que chaque module vous fait produire.`,
-    exTrajet: 'Trente jours dans un compte, jour après jour, jusqu’à l’attestation.',
-    exTarifs: (prix: string) =>
-      `À partir de ${prix} pour soixante jours, l’assistant compris. La méthode, les automatisations, ou les deux.`,
+    exTrajet: 'Trente jours dans un compte, jour après jour, jusqu’à l’attestation.', // chiffre-libre : les trente jours du récit
+    exTarifs: (prix: string, jours: number) =>
+      `À partir de ${prix} pour ${jours} jours, l’assistant compris. La méthode, les automatisations, ou les deux.`,
   },
   hero: {
     kicker: 'Formation IA en ligne',
-    titre: 'Apprendre à travailler avec l’IA, en trente jours.',
+    titre: 'Apprendre à travailler avec l’IA, en trente jours.', // chiffre-libre : les trente jours du récit, pas la durée d'accès
     sous: (lecons: number, heures: string) =>
       `${lecons} leçons, ${heures} de formation. La méthode d’abord, votre outil ensuite, puis les automatisations qui tournent sans vous. Née de trois ans d’ateliers chez La Poste, Pierre Fabre et La Redoute.`,
     cta: (prix: string) => `Commencer, ${prix}`,
@@ -82,7 +82,7 @@ const FR = {
       pro: 'Avec Les automatisations',
     },
     pied: (lecons: number, minutes: number, modulesAuto: number) =>
-      `Deux modules sont offerts, soit ${lecons} leçons et ${minutes} minutes, sans carte bancaire. ${modulesAuto} modules s’ouvrent avec Les automatisations.`,
+      `L’accès gratuit ouvre ${lecons} leçons et ${minutes} minutes, sans carte bancaire. ${modulesAuto} modules s’ouvrent avec Les automatisations.`,
   },
   outils: {
     kicker: 'Le parcours de votre outil',
@@ -124,11 +124,11 @@ const FR = {
   },
   trajet: {
     kicker: 'La démonstration',
-    titre: 'Trente jours dans un compte',
+    titre: 'Trente jours dans un compte', // chiffre-libre : les trente jours du récit, pas la durée d'accès
     // ⚠️ « Trente jours, deux quinzaines, un compte qui se remplit » parlait en
     // jargon interne : « quinzaine » est notre découpage, pas le sien, et « un
     // compte qui se remplit » ne dit pas ce qu'on y gagne (Paul, 07/09).
-    ruban: 'Trente jours, vus de l’intérieur d’un compte.',
+    ruban: 'Trente jours, vus de l’intérieur d’un compte.', // chiffre-libre : les trente jours du récit, pas la durée d'accès
     // ⚠️ « Elle arrête de faire. Elle fait faire. » : la formule était sèche et
     // ne disait ni le moyen ni le moment. Celle-ci dit les deux.
     quinzaine2: 'Elle branche ses outils. Le lundi matin, le travail est déjà fait.',
@@ -318,14 +318,16 @@ const FR = {
     cgvAvant: 'L’achat est régi par nos',
 
     gratuitTag: 'Essayer d’abord',
-    gratuitTitre: (lecons: number) => `${lecons} leçons offertes, pendant 48 heures`,
-    gratuitTexte:
-      'Deux modules entiers, sans carte bancaire : la prise en main, puis écrire, traduire et résumer. Quarante-huit heures pour juger sur pièce avant de payer.',
+    // ⚠️ La durée de l'essai vient de l'app (`essai_heures`, 25/09/2026). Elle
+    // était écrite trois fois ici, en chiffres et en toutes lettres.
+    gratuitTitre: (lecons: number, heures: number) => `${lecons} leçons offertes, pendant ${heures} heures`,
+    gratuitTexte: (heures: number) =>
+      `Des modules entiers, sans carte bancaire : la prise en main, puis écrire, traduire et résumer. ${heures} heures pour juger sur pièce avant de payer.`,
     gratuitCta: 'Ouvrir l’accès gratuit',
     // ⚠️ La durée se dit PARTOUT où l'accès gratuit est proposé : le hero,
     // le retournement, le bouton flottant et la grille. Trois de ces quatre
     // endroits l'annonçaient sans durée (relevé le 07/09).
-    gratuitCourt: (lecons: number) => `${lecons} leçons, 48 h d’essai`,
+    gratuitCourt: (lecons: number, heures: number) => `${lecons} leçons, ${heures} h d’essai`,
 
     /**
      * Le code promo (07/09/2026, option B retenue par Paul dans le labo
@@ -384,7 +386,7 @@ const EN: typeof FR = {
   meta: {
     titre: 'Online AI training course: the full programme',
     description:
-      'Online AI course, module by module: the prompting method, the path for your own tool (ChatGPT, Claude, Copilot, Gemini), automations. Two free modules.',
+      'Online AI course, module by module: the prompting method, the path for your own tool (ChatGPT, Claude, Copilot, Gemini), automations. Free access to start.',
   },
   barre: {
     programme: 'The programme',
@@ -394,12 +396,12 @@ const EN: typeof FR = {
     cta: 'Get started',
     exProgramme: (lecons, modules, heures) =>
       `${lecons} lessons, ${modules} modules, ${heures}. What you learn, and what each module makes you produce.`,
-    exTrajet: 'Thirty days inside an account, day by day, up to the certificate.',
-    exTarifs: (prix) => `From ${prix} for sixty days, assistant included. The method, the automations, or both.`,
+    exTrajet: 'Thirty days inside an account, day by day, up to the certificate.', // chiffre-libre : les trente jours du récit
+    exTarifs: (prix, jours) => `From ${prix} for ${jours} days, assistant included. The method, the automations, or both.`,
   },
   hero: {
     kicker: 'Online AI course',
-    titre: 'Learn to work with AI, in thirty days.',
+    titre: 'Learn to work with AI, in thirty days.', // chiffre-libre : les trente jours du récit, pas la durée d'accès
     sous: (lecons, heures) =>
       `${lecons} lessons, ${heures} of training. The method first, then your tool, then the automations that run without you. Born from three years of workshops at La Poste, Pierre Fabre and La Redoute.`,
     cta: (prix) => `Get started, ${prix}`,
@@ -427,7 +429,7 @@ const EN: typeof FR = {
       pro: 'With Automations',
     },
     pied: (lecons, minutes, modulesAuto) =>
-      `Two modules are free, that is ${lecons} lessons and ${minutes} minutes, no card needed. ${modulesAuto} modules open with Automations.`,
+      `Free access opens ${lecons} lessons and ${minutes} minutes, no card needed. ${modulesAuto} modules open with Automations.`,
   },
   outils: {
     kicker: 'Your tool’s path',
@@ -469,8 +471,8 @@ const EN: typeof FR = {
   },
   trajet: {
     kicker: 'The demonstration',
-    titre: 'Thirty days inside an account',
-    ruban: 'Thirty days, seen from inside an account.',
+    titre: 'Thirty days inside an account', // chiffre-libre : les trente jours du récit, pas la durée d'accès
+    ruban: 'Thirty days, seen from inside an account.', // chiffre-libre : les trente jours du récit, pas la durée d'accès
     quinzaine2: 'She plugs in her tools. On Monday morning, the work is already done.',
     chapeau:
       'Clara Martin is a composite learner. Her account fills up on the product’s real scale. Open a stage to see what she does, day by day.',
@@ -596,11 +598,11 @@ const EN: typeof FR = {
     cgvAvant: 'Your purchase is governed by our',
 
     gratuitTag: 'Try first',
-    gratuitTitre: (lecons) => `${lecons} free lessons, for 48 hours`,
-    gratuitTexte:
-      'Two full modules, no card needed: getting started, then writing, translating and summarising. Forty-eight hours to judge for yourself before paying.',
+    gratuitTitre: (lecons, heures) => `${lecons} free lessons, for ${heures} hours`,
+    gratuitTexte: (heures) =>
+      `Full modules, no card needed: getting started, then writing, translating and summarising. ${heures} hours to judge for yourself before paying.`,
     gratuitCta: 'Open free access',
-    gratuitCourt: (lecons) => `${lecons} lessons, 48h trial`,
+    gratuitCourt: (lecons, heures) => `${lecons} lessons, ${heures}h trial`,
 
     codePastille: (pct) => `−${pct}%`,
     codeNom: (code) => `code ${code}`,

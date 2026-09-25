@@ -320,11 +320,27 @@ export const ETAPES: Etape[] = [
   },
 ];
 
+/**
+ * Leçons et durée de chaque module, servies par l'app (`modulesDurees` de
+ * `/api/academy/public/jour30`, 25/09/2026), par identifiant de module en base.
+ *
+ * ⚠️ Les `minutes` écrites plus haut sont le relevé du 06/09 et ne servent plus
+ * qu'en REPLI : un module refait ou une leçon ajoutée ne s'y voyait jamais.
+ * Toute durée affichée passe donc par `minutesDu`, jamais par `m.minutes`.
+ */
+export type Durees = Record<string, { lecons: number; minutes: number }>;
+
+export function minutesDu(m: Pick<Module, 'id' | 'minutes'>, durees?: Durees): number {
+  return durees?.[m.id]?.minutes ?? m.minutes;
+}
+
 /** Un seul module outil est retenu : la durée moyenne des quatre fait foi. */
-export const MINUTES_OUTIL = Math.round(
-  MODULES.filter((m) => m.auChoix).reduce((s, m) => s + m.minutes, 0) /
-    MODULES.filter((m) => m.auChoix).length,
-);
+export function minutesOutil(durees?: Durees): number {
+  const outils = MODULES.filter((m) => m.auChoix);
+  return Math.round(outils.reduce((s, m) => s + minutesDu(m, durees), 0) / outils.length);
+}
+
+export const MINUTES_OUTIL = minutesOutil();
 
 export function modulesDe(etape: EtapeId): Module[] {
   return MODULES.filter((m) => m.etape === etape);
@@ -346,10 +362,10 @@ export function nombreSuivi(etape: EtapeId): number {
  * que l'apprenant garde : les additionner ferait annoncer une durée que
  * personne ne suit.
  */
-export function minutesDe(etape: EtapeId): number {
+export function minutesDe(etape: EtapeId, durees?: Durees): number {
   const mods = modulesDe(etape);
-  const fixes = mods.filter((m) => !m.auChoix).reduce((s, m) => s + m.minutes, 0);
-  return fixes + (mods.some((m) => m.auChoix) ? MINUTES_OUTIL : 0);
+  const fixes = mods.filter((m) => !m.auChoix).reduce((s, m) => s + minutesDu(m, durees), 0);
+  return fixes + (mods.some((m) => m.auChoix) ? minutesOutil(durees) : 0);
 }
 
 /**
