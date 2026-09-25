@@ -252,7 +252,9 @@ Plan de refonte : `~/.claude/plans/serene-drifting-riddle.md`. Source : `Claude 
 4x2), `StatsRail.astro` (tiles + count-up + sparkline), `IndustryCardV2.astro`
 (5 couches), `MagneticButton.astro` (shine sweep), `TestimonialMarquee.astro`
 (bandeau infini CSS), et la barre de progression de scroll injectée dans
-`BaseLayout.astro`.
+`BaseLayout.astro`. Depuis la nouvelle accueil (25/09/2026, section 7), les sections
+de la grille, des chiffres et des secteurs ne sont plus sur l'accueil ; les fichiers
+restent (`test.astro`, contact, articles).
 
 Reste à faire : `CalculatorInlinePreview.astro`, mini-calculateur sur la homepage.
 Son calcul devra être recoupé avec `data/index.ts` (BUDGET_CONFIG, MANAGEMENT_FEE_CONFIG).
@@ -270,19 +272,38 @@ Le Hub MyDigipal a son propre handoff Claude Design (KPI cards, charts ECharts, 
 - Patterns site-only : magnetic services grid, testimonial marquee, layered industry cards, calc inline preview
 - Patterns hub-only : KPI variants A/B/C, ECharts trend/funnel/heatmap/donut, benchmark bars, campaign tables filtered/sorted/paginated
 
-## 7. La page d'accueil refaite (24/09/2026, direction A « Les visages »), EN APERÇU
+## 7. La page d'accueil refaite (direction A « Les visages »), EN LIGNE depuis le 25/09/2026
 
-⚠️ **Elle n'est pas encore l'accueil.** Elle vit sur `/fr/accueil-v2` et `/en/accueil-v2`
-(`src/pages/[lang]/accueil-v2.astro`), en `noindex`, hors du sitemap et liée de nulle
-part, pour que Paul la regarde sur le vrai site avant de trancher. `index.astro` est
-toujours l'ancienne accueil. Pilotage : `docs/site-mise-en-avant/refonte-accueil-directions.html`.
+`src/pages/[lang]/index.astro`. Elle a vécu deux jours en aperçu caché sur
+`/{lang}/accueil-v2`, qui n'est plus qu'un renvoi en `noindex` vers `/{lang}` (même
+méthode que `academy-v2.astro` : une page et non une suppression, à cause du piège de
+la section 1). Le titre SEO de l'ancienne accueil est gardé mot pour mot. Pilotage :
+`docs/site-mise-en-avant/refonte-accueil-directions.html`.
 
 La page assemble `src/components/accueil/`, dans cet ordre depuis les retours de Paul du
-24/09/2026 : `Visages` (hero), `Bandeau` (logos), `Academie` (l'AI Academy, les boucles
-filmées de l'app en onglets), `Avis` (note, photo de La Poste, verbatims), `Offre` (« Ce
-qu'on fait » : dix services, une phrase chacun, fiche au survol), `Resultats` (sept études
-de cas, descendues exprès), `Articles`, `Portes` (calculateur, Academy, appel). Styles
-communs dans `accueil.css`.
+24/09/2026 : `Visages` (hero), `Bandeau` (logos), `Academie` (l'AI Academy : les boucles
+filmées de l'app en onglets, puis les films parlants de la page de vente), `Avis` (note,
+photo de La Poste, verbatims), `Offre` (« Ce qu'on fait » : dix services, une phrase
+chacun, fiche au survol), `Resultats` (sept études de cas, descendues exprès),
+`Articles`, `Portes` (calculateur, Academy, contact). Styles communs dans `accueil.css`.
+
+- **Aucun « Réserver un appel » sur l'accueil** (Paul, 25/09/2026 : « je préfère que les
+  gens nous contactent par le biais où ils peuvent faire calculer mon budget, ou
+  directement »). Le hero propose « Calculer mon budget » puis « Nous contacter », la
+  dernière porte mène au formulaire de contact (« réponse sous 24 h », la promesse de
+  la page contact). La prise de rendez-vous reste ailleurs (résultat du calculateur,
+  assistant, fin des articles).
+- **Le hero** : « Vos campagnes ont des visages. » / « Your campaigns have faces. », en
+  très grand (jusqu'à 8,25 rem). **Les portraits sont en couleur** ; c'est la personne
+  survolée, touchée ou présentée par la visite qui passe en noir et blanc, avec son nom
+  (Paul, 25/09/2026).
+- **Les films parlants** (`Academie`, sous les boucles) sont ceux de la page de vente
+  (`academy-v2/copy-v2.ts`, `films`) : en anglais le tour de l'espace, l'intérieur d'une
+  leçon, les automatisations et le MCP ; en français les deux extraits de la conférence
+  SeLoger. Lecture au clic seulement, avec le son ; durée lue dans le fichier ; un film
+  qui démarre fait taire la boucle muette. ⚠️ Les MP4 sont en H.264 : le Chromium de
+  Playwright ne les lit pas, donc ni durée ni lecture en test, ce qui ne dit rien des
+  vrais navigateurs.
 
 - **Plus aucun prix dans `Offre`** (Paul : « je pense pas que ça soit une bonne chose de
   mettre le prix »). Une phrase par service ; sur ordinateur, un repère blanc glisse sur la
@@ -300,20 +321,18 @@ communs dans `accueil.css`.
   vente (Paul, 16/09/2026).
 
 - **L'option `refonte`** (`PageLayout` → `BaseLayout`, `Header`, `Footer`,
-  `StickyCalculatorCTA`) montre la nouvelle version du reste de la page : le bleu du
-  logo au lieu du bleu Tailwind et du dégradé indigo, « EN » / « FR » au lieu du
-  drapeau emoji, « Calculer mon budget » dans le pied de page, la barre de progression
-  bleue (`[data-refonte]` sur `<html>`), `theme-color` blanc. Seul l'aperçu la demande :
-  fusionner la PR ne change RIEN de visible sur les autres pages (Paul veut voir le bleu
-  avant de décider).
-- **La bascule, le jour venu** : `accueil-v2.astro` remplace `index.astro` (sans
-  `noindex` ni `refonte`) ; les versions `refonte` deviennent les seules dans les trois
-  composants, et l'option disparaît ; `[data-refonte]` devient la règle par défaut de la
-  barre ; `@view-transition { navigation: auto }` s'ajoute dans `global.css` (il ne joue
-  qu'entre deux pages qui le déclarent, donc tout le site d'un coup) ; supprimer
-  `accueil-v2.astro` puis redéployer en vidant le cache de Render (le piège de la
-  section 1), sinon l'aperçu reste servi. Et `HeroUseCases.astro`, `Timeline30Days.astro`
-  deviennent orphelins.
+  `StickyCalculatorCTA`) : le bleu du logo au lieu du bleu Tailwind et du dégradé
+  indigo, « EN » / « FR » au lieu du drapeau emoji, « Calculer mon budget » dans le pied
+  de page, la barre de progression bleue (`[data-refonte]` sur `<html>`), `theme-color`
+  blanc. **Seule l'accueil la porte** : les autres pages gardent l'ancien en-tête tant
+  que Paul n'a pas décidé de l'étendre.
+- **L'étendre au site, le jour venu** : les versions `refonte` deviennent les seules dans
+  les trois composants et l'option disparaît ; `[data-refonte]` devient la règle par
+  défaut de la barre ; `@view-transition { navigation: auto }` s'ajoute dans
+  `global.css` (il ne joue qu'entre deux pages qui le déclarent, donc tout le site d'un
+  coup). `HeroUseCases.astro` et `Timeline30Days.astro`, orphelins, ont été supprimés à
+  la bascule ; les autres sections de l'ancienne accueil (`ServicesGridV2`, `StatsRail`,
+  `IndustryCardV2`...) restent, `test.astro` et d'autres pages s'en servent.
 - **Aucun chiffre écrit à la main** (`accueil/donnees.ts`) : les résultats viennent de la
   collection `case-studies` (le build s'arrête si l'ordre des KPI d'une fiche change),
   les prix de `prixDeDepart()` du moteur v6, jamais additionnés ; prix, note, modules,
