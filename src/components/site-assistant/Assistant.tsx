@@ -99,34 +99,6 @@ const pousser = (event: string, params: Record<string, unknown> = {}) => {
   w.dataLayer.push({ event, ...params });
 };
 
-/** Les deux drapeaux du sélecteur de langue, en SVG : sous Windows, les drapeaux emoji ne
- * s'affichent pas du tout. Mêmes tracés que la barre des pages outils de l'Academy. */
-function Drapeau({ locale }: { locale: Lang }) {
-  const classe = 'block h-[13px] w-[19px] flex-none rounded-[2px]';
-  if (locale === 'fr') {
-    return (
-      <svg viewBox="0 0 3 2" className={classe} aria-hidden="true" focusable="false">
-        <rect width="1" height="2" x="0" fill="#0055A4" />
-        <rect width="1" height="2" x="1" fill="#FFFFFF" />
-        <rect width="1" height="2" x="2" fill="#EF4135" />
-      </svg>
-    );
-  }
-  return (
-    <svg viewBox="0 0 60 30" className={classe} aria-hidden="true" focusable="false">
-      <clipPath id="as-uk-cadre"><path d="M0,0 v30 h60 v-30 z" /></clipPath>
-      <clipPath id="as-uk-diag"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" /></clipPath>
-      <g clipPath="url(#as-uk-cadre)">
-        <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
-        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#FFFFFF" strokeWidth="6" />
-        <path d="M0,0 L60,30 M60,0 L0,30" clipPath="url(#as-uk-diag)" stroke="#C8102E" strokeWidth="4" />
-        <path d="M30,0 v30 M0,15 h60" stroke="#FFFFFF" strokeWidth="10" />
-        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" />
-      </g>
-    </svg>
-  );
-}
-
 const VIDE: Sauve = { items: [], etape: 'accueil', g: {}, prevenu: false, paulVus: 0, messages: 0, faits: [] };
 
 export interface AssistantProps {
@@ -591,7 +563,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
           {q.media > 0 && <p className="flex justify-between gap-3 text-slate-600"><span>{c.media}</span><span className="tabular-nums">{m(q.media)}{c.parMois}</span></p>}
         </div>
         <div className="mt-3 grid gap-2">
-          <button type="button" onClick={() => ouvrirDevis(plan, budget)} className="h-10 rounded-xl bg-primary-600 text-[14px] font-semibold text-white transition-colors hover:bg-primary-700">{c.voirDevis}</button>
+          <button type="button" onClick={() => ouvrirDevis(plan, budget)} className="h-10 rounded-full bg-marque text-[14px] font-semibold text-white transition-colors hover:bg-marque-fonce">{c.voirDevis}</button>
           <button type="button" onClick={() => versLibre()} className="h-10 rounded-xl bg-slate-100 text-[14px] font-semibold text-slate-900 transition-colors hover:bg-slate-200">{c.parlerPaul}</button>
         </div>
       </div>
@@ -661,8 +633,8 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     if (x.id === 'cas') { await direCas(); return; }
   };
 
-  const puce = 'rounded-full border border-slate-300 bg-white px-3.5 py-2 text-left text-[14px] font-medium text-slate-900 transition-colors hover:border-primary-600 hover:bg-primary-50';
-  const puceForte = 'rounded-full border border-primary-600 bg-primary-600 px-3.5 py-2 text-left text-[14px] font-semibold text-white transition-colors hover:bg-primary-700';
+  const puce = 'rounded-full border border-slate-300 bg-white px-3.5 py-2 text-left text-[14px] font-medium text-slate-900 transition-colors hover:border-marque hover:bg-marque-doux';
+  const puceForte = 'rounded-full border border-marque bg-marque px-3.5 py-2 text-left text-[14px] font-semibold text-white transition-colors hover:bg-marque-fonce';
   const choix = () => {
     const e = s.etape;
     if (e === 'menu' || e === 'accueil' || e === 'fin') {
@@ -677,7 +649,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
           )}
           {e === 'fin' && (
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-[13.5px]">
-              <a href={cheminContact(lang)} className="font-semibold text-primary-600 underline underline-offset-2">{c.contacter}</a>
+              <a href={cheminContact(lang)} className="font-semibold text-marque underline underline-offset-2">{c.contacter}</a>
               <button type="button" onClick={recommencer} className="font-semibold text-slate-600 underline underline-offset-2">{c.recommencer}</button>
             </div>
           )}
@@ -739,8 +711,8 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
                 </button>
               </div>
               <div className="mt-3.5 grid grid-cols-2 gap-2">
-                <button type="button" onClick={() => ouvrir('devis')} className="h-10 rounded-xl bg-primary-600 text-[14px] font-semibold text-white hover:bg-primary-700">{c.devisPoser}</button>
-                <a href={cheminContact(lang)} className="grid h-10 place-items-center rounded-xl bg-slate-100 text-[14px] font-semibold text-slate-900 hover:bg-slate-200">{c.contacter}</a>
+                <button type="button" onClick={() => ouvrir('devis')} className="h-10 rounded-full bg-marque text-[14px] font-semibold text-white hover:bg-marque-fonce">{c.devisPoser}</button>
+                <a href={cheminContact(lang)} className="grid h-10 place-items-center rounded-full bg-slate-100 text-[14px] font-semibold text-slate-900 hover:bg-slate-200">{c.contacter}</a>
               </div>
             </div>
           ) : (invite || nonLu) ? (
@@ -757,7 +729,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
             <button type="button" aria-label={c.ouvrir} onClick={() => ouvrir(devisCourant && !s.items.length ? 'devis' : 'normal')}
               className="relative grid h-14 w-14 shrink-0 place-items-center rounded-full bg-white p-0.5 shadow-[0_8px_24px_rgba(15,27,41,0.22)] ring-2 ring-white transition-transform hover:scale-105 max-sm:h-[52px] max-sm:w-[52px]">
               {photo(52)}
-              {nonLu && <span className="absolute right-0 top-0 h-3.5 w-3.5 rounded-full bg-primary-600 ring-2 ring-white" />}
+              {nonLu && <span className="absolute right-0 top-0 h-3.5 w-3.5 rounded-full bg-marque ring-2 ring-white" />}
             </button>
           )}
         </div>
@@ -775,11 +747,12 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
                 <p className="font-display text-[15px] font-bold leading-tight text-slate-900">{c.nom}</p>
                 <p className="flex items-center gap-1.5 text-[12.5px] text-slate-500"><span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />{c.sousTitre}</p>
               </div>
-              {/* La langue suit la page ; ce drapeau ouvre la même page dans l'autre langue. */}
+              {/* La langue suit la page ; ce lien ouvre la même page dans l'autre langue. Le
+                  code de la langue plutôt qu'un drapeau, comme l'en-tête du site (25/09/2026). */}
               <a href={`/${lang === 'fr' ? 'en' : 'fr'}${chemin.replace(/^\/(fr|en)/, '')}`} aria-label={c.changerLangue} title={c.changerLangue}
-                className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 hover:bg-slate-200"
+                className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-[12px] font-semibold tracking-wide text-slate-600 hover:bg-slate-200 hover:text-slate-900"
                 onClick={() => pousser('site_assistant_langue', { assistant_langue: lang === 'fr' ? 'en' : 'fr' })}>
-                <Drapeau locale={lang === 'fr' ? 'en' : 'fr'} />
+                {lang === 'fr' ? 'EN' : 'FR'}
               </a>
               <button type="button" aria-label={c.fermer} onClick={() => setOuvert(false)} className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">
                 <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
@@ -798,7 +771,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
                     <div key={n} className={`flex flex-col ${it.k === 'moi' ? 'items-end' : 'items-start'}`}>
                       {nouveauLocuteur && <p className="mb-1 px-1 text-[11.5px] font-semibold text-slate-500">{nom}</p>}
                       <p className={`max-w-[88%] whitespace-pre-line rounded-2xl px-3.5 py-2.5 text-[14.5px] leading-snug ${
-                        it.k === 'moi' ? 'rounded-br-md bg-primary-600 text-white' : it.k === 'paul' ? 'rounded-bl-md bg-slate-900 text-white' : 'rounded-bl-md bg-slate-100 text-slate-900'
+                        it.k === 'moi' ? 'rounded-br-md bg-marque text-white' : it.k === 'paul' ? 'rounded-bl-md bg-slate-900 text-white' : 'rounded-bl-md bg-slate-100 text-slate-900'
                       }`}>{it.texte}</p>
                     </div>
                   );
@@ -814,9 +787,9 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
               <div className="flex items-end gap-2">
                 <textarea ref={champRef} rows={1} value={texte} onChange={(e) => setTexte(e.target.value)} placeholder={c.placeholder} aria-label={c.placeholder}
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void envoyer(texte); } }}
-                  className="max-h-28 min-h-[44px] flex-1 resize-none rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-[15px] text-slate-900 placeholder:text-slate-400 focus:border-primary-600 focus:outline-none focus:ring-1 focus:ring-primary-600" />
+                  className="max-h-28 min-h-[44px] flex-1 resize-none rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-[15px] text-slate-900 placeholder:text-slate-400 focus:border-marque focus:outline-none focus:ring-1 focus:ring-marque" />
                 <button type="submit" aria-label={c.envoyer} disabled={!texte.trim() || envoi}
-                  className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary-600 text-white transition-colors hover:bg-primary-700 disabled:opacity-40">
+                  className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-marque text-white transition-colors hover:bg-marque-fonce disabled:opacity-40">
                   <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </button>
               </div>
