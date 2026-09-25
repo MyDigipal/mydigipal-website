@@ -27,6 +27,13 @@
  *
  * Performance : aucune vidéo avant que la section approche de l'écran ;
  * une seule balise `<video>` dont on change la source, pas six.
+ *
+ * Les films PARLANTS (25/09/2026, demande de Paul : « il y a des vidéos que
+ * tu peux reprendre de la page de vente ») viennent ensuite, dans le miroir
+ * des boucles : titre et liste à gauche, écran à droite. Ce sont ceux de la
+ * page de vente (`academy-v2/copy-v2.ts`, `films`), titres et légendes
+ * compris. Un film ne part qu'au clic, avec le son ; il fait taire la boucle
+ * muette, et la boucle relancée le fait taire.
  */
 import Icon from '@/components/ui/Icon.astro';
 import type { Jour30Data } from '@/components/academy/data';
@@ -34,6 +41,7 @@ import { jour30Copy } from '@/components/academy/copy';
 import { baseDemo } from '@/components/academy/demos-fr';
 import { MARQUES } from '@/components/academy-tools/logos';
 import { OUTILS_PUBLIES, lienOutil } from '@/components/academy-tools';
+import { copyV2 } from '@/components/academy-v2/copy-v2';
 import { faitsAcademy, serrer, type Lang } from './donnees';
 
 interface Props {
@@ -58,6 +66,15 @@ const ECRANS = [
 
 const outils = OUTILS_PUBLIES.filter((o) => MARQUES[o.id]);
 
+// Les films PARLANTS de la page de vente (`academy-v2/copy-v2.ts`, 25/09/2026),
+// repris tels quels, titres et légendes compris : en anglais, Paul qui fait
+// visiter l'espace, ouvre une leçon et montre les automatisations ; en
+// français, les deux extraits de la conférence donnée pour SeLoger.
+const cf = copyV2(lang).films;
+const FILMS = [cf.hero, cf.produit, cf.mcp, ...(cf.salle?.films ?? [])].filter(
+  (x): x is NonNullable<typeof x> => !!x,
+);
+
 const t = fr
   ? {
       logo: 'MyDigipal AI Academy',
@@ -74,6 +91,10 @@ const t = fr
       ecrans: 'Les écrans de l’Academy',
       pause: 'Mettre la vidéo en pause',
       lire: 'Lire la vidéo',
+      filmsTitre: 'La méthode, devant une vraie salle.',
+      filmsChapeau: 'Des extraits d’une conférence donnée pour les équipes de SeLoger, avec le son. Les données sont fictives, les réflexes sont ceux de la formation.',
+      filmsChoix: 'Choisir un film',
+      filmsVoir: 'Voir',
     }
   : {
       logo: 'MyDigipal AI Academy',
@@ -90,6 +111,10 @@ const t = fr
       ecrans: 'Academy screens',
       pause: 'Pause the video',
       lire: 'Play the video',
+      filmsTitre: 'Paul shows you around.',
+      filmsChapeau: 'Films with sound: the learner space, a lesson from the inside, and the automations running on a real setup.',
+      filmsChoix: 'Pick a film',
+      filmsVoir: 'Watch',
     };
 
 const faits = [
@@ -187,6 +212,66 @@ const faits = [
         </figcaption>
       </figure>
     </div>
+
+    {FILMS.length > 0 && (
+      <div class="academie-films" data-films data-lire={t.lire}>
+        <div class="films-tete" data-reveal>
+          <h3 class="films-titre" set:html={serrer(t.filmsTitre)} />
+          <p class="films-chapeau">{t.filmsChapeau}</p>
+        </div>
+
+        <figure class="films-bloc" data-reveal style="--i:1">
+          <div class="films-ecran">
+            <img
+              class="films-affiche"
+              src={`/academy/videos/${FILMS[0].id}.webp`}
+              alt=""
+              width="1280"
+              height="720"
+              loading="lazy"
+              decoding="async"
+              data-films-affiche
+            />
+            <video class="films-video" preload="none" playsinline data-films-video></video>
+            <button type="button" class="films-lire" aria-label={`${t.lire} : ${FILMS[0].titre}`} data-films-lire>
+              <span class="films-rond">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="films-libelle">{t.filmsVoir}<span class="films-duree" data-films-duree></span></span>
+            </button>
+          </div>
+          <figcaption class="films-legende">
+            <b data-films-titre>{FILMS[0].titre}</b>
+            <span data-films-texte>{FILMS[0].legende}</span>
+          </figcaption>
+        </figure>
+
+        {FILMS.length > 1 && (
+          <ul class="films-liste" aria-label={t.filmsChoix} data-reveal style="--i:2">
+            {FILMS.map((film, i) => (
+              <li>
+                <button
+                  type="button"
+                  class="films-choix"
+                  aria-pressed={i === 0 ? 'true' : 'false'}
+                  data-film={film.id}
+                  data-titre={film.titre}
+                  data-legende={film.legende}
+                >
+                  <img src={`/academy/videos/${film.id}.webp`} alt="" width="1280" height="720" loading="lazy" decoding="async" />
+                  <span class="films-choix-texte">
+                    <span class="films-choix-titre">{film.titre}</span>
+                    <span class="films-choix-duree" data-duree-de={film.id}></span>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    )}
 
     {outils.length > 0 && (
       <div class="academie-outils" data-reveal style="--i:3">
@@ -538,6 +623,243 @@ const faits = [
     }
   }
 
+  /* ------------------------------------------------- les films parlants */
+  /* Après les boucles muettes (l'écran à gauche, la liste à droite), le
+     miroir : le titre et la liste à gauche, l'écran à droite. Un film parlant
+     ne part jamais seul : il attend un clic, qui vaut accord pour le son. */
+  .academie-films {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 4rem;
+    padding-top: 3.5rem;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+    grid-template-areas:
+      'tete'
+      'ecran'
+      'liste';
+  }
+  @media (min-width: 1024px) {
+    .academie-films {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-template-rows: auto 1fr;
+      grid-template-areas:
+        'tete tete tete tete ecran ecran ecran ecran ecran ecran ecran ecran'
+        'liste liste liste liste ecran ecran ecran ecran ecran ecran ecran ecran';
+      column-gap: 2rem;
+      row-gap: 2rem;
+      margin-top: 5.5rem;
+      padding-top: 5rem;
+    }
+  }
+  .films-tete {
+    grid-area: tete;
+  }
+  .films-bloc {
+    grid-area: ecran;
+    position: relative;
+    margin: 0;
+  }
+  .films-liste {
+    grid-area: liste;
+    align-self: end;
+  }
+  .films-titre {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    word-spacing: 0.06em;
+    color: #fff;
+  }
+  .films-chapeau {
+    margin: 1rem 0 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #a9b6c4;
+    max-width: 44ch;
+  }
+
+  .films-bloc::before {
+    content: '';
+    position: absolute;
+    inset: -10% -6% 12%;
+    background: radial-gradient(closest-side, rgb(29 113 184 / 0.24), transparent);
+    filter: blur(22px);
+    pointer-events: none;
+  }
+  .films-ecran {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #05090f;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    box-shadow: 0 50px 90px -40px rgb(0 0 0 / 0.85);
+  }
+  .films-affiche,
+  .films-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .films-video {
+    visibility: hidden;
+  }
+  .films-ecran.est-lance .films-video {
+    visibility: visible;
+  }
+  .films-ecran.est-lance .films-affiche,
+  .films-ecran.est-lance .films-lire {
+    display: none;
+  }
+  /* La touche : une pastille blanche, le rond de lecture et « Voir · 3 min »,
+     la durée lue dans le fichier. Posée sur un voile uni, pas un dégradé. */
+  .films-lire {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: rgb(5 9 15 / 0.28);
+    cursor: pointer;
+    transition: background-color 0.3s var(--ease-sortie);
+  }
+  .films-lire:hover {
+    background: rgb(5 9 15 / 0.42);
+  }
+  .films-rond {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin-right: -2rem;
+    border-radius: 999px;
+    background: var(--color-encre);
+    color: #fff;
+    box-shadow: 0 0 0 4px #fff;
+    transition: transform 0.3s var(--ease-sortie);
+  }
+  .films-rond svg {
+    width: 20px;
+    height: 20px;
+    margin-left: 3px;
+  }
+  .films-libelle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 3.5rem;
+    padding: 0 1.5rem 0 2.9rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-encre);
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 22px 44px -14px rgb(0 0 0 / 0.7);
+  }
+  .films-duree:not(:empty)::before {
+    content: '·';
+    margin-right: 0.5rem;
+  }
+  .films-duree {
+    font-weight: 500;
+    color: var(--gris);
+  }
+  .films-lire:hover .films-rond {
+    transform: scale(1.06);
+  }
+  .films-lire:active .films-rond {
+    transform: scale(0.96);
+  }
+  .films-legende {
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.25rem;
+    max-width: 62ch;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: #a9b6c4;
+  }
+  .films-legende b {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.0625rem;
+    color: #fff;
+  }
+
+  .films-liste {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .films-choix {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #a9b6c4;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      background-color 0.3s var(--ease-sortie),
+      border-color 0.3s var(--ease-sortie),
+      color 0.3s var(--ease-sortie);
+  }
+  .films-choix img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    opacity: 0.75;
+    transition: opacity 0.3s var(--ease-sortie);
+  }
+  .films-choix-texte {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .films-choix-titre {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    line-height: 1.35;
+  }
+  .films-choix-duree {
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    color: #7f8fa1;
+  }
+  .films-choix:hover {
+    color: #eef2f6;
+    background: rgb(255 255 255 / 0.04);
+  }
+  .films-choix:hover img {
+    opacity: 1;
+  }
+  .films-choix[aria-pressed='true'] {
+    color: #fff;
+    background: rgb(255 255 255 / 0.06);
+    border-color: rgb(255 255 255 / 0.18);
+  }
+  .films-choix[aria-pressed='true'] img {
+    opacity: 1;
+  }
+
   /* ---------------------------------------------------- les pages outils */
   .academie-outils {
     display: flex;
@@ -601,6 +923,9 @@ const faits = [
    * - Modèle ARIA des onglets : flèches, Début, Fin.
    */
   const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /** Un film parlant démarre ; la boucle muette repart. */
+  const FILM = 'accueil-film-lecture';
+  const BOUCLE = 'accueil-boucle-lecture';
 
   document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
     const bande = demo.querySelector<HTMLElement>('[role="tablist"]');
@@ -704,7 +1029,19 @@ const faits = [
       tour = false;
       majBouton();
       if (arretee) video.pause();
-      else lire();
+      else {
+        window.dispatchEvent(new CustomEvent(BOUCLE));
+        lire();
+      }
+    });
+
+    // Un film parlant démarre : la boucle muette s'arrête, pour qu'une seule
+    // image bouge à l'écran.
+    window.addEventListener(FILM, () => {
+      arretee = true;
+      tour = false;
+      majBouton();
+      video.pause();
     });
 
     onglets.forEach((o, i) => {
@@ -725,5 +1062,117 @@ const faits = [
         choisir(cible, true);
       });
     });
+  });
+
+  /**
+   * Les films parlants.
+   *
+   * - Rien ne se charge avant l'approche de la section ; alors seulement, les
+   *   métadonnées de chaque film (quelques Ko, les fichiers sont en
+   *   faststart) donnent la durée affichée, lue dans le fichier et jamais
+   *   écrite dans le code.
+   * - Un film ne part qu'au clic, avec le son et les contrôles du navigateur.
+   *   Choisir un autre film dans la liste le lance aussitôt.
+   * - Sorti de l'écran, il se met en pause.
+   * - Même événement de mesure que la page de vente (`academy_video_play`).
+   */
+  const mn = (s: number) => `${Math.max(1, Math.round(s / 60))} min`;
+  const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+
+  document.querySelectorAll<HTMLElement>('[data-films]').forEach((bloc) => {
+    const ecran = bloc.querySelector<HTMLElement>('.films-ecran');
+    const video = bloc.querySelector<HTMLVideoElement>('[data-films-video]');
+    const affiche = bloc.querySelector<HTMLImageElement>('[data-films-affiche]');
+    const lire = bloc.querySelector<HTMLButtonElement>('[data-films-lire]');
+    const duree = bloc.querySelector<HTMLElement>('[data-films-duree]');
+    const titre = bloc.querySelector<HTMLElement>('[data-films-titre]');
+    const texte = bloc.querySelector<HTMLElement>('[data-films-texte]');
+    if (!ecran || !video || !affiche || !lire || !duree || !titre || !texte) return;
+    const choix = Array.from(bloc.querySelectorAll<HTMLButtonElement>('[data-film]'));
+    // Un seul film : pas de liste, son identifiant vient de l'affiche.
+    const ids = choix.length ? choix.map((c) => c.dataset.film || '') : [affiche.src.split('/').pop()?.replace(/\.webp$/, '') || ''];
+    const durees = new Map<string, number>();
+    let courant = 0;
+
+    const majTouche = () => {
+      const d = durees.get(ids[courant]);
+      duree.textContent = d ? mn(d) : '';
+      lire.setAttribute('aria-label', `${bloc.dataset.lire || ''} : ${titre.textContent || ''}`);
+    };
+
+    const sonder = () => {
+      ids.forEach((id) => {
+        const v = document.createElement('video');
+        v.preload = 'metadata';
+        v.muted = true;
+        v.addEventListener(
+          'loadedmetadata',
+          () => {
+            if (Number.isFinite(v.duration) && v.duration > 0) {
+              durees.set(id, v.duration);
+              const cible = bloc.querySelector<HTMLElement>(`[data-duree-de="${id}"]`);
+              if (cible) cible.textContent = mmss(v.duration);
+              majTouche();
+            }
+            v.removeAttribute('src');
+            v.load();
+          },
+          { once: true },
+        );
+        v.src = `/academy/videos/${id}.mp4`;
+      });
+    };
+    const proche = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        proche.disconnect();
+        sonder();
+      },
+      { rootMargin: '400px 0px' },
+    );
+    proche.observe(bloc);
+
+    const source = () => {
+      video.replaceChildren(
+        Object.assign(document.createElement('source'), { src: `/academy/videos/${ids[courant]}.mp4`, type: 'video/mp4' }),
+      );
+      video.load();
+    };
+
+    const jouer = () => {
+      if (!video.querySelector('source')) source();
+      ecran.classList.add('est-lance');
+      video.controls = true;
+      window.dispatchEvent(new CustomEvent(FILM));
+      video.play().catch(() => {
+        /* lecture refusée : les contrôles restent à disposition */
+      });
+      const w = window as unknown as { dataLayer?: Record<string, unknown>[] };
+      w.dataLayer?.push({ event: 'academy_video_play', video_id: ids[courant], emplacement: 'accueil' });
+    };
+
+    lire.addEventListener('click', jouer);
+
+    choix.forEach((c, i) => {
+      c.addEventListener('click', () => {
+        if (i === courant && ecran.classList.contains('est-lance')) return;
+        video.pause();
+        courant = i;
+        choix.forEach((x, j) => x.setAttribute('aria-pressed', String(j === i)));
+        affiche.src = `/academy/videos/${ids[i]}.webp`;
+        titre.textContent = c.dataset.titre || '';
+        texte.textContent = c.dataset.legende || '';
+        majTouche();
+        source();
+        jouer();
+      });
+    });
+
+    // La boucle muette repart : le film se tait.
+    window.addEventListener(BOUCLE, () => video.pause());
+
+    new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting && !video.paused) video.pause();
+    }).observe(ecran);
   });
 </script>

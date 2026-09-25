@@ -3,10 +3,10 @@
  * Trois façons de commencer : la fin de la page, là où on a envie d'agir.
  *
  * Une grille asymétrique, pas trois cartes égales : le calculateur et
- * l'Academy côte à côte (7 et 5 colonnes), puis l'appel en bande sur toute la
+ * l'Academy côte à côte (7 et 5 colonnes), puis le contact en bande sur toute la
  * largeur, qui ferme la page. Le calculateur prend la plus grande place parce
  * qu'il répond sans rendez-vous ; l'Academy porte sa salle de nuit (sa couleur
- * à elle, la seule surface sombre de la page) ; l'appel porte le visage de
+ * à elle, la seule surface sombre de la page) ; le contact porte le visage de
  * celui qu'on aura au téléphone.
  *
  * La porte du calculateur reprend l'idée de la direction B : on coche des
@@ -16,7 +16,6 @@
  * additionné ici : le total, c'est le calculateur qui le fait.
  */
 import Icon from '@/components/ui/Icon.astro';
-import { BOOKING_URL } from '@/components/site-assistant/copy';
 import { MARQUES } from '@/components/academy-tools/logos';
 import type { Jour30Data } from '@/components/academy/data';
 import { DOMAINES, faitsAcademy, lignePrix, portrait, serrer, type Lang } from './donnees';
@@ -50,10 +49,11 @@ const t = fr
       acaPrix: 'À partir de {} par personne.',
       acaBouton: 'Voir l’Academy',
       acaCapture: 'Le tableau de bord de l’Academy',
+      // Pas de prise de rendez-vous (Paul, 25/09/2026) : le formulaire de
+      // contact, et sa promesse telle que la page contact la tient.
       appelTitre: 'Nous confier vos campagnes.',
-      appelTexte: 'Trente minutes avec Paul, le fondateur, pour regarder vos comptes et vos objectifs.',
-      appelBouton: 'Réserver un appel',
-      nouvelOnglet: '(nouvel onglet)',
+      appelTexte: 'Dites-nous où vous en êtes : on vous répond sous 24 h, sans engagement.',
+      appelBouton: 'Nous contacter',
     }
   : {
       titre: 'Three ways to start.',
@@ -69,9 +69,8 @@ const t = fr
       acaBouton: 'See the Academy',
       acaCapture: 'The Academy dashboard',
       appelTitre: 'Hand us your campaigns.',
-      appelTexte: 'Thirty minutes with Paul, the founder, to look at your accounts and your goals.',
-      appelBouton: 'Book a call',
-      nouvelOnglet: '(opens in a new tab)',
+      appelTexte: 'Tell us where you stand: we reply within 24 hours, no commitment.',
+      appelBouton: 'Contact us',
     };
 const calculateur = `/${lang}/calculator`;
 ---
@@ -157,17 +156,16 @@ const calculateur = `/${lang}/calculator`;
         </div>
       </article>
 
-      <!-- L'appel -->
+      <!-- Le contact -->
       <article class="porte porte-appel" data-projecteur data-reveal style="--i:3">
         <img class="appel-photo" src={portrait('paul-andre')} alt="Paul André" width="320" height="400" loading="lazy" decoding="async" />
         <div class="appel-texte">
           <h3 class="porte-titre" set:html={serrer(t.appelTitre)} />
           <p class="porte-texte">{t.appelTexte}</p>
         </div>
-        <a href={BOOKING_URL} target="_blank" rel="noopener" class="bouton-plein porte-bouton">
+        <a href={`/${lang}/contact`} class="bouton-plein porte-bouton">
           <span>{t.appelBouton}</span>
-          <Icon name="arrow-up-right" size={18} />
-          <span class="sr-only">{t.nouvelOnglet}</span>
+          <Icon name="arrow-right" size={18} />
         </a>
       </article>
     </div>

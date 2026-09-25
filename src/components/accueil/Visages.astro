@@ -3,13 +3,18 @@
  * Le hero de la page d'accueil : des gens d'abord.
  *
  * Direction A du document de refonte (« Les visages »), poussée plus loin :
- * - le titre prend toute la largeur, et sa seconde ligne « en plus grand »
- *   s'épaissit en entrant (axe de graisse de Plus Jakarta Sans, 300 à 800) :
- *   le seul mouvement du hero qui dit quelque chose, il dit la phrase ;
+ * - le titre prend toute la largeur, et sa seconde ligne s'épaissit en
+ *   entrant (axe de graisse de Plus Jakarta Sans, 300 à 800) : le seul
+ *   mouvement du hero qui dit quelque chose, il dit la phrase. « Vos
+ *   campagnes ont des visages » depuis le 25/09/2026 : Paul ne trouvait pas
+ *   « Votre équipe marketing, en plus grand » assez fort, et le voulait plus
+ *   grand ;
  * - les quatorze portraits, recadrés au même format par
- *   `scripts/visages-accueil.mjs`, en noir et blanc pour que la série tienne
- *   malgré des photos prises partout ; la couleur revient sur la personne
- *   qu'on survole, qu'on touche, ou que la visite automatique présente ;
+ *   `scripts/visages-accueil.mjs`, EN COULEUR (Paul, 25/09/2026) ; c'est la
+ *   personne qu'on survole, qu'on touche ou que la visite présente qui passe
+ *   en noir et blanc, se soulève, et dont la légende dit le nom ;
+ * - aucun « Réserver un appel » (Paul, 25/09/2026) : on commence par le
+ *   calculateur, ou on nous écrit ;
  * - les portraits se chargent en différé (`loading="lazy"`) : à l'écran, le
  *   navigateur les demande juste après la mise en page, pendant leur entrée,
  *   au lieu de disputer la bande passante à la feuille de style avant le
@@ -20,7 +25,6 @@
  *   (elle change toutes les 2,4 s pendant la visite).
  */
 import Icon from '@/components/ui/Icon.astro';
-import { BOOKING_URL } from '@/components/site-assistant/copy';
 import { EQUIPE, enLettres, portrait, serrer, type Lang } from './donnees';
 
 interface Props {
@@ -32,24 +36,22 @@ const fr = lang === 'fr';
 const nombre = enLettres(EQUIPE.length, lang);
 const t = fr
   ? {
-      l1: 'Votre équipe marketing,',
-      l2: 'en plus grand.',
+      l1: 'Vos campagnes',
+      l2: 'ont des visages.',
       sous: `${nombre} spécialistes du B2B et de l’automobile, à Paris et à Londres, qui travaillent dans vos comptes.`,
-      appel: 'Réserver un appel',
       budget: 'Calculer mon budget',
+      contact: 'Nous contacter',
       survol: 'Survolez un visage pour savoir qui fait quoi.',
       toucher: 'Touchez un visage pour savoir qui fait quoi.',
-      nouvelOnglet: '(nouvel onglet)',
     }
   : {
-      l1: 'Your marketing team,',
-      l2: 'only bigger.',
+      l1: 'Your campaigns',
+      l2: 'have faces.',
       sous: `${nombre} B2B and automotive specialists in London and Paris, working inside your accounts.`,
-      appel: 'Book a call',
       budget: 'Calculate my budget',
+      contact: 'Contact us',
       survol: 'Hover over a face to see who does what.',
       toucher: 'Tap a face to see who does what.',
-      nouvelOnglet: '(opens in a new tab)',
     };
 
 /**
@@ -74,25 +76,19 @@ const place = (i: number) => {
   <div class="container-custom">
     <h1 id="accueil-titre" class="visages-titre" data-titre>
       <span class="ligne"><span style="--i:0" set:html={serrer(t.l1)} /></span>
-      <span class="ligne"><span style="--i:1" class="plus-grand" set:html={serrer(t.l2)} /></span>
+      <span class="ligne"><span style="--i:1" class="ligne-poids" set:html={serrer(t.l2)} /></span>
     </h1>
 
     <div class="visages-corps">
       <div class="visages-texte">
         <p class="visages-sous">{t.sous}</p>
         <div class="visages-actions">
-          <a
-            href={BOOKING_URL}
-            target="_blank"
-            rel="noopener"
-            class="bouton-plein"
-          >
-            <span>{t.appel}</span>
-            <Icon name="arrow-up-right" size={18} />
-            <span class="sr-only">{t.nouvelOnglet}</span>
-          </a>
-          <a href={`/${lang}/calculator`} class="lien-fleche">
+          <a href={`/${lang}/calculator`} class="bouton-plein">
             <span>{t.budget}</span>
+            <Icon name="arrow-right" size={18} />
+          </a>
+          <a href={`/${lang}/contact`} class="lien-fleche">
+            <span>{t.contact}</span>
             <Icon name="arrow-right" size={18} />
           </a>
         </div>
@@ -143,22 +139,23 @@ const place = (i: number) => {
     font-family: var(--font-display);
     font-weight: 800;
     color: var(--color-encre);
-    /* Deux lignes sur ordinateur : la première ligne fait ~12,3 em de large,
-       la taille suit donc la largeur disponible, bornée à 6 rem. */
-    font-size: clamp(2.6rem, 7.4vw - 0.25rem, 6rem);
-    line-height: 0.98;
+    /* Deux lignes courtes (« ont des visages. » fait ~7,2 em) : la taille suit
+       la largeur de l'écran, 46 px sur un téléphone de 390 px, jusqu'à
+       8,25 rem sur grand écran. */
+    font-size: clamp(2.5rem, 11.8vw, 8.25rem);
+    line-height: 0.95;
     letter-spacing: -0.042em;
     word-spacing: 0.08em;
     margin: 0;
   }
-  .plus-grand {
+  .ligne-poids {
     white-space: nowrap;
   }
-  /* « en plus grand » s'épaissit : il entre fin (300) et finit comme la
-     première ligne (800). Seul le poids change, la ligne ne se replie pas
+  /* La seconde ligne s'épaissit : elle entre fine (300) et finit comme la
+     première (800). Seul le poids change, la ligne ne se replie pas
      (nowrap), donc rien ne bouge autour d'elle. */
   @media (prefers-reduced-motion: no-preference) {
-    .visages-titre .plus-grand {
+    .visages-titre .ligne-poids {
       animation:
         ligne-monte 1s cubic-bezier(0.16, 1, 0.3, 1) both,
         prend-du-poids 1.3s cubic-bezier(0.65, 0, 0.35, 1) both;
@@ -285,13 +282,15 @@ const place = (i: number) => {
     outline: 2px solid var(--color-marque);
     outline-offset: 3px;
   }
+  /* En couleur ; la personne présentée passe en noir et blanc, comme une
+     photo qu'on sort de la série pour la regarder (Paul, 25/09/2026). */
   .visage img {
     display: block;
     width: 100%;
     height: auto;
     aspect-ratio: 4 / 5;
     object-fit: cover;
-    filter: grayscale(1) contrast(1.06) brightness(1.02);
+    filter: none;
     transition: filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .visage.est-actif {
@@ -300,7 +299,7 @@ const place = (i: number) => {
     z-index: 1;
   }
   .visage.est-actif img {
-    filter: none;
+    filter: grayscale(1) contrast(1.06) brightness(1.02);
   }
   @media (prefers-reduced-motion: no-preference) {
     .visage {
@@ -348,7 +347,7 @@ const place = (i: number) => {
 <script>
   /**
    * La mosaïque : un visage survolé, touché, atteint au clavier ou présenté
-   * par la visite passe en couleur et la légende dit son nom. La visite fait
+   * par la visite passe en noir et blanc et la légende dit son nom. La visite fait
    * UN tour de l'équipe (2,4 s par personne), seulement quand la mosaïque est
    * à l'écran, s'arrête au premier geste du visiteur, et n'a jamais lieu s'il
    * a demandé moins d'animation à son système.
