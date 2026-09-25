@@ -745,7 +745,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
               {photo(38)}
               <div className="min-w-0 flex-1">
                 <p className="font-display text-[15px] font-bold leading-tight text-slate-900">{c.nom}</p>
-                <p className="flex items-center gap-1.5 text-[12.5px] text-slate-500"><span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />{c.sousTitre}</p>
+                <p className="flex items-center gap-1.5 text-[12.5px] text-slate-500"><span className="h-1.5 w-1.5 rounded-full bg-green-600" />{c.sousTitre}</p>
               </div>
               {/* La langue suit la page ; ce lien ouvre la même page dans l'autre langue. Le
                   code de la langue plutôt qu'un drapeau, comme l'en-tête du site (25/09/2026). */}

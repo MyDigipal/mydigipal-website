@@ -4,6 +4,7 @@ import { type Language, languages } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 import Button from '@/components/ui/Button.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
+import PageHero from '@/components/ui/PageHero.astro';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -159,8 +160,8 @@ const content = {
     },
     stats: [
       { value: "150K€", label: "Budget Mensuel Géré" },
-      { value: "188K", label: "Clics Générés" },
-      { value: "10.6K", label: "Leads Générés" },
+      { value: "188K", label: "Clics générés" },
+      { value: "10.6K", label: "Leads générés" },
       { value: "50+", label: "Concessions Accompagnées" }
     ],
     services: [
@@ -264,59 +265,26 @@ const c = content[lang] || content.en;
 ---
 
 <PageLayout lang={lang} title={c.seo.title} description={c.seo.description}>
-  <!-- Hero Section -->
-  <section class="relative py-24 lg:py-32 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
-    <!-- Background Pattern -->
-    <div class="absolute inset-0 opacity-10">
-      <div class="absolute inset-0" style="background-image: url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\");"></div>
-    </div>
+  <PageHero
+    eyebrow={c.hero.badge}
+    title={c.hero.headline}
+    subtitle={c.hero.subheadline}
+    description={c.hero.description}
+    actions={[
+      { href: `/${lang}/calculator`, label: lang === 'fr' ? 'Calculer mon budget' : 'Calculate my budget' },
+      { href: `/${lang}/contact`, label: lang === 'fr' ? 'Nous contacter' : 'Contact us', style: 'contour' },
+    ]}
+  />
 
-    <!-- Gradient Orbs -->
-    <div class="absolute top-20 right-1/4 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-    <div class="absolute bottom-20 left-1/4 w-96 h-96 bg-cyan-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-
-    <div class="container-custom relative z-10">
-      <div class="max-w-4xl mx-auto text-center">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-cyan-300 font-medium mb-6 animate-fade-in">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-          </svg>
-          <span>{c.hero.badge}</span>
-        </div>
-
-        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 animate-fade-in" style="animation-delay: 0.1s;">
-          {c.hero.headline}
-        </h1>
-
-        <p class="text-2xl md:text-3xl text-cyan-300 font-medium mb-6 animate-fade-in" style="animation-delay: 0.2s;">
-          {c.hero.subheadline}
-        </p>
-
-        <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-10 animate-fade-in" style="animation-delay: 0.3s;">
-          {c.hero.description}
-        </p>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style="animation-delay: 0.4s;">
-          <Button href={`/${lang}/calculator`} variant="primary" size="lg" class="bg-cyan-600 hover:bg-cyan-700">
-            {lang === 'fr' ? 'Obtenir un Devis' : 'Get a Quote'}
-          </Button>
-          <Button href={`/${lang}/contact`} variant="outline" size="lg" class="border-white/30 text-white hover:bg-white/10">
-            {lang === 'fr' ? 'Nous contacter' : 'Contact Us'}
-          </Button>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- Stats Section -->
-  <section class="py-16 bg-slate-900">
+  <section class="py-14 bg-[#f3f6f9]">
     <div class="container-custom">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
         {c.stats.map((stat, index) => (
           <div class="text-center animate-on-scroll" style={`animation-delay: ${index * 100}ms`}>
-            <div class="text-3xl md:text-4xl font-bold text-cyan-400 mb-2">{stat.value}</div>
-            <div class="text-slate-400 text-sm">{stat.label}</div>
+            <div class="font-display text-3xl md:text-[2.625rem] font-extrabold tracking-[-0.04em] leading-none text-encre mb-2">{stat.value}</div>
+            <div class="text-slate-600 text-sm">{stat.label}</div>
           </div>
         ))}
       </div>
@@ -329,12 +297,11 @@ const c = content[lang] || content.en;
       <div class="grid lg:grid-cols-2 gap-16 items-center">
         <!-- Left: Content -->
         <div class="animate-on-scroll">
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 font-medium mb-6">
-            <Icon name="award" size={16} />
+          <div class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-6">
             <span>{lang === 'fr' ? 'Expertise automobile' : 'Automotive Expertise'}</span>
           </div>
 
-          <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+          <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-6">
             {c.intro.title}
           </h2>
 
@@ -350,8 +317,8 @@ const c = content[lang] || content.en;
               class="point-card p-6 bg-white rounded-2xl border border-slate-200 hover:border-cyan-200 hover:shadow-lg transition-all duration-300 animate-on-scroll"
               style={`animation-delay: ${index * 100}ms`}
             >
-              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mb-4">
-                <Icon name={point.icon} size={24} class="text-white" />
+              <div class="mb-4 text-marque">
+                <Icon name={point.icon} size={24} class="text-marque" />
               </div>
               <h3 class="text-lg font-bold text-slate-900 mb-2">{point.title}</h3>
               <p class="text-slate-600 text-sm leading-relaxed">{point.description}</p>
@@ -366,11 +333,10 @@ const c = content[lang] || content.en;
   <section class="py-24 bg-white">
     <div class="container-custom">
       <div class="text-center mb-16 animate-on-scroll">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-100 text-cyan-700 font-medium mb-6">
-          <Icon name="layers" size={16} />
+        <div class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-6">
           <span>{lang === 'fr' ? 'Nos services automobile' : 'Our Automotive Services'}</span>
         </div>
-        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
           {lang === 'fr' ? 'Solutions marketing pour concessions' : 'Marketing Solutions for Dealerships'}
         </h2>
       </div>
@@ -386,8 +352,8 @@ const c = content[lang] || content.en;
               <!-- Left: Content -->
               <div class="lg:col-span-2">
                 <div class="flex items-center gap-4 mb-4">
-                  <div class={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon name={service.icon} size={28} class="text-white" />
+                  <div class="text-marque">
+                    <Icon name={service.icon} size={28} class="text-marque" />
                   </div>
                   <div>
                     <h3 class="text-2xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">{service.name}</h3>
@@ -462,7 +428,7 @@ const c = content[lang] || content.en;
   <section class="py-24 bg-white">
     <div class="container-custom">
       <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
           {c.process.title}
         </h2>
       </div>
@@ -470,7 +436,7 @@ const c = content[lang] || content.en;
       <div class="grid md:grid-cols-4 gap-8">
         {c.process.steps.map((step, index) => (
           <div class="text-center animate-on-scroll" style={`animation-delay: ${index * 100}ms`}>
-            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mx-auto mb-4">
+            <div class="w-16 h-16 rounded-full bg-marque flex items-center justify-center mx-auto mb-4">
               <span class="text-xl font-bold text-white">{step.number}</span>
             </div>
             <h3 class="text-xl font-bold text-slate-900 mb-2">{step.title}</h3>
@@ -485,7 +451,7 @@ const c = content[lang] || content.en;
   <section class="py-24 bg-gradient-to-b from-cyan-50 to-white">
     <div class="container-custom">
       <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
           {c.testimonials.title}
         </h2>
       </div>

@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
+import rehypeTableaux from './src/lib/rehype-tableaux.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -34,6 +35,7 @@ export default defineConfig({
 
   // Markdown configuration
   markdown: {
+    rehypePlugins: [rehypeTableaux],
     shikiConfig: {
       theme: 'github-dark',
     },

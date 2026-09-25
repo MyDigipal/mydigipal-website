@@ -109,8 +109,7 @@ const t = content[lang] || content.en;
   <div class="container-custom">
     <!-- Header -->
     <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 bg-violet-100 text-violet-700">
-        <Icon name="list" size={16} />
+      <span class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-6">
         {t.badge}
       </span>
       <h2 class="heading-2 mb-4">{t.title}</h2>
@@ -126,7 +125,7 @@ const t = content[lang] || content.en;
         {t.steps.map((step, index) => (
           <div class={`relative flex flex-col md:flex-row gap-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
             <!-- Step number bubble -->
-            <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full bg-violet-500 text-white flex items-center justify-center font-bold text-xl z-10 shadow-lg hidden md:flex">
+            <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full text-white flex items-center justify-center font-bold text-xl z-10 shadow-lg hidden md:flex bg-marque">
               {step.number}
             </div>
 
@@ -134,12 +133,12 @@ const t = content[lang] || content.en;
             <div class={`md:w-[calc(50%-4rem)] ${index % 2 === 0 ? 'md:pr-8' : 'md:pl-8'}`}>
               <div class="step-card group bg-white rounded-2xl border-2 border-slate-200 hover:border-violet-400 p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                 <!-- Mobile number -->
-                <div class="md:hidden w-12 h-12 rounded-full bg-violet-500 text-white flex items-center justify-center font-bold mb-4">
+                <div class="md:hidden w-12 h-12 rounded-full text-white flex items-center justify-center font-bold mb-4 bg-marque">
                   {step.number}
                 </div>
 
                 <div class="flex items-start gap-4 mb-4">
-                  <div class="w-12 h-12 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div class="text-marque">
                     <Icon name={step.icon} size={24} />
                   </div>
                   <div>

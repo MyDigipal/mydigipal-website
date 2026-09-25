@@ -59,13 +59,13 @@ const translations = {
     ]
   },
   fr: {
-    badge: "Types de Contenu",
+    badge: "Types de contenu",
     headline: "Ce que nous pouvons créer pour vous",
     subtitle: "Des articles de blog aux descriptions produit, notre système de contenu IA s'adapte à tout format tout en maintenant votre voix de marque.",
     types: [
       {
         icon: "file-text",
-        title: "Articles de Blog",
+        title: "Articles de blog",
         description: "Articles optimisés SEO de 1500+ mots avec structure appropriée, liens internes et sections FAQ.",
         specs: "1500-3000 mots",
         color: "from-blue-500 to-cyan-500"
@@ -86,14 +86,14 @@ const translations = {
       },
       {
         icon: "book-open",
-        title: "Études de Cas",
+        title: "Études de cas",
         description: "Histoires de succès clients convaincantes avec structure problème-solution-résultats.",
         specs: "1000-2000 mots",
         color: "from-pink-500 to-rose-500"
       },
       {
         icon: "mail",
-        title: "Séquences Email",
+        title: "Séquences email",
         description: "Campagnes email de nurturing qui guident les leads à travers votre funnel.",
         specs: "5-10 emails",
         color: "from-amber-500 to-orange-500"
@@ -116,11 +116,10 @@ const t = translations[lang] || translations.en;
   <div class="container-custom">
     <!-- Header -->
     <div class="text-center mb-16 animate-on-scroll">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 font-medium mb-6">
-        <Icon name="layers" size={16} />
+      <div class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-6">
         <span>{t.badge}</span>
       </div>
-      <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
         {t.headline}
       </h2>
       <p class="text-xl text-slate-600 max-w-3xl mx-auto">
@@ -136,8 +135,8 @@ const t = translations[lang] || translations.en;
           style={`animation-delay: ${index * 100}ms`}
         >
           <!-- Icon -->
-          <div class={`w-14 h-14 rounded-xl bg-gradient-to-br ${type.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-            <Icon name={type.icon} size={24} class="text-white" />
+          <div class="mb-4 text-marque">
+            <Icon name={type.icon} size={24} class="text-marque" />
           </div>
 
           <!-- Content -->
@@ -145,7 +144,7 @@ const t = translations[lang] || translations.en;
           <p class="text-slate-600 mb-4">{type.description}</p>
 
           <!-- Specs Badge -->
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full text-sm text-slate-600">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
             <Icon name="file" size={14} />
             {type.specs}
           </div>

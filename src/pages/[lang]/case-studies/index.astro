@@ -3,6 +3,8 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
 import { getCollection } from 'astro:content';
 import Icon from '@/components/ui/Icon.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
 
 export async function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -35,7 +37,7 @@ const translations = {
     noResults: 'No case studies found.',
   },
   fr: {
-    title: 'Études de Cas - Résultats B2B et Automobile',
+    title: 'Études de cas - Résultats B2B et automobile',
     description: 'Découvrez comment nous aidons les entreprises B2B tech et automobiles à obtenir des résultats exceptionnels grâce à un marketing digital stratégique.',
     hero: {
       badge: 'Success stories',
@@ -59,24 +61,8 @@ const t = translations[lang] || translations.en;
   title={t.title}
   description={t.description}
 >
-  <!-- Hero Section -->
-  <section class="relative bg-slate-950 text-white py-24 overflow-hidden">
-    <!-- Background Effects -->
-    <div class="absolute inset-0 pointer-events-none">
-      <div class="absolute top-20 -left-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]"></div>
-      <div class="absolute bottom-20 -right-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px]"></div>
-      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiMxZTI5M2IiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6TTEgMWg1OHY1OEgxVjF6IiBmaWxsPSIjMzM0MTU1IiBmaWxsLW9wYWNpdHk9Ii4yIi8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-    </div>
+  <PageHero eyebrow={t.hero.badge} title={t.hero.headline} description={t.hero.subheadline} />
 
-    <div class="container-custom relative z-10 text-center">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 font-medium mb-6">
-        <Icon name="trophy" size={16} />
-        <span>{t.hero.badge}</span>
-      </div>
-      <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4">{t.hero.headline}</h1>
-      <p class="text-xl text-slate-300 max-w-2xl mx-auto">{t.hero.subheadline}</p>
-    </div>
-  </section>
 
   <!-- Filters -->
   <section class="py-8 bg-white border-b border-slate-200 sticky top-16 z-40">
@@ -189,24 +175,7 @@ const t = translations[lang] || translations.en;
     </div>
   </section>
 
-  <!-- CTA Section -->
-  <section class="py-20 bg-slate-900 text-white">
-    <div class="container-custom text-center">
-      <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">
-        {lang === 'fr' ? 'Prêt à écrire votre success story ?' : 'Ready to Write Your Success Story?'}
-      </h2>
-      <p class="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-        {lang === 'fr' ? 'Discutons de vos objectifs et voyons comment nous pouvons vous aider à les atteindre.' : 'Let\'s discuss your goals and see how we can help you achieve them.'}
-      </p>
-      <a
-        href={`/${lang}/contact`}
-        class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-white text-blue-700 font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-      >
-        {lang === 'fr' ? 'Démarrer un projet' : 'Start a Project'}
-        <Icon name="arrow-right" size={20} />
-      </a>
-    </div>
-  </section>
+  <FinalCTA lang={lang} title={lang === 'fr' ? 'Prêt à écrire votre success story ?' : 'Ready to write your success story?'} subtitle={lang === 'fr' ? 'Calculez votre plan sur mesure en 3 minutes, ou dites-nous où vous en êtes : on vous répond sous 24 h.' : 'Calculate your tailored plan in 3 minutes, or tell us where you stand: we reply within 24 hours.'} />
 </PageLayout>
 
 <script>

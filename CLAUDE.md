@@ -276,7 +276,7 @@ pages qui les utilisent encore (services/[slug], blog, contact).
 
 ### Cohérence avec le Hub auth (mydigipal-dashboard/)
 Le Hub MyDigipal a son propre handoff Claude Design (KPI cards, charts ECharts, tables enrichies). Les deux ecosystèmes design sont distincts mais coordonnés via `~/.claude/projects/_shared/design-handoff-sync.md` :
-- Site = Inter + Plus Jakarta Sans, palette indigo→violet→cyan créative
+- Site = Inter + Plus Jakarta Sans, un seul bleu d'accent (celui du logo, #1D71B8) depuis le 25/09/2026 (section 7 bis) ; l'ancienne palette indigo→violet→cyan n'existe plus
 - Hub = Inter + Space Grotesk, palette brand-blue/dark + channel colors data
 - Patterns transversaux : count-up easing (easeOutCubic 1400ms), reveal-on-scroll cubic-bezier, magnetic button portable
 - Patterns site-only : magnetic services grid, testimonial marquee, layered industry cards, calc inline preview
@@ -381,6 +381,53 @@ chacun, fiche au survol), `Resultats` (sept études de cas, descendues exprès),
   qu'une fois visible.
 - `?service=seo,google-ads` : le calculateur accepte désormais plusieurs services (porte
   du calculateur, puces à cocher). Rétrocompatible avec `?service=seo`.
+
+## 7 bis. Le reste du site au style de l'accueil (25/09/2026)
+
+Demande de Paul : « changer les composants vraiment structurels de design du site
+internet pour que ça s'applique un petit peu partout », et que tout soit responsive.
+Ce qui a été fait, par ordre de portée :
+
+- **Une seule couleur d'accent, par le thème** (`global.css`, bloc `@theme`) : les familles
+  Tailwind indigo, blue, sky, cyan, violet, purple, fuchsia, pink, emerald, teal, amber,
+  orange et rose valent toutes la gamme du logo (`--color-X-500: var(--color-primary-500)`).
+  ⚠️ `bg-emerald-500` rend donc du bleu : c'est voulu. Une couleur qui porte un SENS
+  s'écrit dans une famille non remappée : `green-*` (réussite, « en ligne »), `yellow-*`
+  (étoiles, alerte), `red-*` (erreur, champ obligatoire). Dans le code neuf, `primary-*`
+  ou `marque`. Les graphiques à plusieurs séries (`DashboardShowcase`) prennent des
+  nuances distinctes (`primary-400`, `primary-200`, `slate-400`), sinon elles se confondent.
+- **Les grands titres** (`h1`/`h2` en `font-display`) passent en graisse 800 et approche
+  -0,03em par une règle hors couche dans `global.css` ; les 58 grands titres qui n'avaient
+  pas `font-display` l'ont reçu.
+- **Trois composants communs refaits** : `HeroService` (toutes les pages services et
+  automobile : fond blanc, chiffres, « ce que vous obtenez » et verbatim dans un panneau
+  gris clair, les deux portes), `FinalCTA` (fin de page sur `marque-doux`, accepte `title`
+  et `subtitle`, sert aussi aux études de cas) et le nouveau `ui/PageHero.astro` (haut des
+  pages d'index : services, IA, automobile, études de cas, blog, recrutement). Le haut
+  d'un article, d'une étude de cas, d'une offre d'emploi et la page contact sont passés
+  en clair eux aussi. La bande `MetricsCounter` qui répétait les chiffres du hero a été
+  supprimée, ainsi que neuf composants orphelins.
+- **Trois motifs remplacés dans ~100 sections** (script de réécriture, relu page par
+  page) : boutons en dégradé devenus pilules `bg-marque`, pastilles d'icône colorées
+  devenues l'icône seule en bleu (`text-primary-300` sur fond sombre), sur-titres en
+  pilule colorée devenus texte gris. Les pastilles qui portent un CHIFFRE (étapes,
+  repères de frise) gardent leur cercle, en `bg-marque`.
+- **Casse française** : 387 titres et libellés FR écrits « À L'Anglaise » sont passés en
+  casse de phrase (noms de produits gardés : Google Ads, Paid Social, Sales Navigator,
+  Account-Based Marketing...). Le titre SEO de l'accueil n'a pas bougé. Écrire les
+  nouveaux titres en casse de phrase.
+- **Aucun emoji** dans les sections (le 🧮 du hero, les ⚠️ et 🤖 décoratifs...).
+- **Responsive** : 238 pages x 5 largeurs (360 à 1440), aucun débordement horizontal.
+  Les tableaux des articles sont posés dans une boîte qui défile seule
+  (`src/lib/rehype-tableaux.mjs`, branché dans `astro.config.mjs`), un chemin de
+  fichier trop long se coupe (`overflow-wrap` sur la prose), et une grille à une colonne
+  sans `grid-cols-1` / `minmax(0, 1fr)` prend la largeur de son contenu le plus large :
+  c'était la cause des débordements de l'accueil (avis) et d'AI Training (témoignages).
+- **Pages légales** : leur texte en markdown minimal s'affichait avec les `**` et les
+  tirets ; `src/lib/texte-simple.ts` le rend.
+- Reste en l'état : la page `/[lang]/ai` garde ses chiffres « 300 % / 50+ / 100+ » non
+  sourcés (chantier des pages IA plus bas) et la page AI Training ses logos Kering et
+  Chanel (la règle du 01/09 visait l'accueil).
 
 ## AI Academy : la page de vente de la formation en ligne (25/08/2026)
 

@@ -1,6 +1,7 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
+import { texteSimple } from '@/lib/texte-simple';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -111,14 +112,14 @@ Nightingale Lane, SW12 8AQ London, United Kingdom`
   fr: {
     title: "Conditions d'Utilisation",
     lastUpdated: "Dernière mise à jour : Décembre 2024",
-    intro: "Veuillez lire attentivement ces Conditions d'Utilisation (\"Conditions\") avant d'utiliser le site web mydigipal.com exploité par MyDigipal LTD (\"nous\", \"notre\").",
+    intro: "Veuillez lire attentivement ces conditions d'utilisation (\"Conditions\") avant d'utiliser le site web mydigipal.com exploité par MyDigipal LTD (\"nous\", \"notre\").",
     sections: [
       {
-        title: "1. Acceptation des Conditions",
+        title: "1. Acceptation des conditions",
         content: `En accédant ou en utilisant notre site web, vous acceptez d'être lié par ces Conditions. Si vous n'êtes pas d'accord avec une partie des conditions, vous ne pouvez pas accéder au site.`
       },
       {
-        title: "2. Utilisation de Notre Site",
+        title: "2. Utilisation de notre site",
         content: `Vous ne pouvez utiliser notre site qu'à des fins légales. Vous vous engagez à ne pas :
 - Utiliser le site de manière contraire aux lois ou réglementations applicables
 - Tenter d'accéder sans autorisation à une partie du site
@@ -127,7 +128,7 @@ Nightingale Lane, SW12 8AQ London, United Kingdom`
 - Collecter des informations du site sans autorisation`
       },
       {
-        title: "3. Propriété Intellectuelle",
+        title: "3. Propriété intellectuelle",
         content: `Le site et son contenu original, ses fonctionnalités et ses fonctions sont la propriété de MyDigipal et sont protégés par les lois internationales sur le droit d'auteur, les marques et autres propriétés intellectuelles.
 
 Vous ne pouvez pas :
@@ -136,7 +137,7 @@ Vous ne pouvez pas :
 - Créer des œuvres dérivées basées sur notre contenu`
       },
       {
-        title: "4. Description des Services",
+        title: "4. Description des services",
         content: `MyDigipal fournit des services de marketing digital incluant mais non limités à :
 - Optimisation pour les Moteurs de Recherche (SEO)
 - Publicité Pay-Per-Click (Google Ads, Social Media Ads)
@@ -147,7 +148,7 @@ Vous ne pouvez pas :
 Les termes spécifiques de tout service seront définis dans des contrats de service séparés.`
       },
       {
-        title: "5. Calculateur et Devis",
+        title: "5. Calculateur et devis",
         content: `Notre calculateur de budget fournit des estimations à titre informatif uniquement. Les coûts réels peuvent varier en fonction de :
 - La portée et la complexité du projet
 - Les exigences de délais
@@ -156,21 +157,21 @@ Les termes spécifiques de tout service seront définis dans des contrats de ser
 Les devis fournis sont valables 30 jours sauf indication contraire et ne constituent pas un accord contraignant.`
       },
       {
-        title: "6. Contenu Soumis par l'Utilisateur",
+        title: "6. Contenu soumis par l'utilisateur",
         content: `En soumettant du contenu via nos formulaires de contact ou autres moyens, vous :
 - Nous accordez le droit d'utiliser ces informations pour répondre à votre demande
 - Confirmez que votre soumission ne viole aucun droit de tiers
 - Comprenez que nous pouvons conserver ces informations comme décrit dans notre Politique de Confidentialité`
       },
       {
-        title: "7. Exclusion de Garanties",
+        title: "7. Exclusion de garanties",
         content: `Notre site est fourni « tel quel » et « selon disponibilité » sans garantie d'aucune sorte, expresse ou implicite. Nous ne garantissons pas que :
 - Le site sera ininterrompu ou sans erreur
 - Les résultats de l'utilisation du site seront précis ou fiables
 - La qualité des services répondra à vos attentes`
       },
       {
-        title: "8. Limitation de Responsabilité",
+        title: "8. Limitation de responsabilité",
         content: `Dans toute la mesure permise par la loi, MyDigipal ne sera pas responsable de tout dommage indirect, accessoire, spécial, consécutif ou punitif, y compris mais sans s'y limiter :
 - Perte de profits ou de revenus
 - Perte de données
@@ -178,7 +179,7 @@ Les devis fournis sont valables 30 jours sauf indication contraire et ne constit
 - Tout autre dommage commercial ou perte`
       },
       {
-        title: "9. Liens vers des Sites Tiers",
+        title: "9. Liens vers des sites tiers",
         content: `Notre site peut contenir des liens vers des sites web ou services tiers qui ne sont pas détenus ou contrôlés par MyDigipal. Nous n'avons aucun contrôle et n'assumons aucune responsabilité pour le contenu, les politiques de confidentialité ou les pratiques des sites tiers.`
       },
       {
@@ -193,7 +194,7 @@ Les devis fournis sont valables 30 jours sauf indication contraire et ne constit
         content: `Ces Conditions sont régies et interprétées conformément aux lois d'Angleterre et du Pays de Galles, sans égard à ses dispositions en matière de conflits de lois. Tout litige découlant de ces Conditions sera soumis à la compétence exclusive des tribunaux d'Angleterre et du Pays de Galles.`
       },
       {
-        title: "12. Modifications des Conditions",
+        title: "12. Modifications des conditions",
         content: `Nous nous réservons le droit de modifier ou remplacer ces Conditions à tout moment. Nous vous informerons de tout changement en publiant les nouvelles Conditions sur cette page. Votre utilisation continue du site après tout changement constitue une acceptation des nouvelles Conditions.`
       },
       {
@@ -216,7 +217,7 @@ const c = content[lang] || content.en;
       <div class="max-w-3xl mx-auto">
         <!-- Header -->
         <div class="mb-12">
-          <h1 class="text-4xl font-bold text-slate-900 mb-4">{c.title}</h1>
+          <h1 class="font-display text-4xl font-bold text-slate-900 mb-4">{c.title}</h1>
           <p class="text-slate-500">{c.lastUpdated}</p>
         </div>
 
@@ -230,9 +231,7 @@ const c = content[lang] || content.en;
           {c.sections.map((section) => (
             <div class="prose prose-slate max-w-none">
               <h2 class="text-xl font-bold text-slate-900 mb-4">{section.title}</h2>
-              <div class="text-slate-600 leading-relaxed whitespace-pre-line">
-                {section.content}
-              </div>
+              <div class="texte-legal text-slate-600 leading-relaxed" set:html={texteSimple(section.content)} />
             </div>
           ))}
         </div>
@@ -240,3 +239,21 @@ const c = content[lang] || content.en;
     </div>
   </section>
 </PageLayout>
+
+<style>
+  .texte-legal :global(p) {
+    margin: 0 0 0.9em;
+  }
+  .texte-legal :global(ul) {
+    margin: 0 0 1.1em;
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+  .texte-legal :global(li) {
+    margin: 0.3em 0;
+  }
+  .texte-legal :global(strong) {
+    color: var(--color-encre);
+    font-weight: 600;
+  }
+</style>

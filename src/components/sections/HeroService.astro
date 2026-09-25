@@ -45,23 +45,11 @@ const {
   heroLogos: heroLogosProp,
 } = Astro.props;
 
-const colorConfig = {
-  seo: { gradient: 'from-emerald-500 to-teal-600', accent: 'text-emerald-400', ring: 'ring-emerald-500/30' },
-  ads: { gradient: 'from-amber-500 to-orange-600', accent: 'text-amber-400', ring: 'ring-amber-500/30' },
-  social: { gradient: 'from-violet-500 to-purple-600', accent: 'text-violet-400', ring: 'ring-violet-500/30' },
-  abm: { gradient: 'from-pink-500 to-rose-600', accent: 'text-pink-400', ring: 'ring-pink-500/30' },
-  training: { gradient: 'from-cyan-500 to-blue-600', accent: 'text-cyan-400', ring: 'ring-cyan-500/30' },
-  emailing: { gradient: 'from-rose-500 to-pink-600', accent: 'text-rose-400', ring: 'ring-rose-500/30' },
-  ai: { gradient: 'from-indigo-500 to-purple-600', accent: 'text-indigo-400', ring: 'ring-indigo-500/30' },
-  tracking: { gradient: 'from-teal-500 to-cyan-600', accent: 'text-teal-400', ring: 'ring-teal-500/30' },
-  content: { gradient: 'from-violet-500 to-purple-600', accent: 'text-violet-400', ring: 'ring-violet-500/30' },
-  primary: { gradient: 'from-blue-500 to-indigo-600', accent: 'text-blue-400', ring: 'ring-blue-500/30' },
-  automotive: { gradient: 'from-sky-500 to-blue-600', accent: 'text-sky-400', ring: 'ring-sky-500/30' },
-};
+// `color` reste accepté pour ne pas toucher aux pages, mais toutes les pages
+// services portent désormais le bleu du logo (Paul, 25/09/2026).
+void color;
 
-const colors = colorConfig[color];
-
-// Compact, dark-safe client logo strip (white pills) for instant credibility.
+// Bande de logos clients sous les boutons, pour la crédibilité immédiate.
 // Defaults to the acquisition clients; a page can override with its own set
 // (e.g. AI Training passes its training clients).
 const defaultHeroLogos = [
@@ -74,112 +62,91 @@ const defaultHeroLogos = [
 const heroLogos = (heroLogosProp && heroLogosProp.length > 0) ? heroLogosProp : defaultHeroLogos;
 
 const labels = {
-  en: { trusted: 'Trusted by', results: 'Real results', whatYouGet: 'What you get', and: 'and' },
-  fr: { trusted: 'Ils nous font confiance', results: 'Résultats concrets', whatYouGet: 'Ce que vous obtenez', and: 'et' },
+  en: { trusted: 'Trusted by', results: 'Real results', whatYouGet: 'What you get', contact: 'Contact us' },
+  fr: { trusted: 'Ils nous font confiance', results: 'Résultats concrets', whatYouGet: 'Ce que vous obtenez', contact: 'Nous contacter' },
 };
 const lbl = labels[lang] || labels.en;
 
 const showPanel = metrics.length > 0 || proofPoints.length > 0;
 ---
 
-<section class="hero-section relative flex items-center overflow-hidden bg-slate-950 min-h-[88vh] lg:min-h-screen">
-  <!-- Animated Background with Parallax -->
-  <div class="absolute inset-0 pointer-events-none">
-    <div class={`parallax-orb orb-1 absolute w-[500px] h-[500px] bg-gradient-to-r ${colors.gradient} rounded-full blur-[100px] opacity-30`} data-speed="0.05"></div>
-    <div class={`parallax-orb orb-2 absolute w-[400px] h-[400px] bg-gradient-to-r ${colors.gradient} rounded-full blur-[80px] opacity-25`} data-speed="0.03"></div>
-    <div class="parallax-orb orb-4 absolute w-[600px] h-[600px] bg-gradient-to-r from-slate-800 to-slate-900 rounded-full blur-[100px] opacity-60" data-speed="0.02"></div>
-
-    <!-- Grid pattern -->
-    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiMxZTI5M2IiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6TTEgMWg1OHY1OEgxVjF6IiBmaWxsPSIjMzM0MTU1IiBmaWxsLW9wYWNpdHk9Ii4zIi8+PC9nPjwvc3ZnPg==')] opacity-10"></div>
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/50 to-slate-950"></div>
-  </div>
-
-  <!-- Content -->
-  <div class="relative z-10 container-custom py-24 lg:py-20">
-    <div class={`grid items-center gap-10 lg:gap-16 ${showPanel ? 'lg:grid-cols-[1.05fr_0.95fr]' : ''}`}>
-      <!-- Left column: message + CTAs + logos -->
-      <div class="max-w-2xl">
+<!-- Le hero des pages services, dans le style de l'accueil depuis le 25/09/2026 :
+     fond blanc, titre serré en graisse 800, un seul bleu, et les deux mêmes portes
+     que partout sur le site (« Calculer mon budget », « Nous contacter »). Aucune
+     animation d'entrée : le titre et le paragraphe sont là dès le premier rendu. -->
+<section class="hero-service relative bg-white border-b border-slate-100">
+  <div class="container-custom pt-12 pb-16 sm:pt-16 lg:pt-20 lg:pb-24">
+    <div class={`grid items-start gap-10 lg:gap-16 ${showPanel ? 'lg:grid-cols-[1.1fr_0.9fr]' : ''}`}>
+      <div class={showPanel ? 'max-w-2xl' : 'max-w-3xl'}>
         {badge && (
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 mb-6 animate-fade-in-down">
-            <span class={`w-2 h-2 rounded-full bg-gradient-to-r ${colors.gradient} animate-pulse`}></span>
-            <span class="text-white/90 font-medium text-sm">{badge}</span>
-          </div>
+          <p class="mb-5 text-sm font-semibold text-slate-500">{badge}</p>
         )}
 
-        <h1 class="font-display text-[2.25rem] sm:text-5xl lg:text-6xl font-bold text-white mb-5 leading-[1.08] break-words hyphens-auto" lang={lang}>
+        <h1 class="hero-service-titre font-display text-[2.375rem] sm:text-5xl lg:text-[3.75rem] font-extrabold text-encre mb-6 break-words hyphens-auto" lang={lang}>
           {headline}
         </h1>
 
         {subheadline && (
-          <p class={`text-lg sm:text-xl font-semibold ${colors.accent} mb-5 animate-fade-in animation-delay-300`}>
+          <p class="text-lg sm:text-xl font-semibold text-marque mb-4 text-pretty">
             {subheadline}
           </p>
         )}
 
-        <p class="text-base sm:text-lg text-slate-400 mb-8 animate-fade-in animation-delay-500">
+        <p class="text-base sm:text-lg text-slate-600 mb-9 max-w-[58ch] text-pretty">
           {description}
         </p>
 
-        <!-- CTA Buttons -->
-        <div class="flex flex-wrap gap-4 animate-fade-in animation-delay-700">
-          <a
-            href={`/${lang}/contact`}
-            class="group inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-white text-slate-900 hover:bg-slate-100 font-semibold text-base shadow-xl hover:shadow-2xl hover:scale-[1.03] transition-all duration-300"
-          >
-            {t(lang, 'cta.startProject')}
-            <Icon name="arrow-right" size={20} class="group-hover:translate-x-1 transition-transform" />
-          </a>
+        <div class="flex flex-wrap gap-3">
           <a
             href={`/${lang}/calculator`}
-            class="inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold text-base hover:bg-white/20 hover:scale-[1.03] transition-all duration-300"
+            class="group inline-flex items-center justify-center gap-2 h-13 px-6 rounded-full bg-marque text-white font-semibold hover:bg-marque-fonce active:scale-[0.98] transition-colors"
           >
-            <span>🧮</span>
             {t(lang, 'cta.calculateBudget')}
+            <Icon name="arrow-right" size={18} class="transition-transform group-hover:translate-x-0.5" />
+          </a>
+          <a
+            href={`/${lang}/contact`}
+            class="inline-flex items-center justify-center h-13 px-6 rounded-full border border-slate-300 text-encre font-semibold hover:border-slate-400 hover:bg-slate-50 transition-colors"
+          >
+            {lbl.contact}
           </a>
         </div>
 
-        <!-- Client logo strip -->
-        <div class="mt-10 animate-fade-in animation-delay-700">
-          <p class="text-xs uppercase tracking-wider text-slate-500 mb-3">{lbl.trusted}</p>
-          <div class="flex flex-wrap items-center gap-2.5">
+        <div class="mt-12">
+          <p class="text-xs font-semibold text-slate-500 mb-4">{lbl.trusted}</p>
+          <ul class="flex flex-wrap items-center gap-x-7 gap-y-4">
             {heroLogos.map((c) => (
-              <div class="h-9 w-[88px] bg-white/90 rounded-lg flex items-center justify-center px-2.5 shadow-sm">
-                <img src={c.logo} alt={c.name} class="max-h-5 max-w-full object-contain" loading="eager" width="80" height="20" />
-              </div>
+              <li class="h-7 flex items-center">
+                <img src={c.logo} alt={c.name} class="max-h-6 w-auto max-w-[108px] object-contain opacity-80" loading="eager" width="108" height="24" />
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
 
-      <!-- Right column: proof panel -->
       {showPanel && (
-        <div class={`relative rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-6 sm:p-7 shadow-2xl ring-1 ${colors.ring} animate-fade-in animation-delay-500`}>
+        <div class="rounded-[20px] bg-[#f3f6f9] p-6 sm:p-8">
           {metrics.length > 0 && (
             <>
-              <div class="flex items-center gap-2 mb-5">
-                <span class={`w-2 h-2 rounded-full bg-gradient-to-r ${colors.gradient}`}></span>
-                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">{lbl.results}</span>
-              </div>
-              <div class="grid grid-cols-2 gap-x-6 gap-y-5 mb-6">
+              <p class="text-xs font-semibold text-slate-500 mb-5">{lbl.results}</p>
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-6 mb-7">
                 {metrics.slice(0, 4).map((m) => (
-                  <div>
-                    <div class={`text-3xl sm:text-4xl font-bold font-display ${colors.accent} leading-none`}>{m.value}</div>
-                    <div class="text-xs text-slate-400 mt-1.5 leading-tight">{m.label}</div>
+                  <div class="flex flex-col-reverse">
+                    <dt class="text-sm text-slate-600 mt-1.5 leading-snug">{m.label}</dt>
+                    <dd class="font-display font-extrabold text-[2.25rem] sm:text-[2.625rem] leading-none tracking-[-0.04em] text-encre">{m.value}</dd>
                   </div>
                 ))}
-              </div>
+              </dl>
             </>
           )}
 
           {proofPoints.length > 0 && (
-            <div class={metrics.length > 0 ? 'pt-5 border-t border-white/10' : ''}>
-              <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-3">{lbl.whatYouGet}</p>
+            <div class={metrics.length > 0 ? 'pt-6 border-t border-slate-200' : ''}>
+              <p class="text-xs font-semibold text-slate-500 mb-3">{lbl.whatYouGet}</p>
               <ul class="space-y-2.5">
                 {proofPoints.slice(0, 4).map((p) => (
-                  <li class="flex items-start gap-2.5 text-sm text-slate-200">
-                    <span class={`mt-0.5 flex-shrink-0 w-4 h-4 rounded-full bg-gradient-to-r ${colors.gradient} flex items-center justify-center`}>
-                      <svg class="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                    </span>
+                  <li class="flex items-start gap-2.5 text-[15px] text-slate-700">
+                    <svg class="mt-1 w-4 h-4 flex-shrink-0 text-marque" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
                     <span>{p}</span>
                   </li>
                 ))}
@@ -188,10 +155,10 @@ const showPanel = metrics.length > 0 || proofPoints.length > 0;
           )}
 
           {testimonial && (
-            <figure class="mt-6 pt-5 border-t border-white/10">
-              <blockquote class="text-sm text-slate-300 italic leading-relaxed">“{testimonial.quote}”</blockquote>
-              <figcaption class="mt-2 text-xs text-slate-400">
-                <span class="text-slate-200 font-medium not-italic">{testimonial.author}</span>{testimonial.role ? `, ${testimonial.role}` : ''}{testimonial.company ? ` — ${testimonial.company}` : ''}
+            <figure class="mt-7 pt-6 border-t border-slate-200">
+              <blockquote class="text-[15px] text-slate-700 leading-relaxed">{lang === 'fr' ? `«\u00a0${testimonial.quote}\u00a0»` : `“${testimonial.quote}”`}</blockquote>
+              <figcaption class="mt-3 text-sm text-slate-500">
+                <span class="text-encre font-semibold">{testimonial.author}</span>{testimonial.role ? `, ${testimonial.role}` : ''}{testimonial.company ? `, ${testimonial.company}` : ''}
               </figcaption>
             </figure>
           )}
@@ -202,48 +169,9 @@ const showPanel = metrics.length > 0 || proofPoints.length > 0;
 </section>
 
 <style>
-  .orb-1 { top: 8%; left: -10%; }
-  .orb-2 { bottom: 15%; right: -5%; }
-  .orb-4 { top: 40%; left: 30%; }
-
-  .animation-delay-300 { animation-delay: 300ms; }
-  .animation-delay-500 { animation-delay: 500ms; }
-  .animation-delay-700 { animation-delay: 700ms; }
-
-  @keyframes fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes fade-in-down { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-
-  .animate-fade-in { animation: fade-in 0.7s ease forwards; opacity: 0; }
-  .animate-fade-in-down { animation: fade-in-down 0.7s ease forwards; opacity: 0; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .animate-fade-in, .animate-fade-in-down { animation: none; opacity: 1; transform: none; }
-    .parallax-orb { animation: none !important; }
+  .hero-service-titre {
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
   }
 </style>
-
-<script>
-  // Mouse parallax for orbs (skipped under reduced motion)
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const heroSection = document.querySelector('.hero-section');
-  const orbs = document.querySelectorAll('.parallax-orb');
-
-  if (!prefersReduced && heroSection && orbs.length > 0) {
-    let mouseX = 0, mouseY = 0, currentX = 0, currentY = 0;
-    heroSection.addEventListener('mousemove', (e) => {
-      const rect = heroSection.getBoundingClientRect();
-      mouseX = ((e as MouseEvent).clientX - rect.left - rect.width / 2) / rect.width;
-      mouseY = ((e as MouseEvent).clientY - rect.top - rect.height / 2) / rect.height;
-    });
-    function animate() {
-      currentX += (mouseX - currentX) * 0.05;
-      currentY += (mouseY - currentY) * 0.05;
-      orbs.forEach((orb) => {
-        const speed = parseFloat(orb.getAttribute('data-speed') || '0.05');
-        (orb as HTMLElement).style.transform = `translate(${currentX * 100 * speed}px, ${currentY * 100 * speed}px)`;
-      });
-      requestAnimationFrame(animate);
-    }
-    animate();
-  }
-</script>
