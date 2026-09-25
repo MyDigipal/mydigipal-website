@@ -129,6 +129,14 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
 - **Parcours** : une question à la fois sur téléphone, guide à droite sur ordinateur, aucune
   avance automatique (le même bouton « Continuer » partout), page de résultat pleine largeur
   avec l'audit et « Nous contacter » (plus de prise de rendez-vous depuis le 25/09/2026).
+- **Le style de la nouvelle accueil depuis le 25/09/2026** : bleu du logo (`marque`) à la
+  place de `primary-*`, boutons en pilule, titres en graisse 800 serrés, sur-titres en gris
+  (le bleu reste aux actions et aux prix), bloc sur toute la largeur du conteneur. ⚠️ **Plus
+  de hauteur fixe ni de défilement à l'intérieur du bloc** (Paul : la barre de défilement
+  « c'est pas très beau ») : c'est la page qui défile, la barre du prix est collée en bas
+  de l'écran (`sticky bottom-0`) et le guide de droite en haut (`sticky top-[88px]`).
+  Ne pas remettre de `lg:h-[...]` ni d'`overflow-y-auto` sur le corps. Captures :
+  `docs/calculator/refonte-2026-09/captures-style-accueil/`.
 - **Entrées** : `?service=<domaine>` coche le service ; `#plan=<encodePlan>` (et `&b=<budget>`)
   ouvre directement un devis, c'est ce que font l'assistant du site et le bouton « Revoir mon
   devis » des mails.

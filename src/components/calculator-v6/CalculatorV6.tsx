@@ -74,8 +74,8 @@ function InfoView({ data, lang, showEmpty }: { data: Info | null; lang: Lang; sh
   return (
     <div className="flex flex-col gap-3">
       <VideoSlotView id={data.video} lang={lang} showEmpty={showEmpty} />
-      {data.kick && <p className="mt-1 text-[12.5px] font-semibold text-primary-600">{data.kick}</p>}
-      <h4 className="font-display text-[19px] font-bold leading-snug text-slate-900">{data.title}</h4>
+      {data.kick && <p className="mt-1 text-[12.5px] font-semibold text-slate-500">{data.kick}</p>}
+      <h4 className="font-display text-[21px] font-extrabold leading-snug tracking-[-0.02em] text-slate-900">{data.title}</h4>
       {data.meta && <p className="text-sm font-semibold text-slate-900">{data.meta}</p>}
       {data.text && <p className="text-[14.5px] leading-relaxed text-slate-600">{data.text}</p>}
       {data.list && data.list.length > 0 && <ul className="list-disc space-y-1 pl-5 text-sm text-slate-600">{data.list.map((li) => <li key={li}>{li}</li>)}</ul>}
@@ -112,7 +112,7 @@ function Hint({ k, lang, currency, children, className = '', tone = 'light' }: {
   return (
     <>
       <button ref={ref} type="button" aria-describedby={pos ? id : undefined}
-        className={`cursor-help border-b border-dashed text-left transition-colors ${tone === 'dark' ? 'border-white/60 hover:border-white' : 'border-slate-400 hover:border-primary-600 hover:text-primary-700'} ${className}`}
+        className={`cursor-help border-b border-dashed text-left transition-colors ${tone === 'dark' ? 'border-white/60 hover:border-white' : 'border-slate-400 hover:border-marque hover:text-marque-fonce'} ${className}`}
         onPointerEnter={(e) => { if (e.pointerType === 'mouse') open(); }}
         onPointerLeave={(e) => { if (e.pointerType === 'mouse') setPos(null); }}
         onBlur={() => setPos(null)}
@@ -187,7 +187,6 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   const [formError, setFormError] = useState('');
   const mountedAt = useRef(Date.now());
   const rootRef = useRef<HTMLDivElement>(null);
-  const bodyRef = useRef<HTMLDivElement>(null);
   const advanceTimer = useRef<number | null>(null);
   const hideTimer = useRef<number | null>(null);
 
@@ -229,7 +228,6 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
 
   // --- l'écran ne saute pas : au changement de question, on ne remonte que si le haut du bloc est sorti de l'écran
   useEffect(() => {
-    if (bodyRef.current) bodyRef.current.scrollTop = 0;
     const el = rootRef.current;
     if (!el) return;
     const top = el.getBoundingClientRect().top;
@@ -447,10 +445,10 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
 
   // --- briques ------------------------------------------------------------------------------
   const optionClass = (checked: boolean) =>
-    `flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 ${checked ? 'border-primary-600 bg-primary-50 ring-1 ring-primary-600' : 'border-slate-200 bg-white hover:border-slate-300'}`;
+    `flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marque ${checked ? 'border-marque bg-marque-doux ring-1 ring-marque' : 'border-slate-200 bg-white hover:border-slate-300'}`;
   const Mark = ({ checked, square = false }: { checked: boolean; square?: boolean }) => (
-    <span className={`grid h-[18px] w-[18px] shrink-0 place-items-center border-[1.5px] ${square ? 'rounded-[5px]' : 'rounded-full'} ${checked ? (square ? 'border-primary-600 bg-primary-600 text-white' : 'border-primary-600') : 'border-slate-300'}`}>
-      {checked && (square ? <IconCheck /> : <span className="h-2 w-2 rounded-full bg-primary-600" />)}
+    <span className={`grid h-[18px] w-[18px] shrink-0 place-items-center border-[1.5px] ${square ? 'rounded-[5px]' : 'rounded-full'} ${checked ? (square ? 'border-marque bg-marque text-white' : 'border-marque') : 'border-slate-300'}`}>
+      {checked && (square ? <IconCheck /> : <span className="h-2 w-2 rounded-full bg-marque" />)}
     </span>
   );
   const Price = ({ amount, once }: { amount?: number; once?: boolean }) => (amount == null ? null : (
@@ -476,7 +474,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       return (
         <div className="rounded-2xl border border-slate-200 p-4">
           <p className="font-display text-[26px] font-extrabold tabular-nums text-slate-900" data-info="media">{fmt(b)}<span className="ml-1 text-sm font-medium text-slate-500">{L(lang, '/mois', '/mo')}</span></p>
-          <input type="range" min={0} max={BUDGET_STEPS.length - 1} step={1} value={idx} aria-label={t(q.title, lang)} className="mt-4 w-full accent-primary-600"
+          <input type="range" min={0} max={BUDGET_STEPS.length - 1} step={1} value={idx} aria-label={t(q.title, lang)} className="mt-4 w-full accent-marque"
             onChange={(e) => setRaw(q.id, BUDGET_STEPS[Number(e.target.value)])}
             onPointerUp={() => tracking && trackBudget(q.domain, BUDGET_STEPS[idx], currency)}
             onKeyUp={() => tracking && trackBudget(q.domain, BUDGET_STEPS[idx], currency)} />
@@ -496,7 +494,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       return (
         <div className="rounded-2xl border border-slate-200 p-4" data-info={`cnt:${type}`}>
           <p className="font-display text-[26px] font-extrabold tabular-nums text-slate-900">{v.toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB')}<span className="ml-1.5 text-sm font-medium text-slate-500">{L(lang, 'contacts', 'contacts')}</span></p>
-          <input type="range" min={0} max={CONTACT_VOLUMES.length - 1} step={1} value={idx} aria-label={t(q.title, lang)} className="mt-4 w-full accent-primary-600"
+          <input type="range" min={0} max={CONTACT_VOLUMES.length - 1} step={1} value={idx} aria-label={t(q.title, lang)} className="mt-4 w-full accent-marque"
             onChange={(e) => setRaw(q.id, CONTACT_VOLUMES[Number(e.target.value)])} />
           <div className="mt-1 flex justify-between text-xs text-slate-500"><span>{CONTACT_VOLUMES[0]}</span><span>{CONTACT_VOLUMES[CONTACT_VOLUMES.length - 1].toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB')}</span></div>
           <p className="mt-3 border-t border-slate-200 pt-3 text-[13.5px] text-slate-600">
@@ -538,8 +536,8 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
             const on = sel.includes(String(o.value));
             return (
               <button key={String(o.value)} type="button" role="checkbox" aria-checked={on} data-info={o.info} onClick={() => toggleMulti(q, String(o.value))}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-medium transition-colors ${on ? 'border-primary-600 bg-primary-50 ring-1 ring-primary-600' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
-                {on && <span className="text-primary-600"><IconCheck /></span>}{t(o.label, lang)}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-medium transition-colors ${on ? 'border-marque bg-marque-doux ring-1 ring-marque' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                {on && <span className="text-marque"><IconCheck /></span>}{t(o.label, lang)}
               </button>
             );
           })}
@@ -586,7 +584,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     return (
       <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
         {terms.map((x) => (
-          <Hint key={x.key} k={x.key} lang={lang} currency={currency} className="pb-px font-medium text-primary-600">{x.label}</Hint>
+          <Hint key={x.key} k={x.key} lang={lang} currency={currency} className="pb-px font-medium text-marque">{x.label}</Hint>
         ))}
         {hasVideo && (
           <button type="button" onClick={() => setSheetKey(rk)} className="inline-flex items-center gap-1.5 font-medium text-slate-700 lg:hidden">
@@ -613,7 +611,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         const on = st.duration === o.months;
         return (
           <button key={o.months} type="button" role="radio" aria-checked={on} onClick={() => setDuration(o.months, false)}
-            className={`flex-1 rounded-lg px-2 py-2 text-sm font-semibold ${on ? (dark ? 'bg-white text-primary-700 shadow-sm' : 'bg-white text-slate-900 shadow-sm') : (dark ? 'text-white' : 'text-slate-600')}`}>
+            className={`flex-1 rounded-lg px-2 py-2 text-sm font-semibold ${on ? (dark ? 'bg-white text-marque-fonce shadow-sm' : 'bg-white text-slate-900 shadow-sm') : (dark ? 'text-white' : 'text-slate-600')}`}>
             {o.months} {L(lang, 'mois', 'months')}{o.discount ? <span className={`block text-[11.5px] ${on || !dark ? 'text-emerald-700' : 'text-emerald-200'}`}>-{o.discount}&nbsp;%</span> : null}
           </button>
         );
@@ -624,14 +622,17 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   // --- corps selon l'écran ----------------------------------------------------------------------
   let body: React.ReactNode;
   let actions: React.ReactNode = null;
-  const primaryBtn = 'inline-flex h-11 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-primary-600 px-5 text-[15px] font-semibold text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-40 lg:flex-none lg:min-w-[170px]';
-  const kicker = (text: string) => <p className="mb-1.5 text-[13px] font-semibold text-primary-600">{text}</p>;
-  const title = (text: string) => <h3 className="font-display text-2xl font-bold leading-tight text-slate-900 lg:text-[26px]">{text}</h3>;
+  // Le style de la page d'accueil (25/09/2026) : boutons en pilule au bleu du logo, titres
+  // serrés en graisse 800, le sur-titre en gris (le bleu reste aux actions et aux prix).
+  const primaryBtn = 'inline-flex h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-marque px-6 text-[15px] font-semibold text-white transition-[background-color,transform] hover:bg-marque-fonce active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 lg:flex-none lg:min-w-[180px]';
+  const kicker = (text: string) => <p className="mb-1.5 text-[13px] font-semibold text-slate-500">{text}</p>;
+  // L'espace avant « ? », « ! », « : » devient insécable : sinon le signe part seul à la ligne.
+  const title = (text: string) => <h3 className="font-display text-[26px] font-extrabold leading-[1.1] tracking-[-0.025em] text-slate-900 lg:text-[32px]">{text.replace(/ ([?!:;])/g, '\u00a0$1')}</h3>;
 
   if (status === 'sent') {
     body = (
       <div className="py-6">
-        <h3 className="font-display text-2xl font-bold text-slate-900">{L(lang, 'Merci, votre devis est en route', 'Thank you, your quote is on its way')}</h3>
+        <h3 className="font-display text-2xl font-extrabold tracking-[-0.025em] text-slate-900">{L(lang, 'Merci, votre devis est en route', 'Thank you, your quote is on its way')}</h3>
         <p className="mt-2 max-w-prose text-slate-600">{L(lang, 'Vous le recevez par email dans quelques minutes. Un expert vous rappelle sous 24 à 48 h pour l’ajuster avec vous.', 'It will reach your inbox in a few minutes. An expert will get back to you within 24 to 48 hours to fine-tune it with you.')}</p>
         {dryRun && <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
       </div>
@@ -660,7 +661,6 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   } else if (cur === 'pick') {
     body = (
       <>
-        {kicker(L(lang, 'Votre devis en quelques questions', 'Your quote in a few questions'))}
         {title(L(lang, 'De quoi avez-vous besoin ?', 'What do you need?'))}
         <p className="mb-4 mt-1.5 text-sm text-slate-500">{L(lang, 'Plusieurs réponses possibles.', 'Pick as many as you like.')}<span className="hidden lg:inline"> {L(lang, 'Survolez un service pour savoir ce qu’il comprend.', 'Hover over a service to see what it includes.')}</span></p>
         <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
@@ -668,20 +668,20 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
             const on = draft.includes(d);
             return (
               <button key={d} type="button" role="checkbox" aria-checked={on} data-info={`dom:${d}`} onClick={() => togglePick(d)}
-                className={`relative rounded-xl border p-3 text-left transition-colors ${on ? 'border-primary-600 bg-primary-50 ring-1 ring-primary-600' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
-                <span className={`absolute right-2.5 top-2.5 grid h-[18px] w-[18px] place-items-center rounded-full border-[1.5px] ${on ? 'border-primary-600 bg-primary-600 text-white' : 'border-slate-300'}`}>{on && <IconCheck />}</span>
+                className={`relative rounded-2xl border p-3.5 text-left transition-colors ${on ? 'border-marque bg-marque-doux ring-1 ring-marque' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                <span className={`absolute right-2.5 top-2.5 grid h-[18px] w-[18px] place-items-center rounded-full border-[1.5px] ${on ? 'border-marque bg-marque text-white' : 'border-slate-300'}`}>{on && <IconCheck />}</span>
                 <span className="block pr-6 text-[14.5px] font-semibold leading-snug text-slate-900">{domainName(d, lang)}</span>
                 <span className="mt-1 line-clamp-2 block text-[12.5px] leading-snug text-slate-500">{domainDesc(d, lang)}</span>
               </button>
             );
           })}
           <button type="button" onClick={openGuide}
-            className="col-span-2 flex items-center justify-between gap-4 rounded-xl border border-primary-200 bg-primary-50 p-4 text-left transition-colors hover:border-primary-400 lg:col-span-4">
+            className="col-span-2 flex items-center justify-between gap-4 rounded-2xl border border-marque/20 bg-marque-doux p-4 text-left transition-colors hover:border-marque/50 lg:col-span-4">
             <span>
               <span className="block text-[15px] font-bold text-slate-900">{L(lang, 'Je ne sais pas encore, aidez-moi à choisir', 'Not sure yet? Help me choose')}</span>
               <span className="mt-0.5 block text-[13px] text-slate-600">{L(lang, 'Trois questions sur votre entreprise, et on vous propose un plan chiffré.', 'Three questions about your business, and we suggest a costed plan.')}</span>
             </span>
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary-600 text-white"><IconNext /></span>
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-marque text-white"><IconNext /></span>
           </button>
         </div>
         <div className="mt-5 flex flex-wrap items-center justify-end gap-2 text-sm text-slate-500">{L(lang, 'Prix en', 'Prices in')} <CurrencySwitch /></div>
@@ -757,10 +757,10 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     ];
 
     const monthlyCard = (
-      <div {...rise(1)} className={`rounded-3xl bg-primary-600 p-6 text-white sm:p-8 ${rise(1).className}`}>
-        <p className="text-sm font-medium text-primary-100"><H k="g:monthly" tone="dark">{L(lang, 'Nos honoraires, par mois', 'Our fees, per month')}</H></p>
+      <div {...rise(1)} className={`rounded-3xl bg-marque p-6 text-white sm:p-8 ${rise(1).className}`}>
+        <p className="text-sm font-medium text-white/80"><H k="g:monthly" tone="dark">{L(lang, 'Nos honoraires, par mois', 'Our fees, per month')}</H></p>
         <p className="mt-2 font-display text-5xl font-extrabold leading-none tabular-nums sm:text-6xl"><CountUp value={quote.monthly} format={fmt} /></p>
-        <p className="mt-2 text-sm text-primary-100">{quote.discountPct ? L(lang, `Remise de ${quote.discountPct}\u00a0% déduite`, `${quote.discountPct}% discount applied`) : L(lang, 'Hors budget média', 'Media budget not included')}</p>
+        <p className="mt-2 text-sm text-white/80">{quote.discountPct ? L(lang, `Remise de ${quote.discountPct}\u00a0% déduite`, `${quote.discountPct}% discount applied`) : L(lang, 'Hors budget média', 'Media budget not included')}</p>
         <div className="mt-6"><DurationSwitch dark /></div>
       </div>
     );
@@ -792,7 +792,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
                 ))}
               </ul>
             )}
-            <button type="button" className="mt-3 text-[13px] font-semibold text-primary-600 underline underline-offset-2" onClick={() => editDomain(dq.domain)}>
+            <button type="button" className="mt-3 text-[13px] font-semibold text-marque underline underline-offset-2" onClick={() => editDomain(dq.domain)}>
               {dq.discuss || dq.empty ? L(lang, 'Préciser', 'Set it up') : L(lang, 'Modifier', 'Edit')}
             </button>
           </div>
@@ -801,15 +801,15 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     );
     const auditPanel = status === 'sent' ? (
       <div className="rounded-3xl bg-slate-900 p-6 text-white sm:p-10">
-        <h3 className="font-display text-2xl font-bold sm:text-3xl">{L(lang, `Merci ${firstName}, c’est parti`, `Thank you ${firstName}, we’re on it`)}</h3>
+        <h3 className="font-display text-2xl font-extrabold tracking-[-0.025em] sm:text-3xl">{L(lang, `Merci ${firstName}, c’est parti`, `Thank you ${firstName}, we’re on it`)}</h3>
         <p className="mt-3 max-w-2xl text-slate-300">{L(lang, `Le devis arrive dans votre boîte mail dans quelques minutes. On étudie ${contact.company.trim()} de près, et on revient vers vous sous 24 à 48 h.`, `The quote reaches your inbox in a few minutes. We take a close look at ${contact.company.trim()} and get back to you within 24 to 48 hours.`)}</p>
         {/* Pas de prise de rendez-vous (Paul, 25/09/2026) : le formulaire de contact. */}
-        <a href={`/${lang}/contact`} className="mt-6 inline-flex h-11 items-center rounded-xl bg-white px-5 text-[15px] font-semibold text-slate-900">{L(lang, 'Nous contacter', 'Contact us')}</a>
+        <a href={`/${lang}/contact`} className="mt-6 inline-flex h-12 items-center rounded-full bg-white px-6 text-[15px] font-semibold text-slate-900">{L(lang, 'Nous contacter', 'Contact us')}</a>
         {dryRun && <p className="mt-5 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
       </div>
     ) : (
-      <div className="rounded-3xl border border-primary-100 bg-primary-50/70 p-5 sm:p-8">
-        <h3 className="font-display text-2xl font-bold text-slate-900 sm:text-3xl">{L(lang, 'Un audit fait pour votre entreprise, en plus du devis', 'An audit built for your business, on top of the quote')}</h3>
+      <div className="rounded-3xl border border-marque/15 bg-marque-doux/70 p-5 sm:p-8">
+        <h3 className="font-display text-2xl font-extrabold tracking-[-0.025em] text-slate-900 sm:text-3xl">{L(lang, 'Un audit fait pour votre entreprise, en plus du devis', 'An audit built for your business, on top of the quote')}</h3>
         <p className="mt-2 max-w-2xl text-slate-600">{L(lang, 'Ce devis repose sur nos grilles de prix. Donnez-nous votre site et quelques réponses : on regarde votre entreprise de l’extérieur, vos recherches, vos concurrents, votre tracking, et on vous envoie un audit adapté.', 'This quote is based on our price grid. Share your website and a few answers: we look at your business from the outside, your searches, your competitors, your tracking, and send you a tailored audit.')}</p>
         <form className="mt-6 grid gap-4" onSubmit={(e) => { e.preventDefault(); submit(); }} noValidate>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -827,7 +827,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
             </label>
           </div>
           {questions.map((x) => (
-            <label key={x.key} className="block rounded-2xl border border-slate-200 bg-white p-4 transition-colors focus-within:border-primary-600">
+            <label key={x.key} className="block rounded-2xl border border-slate-200 bg-white p-4 transition-colors focus-within:border-marque">
               <span className="flex items-baseline justify-between gap-3">
                 <span className="font-display text-[15px] font-bold text-slate-900">{x.q}</span>
                 <span className="shrink-0 text-xs text-slate-500">{L(lang, 'Facultatif', 'Optional')}</span>
@@ -845,10 +845,10 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
             </p>
           )}
           <div className="flex flex-wrap items-center gap-3">
-            <button type="submit" disabled={status === 'sending'} className="inline-flex h-12 items-center justify-center rounded-xl bg-primary-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-primary-700 disabled:opacity-50">
+            <button type="submit" disabled={status === 'sending'} className="inline-flex h-12 items-center justify-center rounded-full bg-marque px-6 text-[15px] font-semibold text-white transition-colors hover:bg-marque-fonce disabled:opacity-50">
               {status === 'sending' ? L(lang, 'Envoi...', 'Sending...') : L(lang, 'Recevoir mon devis et mon audit', 'Get my quote and my audit')}
             </button>
-            <a href={`/${lang}/contact`} className="inline-flex h-12 items-center rounded-xl bg-white px-5 text-[15px] font-semibold text-slate-900 ring-1 ring-slate-200 hover:ring-slate-300">{L(lang, 'Nous contacter', 'Contact us')}</a>
+            <a href={`/${lang}/contact`} className="inline-flex h-12 items-center rounded-full bg-white px-6 text-[15px] font-semibold text-slate-900 ring-1 ring-slate-200 hover:ring-slate-300">{L(lang, 'Nous contacter', 'Contact us')}</a>
           </div>
           <p className="text-xs text-slate-500">{L(lang, 'Sans engagement. Vos réponses servent uniquement à préparer l’audit.', 'No commitment. Your answers are only used to prepare the audit.')}</p>
         </form>
@@ -874,13 +874,13 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
 
         <div className="space-y-10 px-4 py-8 sm:px-8 sm:py-10 lg:px-12">
           <div {...rise(0)}>
-            <p className="text-[13px] font-semibold text-primary-600">{proposalBudget ? L(lang, 'Notre proposition', 'Our proposal') : L(lang, 'C’est prêt', 'All set')}</p>
-            <h2 className="mt-1 font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            <p className="text-[13px] font-semibold text-slate-500">{proposalBudget ? L(lang, 'Notre proposition', 'Our proposal') : L(lang, 'C’est prêt', 'All set')}</p>
+            <h2 className="mt-1 font-display text-3xl font-extrabold tracking-[-0.03em] text-slate-900 sm:text-[42px] sm:leading-[1.05]">
               {proposalBudget ? L(lang, `Pour environ ${fmt(proposalBudget)} par mois`, `For about ${fmt(proposalBudget)} a month`) : L(lang, 'Votre devis est prêt', 'Your quote is ready')}
             </h2>
             <p className="mt-2 text-slate-600">
               {L(lang, `${nb} service${nb > 1 ? 's' : ''}, engagement de ${st.duration} mois. Tout reste modifiable, et chaque terme souligné a sa définition.`, `${nb} service${nb > 1 ? 's' : ''}, ${st.duration}-month commitment. Everything can still change, and each underlined term has its definition.`)}
-              {proposalBudget ? <> <button type="button" onClick={restart} className="font-semibold text-primary-600 underline underline-offset-2">{L(lang, 'Repartir de zéro', 'Start over')}</button></> : null}
+              {proposalBudget ? <> <button type="button" onClick={restart} className="font-semibold text-marque underline underline-offset-2">{L(lang, 'Repartir de zéro', 'Start over')}</button></> : null}
             </p>
           </div>
 
@@ -893,14 +893,14 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
           </section>
           <div {...rise(4)}>{totalLine}</div>
           <section {...rise(5)}>
-            <h3 className="mb-4 font-display text-xl font-bold text-slate-900">{L(lang, 'Le détail, service par service', 'Service by service')}</h3>
+            <h3 className="mb-4 font-display text-2xl font-extrabold tracking-[-0.025em] text-slate-900">{L(lang, 'Le détail, service par service', 'Service by service')}</h3>
             {serviceCards}
           </section>
 
           <section {...rise(6)}>{auditPanel}</section>
 
           <section {...rise(7)}>
-            <h3 className="mb-4 font-display text-xl font-bold text-slate-900">{L(lang, 'Ce qui se passe ensuite', 'What happens next')}</h3>
+            <h3 className="mb-4 font-display text-2xl font-extrabold tracking-[-0.025em] text-slate-900">{L(lang, 'Ce qui se passe ensuite', 'What happens next')}</h3>
             <ol className="grid gap-4 md:grid-cols-3">
               {steps.map(([title, text], k) => (
                 <li key={title} className="flex gap-3">
@@ -918,17 +918,20 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   if (!guided && cur === 'recap') return renderResults();
 
   return (
-    <div ref={rootRef} className="overflow-clip rounded-3xl border border-slate-200 bg-white shadow-soft lg:grid lg:h-[680px] lg:grid-cols-[minmax(0,1fr)_440px]">
-      <div className="flex flex-col lg:min-h-0" onMouseOver={onOver} onMouseOut={onOut} onFocus={onOver} onBlur={onOut}>
-        <div className="flex items-center gap-3 border-b border-slate-200 px-4 py-3 sm:px-7">
+    // Le bloc grandit avec son contenu (Paul, 25/09/2026 : la barre de défilement intérieure
+    // « c'est pas très beau »). Plus de hauteur fixe : c'est la page qui défile, la barre du
+    // prix reste collée en bas de l'écran et le guide de droite reste collé en haut.
+    <div ref={rootRef} className="overflow-clip rounded-3xl border border-slate-200 bg-white shadow-soft lg:grid lg:min-h-[640px] lg:grid-cols-[minmax(0,1fr)_420px]">
+      <div className="flex flex-col" onMouseOver={onOver} onMouseOut={onOut} onFocus={onOver} onBlur={onOut}>
+        <div className="flex items-center gap-3 border-b border-slate-200 px-4 py-3 sm:px-7 lg:px-10">
           <button type="button" aria-label={L(lang, 'Retour', 'Back')} disabled={(!guided && i === 0) || status === 'sent'} onClick={onBack}
             className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-900 disabled:opacity-30"><IconBack /></button>
-          <div className="h-1 flex-1 overflow-hidden rounded-full bg-slate-100" aria-hidden="true"><div className="h-full rounded-full bg-primary-600 transition-[width] duration-300" style={{ width: `${status === 'sent' ? 100 : pct}%` }} /></div>
+          <div className="h-1 flex-1 overflow-hidden rounded-full bg-slate-100" aria-hidden="true"><div className="h-full rounded-full bg-marque transition-[width] duration-300" style={{ width: `${status === 'sent' ? 100 : pct}%` }} /></div>
           <span className="min-w-[38px] text-right text-[12.5px] tabular-nums text-slate-500">{guided ? `${guided.step + 1}/3` : `${Math.min(i + 1, seq.length)}/${seq.length}`}</span>
         </div>
-        <div ref={bodyRef} className="min-h-[440px] px-4 py-6 sm:px-7 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">{body}</div>
+        <div className="min-h-[440px] flex-1 px-4 py-6 sm:px-7 lg:px-10 lg:py-9">{body}</div>
         {status !== 'sent' && !guided && (
-          <div className="sticky bottom-0 z-10 flex flex-col gap-3 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur sm:px-7 lg:static lg:flex-row-reverse lg:items-center lg:justify-between lg:py-4">
+          <div className="sticky bottom-0 z-10 flex flex-col gap-3 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur sm:px-7 lg:flex-row-reverse lg:items-center lg:justify-between lg:px-10 lg:py-4">
             {actions && <div className="flex gap-2">{actions}</div>}
             <div className="min-w-0" aria-live="polite">
               {st.domains.length && (quote.monthly > 0 || quote.oneOff > 0 || quote.media > 0 || talk > 0 || quote.domains.some((d) => d.lines.some((l) => l.per === 'quote'))) ? (
@@ -946,15 +949,17 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
                   )}
                 </>
               ) : (
-                <p className="text-sm text-slate-500">{st.domains.length ? L(lang, 'Le prix s’affiche dès votre première réponse.', 'The price shows up with your first answer.') : L(lang, 'Choisissez un service pour voir le prix.', 'Pick a service to see the price.')}</p>
+                <p className="text-sm text-slate-500">{st.domains.length ? L(lang, 'Le prix s’affiche dès votre première réponse.', 'The price shows up with your first answer.') : draft.length ? L(lang, 'Continuez pour voir le prix.', 'Continue to see the price.') : L(lang, 'Choisissez un service pour voir le prix.', 'Pick a service to see the price.')}</p>
               )}
             </div>
           </div>
         )}
       </div>
 
-      <aside className="hidden min-h-0 flex-col gap-3 overflow-y-auto border-l border-slate-200 bg-slate-50 p-6 lg:flex" onMouseEnter={onGuideEnter} onMouseLeave={onGuideLeave}>
-        <InfoView data={info(status === 'sent' ? 'next' : guideKey, lang, currency)} lang={lang} showEmpty={showEmptyVideoSlots} />
+      <aside className="hidden border-l border-slate-200 bg-slate-50 lg:block" onMouseEnter={onGuideEnter} onMouseLeave={onGuideLeave}>
+        <div className="sticky top-[88px] flex max-h-[calc(100vh-112px)] flex-col gap-3 overflow-y-auto p-7 [scrollbar-width:thin]">
+          <InfoView data={info(status === 'sent' ? 'next' : guideKey, lang, currency)} lang={lang} showEmpty={showEmptyVideoSlots} />
+        </div>
       </aside>
 
       {sheetKey && (
