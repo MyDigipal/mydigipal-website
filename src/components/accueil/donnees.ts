@@ -81,6 +81,14 @@ export const EQUIPE: Array<{ slug: string; nom: string; role: Txt }> = [
 export const portrait = (slug: string) => `/images/team/visages/${slug}.avif`;
 
 const EN_LETTRES: Record<number, Txt> = {
+  2: { fr: 'Deux', en: 'Two' },
+  3: { fr: 'Trois', en: 'Three' },
+  4: { fr: 'Quatre', en: 'Four' },
+  5: { fr: 'Cinq', en: 'Five' },
+  6: { fr: 'Six', en: 'Six' },
+  7: { fr: 'Sept', en: 'Seven' },
+  8: { fr: 'Huit', en: 'Eight' },
+  9: { fr: 'Neuf', en: 'Nine' },
   10: { fr: 'Dix', en: 'Ten' },
   11: { fr: 'Onze', en: 'Eleven' },
   12: { fr: 'Douze', en: 'Twelve' },

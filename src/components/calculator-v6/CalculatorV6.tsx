@@ -161,8 +161,6 @@ function CountUp({ value, format }: { value: number; format: (n: number) => stri
   return <span ref={ref}>{format(0)}</span>;
 }
 
-const BOOKING_URL = 'https://calendar.app.google/ofYHfRHbFoMpVxf79';
-
 type Guided = { step: number; industry?: string; goals?: string; monthlyBudget?: string };
 const GUIDED_TITLES: Record<string, { fr: string; en: string; subFr: string; subEn: string }> = {
   industry: { fr: 'Votre secteur ?', en: 'Your industry?', subFr: 'Le plus proche suffit, on adapte la proposition.', subEn: 'The closest one is fine, we tailor the proposal.' },
@@ -805,7 +803,8 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       <div className="rounded-3xl bg-slate-900 p-6 text-white sm:p-10">
         <h3 className="font-display text-2xl font-bold sm:text-3xl">{L(lang, `Merci ${firstName}, c’est parti`, `Thank you ${firstName}, we’re on it`)}</h3>
         <p className="mt-3 max-w-2xl text-slate-300">{L(lang, `Le devis arrive dans votre boîte mail dans quelques minutes. On étudie ${contact.company.trim()} de près, et on revient vers vous sous 24 à 48 h.`, `The quote reaches your inbox in a few minutes. We take a close look at ${contact.company.trim()} and get back to you within 24 to 48 hours.`)}</p>
-        <a href={BOOKING_URL} target="_blank" rel="noopener" className="mt-6 inline-flex h-11 items-center rounded-xl bg-white px-5 text-[15px] font-semibold text-slate-900">{L(lang, 'Réserver un appel de 30 min', 'Book a 30-min call')}</a>
+        {/* Pas de prise de rendez-vous (Paul, 25/09/2026) : le formulaire de contact. */}
+        <a href={`/${lang}/contact`} className="mt-6 inline-flex h-11 items-center rounded-xl bg-white px-5 text-[15px] font-semibold text-slate-900">{L(lang, 'Nous contacter', 'Contact us')}</a>
         {dryRun && <p className="mt-5 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
       </div>
     ) : (
@@ -849,7 +848,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
             <button type="submit" disabled={status === 'sending'} className="inline-flex h-12 items-center justify-center rounded-xl bg-primary-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-primary-700 disabled:opacity-50">
               {status === 'sending' ? L(lang, 'Envoi...', 'Sending...') : L(lang, 'Recevoir mon devis et mon audit', 'Get my quote and my audit')}
             </button>
-            <a href={BOOKING_URL} target="_blank" rel="noopener" className="inline-flex h-12 items-center rounded-xl bg-white px-5 text-[15px] font-semibold text-slate-900 ring-1 ring-slate-200 hover:ring-slate-300">{L(lang, 'Réserver un appel de 30 min', 'Book a 30-min call')}</a>
+            <a href={`/${lang}/contact`} className="inline-flex h-12 items-center rounded-xl bg-white px-5 text-[15px] font-semibold text-slate-900 ring-1 ring-slate-200 hover:ring-slate-300">{L(lang, 'Nous contacter', 'Contact us')}</a>
           </div>
           <p className="text-xs text-slate-500">{L(lang, 'Sans engagement. Vos réponses servent uniquement à préparer l’audit.', 'No commitment. Your answers are only used to prepare the audit.')}</p>
         </form>

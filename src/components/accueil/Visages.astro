@@ -3,12 +3,14 @@
  * Le hero de la page d'accueil : des gens d'abord.
  *
  * Direction A du document de refonte (« Les visages »), poussée plus loin :
- * - le titre prend toute la largeur, et sa seconde ligne s'épaissit en
- *   entrant (axe de graisse de Plus Jakarta Sans, 300 à 800) : le seul
- *   mouvement du hero qui dit quelque chose, il dit la phrase. « Vos
- *   campagnes ont des visages » depuis le 25/09/2026 : Paul ne trouvait pas
- *   « Votre équipe marketing, en plus grand » assez fort, et le voulait plus
- *   grand ;
+ * - le titre prend toute la largeur, en trois lignes, et la dernière
+ *   s'épaissit en entrant (axe de graisse de Plus Jakarta Sans, 300 à 800) :
+ *   le seul mouvement du hero qui dit quelque chose, il dit la phrase. Le
+ *   titre dit ce que Paul a demandé le 25/09/2026 : une agence de marketing
+ *   digital, l'IA comme moteur, des humains aux commandes (« l'expertise de
+ *   l'humain et l'intelligence de l'intelligence artificielle »). Avant lui,
+ *   « Votre équipe marketing, en plus grand » puis « Vos campagnes ont des
+ *   visages », écartés tous les deux ;
  * - les quatorze portraits, recadrés au même format par
  *   `scripts/visages-accueil.mjs`, EN COULEUR (Paul, 25/09/2026) ; c'est la
  *   personne qu'on survole, qu'on touche ou que la visite présente qui passe
@@ -36,8 +38,9 @@ const fr = lang === 'fr';
 const nombre = enLettres(EQUIPE.length, lang);
 const t = fr
   ? {
-      l1: 'Vos campagnes',
-      l2: 'ont des visages.',
+      l1: 'Le marketing digital,',
+      l2: 'boosté par l’IA,',
+      l3: 'piloté par des humains.',
       sous: `${nombre} spécialistes du B2B et de l’automobile, à Paris et à Londres, qui travaillent dans vos comptes.`,
       budget: 'Calculer mon budget',
       contact: 'Nous contacter',
@@ -45,8 +48,9 @@ const t = fr
       toucher: 'Touchez un visage pour savoir qui fait quoi.',
     }
   : {
-      l1: 'Your campaigns',
-      l2: 'have faces.',
+      l1: 'Digital marketing,',
+      l2: 'boosted by AI,',
+      l3: 'run by humans.',
       sous: `${nombre} B2B and automotive specialists in London and Paris, working inside your accounts.`,
       budget: 'Calculate my budget',
       contact: 'Contact us',
@@ -76,7 +80,8 @@ const place = (i: number) => {
   <div class="container-custom">
     <h1 id="accueil-titre" class="visages-titre" data-titre>
       <span class="ligne"><span style="--i:0" set:html={serrer(t.l1)} /></span>
-      <span class="ligne"><span style="--i:1" class="ligne-poids" set:html={serrer(t.l2)} /></span>
+      <span class="ligne"><span style="--i:1" set:html={serrer(t.l2)} /></span>
+      <span class="ligne"><span style="--i:2" class="ligne-poids" set:html={serrer(t.l3)} /></span>
     </h1>
 
     <div class="visages-corps">
@@ -139,10 +144,11 @@ const place = (i: number) => {
     font-family: var(--font-display);
     font-weight: 800;
     color: var(--color-encre);
-    /* Deux lignes courtes (« ont des visages. » fait ~7,2 em) : la taille suit
-       la largeur de l'écran, 46 px sur un téléphone de 390 px, jusqu'à
-       8,25 rem sur grand écran. */
-    font-size: clamp(2.5rem, 11.8vw, 8.25rem);
+    /* Trois lignes, la plus longue (« piloté par des humains. ») fait
+       ~10,4 em à la graisse 800 : la taille suit la largeur de l'écran pour
+       qu'elle tienne sans se replier, 33 px sur un téléphone de 390 px,
+       jusqu'à 6,5 rem sur grand écran. */
+    font-size: clamp(1.9rem, 8.5vw, 6.5rem);
     line-height: 0.95;
     letter-spacing: -0.042em;
     word-spacing: 0.08em;
@@ -151,15 +157,16 @@ const place = (i: number) => {
   .ligne-poids {
     white-space: nowrap;
   }
-  /* La seconde ligne s'épaissit : elle entre fine (300) et finit comme la
-     première (800). Seul le poids change, la ligne ne se replie pas
+  /* La dernière ligne s'épaissit : elle entre fine (300) et finit comme les
+     autres (800). Seul le poids change, la ligne ne se replie pas
      (nowrap), donc rien ne bouge autour d'elle. */
   @media (prefers-reduced-motion: no-preference) {
     .visages-titre .ligne-poids {
       animation:
         ligne-monte 1s cubic-bezier(0.16, 1, 0.3, 1) both,
         prend-du-poids 1.3s cubic-bezier(0.65, 0, 0.35, 1) both;
-      animation-delay: 200ms, 650ms;
+      /* après les deux premières lignes (0 et 120 ms, + 80 ms, socle commun) */
+      animation-delay: 320ms, 800ms;
     }
   }
   @keyframes prend-du-poids {

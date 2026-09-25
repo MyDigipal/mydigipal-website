@@ -28,7 +28,7 @@ import type { Currency, ServiceDomain } from '../calculator/types';
 import { provenance } from '../academy/track';
 import { envoyerMessage, envoyerReponse, lireMessages, ouvrirFil, type Contexte, type Fil } from './api';
 import { ficheDe, type Fiche } from './pages';
-import { BOOKING_URL, PHOTO, QUESTIONS, cheminCalculateur, copie, type Champ } from './copy';
+import { PHOTO, QUESTIONS, cheminCalculateur, cheminContact, copie, type Champ } from './copy';
 
 type Etape = 'accueil' | 'menu' | 'service' | Champ | 'fin' | 'libre';
 /** Un choix proposé dans le panneau : soit une action, soit un lien vers une page. */
@@ -677,7 +677,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
           )}
           {e === 'fin' && (
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-[13.5px]">
-              <a href={BOOKING_URL} target="_blank" rel="noopener" className="font-semibold text-primary-600 underline underline-offset-2">{c.reserver}</a>
+              <a href={cheminContact(lang)} className="font-semibold text-primary-600 underline underline-offset-2">{c.contacter}</a>
               <button type="button" onClick={recommencer} className="font-semibold text-slate-600 underline underline-offset-2">{c.recommencer}</button>
             </div>
           )}
@@ -710,7 +710,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
       return (
         <div className="flex flex-wrap gap-2">
           {c.suggestions.map((x) => <button key={x} type="button" className={puce} onClick={() => envoyer(x)}>{x}</button>)}
-          <a href={BOOKING_URL} target="_blank" rel="noopener" className={puce}>{c.reserver}</a>
+          <a href={cheminContact(lang)} className={puce}>{c.contacter}</a>
         </div>
       );
     }
@@ -740,7 +740,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
               </div>
               <div className="mt-3.5 grid grid-cols-2 gap-2">
                 <button type="button" onClick={() => ouvrir('devis')} className="h-10 rounded-xl bg-primary-600 text-[14px] font-semibold text-white hover:bg-primary-700">{c.devisPoser}</button>
-                <a href={BOOKING_URL} target="_blank" rel="noopener" className="grid h-10 place-items-center rounded-xl bg-slate-100 text-[14px] font-semibold text-slate-900 hover:bg-slate-200">{c.reserverCourt}</a>
+                <a href={cheminContact(lang)} className="grid h-10 place-items-center rounded-xl bg-slate-100 text-[14px] font-semibold text-slate-900 hover:bg-slate-200">{c.contacter}</a>
               </div>
             </div>
           ) : (invite || nonLu) ? (

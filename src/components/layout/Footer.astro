@@ -5,18 +5,13 @@ import Icon from '@/components/ui/Icon.astro';
 
 interface Props {
   lang: Language;
-  /** Version de la refonte de l'accueil (24/09/2026) : un seul libellé pour le
-   *  calculateur et le bleu du logo. Seule la page d'accueil la demande (en
-   *  ligne depuis le 25/09/2026) ; si Paul l'étend au site, elle devient la
-   *  seule version. */
-  refonte?: boolean;
   /** Remplace le lien vers les CGU de l'agence. La page de vente de l'Academy
    *  y met les conditions générales de vente de l'application (24/09/2026) :
    *  on y achète une formation, pas une prestation d'agence. */
   termsLink?: { label: string; href: string };
 }
 
-const { lang, refonte = false, termsLink } = Astro.props;
+const { lang, termsLink } = Astro.props;
 
 const currentYear = new Date().getFullYear();
 
@@ -45,7 +40,7 @@ const footerLinks = {
     { label: t(lang, 'nav.blog'), href: `/${lang}/blog` },
     { label: t(lang, 'nav.contact'), href: `/${lang}/contact` },
     // Un seul libellé pour le calculateur sur tout le site (document de refonte, 23/09/2026).
-    { label: refonte ? t(lang, 'nav.quote') : lang === 'fr' ? 'Devis Gratuit' : 'Get a Quote', href: `/${lang}/calculator` },
+    { label: t(lang, 'nav.quote'), href: `/${lang}/calculator` },
     { label: lang === 'fr' ? 'Recrutement' : 'Careers', href: `/${lang}/careers` },
   ],
 };
@@ -77,7 +72,8 @@ const socialLinks = [
             class="h-10 w-auto"
           />
         </a>
-        <p class:list={['font-medium mb-3', refonte ? 'text-[#58A9E8]' : 'text-primary-400']}>
+        <!-- Le bleu du logo, éclairci pour tenir sur l'ardoise. -->
+        <p class="font-medium mb-3 text-[#58A9E8]">
           {t(lang, 'site.tagline')}
         </p>
         <p class="text-slate-400 text-sm leading-relaxed mb-6 max-w-sm">
@@ -94,7 +90,7 @@ const socialLinks = [
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              class:list={['w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center transition-colors', refonte ? 'hover:bg-marque' : 'hover:bg-indigo-600']}
+              class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center transition-colors hover:bg-marque"
               aria-label={social.label}
             >
               <Icon name={social.icon} size={20} class="text-slate-400 hover:text-white" />

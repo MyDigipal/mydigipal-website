@@ -1,7 +1,6 @@
 ---
 import { languages, type Language } from '@/i18n/config';
 import { t } from '@/i18n/utils';
-import Button from '@/components/ui/Button.astro';
 import Icon from '@/components/ui/Icon.astro';
 
 interface Props {
@@ -10,29 +9,18 @@ interface Props {
    *  Academy y met « Ouvrir mon compte » vers ses tarifs (Paul, 25/08/2026). */
   ctaHref?: string;
   ctaLabel?: string;
-  /** La version de la refonte de l'accueil (24/09/2026) : le bleu du logo et
-   *  le code de la langue au lieu du drapeau emoji. Seule la page d'accueil
-   *  la demande (en ligne depuis le 25/09/2026) ; si Paul l'étend au site,
-   *  elle devient la seule version et l'option disparaît. */
-  refonte?: boolean;
 }
 
-const { lang, ctaHref = `/${lang}/calculator`, ctaLabel, refonte = false } = Astro.props;
+const { lang, ctaHref = `/${lang}/calculator`, ctaLabel } = Astro.props;
 
-// Les couleurs d'accent de l'en-tête, selon la version.
-const k = refonte
-  ? {
-      actif: 'text-marque',
-      actifFond: 'text-marque bg-marque-doux',
-      survol: 'hover:text-marque hover:bg-marque-doux',
-      compte: 'text-marque bg-marque-doux hover:bg-[#dcebf8]',
-    }
-  : {
-      actif: 'text-primary-600',
-      actifFond: 'text-primary-500 bg-primary-50',
-      survol: 'hover:text-primary-600 hover:bg-primary-50',
-      compte: 'text-primary-600 bg-primary-50 hover:bg-primary-100',
-    };
+// Les couleurs d'accent de l'en-tête : le bleu du logo, sur tout le site depuis
+// le 25/09/2026 (venu de la refonte de l'accueil, étendu par Paul).
+const k = {
+  actif: 'text-marque',
+  actifFond: 'text-marque bg-marque-doux',
+  survol: 'hover:text-marque hover:bg-marque-doux',
+  compte: 'text-marque bg-marque-doux hover:bg-[#dcebf8]',
+};
 const cta = ctaLabel ?? t(lang, 'nav.quote');
 
 const currentPath = Astro.url.pathname;
@@ -156,35 +144,26 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
         {t(lang, 'nav.contact')}
       </a>
 
-      <!-- Calculator Button (primary CTA). Au bleu du logo dans la version
-           de la refonte de l'accueil (24/09/2026). -->
-      {refonte ? (
-        <a
-          href={ctaHref}
-          class="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg bg-marque text-white hover:bg-marque-fonce active:scale-[0.98] transition-colors"
-        >
-          {cta}
-        </a>
-      ) : (
-        <Button href={ctaHref} variant="primary" size="sm" class="hidden sm:inline-flex">
-          {cta}
-        </Button>
-      )}
+      <!-- Calculator Button (primary CTA), au bleu du logo. -->
+      <a
+        href={ctaHref}
+        class="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg bg-marque text-white hover:bg-marque-fonce active:scale-[0.98] transition-colors"
+      >
+        {cta}
+      </a>
 
-      <!-- Sélecteur de langue. Dans la version de la refonte, le code de la
-           langue plutôt que le drapeau emoji (Windows n'affiche pas les
-           drapeaux emoji, et un drapeau n'est pas une langue). -->
+      <!-- Sélecteur de langue : le code de la langue plutôt que le drapeau
+           emoji (Windows n'affiche pas les drapeaux emoji, et un drapeau n'est
+           pas une langue). -->
       <a
         href={alternateUrl}
-        class={refonte
-          ? 'hidden sm:flex items-center justify-center w-10 h-10 text-xs font-semibold tracking-wide text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors'
-          : 'hidden sm:flex items-center justify-center w-10 h-10 text-xl hover:bg-slate-50 rounded-lg transition-colors'}
+        class="hidden sm:flex items-center justify-center w-10 h-10 text-xs font-semibold tracking-wide text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
         title={languages[alternateLang].name}
         aria-label={`Switch to ${languages[alternateLang].name}`}
         hreflang={alternateLang}
         lang={alternateLang}
       >
-        {refonte ? alternateLang.toUpperCase() : languages[alternateLang].flag}
+        {alternateLang.toUpperCase()}
       </a>
 
       <!-- Mobile menu button -->
@@ -275,30 +254,22 @@ const alternateUrl = `/${alternateLang}${pathWithoutLang}`;
           >
             {t(lang, 'nav.contact')}
           </a>
-          {refonte ? (
-            <a
-              href={ctaHref}
-              class="flex-1 flex items-center justify-center px-4 py-3 text-sm font-medium rounded-lg bg-marque text-white hover:bg-marque-fonce transition-colors"
-            >
-              {cta}
-            </a>
-          ) : (
-            <Button href={ctaHref} variant="primary" class="flex-1">
-              {cta}
-            </Button>
-          )}
+          <a
+            href={ctaHref}
+            class="flex-1 flex items-center justify-center px-4 py-3 text-sm font-medium rounded-lg bg-marque text-white hover:bg-marque-fonce transition-colors"
+          >
+            {cta}
+          </a>
         </div>
         <a
           href={alternateUrl}
-          class={refonte
-            ? 'flex items-center justify-center gap-2 h-12 px-4 text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors'
-            : 'flex items-center justify-center w-12 h-12 text-2xl hover:bg-slate-50 rounded-lg transition-colors'}
+          class="flex items-center justify-center gap-2 h-12 px-4 text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
           title={languages[alternateLang].name}
           aria-label={`Switch to ${languages[alternateLang].name}`}
           hreflang={alternateLang}
           lang={alternateLang}
         >
-          {refonte ? languages[alternateLang].name : languages[alternateLang].flag}
+          {languages[alternateLang].name}
         </a>
       </div>
     </div>

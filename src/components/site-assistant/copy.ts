@@ -14,7 +14,9 @@
 import type { Lang } from '../calculator-v6/engine';
 
 export const PHOTO = '/images/team/Team_Paul_Andre.webp';
-export const BOOKING_URL = 'https://calendar.app.google/ofYHfRHbFoMpVxf79';
+/** Plus de prise de rendez-vous sur le site (Paul, 25/09/2026) : on nous écrit
+ *  depuis la page contact, ou on passe par le calculateur. */
+export const cheminContact = (lang: Lang) => `/${lang}/contact`;
 
 /** Le calculateur qui reçoit un plan par l'ancre `#plan=`. */
 export const cheminCalculateur = (lang: Lang) => `/${lang}/calculator`;
@@ -98,8 +100,7 @@ const FR = {
   aDefinir: 'À définir ensemble',
   voirDevis: 'Voir le devis détaillé',
   parlerPaul: 'En parler avec Paul',
-  reserver: 'Réserver un appel de 30 min',
-  reserverCourt: 'Réserver 30 min',
+  contacter: 'Nous contacter',
   recommencer: 'Recommencer',
   placeholder: 'Écrire à Paul…',
   envoyer: 'Envoyer',
@@ -191,8 +192,7 @@ const EN: Copy = {
   aDefinir: 'To define together',
   voirDevis: 'See the detailed quote',
   parlerPaul: 'Talk it through with Paul',
-  reserver: 'Book a 30-min call',
-  reserverCourt: 'Book 30 min',
+  contacter: 'Contact us',
   recommencer: 'Start again',
   placeholder: 'Write to Paul…',
   envoyer: 'Send',
