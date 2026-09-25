@@ -363,7 +363,7 @@ const FR: CopyOutil = {
       {
         q: 'Combien de temps faut-il y consacrer ?',
         r: [
-          "Comptez sept à huit heures de lecture et d'exercices sur le parcours, étalées comme vous le souhaitez pendant votre accès. La plupart des apprenants font une leçon par jour, le matin, sur une trentaine de jours.",
+          "Comptez {heures} de lecture et d'exercices sur le parcours, étalées comme vous le souhaitez pendant votre accès. La plupart des apprenants font une leçon par jour, le matin, sur une trentaine de jours.", // chiffre-libre : {heures} est remplacé par la durée de La méthode lue dans l'API ; la trentaine de jours est un rythme, pas la durée d'accès
         ],
       },
       {
@@ -558,7 +558,7 @@ const EN: CopyOutil = {
       {
         q: 'How much time does it take?',
         r: [
-          'Around seven to eight hours of reading and exercises across the path, spread however you like over your access period. Most learners do one lesson a morning, over about thirty days.',
+          'Around {heures} of reading and exercises across the path, spread however you like over your access period. Most learners do one lesson a morning, over about thirty days.', // chiffre-libre : {heures} est remplacé par la durée de La méthode lue dans l'API ; les trente jours sont un rythme, pas la durée d'accès
         ],
       },
       {

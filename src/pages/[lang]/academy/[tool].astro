@@ -89,6 +89,15 @@ const avis = data.avis ?? AVIS_REPLI;
 const jours = data.acces_jours ?? 60;
 
 /**
+ * La FAQ du fichier de copie écrit `{heures}` là où elle parle de la durée de
+ * La méthode, et la page le remplace par la valeur de l'API (25/09/2026). Elle
+ * disait « sept à huit heures » pour un parcours qui en compte 8 h 40, parce
+ * que ses réponses sont des textes fixes que `data-fait` n'atteint pas.
+ */
+const heuresMethode = data.faits.heuresProgramme ?? data.faits.heures;
+const faq = c.faq.items.map((q) => ({ ...q, r: q.r.map((p) => p.split('{heures}').join(heuresMethode)) }));
+
+/**
  * Les leçons du module outil.
  *
  * Servies par l'application depuis le 13/09/2026 (`modulesOutils`), avec leur
@@ -134,7 +143,7 @@ const schema = {
     },
     {
       '@type': 'FAQPage',
-      mainEntity: c.faq.items.map((q) => ({
+      mainEntity: faq.map((q) => ({
         '@type': 'Question',
         name: q.q,
         acceptedAnswer: { '@type': 'Answer', text: q.r.join(' ') },
@@ -554,7 +563,7 @@ const schema = {
       </h2>
       <div class="border-t border-filet-nuit">
         {
-          c.faq.items.map((q) => (
+          faq.map((q) => (
             <details class="group border-b border-filet-nuit">
               <summary
                 class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-6 py-4 text-[16.5px] font-medium text-ivoire [&::-webkit-details-marker]:hidden"

@@ -64,6 +64,7 @@ export default function Tarifs({
   leconsComplement,
   exercices,
   leconsGratuit,
+  essaiHeures,
   modulesAuto,
   lienGratuit,
   assistantUn,
@@ -89,6 +90,8 @@ export default function Tarifs({
   leconsComplement: number;
   exercices: number;
   leconsGratuit: number;
+  /** La durée de l'accès gratuit, servie par l'app (`essai_heures`) : jamais écrite dans la copie. */
+  essaiHeures: number;
   modulesAuto: number;
   /** Le module gratuit, déjà enrichi des identifiants de clic. */
   lienGratuit: string;
@@ -704,9 +707,9 @@ export default function Tarifs({
               {c.gratuitTag}
             </span>
             <p className="m-0 mt-1 text-[17px] leading-[1.5] text-ivoire">
-              {c.gratuitTitre(leconsGratuit)}
+              {c.gratuitTitre(leconsGratuit, essaiHeures)}
             </p>
-            <p className="m-0 mt-1 text-[15px] leading-[1.55] text-brume-nuit">{c.gratuitTexte}</p>
+            <p className="m-0 mt-1 text-[15px] leading-[1.55] text-brume-nuit">{c.gratuitTexte(essaiHeures)}</p>
           </div>
           <a
             href={lienGratuit}

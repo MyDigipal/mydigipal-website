@@ -176,7 +176,7 @@ export default function AcademyV2({
         locale={locale}
         data={data}
         ancreTarifs="tarifs"
-        cta2={c.tarifs.gratuitCourt(leconsGratuit(data))}
+        cta2={c.tarifs.gratuitCourt(leconsGratuit(data), data.essai_heures ?? 48)}
         prixAffiche={`${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, devise), locale)} ${SYMBOLE[devise]}`}
         film={
           c.films.hero ? (
@@ -199,6 +199,7 @@ export default function AcademyV2({
         heures={data.faits.heures}
         leconsGratuit={leconsGratuit(data)}
         minutesGratuit={data.faits.minutesGratuit ?? 0}
+        durees={data.modulesDurees}
       />
 
       {/* Les quatre outils, juste après le programme. Le programme vient de
@@ -218,6 +219,7 @@ export default function AcademyV2({
         prixMethodeMinor={programme ? prixDe(programme, devise) : 0}
         prixAvanceeMinor={prixLot}
         accesJours={data.acces_jours ?? 60}
+        durees={data.modulesDurees}
       />
 
       {/* L'espace apprenant, qu'on visite au survol. C'est la cible de l'entrée
@@ -297,7 +299,7 @@ export default function AcademyV2({
         trophees={data.faits.trophees}
         leconsGratuites={leconsGratuit(data)}
         ancreTarifs="tarifs"
-        libelleGratuit={c.tarifs.gratuitCourt(leconsGratuit(data))}
+        libelleGratuit={c.tarifs.gratuitCourt(leconsGratuit(data), data.essai_heures ?? 48)}
       />
 
       {/* Page française : la méthode devant une salle, juste avant « Une
@@ -321,6 +323,7 @@ export default function AcademyV2({
         leconsComplement={leconsComplement(data)}
         exercices={data.faits.exercices}
         leconsGratuit={leconsGratuit(data)}
+        essaiHeures={data.essai_heures ?? 48}
         modulesAuto={nbAuto}
         lienGratuit={gratuit}
         assistantUn={data.assistant_questions?.un ?? 300}

@@ -75,9 +75,9 @@ export const LIVRABLES_FR: Livrable[] = [
 export const FILMS_FR: Film[] = [
   {
     fichier: '08-agent',
-    titre: 'Un agent qui qualifie à 22 h 47',
+    titre: 'Un agent qui qualifie à 22 h 47', // chiffre-libre : heure du récit
     texte:
-      "Une demande arrive le soir. L'agent la lit, la qualifie, cherche le contexte, et le mail part à 22 h 49.",
+      "Une demande arrive le soir. L'agent la lit, la qualifie, cherche le contexte, et le mail part à 22 h 49.", // chiffre-libre : heure du récit
     duree: '34 s',
   },
   {

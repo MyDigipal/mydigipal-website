@@ -321,7 +321,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
             <span className="text-[11px] text-brume-nuit">{enDevise(c.ttc, devise)}</span>
           </span>
           <span className="mt-1 block truncate font-ac-mono text-[10.5px] text-brume-nuit">
-            {totaux.mensuel ? `+ ${formatPrice(totaux.mensuel, locale)} ${enDevise(c.parMois, devise)}` : places > 1 ? c.uniquePlaces(places) : c.unique}
+            {totaux.mensuel ? `+ ${formatPrice(totaux.mensuel, locale)} ${enDevise(c.parMois, devise)}` : places > 1 ? c.uniquePlaces(places, data.acces_jours ?? 60) : c.unique(data.acces_jours ?? 60)}
           </span>
         </span>
         <a href={lien} className={`${cta} px-4 py-2.5 text-[14px]`}>
@@ -348,7 +348,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
             {c.remiseCode(code.toUpperCase(), Math.round((promo.remise / (totaux.unique || 1)) * 100))}
           </p>
         )}
-        <p className="m-0 mt-2 font-ac-mono text-[11.5px] text-brume-nuit">{places > 1 ? c.uniquePlaces(places) : c.unique}</p>
+        <p className="m-0 mt-2 font-ac-mono text-[11.5px] text-brume-nuit">{places > 1 ? c.uniquePlaces(places, data.acces_jours ?? 60) : c.unique(data.acces_jours ?? 60)}</p>
         <div className="mt-[18px] flex flex-wrap items-baseline gap-2.5 border-t border-filet-nuit pt-4">
           <span className={`font-ac-mono text-[22px] font-bold leading-[1.2] tabular-nums ${totaux.mensuel ? 'text-ivoire' : 'text-brume-nuit'}`}>
             {totaux.mensuel ? `${formatPrice(totaux.mensuel, locale)} ${sym}` : `0 ${sym}`}
