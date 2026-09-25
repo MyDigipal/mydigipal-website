@@ -80,7 +80,7 @@ const translations = {
     publishedOn: 'Published on',
   },
   fr: {
-    backToBlog: 'Retour au Blog',
+    backToBlog: 'Retour au blog',
     readMore: 'Lire la suite',
     relatedArticles: 'Articles Similaires',
     share: 'Partager cet article',
@@ -150,57 +150,45 @@ const categoryLabels: Record<string, Record<string, string>> = {
     <FAQSchema faqs={post.data.faqs} />
   )}
 
-  <!-- Hero Section -->
-  <section class="relative bg-slate-950 text-white pt-32 pb-24 overflow-hidden">
-    <!-- Background Effects -->
-    <div class="absolute inset-0 pointer-events-none">
-      <div class="absolute top-20 -left-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]"></div>
-      <div class="absolute bottom-20 -right-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px]"></div>
-    </div>
-
-    <div class="container-custom relative z-10 max-w-4xl mx-auto">
-      <!-- Back Link -->
+  <!-- Le haut de l'article, dans le style de l'accueil depuis le 25/09/2026 : fond
+       blanc, titre serré, catégorie et date en gris, un seul bleu. -->
+  <section class="bg-white pt-10 pb-10 lg:pt-14 lg:pb-12">
+    <div class="container-custom max-w-4xl mx-auto">
       <a
         href={`/${lang}/blog`}
-        class="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8"
+        class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-encre transition-colors mb-8"
       >
         <Icon name="arrow-left" size={16} />
         {t.backToBlog}
       </a>
 
-      <!-- Category & Date -->
-      <div class="flex items-center gap-4 mb-6">
-        <span class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm font-medium">
-          {categoryLabels[lang]?.[post.data.category] || post.data.category}
-        </span>
-        <span class="text-slate-400">•</span>
-        <time class="text-slate-400" datetime={post.data.date.toISOString()}>
+      <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold text-slate-500 mb-5">
+        <span class="text-marque">{categoryLabels[lang]?.[post.data.category] || post.data.category}</span>
+        <span aria-hidden="true">·</span>
+        <time datetime={post.data.date.toISOString()}>
           {post.data.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
           })}
         </time>
-      </div>
+      </p>
 
-      <!-- Title -->
-      <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight font-display">
+      <h1 class="article-titre font-display text-[2rem] sm:text-4xl lg:text-[3.25rem] font-extrabold text-encre mb-6 break-words">
         {post.data.title}
       </h1>
 
-      <!-- Description -->
-      <p class="text-xl text-slate-300 mb-8">
+      <p class="text-lg sm:text-xl text-slate-600 mb-8 text-pretty">
         {post.data.description}
       </p>
 
-      <!-- Author -->
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-full bg-marque-doux text-marque flex items-center justify-center font-bold">
           {post.data.author.charAt(0)}
         </div>
         <div>
-          <div class="font-medium text-white">{post.data.author}</div>
-          <div class="text-sm text-slate-400">{t.publishedOn} {post.data.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+          <div class="font-semibold text-encre">{post.data.author}</div>
+          <div class="text-sm text-slate-500">{t.publishedOn} {post.data.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
         </div>
       </div>
     </div>
@@ -211,7 +199,7 @@ const categoryLabels: Record<string, Record<string, string>> = {
        be heard without an explicit control. The button below unmutes, stops the
        loop and restarts from the beginning so the narration is heard in full. -->
   {post.data.video && (
-    <section class="relative -mt-12 pb-8 bg-white">
+    <section class="relative pb-8 bg-white">
       <div class="container-custom max-w-5xl mx-auto">
         <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-slate-950" data-hero-video>
           <video
@@ -277,7 +265,7 @@ const categoryLabels: Record<string, Record<string, string>> = {
 
   <!-- Featured Image (fallback when there is no hero video) -->
   {!post.data.video && post.data.image && !post.data.image.includes('/images/blog/') && (
-    <section class="relative -mt-12 pb-8 bg-white">
+    <section class="relative pb-8 bg-white">
       <div class="container-custom max-w-5xl mx-auto">
         <div class="relative rounded-2xl overflow-hidden shadow-2xl">
           <img
@@ -367,7 +355,7 @@ const categoryLabels: Record<string, Record<string, string>> = {
                     loading="lazy"
                   />
                 ) : (
-                  <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600"></div>
+                  <div class="absolute inset-0 bg-marque-doux"></div>
                 )}
               </a>
               <div class="p-6">
@@ -407,6 +395,12 @@ const categoryLabels: Record<string, Record<string, string>> = {
 
 <style>
   @reference "../../../styles/global.css";
+
+  .article-titre {
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
 
   .line-clamp-2 {
     display: -webkit-box;

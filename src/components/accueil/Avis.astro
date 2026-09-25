@@ -127,8 +127,11 @@ const t = fr
   .avis {
     background: #fff;
   }
+  /* minmax(0, 1fr) : sans lui, la colonne unique prend la largeur de la bande de
+     logos qui ne se replie pas au téléphone, et la page déborde de 10 px à 360. */
   .avis-grille {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 3rem;
   }
   @media (min-width: 1024px) {

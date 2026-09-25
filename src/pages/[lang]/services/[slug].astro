@@ -16,7 +16,6 @@ import Icon from '@/components/ui/Icon.astro';
 
 // Sections
 import HeroService from '@/components/sections/HeroService.astro';
-import MetricsCounter from '@/components/sections/MetricsCounter.astro';
 import PainPointsSection from '@/components/sections/PainPointsSection.astro';
 import SEOComparisonSection from '@/components/sections/SEOComparisonSection.astro';
 import StickyPillarNav from '@/components/sections/StickyPillarNav.astro';
@@ -214,13 +213,13 @@ const blogArticles = {
       href: "/fr/blog/how-to-train-teams-on-ai"
     },
     {
-      title: "Créer des Agents IA avec n8n",
+      title: "Créer des agents IA avec n8n",
       description: "Le guide complet 2026 pour l'automatisation de workflows autonomes.",
       image: "/images/Blog Thumbnails/EN - agents-ia-n8n-automatisation.jpg",
       href: "/fr/blog/ai-agents-n8n-automation"
     },
     {
-      title: "Claude Code : Productivité Développeur",
+      title: "Claude Code : productivité développeur",
       description: "Maîtrisez l'outil CLI d'Anthropic pour coder 3-10x plus vite.",
       image: "/images/Blog Thumbnails/EN - claude-code-developer-productivity.jpg",
       href: "/fr/blog/claude-code-developer-productivity"
@@ -237,8 +236,8 @@ const blogSectionContent = {
     viewAll: "View all AI articles"
   },
   fr: {
-    badge: "En Savoir Plus",
-    title: "Nos Ressources IA",
+    badge: "En savoir plus",
+    title: "Nos ressources IA",
     subtitle: "Des articles approfondis pour maîtriser l'IA dans votre organisation",
     readMore: "Lire l'article",
     viewAll: "Voir tous les articles IA"
@@ -291,10 +290,8 @@ const breadcrumbItems = [
     heroLogos={heroLogos}
   />
 
-  <!-- Metrics Counter -->
-  {metrics && metrics.length > 0 && (
-    <MetricsCounter metrics={metrics} color={color} />
-  )}
+  <!-- Les chiffres sont dans le panneau du hero : la bande MetricsCounter qui les
+       répétait juste en dessous a été retirée le 25/09/2026. -->
 
   <!-- Pain Points - The Problem (empathy/urgency before solution) -->
   {isSEOService && (
@@ -459,11 +456,10 @@ const breadcrumbItems = [
     <section class="py-24 bg-white">
       <div class="container-custom">
         <div class="text-center mb-16 animate-on-scroll">
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 font-medium mb-6">
-            <Icon name="book" size={16} />
+          <div class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-6">
             <span>{blogContent.badge}</span>
           </div>
-          <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
             {blogContent.title}
           </h2>
           <p class="text-lg text-slate-500">
@@ -551,7 +547,7 @@ const breadcrumbItems = [
   }
 
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-    50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
+    0%, 100% { box-shadow: 0 0 20px rgba(60, 139, 212, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(60, 139, 212, 0.6); }
   }
 </style>

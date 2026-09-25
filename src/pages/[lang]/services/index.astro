@@ -5,6 +5,7 @@ import Icon from '@/components/ui/Icon.astro';
 import Button from '@/components/ui/Button.astro';
 import TrustedBy from '@/components/sections/TrustedBy.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
+import PageHero from '@/components/ui/PageHero.astro';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -110,10 +111,10 @@ const content = {
   fr: {
     seo: {
       title: "Services Marketing Digital | Google Ads, SEO",
-      description: "Agence de marketing digital full-service : Google Ads, Paid Social, SEO, Email Marketing et ABM B2B. Stratégies data-driven pour une croissance mesurable."
+      description: "Agence de marketing digital full-service : Google Ads, Paid Social, SEO, email marketing et ABM B2B. Stratégies data-driven pour une croissance mesurable."
     },
     hero: {
-      badge: "Nos Services",
+      badge: "Nos services",
       headline: "Marketing Digital Data-Driven",
       subheadline: "Accélérez votre croissance",
       description: "De la publicité payante aux stratégies organiques, nous fournissons des solutions de marketing digital complètes qui génèrent des résultats mesurables. Choisissez les services adaptés à vos objectifs."
@@ -150,7 +151,7 @@ const content = {
         name: "SEO",
         description: "Construisez un trafic organique durable. Optimisation technique, stratégie de contenu et netlinking pour une croissance long terme.",
         href: "/fr/services/seo",
-        features: ["SEO Technique", "Stratégie Contenu", "Netlinking", "SEO Local"],
+        features: ["SEO Technique", "Stratégie contenu", "Netlinking", "SEO Local"],
         color: "from-green-500 to-emerald-500"
       },
       {
@@ -174,7 +175,7 @@ const content = {
         name: "Tracking & Reporting",
         description: "Configuration GA4, GTM, pixels et dashboards custom. Transformez vos données en insights actionnables avec l'analytics IA.",
         href: "/fr/services/tracking-reporting",
-        features: ["GA4 & GTM", "Dashboards Custom", "Conformité Cookies", "Analytics IA"],
+        features: ["GA4 & GTM", "Dashboards Custom", "Conformité cookies", "Analytics IA"],
         color: "from-teal-500 to-cyan-500"
       }
     ],
@@ -205,47 +206,17 @@ const c = content[lang] || content.en;
 ---
 
 <PageLayout lang={lang} title={c.seo.title} description={c.seo.description}>
-  <!-- Hero Section -->
-  <section class="relative py-24 lg:py-32 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 overflow-hidden">
-    <!-- Background Pattern -->
-    <div class="absolute inset-0 opacity-20">
-      <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0); background-size: 40px 40px;"></div>
-    </div>
+  <PageHero
+    eyebrow={c.hero.badge}
+    title={c.hero.headline}
+    subtitle={c.hero.subheadline}
+    description={c.hero.description}
+    actions={[
+      { href: `/${lang}/calculator`, label: lang === 'fr' ? 'Calculer mon budget' : 'Calculate my budget' },
+      { href: `/${lang}/contact`, label: lang === 'fr' ? 'Nous contacter' : 'Contact us', style: 'contour' },
+    ]}
+  />
 
-    <!-- Gradient Orbs -->
-    <div class="absolute top-20 left-10 w-72 h-72 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-    <div class="absolute bottom-20 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style="animation-delay: 1s;"></div>
-
-    <div class="container-custom relative z-10">
-      <div class="max-w-4xl mx-auto text-center">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-indigo-300 font-medium mb-6 animate-fade-in">
-          <Icon name="layers" size={16} />
-          <span>{c.hero.badge}</span>
-        </div>
-
-        <h1 class="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 animate-fade-in" style="animation-delay: 0.1s;">
-          {c.hero.headline}
-        </h1>
-
-        <p class="text-2xl md:text-3xl text-indigo-300 font-medium mb-6 animate-fade-in" style="animation-delay: 0.2s;">
-          {c.hero.subheadline}
-        </p>
-
-        <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-10 animate-fade-in" style="animation-delay: 0.3s;">
-          {c.hero.description}
-        </p>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style="animation-delay: 0.4s;">
-          <Button href={`/${lang}/calculator`} variant="primary" size="lg">
-            {lang === 'fr' ? 'Obtenir un devis' : 'Get a Quote'}
-          </Button>
-          <Button href={`/${lang}/contact`} variant="outline" size="lg" class="border-white/30 text-white hover:bg-white/10">
-            {lang === 'fr' ? 'Nous contacter' : 'Contact Us'}
-          </Button>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- Why Choose Us Section -->
   <section class="py-24 bg-gradient-to-b from-slate-50 to-white">
@@ -253,8 +224,7 @@ const c = content[lang] || content.en;
       <div class="grid lg:grid-cols-2 gap-16 items-center">
         <!-- Left: Content -->
         <div class="animate-on-scroll">
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
-            <Icon name="award" size={16} />
+          <div class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-6">
             <span>{lang === 'fr' ? 'Notre différence' : 'Our Difference'}</span>
           </div>
 
@@ -274,8 +244,8 @@ const c = content[lang] || content.en;
               class="point-card p-6 bg-white rounded-2xl border border-slate-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 animate-on-scroll"
               style={`animation-delay: ${index * 100}ms`}
             >
-              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mb-4">
-                <Icon name={point.icon} size={24} class="text-white" />
+              <div class="mb-4 text-marque">
+                <Icon name={point.icon} size={24} class="text-marque" />
               </div>
               <h3 class="text-lg font-bold text-slate-900 mb-2">{point.title}</h3>
               <p class="text-slate-600 text-sm leading-relaxed">{point.description}</p>
@@ -290,8 +260,7 @@ const c = content[lang] || content.en;
   <section class="py-24 bg-white">
     <div class="container-custom">
       <div class="text-center mb-16 animate-on-scroll">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-6">
-          <Icon name="grid" size={16} />
+        <div class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-6">
           <span>{lang === 'fr' ? 'Nos expertises' : 'Our Expertise'}</span>
         </div>
         <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
@@ -317,8 +286,8 @@ const c = content[lang] || content.en;
 
             <div class="relative z-10">
               <!-- Icon -->
-              <div class={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                <Icon name={service.icon} size={32} class="text-white" />
+              <div class="mb-6 text-marque">
+                <Icon name={service.icon} size={32} class="text-marque" />
               </div>
 
               <!-- Content -->
@@ -365,7 +334,7 @@ const c = content[lang] || content.en;
           >
             <div class="flex gap-1 mb-4">
               {[1,2,3,4,5].map(() => (
-                <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
               ))}

@@ -11,7 +11,6 @@ import Icon from '@/components/ui/Icon.astro';
 
 // Sections
 import HeroService from '@/components/sections/HeroService.astro';
-import MetricsCounter from '@/components/sections/MetricsCounter.astro';
 import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 
@@ -91,12 +90,11 @@ const {
     subheadline={hero?.subheadline}
     description={description}
     color={color}
+    metrics={metrics}
+    proofPoints={(services?.items || []).slice(0, 4).map((i: { title: string }) => i.title)}
   />
-
-  <!-- Metrics Counter -->
-  {metrics && metrics.length > 0 && (
-    <MetricsCounter metrics={metrics} color={color} />
-  )}
+  <!-- Les chiffres sont dans le panneau du hero depuis le 25/09/2026 (plus de bande
+       MetricsCounter qui les répétait). -->
 
   <!-- Dynamic Ads Flow Diagram (only for Dynamic Ads page) -->
   {isDynamicAds && (

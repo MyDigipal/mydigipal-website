@@ -126,38 +126,37 @@ const postedDate = job.data.posted_date
 ---
 
 <PageLayout title={seo.title} description={seo.description} lang={lang}>
-  <section class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-16 lg:py-20">
+  <section class="bg-white border-b border-slate-100 pt-10 pb-14 lg:pt-14 lg:pb-16">
     <div class="container-custom">
       <a
         href={`/${lang}/careers`}
-        class="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors mb-6"
+        class="inline-flex items-center gap-2 text-slate-500 hover:text-encre text-sm font-medium transition-colors mb-6"
       >
         <Icon name="arrow-left" size={16} />
         {t.backToJobs}
       </a>
 
       <div class="max-w-3xl">
-        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/15 border border-primary-500/30 text-primary-300 text-xs font-medium mb-4 uppercase tracking-wider">
-          <Icon name="users" size={14} />
+        <span class="block text-sm font-semibold text-slate-500 mb-4">
           {job.data.role}
         </span>
-        <h1 class="font-display text-3xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+        <h1 class="font-display text-[2rem] sm:text-4xl lg:text-5xl font-extrabold text-encre mb-4 leading-[1.08]">
           {job.data.title}
         </h1>
-        <p class="text-lg text-slate-300 mb-6 leading-relaxed">
+        <p class="text-lg text-slate-600 mb-6 leading-relaxed">
           {job.data.pitch}
         </p>
         <div class="flex flex-wrap gap-2">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full text-white text-sm">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
             <Icon name="map-pin" size={14} />
             {job.data.location}
           </span>
-          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full text-white text-sm">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
             <Icon name="briefcase" size={14} />
             {job.data.format}
           </span>
           {job.data.hours && (
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full text-white text-sm">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
               <Icon name="clock" size={14} />
               {job.data.hours}
             </span>
@@ -393,7 +392,7 @@ const postedDate = job.data.posted_date
         <button
           type="submit"
           id={`${formId}-submit`}
-          class="w-full py-4 px-6 bg-slate-900 text-white hover:bg-slate-800 font-semibold rounded-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+          class="w-full py-4 px-6 bg-marque text-white hover:bg-marque-fonce font-semibold rounded-full transition-colors duration-300 active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
         >
           <span class={`${formId}-btn-text`}>{t.form.submit}</span>
           <Icon name="send" size={20} />

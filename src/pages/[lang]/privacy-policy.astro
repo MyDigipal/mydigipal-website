@@ -1,6 +1,7 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
+import { texteSimple } from '@/lib/texte-simple';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -122,12 +123,12 @@ Nightingale Lane, SW12 8AQ London, United Kingdom`
     ]
   },
   fr: {
-    title: "Politique de Confidentialité",
+    title: "Politique de confidentialité",
     lastUpdated: "Derni\u00e8re mise \u00e0 jour : septembre 2026",
     intro: "MyDigipal LTD (\"nous\", \"notre\") s'engage à protéger votre vie privée. Cette Politique de Confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous visitez notre site web mydigipal.com.",
     sections: [
       {
-        title: "1. Informations que Nous Collectons",
+        title: "1. Informations que nous collectons",
         content: `Nous pouvons collecter des informations vous concernant de différentes manières :
 
 **Données Personnelles** : Lorsque vous remplissez un formulaire de contact ou demandez un devis, nous collectons :
@@ -143,7 +144,7 @@ Nightingale Lane, SW12 8AQ London, United Kingdom`
 - Informations sur l'appareil`
       },
       {
-        title: "2. Comment Nous Utilisons Vos Informations",
+        title: "2. Comment nous utilisons vos informations",
         content: `Nous utilisons les informations collectées pour :
 - Répondre à vos demandes et fournir un support client
 - Vous envoyer des communications marketing (avec votre consentement)
@@ -152,7 +153,7 @@ Nightingale Lane, SW12 8AQ London, United Kingdom`
 - Respecter nos obligations légales`
       },
       {
-        title: "3. Cookies et Technologies de Suivi",
+        title: "3. Cookies et technologies de suivi",
         content: `Nous utilisons des cookies et des technologies similaires. Notre bannière de cookies vous permet de g\u00e9rer vos pr\u00e9f\u00e9rences \u00e0 tout moment via le lien "Cookies" en pied de page.
 
 **Cat\u00e9gories de cookies :**
@@ -185,14 +186,14 @@ Nightingale Lane, SW12 8AQ London, United Kingdom`
 Chaque service a sa propre politique de confidentialit\u00e9. Nous avons mis en place des Accords de Traitement des Donn\u00e9es avec Google et Meta conform\u00e9ment au RGPD.`
       },
       {
-        title: "5. Conservation des Données",
+        title: "5. Conservation des données",
         content: `Nous conservons vos données personnelles uniquement aussi longtemps que nécessaire, généralement :
 - Soumissions de formulaires : 3 ans
 - Préférences marketing : Jusqu'à désinscription
 - Données analytiques : 26 mois`
       },
       {
-        title: "6. Vos Droits (RGPD)",
+        title: "6. Vos droits (RGPD)",
         content: `Si vous êtes dans l'Union Européenne, vous avez le droit de :
 - **Accès** : Demander une copie de vos données personnelles
 - **Rectification** : Corriger les données inexactes
@@ -204,7 +205,7 @@ Chaque service a sa propre politique de confidentialit\u00e9. Nous avons mis en 
 Pour exercer ces droits, veuillez utiliser notre formulaire de contact sur mydigipal.com/fr/contact ou nous envoyer un email à paul@mydigipal.com.`
       },
       {
-        title: "7. Sécurité des Données",
+        title: "7. Sécurité des données",
         content: `Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données personnelles, notamment :
 - Chiffrement SSL/TLS pour les données en transit
 - Infrastructure d'hébergement sécurisée
@@ -215,11 +216,11 @@ Pour exercer ces droits, veuillez utiliser notre formulaire de contact sur mydig
         content: `Vos données peuvent être transférées et traitées dans des pays en dehors de votre pays de résidence, y compris les États-Unis et le Canada. Nous veillons à ce que des garanties appropriées soient en place pour ces transferts.`
       },
       {
-        title: "9. Vie Privée des Enfants",
+        title: "9. Vie privée des enfants",
         content: `Notre site web n'est pas destiné aux enfants de moins de 16 ans. Nous ne collectons pas sciemment d'informations personnelles auprès d'enfants.`
       },
       {
-        title: "10. Modifications de Cette Politique",
+        title: "10. Modifications de cette politique",
         content: `Nous pouvons mettre à jour cette Politique de Confidentialité de temps en temps. Nous vous informerons de tout changement en publiant la nouvelle politique sur cette page et en mettant à jour la date de « Dernière mise à jour ».`
       },
       {
@@ -242,7 +243,7 @@ const c = content[lang] || content.en;
       <div class="max-w-3xl mx-auto">
         <!-- Header -->
         <div class="mb-12">
-          <h1 class="text-4xl font-bold text-slate-900 mb-4">{c.title}</h1>
+          <h1 class="font-display text-4xl font-bold text-slate-900 mb-4">{c.title}</h1>
           <p class="text-slate-500">{c.lastUpdated}</p>
         </div>
 
@@ -256,9 +257,7 @@ const c = content[lang] || content.en;
           {c.sections.map((section) => (
             <div class="prose prose-slate max-w-none">
               <h2 class="text-xl font-bold text-slate-900 mb-4">{section.title}</h2>
-              <div class="text-slate-600 leading-relaxed whitespace-pre-line">
-                {section.content}
-              </div>
+              <div class="texte-legal text-slate-600 leading-relaxed" set:html={texteSimple(section.content)} />
             </div>
           ))}
         </div>
@@ -266,3 +265,21 @@ const c = content[lang] || content.en;
     </div>
   </section>
 </PageLayout>
+
+<style>
+  .texte-legal :global(p) {
+    margin: 0 0 0.9em;
+  }
+  .texte-legal :global(ul) {
+    margin: 0 0 1.1em;
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+  .texte-legal :global(li) {
+    margin: 0.3em 0;
+  }
+  .texte-legal :global(strong) {
+    color: var(--color-encre);
+    font-weight: 600;
+  }
+</style>

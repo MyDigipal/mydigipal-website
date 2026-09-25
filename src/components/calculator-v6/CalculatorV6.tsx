@@ -612,7 +612,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         return (
           <button key={o.months} type="button" role="radio" aria-checked={on} onClick={() => setDuration(o.months, false)}
             className={`flex-1 rounded-lg px-2 py-2 text-sm font-semibold ${on ? (dark ? 'bg-white text-marque-fonce shadow-sm' : 'bg-white text-slate-900 shadow-sm') : (dark ? 'text-white' : 'text-slate-600')}`}>
-            {o.months} {L(lang, 'mois', 'months')}{o.discount ? <span className={`block text-[11.5px] ${on || !dark ? 'text-emerald-700' : 'text-emerald-200'}`}>-{o.discount}&nbsp;%</span> : null}
+            {o.months} {L(lang, 'mois', 'months')}{o.discount ? <span className={`block text-[11.5px] ${on || !dark ? 'text-green-700' : 'text-green-200'}`}>-{o.discount}&nbsp;%</span> : null}
           </button>
         );
       })}
@@ -634,7 +634,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       <div className="py-6">
         <h3 className="font-display text-2xl font-extrabold tracking-[-0.025em] text-slate-900">{L(lang, 'Merci, votre devis est en route', 'Thank you, your quote is on its way')}</h3>
         <p className="mt-2 max-w-prose text-slate-600">{L(lang, 'Vous le recevez par email dans quelques minutes. Un expert vous rappelle sous 24 à 48 h pour l’ajuster avec vous.', 'It will reach your inbox in a few minutes. An expert will get back to you within 24 to 48 hours to fine-tune it with you.')}</p>
-        {dryRun && <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
+        {dryRun && <p className="mt-4 rounded-xl bg-yellow-50 px-4 py-3 text-sm text-yellow-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
       </div>
     );
   } else if (guided) {
@@ -805,7 +805,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         <p className="mt-3 max-w-2xl text-slate-300">{L(lang, `Le devis arrive dans votre boîte mail dans quelques minutes. On étudie ${contact.company.trim()} de près, et on revient vers vous sous 24 à 48 h.`, `The quote reaches your inbox in a few minutes. We take a close look at ${contact.company.trim()} and get back to you within 24 to 48 hours.`)}</p>
         {/* Pas de prise de rendez-vous (Paul, 25/09/2026) : le formulaire de contact. */}
         <a href={`/${lang}/contact`} className="mt-6 inline-flex h-12 items-center rounded-full bg-white px-6 text-[15px] font-semibold text-slate-900">{L(lang, 'Nous contacter', 'Contact us')}</a>
-        {dryRun && <p className="mt-5 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
+        {dryRun && <p className="mt-5 rounded-xl bg-yellow-50 px-4 py-3 text-sm text-yellow-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
       </div>
     ) : (
       <div className="rounded-3xl border border-marque/15 bg-marque-doux/70 p-5 sm:p-8">
@@ -937,7 +937,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
               {st.domains.length && (quote.monthly > 0 || quote.oneOff > 0 || quote.media > 0 || talk > 0 || quote.domains.some((d) => d.lines.some((l) => l.per === 'quote'))) ? (
                 <>
                   <div className="flex items-baseline gap-3">
-                    <span className="text-[13px] text-slate-500">{L(lang, 'Votre estimation', 'Your estimate')}{quote.discountPct ? <em className="ml-1 font-semibold not-italic text-emerald-700">-{quote.discountPct}&nbsp;%</em> : null}</span>
+                    <span className="text-[13px] text-slate-500">{L(lang, 'Votre estimation', 'Your estimate')}{quote.discountPct ? <em className="ml-1 font-semibold not-italic text-green-700">-{quote.discountPct}&nbsp;%</em> : null}</span>
                     <strong className="font-display text-[23px] font-extrabold tabular-nums text-slate-900">{fmt(quote.monthly)}<span className="ml-0.5 text-[13px] font-medium text-slate-500">{L(lang, '/mois', '/mo')}</span></strong>
                   </div>
                   {(quote.oneOff > 0 || quote.media > 0 || talk > 0) && (

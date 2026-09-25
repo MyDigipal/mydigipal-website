@@ -8,6 +8,7 @@ import FinalCTA from '@/components/sections/FinalCTA.astro';
 import { ENDPOINT, prixDe, type Jour30Data } from '@/components/academy/data';
 import secoursFr from '@/data/academy/jour30-fr.json';
 import secoursEn from '@/data/academy/jour30-en.json';
+import PageHero from '@/components/ui/PageHero.astro';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -85,13 +86,13 @@ const blogArticles = {
       href: "/fr/blog/how-to-train-teams-on-ai"
     },
     {
-      title: "Créer des Agents IA avec n8n",
+      title: "Créer des agents IA avec n8n",
       description: "Le guide complet 2026 pour l'automatisation de workflows autonomes.",
       image: "/images/Blog Thumbnails/EN - agents-ia-n8n-automatisation.jpg",
       href: "/fr/blog/ai-agents-n8n-automation"
     },
     {
-      title: "Claude Code : Productivité Développeur",
+      title: "Claude Code : productivité développeur",
       description: "Maîtrisez l'outil CLI d'Anthropic pour coder 3-10x plus vite.",
       image: "/images/Blog Thumbnails/EN - claude-code-developer-productivity.jpg",
       href: "/fr/blog/claude-code-developer-productivity"
@@ -230,12 +231,12 @@ const content = {
     },
     hero: {
       badge: "Services IA",
-      headline: "Adoptez la Révolution IA",
+      headline: "Adoptez la révolution IA",
       subheadline: "Former. Construire. Créer.",
       description: "L'IA transforme chaque industrie. Que vous ayez besoin de former votre équipe, construire des solutions sur-mesure ou scaler votre création de contenu, on vous accompagne dans votre transition IA."
     },
     intro: {
-      title: "L'IA N'est Pas le Futur — C'est Maintenant",
+      title: "L'IA n'est pas le futur, c'est maintenant",
       description: "Les entreprises qui adoptent l'IA aujourd'hui seront les leaders de demain. On vous aide à naviguer cette transformation avec des solutions IA pratiques et orientées résultats.",
       paragraph: "De la formation executive à l'automatisation sur-mesure, nos services IA sont conçus pour délivrer une valeur immédiate tout en construisant des capacités long terme.",
       stats: [
@@ -271,7 +272,7 @@ const content = {
         tagline: "En présentiel ou à distance, pour votre équipe",
         description: "Programmes de formation IA complets pour dirigeants, marketeurs et équipes. Apprenez à utiliser ChatGPT, Claude, Midjourney et plus pour un impact business réel.",
         href: "/fr/services/ai-training",
-        features: ["Workshops Dirigeants", "Formation Équipes", "Labs Pratiques", "Curriculum Sur-Mesure"],
+        features: ["Workshops Dirigeants", "Formation équipes", "Labs Pratiques", "Curriculum sur-mesure"],
         highlights: [
           "Formation immersive d'une journée",
           "La méthode CRAFT pour le prompting",
@@ -298,10 +299,10 @@ const content = {
       {
         icon: "edit-3",
         name: "Contenu IA",
-        tagline: "Scalez Votre Contenu",
+        tagline: "Scalez votre contenu",
         description: "Création de contenu IA à grande échelle. Articles de blog, réseaux sociaux, copy pub — on combine l'efficacité de l'IA avec la créativité humaine pour du contenu de qualité.",
         href: "/fr/services/ai-content",
-        features: ["Articles Blog", "Réseaux Sociaux", "Copy Publicitaire", "Séquences Email"],
+        features: ["Articles Blog", "Réseaux sociaux", "Copy Publicitaire", "Séquences email"],
         highlights: [
           "Process IA + relecture humaine",
           "Contenu optimisé SEO",
@@ -311,9 +312,9 @@ const content = {
         color: "from-emerald-500 to-teal-600"
       }
     ],
-    cta: "Explorer le Service",
+    cta: "Explorer le service",
     useCases: {
-      title: "L'IA pour Chaque Département",
+      title: "L'IA pour chaque département",
       items: [
         { icon: "trending-up", name: "Marketing", description: "Création contenu, optimisation campagnes, analyse audience" },
         { icon: "users", name: "Sales", description: "Lead scoring, personnalisation email, automatisation CRM" },
@@ -322,8 +323,8 @@ const content = {
       ]
     },
     blogSection: {
-      badge: "En Savoir Plus",
-      title: "Nos Ressources IA",
+      badge: "En savoir plus",
+      title: "Nos ressources IA",
       subtitle: "Des articles approfondis pour maîtriser l'IA dans votre organisation"
     },
     testimonials: {
@@ -353,52 +354,17 @@ const articles = blogArticles[lang] || blogArticles.en;
 ---
 
 <PageLayout lang={lang} title={c.seo.title} description={c.seo.description}>
-  <!-- Hero Section -->
-  <section class="relative py-24 lg:py-32 bg-gradient-to-br from-slate-900 via-violet-900 to-slate-900 overflow-hidden">
-    <!-- Animated Background -->
-    <div class="absolute inset-0 opacity-30">
-      <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(167,139,250,0.3) 1px, transparent 0); background-size: 50px 50px;"></div>
-    </div>
+  <PageHero
+    eyebrow={c.hero.badge}
+    title={c.hero.headline}
+    subtitle={c.hero.subheadline}
+    description={c.hero.description}
+    actions={[
+      { href: `/${lang}/academy`, label: lang === 'fr' ? 'Découvrir l’AI Academy' : 'Explore the AI Academy' },
+      { href: `/${lang}/contact`, label: lang === 'fr' ? 'Nous contacter' : 'Contact us', style: 'contour' },
+    ]}
+  />
 
-    <!-- Floating Elements -->
-    <div class="absolute top-1/4 left-10 w-20 h-20 border border-violet-400/30 rounded-lg rotate-12 animate-float"></div>
-    <div class="absolute bottom-1/4 right-20 w-16 h-16 border border-purple-400/30 rounded-full animate-float" style="animation-delay: 1s;"></div>
-    <div class="absolute top-1/2 right-1/4 w-12 h-12 bg-violet-500/20 rounded-lg animate-float" style="animation-delay: 2s;"></div>
-
-    <!-- Gradient Orbs -->
-    <div class="absolute top-20 left-1/4 w-96 h-96 bg-violet-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-    <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style="animation-delay: 1s;"></div>
-
-    <div class="container-custom relative z-10">
-      <div class="max-w-4xl mx-auto text-center">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-violet-300 font-medium mb-6 animate-fade-in">
-          <Icon name="sparkles" size={16} />
-          <span>{c.hero.badge}</span>
-        </div>
-
-        <h1 class="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 animate-fade-in" style="animation-delay: 0.1s;">
-          {c.hero.headline}
-        </h1>
-
-        <p class="text-2xl md:text-3xl text-violet-300 font-medium mb-6 animate-fade-in" style="animation-delay: 0.2s;">
-          {c.hero.subheadline}
-        </p>
-
-        <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-10 animate-fade-in" style="animation-delay: 0.3s;">
-          {c.hero.description}
-        </p>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style="animation-delay: 0.4s;">
-          <Button href={`/${lang}/academy`} variant="primary" size="lg" class="bg-violet-600 hover:bg-violet-700">
-            {lang === 'fr' ? 'Découvrir l’AI Academy' : 'Explore the AI Academy'}
-          </Button>
-          <Button href={`/${lang}/contact`} variant="outline" size="lg" class="border-white/30 text-white hover:bg-white/10">
-            {lang === 'fr' ? 'Nous contacter' : 'Contact us'}
-          </Button>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- Intro Section with Stats -->
   <section class="py-24 bg-gradient-to-b from-slate-50 to-white">
@@ -436,8 +402,7 @@ const articles = blogArticles[lang] || blogArticles.en;
   <section class="py-24 bg-white">
     <div class="container-custom">
       <div class="text-center mb-16 animate-on-scroll">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 font-medium mb-6">
-          <Icon name="layers" size={16} />
+        <div class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-6">
           <span>{c.servicesSection.badge}</span>
         </div>
         <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
@@ -462,8 +427,8 @@ const articles = blogArticles[lang] || blogArticles.en;
               <!-- Left: Content -->
               <div>
                 <div class="flex items-center gap-4 mb-4">
-                  <div class={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon name={service.icon} size={28} class="text-white" />
+                  <div class="text-marque">
+                    <Icon name={service.icon} size={28} class="text-marque" />
                   </div>
                   <div>
                     <h3 class="text-2xl font-bold text-slate-900 group-hover:text-violet-600 transition-colors">{service.name}</h3>
@@ -483,7 +448,7 @@ const articles = blogArticles[lang] || blogArticles.en;
                 </div>
 
                 <!-- CTA with shine effect -->
-                <div class="cta-button inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-900 text-white hover:bg-slate-800 font-semibold group-hover:gap-3 transition-all shadow-lg">
+                <div class="cta-button inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-marque text-white hover:bg-marque-fonce font-semibold group-hover:gap-3 transition-all shadow-lg">
                   <span>{c.cta}</span>
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -529,8 +494,8 @@ const articles = blogArticles[lang] || blogArticles.en;
             class="p-6 bg-white rounded-2xl border border-slate-200 hover:border-violet-200 hover:shadow-lg transition-all animate-on-scroll"
             style={`animation-delay: ${index * 100}ms`}
           >
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-4">
-              <Icon name={useCase.icon} size={24} class="text-white" />
+            <div class="mb-4 text-marque">
+              <Icon name={useCase.icon} size={24} class="text-marque" />
             </div>
             <h3 class="text-lg font-bold text-slate-900 mb-2">{useCase.name}</h3>
             <p class="text-slate-600 text-sm">{useCase.description}</p>
@@ -544,8 +509,7 @@ const articles = blogArticles[lang] || blogArticles.en;
   <section class="py-24 bg-white">
     <div class="container-custom">
       <div class="text-center mb-16 animate-on-scroll">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 font-medium mb-6">
-          <Icon name="book" size={16} />
+        <div class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-6">
           <span>{c.blogSection.badge}</span>
         </div>
         <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
