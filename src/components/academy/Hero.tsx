@@ -26,6 +26,7 @@ export default function Hero({
   cta2,
   prixAffiche,
   film,
+  urlCadre,
 }: {
   locale: Locale;
   data: Jour30Data;
@@ -45,6 +46,8 @@ export default function Hero({
    * Avec un film, le cadre reste aussi au téléphone : c'est ce qu'on vient voir.
    */
   film?: ReactNode;
+  /** Le texte de la barre d'adresse du cadre, quand le film ne montre pas l'app. */
+  urlCadre?: string;
 }) {
   const c = jour30Copy(locale).hero;
   const programme = data.offres.find((o) => o.id === 'programme');
@@ -124,7 +127,7 @@ export default function Hero({
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
-            <span className="ml-3 font-ac-mono text-[11px] text-brume-nuit">{c.url}</span>
+            <span className="ml-3 font-ac-mono text-[11px] text-brume-nuit">{urlCadre ?? c.url}</span>
           </div>
           {film ? (
             // La hauteur est réservée par l'aspect 16:9 de la vidéo : rien ne

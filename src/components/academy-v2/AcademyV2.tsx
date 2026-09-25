@@ -183,6 +183,7 @@ export default function AcademyV2({
             <Film film={c.films.hero} libelleLire={c.films.lire} voir={c.films.voir} sansLegende cadre />
           ) : undefined
         }
+        urlCadre={c.films.urlCadre}
       />
 
       {/* La preuve sous le hero : la note et les logos, repris de la nouvelle

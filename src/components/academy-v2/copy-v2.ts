@@ -354,6 +354,9 @@ const FR = {
   films: {
     lire: 'Lire la vidéo',
     voir: 'Voir',
+    // Le film du hero est une conférence, pas l'app : l'adresse de l'app
+    // au-dessus aurait été fausse (Paul, 25/09/2026).
+    urlCadre: 'Extrait d’une formation en entreprise',
     // Dans le cadre du hero, à la place de la capture (25/09/2026).
     hero: {
       id: 'conference-reclamation-fr',

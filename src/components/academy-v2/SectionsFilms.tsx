@@ -22,6 +22,8 @@ export type FilmsCopy = {
   voir: string;
   /** Le film du hero, dans le cadre de navigateur, à la place de la capture. */
   hero?: FilmData;
+  /** La barre d'adresse du cadre du hero, quand le film n'est pas l'app. */
+  urlCadre?: string;
   /** Page anglaise : l'intérieur d'une leçon, après la visite. */
   produit?: FilmData;
   /** Page anglaise : Les automatisations et le MCP, après le schéma. */
