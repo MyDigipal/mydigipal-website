@@ -20,10 +20,9 @@ interface Props {
   articleAuthor?: string;
   articleSection?: string;
   articleTags?: string[];
-  /** La refonte de l'accueil (`/{lang}`, en ligne depuis le 25/09/2026) : pose
-   *  `data-refonte` sur <html> (couleur de la barre de progression) et règle
-   *  la couleur du navigateur sur le fond de la page. */
-  refonte?: boolean;
+  /** La couleur de la barre du navigateur (mobile) : le fond de l'en-tête de
+   *  la page. Blanc par défaut ; la salle de nuit sur les pages de l'Academy. */
+  couleurNavigateur?: string;
 }
 
 const {
@@ -39,7 +38,7 @@ const {
   articleAuthor,
   articleSection,
   articleTags = [],
-  refonte = false,
+  couleurNavigateur = '#ffffff',
 } = Astro.props;
 
 const siteTitle = t(lang, 'site.name');
@@ -61,7 +60,7 @@ const canonical = canonicalURL || Astro.url.href;
 ---
 
 <!doctype html>
-<html lang={lang} class="scroll-smooth" data-refonte={refonte ? '' : undefined}>
+<html lang={lang} class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -130,7 +129,10 @@ const canonical = canonicalURL || Astro.url.href;
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="/images/Logos/Favicon logo_256px.png" />
     <link rel="apple-touch-icon" href="/images/Logos/Favicon logo_256px.png" />
-    <meta name="theme-color" content={refonte ? '#ffffff' : '#4F46E5'} />
+    <!-- La barre du navigateur prend le fond de l'en-tête : blanc, ou la salle
+         de nuit de l'Academy. L'indigo d'avant venait de l'ancienne palette
+         (retirée le 25/09/2026). -->
+    <meta name="theme-color" content={couleurNavigateur} />
 
     <!-- RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title={lang === 'fr' ? 'Blog MyDigipal' : 'MyDigipal Blog'} href={`/${lang}/rss.xml`} />

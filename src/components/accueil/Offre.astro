@@ -15,6 +15,10 @@
  * page et le calculateur. Au téléphone : la liste seule, chaque ligne mène à
  * sa page.
  *
+ * Le 25/09/2026, Paul : « Réseaux sociaux » et non « Publicité sociale »,
+ * l'Automobile à la place de l'Emailing, et trois lignes pour l'IA (le
+ * contenu produit avec l'IA sort de la liste).
+ *
  * Les listes « ce qui est compris » reprennent les pages services et les
  * fiches du calculateur (`calculator-v6/content.ts`), reformulées. Les
  * chiffres viennent de la collection `case-studies` et de l'API de l'Academy,
@@ -22,7 +26,7 @@
  */
 import Icon from '@/components/ui/Icon.astro';
 import type { Jour30Data } from '@/components/academy/data';
-import { LOGOS, faitsAcademy, hauteurLogo, lireResultats, serrer, type Lang, type Resultat } from './donnees';
+import { LOGOS, enLettres, faitsAcademy, hauteurLogo, lireResultats, serrer, type Lang, type Resultat } from './donnees';
 
 interface Props {
   lang: Lang;
@@ -67,18 +71,19 @@ const agence: Service[] = fr
       },
       {
         id: 'paid-social',
-        nom: 'Publicité sociale',
+        nom: 'Réseaux sociaux',
         court: 'LinkedIn, Meta, TikTok et YouTube, pour toucher les décideurs là où ils passent leur temps.',
         texte: 'Sur LinkedIn, un ciblage par entreprise, par poste et par secteur ; sur Meta, les catalogues de véhicules et de produits. Les visuels peuvent être créés chez nous.',
         compris: ['LinkedIn Ads : ciblage de comptes, formulaires de leads', 'Meta : Facebook et Instagram', 'TikTok Ads et YouTube', 'Création des visuels en option', 'Le budget média se paie directement aux plateformes'],
         preuve: cas('symbl-ai'),
       },
       {
-        id: 'emailing',
-        nom: 'Emailing',
-        court: 'Des campagnes et des séquences écrites pour chaque segment, reliées à votre CRM.',
-        texte: 'La mise en place de l’outil et la segmentation, puis chaque mois le calendrier, la rédaction, le design et l’envoi. Et si la base manque de contacts, leur acquisition, conforme au RGPD.',
-        compris: ['Mise en place de l’outil et intégration au CRM', 'Segmentation des audiences', 'Calendrier éditorial mensuel', 'Rédaction, design et envoi des campagnes', 'Acquisition de contacts conforme au RGPD'],
+        id: 'automotive',
+        nom: 'Automobile',
+        court: 'Des campagnes pour les concessions et les groupes : Google Ads, réseaux sociaux et votre stock de véhicules en publicité.',
+        texte: 'Le parcours d’achat d’une voiture est long et local. On cible la zone de chaque concession, on relie votre stock aux publicités de Meta et de Google, et on mesure les clics, les visites et les ventes.',
+        compris: ['Google Ads : Search, Display, YouTube et Vehicle Listing Ads', 'Facebook, Instagram et TikTok', 'Publicités dynamiques reliées à votre stock', 'Ciblage local, concession par concession', 'Suivi des clics, des visites et des ventes'],
+        preuve: cas('vulcain-group'),
       },
       {
         id: 'b2b-abm',
@@ -115,18 +120,19 @@ const agence: Service[] = fr
       },
       {
         id: 'paid-social',
-        nom: 'Paid social',
+        nom: 'Social media',
         court: 'LinkedIn, Meta, TikTok and YouTube, to reach decision-makers where they spend their time.',
         texte: 'On LinkedIn, targeting by company, job title and industry; on Meta, vehicle and product catalogues. We can create the visuals too.',
         compris: ['LinkedIn Ads: account targeting, lead gen forms', 'Meta: Facebook and Instagram', 'TikTok Ads and YouTube', 'Visual creation as an option', 'Media spend is paid directly to the platforms'],
         preuve: cas('symbl-ai'),
       },
       {
-        id: 'emailing',
-        nom: 'Emailing',
-        court: 'Campaigns and sequences written for each segment, connected to your CRM.',
-        texte: 'Setting up the tool and the segments, then every month the calendar, the copy, the design and the sending. And if the list runs short, GDPR-compliant contact acquisition.',
-        compris: ['Tool set-up and CRM integration', 'Audience segmentation', 'Monthly editorial calendar', 'Copy, design and sending of campaigns', 'GDPR-compliant contact acquisition'],
+        id: 'automotive',
+        nom: 'Automotive',
+        court: 'Campaigns for dealerships and dealer groups: Google Ads, social media and your vehicle stock in ads.',
+        texte: 'Buying a car is a long, local journey. We target each dealership’s area, connect your stock to Meta and Google ads, and measure clicks, visits and sales.',
+        compris: ['Google Ads: Search, Display, YouTube and Vehicle Listing Ads', 'Facebook, Instagram and TikTok', 'Dynamic ads connected to your stock', 'Local targeting, dealership by dealership', 'Tracking of clicks, visits and sales'],
+        preuve: cas('vulcain-group'),
       },
       {
         id: 'b2b-abm',
@@ -168,13 +174,6 @@ const ia: Service[] = fr
         texte: 'On repère les tâches répétitives, on les automatise, et un humain garde la main là où il le faut : demandes entrantes, comptes rendus, relances, reporting.',
         compris: ['Traitement automatique des demandes entrantes', 'Enrichissement des données du CRM', 'Rapports générés automatiquement', 'Synchronisation entre outils : CRM, email, facturation', 'Assistants et bases de connaissances sur vos documents'],
       },
-      {
-        id: 'ai-content',
-        nom: 'Contenu produit avec l’IA',
-        court: 'Des articles et des pages écrits avec l’IA, dans votre ton, relus par un humain.',
-        texte: 'L’IA apprend votre ton sur vos contenus existants, les sujets viennent des données de recherche, et chaque texte est relu et vérifié avant publication.',
-        compris: ['Apprentissage de votre ton sur vos contenus', 'Sujets choisis avec Ahrefs et Search Console', 'Articles structurés : titres, méta, FAQ, liens internes', 'Relecture et vérification humaines'],
-      },
     ]
   : [
       {
@@ -198,26 +197,23 @@ const ia: Service[] = fr
         texte: 'We find the repetitive tasks, automate them, and keep a human in charge where it matters: incoming requests, meeting notes, follow-ups, reporting.',
         compris: ['Automatic handling of incoming leads', 'CRM data enrichment', 'Automatically generated reports', 'Sync between tools: CRM, email, billing', 'Assistants and knowledge bases on your documents'],
       },
-      {
-        id: 'ai-content',
-        nom: 'AI-assisted content',
-        court: 'Articles and pages written with AI, in your voice, checked by a human.',
-        texte: 'The AI learns your voice from your existing content, topics come from search data, and every piece is proofread and fact-checked before it goes live.',
-        compris: ['Learning your voice from your content', 'Topics chosen with Ahrefs and Search Console', 'Structured articles: headings, meta, FAQ, internal links', 'Human proofreading and fact-checking'],
-      },
     ];
 
 // Le lien de chaque service, et ceux que le calculateur chiffre.
-const CALCULATEUR = new Set(['seo', 'google-ads', 'paid-social', 'emailing', 'tracking-reporting', 'ai-training', 'ai-solutions', 'ai-content']);
+const CALCULATEUR = new Set(['seo', 'google-ads', 'paid-social', 'tracking-reporting', 'ai-training', 'ai-solutions']);
+const LIENS: Record<string, string> = { academy: `/${lang}/academy`, automotive: `/${lang}/automotive` };
 for (const s of [...agence, ...ia]) {
-  s.lien = s.id === 'academy' ? `/${lang}/academy` : `/${lang}/services/${s.id}`;
+  s.lien = LIENS[s.id] ?? `/${lang}/services/${s.id}`;
   s.chiffrer = CALCULATEUR.has(s.id);
 }
+// « Six métiers d'agence et trois façons » : compté sur les listes.
+const nAgence = enLettres(agence.length, lang);
+const nIa = enLettres(ia.length, lang).toLowerCase();
 
 const t = fr
   ? {
       titre: 'Ce qu’on fait.',
-      chapeau: 'Six métiers d’agence et quatre façons de mettre l’IA au travail, tenus par la même équipe.',
+      chapeau: `${nAgence} métiers d’agence et ${nIa} façons de mettre l’IA au travail, tenus par la même équipe.`,
       agence: 'L’agence, au mois',
       ia: 'L’IA, appliquée',
       compris: 'Ce qui est compris',
@@ -232,7 +228,7 @@ const t = fr
     }
   : {
       titre: 'What we do.',
-      chapeau: 'Six agency disciplines and four ways to put AI to work, run by the same team.',
+      chapeau: `${nAgence} agency disciplines and ${nIa} ways to put AI to work, run by the same team.`,
       agence: 'The agency, monthly',
       ia: 'Applied AI',
       compris: 'What’s included',

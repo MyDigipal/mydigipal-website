@@ -128,7 +128,7 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   au webhook et GA4 lisent tous ce résultat (fin du bug 1 750 € contre 1 400 €).
 - **Parcours** : une question à la fois sur téléphone, guide à droite sur ordinateur, aucune
   avance automatique (le même bouton « Continuer » partout), page de résultat pleine largeur
-  avec l'audit et le rendez-vous.
+  avec l'audit et « Nous contacter » (plus de prise de rendez-vous depuis le 25/09/2026).
 - **Entrées** : `?service=<domaine>` coche le service ; `#plan=<encodePlan>` (et `&b=<budget>`)
   ouvre directement un devis, c'est ce que font l'assistant du site et le bouton « Revoir mon
   devis » des mails.
@@ -287,16 +287,23 @@ photo de La Poste, verbatims), `Offre` (« Ce qu'on fait » : dix services, une 
 chacun, fiche au survol), `Resultats` (sept études de cas, descendues exprès),
 `Articles`, `Portes` (calculateur, Academy, contact). Styles communs dans `accueil.css`.
 
-- **Aucun « Réserver un appel » sur l'accueil** (Paul, 25/09/2026 : « je préfère que les
-  gens nous contactent par le biais où ils peuvent faire calculer mon budget, ou
-  directement »). Le hero propose « Calculer mon budget » puis « Nous contacter », la
-  dernière porte mène au formulaire de contact (« réponse sous 24 h », la promesse de
-  la page contact). La prise de rendez-vous reste ailleurs (résultat du calculateur,
-  assistant, fin des articles).
-- **Le hero** : « Vos campagnes ont des visages. » / « Your campaigns have faces. », en
-  très grand (jusqu'à 8,25 rem). **Les portraits sont en couleur** ; c'est la personne
-  survolée, touchée ou présentée par la visite qui passe en noir et blanc, avec son nom
-  (Paul, 25/09/2026).
+- **Aucun « Réserver un appel » sur TOUT le site** depuis le 25/09/2026 (Paul : « je
+  préfère que les gens nous contactent par le biais où ils peuvent faire calculer mon
+  budget, ou directement »). Partout, les deux mêmes portes : « Calculer mon budget » et
+  « Nous contacter » (`/{lang}/contact`, « réponse sous 24 h », la promesse de la page
+  contact). Les anciens boutons ont été remplacés dans l'accueil, `FinalCTA`,
+  `BlogServiceCTA`, `TechnicalSEOSection`, `TrainingBenefitsManagers`, `AIProcess`, la
+  page de résultat du calculateur, l'assistant (`cheminContact()` dans
+  `site-assistant/copy.ts`, `BOOKING_URL` n'existe plus) et dix articles de blog. Ne pas
+  remettre de lien d'agenda.
+- **Le hero** : « Le marketing digital, / boosté par l'IA, / piloté par des humains. »
+  (« Digital marketing, / boosted by AI, / run by humans. »), la dernière ligne qui prend
+  du poids. C'est ce que Paul a décrit le 25/09/2026 (« l'expertise de l'humain et
+  l'intelligence de l'intelligence artificielle ») après avoir écarté « Votre équipe
+  marketing, en plus grand » puis « Vos campagnes ont des visages » (« c'est nul »).
+  Taille réglée pour que la plus longue ligne tienne sans se replier jusqu'à 360 px.
+  **Les portraits sont en couleur** ; c'est la personne survolée, touchée ou présentée
+  par la visite qui passe en noir et blanc, avec son nom (Paul, 25/09/2026).
 - **Les films parlants** (`Academie`, sous les boucles) sont ceux de la page de vente
   (`academy-v2/copy-v2.ts`, `films`) : en anglais le tour de l'espace, l'intérieur d'une
   leçon, les automatisations et le MCP ; en français les deux extraits de la conférence
@@ -306,7 +313,11 @@ chacun, fiche au survol), `Resultats` (sept études de cas, descendues exprès),
   vrais navigateurs.
 
 - **Plus aucun prix dans `Offre`** (Paul : « je pense pas que ça soit une bonne chose de
-  mettre le prix »). Une phrase par service ; sur ordinateur, un repère blanc glisse sur la
+  mettre le prix »). La liste, fixée par Paul le 25/09/2026 : SEO, Google Ads, **Réseaux
+  sociaux** (et non « Publicité sociale »), **Automobile** (vers `/{lang}/automotive`, à la
+  place de l'Emailing), B2B et ABM, Tracking et reporting ; puis AI Academy, Formation en
+  salle ou à distance, Automatisations sur mesure (le contenu produit avec l'IA n'y est
+  plus). Le chapeau compte les lignes (`enLettres`). Une phrase par service ; sur ordinateur, un repère blanc glisse sur la
   ligne survolée ou atteinte au clavier, et la fiche collée à droite dit ce qui est compris,
   un résultat client quand une étude de cas a employé le service (lu dans la collection),
   la page et « Chiffrer ce service » (`/calculator?service=`). Au téléphone, la liste seule.
@@ -320,17 +331,16 @@ chacun, fiche au survol), `Resultats` (sept études de cas, descendues exprès),
 - **Prix de l'Academy en dollars sur la page anglaise** (`prixAffiche()`), comme sa page de
   vente (Paul, 16/09/2026).
 
-- **L'option `refonte`** (`PageLayout` → `BaseLayout`, `Header`, `Footer`,
-  `StickyCalculatorCTA`) : le bleu du logo au lieu du bleu Tailwind et du dégradé
-  indigo, « EN » / « FR » au lieu du drapeau emoji, « Calculer mon budget » dans le pied
-  de page, la barre de progression bleue (`[data-refonte]` sur `<html>`), `theme-color`
-  blanc. **Seule l'accueil la porte** : les autres pages gardent l'ancien en-tête tant
-  que Paul n'a pas décidé de l'étendre.
-- **L'étendre au site, le jour venu** : les versions `refonte` deviennent les seules dans
-  les trois composants et l'option disparaît ; `[data-refonte]` devient la règle par
-  défaut de la barre ; `@view-transition { navigation: auto }` s'ajoute dans
-  `global.css` (il ne joue qu'entre deux pages qui le déclarent, donc tout le site d'un
-  coup). `HeroUseCases.astro` et `Timeline30Days.astro`, orphelins, ont été supprimés à
+- **L'en-tête, le pied de page et le bouton collant de l'accueil sont ceux de tout le
+  site** depuis le 25/09/2026 (Paul : « pour l'en-tête, tu peux l'étendre à tout le
+  site ») : le bleu du logo au lieu du bleu Tailwind et du dégradé indigo, « EN » / « FR »
+  au lieu du drapeau emoji, « Calculer mon budget » dans le pied de page, la barre de
+  progression bleue. L'option `refonte` qui les réservait à l'aperçu n'existe plus.
+  `theme-color` blanc, sauf les pages de l'Academy qui passent `couleurNavigateur` (leur
+  salle de nuit, `#0d1424`) à `BaseLayout`.
+- `@view-transition { navigation: auto }` (transitions entre pages sans JavaScript) reste
+  à décider : il ne joue qu'entre deux pages qui le déclarent, donc tout le site d'un
+  coup. `HeroUseCases.astro` et `Timeline30Days.astro`, orphelins, ont été supprimés à
   la bascule ; les autres sections de l'ancienne accueil (`ServicesGridV2`, `StatsRail`,
   `IndustryCardV2`...) restent, `test.astro` et d'autres pages s'en servent.
 - **Aucun chiffre écrit à la main** (`accueil/donnees.ts`) : les résultats viennent de la
