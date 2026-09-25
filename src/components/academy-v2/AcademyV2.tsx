@@ -39,6 +39,7 @@ import Question from './Question';
 import OutilsCartes, { type CarteOutil } from './OutilsCartes';
 import Preuves, { type LogoPreuve } from './Preuves';
 import { FilmSeul, FilmsSalle } from './SectionsFilms';
+import Film from './Film';
 import { jour30Copy } from '../academy/copy';
 import './vente.css';
 
@@ -177,6 +178,11 @@ export default function AcademyV2({
         ancreTarifs="tarifs"
         cta2={c.tarifs.gratuitCourt(leconsGratuit(data))}
         prixAffiche={`${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, devise), locale)} ${SYMBOLE[devise]}`}
+        film={
+          c.films.hero ? (
+            <Film film={c.films.hero} libelleLire={c.films.lire} voir={c.films.voir} sansLegende cadre />
+          ) : undefined
+        }
       />
 
       {/* La preuve sous le hero : la note et les logos, repris de la nouvelle
@@ -225,14 +231,14 @@ export default function AcademyV2({
 
       {/* Page anglaise : Paul ouvre une leçon, juste sous le tableau de bord
           qu'on vient de survoler. */}
-      {c.films.produit ? <FilmSeul film={c.films.produit} lire={c.films.lire} fond="nuit" /> : null}
+      {c.films.produit ? <FilmSeul film={c.films.produit} lire={c.films.lire} voir={c.films.voir} fond="nuit" /> : null}
 
       {/* Le câblage MCP animé, tel quel. */}
       <Mcp locale={locale} titre={c.mcp.titre} texte={c.mcp.texte} />
 
       {/* Page anglaise : la vraie installation, sur la même feuille claire
           que le schéma qu'elle prouve. L'écran passe à gauche. */}
-      {c.films.mcp ? <FilmSeul film={c.films.mcp} lire={c.films.lire} fond="feuille" inverse /> : null}
+      {c.films.mcp ? <FilmSeul film={c.films.mcp} lire={c.films.lire} voir={c.films.voir} fond="feuille" inverse /> : null}
 
       {/* Le ruban sans sa grande photo : elle descend à la frontière de la
           quinzaine 2, pour qu'il y ait une image par quinzaine. */}
@@ -295,7 +301,7 @@ export default function AcademyV2({
 
       {/* Page française : la méthode devant une salle, juste avant « Une
           méthode née en salle », dont elle est la preuve. */}
-      {c.films.salle ? <FilmsSalle salle={c.films.salle} lire={c.films.lire} /> : null}
+      {c.films.salle ? <FilmsSalle salle={c.films.salle} lire={c.films.lire} voir={c.films.voir} /> : null}
 
       {/* Qui enseigne : les logos clients et les verbatims. */}
       <Maison locale={locale} temoignages={temoignagesPublics(data.temoignages)} avis={avis} />

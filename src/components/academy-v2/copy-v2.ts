@@ -353,17 +353,19 @@ const FR = {
   // données montrées sont fictives. Aucun nombre dans les légendes.
   films: {
     lire: 'Lire la vidéo',
+    voir: 'Voir',
+    // Dans le cadre du hero, à la place de la capture (25/09/2026).
+    hero: {
+      id: 'conference-reclamation-fr',
+      titre: 'Répondre à une réclamation, devant les équipes de SeLoger',
+      legende:
+        'L’IA promet un geste commercial qu’on n’a pas le droit de faire, on la recadre, puis elle tire le tableau de bord de toutes les réclamations.',
+    },
     salle: {
       titre: 'La méthode, devant une vraie salle.',
       chapeau:
-        'Deux extraits d’une conférence donnée pour les équipes de SeLoger. Les données sont fictives, les réflexes sont ceux de la formation.',
+        'Un extrait d’une conférence donnée pour les équipes de SeLoger. Les données sont fictives, les réflexes sont ceux de la formation.',
       films: [
-        {
-          id: 'conference-reclamation-fr',
-          titre: 'Répondre à une réclamation',
-          legende:
-            'L’IA promet un geste commercial qu’on n’a pas le droit de faire, on la recadre, puis elle tire le tableau de bord de toutes les réclamations.',
-        },
         {
           id: 'conference-rendez-vous-fr',
           titre: 'Préparer un rendez-vous à enjeu',
@@ -612,6 +614,13 @@ const EN: typeof FR = {
   // The talking films (25/09/2026): Paul walking through the product, in English.
   films: {
     lire: 'Play the video',
+    voir: 'Watch',
+    // In the hero frame, instead of the dashboard capture (25/09/2026).
+    hero: {
+      id: 'tour-espace-en',
+      titre: 'A tour of the learner space',
+      legende: 'Paul walks through the space you open after buying: the course, the tools, the use cases and your progress.',
+    },
     produit: {
       id: 'interieur-lecon-en',
       titre: 'Inside a lesson',

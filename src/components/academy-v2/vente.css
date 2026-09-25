@@ -150,46 +150,78 @@
   position: absolute;
   inset: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
   border: 0;
   border-radius: 14px;
-  background: linear-gradient(180deg, rgb(10 16 30 / 0.05) 30%, rgb(10 16 30 / 0.55));
-  color: #fff;
+  background: linear-gradient(180deg, rgb(10 16 30 / 0.12), rgb(10 16 30 / 0.5));
+  color: var(--color-encre);
   cursor: pointer;
   touch-action: manipulation;
+  transition: background-color 0.3s var(--ease-sortie);
 }
+.vente-v2 .film-lire:hover {
+  background: linear-gradient(180deg, rgb(10 16 30 / 0.2), rgb(10 16 30 / 0.6));
+}
+
+/* La touche : une pastille dorée, le rond de lecture à gauche et « Voir ·
+   3 min » à droite. Encre sur or : 8,6 de contraste. Paul ne voyait pas où
+   se lançaient les films (25/09/2026), d'où la taille et le libellé. */
 .vente-v2 .film-rond {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 4.5rem;
-  height: 4.5rem;
+  flex: none;
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 999px;
+  background: var(--color-encre);
+  color: var(--color-or);
+  transition: transform 0.3s var(--ease-sortie);
+}
+.vente-v2 .film-rond svg {
+  width: 22px;
+  height: 22px;
+  /* Le triangle a son centre de gravité à gauche de sa boîte. */
+  margin-left: 3px;
+}
+.vente-v2 .film-lire .film-rond {
+  position: relative;
+  margin-right: -2.25rem;
+  z-index: 1;
+  box-shadow: 0 0 0 4px var(--color-or);
+}
+.vente-v2 .film-libelle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 3.75rem;
+  padding: 0 1.6rem 0 3.1rem;
   border-radius: 999px;
   background: var(--color-or);
   color: var(--color-encre);
-  box-shadow: 0 18px 40px -12px rgb(0 0 0 / 0.6);
-  transition:
-    transform 0.3s var(--ease-sortie),
-    background-color 0.2s var(--ease-sortie);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 22px 44px -14px rgb(0 0 0 / 0.7);
+  transition: background-color 0.2s var(--ease-sortie);
 }
-/* Le triangle a son centre de gravité à gauche de sa boîte. */
-.vente-v2 .film-rond svg {
-  margin-left: 3px;
+.vente-v2 .film-duree {
+  font-weight: 500;
+  opacity: 0.8;
+}
+.vente-v2 .film-duree::before {
+  content: '·';
+  margin-right: 0.5rem;
+}
+.vente-v2 .film-lire:hover .film-libelle {
+  background: var(--color-or-vif);
 }
 .vente-v2 .film-lire:hover .film-rond {
   transform: scale(1.06);
-  background: var(--color-or-vif);
 }
 .vente-v2 .film-lire:active .film-rond {
-  transform: scale(0.97);
-}
-.vente-v2 .film-libelle {
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-shadow: 0 1px 12px rgb(0 0 0 / 0.5);
+  transform: scale(0.96);
 }
 .vente-v2 .film-lire:focus-visible {
   outline: 2px solid var(--color-or);
@@ -197,7 +229,24 @@
 }
 @media (max-width: 639px) {
   .vente-v2 .film-rond {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 3.25rem;
+    height: 3.25rem;
   }
+  .vente-v2 .film-libelle {
+    height: 3.25rem;
+    font-size: 0.975rem;
+    padding: 0 1.25rem 0 2.9rem;
+  }
+}
+
+/* Dans le cadre de navigateur du hero : le cadre porte déjà le coin, le
+   filet et l'ombre. */
+.vente-v2 .film-cadre::before {
+  display: none;
+}
+.vente-v2 .film-cadre video,
+.vente-v2 .film-cadre .film-lire {
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
 }

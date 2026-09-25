@@ -28,6 +28,12 @@ export type FilmData = {
 
 const EVT = 'academy-film-lecture';
 
+/** « 3 min » : la durée arrondie à la minute, pour le libellé de la touche. */
+function minutes(s: number) {
+  if (!Number.isFinite(s) || s <= 0) return '';
+  return `${Math.max(1, Math.round(s / 60))} min`;
+}
+
 function duree(s: number) {
   if (!Number.isFinite(s) || s <= 0) return '';
   const m = Math.floor(s / 60);
@@ -42,6 +48,8 @@ export default function Film({
   grand = false,
   sansLegende = false,
   onDuree,
+  voir,
+  cadre = false,
 }: {
   film: FilmData;
   libelleLire: string;
@@ -53,10 +61,15 @@ export default function Film({
   sansLegende?: boolean;
   /** La durée lue dans le fichier, pour une légende posée ailleurs. */
   onDuree?: (texte: string) => void;
+  /** Le verbe court de la touche (« Voir », « Watch ») : suivi de la durée. */
+  voir?: string;
+  /** Dans le cadre de navigateur du hero : ni coins, ni filet, ni lueur. */
+  cadre?: boolean;
 }) {
   const video = useRef<HTMLVideoElement | null>(null);
   const [lance, setLance] = useState(false);
   const [temps, setTemps] = useState('');
+  const [mins, setMins] = useState('');
   const src = `/academy/videos/${film.id}`;
   const nuit = fond === 'nuit';
 
@@ -66,6 +79,7 @@ export default function Film({
     const surMeta = () => {
       const t = duree(v.duration);
       setTemps(t);
+      setMins(minutes(v.duration));
       onDuree?.(t);
     };
     if (v.readyState >= 1) surMeta();
@@ -104,7 +118,7 @@ export default function Film({
 
   return (
     <figure className="m-0">
-      <div className={`film-ecran ${nuit ? 'film-nuit' : 'film-feuille'}`}>
+      <div className={`film-ecran ${nuit ? 'film-nuit' : 'film-feuille'} ${cadre ? 'film-cadre' : ''}`}>
         <video
           ref={video}
           className="block aspect-video h-auto w-full bg-encre object-cover"
@@ -127,7 +141,13 @@ export default function Film({
                 <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
               </svg>
             </span>
-            <span className="film-libelle">{libelleLire}</span>
+            {/* Le libellé à côté de la touche, et la durée lue dans le
+                fichier (« Voir · 3 min ») : Paul ne voyait pas où se lançaient
+                les films (25/09/2026). */}
+            <span className="film-libelle">
+              {voir ?? libelleLire}
+              {mins ? <span className="film-duree">{mins}</span> : null}
+            </span>
           </button>
         ) : null}
       </div>

@@ -4,6 +4,7 @@ import type { Jour30Data, Locale } from './data';
 import { leconsProgramme, leconsComplement, leconsGratuit } from './data';
 import { formatPrice } from './offres';
 import { useLienApp } from './track';
+import type { ReactNode } from 'react';
 import { cheminCapture } from './Demos';
 
 /**
@@ -24,6 +25,7 @@ export default function Hero({
   ancreTarifs = 'pricing',
   cta2,
   prixAffiche,
+  film,
 }: {
   locale: Locale;
   data: Jour30Data;
@@ -36,6 +38,13 @@ export default function Hero({
    * devise. Sans lui, le hero affiche l'euro comme avant.
    */
   prixAffiche?: string;
+  /**
+   * Un film à la place de la capture, dans le même cadre de navigateur
+   * (seconde page de vente, 25/09/2026, demande de Paul). La capture du
+   * tableau de bord était périmée (« permanent access », « 105 lessons »).
+   * Avec un film, le cadre reste aussi au téléphone : c'est ce qu'on vient voir.
+   */
+  film?: ReactNode;
 }) {
   const c = jour30Copy(locale).hero;
   const programme = data.offres.find((o) => o.id === 'programme');
@@ -108,13 +117,20 @@ export default function Hero({
             Elle avait d'abord été réduite, puis cadrée en 4:5 le 01/09 pour
             rester lisible ; elle sort maintenant, et le premier écran tient en
             un titre, une phrase et deux boutons. */}
-        <div className="hidden overflow-hidden rounded-[16px] border border-filet-nuit bg-encre shadow-[0_40px_80px_-50px_rgba(0,0,0,0.9)] sm:block">
+        <div
+          className={`${film ? '' : 'hidden sm:block'} overflow-hidden rounded-[16px] border border-filet-nuit bg-encre shadow-[0_40px_80px_-50px_rgba(0,0,0,0.9)]`}
+        >
           <div className="flex items-center gap-2 border-b border-filet-nuit px-4 py-3">
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
             <span className="h-[9px] w-[9px] rounded-full bg-white/[0.14]" />
             <span className="ml-3 font-ac-mono text-[11px] text-brume-nuit">{c.url}</span>
           </div>
+          {film ? (
+            // La hauteur est réservée par l'aspect 16:9 de la vidéo : rien ne
+            // bouge quand l'affiche arrive.
+            <div className="relative">{film}</div>
+          ) : (
           <div className="relative aspect-[16/10]">
             <img
               src={cheminCapture('tableau-de-bord', locale)}
@@ -125,6 +141,7 @@ export default function Hero({
               className="block h-full w-full object-cover object-left-top sm:object-top"
             />
           </div>
+          )}
         </div>
       </div>
     </section>

@@ -18,6 +18,10 @@ import Film, { type FilmData } from './Film';
  */
 export type FilmsCopy = {
   lire: string;
+  /** Le verbe de la touche de lecture, suivi de la durée (« Voir · 3 min »). */
+  voir: string;
+  /** Le film du hero, dans le cadre de navigateur, à la place de la capture. */
+  hero?: FilmData;
   /** Page anglaise : l'intérieur d'une leçon, après la visite. */
   produit?: FilmData;
   /** Page anglaise : Les automatisations et le MCP, après le schéma. */
@@ -30,11 +34,13 @@ export type FilmsCopy = {
 export function FilmSeul({
   film,
   lire,
+  voir,
   fond,
   inverse = false,
 }: {
   film: FilmData;
   lire: string;
+  voir: string;
   fond: 'nuit' | 'feuille';
   /** L'écran à gauche : la seconde occurrence ne copie pas la première. */
   inverse?: boolean;
@@ -60,35 +66,36 @@ export function FilmSeul({
           ) : null}
         </div>
         <div className={`v2-reveal lg:col-span-8 ${inverse ? 'lg:order-1' : ''}`} style={{ ['--i' as string]: 1 }}>
-          <Film film={film} libelleLire={lire} fond={fond} sansLegende onDuree={setTemps} />
+          <Film film={film} libelleLire={lire} voir={voir} fond={fond} sansLegende onDuree={setTemps} />
         </div>
       </div>
     </section>
   );
 }
 
-/** La conférence : deux films, le premier en grand, le second décalé. */
-export function FilmsSalle({ salle, lire }: { salle: NonNullable<FilmsCopy['salle']>; lire: string }) {
+/**
+ * La conférence. Depuis que l'extrait sur la réclamation est monté dans le
+ * hero (25/09/2026), il n'en reste qu'un : le texte à gauche, l'écran à droite.
+ * S'il y en a deux, le second se pose sous le premier, décalé à droite.
+ */
+export function FilmsSalle({ salle, lire, voir }: { salle: NonNullable<FilmsCopy['salle']>; lire: string; voir: string }) {
   const [premier, ...autres] = salle.films;
+  if (!premier) return null;
   return (
     <section className="border-t border-filet-nuit px-4 py-20 sm:px-6 lg:py-28">
-      <div className="mx-auto max-w-[1180px]">
-        <div className="v2-reveal max-w-[60ch]">
+      <div className="mx-auto grid max-w-[1180px] grid-cols-[minmax(0,1fr)] items-center gap-10 lg:grid-cols-12 lg:gap-10">
+        <div className="v2-reveal lg:col-span-4">
           <h2 className="m-0 text-ivoire">{salle.titre}</h2>
-          <p className="mt-5 text-[16.5px] leading-[1.65] text-corps-nuit">{salle.chapeau}</p>
+          <p className="mt-5 text-[16px] leading-[1.65] text-corps-nuit">{salle.chapeau}</p>
         </div>
-        <div className="mt-12 grid grid-cols-[minmax(0,1fr)] gap-12 lg:mt-16 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-10">
-          {premier ? (
-            <div className="v2-reveal">
-              <Film film={premier} libelleLire={lire} grand />
-            </div>
-          ) : null}
-          {autres.map((f, i) => (
-            <div key={f.id} className="v2-reveal lg:mt-40" style={{ ['--i' as string]: i + 1 }}>
-              <Film film={f} libelleLire={lire} />
-            </div>
-          ))}
+        <div className="v2-reveal lg:col-span-8" style={{ ['--i' as string]: 1 }}>
+          <Film film={premier} libelleLire={lire} voir={voir} grand />
         </div>
+        {autres.map((f, i) => (
+          <div key={f.id} className="v2-reveal lg:col-span-7 lg:col-start-6" style={{ ['--i' as string]: i + 2 }}>
+            <Film film={f} libelleLire={lire} voir={voir} />
+          </div>
+        ))}
       </div>
     </section>
   );
