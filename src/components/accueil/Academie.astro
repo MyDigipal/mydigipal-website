@@ -71,7 +71,7 @@ const outils = OUTILS_PUBLIES.filter((o) => MARQUES[o.id]);
 // visiter l'espace, ouvre une leçon et montre les automatisations ; en
 // français, les deux extraits de la conférence donnée pour SeLoger.
 const cf = copyV2(lang).films;
-const FILMS = [cf.hero, cf.produit, cf.mcp, ...(cf.salle?.films ?? [])].filter(
+const FILMS = [cf.tour, cf.produit, cf.mcp, ...(cf.salle?.films ?? [])].filter(
   (x): x is NonNullable<typeof x> => !!x,
 );
 
@@ -91,6 +91,7 @@ const t = fr
       ecrans: 'Les écrans de l’Academy',
       pause: 'Mettre la vidéo en pause',
       lire: 'Lire la vidéo',
+      presentation: 'L’AI Academy en 40 secondes',
       filmsTitre: 'La méthode, devant une vraie salle.',
       filmsChapeau: 'Des extraits d’une conférence donnée pour les équipes de SeLoger, avec le son. Les données sont fictives, les réflexes sont ceux de la formation.',
       filmsChoix: 'Choisir un film',
@@ -111,6 +112,7 @@ const t = fr
       ecrans: 'Academy screens',
       pause: 'Pause the video',
       lire: 'Play the video',
+      presentation: 'The AI Academy in 40 seconds',
       filmsTitre: 'Paul shows you around.',
       filmsChapeau: 'Films with sound: the learner space, a lesson from the inside, and the automations running on a real setup.',
       filmsChoix: 'Pick a film',
@@ -163,6 +165,32 @@ const faits = [
         </div>
       </div>
     </div>
+
+    {/* La vidéo de présentation (27/09/2026), la même que dans le hero de la
+        page de vente : muette, elle part seule quand elle entre à l'écran,
+        s'arrête quand elle en sort, et jamais seule sous
+        prefers-reduced-motion. */}
+    <figure class="academie-presentation" data-presentation data-reveal style="--i:2">
+      <div class="presentation-ecran">
+        <video
+          class="presentation-video"
+          muted
+          loop
+          playsinline
+          preload="none"
+          disablepictureinpicture
+          poster={`/academy/videos/presentation-${lang}.webp`}
+          aria-label={t.presentation}
+          data-pres-video
+        >
+          <source src={`/academy/videos/presentation-${lang}.mp4`} type="video/mp4" />
+        </video>
+        <button type="button" class="academie-lecture est-arretee" aria-label={t.lire} data-pres-bouton data-pause={t.pause} data-lire={t.lire}>
+          <Icon name="pause" size={16} class="icone-pause" />
+          <Icon name="play" size={16} class="icone-lire" />
+        </button>
+      </div>
+    </figure>
 
     <div class="academie-demo" data-demo data-reveal style="--i:2">
       <div class="academie-onglets" role="tablist" aria-label={t.ecrans}>
@@ -413,6 +441,40 @@ const faits = [
   .academie-panneau {
     position: relative;
     margin: 0;
+  }
+
+  /* La vidéo de présentation : pleine largeur, entre le titre et les écrans. */
+  .academie-presentation {
+    position: relative;
+    margin: 3rem 0 0;
+  }
+  @media (min-width: 1024px) {
+    .academie-presentation {
+      margin-top: 4.5rem;
+    }
+  }
+  .academie-presentation::before {
+    content: '';
+    position: absolute;
+    inset: -8% -6% 6%;
+    background: radial-gradient(closest-side, rgb(200 169 81 / 0.16), transparent);
+    filter: blur(24px);
+    pointer-events: none;
+  }
+  .presentation-ecran {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #0d1424;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    box-shadow: 0 50px 90px -40px rgb(0 0 0 / 0.85);
+  }
+  .presentation-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   /* Une lueur du bleu du logo derrière l'écran, pas un dégradé de fond. */
   .academie-panneau::before {
@@ -910,6 +972,48 @@ const faits = [
 </style>
 
 <script>
+  /**
+   * La vidéo de présentation : muette, elle démarre à l'entrée dans l'écran et
+   * s'arrête à la sortie. Le bouton l'arrête pour de bon (le défilement ne la
+   * relance plus), ou la relance. Un film parlant qui démarre la fait taire.
+   */
+  document.querySelectorAll<HTMLElement>('[data-presentation]').forEach((bloc) => {
+    const v = bloc.querySelector<HTMLVideoElement>('[data-pres-video]');
+    const b = bloc.querySelector<HTMLButtonElement>('[data-pres-bouton]');
+    if (!v || !b) return;
+    let arretee = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const etat = () => {
+      b.classList.toggle('est-arretee', v.paused);
+      b.setAttribute('aria-label', (v.paused ? b.dataset.lire : b.dataset.pause) ?? '');
+    };
+    v.addEventListener('play', etat);
+    v.addEventListener('pause', etat);
+    new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !arretee) v.play().catch(() => {});
+        else if (!e.isIntersecting && !v.paused) v.pause();
+      },
+      { threshold: 0.35 },
+    ).observe(v);
+    b.addEventListener('click', () => {
+      if (v.paused) {
+        arretee = false;
+        v.play().catch(() => {});
+        (window as unknown as { dataLayer?: Record<string, unknown>[] }).dataLayer?.push({
+          event: 'academy_video_play',
+          video_id: 'presentation-accueil',
+        });
+      } else {
+        arretee = true;
+        v.pause();
+      }
+    });
+    window.addEventListener('accueil-film-lecture', () => {
+      arretee = true;
+      v.pause();
+    });
+  });
+
   /**
    * Le lecteur des écrans de l'Academy.
    *

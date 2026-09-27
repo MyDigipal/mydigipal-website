@@ -39,7 +39,7 @@ import Question from './Question';
 import OutilsCartes, { type CarteOutil } from './OutilsCartes';
 import Preuves, { type LogoPreuve } from './Preuves';
 import { FilmSeul, FilmsSalle } from './SectionsFilms';
-import Film from './Film';
+import Presentation from './Presentation';
 import { jour30Copy } from '../academy/copy';
 import './vente.css';
 
@@ -179,8 +179,8 @@ export default function AcademyV2({
         cta2={c.tarifs.gratuitCourt(leconsGratuit(data), data.essai_heures ?? 48)}
         prixAffiche={`${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, devise), locale)} ${SYMBOLE[devise]}`}
         film={
-          c.films.hero ? (
-            <Film film={c.films.hero} libelleLire={c.films.lire} voir={c.films.voir} sansLegende cadre />
+          c.films.presentation ? (
+            <Presentation video={c.films.presentation} lire={c.films.lire} pause={c.films.pause ?? c.films.lire} />
           ) : undefined
         }
         urlCadre={c.films.urlCadre}
@@ -232,8 +232,10 @@ export default function AcademyV2({
           quatre parcours sont de toute façon nommés dans Le programme. */}
       <Visite locale={locale} data={data} titre={c.preuves.visiteTitre} />
 
-      {/* Page anglaise : Paul ouvre une leçon, juste sous le tableau de bord
-          qu'on vient de survoler. */}
+      {/* Page anglaise : la visite de l'espace par Paul, qui était dans le hero
+          jusqu'au 27/09, puis Paul qui ouvre une leçon. */}
+      {c.films.tour ? <FilmSeul film={c.films.tour} lire={c.films.lire} voir={c.films.voir} fond="nuit" /> : null}
+
       {c.films.produit ? <FilmSeul film={c.films.produit} lire={c.films.lire} voir={c.films.voir} fond="nuit" /> : null}
 
       {/* Le câblage MCP animé, tel quel. */}

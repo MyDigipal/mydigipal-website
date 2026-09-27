@@ -356,21 +356,24 @@ const FR = {
   films: {
     lire: 'Lire la vidéo',
     voir: 'Voir',
-    // Le film du hero est une conférence, pas l'app : l'adresse de l'app
-    // au-dessus aurait été fausse (Paul, 25/09/2026).
-    urlCadre: 'Extrait d’une formation en entreprise',
-    // Dans le cadre du hero, à la place de la capture (25/09/2026).
-    hero: {
-      id: 'conference-reclamation-fr',
-      titre: 'Répondre à une réclamation, devant les équipes de SeLoger',
-      legende:
-        'L’IA promet un geste commercial qu’on n’a pas le droit de faire, on la recadre, puis elle tire le tableau de bord de toutes les réclamations.',
-    },
+    pause: 'Mettre la vidéo en pause',
+    // La vidéo de présentation, dans le cadre du hero (27/09/2026). Elle n'est
+    // pas l'app : la barre d'adresse dit ce qu'on regarde.
+    urlCadre: 'L’AI Academy en 40 secondes',
+    presentation: { id: 'presentation-fr', titre: 'L’AI Academy en 40 secondes' },
     salle: {
       titre: 'La méthode, devant une vraie salle.',
       chapeau:
         'Un extrait d’une conférence donnée pour les équipes de SeLoger. Les données sont fictives, les réflexes sont ceux de la formation.',
+      // L'extrait sur la réclamation a quitté le hero le 27/09 pour la vidéo de
+      // présentation : il retrouve sa place de la paire.
       films: [
+        {
+          id: 'conference-reclamation-fr',
+          titre: 'Répondre à une réclamation, devant les équipes de SeLoger',
+          legende:
+            'L’IA promet un geste commercial qu’on n’a pas le droit de faire, on la recadre, puis elle tire le tableau de bord de toutes les réclamations.',
+        },
         {
           id: 'conference-rendez-vous-fr',
           titre: 'Préparer un rendez-vous à enjeu',
@@ -620,8 +623,12 @@ const EN: typeof FR = {
   films: {
     lire: 'Play the video',
     voir: 'Watch',
-    // In the hero frame, instead of the dashboard capture (25/09/2026).
-    hero: {
+    pause: 'Pause the video',
+    // The presentation video, in the hero frame (27/09/2026).
+    urlCadre: 'The AI Academy in 40 seconds',
+    presentation: { id: 'presentation-en', titre: 'The AI Academy in 40 seconds' },
+    // Paul's tour of the space left the hero on 27/09: it now follows the tour.
+    tour: {
       id: 'tour-espace-en',
       titre: 'A tour of the learner space',
       legende: 'Paul walks through the space you open after buying: the course, the tools, the use cases and your progress.',

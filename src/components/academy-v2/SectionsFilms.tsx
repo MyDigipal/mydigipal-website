@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Film, { type FilmData } from './Film';
+import type { PresentationData } from './Presentation';
 
 /**
  * Les sections qui portent les films parlants (25/09/2026).
@@ -20,10 +21,17 @@ export type FilmsCopy = {
   lire: string;
   /** Le verbe de la touche de lecture, suivi de la durée (« Voir · 3 min »). */
   voir: string;
-  /** Le film du hero, dans le cadre de navigateur, à la place de la capture. */
-  hero?: FilmData;
-  /** La barre d'adresse du cadre du hero, quand le film n'est pas l'app. */
+  /**
+   * La vidéo de présentation, muette, dans le cadre du hero (27/09/2026). Elle
+   * a remplacé le film parlant qui y était depuis le 25/09.
+   */
+  presentation?: PresentationData;
+  /** Les libellés du bouton de la vidéo de présentation. */
+  pause?: string;
+  /** La barre d'adresse du cadre du hero, quand la vidéo n'est pas l'app. */
   urlCadre?: string;
+  /** Page anglaise : la visite de l'espace par Paul, après la visite survolée. */
+  tour?: FilmData;
   /** Page anglaise : l'intérieur d'une leçon, après la visite. */
   produit?: FilmData;
   /** Page anglaise : Les automatisations et le MCP, après le schéma. */
