@@ -604,6 +604,22 @@ const seo = {
       source: window.location.href,
       language: pageLang,
       provenance,
+      // fbp, fbc et consentement publicitaire pour l'envoi serveur Meta de l'app
+      // (28/09/2026) : ses cookies ne suivent pas la requête vers academy.
+      // Même règle que metaIds() dans academy/track.ts (script en ligne, pas d'import).
+      meta_ids: (() => {
+        const lire = (nom) => {
+          const m = document.cookie.match(new RegExp('(?:^|; )' + nom + '=([^;]*)'));
+          return m ? decodeURIComponent(m[1]) : undefined;
+        };
+        let consent = false;
+        const academy = lire('academy_consent');
+        if (academy) consent = academy === 'granted';
+        else {
+          try { consent = JSON.parse(lire('mydigipal_consent') || '{}').marketing === true; } catch { consent = false; }
+        }
+        return { fbp: lire('_fbp'), fbc: lire('_fbc'), consent };
+      })(),
     };
 
     try {
@@ -625,7 +641,9 @@ const seo = {
             'event': 'contact_form_submit',
             'form_name': 'contact',
             'form_location': window.location.pathname,
-            ...(reponse && reponse.user_data ? { 'user_data': reponse.user_data } : {})
+            ...(reponse && reponse.user_data ? { 'user_data': reponse.user_data } : {}),
+            // L'identifiant partagé avec l'envoi serveur Meta : la balise le passe en eventID.
+            ...(reponse && reponse.event_id ? { 'event_id': reponse.event_id } : {})
           });
         }
         // Mark form as submitted to suppress form_abandon event

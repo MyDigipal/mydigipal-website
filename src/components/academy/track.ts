@@ -205,3 +205,31 @@ export function useLienApp(url: string): string {
   }, [url]);
   return href;
 }
+
+/**
+ * Ce que l'envoi serveur Meta de l'app ne peut pas lire lui-même (28/09/2026) :
+ * les formulaires de mydigipal.com écrivent à academy.mydigipal.com, et les
+ * cookies du site ne suivent pas cette requête. On transmet donc fbp, fbc et le
+ * consentement publicitaire, lus ici, avec le formulaire. Le consentement suit la
+ * règle de GTM (« JS - Consentement publicitaire ») : academy_consent, sinon la
+ * clé `marketing` de mydigipal_consent, et non par défaut.
+ */
+export function metaIds(): { fbp?: string; fbc?: string; consent: boolean } {
+  if (typeof document === 'undefined') return { consent: false };
+  const lire = (nom: string) => {
+    const m = document.cookie.match(new RegExp('(?:^|; )' + nom + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : undefined;
+  };
+  let consent = false;
+  const academy = lire('academy_consent');
+  if (academy) consent = academy === 'granted';
+  else {
+    try {
+      const j = JSON.parse(lire('mydigipal_consent') || '{}') as { marketing?: boolean };
+      consent = j.marketing === true;
+    } catch {
+      consent = false;
+    }
+  }
+  return { fbp: lire('_fbp'), fbc: lire('_fbc'), consent };
+}

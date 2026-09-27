@@ -18,7 +18,7 @@ import { CURRENCY_CONFIGS, DURATION_CONFIG } from '../calculator/data';
 import type { ContactType } from '../calculator/data/emailing-services';
 import { guidedQuestions } from '../calculator/guided-data';
 import { track, trackBudget, trackChannel, trackDomain, trackService, trackStep, trackAbandon } from '../calculator/tracking';
-import { provenance } from '../academy/track';
+import { metaIds, provenance } from '../academy/track';
 import {
   AI_CUSTOM_FIELDS, BUDGET_STEPS, CONTACT_VOLUMES, DEFAULT_BUDGET, DEFAULT_CONTACT_VOLUME, DOMAIN_ORDER, QUESTION_INDEX,
   buildPayload, channelsOf, decodePlan, devis, domainDesc, domainName, emptyState, guidedProposal, inOrder, money, optionsFor, perLabel,
@@ -419,6 +419,8 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     payload.metadata.usedGuidedMode = !!proposalBudget;
     // D'où vient la personne (annonce, source, page d'entrée) : Paul le lit dans son mail.
     payload.metadata.provenance = provenance();
+    // fbp, fbc et consentement pour l'envoi serveur Meta de l'app (28/09/2026).
+    (payload as unknown as { meta_ids: ReturnType<typeof metaIds> }).meta_ids = metaIds();
     if (dryRun) {
       // eslint-disable-next-line no-console
       console.info('[calculateur v6, mode test] envoi non effectué', payload);
@@ -438,7 +440,9 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         track('calculator_form_submit', {
           form_name: 'calculator', form_location: window.location.pathname, calculator_total: quote.totalFees,
           used_guided_mode: !!proposalBudget, selected_domains: st.domains.join(','), currency,
-          ...(reponse?.user_data ? { user_data: reponse.user_data } : {})
+          ...(reponse?.user_data ? { user_data: reponse.user_data } : {}),
+          // L'identifiant partagé avec l'envoi serveur Meta : la balise le passe en eventID.
+          ...(reponse?.event_id ? { event_id: reponse.event_id } : {})
         });
       }
     } catch {
