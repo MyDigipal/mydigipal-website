@@ -95,9 +95,11 @@ export default function AcademyV2({
     if (d === 'EUR' || d === 'GBP' || d === 'USD') setDevise(d);
   }, []);
   const c = copyV2(locale);
-  const gratuit = useLienApp(
-    `https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`,
-  );
+  // L'essai gratuit se choisit dans le tunnel depuis le 27/09/2026 (Paul : « je
+  // veux rien d'avoir deux pages de checkout ») : le lien ouvre /checkout avec
+  // l'accès gratuit présélectionné. /start y redirige aussi, pour les liens
+  // déjà partis.
+  const gratuit = useLienApp(`https://academy.mydigipal.com/checkout?items=free&lang=${locale}`);
 
   // Les apparitions au défilement (vente.css) ne s'arment qu'une fois React
   // monté : sans JavaScript, rien ne reste invisible.
@@ -184,6 +186,7 @@ export default function AcademyV2({
         locale={locale}
         data={data}
         ancreTarifs="tarifs"
+        cta2VersTarifs
         cta2={c.tarifs.gratuitCourt(leconsGratuit(data), data.essai_heures ?? 48)}
         prixAffiche={`${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, devise), locale)} ${SYMBOLE[devise]}`}
         film={

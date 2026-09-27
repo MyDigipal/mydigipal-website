@@ -24,6 +24,7 @@ export default function Hero({
   data,
   ancreTarifs = 'pricing',
   cta2,
+  cta2VersTarifs = false,
   prixAffiche,
   film,
   urlCadre,
@@ -34,6 +35,14 @@ export default function Hero({
   ancreTarifs?: string;
   /** Libellé du second bouton, pour y annoncer la durée de l'accès gratuit. */
   cta2?: string;
+  /**
+   * Le second bouton mène aux tarifs, comme le premier (Paul, 27/09/2026 : les
+   * deux boutons du haut « devraient t'amener au même endroit, la section tout
+   * en bas avec le pricing. C'est là qu'elle décide du prix ou si elle veut le
+   * free access »). Sans cette option, il ouvre l'essai directement, comme sur
+   * la première page de vente.
+   */
+  cta2VersTarifs?: boolean;
   /**
    * Le prix déjà formaté avec son symbole, quand la page laisse choisir la
    * devise. Sans lui, le hero affiche l'euro comme avant.
@@ -107,7 +116,8 @@ export default function Hero({
               {c.cta}
             </a>
             <a
-              href={gratuit}
+              href={cta2VersTarifs ? `#${ancreTarifs}` : gratuit}
+              onClick={cta2VersTarifs ? surAncre(ancreTarifs) : undefined}
               className={`${cta} border border-filet-nuit text-corps-nuit hover:border-brume-nuit hover:text-ivoire`}
             >
               {cta2 ?? c.cta2(leconsGratuit(data))}
