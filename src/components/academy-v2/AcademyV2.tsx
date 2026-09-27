@@ -312,6 +312,7 @@ export default function AcademyV2({
         trophees={data.faits.trophees}
         leconsGratuites={leconsGratuit(data)}
         ancreTarifs="tarifs"
+        gratuitVersTarifs
         libelleGratuit={c.tarifs.gratuitCourt(leconsGratuit(data), data.essai_heures ?? 48)}
       />
 

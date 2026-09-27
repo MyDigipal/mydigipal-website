@@ -26,6 +26,7 @@ export default function Retournement({
   leconsGratuites,
   ancreTarifs = 'pricing',
   libelleGratuit,
+  gratuitVersTarifs = false,
 }: {
   locale: Locale;
   fin: EtatJour;
@@ -42,6 +43,12 @@ export default function Retournement({
   ancreTarifs?: string;
   /** Libellé du lien gratuit, pour y annoncer la durée. */
   libelleGratuit?: string;
+  /**
+   * Le bouton d'essai mène aux tarifs au lieu d'ouvrir l'essai (Paul,
+   * 27/09/2026) : c'est là qu'on choisit un programme OU l'accès gratuit.
+   * Même option que `cta2VersTarifs` sur le hero.
+   */
+  gratuitVersTarifs?: boolean;
 }) {
   const t = jour30Copy(locale);
   const c = t.retournement;
@@ -168,7 +175,8 @@ export default function Retournement({
               {c.ouvrir}
             </a>
             <a
-              href={gratuit}
+              href={gratuitVersTarifs ? `#${ancreTarifs}` : gratuit}
+              onClick={gratuitVersTarifs ? surAncre(ancreTarifs) : undefined}
               className="inline-flex min-h-11 items-center justify-center rounded-bouton border border-filet-nuit px-4 py-3.5 text-center text-[14.5px] font-medium text-corps-nuit transition duration-150 hover:border-brume-nuit hover:text-ivoire sm:whitespace-nowrap sm:px-[26px] sm:text-[15.5px]"
             >
               {libelleGratuit ?? c.gratuit(leconsGratuites)}
