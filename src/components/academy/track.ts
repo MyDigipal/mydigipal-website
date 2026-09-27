@@ -56,7 +56,10 @@ export function trackSelectItem(item: { tier: string; tierName: string; value: n
 // se retrouver dans le tunnel sans qu'ils aient à le recopier. Le mécanisme est
 // exactement celui d'un gclid : capté à l'arrivée, gardé en session, réinjecté
 // dans les liens vers l'application.
-const CLES = ['gclid', 'fbclid', 'gbraid', 'wbraid', 'coupon'] as const;
+// `rdt_cid` (Reddit) ajouté le 27/09/2026 : il était gardé pour la provenance
+// mais jamais réinjecté vers le tunnel, si bien qu'un clic Reddit perdait son
+// identifiant en changeant de domaine, alors que l'app le relit comme les autres.
+const CLES = ['gclid', 'fbclid', 'gbraid', 'wbraid', 'rdt_cid', 'coupon'] as const;
 const STOCK = 'academy_ad_ids';
 
 /**
