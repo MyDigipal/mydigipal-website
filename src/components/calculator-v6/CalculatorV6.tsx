@@ -80,6 +80,38 @@ function InfoView({ data, lang, showEmpty }: { data: Info | null; lang: Lang; sh
       {data.text && <p className="text-[14.5px] leading-relaxed text-slate-600">{data.text}</p>}
       {data.list && data.list.length > 0 && <ul className="list-disc space-y-1 pl-5 text-sm text-slate-600">{data.list.map((li) => <li key={li}>{li}</li>)}</ul>}
       {data.note && <p className="text-[13px] text-slate-500">{data.note}</p>}
+      {data.video === 'ai-training' && <AcademyAside lang={lang} />}
+    </div>
+  );
+}
+
+/**
+ * L'AI Academy, à côté de la formation en entreprise (Paul, 27/09/2026 : mettre la vidéo en
+ * avant dans le calculateur). Quelqu'un qui chiffre une formation d'équipe peut vouloir se
+ * former seul : la vidéo de présentation, muette et au clic (ce panneau défile, rien ne part
+ * seul), et le lien vers la page de vente. Aucun prix ici : il vit dans la page de vente.
+ */
+function AcademyAside({ lang }: { lang: Lang }) {
+  return (
+    <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <p className="text-[12.5px] font-semibold text-slate-500">{L(lang, 'Vous préférez vous former seul ?', 'Would you rather learn on your own?')}</p>
+      <p className="mt-1 font-display text-[17px] font-extrabold leading-snug tracking-[-0.02em] text-slate-900">
+        {L(lang, 'La même formation, en ligne, à votre rythme : l’AI Academy.', 'The same training, online, at your own pace: the AI Academy.')}
+      </p>
+      <video
+        className="mt-3 aspect-video w-full rounded-xl bg-slate-900"
+        src={`/academy/videos/presentation-${lang}.mp4`}
+        poster={`/academy/videos/presentation-${lang}.webp`}
+        controls
+        muted
+        preload="none"
+        playsInline
+        onPlay={() => (window as unknown as { dataLayer?: Record<string, unknown>[] }).dataLayer?.push({ event: 'academy_video_play', video_id: 'presentation-calculateur' })}
+      />
+      <a href={`/${lang}/academy`} className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-marque hover:underline">
+        {L(lang, 'Découvrir l’AI Academy', 'Explore the AI Academy')}
+        <IconNext />
+      </a>
     </div>
   );
 }
