@@ -429,12 +429,16 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     try {
       const res = await fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, mode: 'cors', body: JSON.stringify(payload) });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      // Les identifiants hachés renvoyés par l'app (28/09/2026) : la balise GA4
+      // les transmet en données fournies par l'utilisateur. Rien en clair.
+      const reponse = await res.json().catch(() => ({}));
       setStatus('sent');
       if (tracking) {
         trackStep('submitted');
         track('calculator_form_submit', {
           form_name: 'calculator', form_location: window.location.pathname, calculator_total: quote.totalFees,
-          used_guided_mode: !!proposalBudget, selected_domains: st.domains.join(','), currency
+          used_guided_mode: !!proposalBudget, selected_domains: st.domains.join(','), currency,
+          ...(reponse?.user_data ? { user_data: reponse.user_data } : {})
         });
       }
     } catch {

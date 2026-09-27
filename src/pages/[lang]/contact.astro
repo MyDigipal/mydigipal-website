@@ -616,12 +616,16 @@ const seo = {
       });
 
       if (response.ok) {
+        // Les identifiants hachés renvoyés par l'app (28/09/2026) : la balise GA4
+        // les transmet en données fournies par l'utilisateur. Rien en clair.
+        const reponse = await response.json().catch(() => ({}));
         // Track conversion in GTM before redirect
         if (typeof window !== 'undefined' && window.dataLayer) {
           window.dataLayer.push({
             'event': 'contact_form_submit',
             'form_name': 'contact',
-            'form_location': window.location.pathname
+            'form_location': window.location.pathname,
+            ...(reponse && reponse.user_data ? { 'user_data': reponse.user_data } : {})
           });
         }
         // Mark form as submitted to suppress form_abandon event

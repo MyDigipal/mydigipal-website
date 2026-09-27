@@ -10,7 +10,7 @@
  * events se regroupent naturellement dans les rapports GA4.
  */
 
-type Payload = Record<string, string | number | boolean | null | undefined>;
+type Payload = Record<string, string | number | boolean | null | undefined | Record<string, string>>;
 
 /** Etapes du funnel, dans l'ordre. L'index sert a calculer la profondeur atteinte. */
 export const FUNNEL_STEPS = [
