@@ -86,6 +86,14 @@ export default function AcademyV2({
   // endroits où il y a les prix, ça devrait être en dollar »). Elle se change
   // dans la barre, et elle suit jusqu'au tunnel, où seul le pays décide la TVA.
   const [devise, setDevise] = useState<Devise>(locale === 'en' ? 'USD' : 'EUR');
+  // Une annonce peut imposer la devise de son pays (Paul, 27/09/2026 : « quand on
+  // fait les campagnes vers le UK, ça devrait ramener vers la devise en pound ») :
+  // `?devise=GBP` dans l'URL de l'annonce. Lu après le montage, sinon le HTML
+  // statique et le premier rendu ne s'accorderaient pas.
+  useEffect(() => {
+    const d = new URLSearchParams(window.location.search).get('devise')?.toUpperCase();
+    if (d === 'EUR' || d === 'GBP' || d === 'USD') setDevise(d);
+  }, []);
   const c = copyV2(locale);
   const gratuit = useLienApp(
     `https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`,
