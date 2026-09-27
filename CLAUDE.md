@@ -425,9 +425,16 @@ Ce qui a été fait, par ordre de portée :
   c'était la cause des débordements de l'accueil (avis) et d'AI Training (témoignages).
 - **Pages légales** : leur texte en markdown minimal s'affichait avec les `**` et les
   tirets ; `src/lib/texte-simple.ts` le rend.
+- **Chanel n'apparaît plus nulle part sur le site** (Paul, 27/09/2026) : ni dans le bandeau
+  du hero d'AI Training (La Poste à sa place), ni dans la grille `TrainingClients`
+  (Moët Hennessy, client de formation, garde la grille pleine à douze), ni dans la méta
+  description. **Kering reste sur la page AI Training** ; l'accueil et l'Academy
+  continuent d'écarter les deux (décision du 01/09).
+- Une section qui porte des halos en `absolute` doit être `relative` : sinon ses halos se
+  placent par rapport à la page et débordent sur le hero clair au-dessus (vu sur AI
+  Training le 27/09, onze sections corrigées).
 - Reste en l'état : la page `/[lang]/ai` garde ses chiffres « 300 % / 50+ / 100+ » non
-  sourcés (chantier des pages IA plus bas) et la page AI Training ses logos Kering et
-  Chanel (la règle du 01/09 visait l'accueil).
+  sourcés (chantier des pages IA plus bas).
 
 ## AI Academy : la page de vente de la formation en ligne (25/08/2026)
 
