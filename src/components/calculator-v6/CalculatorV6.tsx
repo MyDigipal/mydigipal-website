@@ -100,8 +100,8 @@ function AcademyAside({ lang }: { lang: Lang }) {
       </p>
       <video
         className="mt-3 aspect-video w-full rounded-xl bg-slate-900"
-        src={`/academy/videos/presentation-${lang}.mp4`}
-        poster={`/academy/videos/presentation-${lang}.webp`}
+        src={`/academy/videos/presentation-v4-${lang}.mp4`}
+        poster={`/academy/videos/presentation-v4-${lang}.webp`}
         controls
         muted
         preload="none"

@@ -359,8 +359,8 @@ const FR = {
     pause: 'Mettre la vidéo en pause',
     // La vidéo de présentation, dans le cadre du hero (27/09/2026). Elle n'est
     // pas l'app : la barre d'adresse dit ce qu'on regarde.
-    urlCadre: 'L’AI Academy en 40 secondes',
-    presentation: { id: 'presentation-fr', titre: 'L’AI Academy en 40 secondes' },
+    urlCadre: 'L’AI Academy en 30 secondes',
+    presentation: { id: 'presentation-v4-fr', titre: 'L’AI Academy en 30 secondes' },
     salle: {
       titre: 'La méthode, devant une vraie salle.',
       chapeau:
@@ -625,8 +625,8 @@ const EN: typeof FR = {
     voir: 'Watch',
     pause: 'Pause the video',
     // The presentation video, in the hero frame (27/09/2026).
-    urlCadre: 'The AI Academy in 40 seconds',
-    presentation: { id: 'presentation-en', titre: 'The AI Academy in 40 seconds' },
+    urlCadre: 'The AI Academy in 30 seconds',
+    presentation: { id: 'presentation-v4-en', titre: 'The AI Academy in 30 seconds' },
     // Paul's tour of the space left the hero on 27/09: it now follows the tour.
     tour: {
       id: 'tour-espace-en',
