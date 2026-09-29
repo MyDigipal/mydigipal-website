@@ -26,7 +26,10 @@ import { info } from '../calculator-v6/content';
 import { guidedQuestions } from '../calculator/guided-data';
 import type { Currency, ServiceDomain } from '../calculator/types';
 import { provenance } from '../academy/track';
-import { envoyerMessage, envoyerReponse, lireMessages, ouvrirFil, type Contexte, type Fil } from './api';
+import {
+  MAX_CARACTERES, envoyerMessage, envoyerReponse, lireFil, ouvrirFil, type Contexte, type EtatIa, type Fil, type MessageFil,
+} from './api';
+import { garderConversation, lireConversation } from '../academy-v2/conversation-cookie';
 import { ficheDe, type Fiche } from './pages';
 import { PHOTO, QUESTIONS, cheminCalculateur, cheminContact, copie, type Champ } from './copy';
 
@@ -35,10 +38,28 @@ type Etape = 'accueil' | 'menu' | 'service' | Champ | 'fin' | 'libre';
 type Choix = { id: string; label: string; href?: string };
 type Item =
   | { k: 'bot'; texte: string }
+  /** Une réponse de l'assistant IA (29/09/2026), étiquetée comme telle. */
+  | { k: 'ia'; texte: string }
   | { k: 'moi'; texte: string }
   | { k: 'paul'; texte: string; at: string }
   | { k: 'evt'; texte: string }
   | { k: 'plan'; plan: string; budget: number };
+
+/**
+ * Les liens vers mydigipal.com que l'assistant IA écrit deviennent cliquables.
+ * L'application n'en laisse passer que vers des pages qui existent, et aucun
+ * autre domaine : le reste du texte s'affiche tel quel.
+ */
+const LIEN_SITE = /(https:\/\/(?:www\.)?mydigipal\.com\/[^\s)\]]*[^\s)\].,;:!?])/g;
+function avecLiens(texte: string, surLien: (href: string) => void) {
+  const morceaux = texte.split(LIEN_SITE);
+  if (morceaux.length === 1) return texte;
+  return morceaux.map((m, i) => {
+    if (i % 2 === 0) return m;
+    const href = m.replace(/^https:\/\/(?:www\.)?mydigipal\.com/, '') || '/';
+    return <a key={i} href={href} onClick={() => surLien(href)} className="font-semibold underline underline-offset-2">{href.replace(/\?.*$/, '')}</a>;
+  });
+}
 
 interface Sauve {
   items: Item[];
@@ -61,9 +82,15 @@ interface Sauve {
   relance?: boolean;
   /** Une adresse a déjà été donnée : on ne la redemande pas. */
   adresse?: boolean;
+  /** Messages de la conversation serveur déjà affichés (29/09/2026). */
+  srv?: number;
+  /** L'état de l'assistant IA, tel que l'application le renvoie. */
+  etat?: EtatIa;
 }
 
-const CLE = 'mdp_assistant_v1';
+// v2 le 29/09/2026 : les conversations gardées avant l'assistant IA ne comptaient pas
+// les messages du serveur, et les relire aurait dupliqué les réponses de Paul.
+const CLE = 'mdp_assistant_v2';
 const CLE_INVITE = 'mdp_assistant_invite';
 const CLE_DEVIS = 'mdp_assistant_devis_vu';
 const EMAIL = /[^\s@<>()]+@[^\s@<>()]+\.[a-z]{2,}/i;
@@ -149,22 +176,28 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   const [s, setS] = useState<Sauve>(() => lire(CLE, VIDE));
   const sRef = useRef(s);
   sRef.current = s;
+  // `sRef` est la vérité, mise à jour tout de suite : une réponse du serveur qui arrive
+  // juste après l'envoi s'ajoute au message du visiteur, pas à l'état d'avant (29/09/2026).
   const maj = useCallback((f: (x: Sauve) => Sauve) => {
-    setS((x) => {
-      const n = f(x);
-      ecrire(CLE, n);
-      return n;
-    });
+    const n = f(sRef.current);
+    sRef.current = n;
+    ecrire(CLE, n);
+    setS(n);
   }, []);
 
   const [ouvert, setOuvert] = useState(false);
   const [invite, setInvite] = useState(false);
   const [grand, setGrand] = useState(false);
   const [nonLu, setNonLu] = useState(false);
+  /** Une conversation écrite ailleurs vient d'être reprise : l'invitation le dit. */
+  const [reprise, setReprise] = useState(false);
   const [texte, setTexte] = useState('');
   const [piege, setPiege] = useState('');
   const [envoi, setEnvoi] = useState(false);
-  const [erreur, setErreur] = useState(false);
+  const envoiRef = useRef(false);
+  envoiRef.current = envoi;
+  /** `true` : l'envoi a échoué ; un texte : ce qu'il faut dire (message trop long). */
+  const [erreur, setErreur] = useState<boolean | string>(false);
   const [devisCourant, setDevisCourant] = useState<string | null>(null);
   const ouvertRef = useRef(false);
   ouvertRef.current = ouvert;
@@ -184,6 +217,30 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     const fil = await ouvrirFil(ctx());
     if (fil) maj((x) => ({ ...x, fil }));
     return fil;
+  };
+
+  /**
+   * Les messages du serveur pas encore affichés : réponses de l'IA, messages
+   * automatiques (demande d'adresse), réponses de Paul. Ceux du visiteur sont déjà
+   * à l'écran, posés par ce panneau au moment de l'envoi.
+   * Rend le nombre de nouvelles réponses de Paul.
+   */
+  const fusionner = (liste: MessageFil[], etat?: EtatIa): number => {
+    const x = sRef.current;
+    const nouveaux = liste.slice(x.srv ?? 0);
+    const items = [...x.items];
+    let paul = x.paulVus;
+    for (const n of nouveaux) {
+      if (n.auteur === 'visiteur') continue;
+      if (n.auteur === 'paul') {
+        if (paul === 0) items.push({ k: 'evt', texte: c.paulRejoint });
+        paul += 1;
+        items.push({ k: 'paul', texte: n.texte, at: n.at });
+      } else items.push({ k: n.auteur === 'ia' ? 'ia' : 'bot', texte: n.texte });
+    }
+    const arrivees = paul - x.paulVus;
+    maj((y) => ({ ...y, items, srv: liste.length, paulVus: paul, etat: etat ?? y.etat }));
+    return arrivees;
   };
 
   // Ce que l'assistant dit en s'ouvrant, selon la page (Paul, 22/09 : « le choix de base sur la
@@ -267,6 +324,45 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     return () => window.clearTimeout(t);
   }, []);
 
+  // La conversation écrite ailleurs (un autre onglet, la page de l'Academy, la visite d'hier) :
+  // le cookie `mdp_conversation` du domaine la garde, et ce panneau la reprend. Un seul panneau
+  // par page (29/09/2026) : la petite bulle « Reprendre la conversation » de BaseLayout ne
+  // s'affiche plus là où l'assistant est présent.
+  useEffect(() => {
+    if (sRef.current.fil) return;
+    const gardee = lireConversation();
+    if (!gardee) return;
+    let vivant = true;
+    void lireFil(gardee).then((lu) => {
+      if (!vivant || !lu?.ecrit || sRef.current.fil) return;
+      const items: Item[] = lu.messages.map((n) =>
+        n.auteur === 'visiteur' ? { k: 'moi', texte: n.texte }
+          : n.auteur === 'paul' ? { k: 'paul', texte: n.texte, at: n.at }
+            : { k: n.auteur === 'ia' ? 'ia' : 'bot', texte: n.texte }
+      );
+      maj((x) => ({
+        ...x,
+        fil: gardee,
+        items,
+        srv: lu.messages.length,
+        paulVus: lu.messages.filter((n) => n.auteur === 'paul').length,
+        messages: lu.messages.filter((n) => n.auteur === 'visiteur').length,
+        etat: lu.etat,
+        adresse: !!lu.etat?.a_adresse,
+        prevenu: true,
+        etape: 'libre',
+        page: chemin,
+      }));
+      if ((lu.non_lus ?? 0) > 0) setNonLu(true);
+      else if (!lire(CLE_INVITE, false)) {
+        setReprise(true);
+        setInvite(true);
+      }
+    });
+    return () => { vivant = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Sur la page de résultat : l'invitation en grand, une fois par visite.
   useEffect(() => {
     if (!devisCourant || lire(CLE_DEVIS, false)) return;
@@ -290,33 +386,26 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
       if (arret) return;
       if (Date.now() - debut.current > 30 * 60_000 && !ouvertRef.current) return;
       if (document.visibilityState === 'visible') {
-        const liste = await lireMessages(sRef.current.fil as Fil);
-        const dePaul = (liste ?? []).filter((x) => x.auteur === 'paul');
-        if (dePaul.length > sRef.current.paulVus) {
-          const nouveaux = dePaul.slice(sRef.current.paulVus);
-          maj((x) => ({
-            ...x,
-            paulVus: dePaul.length,
-            items: [
-              ...x.items,
-              ...(x.paulVus === 0 ? [{ k: 'evt', texte: c.paulRejoint } as Item] : []),
-              ...nouveaux.map((n) => ({ k: 'paul', texte: n.texte, at: n.at }) as Item),
-            ],
-          }));
-          if (!ouvertRef.current) setNonLu(true);
-        }
+        // `vu` : panneau ouvert et au premier plan, l'accusé de Paul passe à « lu ».
+        const lu = await lireFil(sRef.current.fil as Fil, ouvertRef.current);
+        // Pendant un envoi, la réponse de l'envoi fait foi : pas de double lecture.
+        if (lu && !envoiRef.current && lu.messages.length > (sRef.current.srv ?? 0)) {
+          if (fusionner(lu.messages, lu.etat) > 0 && !ouvertRef.current) setNonLu(true);
+        } else if (lu?.etat) maj((x) => ({ ...x, etat: lu.etat }));
       }
       minuteur = window.setTimeout(tour, ouvertRef.current ? 5000 : 20000);
     };
     minuteur = window.setTimeout(tour, 1500);
     return () => { arret = true; window.clearTimeout(minuteur); };
-  }, [s.fil, s.prevenu, c.paulRejoint, maj]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [s.fil, s.prevenu, maj]);
 
   // Cinq minutes sans réponse de Paul : on le dit, et on prend l'adresse pour lui répondre
   // par courriel (sa demande du 23/09/2026). Le compte part de l'envoi du premier message et
   // survit au changement de page, puisqu'il est gardé avec la conversation.
   useEffect(() => {
-    if (!s.ecritA || s.relance || s.adresse || s.paulVus > 0) return;
+    // Avec l'assistant IA, c'est lui qui demande l'adresse au bon moment (application).
+    if (!s.ecritA || s.relance || s.adresse || s.paulVus > 0 || s.etat) return;
     const reste = Math.max(0, s.ecritA + 5 * 60_000 - Date.now());
     const t = window.setTimeout(() => {
       if (sRef.current.paulVus > 0 || sRef.current.relance || sRef.current.adresse) return;
@@ -324,7 +413,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
       pousser('site_assistant_absent');
     }, reste);
     return () => window.clearTimeout(t);
-  }, [s.ecritA, s.relance, s.adresse, s.paulVus, c.absent, c.absentPlus, maj]);
+  }, [s.ecritA, s.relance, s.adresse, s.paulVus, s.etat, c.absent, c.absentPlus, maj]);
 
   // Le fil défile jusqu'au dernier message.
   useEffect(() => {
@@ -503,33 +592,49 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   const envoyer = async (brut: string) => {
     const question = brut.trim();
     if (!question || envoi) return;
+    if (question.length > MAX_CARACTERES) {
+      setErreur(c.trop(MAX_CARACTERES));
+      return;
+    }
     setErreur(false);
     setEnvoi(true);
     const email = EMAIL.exec(question)?.[0];
     const premier = sRef.current.messages === 0;
+    const avaitAdresse = !!sRef.current.etat?.a_adresse;
     maj((x) => ({ ...x, items: [...x.items, { k: 'moi', texte: question }] }));
     setTexte('');
     const fil = await assurerFil();
     const plan = [...sRef.current.items].reverse().find((i) => i.k === 'plan') as Extract<Item, { k: 'plan' }> | undefined;
     const st = plan ? decodePlan(plan.plan) : null;
-    const ok = !!fil && (await envoyerMessage(fil, ctx(), { question, email, devis: devisCourant ?? (st ? resumeDevis(st) : undefined), website: piege }));
+    const r = fil ? await envoyerMessage(fil, ctx(), { question, email, devis: devisCourant ?? (st ? resumeDevis(st) : undefined), website: piege }) : null;
     setEnvoi(false);
-    if (!ok) {
+    if (!r?.ok) {
+      // Le message n'est pas parti : il revient dans le champ, et l'état de l'IA (conversation
+      // close, message trop long) s'affiche s'il est connu.
+      maj((x) => ({ ...x, items: x.items.slice(0, -1), ...(r?.etat ? { etat: r.etat } : {}) }));
+      setTexte(question);
       setErreur(true);
       return;
     }
-    if (premier) pousser('site_assistant_message', { assistant_page: window.location.pathname });
+    if (fil) garderConversation(fil);
+    // La conversation suit le visiteur : autres pages, page de l'Academy, retour le lendemain.
+    if (premier) pousser('site_assistant_message', { assistant_page: window.location.pathname, ia_mode: r.ia_mode || 'paul' });
+    if (r.etat?.a_adresse && !avaitAdresse) pousser('site_assistant_email', { assistant_page: window.location.pathname });
+    if (r.messages) fusionner(r.messages, r.etat);
     maj((x) => ({
       ...x,
       prevenu: true,
       messages: x.messages + 1,
       ecritA: x.ecritA ?? Date.now(),
       adresse: x.adresse || !!email,
-      // Une question en cours reste posée : écrire à Paul n'annule pas le parcours.
+      // Une question en cours reste posée : écrire n'annule pas le parcours.
       etape: x.etape === 'menu' || x.etape === 'accueil' ? 'libre' : x.etape,
       items: [
         ...x.items,
-        ...(premier && !email ? [{ k: 'bot', texte: c.apresMessage } as Item] : []),
+        // Sans assistant IA (IA coupée côté application, ancienne conversation), le panneau
+        // dit lui-même ce qui se passe, comme avant le 29/09/2026.
+        ...(!r.etat && premier && !email ? [{ k: 'bot', texte: c.apresMessage } as Item] : []),
+        // Le courriel de confirmation part dans les deux cas : on le dit.
         ...(email ? [{ k: 'bot', texte: `${c.emailRecu}\n\n${c.emailSpam}` } as Item] : []),
       ],
     }));
@@ -690,6 +795,14 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   };
 
   const bas = surelever ? 'bottom-[8.5rem] lg:bottom-6' : 'bottom-4 sm:bottom-6';
+  const close = s.etat?.fin === 'hors_sujet';
+  const aide = close
+    ? c.finHors
+    : s.etat?.relais || s.etat?.fin
+      ? c.sousTitreRelais
+      : s.etat?.ia_active && s.etat.messages_restants < 6
+        ? c.restants(s.etat.messages_restants)
+        : c.aideIa;
 
   return (
     <>
@@ -717,9 +830,9 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
             </div>
           ) : (invite || nonLu) ? (
             <div className="flex items-center gap-1 rounded-2xl rounded-br-md border border-slate-200 bg-white py-2 pl-3.5 pr-1.5 shadow-lg">
-              <button type="button" onClick={() => ouvrir(devisCourant ? 'devis' : 'normal')} className="max-w-[calc(100vw-7.5rem)] text-left text-[14px] font-semibold leading-snug text-slate-900 sm:max-w-[17rem]">{nonLu ? c.paulARepondu : inviteTexte()}</button>
+              <button type="button" onClick={() => ouvrir(devisCourant ? 'devis' : 'normal')} className="max-w-[calc(100vw-7.5rem)] text-left text-[14px] font-semibold leading-snug text-slate-900 sm:max-w-[17rem]">{nonLu ? c.paulARepondu : reprise ? c.reprendre : inviteTexte()}</button>
               {!nonLu && (
-                <button type="button" aria-label={c.fermer} onClick={() => { setInvite(false); ecrire(CLE_INVITE, true); }} className="grid h-7 w-7 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+                <button type="button" aria-label={c.fermer} onClick={() => { setInvite(false); setReprise(false); ecrire(CLE_INVITE, true); }} className="grid h-7 w-7 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700">
                   <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
                 </button>
               )}
@@ -745,7 +858,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
               {photo(38)}
               <div className="min-w-0 flex-1">
                 <p className="font-display text-[15px] font-bold leading-tight text-slate-900">{c.nom}</p>
-                <p className="flex items-center gap-1.5 text-[12.5px] text-slate-500"><span className="h-1.5 w-1.5 rounded-full bg-green-600" />{c.sousTitre}</p>
+                <p className="flex items-center gap-1.5 text-[12.5px] text-slate-500"><span className="h-1.5 w-1.5 rounded-full bg-green-600" />{s.etat?.relais || (s.paulVus > 0 && !s.etat) ? c.sousTitreRelais : c.sousTitreIa}</p>
               </div>
               {/* La langue suit la page ; ce lien ouvre la même page dans l'autre langue. Le
                   code de la langue plutôt qu'un drapeau, comme l'en-tête du site (25/09/2026). */}
@@ -766,33 +879,40 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
                   if (it.k === 'evt') return <p key={n} className="self-center rounded-full bg-slate-100 px-3 py-1 text-[12px] text-slate-500">{it.texte}</p>;
                   if (it.k === 'plan') return <div key={n}>{carte(it.plan, it.budget)}</div>;
                   const nouveauLocuteur = !avant || avant.k !== it.k;
-                  const nom = it.k === 'moi' ? c.vous : it.k === 'paul' ? c.paul : c.assistant;
+                  const nom = it.k === 'moi' ? c.vous : it.k === 'paul' ? c.paul : it.k === 'ia' ? c.assistantIa : c.assistant;
+                  const texteAffiche = it.k === 'moi' ? it.texte : avecLiens(it.texte, (href) => pousser('site_assistant_lien', { assistant_lien: href, assistant_source: it.k }));
                   return (
                     <div key={n} className={`flex flex-col ${it.k === 'moi' ? 'items-end' : 'items-start'}`}>
                       {nouveauLocuteur && <p className="mb-1 px-1 text-[11.5px] font-semibold text-slate-500">{nom}</p>}
                       <p className={`max-w-[88%] whitespace-pre-line rounded-2xl px-3.5 py-2.5 text-[14.5px] leading-snug ${
                         it.k === 'moi' ? 'rounded-br-md bg-marque text-white' : it.k === 'paul' ? 'rounded-bl-md bg-slate-900 text-white' : 'rounded-bl-md bg-slate-100 text-slate-900'
-                      }`}>{it.texte}</p>
+                      }`}>{texteAffiche}</p>
                     </div>
                   );
                 })}
+                {envoi && <p className="self-start rounded-2xl rounded-bl-md bg-slate-100 px-3.5 py-2.5 text-[13.5px] text-slate-500" role="status">{c.ecrit}</p>}
+                {s.etat?.relais && <p className="self-center text-center text-[12.5px] text-slate-500">{c.relais}</p>}
                 <div className="mt-1">{choix()}</div>
                 <div ref={fondRef} />
               </div>
             </div>
 
             <form className="shrink-0 border-t border-slate-100 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3" onSubmit={(e) => { e.preventDefault(); void envoyer(texte); }}>
-              {erreur && <p className="mb-2 px-1 text-[13px] text-red-700" role="alert">{c.erreur}</p>}
+              {erreur && <p className="mb-2 px-1 text-[13px] text-red-700" role="alert">{typeof erreur === 'string' ? erreur : c.erreur}</p>}
               <input type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" value={piege} onChange={(e) => setPiege(e.target.value)} name="website_url" />
               <div className="flex items-end gap-2">
-                <textarea ref={champRef} rows={1} value={texte} onChange={(e) => setTexte(e.target.value)} placeholder={c.placeholder} aria-label={c.placeholder}
+                <textarea ref={champRef} rows={1} value={texte} onChange={(e) => setTexte(e.target.value)} placeholder={close ? c.finHors : c.placeholder} aria-label={c.placeholder} disabled={close}
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void envoyer(texte); } }}
                   className="max-h-28 min-h-[44px] flex-1 resize-none rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-[15px] text-slate-900 placeholder:text-slate-400 focus:border-marque focus:outline-none focus:ring-1 focus:ring-marque" />
-                <button type="submit" aria-label={c.envoyer} disabled={!texte.trim() || envoi}
+                <button type="submit" aria-label={c.envoyer} disabled={!texte.trim() || envoi || close || texte.length > MAX_CARACTERES}
                   className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-marque text-white transition-colors hover:bg-marque-fonce disabled:opacity-40">
                   <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </button>
               </div>
+              {/* Qui répond, et combien de messages il reste avant que Paul prenne la suite. */}
+              <p className={`mt-1.5 px-1 text-[12px] ${texte.length > MAX_CARACTERES ? 'text-red-700' : 'text-slate-400'}`}>
+                {texte.length > MAX_CARACTERES ? c.trop(MAX_CARACTERES) : aide}
+              </p>
             </form>
           </section>
         </>

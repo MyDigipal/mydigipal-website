@@ -3,9 +3,10 @@
 // ============================================================
 //
 // Décision de Paul du 22/09/2026 : un assistant SANS modèle (« on veut un truc
-// bateau »). Tout ce qu'il dit est écrit ici, et tout ce qui sort du script
-// (une question libre) part à Paul, qui entre dans la conversation depuis
-// Google Chat. Les questions sont celles du mode « Aidez-moi à choisir » du
+// bateau »). Tout ce qu'il dit est écrit ici. Depuis le 29/09/2026, une question
+// ÉCRITE reçoit la réponse d'un assistant IA qui connaît l'agence (même
+// mécanique que le panneau de l'Academy, côté application), et Paul entre dans
+// la conversation depuis Google Chat quand il veut. Les questions sont celles du mode « Aidez-moi à choisir » du
 // calculateur : un seul assistant sur le site, pas deux.
 //
 // Ce que Paul lit dans Google Chat reste en français quelle que soit la langue
@@ -33,6 +34,18 @@ export const QUESTIONS: Record<Champ, { fr: string; en: string }> = {
 const FR = {
   nom: 'MyDigipal',
   sousTitre: 'Paul peut vous rejoindre à tout moment',
+  // L'assistant IA (29/09/2026), mêmes mots que le panneau de l'Academy.
+  sousTitreIa: 'Assistant IA, Paul lit chaque conversation',
+  sousTitreRelais: 'Paul vous répond lui-même',
+  assistantIa: 'Assistant IA',
+  relais: 'Paul a pris le relais. L’assistant IA ne répond plus dans cette conversation.',
+  restants: (n: number) =>
+    n === 1 ? 'Encore 1 message avant que Paul prenne la suite' : `Encore ${n} messages avant que Paul prenne la suite`,
+  aideIa: 'Réponses générées par une IA, relues par Paul',
+  finHors: 'Conversation terminée.',
+  ecrit: 'L’assistant écrit…',
+  trop: (max: number) => `Votre message dépasse ${max} caractères. Raccourcissez-le un peu.`,
+  reprendre: 'Reprendre la conversation',
   ouvrir: 'Ouvrir la conversation avec MyDigipal',
   fermer: 'Fermer',
   invite: 'Une question ? Je vous aide à choisir.',
@@ -89,7 +102,7 @@ const FR = {
   aide: 'M’aider à choisir',
   poser: 'Poser une question',
   calculateur: 'Ouvrir le calculateur',
-  libre: 'Écrivez-la ci-dessous, Paul la lit en direct.',
+  libre: 'Écrivez-la ci-dessous : l’assistant IA vous répond tout de suite, et Paul lit chaque conversation.',
   suggestions: ['Peut-on commencer plus petit ?', 'Comment se passe le démarrage ?', 'Qu’est-ce qui est compris dans le prix ?'],
   propIntro: 'Voici ce que je vous propose. Tout reste modifiable dans le calculateur.',
   honoraires: 'Nos honoraires',
@@ -102,7 +115,7 @@ const FR = {
   parlerPaul: 'En parler avec Paul',
   contacter: 'Nous contacter',
   recommencer: 'Recommencer',
-  placeholder: 'Écrire à Paul…',
+  placeholder: 'Votre question…',
   envoyer: 'Envoyer',
   apresMessage: 'C’est parti chez Paul. Il vous répond ici même. Si vous devez partir, écrivez votre e-mail : sa réponse vous suivra.',
   emailMerci: 'Merci. Si vous n’êtes plus là quand Paul répond, sa réponse partira à cette adresse.',
@@ -130,6 +143,16 @@ type Copy = typeof FR;
 const EN: Copy = {
   nom: 'MyDigipal',
   sousTitre: 'Paul can join you at any time',
+  sousTitreIa: 'AI assistant, Paul reads every conversation',
+  sousTitreRelais: 'Paul answers you himself',
+  assistantIa: 'AI assistant',
+  relais: 'Paul has taken over. The AI assistant no longer answers in this conversation.',
+  restants: (n: number) => (n === 1 ? '1 more message before Paul takes over' : `${n} more messages before Paul takes over`),
+  aideIa: 'Answers written by an AI, read by Paul',
+  finHors: 'Conversation closed.',
+  ecrit: 'The assistant is writing…',
+  trop: (max: number) => `Your message is over ${max} characters. Please shorten it a little.`,
+  reprendre: 'Resume the conversation',
   ouvrir: 'Open the chat with MyDigipal',
   fermer: 'Close',
   invite: 'A question? I can help you choose.',
@@ -181,7 +204,7 @@ const EN: Copy = {
   aide: 'Help me choose',
   poser: 'Ask a question',
   calculateur: 'Open the calculator',
-  libre: 'Write it below, Paul reads it live.',
+  libre: 'Write it below: the AI assistant answers straight away, and Paul reads every conversation.',
   suggestions: ['Can we start smaller?', 'How does the start work?', 'What is included in the price?'],
   propIntro: 'Here is what I suggest. Everything can still be changed in the calculator.',
   honoraires: 'Our fees',
@@ -194,7 +217,7 @@ const EN: Copy = {
   parlerPaul: 'Talk it through with Paul',
   contacter: 'Contact us',
   recommencer: 'Start again',
-  placeholder: 'Write to Paul…',
+  placeholder: 'Your question…',
   envoyer: 'Send',
   apresMessage: 'Sent to Paul. He replies right here. If you need to leave, type your email and his answer will follow you.',
   emailMerci: 'Thank you. If you are gone when Paul replies, his answer will go to this address.',

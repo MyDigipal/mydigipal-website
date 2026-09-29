@@ -224,7 +224,11 @@ export function enDevise(texte: string, devise: Devise): string {
  * décidait de ce qui s'affichait, et un verbatim remis un jour dans l'app
  * reviendrait tout seul sur la page de vente.
  */
-const MARQUES_INTERDITES = ['kering', 'chanel'];
+export const MARQUES_INTERDITES = ['kering', 'chanel'];
+
+/** Le texte nomme-t-il une marque interdite ? Vaut aussi pour la connaissance de l'assistant du site. */
+export const nommeMarqueInterdite = (texte: string | undefined): boolean =>
+  MARQUES_INTERDITES.some((m) => (texte || '').toLowerCase().includes(m));
 
 /** Écarter les verbatims des marques interdites, quelle que soit leur source. */
 export function temoignagesPublics<T extends { societe?: string; logo?: string }>(liste: T[]): T[] {
