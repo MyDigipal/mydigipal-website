@@ -334,12 +334,15 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   useEffect(() => {
     const b = document.getElementById('cookie-consent-banner');
     if (!b) return;
+    // On lit l'ÉTAT du bandeau (sa classe) et sa hauteur, pas sa position : il entre en
+    // glissant pendant 300 ms, et une mesure prise pendant ce glissement donnait une hauteur
+    // partielle qui ne se corrigeait plus (29/09/2026).
     const mesurer = () => {
-      const r = b.getBoundingClientRect();
-      setBandeau(r.height > 0 && r.top < window.innerHeight - 1 ? Math.round(window.innerHeight - r.top) : 0);
+      const affiche = b.classList.contains('translate-y-0');
+      setBandeau(affiche ? Math.round(b.getBoundingClientRect().height) : 0);
     };
     mesurer();
-    const mo = new MutationObserver(() => window.setTimeout(mesurer, 350));
+    const mo = new MutationObserver(mesurer);
     mo.observe(b, { attributes: true, attributeFilter: ['class', 'style'] });
     window.addEventListener('resize', mesurer);
     return () => {
@@ -887,7 +890,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
         <>
           <div className="fixed inset-0 z-[45] bg-slate-900/30 sm:hidden" onClick={() => setOuvert(false)} aria-hidden="true" />
           <section role="dialog" aria-label={c.nom}
-            className="fixed inset-x-0 bottom-[var(--bandeau,0px)] z-[46] flex h-[min(85dvh,calc(100dvh-var(--bandeau,0px)-1rem))] flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:inset-x-auto sm:bottom-[calc(1.5rem+var(--bandeau,0px))] sm:right-6 sm:h-[min(600px,calc(100dvh-3rem-var(--bandeau,0px)))] sm:w-[380px] sm:rounded-3xl sm:border sm:border-slate-200">
+            className="fixed inset-x-0 bottom-[var(--bandeau,0px)] z-[46] flex h-[min(85dvh,calc(100dvh-var(--bandeau,0px)-5.5rem))] flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:inset-x-auto sm:bottom-[calc(1.5rem+var(--bandeau,0px))] sm:right-6 sm:h-[min(600px,calc(100dvh-3rem-var(--bandeau,0px)))] sm:w-[380px] sm:rounded-3xl sm:border sm:border-slate-200">
             <header className="flex shrink-0 items-center gap-3 border-b border-slate-100 px-4 py-3">
               {photo(38)}
               <div className="min-w-0 flex-1">

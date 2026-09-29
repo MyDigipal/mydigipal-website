@@ -483,13 +483,13 @@ const canonical = canonicalURL || Astro.url.href;
             document.body.append(boite);
             // Le bandeau cookies occupe le bas de l'écran tant qu'il est affiché.
             const bandeau = document.getElementById('cookie-consent-banner');
+            // L'état du bandeau (sa classe) et sa hauteur, pas sa position en cours de glissement.
             const placer = () => {
-              const r = bandeau?.getBoundingClientRect();
-              const h = r && r.height > 0 && r.top < innerHeight - 1 ? Math.round(innerHeight - r.top) : 0;
+              const h = bandeau?.classList.contains('translate-y-0') ? Math.round(bandeau.getBoundingClientRect().height) : 0;
               boite.style.bottom = `${h + 16}px`;
             };
             placer();
-            if (bandeau) new MutationObserver(() => setTimeout(placer, 350)).observe(bandeau, { attributes: true, attributeFilter: ['class', 'style'] });
+            if (bandeau) new MutationObserver(placer).observe(bandeau, { attributes: true, attributeFilter: ['class', 'style'] });
           })
           .catch(() => undefined);
       })();

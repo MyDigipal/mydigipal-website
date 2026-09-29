@@ -23,10 +23,11 @@ const isCalculatorPage = currentPath.includes('/calculator');
     <a
       href={`/${lang}/calculator`}
       aria-label={text}
-      class="group flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 text-white font-semibold rounded-2xl hover:scale-105 transition-all duration-300 bg-marque hover:bg-marque-fonce shadow-[0_18px_40px_-16px_rgb(11_27_43/0.55)]"
+      class="group flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 text-white font-semibold rounded-2xl hover:scale-105 transition-all duration-300 bg-marque hover:bg-marque-fonce shadow-[0_18px_40px_-16px_rgb(11_27_43/0.55)]"
     >
-      <!-- Calculator Icon -->
-      <span class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-xl group-hover:bg-white/30 transition-colors flex-shrink-0">
+      <!-- Calculator Icon. Le bouton fait la hauteur du visage de l'assistant (56 px) : plus
+           haut, il passait sous l'invitation posée au-dessus du visage (29/09/2026). -->
+      <span class="flex items-center justify-center w-8 h-8 bg-white/20 rounded-xl group-hover:bg-white/30 transition-colors flex-shrink-0">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="4" y="2" width="16" height="20" rx="2"></rect>
           <line x1="8" y1="6" x2="16" y2="6"></line>
@@ -102,17 +103,24 @@ const isCalculatorPage = currentPath.includes('/calculator');
 </script>
 
 <style>
+  /* Au-dessus du bandeau cookies tant qu'il est affiché (29/09/2026) : il recouvrait le bouton,
+     en entier sur téléphone. `--bandeau` est publié par CookieConsent. */
+  #sticky-calculator-cta {
+    bottom: calc(1.5rem + var(--bandeau, 0px));
+  }
+
   /* À côté de la bulle de l'assistant (22/09/2026) : les deux appels à l'action du site, sur une
      ligne, le calculateur à gauche du visage de Paul. Décalage = marge de la bulle + sa largeur
      + 10 px, et même ligne de base que la bulle (16 px du bas sur téléphone, 24 px au-delà). */
   :global(html[data-assistant='on']) #sticky-calculator-cta {
     right: 78px;
-    bottom: 16px;
+    bottom: calc(16px + var(--bandeau, 0px));
   }
   @media (min-width: 640px) {
     :global(html[data-assistant='on']) #sticky-calculator-cta {
       right: 92px;
-      bottom: 24px;
+      /* Bandeau affiché, le visage se pose à 16 px au-dessus de lui : le bouton fait de même. */
+      bottom: max(24px, calc(16px + var(--bandeau, 0px)));
     }
   }
 
