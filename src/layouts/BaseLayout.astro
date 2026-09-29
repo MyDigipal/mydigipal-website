@@ -65,6 +65,20 @@ const canonical = canonicalURL || Astro.url.href;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Le droit au mouvement (29/09/2026). `html.mv` autorise l'état de départ des
+         apparitions : sans cette classe, tout le contenu est visible. Elle n'est posée
+         que si le script tourne et que le visiteur n'a pas demandé moins de mouvement,
+         et elle se retire seule si le script des apparitions n'a pas démarré au bout de
+         quatre secondes : un contenu ne reste jamais caché par une panne. -->
+    <script is:inline>
+      (function (d) {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (/[?&]fige=1/.test(location.search)) return;
+        d.classList.add('mv');
+        setTimeout(function () { if (!d.dataset.mvPret) d.classList.remove('mv'); }, 4000);
+      })(document.documentElement);
+    </script>
+
     <!-- Primary Meta Tags -->
     <title>{pageTitle}</title>
     <meta name="title" content={pageTitle} />
@@ -345,6 +359,8 @@ const canonical = canonicalURL || Astro.url.href;
       );
 
       const wireAll = () => {
+        // Les apparitions sont branchées : `html.mv` peut rester (voir en tête de page).
+        document.documentElement.dataset.mvPret = '1';
         initAll();
         document
           .querySelectorAll('.animate-on-scroll:not(.is-visible), .stagger-children:not(.is-visible)')

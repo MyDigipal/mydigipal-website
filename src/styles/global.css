@@ -116,6 +116,26 @@
   --animate-aurora: aurora 60s linear infinite;
 }
 
+/* ===== LA COURBE SIGNATURE (29/09/2026) =====
+   La A de Paul : une entrée qui arrive vite et se pose net, une sortie qui part
+   doucement et disparaît vite, les éléments secondaires 33 ms plus tard. Les mêmes
+   valeurs en JavaScript dans `src/lib/motion/temps.ts`. Le dépassement est réservé
+   aux objets, jamais à un texte. */
+:root {
+  --mdp-entree: cubic-bezier(0.15, 1, 0.32, 1);
+  --mdp-sortie: cubic-bezier(0.333, 0, 0.667, 0);
+  --mdp-d-entree: 550ms;
+  --mdp-d-sortie: 400ms;
+  --mdp-d-ligne: 900ms;
+  --mdp-retard: 33ms;
+}
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --mdp-entree: linear(0, 0.1692 2.7%, 0.317 5.5%, 0.4462 8.5%, 0.5579 11.8%, 0.6531 15.3%,
+      0.7339 19.1%, 0.8011 23.3%, 0.8557 27.9%, 0.8962 32.7%, 0.9282 38%, 0.9711 51.1%, 0.9915 68.7%, 1);
+  }
+}
+
 /* Keyframes consumed by --animate-* tokens above */
 @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
 @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
@@ -368,31 +388,32 @@
 
 /* ===== ANIMATIONS ===== */
 @layer utilities {
-  /* Intersection Observer animations */
-  .animate-on-scroll {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
-
-  .animate-on-scroll.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* Stagger children */
+  /* Les apparitions au défilement.
+     ⚠️ L'état par défaut est l'état VISIBLE. Jusqu'au 29/09/2026 ces classes valaient
+     `opacity: 0` sans condition : sans JavaScript, ou si le script échouait, le contenu
+     de 61 fichiers restait invisible. L'état de départ n'existe plus que sous `html.mv`,
+     classe posée en tête de page quand le script tourne et que le visiteur accepte le
+     mouvement (BaseLayout). Le déplacement fait le geste, l'opacité est courte. */
+  .animate-on-scroll,
   .stagger-children > * {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    transition:
+      transform var(--mdp-d-entree) var(--mdp-entree),
+      opacity 120ms linear;
   }
 
-  .stagger-children.is-visible > *:nth-child(1) { transition-delay: 0ms; opacity: 1; transform: translateY(0); }
-  .stagger-children.is-visible > *:nth-child(2) { transition-delay: 100ms; opacity: 1; transform: translateY(0); }
-  .stagger-children.is-visible > *:nth-child(3) { transition-delay: 200ms; opacity: 1; transform: translateY(0); }
-  .stagger-children.is-visible > *:nth-child(4) { transition-delay: 300ms; opacity: 1; transform: translateY(0); }
-  .stagger-children.is-visible > *:nth-child(5) { transition-delay: 400ms; opacity: 1; transform: translateY(0); }
-  .stagger-children.is-visible > *:nth-child(6) { transition-delay: 500ms; opacity: 1; transform: translateY(0); }
+  html.mv .animate-on-scroll:not(.is-visible),
+  html.mv .stagger-children:not(.is-visible) > * {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  /* Les enfants arrivent l'un après l'autre. Au-delà du sixième ils arrivent ensemble :
+     avant, un septième enfant restait invisible pour toujours. */
+  .stagger-children.is-visible > *:nth-child(2) { transition-delay: 70ms; }
+  .stagger-children.is-visible > *:nth-child(3) { transition-delay: 140ms; }
+  .stagger-children.is-visible > *:nth-child(4) { transition-delay: 210ms; }
+  .stagger-children.is-visible > *:nth-child(5) { transition-delay: 280ms; }
+  .stagger-children.is-visible > *:nth-child(n + 6) { transition-delay: 350ms; }
 }
 
 /* Calculator sticky CTA animation */
@@ -534,15 +555,15 @@
    change pour les sections qui s'en servaient déjà). La page d'accueil refaite
    allonge la courbe dans accueil.css. */
 [data-reveal] {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform var(--mdp-d-entree) var(--mdp-entree),
+    opacity 120ms linear;
   transition-delay: calc(var(--i, 0) * 70ms);
 }
-[data-reveal].is-revealed {
-  opacity: 1;
-  transform: none;
+/* Visible par défaut : l'état de départ n'existe que sous `html.mv` (voir plus haut). */
+html.mv [data-reveal]:not(.is-revealed) {
+  opacity: 0;
+  transform: translateY(16px);
 }
 
 /* 3. Le projecteur : une lumière bleue suit le pointeur sur une carte

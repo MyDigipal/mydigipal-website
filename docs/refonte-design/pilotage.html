@@ -297,9 +297,9 @@ tr.groupe td{font:700 13px/1 Inter,sans-serif;color:var(--marque);padding-top:28
 <div>
 <h3>La technique</h3>
 <ul>
-<li><strong>Le contenu est caché au repos.</strong> <code>.animate-on-scroll</code> vaut <code>opacity: 0</code> dans la feuille de style, sans condition. Sans JavaScript, ou si le script échoue, l'essentiel des pages de services est invisible. 61 fichiers l'emploient.</li>
+<li><strong>Le contenu est caché au repos.</strong> <code>.animate-on-scroll</code> vaut <code>opacity: 0</code> dans la feuille de style, sans condition. Sans JavaScript, ou si le script échoue, l'essentiel des pages de services est invisible. 61 fichiers l'emploient. <strong>Corrigé sur la branche du chantier</strong> : l'état de départ n'existe plus que sous <code>html.mv</code>, et se retire seul si le script ne démarre pas.</li>
 <li><strong>Deux systèmes d'apparition cohabitent</strong> : <code>.animate-on-scroll</code> (61 fichiers) et <code>[data-reveal]</code> (13 fichiers), avec deux observateurs.</li>
-<li><strong>La courbe n'est pas la tienne.</strong> <code>cubic-bezier(0.4, 0, 0.2, 1)</code> sur 0,6 s, et un fondu aussi long que le déplacement.</li>
+<li><strong>La courbe n'est pas la tienne.</strong> <code>cubic-bezier(0.4, 0, 0.2, 1)</code> sur 0,6 s, et un fondu aussi long que le déplacement. <strong>Corrigé sur la branche</strong> : toutes les apparitions passent à la courbe A, avec un fondu court.</li>
 <li><strong>Le bouton du calculateur écoute le défilement</strong> pour apparaître. Un repère observé fait le même travail sans écouteur.</li>
 <li><strong><code>check-chiffres.mjs</code> n'est pas dans ce dépôt.</strong> Il vit dans celui de l'Academy et ne contrôle que ses faits (leçons, prix, note). Rien ne contrôle les chiffres des pages de l'agence.</li>
 </ul>
@@ -369,6 +369,7 @@ tr.groupe td{font:700 13px/1 Inter,sans-serif;color:var(--marque);padding-top:28
 <div>
 <h3>Les fichiers</h3>
 <ul>
+<li><code>src/lib/motion/</code> : le même moteur en TypeScript, prêt pour les composants du site (<code>temps.ts</code>, <code>scene.ts</code>).</li>
 <li><code>labo/refonte-site/socle/motion.js</code> : les scènes, les courbes, le ressort, la graine, les pistes de clés.</li>
 <li><code>labo/refonte-site/socle/socle.css</code> : les jetons de mouvement, l'apparition courante, les éléments flottants.</li>
 <li><code>labo/refonte-site/socle/page.js</code> : la langue, le bandeau, les deux appels, le panneau.</li>
@@ -387,8 +388,8 @@ tr.groupe td{font:700 13px/1 Inter,sans-serif;color:var(--marque);padding-top:28
 <div class="defile"><table>
 <thead><tr><th>Composant</th><th>Essai d'origine</th><th>Ce qu'il sert à expliquer</th><th>Paramètres</th><th>État</th></tr></thead>
 <tbody>
-<tr><td class="page">Scène (socle)</td><td><code>courbes-signature</code></td><td>Le moteur commun : jouer une fois, tenir, rejouer un temps.</td><td>tenue, rendu, mode, repères</td><td><span class="etat fait">Écrit, dans le socle des maquettes</span></td></tr>
-<tr><td class="page">Apparition et titre sous masque</td><td><code>courbes-signature</code></td><td>L'ordre de lecture d'une section.</td><td>rang dans la section</td><td><span class="etat fait">Écrit, dans le socle des maquettes</span></td></tr>
+<tr><td class="page">Scène (socle)</td><td><code>courbes-signature</code></td><td>Le moteur commun : jouer une fois, tenir, rejouer un temps.</td><td>tenue, rendu, mode, repères</td><td><span class="etat fait">Écrit, dans src/lib/motion/</span></td></tr>
+<tr><td class="page">Apparition et titre sous masque</td><td><code>courbes-signature</code></td><td>L'ordre de lecture d'une section.</td><td>rang dans la section</td><td><span class="etat fait">Écrit, dans global.css</span></td></tr>
 <tr><td class="page">Éléments flottants</td><td><code>aucun</code></td><td>Deux appels, un panneau, un bandeau, sans recouvrement.</td><td>hauteur de l'en-tête</td><td><span class="etat fait">Écrit, dans le socle des maquettes</span></td></tr>
 <tr><td class="page">Carte de verre</td><td><code>carte-3d</code></td><td>Un objet, ce qui y entre et ce qui en sort : une campagne, un serveur MCP, un flux de stock.</td><td>titre, entrées, sorties, retours, trois textes</td><td><span class="etat attente">En maquette, direction A</span></td></tr>
 <tr><td class="page">Schéma sur grille</td><td><code>grille-suisse</code></td><td>Le même propos, à plat, sur douze colonnes.</td><td>entrées, bloc central, sorties, retours</td><td><span class="etat attente">En maquette, direction B</span></td></tr>
@@ -520,6 +521,7 @@ tr.groupe td{font:700 13px/1 Inter,sans-serif;color:var(--marque);padding-top:28
 <li><b>29/09/2026</b> Socle de mouvement écrit et vérifié à l'écran : scènes, courbe A, éléments flottants, mode figé.</li>
 <li><b>29/09/2026</b> Trois directions lancées en maquette sur la page Google Ads : A Encre, B Grille, C Atelier.</li>
 <li><b>29/09/2026</b> Correctif des éléments flottants écrit, construit et vérifié en local (branche flottants-sans-recouvrement, 5b0e768). Non déployé : en attente de ton accord.</li>
+<li><b>29/09/2026</b> Socle porté dans src/lib/motion/. Apparitions du site corrigées sur la branche : contenu visible par défaut, courbe A, septième enfant d'une cascade enfin affiché. Construit, check-seo au vert.</li>
 </ul>
 </div></section>
 

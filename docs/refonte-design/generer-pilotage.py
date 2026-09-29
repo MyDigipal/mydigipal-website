@@ -284,9 +284,9 @@ def questions_html() -> str:
 
 COMPOSANTS = [
     ("Scène (socle)", "courbes-signature", "Le moteur commun : jouer une fois, tenir, rejouer un temps.",
-     "tenue, rendu, mode, repères", "Écrit, dans le socle des maquettes", "fait"),
+     "tenue, rendu, mode, repères", "Écrit, dans src/lib/motion/", "fait"),
     ("Apparition et titre sous masque", "courbes-signature", "L'ordre de lecture d'une section.",
-     "rang dans la section", "Écrit, dans le socle des maquettes", "fait"),
+     "rang dans la section", "Écrit, dans global.css", "fait"),
     ("Éléments flottants", "aucun", "Deux appels, un panneau, un bandeau, sans recouvrement.",
      "hauteur de l'en-tête", "Écrit, dans le socle des maquettes", "fait"),
     ("Carte de verre", "carte-3d", "Un objet, ce qui y entre et ce qui en sort : une campagne, un serveur MCP, un flux de stock.",
@@ -463,6 +463,7 @@ JOURNAL = [
     ("29/09/2026", "Socle de mouvement écrit et vérifié à l'écran : scènes, courbe A, éléments flottants, mode figé."),
     ("29/09/2026", "Trois directions lancées en maquette sur la page Google Ads : A Encre, B Grille, C Atelier."),
     ("29/09/2026", "Correctif des éléments flottants écrit, construit et vérifié en local (branche flottants-sans-recouvrement, 5b0e768). Non déployé : en attente de ton accord."),
+    ("29/09/2026", "Socle porté dans src/lib/motion/. Apparitions du site corrigées sur la branche : contenu visible par défaut, courbe A, septième enfant d'une cascade enfin affiché. Construit, check-seo au vert."),
 ]
 
 
