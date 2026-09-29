@@ -1,0 +1,162 @@
+/* ============================================================================
+   MyDigipal - socle commun des maquettes de la refonte (29/09/2026)
+   Ce que les trois directions partagent : les jetons de mouvement, l'apparition
+   courante, la bascule de langue, les deux appels flottants du site.
+   Chaque direction apporte sa palette, ses polices et son rythme dans son propre
+   fichier ; elle ne redéfinit PAS ce qui suit.
+   ========================================================================== */
+
+:root {
+  /* La courbe signature MyDigipal (la A, nette) et ses durées. */
+  --mdp-entree: cubic-bezier(0.15, 1, 0.32, 1);
+  --mdp-sortie: cubic-bezier(0.333, 0, 0.667, 0);
+  --mdp-d-entree: 550ms;
+  --mdp-d-sortie: 400ms;
+  --mdp-d-ligne: 900ms;
+  --mdp-retard: 33ms;
+
+  /* L'ordre des couches du site, écrit une fois. */
+  --z-entete: 50;
+  --z-flottant: 45;
+  --z-panneau: 46;
+  --z-bandeau: 60;
+}
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --mdp-entree: linear(0, 0.1692 2.7%, 0.317 5.5%, 0.4462 8.5%, 0.5579 11.8%, 0.6531 15.3%,
+      0.7339 19.1%, 0.8011 23.3%, 0.8557 27.9%, 0.8962 32.7%, 0.9282 38%, 0.9711 51.1%, 0.9915 68.7%, 1);
+  }
+}
+
+/* ---------- bascule de langue : les deux langues sont dans le HTML ---------- */
+html[data-langue='fr'] [lang='en'],
+html[data-langue='en'] [lang='fr'] { display: none !important; }
+
+/* ---------- l'apparition courante ----------
+   Par défaut tout est visible. L'état de départ n'existe que sous `html.mv`,
+   classe posée par le script en tête de page quand JavaScript tourne et que le
+   visiteur n'a pas demandé moins de mouvement. Le déplacement fait le geste,
+   l'opacité est courte : un contenu ne reste jamais longtemps invisible. */
+html.mv [data-entree] {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+}
+html.mv [data-entree].est-entre {
+  opacity: 1;
+  transform: none;
+  transition:
+    transform var(--mdp-d-entree) var(--mdp-entree) calc(var(--i, 0) * 70ms),
+    opacity 120ms linear calc(var(--i, 0) * 70ms);
+}
+
+/* Une ligne de titre qui monte de son masque : <span class="ligne"><span>...</span></span> */
+.ligne { display: block; overflow: hidden; padding-block: 0.12em; margin-block: -0.12em; }
+.ligne > span { display: block; }
+html.mv [data-entree] .ligne > span { transform: translate3d(0, 125%, 0); }
+html.mv [data-entree].est-entre .ligne > span {
+  transform: none;
+  transition: transform var(--mdp-d-ligne) var(--mdp-entree) calc(var(--l, 0) * 130ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.mv [data-entree], html.mv [data-entree] .ligne > span { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---------- les deux appels flottants du site, et pas un de plus ----------
+   « Calculer mon budget » et le visage de Paul, sur une ligne, en bas à droite.
+   `--bandeau` est la hauteur occupée par le bandeau cookies : les deux montent
+   ensemble au-dessus de lui, et aucun élément flottant n'en recouvre un autre. */
+.flottants {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(16px + var(--bandeau, 0px) + env(safe-area-inset-bottom));
+  z-index: var(--z-flottant);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+.flottants > * { pointer-events: auto; }
+@media (min-width: 640px) {
+  .flottants { right: 24px; bottom: calc(24px + var(--bandeau, 0px)); }
+}
+.flottants__visage {
+  width: 52px; height: 52px; border-radius: 999px; padding: 2px; border: 0; cursor: pointer;
+  background: #fff; box-shadow: 0 8px 24px rgb(15 27 41 / 0.22);
+}
+.flottants__visage img { width: 100%; height: 100%; border-radius: 999px; object-fit: cover; display: block; }
+@media (min-width: 640px) { .flottants__visage { width: 56px; height: 56px; } }
+
+/* Utilitaire d'accessibilité. */
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- le bouton du calculateur : caché avant 400 px de défilement ---------- */
+[data-flottant-calculateur] {
+  opacity: 0;
+  visibility: hidden;
+  transform: translate3d(0, 16px, 0);
+  transition: transform var(--mdp-d-sortie) var(--mdp-sortie), opacity 120ms linear, visibility 0s linear var(--mdp-d-sortie);
+}
+[data-flottant-calculateur].est-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: transform var(--mdp-d-entree) var(--mdp-entree), opacity 120ms linear;
+}
+.bouton-flottant__court { display: none; }
+@media (max-width: 639px) {
+  .bouton-flottant__long { display: none; }
+  .bouton-flottant__court { display: inline; }
+}
+/* Panneau de l'assistant ouvert : le bouton et le visage s'effacent (site, 29/09/2026). */
+html[data-assistant-ouvert='on'] [data-flottant-calculateur],
+html[data-assistant-ouvert='on'] [data-assistant-ouvrir] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ---------- le bandeau cookies de démonstration ---------- */
+[data-bandeau] {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-bandeau);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 20px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: #0f172a; color: #e2e8f0; font: 500 14px/1.4 Inter, system-ui, sans-serif;
+}
+[data-bandeau][hidden] { display: none; }
+[data-bandeau] button {
+  font: 600 14px/1 Inter, system-ui, sans-serif; height: 36px; padding: 0 16px; border-radius: 999px;
+  cursor: pointer; border: 1px solid rgb(255 255 255 / 0.25); background: none; color: #e2e8f0;
+}
+[data-bandeau] button[data-principal] { background: #1D71B8; border-color: #1D71B8; color: #fff; }
+
+/* ---------- le panneau de l'assistant (factice) ----------
+   Sur téléphone il monte du bas sans jamais passer sous l'en-tête ; sur ordinateur
+   c'est une fenêtre en bas à droite. Toujours au-dessus du bandeau cookies. */
+[data-assistant-panneau] {
+  position: fixed; z-index: var(--z-panneau);
+  left: 0; right: 0; bottom: var(--bandeau, 0px);
+  height: 560px;
+  max-height: calc(100dvh - var(--entete, 72px) - var(--bandeau, 0px) - 8px);
+  display: flex; flex-direction: column; overflow: hidden;
+  background: #fff; color: #0f172a; border-radius: 24px 24px 0 0;
+  box-shadow: 0 -12px 48px rgb(11 27 43 / 0.28);
+  font: 400 15px/1.5 Inter, system-ui, sans-serif;
+}
+[data-assistant-panneau][hidden] { display: none; }
+@media (min-width: 640px) {
+  [data-assistant-panneau] {
+    left: auto; right: 24px; bottom: calc(24px + var(--bandeau, 0px)); width: 380px;
+    border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 24px 64px rgb(11 27 43 / 0.25);
+  }
+}
+.panneau__tete { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid #eef2f6; }
+.panneau__tete img { width: 40px; height: 40px; border-radius: 999px; object-fit: cover; }
+.panneau__tete strong { display: block; font-weight: 700; }
+.panneau__tete small { color: #64748b; font-size: 12.5px; }
+.panneau__tete button { margin-left: auto; width: 36px; height: 36px; border-radius: 999px; border: 0; background: #f1f5f9; cursor: pointer; display: grid; place-items: center; }
+.panneau__fil { flex: 1; overflow: auto; padding: 16px; }
+.panneau__bulle { margin: 0; background: #f1f5f9; border-radius: 16px 16px 16px 6px; padding: 10px 14px; max-width: 86%; }
+.panneau__saisie { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #eef2f6; margin: 0; }
+.panneau__saisie input { flex: 1; min-width: 0; height: 44px; border-radius: 14px; border: 1px solid #cbd5e1; padding: 0 14px; font: inherit; }
+.panneau__saisie button { width: 44px; height: 44px; border-radius: 999px; border: 0; background: #1D71B8; color: #fff; cursor: pointer; display: grid; place-items: center; }

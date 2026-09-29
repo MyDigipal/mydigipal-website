@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr" data-langue="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Maquette - Direction X - Google Ads | MyDigipal</title>
+
+  <!-- 1. La langue et le droit au mouvement, AVANT les styles (aucun éclair de contenu). -->
+  <script>
+    (function (d) {
+      var q = new URLSearchParams(location.search).get('langue'), m = null;
+      try { m = localStorage.getItem('mdp-maquette-langue'); } catch (e) {}
+      d.dataset.langue = q === 'en' || q === 'fr' ? q : (m === 'en' ? 'en' : 'fr');
+      d.lang = d.dataset.langue;
+      if (!/[?&]fige=1/.test(location.search) && !matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('mv');
+    })(document.documentElement);
+  </script>
+
+  <!-- 2. Les polices de la direction (Google Fonts en maquette, hébergées par le site en production). -->
+  <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> ... -->
+
+  <!-- 3. Le socle commun, puis la feuille de la direction. -->
+  <link rel="stylesheet" href="socle/socle.css">
+  <link rel="stylesheet" href="direction-x.css">
+</head>
+<body>
+
+  <header class="entete"><!-- l'en-tête du site, voir socle/CONTENU.md --></header>
+
+  <main>
+    <!-- 1. Hero  2. Logos  3. Performance Max (scène principale)  4. Formats
+         5. Méthode (seconde scène)  6. Preuve  7. Questions  8. Appel final -->
+  </main>
+
+  <footer class="pied"><!-- le pied de page du site --></footer>
+
+  <!-- ==========================================================================
+       Les deux appels flottants, le panneau factice de l'assistant, le bandeau
+       cookies de démonstration : À COPIER TEL QUEL. Seule la mise en forme de
+       .bouton-flottant appartient à la direction.
+       ======================================================================== -->
+  <div class="flottants">
+    <a class="bouton-flottant" href="#" data-flottant-calculateur>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="16" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="8" y2="18"/><line x1="12" y1="18" x2="16" y2="18"/></svg>
+      <span class="bouton-flottant__long"><span lang="fr">Calculer mon budget</span><span lang="en">Calculate my budget</span></span>
+      <span class="bouton-flottant__court"><span lang="fr">Mon budget</span><span lang="en">My budget</span></span>
+    </a>
+    <button type="button" class="flottants__visage" data-assistant-ouvrir aria-expanded="false">
+      <img src="../../public/images/team/Team_Paul_Andre.webp" alt="" width="52" height="52">
+      <span class="sr"><span lang="fr">Ouvrir la conversation avec MyDigipal</span><span lang="en">Open the chat with MyDigipal</span></span>
+    </button>
+  </div>
+
+  <section data-assistant-panneau role="dialog" aria-label="MyDigipal" hidden>
+    <div class="panneau__tete">
+      <img src="../../public/images/team/Team_Paul_Andre.webp" alt="" width="40" height="40">
+      <div>
+        <strong>MyDigipal</strong>
+        <small><span lang="fr">Assistant IA, Paul lit chaque conversation</span><span lang="en">AI assistant, Paul reads every conversation</span></small>
+      </div>
+      <button type="button" data-assistant-fermer>
+        <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span class="sr"><span lang="fr">Fermer</span><span lang="en">Close</span></span>
+      </button>
+    </div>
+    <div class="panneau__fil">
+      <p class="panneau__bulle"><span lang="fr">Vous regardez Google Ads. Par quoi je commence&nbsp;?</span><span lang="en">You are looking at Google Ads. What should I start with?</span></p>
+    </div>
+    <form class="panneau__saisie" onsubmit="return false">
+      <input type="text" aria-label="Votre question" placeholder="Votre question...">
+      <button type="submit" aria-label="Envoyer"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+    </form>
+  </section>
+
+  <div data-bandeau role="region" aria-label="Cookies">
+    <span><span lang="fr">Ce site utilise des cookies pour mesurer son audience.</span><span lang="en">This site uses cookies to analyse traffic.</span></span>
+    <span style="display:flex;gap:8px">
+      <button type="button" data-bandeau-fermer><span lang="fr">Refuser</span><span lang="en">Refuse</span></button>
+      <button type="button" data-bandeau-fermer data-principal>OK</button>
+    </span>
+  </div>
+
+  <script src="socle/motion.js"></script>
+  <script src="socle/page.js"></script>
+  <!-- Les scènes de la direction, après le socle : -->
+  <!-- <script src="direction-x.js"></script> -->
+</body>
+</html>
