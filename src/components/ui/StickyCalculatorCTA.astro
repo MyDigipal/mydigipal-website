@@ -116,6 +116,13 @@ const isCalculatorPage = currentPath.includes('/calculator');
     }
   }
 
+  /* Panneau de l'assistant ouvert : le bouton s'efface, il couvrait le champ de saisie (29/09/2026). */
+  :global(html[data-assistant-ouvert='on']) #sticky-calculator-cta {
+    opacity: 0 !important;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
   @keyframes ping-slow {
     75%, 100% {
       transform: scale(1.1);

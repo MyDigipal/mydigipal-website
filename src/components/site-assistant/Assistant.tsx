@@ -444,6 +444,15 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     if (ouvert) fondRef.current?.scrollIntoView({ block: 'end' });
   }, [ouvert, s.items.length, s.etape]);
 
+  // Panneau ouvert : le bouton flottant « Calculer mon budget » s'efface (StickyCalculatorCTA),
+  // sinon il se pose sur le champ de saisie (vu par Paul le 29/09/2026).
+  useEffect(() => {
+    const racine = document.documentElement;
+    if (ouvert) racine.dataset.assistantOuvert = 'on';
+    else delete racine.dataset.assistantOuvert;
+    return () => { delete racine.dataset.assistantOuvert; };
+  }, [ouvert]);
+
   useEffect(() => {
     if (!ouvert) return;
     const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOuvert(false); };
