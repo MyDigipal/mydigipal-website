@@ -683,6 +683,50 @@ Copilot et de Gemini portent un dégradé, et le système n'a qu'une couleur d'a
 sans aucun dégradé. Usage nominatif seulement, jamais à côté du logo MyDigipal
 d'une manière qui suggérerait un partenariat.
 
+## Chantier en cours : la refonte du design, avec un mouvement qui explique (29/09/2026)
+
+Demande de Paul : le passage du 25/09 (section 7 bis) a rendu le site blanc sur blanc, les
+sections sombres qui ponctuaient ont disparu, les pages se ressemblent. Il veut du rythme, et
+des animations qui EXPLIQUENT une notion difficile, jamais qui décorent.
+
+- **Un seul document d'état** : `docs/refonte-design/pilotage.html`, généré par
+  `docs/refonte-design/generer-pilotage.py` (on modifie les listes du script, on relance, on ne
+  retouche pas le HTML à la main). Il porte l'audit, les décisions, les questions ouvertes, le
+  catalogue des composants et l'avancement page par page.
+- **Branche `refonte-design`**, rien sur `main` avant le choix de Paul. Ordre de passage : pages
+  IA, services, automobile, le reste, l'accueil en dernier.
+- **Les maquettes** : `labo/refonte-site/` (hors du build). Trois directions sur la page Google
+  Ads, `direction-a.html` (Encre), `-b` (Grille), `-c` (Atelier), comparées dans `index.html`.
+  Pour les voir dans Claude-in-Chrome : `python -m http.server 4173` depuis la racine du dépôt.
+- **Le socle de mouvement** (`labo/refonte-site/socle/`, futur `src/lib/motion/`) :
+  - une scène est une fonction PURE du temps, `MDP.scene(el, { tenue, rendu })` ; elle joue une
+    fois à l'entrée dans l'écran, s'arrête sur son instant de tenue, et porte des repères
+    cliquables (`data-aller`, `data-tenir`, `data-jusqua`, `data-rejouer`) ;
+  - **l'état par défaut de la page est l'état final** : sans JavaScript, sous mouvement réduit ou
+    avec `?fige=1`, tout est visible. L'état de départ n'existe que sous `html.mv` ;
+  - courbe signature, la A de Paul : entrée `cubic-bezier(0.15, 1, 0.32, 1)` sur 0,55 s, sortie
+    `cubic-bezier(0.333, 0, 0.667, 0)` sur 0,40 s, éléments secondaires 33 ms plus tard. Le
+    dépassement est réservé aux objets, jamais à un texte ;
+  - une scène se VÉRIFIE posée à un instant (`el.__scene.aller(3.2)`), pas en la regardant
+    jouer : dans une fenêtre en arrière-plan, `requestAnimationFrame` ne tourne presque pas.
+- ⚠️ **À corriger pendant le chantier, relevé par l'audit** : `.animate-on-scroll` vaut
+  `opacity: 0` sans condition dans `global.css` (61 fichiers) : sans script, le contenu des pages
+  de services est invisible. Deux systèmes d'apparition cohabitent (`.animate-on-scroll` et
+  `[data-reveal]`). Les sections portent des chiffres sans source (« 8.5B », « 65% », « 300% »...)
+  et 196 tirets longs.
+- **Les goûts de Paul en mouvement** : `projects/_shared/motion-lib/AVIS-PAUL.md`, et l'adaptation
+  au web des essais dans `projects/_shared/motion-lib/ADAPTATION-WEB.md`.
+
+### Les éléments flottants partagent une seule mesure : `--bandeau`
+
+Branche `flottants-sans-recouvrement` (commit `5b0e768`), à déployer après accord de Paul.
+`CookieConsent.astro` publie la hauteur du bandeau dans `--bandeau` sur `<html>` quand il
+s'affiche, se retire ou change de vue. `StickyCalculatorCTA` et `academy/AppelFlottant` s'en
+servent dans leur `bottom`. Un nouvel élément flottant fait de même, et ne mesure rien lui-même.
+⚠️ Le bandeau entre en glissant pendant 300 ms : une mesure de sa POSITION prise pendant ce
+glissement donne une hauteur partielle. `Assistant.tsx`, `Question.tsx` et la bulle de reprise de
+`BaseLayout.astro` lisent donc sa classe `translate-y-0` et sa hauteur.
+
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)
 
 Paul veut vendre l'Academy en priorité, puis « refaire un petit peu » les autres pages IA.

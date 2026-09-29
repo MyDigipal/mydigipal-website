@@ -462,6 +462,7 @@ JOURNAL = [
     ("29/09/2026", "Correctif du bouton du calculateur (bc48cc0) vérifié en production, au bureau et à 390 px. Trois autres recouvrements relevés."),
     ("29/09/2026", "Socle de mouvement écrit et vérifié à l'écran : scènes, courbe A, éléments flottants, mode figé."),
     ("29/09/2026", "Trois directions lancées en maquette sur la page Google Ads : A Encre, B Grille, C Atelier."),
+    ("29/09/2026", "Correctif des éléments flottants écrit, construit et vérifié en local (branche flottants-sans-recouvrement, 5b0e768). Non déployé : en attente de ton accord."),
 ]
 
 
