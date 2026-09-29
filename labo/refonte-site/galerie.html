@@ -1,0 +1,284 @@
+<title>Directions de la refonte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap">
+<style>
+/* Une table de montage : le choix à gauche, l'écran au centre, l'avis dessous. Page sombre par
+   choix, pour que les trois maquettes, claires, soient ce qu'on regarde. */
+:root{
+  color-scheme:dark;
+  --fond:#0b1b2b;--surface:#102a43;--surface-2:#17375a;--filet:#25496f;
+  --texte:#f4f7fa;--sourd:#a9b8c8;--marque:#1d71b8;--marque-clair:#7db8ee;
+  --adore:#7fd4a4;--interessant:#e8c46b;--non:#e08a7c;
+  --titre:"Plus Jakarta Sans",Inter,ui-sans-serif,system-ui,sans-serif;
+  --corps:Inter,ui-sans-serif,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font:16px/1.55 var(--corps);padding-inline:clamp(16px,3vw,40px);padding-block:28px 72px;-webkit-font-smoothing:antialiased}
+.page{max-width:1380px;margin:0 auto;display:grid;gap:28px}
+h1,h2,h3{font-family:var(--titre);letter-spacing:-.03em;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-weight:800;font-size:clamp(1.9rem,4.4vw,3.1rem)}
+h2{font-weight:800;font-size:1.5rem}
+p{margin:0}
+.chapeau{color:var(--sourd);max-width:68ch;margin-top:12px}
+button{font:600 14px/1 var(--corps);color:var(--texte);cursor:pointer}
+button:focus-visible,a:focus-visible,textarea:focus-visible{outline:2px solid var(--marque-clair);outline-offset:3px}
+
+.choix{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+@media (min-width:760px){.choix{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.choix button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;text-align:left;background:var(--surface);border:1px solid var(--filet);border-radius:16px;padding:16px 18px;min-height:76px}
+.choix button strong{font:800 1.15rem/1.2 var(--titre);letter-spacing:-.02em}
+.choix button small{grid-column:1;color:var(--sourd);font:400 14px/1.4 var(--corps)}
+.choix button[aria-pressed="true"]{background:#fff;color:var(--fond);border-color:#fff}
+.choix button[aria-pressed="true"] small{color:#33475b}
+.puce{grid-row:1 / span 2;grid-column:2;width:12px;height:12px;border-radius:50%;background:var(--filet)}
+.puce[data-v="adore"]{background:var(--adore)}.puce[data-v="interessant"]{background:var(--interessant)}.puce[data-v="non"]{background:var(--non)}
+
+.reglages{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.groupe{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.groupe > span{font:600 13px/1 var(--corps);color:var(--sourd);margin-right:4px}
+.groupe button{background:none;border:1px solid var(--filet);border-radius:999px;height:40px;padding:0 16px}
+.groupe button[aria-pressed="true"]{background:var(--texte);color:var(--fond);border-color:var(--texte)}
+.largeur{display:none}
+@media (min-width:1100px){.largeur{display:flex}}
+.plein{font:600 14px/1 var(--corps);color:#fff;background:var(--marque);text-decoration:none;border-radius:999px;padding:13px 18px;margin-left:auto}
+
+.ecran{display:grid;gap:16px}
+.cadre{display:grid;justify-items:center}
+.cadre iframe{display:block;border:0;background:#fff;width:100%;max-width:100%;height:min(820px,78vh);min-height:520px;border-radius:20px;box-shadow:0 0 0 1px var(--filet),0 40px 80px -30px rgb(0 0 0 / .8)}
+.cadre[data-largeur="telephone"] iframe{width:390px}
+
+.fiche{display:grid;gap:22px;grid-template-columns:minmax(0,1fr);background:var(--surface);border-radius:20px;padding:clamp(18px,3vw,32px)}
+@media (min-width:960px){.fiche{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px}}
+.portrait{display:grid;gap:14px;align-content:start}
+.portrait p{color:#d5dee8;max-width:60ch}
+.portrait dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 16px;font-size:15px}
+.portrait dt{color:var(--sourd);font-weight:600}
+.portrait dd{margin:0}
+.nuancier{display:flex;gap:6px}
+.nuancier i{width:30px;height:30px;border-radius:50%;box-shadow:0 0 0 1px rgb(255 255 255 / .22)}
+.avis{display:grid;gap:14px;align-content:start}
+.avis label,.general label{font:600 14px/1.3 var(--corps);color:var(--sourd)}
+.verdicts{display:flex;flex-wrap:wrap;gap:8px}
+.verdicts button{background:none;border:1px solid var(--filet);border-radius:999px;min-height:44px;padding:0 18px}
+.verdicts button[aria-pressed="true"][data-v="adore"]{background:var(--adore);border-color:var(--adore);color:#10231a}
+.verdicts button[aria-pressed="true"][data-v="interessant"]{background:var(--interessant);border-color:var(--interessant);color:#2a2010}
+.verdicts button[aria-pressed="true"][data-v="non"]{background:var(--non);border-color:var(--non);color:#2b1411}
+textarea{width:100%;min-height:120px;resize:vertical;background:var(--fond);color:var(--texte);border:1px solid var(--filet);border-radius:12px;padding:14px;font:16px/1.5 var(--corps)}
+.ligne{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.enregistrer{background:#fff;color:var(--fond);border:0;border-radius:999px;min-height:44px;padding:0 20px}
+.statut{font-size:14px;color:var(--sourd)}
+.general{display:grid;gap:12px;background:var(--surface);border-radius:20px;padding:clamp(18px,3vw,32px)}
+.general p{color:var(--sourd);max-width:68ch}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){button{transition:background-color .15s,border-color .15s,color .15s}}
+</style>
+
+<div class="page">
+  <header>
+    <h1>Trois directions pour le site</h1>
+    <p class="chapeau">La page de service Google Ads, avec le même contenu et les mêmes chiffres, dans trois systèmes de design. La notion expliquée par l'animation : comment marche une campagne Performance Max. Regarde-les, dis ce qui te plaît et ce qui te gêne : la direction retenue sera déclinée sur tout le site.</p>
+  </header>
+
+  <div class="choix" role="group" aria-label="Choisir une direction" id="choix"></div>
+
+  <section class="ecran" aria-label="La maquette">
+    <div class="reglages">
+      <div class="groupe"><span>Langue</span>
+        <button type="button" data-langue="en" aria-pressed="true">English</button>
+        <button type="button" data-langue="fr" aria-pressed="false">Français</button>
+      </div>
+      <div class="groupe"><span>Mouvement</span>
+        <button type="button" data-fige="0" aria-pressed="true">Animé</button>
+        <button type="button" data-fige="1" aria-pressed="false">Figé</button>
+      </div>
+      <div class="groupe largeur"><span>Largeur</span>
+        <button type="button" data-largeur="telephone" aria-pressed="true">Téléphone</button>
+        <button type="button" data-largeur="ordinateur" aria-pressed="false">Ordinateur</button>
+      </div>
+      <a class="plein" id="plein" href="direction-a.html">Ouvrir la maquette seule</a>
+    </div>
+    <div class="cadre" id="cadre" data-largeur="telephone">
+      <iframe id="scene" title="Maquette"></iframe>
+    </div>
+  </section>
+
+  <section class="fiche" aria-label="La direction et ton avis">
+    <div class="portrait">
+      <h2 id="nom"></h2>
+      <p id="parti"></p>
+      <div class="nuancier" id="nuancier" aria-hidden="true"></div>
+      <dl>
+        <dt>Polices</dt><dd id="polices"></dd>
+        <dt>Scène principale</dt><dd id="scenePrincipale"></dd>
+        <dt>Aussi</dt><dd id="aussi"></dd>
+        <dt>Fonds</dt><dd id="fonds"></dd>
+      </dl>
+    </div>
+    <div class="avis">
+      <div class="verdicts" role="group" aria-label="Ton avis">
+        <button type="button" data-v="adore" aria-pressed="false">J'adore</button>
+        <button type="button" data-v="interessant" aria-pressed="false">Intéressant</button>
+        <button type="button" data-v="non" aria-pressed="false">Pas pour nous</button>
+      </div>
+      <label for="note">Ce que tu aimes, ce qui te gêne, ce que tu voudrais voir</label>
+      <textarea id="note" placeholder="Ex. j'aime la section sombre de Performance Max, le hero est trop sage, la police me plaît moins..."></textarea>
+      <div class="ligne">
+        <button class="enregistrer" id="enregistrer" type="button">Enregistrer l'avis</button>
+        <span class="statut" id="statut" role="status"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="general">
+    <h2>Ce que tu prends dans chacune</h2>
+    <p>Tu peux garder le rythme d'une direction et l'animation d'une autre. Dis-le ici, avec tes mots : je lis cette note avant de décliner les pages.</p>
+    <label for="ensemble" class="sr">Ta note d'ensemble</label>
+    <textarea id="ensemble" placeholder="Ex. la direction A pour les pages, l'usine isométrique de la C pour expliquer Performance Max..."></textarea>
+    <div class="ligne">
+      <button class="enregistrer" id="enregistrerEnsemble" type="button">Enregistrer</button>
+      <span class="statut" id="statutEnsemble" role="status"></span>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var DIRECTIONS = [
+    { id: 'direction-a', nom: 'A. Encre', court: 'La continuité, avec de la profondeur',
+      parti: "La page claire du site, ponctuée par des scènes d'encre où l'on explique. Mêmes polices, même bleu, même en-tête que le site en ligne, avec du volume et de la lumière.",
+      polices: 'Plus Jakarta Sans et Inter, celles du site', scene: 'La carte de verre, une phrase à gauche et une à droite',
+      aussi: 'Morphing sur rail pour la méthode', fonds: 'Blanc, brume, encre',
+      nuancier: ['#ffffff', '#f3f6fa', '#1d71b8', '#7db8ee', '#0b1b2b'] },
+    { id: 'direction-b', nom: 'B. Grille', court: 'Le style suisse, en aplats',
+      parti: "La grille se voit, la typographie porte tout, les aplats ponctuent : du blanc, un noir profond, et le bleu du logo en pleins. Aucune ombre, aucun dégradé.",
+      polices: 'Archivo, une seule famille', scene: 'Performance Max en schéma sur douze colonnes',
+      aussi: 'Morphing sur fond bleu, tableau à palettes pour les trois chiffres', fonds: 'Blanc, gris froid, bleu plein, noir',
+      nuancier: ['#ffffff', '#f1f2f4', '#1d71b8', '#0c1116'] },
+    { id: 'direction-c', nom: 'C. Atelier', court: "L'isométrie et le papier",
+      parti: "L'isométrie explique, le papier réchauffe : des feuilles posées, des ombres nettes, une maquette en volume. Le corail ne dit qu'une chose, le résultat.",
+      polices: 'Bricolage Grotesque et Inter', scene: "L'usine isométrique de Performance Max",
+      aussi: 'Collage dans le hero, morphing du bleu au corail', fonds: 'Craie, blanc, bleu plein, nuit',
+      nuancier: ['#f6f4ef', '#ffffff', '#1d71b8', '#ff6a4d', '#0a1626'] }
+  ];
+  var $ = function (id) { return document.getElementById(id); };
+  var etat = { direction: 'direction-a', langue: 'en', fige: '0', largeur: 'telephone' };
+  var avis = {}, db = null, verdictChoisi = null;
+
+  function garder(cle, valeur) { try { localStorage.setItem(cle, valeur); } catch (e) { /* stockage indisponible */ } }
+  try {
+    var d0 = localStorage.getItem('refonte-direction');
+    if (d0 && DIRECTIONS.some(function (d) { return d.id === d0; })) etat.direction = d0;
+  } catch (e) { /* stockage indisponible */ }
+
+  function courante() { return DIRECTIONS.filter(function (d) { return d.id === etat.direction; })[0]; }
+  function adresse() { return etat.direction + '.html?langue=' + etat.langue + (etat.fige === '1' ? '&fige=1' : ''); }
+
+  function dessinerChoix() {
+    var c = $('choix');
+    c.textContent = '';
+    DIRECTIONS.forEach(function (d) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-pressed', String(d.id === etat.direction));
+      var s = document.createElement('strong'); s.textContent = d.nom;
+      var m = document.createElement('small'); m.textContent = d.court;
+      var p = document.createElement('i'); p.className = 'puce';
+      var v = avis[d.id] && avis[d.id].verdict; if (v) p.dataset.v = v;
+      b.append(s, p, m);
+      b.addEventListener('click', function () { etat.direction = d.id; garder('refonte-direction', d.id); verdictChoisi = null; afficher(true); });
+      c.appendChild(b);
+    });
+  }
+
+  function remplirAvis() {
+    var a = avis[etat.direction] || {};
+    [].slice.call(document.querySelectorAll('.verdicts button')).forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.v === a.verdict));
+    });
+    if (document.activeElement !== $('note')) $('note').value = a.note || '';
+  }
+
+  function afficher(recharger) {
+    var d = courante();
+    // La maquette lit la langue et le mode figé dans le stockage aussi : une page publiée ne
+    // reçoit pas toujours les paramètres de son adresse.
+    garder('mdp-maquette-langue', etat.langue);
+    garder('mdp-maquette-fige', etat.fige);
+    $('plein').href = adresse();
+    $('cadre').dataset.largeur = etat.largeur;
+    if (recharger) { $('scene').src = adresse(); $('scene').title = 'Maquette, direction ' + d.nom; }
+    $('nom').textContent = d.nom;
+    $('parti').textContent = d.parti;
+    $('polices').textContent = d.polices;
+    $('scenePrincipale').textContent = d.scene;
+    $('aussi').textContent = d.aussi;
+    $('fonds').textContent = d.fonds;
+    var n = $('nuancier'); n.textContent = '';
+    d.nuancier.forEach(function (c) { var i = document.createElement('i'); i.style.background = c; n.appendChild(i); });
+    [].slice.call(document.querySelectorAll('[data-langue]')).forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.langue === etat.langue)); });
+    [].slice.call(document.querySelectorAll('[data-fige]')).forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.fige === etat.fige)); });
+    [].slice.call(document.querySelectorAll('[data-largeur]')).forEach(function (b) { if (b.tagName === 'BUTTON') b.setAttribute('aria-pressed', String(b.dataset.largeur === etat.largeur)); });
+    $('statut').textContent = '';
+    remplirAvis();
+    dessinerChoix();
+  }
+
+  document.querySelector('.reglages').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.langue) { etat.langue = b.dataset.langue; afficher(true); }
+    if (b.dataset.fige) { etat.fige = b.dataset.fige; afficher(true); }
+    if (b.dataset.largeur) { etat.largeur = b.dataset.largeur; afficher(false); }
+  });
+
+  [].slice.call(document.querySelectorAll('.verdicts button')).forEach(function (b) {
+    b.addEventListener('click', function () {
+      verdictChoisi = b.dataset.v;
+      [].slice.call(document.querySelectorAll('.verdicts button')).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      sauver();
+    });
+  });
+  $('enregistrer').addEventListener('click', sauver);
+
+  function sauver() {
+    var d = courante(), a = avis[d.id] || {};
+    var donnee = { direction: d.id, titre: d.nom, verdict: verdictChoisi || a.verdict || null, note: $('note').value.trim(), maj: new Date().toISOString() };
+    avis[d.id] = donnee; verdictChoisi = null; dessinerChoix();
+    if (!db) { $('statut').textContent = 'Non enregistré : ouvre la page connecté à claude.ai.'; return; }
+    $('statut').textContent = 'Enregistrement...';
+    db.doc('avis/' + d.id).set(donnee).then(
+      function () { $('statut').textContent = 'Enregistré, Claude le lira.'; },
+      function () { $('statut').textContent = "Échec de l'enregistrement, réessaie."; }
+    );
+  }
+
+  $('enregistrerEnsemble').addEventListener('click', function () {
+    var texte = $('ensemble').value.trim();
+    if (!db) { $('statutEnsemble').textContent = 'Non enregistré : ouvre la page connecté à claude.ai.'; return; }
+    $('statutEnsemble').textContent = 'Enregistrement...';
+    db.doc('avis/ensemble').set({ direction: 'ensemble', titre: "Note d'ensemble", verdict: null, note: texte, maj: new Date().toISOString() }).then(
+      function () { $('statutEnsemble').textContent = 'Enregistré, Claude le lira.'; },
+      function () { $('statutEnsemble').textContent = "Échec de l'enregistrement, réessaie."; }
+    );
+  });
+
+  function brancher() {
+    if (!(window.claude && window.claude.use)) return;
+    window.claude.use('db').then(function (base) {
+      db = base;
+      if (!db) return;
+      db.collection('avis').onSnapshot(function (snap) {
+        snap.docs.forEach(function (x) { avis[x.id] = x.data(); });
+        dessinerChoix(); remplirAvis();
+        var e = avis.ensemble;
+        if (e && document.activeElement !== $('ensemble')) $('ensemble').value = e.note || '';
+      }, function () { /* lecture interrompue : la page reste utilisable */ });
+    }, function () { db = null; });
+  }
+
+  // Sur un grand écran la maquette s'ouvre en largeur de téléphone ; sur un téléphone le cadre
+  // prend toute la largeur, c'est déjà la bonne.
+  afficher(true);
+  brancher();
+})();
+</script>
