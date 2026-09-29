@@ -1,0 +1,702 @@
+/* ============================================================================
+   MyDigipal - maquette de la refonte, direction A « Encre » (29/09/2026)
+   La page claire du site, ponctuée par des scènes d'encre où l'on explique.
+   Mêmes polices, même bleu, même en-tête que le site : ce qui change, c'est la
+   profondeur, la lumière et le rythme.
+
+   Règles de forme, valables partout :
+   - un seul accent, le bleu du logo ; sur l'encre, un résultat s'écrit en blanc ;
+   - rayons : 20 px pour un panneau, 12 px pour ce qu'il contient, 32 px pour une
+     scène pleine largeur, pilule pour tout ce qui se clique ;
+   - un liseré de verre fait TOUT le pourtour, jamais un seul côté.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../../public/fonts/inter-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('../../public/fonts/jakarta-latin.woff2') format('woff2');
+}
+
+:root {
+  /* Les clairs */
+  --blanc: #FFFFFF;
+  --brume: #F3F6FA;
+  --filet: #E2E8F0;
+  /* L'encre */
+  --encre: #0B1B2B;
+  --encre-2: #102A43;
+  --abysse: #071421;
+  /* Le bleu du logo, seul accent */
+  --marque: #1D71B8;
+  --marque-fonce: #155A93;
+  --marque-clair: #7DB8EE;
+  --marque-doux: #EAF3FB;
+  /* Les textes */
+  --texte: #0B1B2B;
+  --texte-2: #4B5B6B;
+  --texte-sombre: #F4F7FA;
+  --texte-sombre-2: #A9B8C8;
+  --filet-sombre: rgb(255 255 255 / 0.10);
+  /* Le verre */
+  --verre: rgb(255 255 255 / 0.06);
+  --verre-bord: rgb(255 255 255 / 0.14);
+  /* Les formes */
+  --rayon: 20px;
+  --rayon-interieur: 12px;
+  --rayon-scene: 32px;
+  --pilule: 999px;
+  --ombre: 0 1px 2px rgb(11 27 43 / 0.05), 0 16px 40px -16px rgb(11 27 43 / 0.20);
+  --ombre-forte: 0 2px 6px rgb(11 27 43 / 0.10), 0 32px 64px -24px rgb(11 27 43 / 0.45);
+  /* Les polices : celles du site */
+  --police-titre: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  --police-texte: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* La mise en page */
+  --entete: 72px;
+  --gouttiere: 16px;
+  --section: 80px;
+}
+@media (min-width: 640px) { :root { --gouttiere: 24px; } }
+@media (min-width: 1024px) { :root { --gouttiere: 32px; --section: 128px; } }
+
+/* ---------- la base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--police-texte);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--texte);
+  background: var(--blanc);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, p, ul, ol, figure, blockquote { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+img, svg { display: block; }
+img { max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+main { padding-top: var(--entete); overflow-x: hidden; }
+@supports (overflow: clip) { main { overflow-x: clip; } }
+:focus-visible { outline: 2px solid var(--marque); outline-offset: 3px; border-radius: 6px; }
+.section--encre :focus-visible, .pied :focus-visible, .appel__panneau :focus-visible, .resultats :focus-visible, .format--pmax :focus-visible { outline-color: #fff; }
+
+.icones { position: absolute; width: 0; height: 0; overflow: hidden; }
+.ic { flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ic--16 { width: 16px; height: 16px; }
+.ic--18 { width: 18px; height: 18px; }
+.ic--24 { width: 24px; height: 24px; }
+
+.conteneur { width: 100%; max-width: 1280px; margin-inline: auto; padding-inline: var(--gouttiere); }
+
+/* ---------- les titres et le texte ---------- */
+.titre-1, .titre-2 { font-family: var(--police-titre); font-weight: 800; text-wrap: balance; }
+.titre-1 { font-size: clamp(2.375rem, 1.6rem + 3.4vw, 3.875rem); line-height: 1.04; letter-spacing: -0.035em; }
+.titre-2 { font-size: clamp(1.875rem, 1.35rem + 2.4vw, 3.125rem); line-height: 1.08; letter-spacing: -0.03em; }
+.chapeau { font-size: 1.0625rem; line-height: 1.6; color: var(--texte-2); max-width: 60ch; text-wrap: pretty; }
+@media (min-width: 1024px) { .chapeau { font-size: 1.1875rem; } }
+.rubrique { font-size: 1rem; font-weight: 600; color: var(--marque); }
+
+.tete { display: grid; gap: 20px; max-width: 880px; margin-bottom: 48px; }
+.tete--ligne { margin-bottom: 40px; }
+@media (min-width: 1024px) { .tete { gap: 24px; margin-bottom: 64px; } }
+
+/* ---------- les boutons : des pilules, côte à côte à toutes les largeurs ---------- */
+.boutons { display: flex; flex-wrap: nowrap; gap: 8px; }
+.bouton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 52px; padding: 0 14px; border-radius: var(--pilule); border: 0;
+  font-weight: 600; font-size: 1rem; line-height: 1; white-space: nowrap; cursor: pointer;
+  transition: background-color 200ms ease, box-shadow 200ms ease, transform 200ms var(--mdp-entree);
+}
+.bouton:active { transform: scale(0.98); }
+.bouton__fleche { display: none; transition: transform 300ms var(--mdp-entree); }
+.bouton:hover .bouton__fleche { transform: translate3d(3px, 0, 0); }
+.bouton--plein { background: var(--marque); color: #fff; }
+.bouton--plein:hover { background: var(--marque-fonce); }
+.bouton--contour { background: transparent; color: var(--texte); box-shadow: inset 0 0 0 1px #C3CEDA; }
+.bouton--contour:hover { background: var(--brume); box-shadow: inset 0 0 0 1px #9FB0C2; }
+.bouton--blanc { background: #fff; color: var(--marque-fonce); }
+.bouton--blanc:hover { background: var(--marque-doux); }
+.bouton--contour-clair { background: transparent; color: #fff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.55); }
+.bouton--contour-clair:hover { background: rgb(255 255 255 / 0.10); }
+.bouton--petit { height: 44px; padding: 0 18px; font-size: 0.875rem; }
+@media (min-width: 480px) {
+  .boutons { gap: 12px; }
+  .bouton { padding: 0 24px; }
+  .bouton--petit { padding: 0 18px; }
+  .bouton__fleche { display: block; }
+}
+
+.lien-fleche { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 600; color: var(--marque-clair); white-space: nowrap; }
+.lien-fleche .ic { transition: transform 300ms var(--mdp-entree); }
+.lien-fleche:hover .ic { transform: translate3d(2px, -2px, 0); }
+
+/* ==========================================================================
+   L'en-tête du site
+   ========================================================================== */
+.entete {
+  position: fixed; top: 0; left: 0; right: 0; z-index: var(--z-entete);
+  background: rgb(255 255 255 / 0.96);
+  box-shadow: 0 1px 0 var(--filet);
+}
+.entete__barre { height: var(--entete); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.entete__logo { display: flex; align-items: center; min-height: 44px; }
+.entete__logo img { height: 32px; width: auto; }
+.entete__nav, .entete__droite { display: none; }
+.entete__menu {
+  display: grid; place-items: center; width: 44px; height: 44px; margin-right: -10px;
+  border: 0; border-radius: 12px; background: none; color: var(--texte-2); cursor: pointer;
+}
+.entete__menu:hover { background: var(--brume); color: var(--texte); }
+/* Menu ouvert : la croix (le signe plus, tourné d'un huitième de tour) remplace les trois traits. */
+.entete__menu > .ic { grid-area: 1 / 1; }
+.entete__menu-ferme { transform: rotate(45deg); visibility: hidden; }
+.entete__menu[aria-expanded='true'] .entete__menu-ferme { visibility: visible; }
+.entete__menu[aria-expanded='true'] .entete__menu-ouvert { visibility: hidden; }
+
+/* Le menu ouvert s'arrête au-dessus des deux appels flottants et du bandeau. */
+.menu { border-top: 1px solid var(--filet); background: #fff; max-height: calc(100dvh - var(--entete) - var(--bandeau, 0px) - 84px); overflow-y: auto; }
+.menu[hidden] { display: none; }
+.menu > .conteneur { padding-block: 12px 20px; }
+.menu__liens { display: grid; }
+.menu__liens a { display: flex; align-items: center; min-height: 48px; padding: 0 12px; border-radius: 12px; font-weight: 500; color: var(--texte-2); }
+.menu__liens a[aria-current] { color: var(--marque); background: var(--marque-doux); }
+.menu__actions { display: flex; gap: 8px; margin-top: 12px; }
+.menu__actions .bouton { flex: 1; height: 48px; }
+.menu__langue { display: flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 8px; font-weight: 600; color: var(--texte-2); }
+
+@media (min-width: 1024px) {
+  .entete__menu, .menu { display: none !important; }
+  .entete__nav { display: flex; align-items: center; gap: 2px; }
+  .entete__nav a {
+    display: inline-flex; align-items: center; gap: 4px; height: 44px; padding: 0 12px; border-radius: 8px;
+    font-size: 0.875rem; font-weight: 500; color: #475569; white-space: nowrap; transition: color 200ms ease, background-color 200ms ease;
+  }
+  .entete__nav a:hover { color: var(--texte); background: var(--brume); }
+  .entete__nav a[aria-current] { color: var(--marque); }
+  .entete__droite { display: flex; align-items: center; gap: 6px; }
+  .entete__lien {
+    display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 12px; border-radius: 8px;
+    font-size: 0.875rem; font-weight: 500; color: #475569; white-space: nowrap; transition: color 200ms ease, background-color 200ms ease;
+  }
+  .entete__lien:hover { color: var(--marque); background: var(--marque-doux); }
+  .entete__lien-nom { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .entete__langue {
+    display: grid; place-items: center; width: 44px; height: 44px; border-radius: 8px;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.02em; color: #475569;
+  }
+  .entete__langue:hover { color: var(--texte); background: var(--brume); }
+}
+@media (min-width: 1200px) {
+  .entete__nav a { padding: 0 16px; }
+  .entete__lien-nom { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+}
+
+/* ==========================================================================
+   1. Le hero
+   ========================================================================== */
+.hero { padding-block: 40px 72px; }
+.hero__grille { display: grid; gap: 48px; align-items: center; }
+.hero__texte { display: grid; gap: 20px; justify-items: start; }
+.hero__texte .chapeau { max-width: 54ch; }
+.hero__texte .boutons { margin-top: 12px; }
+@media (min-width: 1024px) {
+  .hero { padding-block: 72px 112px; }
+  .hero__grille { grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr); gap: 72px; }
+  .hero__texte { gap: 24px; }
+}
+
+/* Les trois résultats : un panneau d'encre posé sur une plaque claire.
+   La lueur est fixe, elle donne une source à la lumière. */
+.resultats {
+  position: relative;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 28px 24px;
+  padding: 28px 24px; border-radius: var(--rayon);
+  color: var(--texte-sombre);
+  background:
+    radial-gradient(110% 80% at 92% -10%, rgb(29 113 184 / 0.55) 0%, rgb(29 113 184 / 0.16) 42%, transparent 68%),
+    var(--encre);
+  /* La plaque claire est une ombre portée sans flou : elle reste derrière le panneau. */
+  --plaque-x: 10px; --plaque-y: 12px;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.10),
+    var(--plaque-x) var(--plaque-y) 0 0 var(--brume),
+    var(--plaque-x) var(--plaque-y) 0 1px var(--filet),
+    var(--ombre-forte);
+  margin: 0 10px 12px 0;
+}
+.resultat--tete { grid-column: 1 / -1; padding-bottom: 28px; position: relative; }
+.resultat--tete::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--filet-sombre); }
+.resultat__valeur {
+  font-family: var(--police-titre); font-weight: 800; font-size: 2.5rem; line-height: 1; letter-spacing: -0.045em;
+  color: #fff; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.resultat--tete .resultat__valeur { font-size: clamp(4.5rem, 3rem + 7vw, 6.75rem); line-height: 0.92; }
+.resultat__nom { margin-top: 10px; font-size: 1rem; line-height: 1.35; color: var(--texte-sombre); }
+.resultat__client { margin-top: 2px; font-size: 1rem; line-height: 1.35; color: var(--texte-sombre-2); }
+.resultat--tete .resultat__nom { margin-top: 14px; font-size: 1.125rem; }
+@media (min-width: 1024px) {
+  .resultats { padding: 40px; gap: 32px; --plaque-x: 16px; --plaque-y: 18px; margin: 0 16px 18px 0; }
+  .resultat--tete { padding-bottom: 32px; }
+  .resultat__valeur { font-size: 3rem; }
+}
+
+/* ==========================================================================
+   2. Les logos, entre deux filets
+   ========================================================================== */
+.logos { border-block: 1px solid var(--filet); padding-block: 40px calc(40px + var(--rayon-scene)); }
+.logos__grille { display: grid; gap: 28px; align-items: center; }
+.logos__titre { font-family: var(--police-texte); font-size: 1rem; font-weight: 500; line-height: 1.4; color: var(--texte-2); }
+.logos__liste { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 16px; align-items: center; justify-items: center; }
+.logos__liste img, .pastille img { height: var(--h, 30px); width: auto; max-width: 100%; object-fit: contain; }
+.logos__liste img { filter: grayscale(1); opacity: 0.78; }
+@media (min-width: 640px) { .logos__liste { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1024px) {
+  .logos { padding-block: 48px calc(48px + var(--rayon-scene)); }
+  .logos__grille { grid-template-columns: 200px minmax(0, 1fr); gap: 48px; }
+  .logos__liste { grid-template-columns: repeat(6, 1fr); gap: 36px 28px; }
+}
+
+/* ==========================================================================
+   Les sections, et la scène qu'on pousse sur le plateau
+   ========================================================================== */
+.section { padding-block: var(--section); }
+.section--brume { background: var(--brume); }
+.section--encre { background: var(--encre); color: var(--texte-sombre); padding-block: calc(var(--section) - 16px); }
+.section--encre .tete { margin-bottom: 36px; }
+@media (min-width: 1024px) { .section--encre .tete { margin-bottom: 64px; } }
+.section--encre .chapeau { color: var(--texte-sombre-2); }
+.section--scene {
+  position: relative; z-index: 1; margin-top: calc(var(--rayon-scene) * -1);
+  border-radius: var(--rayon-scene) var(--rayon-scene) 0 0; overflow: hidden;
+}
+@supports (overflow: clip) { .section--scene { overflow: clip; } }
+/* La section claire qui précède une scène garde la place des coins arrondis. */
+.methode { padding-bottom: calc(var(--section) + var(--rayon-scene)); }
+
+/* ==========================================================================
+   3. La scène principale : la carte de verre
+   ========================================================================== */
+.pmax {
+  background:
+    radial-gradient(60% 34% at 50% 0%, rgb(29 113 184 / 0.22), transparent 70%),
+    var(--encre);
+}
+
+.reperes { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; margin-bottom: 32px; }
+.reperes .repere:not(:nth-of-type(3)) { grid-column: 1 / -1; }
+.repere, .rejouer {
+  display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px;
+  border: 0; border-radius: var(--pilule); background: transparent; cursor: pointer;
+  font-size: 1rem; font-weight: 600; line-height: 1; white-space: nowrap; color: var(--texte-sombre-2);
+  transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease;
+}
+.repere { width: 100%; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18); }
+.repere:hover { color: #fff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.40); }
+.repere[aria-pressed='true'] { background: var(--texte-sombre); color: var(--encre); box-shadow: none; }
+.rejouer { padding: 0 14px 0 12px; }
+.rejouer:hover { color: #fff; background: var(--verre); }
+.rejouer--clair { color: var(--texte-2); }
+.rejouer--clair:hover { color: var(--texte); background: var(--brume); }
+
+.plateau { display: grid; gap: 32px; }
+.temps { display: grid; gap: 12px; align-content: start; }
+.temps__titre { font-family: var(--police-titre); font-weight: 800; font-size: 1.625rem; line-height: 1.12; letter-spacing: -0.025em; color: #fff; }
+.temps__texte { color: var(--texte-sombre-2); text-wrap: pretty; }
+
+/* ----- la machine : la carte, son faisceau, les réseaux ----- */
+.machine { position: relative; }
+.champ { position: relative; perspective: 1300px; }
+/* La lueur fixe, derrière la carte. */
+.champ::before {
+  content: ''; position: absolute; inset: -22% -30%; pointer-events: none;
+  background: radial-gradient(closest-side, rgb(29 113 184 / 0.34), rgb(29 113 184 / 0.10) 55%, transparent);
+}
+.carte-ombre {
+  position: absolute; left: 6%; right: 6%; bottom: -34px; height: 56px; pointer-events: none;
+  background: radial-gradient(closest-side, rgb(2 9 16 / 0.85), rgb(2 9 16 / 0.35) 55%, transparent);
+}
+.carte-pose { position: relative; transform-style: preserve-3d; }
+.carte {
+  position: relative; border-radius: var(--rayon); transform-style: preserve-3d;
+  transform: rotateX(2deg) rotateY(3deg);
+}
+/* L'épaisseur : une seconde plaque, vingt-deux pixels derrière la première. */
+.carte__dos {
+  position: absolute; inset: 0; border-radius: inherit; background: #0A1C2E;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  transform: translateZ(-22px);
+}
+.carte__face {
+  position: absolute; inset: 0; border-radius: inherit; overflow: hidden;
+  background:
+    radial-gradient(120% 70% at 0% 0%, rgb(255 255 255 / 0.13), transparent 58%),
+    linear-gradient(160deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.02) 60%),
+    #0F2740;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.17);
+}
+.carte__reflet {
+  position: absolute; top: -20%; bottom: -20%; left: 0; width: 52%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.20) 42%, rgb(255 255 255 / 0.06) 62%, transparent);
+  opacity: 0; transform: translate3d(-160%, 0, 0) skewX(-18deg);
+}
+.carte__contenu { position: relative; padding: 18px 16px; transform-style: preserve-3d; }
+.carte__nom {
+  font-family: var(--police-titre); font-weight: 800; font-size: 1.25rem; line-height: 1.2; letter-spacing: -0.02em;
+  color: #fff; margin-bottom: 16px; transform: translateZ(14px);
+}
+/* Sur téléphone les puces se rangent à leur largeur et remplissent la ligne : deux par
+   ligne tant que les noms sont courts, une seule quand ils sont longs. Aucune largeur
+   n'est supposée, la mise en page tient dans les deux langues et sous 390 px. */
+.carte__elements { display: flex; flex-wrap: wrap; gap: 8px; transform-style: preserve-3d; }
+.carte__elements li { flex: 1 1 auto; }
+.carte__retours {
+  position: relative; display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 18px; padding-top: 18px; transform-style: preserve-3d;
+}
+.carte__retours::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--filet-sombre); }
+/* Chaque puce a sa place dans la carte : un contour en pointillés, visible tant que la
+   puce n'est pas arrivée. Au repos il est éteint (--place vaut 0). */
+.carte__elements li, .carte__retours li { position: relative; min-width: 0; transform-style: preserve-3d; }
+.carte__elements li { border-radius: var(--rayon-interieur); }
+.carte__retours li { border-radius: var(--pilule); }
+.carte__elements li::before, .carte__retours li::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  border: 1px dashed rgb(255 255 255 / 0.26); opacity: var(--place, 0);
+}
+.puce { display: flex; align-items: center; white-space: nowrap; line-height: 1.1; transform: translateZ(14px); }
+.carte__elements .puce {
+  gap: 8px; height: 44px; padding: 0 12px; border-radius: var(--rayon-interieur);
+  background: rgb(255 255 255 / 0.07); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.11);
+  font-weight: 500; color: var(--texte-sombre);
+}
+.carte__elements .ic { color: var(--marque-clair); }
+/* Sur l'encre, un résultat s'écrit en blanc. */
+.carte__retours .puce {
+  gap: 8px; height: 40px; padding: 0 14px 0 12px; border-radius: var(--pilule);
+  background: var(--texte-sombre); color: var(--encre); font-weight: 600;
+}
+.carte__retours .ic { color: var(--marque); }
+
+.faisceau { display: none; }
+.tiges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; height: 30px; }
+.tige { justify-self: center; width: 2px; height: 100%; border-radius: 1px; background: rgb(125 184 238 / 0.55); transform-origin: 50% 0; }
+
+.reseaux { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.reseaux li {
+  display: flex; align-items: center; justify-content: center; gap: 6px; height: 48px; padding: 0 6px;
+  border-radius: var(--pilule); background: var(--verre); box-shadow: inset 0 0 0 1px var(--verre-bord);
+  font-weight: 600; line-height: 1; color: var(--texte-sombre); white-space: nowrap;
+}
+.reseaux .ic { color: var(--marque-clair); }
+
+.gardes { display: grid; gap: 4px; margin-top: 12px; }
+.gardes li { position: relative; display: flex; align-items: center; gap: 12px; height: 44px; color: var(--texte-sombre-2); font-weight: 500; line-height: 1.2; }
+/* Le passage : un bout de trait, et le signe qui le ferme. */
+.garde__trait { flex: none; width: 34px; height: 2px; border-radius: 1px; background: rgb(125 184 238 / 0.55); margin-right: -12px; transform-origin: 0 50%; }
+.garde__signe { color: var(--texte-sombre); }
+
+.conclusion {
+  margin-top: 48px; font-family: var(--police-titre); font-weight: 800;
+  font-size: clamp(1.625rem, 1.1rem + 2.3vw, 2.875rem); line-height: 1.14; letter-spacing: -0.03em; text-wrap: balance;
+}
+.conclusion__1 { color: var(--texte-sombre-2); }
+.conclusion__2 { color: #fff; }
+
+@media (min-width: 1024px) {
+  .reperes { display: flex; flex-wrap: wrap; align-items: center; margin-bottom: 56px; }
+  .plateau { gap: 40px; }
+  .repere { width: auto; }
+  .rejouer { margin-left: auto; }
+
+  /* Trois colonnes : phrase, machine, phrase. La machine garde sa largeur (son faisceau
+     est dessiné au pixel), ce sont les deux colonnes de texte qui cèdent la place. */
+  .plateau {
+    grid-template-columns: minmax(0, 270px) auto minmax(0, 250px);
+    justify-content: space-between;
+    grid-template-rows: auto auto; column-gap: 28px; row-gap: 40px; align-items: start;
+  }
+  .temps--1 { grid-column: 1; grid-row: 1; }
+  .temps--3 { grid-column: 1; grid-row: 2; align-self: end; }
+  .temps--2 { grid-column: 3; grid-row: 1 / span 2; align-self: center; }
+  .machine {
+    grid-column: 2; grid-row: 1 / span 2; align-self: center;
+    display: grid; grid-template-columns: 250px 120px 142px; align-items: center;
+  }
+  .champ { z-index: 2; }
+  .carte { transform: rotateX(2.5deg) rotateY(5deg); }
+  .carte__contenu { padding: 22px; }
+  .carte__elements { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .carte__elements .puce { height: 40px; padding: 0 12px; gap: 8px; font-size: 0.9375rem; }
+  .carte__retours .puce { height: 36px; font-size: 0.9375rem; }
+
+  .tiges { display: none; }
+  /* Le faisceau part de sous la carte : 28 px de recouvrement cachent le départ. */
+  .faisceau { display: block; position: relative; z-index: 1; margin-left: -28px; overflow: visible; }
+  .faisceau path { fill: none; stroke: rgb(125 184 238 / 0.60); stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .faisceau__impasse { stroke: rgb(125 184 238 / 0.38); }
+
+  .sorties { position: relative; z-index: 1; }
+  .reseaux { grid-template-columns: 1fr; }
+  .reseaux li { justify-content: flex-start; height: 44px; padding: 0 16px 0 14px; gap: 8px; font-size: 0.9375rem; }
+  .gardes { gap: 8px; margin-top: 24px; }
+  .gardes li { gap: 10px; font-size: 0.9375rem; white-space: nowrap; }
+  .garde__trait { display: none; }
+  .garde__signe { margin-left: -14px; }
+
+  .conclusion { margin-top: 88px; text-align: center; }
+}
+@media (min-width: 1200px) {
+  .plateau { column-gap: 32px; }
+  .machine { grid-template-columns: 300px 120px 160px; }
+}
+@media (min-width: 1360px) {
+  .machine { grid-template-columns: 320px 120px 172px; }
+}
+
+/* Pendant la lecture seulement, les éléments animés ont leur calque. */
+[data-scene='lecture'] .carte-pose, [data-scene='lecture'] .carte,
+[data-scene='lecture'] .puce,
+[data-scene='lecture'] .reseaux li, [data-scene='lecture'] .voyageur { will-change: transform; }
+
+/* ==========================================================================
+   4. Les formats : deux qui pèsent, deux qui accompagnent
+   ========================================================================== */
+.formats__grille { display: grid; gap: 16px; }
+.format { display: grid; align-content: start; gap: 16px; padding: 28px 24px; border-radius: var(--rayon); background: var(--blanc); box-shadow: var(--ombre); }
+.format__nom { font-family: var(--police-titre); font-weight: 800; font-size: 1.875rem; line-height: 1.1; letter-spacing: -0.03em; }
+.format__texte { color: var(--texte-2); max-width: 52ch; text-wrap: pretty; }
+.etiquettes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.etiquettes li { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: var(--pilule); background: var(--brume); color: var(--texte-2); font-weight: 500; line-height: 1; white-space: nowrap; }
+
+/* Performance Max est un panneau d'encre sur ordinateur. Sur téléphone il reste clair :
+   un panneau y fait toute la largeur, et la scène qui précède est déjà une longue page
+   d'encre. Avec lui, le téléphone passait 57 % de surface sombre ou pleine couleur. */
+.format__reseaux { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; padding-top: 24px; color: var(--marque); }
+.format__reseaux::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--filet); }
+.format__reseaux li { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--pilule); background: var(--marque-doux); }
+
+.format--second { background: rgb(255 255 255 / 0.62); box-shadow: inset 0 0 0 1px rgb(11 27 43 / 0.06); }
+.format--second .format__nom { font-size: 1.375rem; letter-spacing: -0.02em; }
+.format--second .etiquettes li { background: rgb(11 27 43 / 0.05); }
+
+@media (min-width: 1024px) {
+  .formats__grille { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px; }
+  .format { padding: 44px; gap: 18px; }
+  .format__nom { font-size: 2.5rem; }
+  .format__texte { font-size: 1.0625rem; }
+  .etiquettes li { font-size: 0.9375rem; }
+  .format--pmax {
+    grid-column: span 7; color: var(--texte-sombre);
+    background:
+      radial-gradient(90% 70% at 100% 0%, rgb(29 113 184 / 0.50), rgb(29 113 184 / 0.12) 48%, transparent 72%),
+      var(--encre);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.10), var(--ombre-forte);
+  }
+  .format--pmax .format__texte { color: var(--texte-sombre-2); }
+  .format--pmax .etiquettes li { background: rgb(255 255 255 / 0.09); color: var(--texte-sombre); }
+  .format--pmax .format__reseaux { color: var(--marque-clair); }
+  .format--pmax .format__reseaux::before { background: var(--filet-sombre); }
+  .format--pmax .format__reseaux li { background: var(--verre); box-shadow: inset 0 0 0 1px var(--verre-bord); }
+  /* Search est moins haut que son voisin : ses étiquettes se posent en bas du panneau. */
+  .format--search { grid-column: span 5; grid-template-rows: auto auto 1fr; align-content: stretch; }
+  .format--search .etiquettes { align-self: end; }
+  .format--second { grid-column: span 6; padding: 32px 44px; gap: 12px; }
+  .format--second .format__nom { font-size: 1.5rem; }
+  .format--second .format__texte { font-size: 1rem; }
+}
+
+/* ==========================================================================
+   5. La méthode : un seul objet voyage et change de forme
+   ========================================================================== */
+.scene-methode { position: relative; --voyageur: 72px; --ancre: 44px; --pas: 44px; }
+.stations { display: grid; gap: var(--pas); }
+.station { position: relative; min-height: var(--voyageur); padding-left: calc(var(--voyageur) + 20px); display: grid; gap: 8px; align-content: start; }
+.station__titre { font-family: var(--police-titre); font-weight: 800; font-size: 1.375rem; line-height: 1.2; letter-spacing: -0.02em; padding-top: 4px; }
+/* Un bouton centre son contenu en hauteur : on l'aligne en haut, pour que les quatre titres partent de la même ligne. */
+.station__bouton { display: flex; align-items: flex-start; width: 100%; min-height: 44px; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; font: inherit; letter-spacing: inherit; color: inherit; }
+.station__bouton:hover .station__nom { color: var(--marque); }
+.station__nom { transition: color 200ms ease; }
+.station__texte { color: var(--texte-2); max-width: 46ch; text-wrap: pretty; }
+
+.station__ancre {
+  position: absolute; z-index: 1;
+  left: calc((var(--voyageur) - var(--ancre)) / 2); top: calc((var(--voyageur) - var(--ancre)) / 2);
+  width: var(--ancre); height: var(--ancre); border-radius: 50%;
+  background: var(--blanc); box-shadow: inset 0 0 0 2px var(--filet);
+}
+.station__trace { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; background: var(--marque-doux); overflow: visible; }
+.station__trace path { fill: var(--marque); }
+.station__oeil { fill: var(--marque-doux); }
+
+/* Le rail, par tronçons : de cette station à la suivante. */
+.station__rail {
+  position: absolute; left: calc(var(--voyageur) / 2 - 1px); top: calc(var(--voyageur) / 2);
+  width: 2px; height: calc(100% + var(--pas)); background: var(--filet);
+}
+.station__avance { position: absolute; inset: 0; background: var(--marque); transform-origin: 50% 0; }
+
+.voyageur {
+  position: absolute; z-index: 3; left: 50%; top: 50%; pointer-events: none;
+  width: var(--voyageur); height: var(--voyageur);
+  margin: calc(var(--voyageur) / -2) 0 0 calc(var(--voyageur) / -2);
+}
+.voyageur__corps { display: block; width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 12px 24px -10px rgb(21 90 147 / 0.65); }
+.voyageur__corps svg { width: 100%; height: 100%; overflow: visible; }
+.voyageur__disque, .voyageur__trou { fill: var(--marque); }
+.voyageur__forme { fill: #fff; }
+.voyageur__ombre {
+  position: absolute; left: 8%; right: 8%; bottom: -16px; height: 14px;
+  background: radial-gradient(closest-side, rgb(11 27 43 / 0.22), transparent);
+}
+.scene-methode > .rejouer { margin-top: 32px; margin-left: -12px; }
+
+@media (min-width: 1024px) {
+  .scene-methode { --voyageur: 104px; --ancre: 48px; --pas: 32px; }
+  .stations { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .station { padding-left: 0; padding-top: calc(var(--voyageur) + 28px); padding-right: 8px; gap: 10px; }
+  .station__titre { font-size: 1.5rem; padding-top: 0; }
+  .station__rail {
+    left: calc(var(--voyageur) / 2); top: calc(var(--voyageur) / 2 - 1px);
+    width: calc(100% + var(--pas)); height: 2px;
+  }
+  .station__avance { transform-origin: 0 50%; }
+  .scene-methode > .rejouer { margin-top: 48px; }
+}
+
+/* ==========================================================================
+   6. La preuve : trois lignes, des chiffres très grands
+   ========================================================================== */
+.preuve {
+  background:
+    radial-gradient(70% 40% at 78% 8%, rgb(29 113 184 / 0.30), transparent 70%),
+    var(--encre);
+}
+.lignes { display: grid; }
+.ligne-preuve { display: grid; gap: 14px; padding-block: 28px; }
+.ligne-preuve + .ligne-preuve { border-top: 1px solid var(--filet-sombre); }
+.ligne-preuve:first-child { padding-top: 0; }
+.ligne-preuve__client { display: flex; align-items: center; gap: 14px; }
+.ligne-preuve__nom { font-weight: 600; color: var(--texte-sombre); }
+/* Les logos des clients ont un fond blanc : tous sur la même pastille claire. */
+.pastille { display: grid; place-items: center; flex: none; width: 96px; height: 52px; padding: 8px 12px; border-radius: var(--rayon-interieur); background: #fff; }
+.ligne-preuve__chiffre {
+  font-family: var(--police-titre); font-weight: 800; font-size: clamp(4.5rem, 2.6rem + 9vw, 8rem);
+  line-height: 0.92; letter-spacing: -0.05em; color: #fff; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.ligne-preuve__detail { display: grid; gap: 4px; }
+.ligne-preuve__libelle { font-size: 1.125rem; line-height: 1.35; color: var(--texte-sombre); }
+.ligne-preuve__second { color: var(--texte-sombre-2); }
+
+.verbatim { margin-top: 40px; display: grid; gap: 20px; }
+.verbatim blockquote p { font-family: var(--police-titre); font-weight: 700; font-size: clamp(1.375rem, 1.1rem + 1.2vw, 2rem); line-height: 1.32; letter-spacing: -0.02em; color: #fff; text-wrap: pretty; }
+.verbatim figcaption { color: var(--texte-sombre-2); }
+
+@media (min-width: 1024px) {
+  /* Une seule grille pour les trois lignes : le chiffre prend sa largeur, et les
+     libellés s'alignent d'une ligne à l'autre. */
+  .lignes { grid-template-columns: minmax(150px, 210px) auto minmax(0, 1fr) auto; column-gap: 40px; }
+  .ligne-preuve { grid-column: 1 / -1; grid-template-columns: subgrid; align-items: center; padding-block: 40px; }
+  .ligne-preuve__client { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .ligne-preuve__chiffre { font-size: clamp(5rem, 1rem + 7vw, 7.25rem); }
+  .ligne-preuve__libelle { font-size: 1.25rem; }
+  .verbatim { margin-top: 88px; margin-left: 250px; max-width: 900px; }
+}
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .verbatim { margin-left: 190px; }
+}
+
+/* ==========================================================================
+   7. Les questions
+   ========================================================================== */
+.questions__grille { display: grid; gap: 0; }
+.question { border-bottom: 1px solid var(--filet); }
+.question:first-child { border-top: 1px solid var(--filet); }
+.question summary {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 20px;
+  padding: 22px 0; cursor: pointer; list-style: none;
+  font-family: var(--police-titre); font-weight: 700; font-size: 1.125rem; line-height: 1.35; letter-spacing: -0.01em;
+}
+.question summary::-webkit-details-marker { display: none; }
+.question summary .ic { margin-top: 1px; color: var(--marque); transition: transform 400ms var(--mdp-entree); }
+.question[open] summary .ic { transform: rotate(45deg); }
+.question summary:hover { color: var(--marque); }
+.question > p { padding: 0 44px 26px 0; color: var(--texte-2); max-width: 66ch; text-wrap: pretty; }
+@media (min-width: 1024px) {
+  .questions__grille { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 72px; align-items: start; }
+  .questions .tete { position: sticky; top: calc(var(--entete) + 40px); margin-bottom: 0; }
+  .question summary { font-size: 1.25rem; padding: 26px 0; }
+  .question > p { font-size: 1.0625rem; }
+}
+
+/* ==========================================================================
+   8. L'appel final : un panneau de bleu plein, posé sur la brume
+   ========================================================================== */
+.appel { padding-block: 0 var(--section); background: linear-gradient(var(--blanc) 0 96px, var(--brume) 96px); }
+.appel__panneau {
+  display: grid; gap: 20px; justify-items: start;
+  margin-inline: calc(var(--gouttiere) * -1); padding: 56px var(--gouttiere);
+  border-radius: 28px; color: #fff;
+  background:
+    radial-gradient(60% 80% at 100% 0%, rgb(125 184 238 / 0.24), transparent 62%),
+    var(--marque);
+  box-shadow: 0 32px 64px -28px rgb(21 90 147 / 0.60);
+}
+.appel__panneau .chapeau { color: rgb(255 255 255 / 0.92); max-width: 52ch; }
+.appel__panneau .boutons { margin-top: 12px; }
+@media (min-width: 640px) {
+  .appel__panneau { margin-inline: 0; padding: 64px 48px; border-radius: var(--rayon-scene); }
+}
+@media (min-width: 1024px) {
+  .appel__panneau { padding: 96px 88px; gap: 24px; }
+  .appel__panneau .titre-2 { max-width: 16ch; }
+}
+
+/* ==========================================================================
+   9. Le pied de page
+   ========================================================================== */
+.pied { background: var(--encre); color: var(--texte-sombre); }
+.pied__grille { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 24px; padding-block: 48px 32px; }
+.pied__marque { grid-column: 1 / -1; display: grid; gap: 12px; justify-items: start; }
+.pied__marque a { display: flex; align-items: center; min-height: 44px; }
+.pied__marque img { height: 40px; width: auto; }
+.pied__devise { margin-top: 8px; font-weight: 600; color: var(--marque-clair); }
+.pied__texte { color: var(--texte-sombre-2); max-width: 38ch; }
+.pied__colonne h2 { font-family: var(--police-texte); font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
+.pied__colonne a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; color: var(--texte-sombre-2); transition: color 200ms ease; }
+.pied__colonne a:hover, .pied__legal a:hover { color: #fff; }
+.pied__bas { border-top: 1px solid var(--filet-sombre); }
+/* La réserve du bas laisse les deux appels flottants au-dessus du dernier texte. */
+.pied__bas-grille { display: grid; gap: 4px; padding-block: 20px 96px; color: var(--texte-sombre-2); }
+.pied__legal { display: flex; flex-wrap: wrap; gap: 0 24px; }
+.pied__legal a { display: inline-flex; align-items: center; min-height: 44px; }
+@media (min-width: 1024px) {
+  .pied__grille { grid-template-columns: minmax(0, 1.5fr) repeat(4, minmax(0, 1fr)); gap: 48px; padding-block: 88px 64px; }
+  .pied__marque { grid-column: auto; }
+  .pied__colonne a { font-size: 0.9375rem; }
+  .pied__bas-grille { grid-template-columns: 1fr auto; align-items: center; padding-block: 20px 28px; font-size: 0.9375rem; }
+  .pied__legal { padding-right: 300px; }
+}
+
+/* ==========================================================================
+   Les deux appels flottants : la mise en forme du bouton appartient à la direction
+   ========================================================================== */
+.bouton-flottant {
+  display: inline-flex; align-items: center; gap: 8px; height: 52px; padding: 0 20px;
+  border-radius: var(--pilule); background: var(--marque); color: #fff;
+  font-weight: 600; font-size: 1rem; line-height: 1; white-space: nowrap;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.20), 0 10px 28px rgb(11 27 43 / 0.32);
+}
+.bouton-flottant:hover { background: var(--marque-fonce); }
+@media (min-width: 640px) { .bouton-flottant { height: 56px; padding: 0 24px; } }

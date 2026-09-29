@@ -14,7 +14,7 @@ from pathlib import Path
 ICI = Path(__file__).parent
 GABARIT = ICI / "_gabarit-pilotage.html"
 SORTIE = ICI / "pilotage.html"
-DATE = "29/09/2026"
+DATE = "30/09/2026"
 PAS = 30  # un échantillon de la ligne de sondage tous les 30 px
 PIED = 15  # le pied de page fait environ 15 échantillons (450 px)
 
@@ -235,7 +235,7 @@ def chiffres_cles() -> str:
 QUESTIONS = [
     ("Q1", "Quelle direction ?",
      "A « Encre », B « Grille » ou C « Atelier ». Tu peux aussi prendre le rythme de l'une et l'animation d'une autre.",
-     "Je te donnerai mon avis après avoir vérifié les trois maquettes à l'écran : il est noté dans la section des directions."),
+     "La A pour le système, avec l'usine isométrique de la C et le tableau à palettes de la B comme composants. Détail dans la section des directions."),
     ("Q2", "Une seconde couleur qui porte un sens ?",
      "Le 25/09 tu as fixé un seul accent, le bleu du logo. La direction C ajoute un corail réservé au résultat (ce qui sort de la machine, un chiffre de client).",
      "Oui, à cette condition stricte : jamais un bouton, jamais un décor. Dans un schéma, une couleur qui dit « résultat » aide à lire. Les directions A et B s'en passent."),
@@ -450,8 +450,39 @@ DIRECTIONS = """
 AVIS_DIRECTIONS = """
 <h3>Pour les voir</h3>
 <ul>
-<li>Sur ton ordinateur : ouvre les liens ci-dessus, ou lance <code>python -m http.server 4173</code> dans <code>C:\\dev\\sv</code> puis <code>http://localhost:4173/labo/refonte-site/direction-a.html</code>.</li>
-<li>Les maquettes sont en cours de construction et de contrôle. Mon avis et le résultat des contrôles seront notés ici dès qu'elles sont vérifiées à l'écran.</li>
+<li><strong>Sur ton téléphone ou ton ordinateur</strong> : la galerie privée, <a href="https://claude.ai/artifact/K5n2ANkACuuGF78JSbB6Ee">claude.ai/artifact/K5n2ANkACuuGF78JSbB6Ee</a>. Tu y passes d'une direction à l'autre, en anglais ou en français, animée ou figée, et tu y laisses un avis par direction. Je lis ces avis avant de décliner.</li>
+<li>En local : <code>python -m http.server 4173</code> dans <code>C:\dev\sv</code>, puis <code>http://localhost:4173/labo/refonte-site/index.html</code> pour les trois côte à côte.</li>
+</ul>
+
+<h3>Ce qui a été contrôlé, et ce qui ne l'a pas été</h3>
+<div class="defile"><table>
+<thead><tr><th>Contrôle, à 390 et 1 440 px, en français et en anglais</th><th>A. Encre</th><th>B. Grille</th><th>C. Atelier</th></tr></thead>
+<tbody>
+<tr><td>Débordement horizontal</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+<tr><td>Éléments flottants qui se recouvrent, quatre états</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+<tr><td>Boutons sur deux lignes, textes rognés</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+<tr><td>Texte sous 16 px à 390 px</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+<tr><td>Tirets longs, chiffres hors des études de cas</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+<tr><td>Page complète sans script et en mode figé</td><td>oui</td><td>oui</td><td>oui</td></tr>
+<tr><td>Surface sombre ou pleine, sections</td><td class="n">42 à 45 %</td><td class="n">43 à 46 %</td><td class="n">42 à 45 %</td></tr>
+<tr><td>Instants de la scène principale vus à l'écran</td><td class="n">17</td><td class="n">10</td><td class="n">22</td></tr>
+</tbody></table></div>
+<p style="margin-top:16px"><strong>Non vérifié, pour les trois</strong> : le mouvement lui-même. La fenêtre du navigateur était en arrière-plan, chaque scène a été posée à un instant puis capturée, jamais vue en train de jouer. La fluidité, le déclenchement à l'entrée dans l'écran, un vrai téléphone, Safari et Firefox restent à juger : c'est ton regard qui tranche.</p>
+
+<h3>Mon avis</h3>
+<ul>
+<li><strong>Je prendrais la A pour le système</strong> : mêmes polices et même en-tête que l'accueil refait il y a quatre jours, donc aucune page à reprendre pour elle. Le rythme est revenu, et la carte de verre est exactement ta demande (une phrase à gauche, une à droite).</li>
+<li><strong>Et je garderais deux pièces des autres comme composants</strong> : l'usine isométrique de la C pour tout ce qui circule (une automatisation, le suivi côté serveur, le routage d'un lead), repeinte dans la palette de la A ; le tableau à palettes de la B pour trois chiffres d'un client.</li>
+<li>La B est la plus graphique, mais elle change la police et les formes de tout le site, accueil compris. La C demande une seconde couleur et une police de titre.</li>
+</ul>
+
+<h3>Les réserves à connaître</h3>
+<ul>
+<li>Sur téléphone, la scène principale fait environ 1 550 px dans la A et la B, presque deux écrans : les temps 2 et 3 peuvent se jouer sous l'écran. La C règle le problème en gardant le dessin collé sous l'en-tête pendant la lecture. À reprendre dans la direction retenue.</li>
+<li>Entre deux formes, l'objet de la méthode passe par une forme sans nom pendant une demi-seconde.</li>
+<li>Le verbatim fait cinq à six lignes à 390 px : à couper à trois.</li>
+<li>Dans la C, le titre de la section Performance Max est sur la craie et seule la scène est sur la nuit : toute en nuit, la page dépassait 51 % de sombre.</li>
+<li>Panneaux compris (hero, format Performance Max, appel final), la A monte à 52 % de surface sombre ou pleine.</li>
 </ul>
 """
 
@@ -464,6 +495,8 @@ JOURNAL = [
     ("29/09/2026", "Trois directions lancées en maquette sur la page Google Ads : A Encre, B Grille, C Atelier."),
     ("29/09/2026", "Correctif des éléments flottants écrit, construit et vérifié en local (branche flottants-sans-recouvrement, 5b0e768). Non déployé : en attente de ton accord."),
     ("29/09/2026", "Socle porté dans src/lib/motion/. Apparitions du site corrigées sur la branche : contenu visible par défaut, courbe A, septième enfant d'une cascade enfin affiché. Construit, check-seo au vert."),
+    ("30/09/2026", "Les trois directions sont livrées, contrôlées à 390 et 1 440 px dans les deux langues, et publiées en galerie privée. Défaut du socle corrigé : au changement de langue, une scène encore sous l'écran restait vide."),
+    ("30/09/2026", "Consigne de Paul : limiter la dépense. Plus aucun agent lancé, la suite se fait un groupe à la fois, coût annoncé avant."),
 ]
 
 

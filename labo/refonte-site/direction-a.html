@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="fr" data-langue="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Maquette - Direction A, Encre - Google Ads | MyDigipal</title>
+
+  <!-- 1. La langue et le droit au mouvement, AVANT les styles (aucun éclair de contenu). -->
+  <script>
+    (function (d) {
+      var q = new URLSearchParams(location.search).get('langue'), m = null;
+      try { m = localStorage.getItem('mdp-maquette-langue'); } catch (e) {}
+      d.dataset.langue = q === 'en' || q === 'fr' ? q : (m === 'en' ? 'en' : 'fr');
+      d.lang = d.dataset.langue;
+      if (!/[?&]fige=1/.test(location.search) && !matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('mv');
+    })(document.documentElement);
+  </script>
+
+  <!-- 2. Les polices de la direction : celles du site, hébergées par lui. -->
+  <link rel="preload" href="../../public/fonts/jakarta-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../public/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- 3. Le socle commun, puis la feuille de la direction. -->
+  <link rel="stylesheet" href="socle/socle.css">
+  <link rel="stylesheet" href="direction-a.css">
+</head>
+<body>
+
+  <!-- Les icônes de la page : une seule famille (Feather, celle du site), trait de 2. -->
+  <svg class="icones" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-fleche" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+      <symbol id="i-fleche-haut" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+      <symbol id="i-connexion" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+      <symbol id="i-rejouer" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></symbol>
+      <symbol id="i-loupe" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+      <symbol id="i-lecture" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+      <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
+      <symbol id="i-boussole" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></symbol>
+      <symbol id="i-enveloppe" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+      <symbol id="i-repere" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+      <symbol id="i-titres" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></symbol>
+      <symbol id="i-texte" viewBox="0 0 24 24"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></symbol>
+      <symbol id="i-film" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></symbol>
+      <symbol id="i-flux" viewBox="0 0 24 24"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></symbol>
+      <symbol id="i-audience" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+      <symbol id="i-lead" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></symbol>
+      <symbol id="i-vente" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></symbol>
+      <symbol id="i-essai" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></symbol>
+      <symbol id="i-interdit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ==========================================================================
+       L'en-tête du site : mêmes entrées, même ordre, même bleu.
+       ======================================================================== -->
+  <header class="entete">
+    <div class="entete__barre conteneur">
+      <a class="entete__logo" href="#" aria-label="MyDigipal">
+        <img src="../../public/images/Logos/MyDigipal%20Logo_Full%20Main.png" alt="MyDigipal" width="89" height="32">
+      </a>
+
+      <nav class="entete__nav" aria-label="Navigation principale">
+        <a href="#" aria-current="page">Services<svg class="ic ic--16"><use href="#i-chevron"/></svg></a>
+        <a href="#"><span lang="fr">IA</span><span lang="en">AI</span><svg class="ic ic--16"><use href="#i-chevron"/></svg></a>
+        <a href="#"><span lang="fr">Automobile</span><span lang="en">Automotive</span><svg class="ic ic--16"><use href="#i-chevron"/></svg></a>
+        <a href="#"><span lang="fr">Études de cas</span><span lang="en">Case Studies</span></a>
+        <a href="#">Blog</a>
+      </nav>
+
+      <div class="entete__droite">
+        <a class="entete__lien entete__lien--compte" href="#">
+          <svg class="ic ic--16"><use href="#i-connexion"/></svg>
+          <span class="entete__lien-nom"><span lang="fr">Espace client</span><span lang="en">Client Login</span></span>
+        </a>
+        <a class="entete__lien" href="#">Contact</a>
+        <a class="bouton bouton--plein bouton--petit" href="#"><span lang="fr">Calculer mon budget</span><span lang="en">Calculate my budget</span></a>
+        <a class="entete__langue" href="#" data-bascule-langue>
+          <span lang="fr" aria-hidden="true">EN</span><span lang="en" aria-hidden="true">FR</span>
+          <span class="sr"><span lang="fr">Passer le site en anglais</span><span lang="en">Switch the site to French</span></span>
+        </a>
+      </div>
+
+      <button type="button" class="entete__menu" data-menu-ouvrir aria-expanded="false" aria-controls="menu">
+        <svg class="ic ic--24 entete__menu-ouvert"><use href="#i-menu"/></svg>
+        <svg class="ic ic--24 entete__menu-ferme"><use href="#i-plus"/></svg>
+        <span class="sr">Menu</span>
+      </button>
+    </div>
+
+    <div class="menu" id="menu" data-menu hidden>
+      <div class="conteneur">
+        <nav class="menu__liens" aria-label="Menu">
+          <a href="#" aria-current="page">Services</a>
+          <a href="#"><span lang="fr">IA</span><span lang="en">AI</span></a>
+          <a href="#"><span lang="fr">Automobile</span><span lang="en">Automotive</span></a>
+          <a href="#"><span lang="fr">Études de cas</span><span lang="en">Case Studies</span></a>
+          <a href="#">Blog</a>
+          <a href="#"><span lang="fr">Espace client</span><span lang="en">Client Login</span></a>
+        </nav>
+        <div class="menu__actions">
+          <a class="bouton bouton--contour" href="#">Contact</a>
+          <a class="bouton bouton--plein" href="#"><span lang="fr">Calculer mon budget</span><span lang="en">Calculate my budget</span></a>
+        </div>
+        <a class="menu__langue" href="#" data-bascule-langue><span lang="fr">English</span><span lang="en">Français</span></a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ========================================================================
+         1. Hero (blanc) : le texte à gauche, les résultats de clients à droite,
+         écrits en blanc sur un panneau d'encre.
+         ====================================================================== -->
+    <section class="hero">
+      <div class="conteneur hero__grille">
+        <div class="hero__texte">
+          <p class="rubrique">Google Ads</p>
+          <h1 class="titre-1">
+            <span lang="fr">Dominez les résultats de recherche instantanément</span>
+            <span lang="en">Dominate search results instantly</span>
+          </h1>
+          <p class="chapeau" lang="fr">Une gestion Google Ads fondée sur la mesure, pas sur l'intuition. Campagnes Search, Performance Max et YouTube revues chaque semaine, sans boîte noire.</p>
+          <p class="chapeau" lang="en">Google Ads management built on measurement, not guesswork. Search, Performance Max and YouTube campaigns reviewed every week, with no black-box reporting.</p>
+          <div class="boutons">
+            <a class="bouton bouton--plein" href="#">
+              <span lang="fr">Calculer mon budget</span><span lang="en">Calculate my budget</span>
+              <svg class="ic ic--18 bouton__fleche"><use href="#i-fleche"/></svg>
+            </a>
+            <a class="bouton bouton--contour" href="#"><span lang="fr">Nous contacter</span><span lang="en">Contact us</span></a>
+          </div>
+        </div>
+
+        <div class="resultats" id="scene-resultats">
+          <div class="resultat resultat--tete">
+            <p class="resultat__valeur"><span class="compte" data-compte="112" data-signe="+">+112</span><span lang="fr">&nbsp;%</span><span lang="en">%</span></p>
+            <p class="resultat__nom"><span lang="fr">conversions Google Ads</span><span lang="en">Google Ads conversions</span></p>
+            <p class="resultat__client"><span lang="fr">Groupe Théobald</span><span lang="en">Theobald Group</span></p>
+          </div>
+          <div class="resultat">
+            <p class="resultat__valeur"><span class="compte" data-compte="35" data-signe="-">-35</span><span lang="fr">&nbsp;%</span><span lang="en">%</span></p>
+            <p class="resultat__nom"><span lang="fr">coût par lead</span><span lang="en">cost per lead</span></p>
+            <p class="resultat__client"><span lang="fr">Groupe Vulcain</span><span lang="en">Vulcain Group</span></p>
+          </div>
+          <div class="resultat">
+            <p class="resultat__valeur"><span class="compte" data-compte="225" data-signe="+">+225</span><span lang="fr">&nbsp;%</span><span lang="en">%</span></p>
+            <p class="resultat__nom"><span lang="fr">utilisateurs Google Ads</span><span lang="en">Google Ads users</span></p>
+            <p class="resultat__client"><span lang="fr">Groupe DMD</span><span lang="en">DMD Group</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         2. Les logos (blanc, entre deux filets).
+         ====================================================================== -->
+    <section class="logos" aria-labelledby="logos-titre">
+      <div class="conteneur logos__grille" data-entree>
+        <h2 class="logos__titre" id="logos-titre">
+          <span lang="fr">Ils nous confient leurs campagnes</span>
+          <span lang="en">They trust us with their campaigns</span>
+        </h2>
+        <ul class="logos__liste">
+          <li><img src="../../public/images/accueil/logos/theobald.webp" alt="Groupe Théobald" width="95" height="96" loading="lazy" decoding="async" style="--h:40px"></li>
+          <li><img src="../../public/images/accueil/logos/vulcain.webp" alt="Groupe Vulcain" width="186" height="66" loading="lazy" decoding="async" style="--h:30px"></li>
+          <li><img src="../../public/images/accueil/logos/dmd.webp" alt="Groupe DMD" width="192" height="76" loading="lazy" decoding="async" style="--h:32px"></li>
+          <li><img src="../../public/images/accueil/logos/bymycar.webp" alt="BYmyCAR" width="284" height="96" loading="lazy" decoding="async" style="--h:30px"></li>
+          <li><img src="../../public/images/accueil/logos/ford.webp" alt="Ford" width="256" height="96" loading="lazy" decoding="async" style="--h:32px"></li>
+          <li><img src="../../public/images/accueil/logos/motork.webp" alt="MotorK" width="200" height="45" loading="lazy" decoding="async" style="--h:24px"></li>
+          <li><img src="../../public/images/accueil/logos/genesys.webp" alt="Genesys" width="472" height="96" loading="lazy" decoding="async" style="--h:26px"></li>
+          <li><img src="../../public/images/accueil/logos/opentext.webp" alt="OpenText" width="505" height="96" loading="lazy" decoding="async" style="--h:24px"></li>
+          <li><img src="../../public/images/accueil/logos/edenred.webp" alt="Edenred" width="157" height="96" loading="lazy" decoding="async" style="--h:34px"></li>
+          <li><img src="../../public/images/accueil/logos/gwi.webp" alt="GWI" width="301" height="96" loading="lazy" decoding="async" style="--h:28px"></li>
+          <li><img src="../../public/images/accueil/logos/symbl.webp" alt="Symbl" width="356" height="96" loading="lazy" decoding="async" style="--h:28px"></li>
+          <li><img src="../../public/images/accueil/logos/quantum.webp" alt="Quantum Metric" width="127" height="72" loading="lazy" decoding="async" style="--h:34px"></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         3. Performance Max (ENCRE) : la scène principale.
+         La carte de verre est la campagne. Une phrase à gauche, une à droite.
+         ====================================================================== -->
+    <section class="section section--encre section--scene pmax" id="performance-max">
+      <div class="conteneur">
+        <header class="tete" data-entree>
+          <h2 class="titre-2" id="pmax-titre"><span class="ligne"><span>
+            <span lang="fr">Comment marche une campagne Performance Max</span>
+            <span lang="en">How a Performance Max campaign works</span>
+          </span></span></h2>
+          <p class="chapeau" lang="fr">Vous donnez à Google des éléments et un objectif. Son IA compose les annonces et choisit où les montrer. Notre travail se joue avant et après&nbsp;: ce qu'on lui donne, puis ce qu'on lui apprend.</p>
+          <p class="chapeau" lang="en">You give Google a set of assets and a goal. Its AI assembles the ads and decides where to show them. Our work happens before and after: what we feed it, then what we teach it.</p>
+        </header>
+
+        <div class="scene-pmax" id="scene-pmax">
+
+          <div class="reperes" role="group" aria-labelledby="pmax-titre">
+            <button type="button" class="repere" data-aller="0" data-tenir="4.6" data-jusqua="5.1" aria-pressed="false">
+              <span lang="fr">Ce qu'on lui donne</span><span lang="en">What we feed it</span>
+            </button>
+            <button type="button" class="repere" data-aller="5.1" data-tenir="9.1" data-jusqua="9.6" aria-pressed="false">
+              <span lang="fr">Ce que Google décide</span><span lang="en">What Google decides</span>
+            </button>
+            <button type="button" class="repere" data-aller="9.6" data-tenir="14" data-jusqua="14" data-dernier aria-pressed="true">
+              <span lang="fr">Ce qu'on lui apprend</span><span lang="en">What we teach it</span>
+            </button>
+            <button type="button" class="rejouer" data-rejouer>
+              <svg class="ic ic--18"><use href="#i-rejouer"/></svg>
+              <span lang="fr">Rejouer</span><span lang="en">Replay</span>
+            </button>
+          </div>
+
+          <div class="plateau">
+
+            <div class="temps temps--1">
+              <h3 class="temps__titre"><span class="ligne"><span><span lang="fr">Ce qu'on lui donne</span><span lang="en">What we feed it</span></span></span></h3>
+              <p class="temps__texte" lang="fr">Des titres, des descriptions, des images, des vidéos, votre flux de produits ou de véhicules, et des signaux d'audience. Plus la matière est juste, mieux la machine travaille.</p>
+              <p class="temps__texte" lang="en">Headlines, descriptions, images, videos, your product or vehicle feed, and audience signals. The better the material, the better the machine works.</p>
+            </div>
+
+            <div class="machine">
+              <div class="champ">
+                <span class="carte-ombre" aria-hidden="true"></span>
+                <div class="carte-pose">
+                  <div class="carte">
+                    <span class="carte__dos" aria-hidden="true"></span>
+                    <span class="carte__face" aria-hidden="true"><span class="carte__reflet"></span></span>
+                    <div class="carte__contenu">
+                      <p class="carte__nom">Performance Max</p>
+                      <ul class="carte__elements">
+                        <li><span class="puce"><svg class="ic ic--16" aria-hidden="true"><use href="#i-titres"/></svg><span lang="fr">Titres</span><span lang="en">Headlines</span></span></li>
+                        <li><span class="puce"><svg class="ic ic--16" aria-hidden="true"><use href="#i-texte"/></svg>Descriptions</span></li>
+                        <li><span class="puce"><svg class="ic ic--16" aria-hidden="true"><use href="#i-image"/></svg>Images</span></li>
+                        <li><span class="puce"><svg class="ic ic--16" aria-hidden="true"><use href="#i-film"/></svg><span lang="fr">Vidéos</span><span lang="en">Videos</span></span></li>
+                        <li><span class="puce"><svg class="ic ic--16" aria-hidden="true"><use href="#i-flux"/></svg><span lang="fr">Flux produits</span><span lang="en">Product feed</span></span></li>
+                        <li><span class="puce"><svg class="ic ic--16" aria-hidden="true"><use href="#i-audience"/></svg><span lang="fr">Signaux d'audience</span><span lang="en">Audience signals</span></span></li>
+                      </ul>
+                      <ul class="carte__retours">
+                        <li><span class="puce"><svg class="ic ic--16" aria-hidden="true"><use href="#i-lead"/></svg><span lang="fr">Lead qualifié</span><span lang="en">Qualified lead</span></span></li>
+                        <li><span class="puce"><svg class="ic ic--16" aria-hidden="true"><use href="#i-vente"/></svg><span lang="fr">Vente</span><span lang="en">Sale</span></span></li>
+                        <li><span class="puce"><svg class="ic ic--16" aria-hidden="true"><use href="#i-essai"/></svg><span lang="fr">Essai en concession</span><span lang="en">Test drive</span></span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ordinateur : le faisceau part de la carte, un trait par réseau, deux impasses. -->
+              <svg class="faisceau" viewBox="0 0 148 424" width="148" height="424" aria-hidden="true" focusable="false">
+                <path class="faisceau__trait" pathLength="1" d="M0 212 C 84 212 68 22 148 22"/>
+                <path class="faisceau__trait" pathLength="1" d="M0 212 C 84 212 68 74 148 74"/>
+                <path class="faisceau__trait" pathLength="1" d="M0 212 C 84 212 68 126 148 126"/>
+                <path class="faisceau__trait" pathLength="1" d="M0 212 C 84 212 68 178 148 178"/>
+                <path class="faisceau__trait" pathLength="1" d="M0 212 C 84 212 68 230 148 230"/>
+                <path class="faisceau__trait" pathLength="1" d="M0 212 C 84 212 68 282 148 282"/>
+                <path class="faisceau__impasse" pathLength="1" d="M0 212 C 78 212 58 350 134 350"/>
+                <path class="faisceau__impasse" pathLength="1" d="M0 212 C 78 212 58 402 134 402"/>
+              </svg>
+
+              <!-- Téléphone : trois tiges descendent de la carte vers les réseaux. -->
+              <div class="tiges" aria-hidden="true"><span class="tige"></span><span class="tige"></span><span class="tige"></span></div>
+
+              <div class="sorties">
+                <ul class="reseaux">
+                  <li><svg class="ic ic--16" aria-hidden="true"><use href="#i-loupe"/></svg>Search</li>
+                  <li><svg class="ic ic--16" aria-hidden="true"><use href="#i-lecture"/></svg>YouTube</li>
+                  <li><svg class="ic ic--16" aria-hidden="true"><use href="#i-image"/></svg>Display</li>
+                  <li><svg class="ic ic--16" aria-hidden="true"><use href="#i-boussole"/></svg>Discover</li>
+                  <li><svg class="ic ic--16" aria-hidden="true"><use href="#i-enveloppe"/></svg>Gmail</li>
+                  <li><svg class="ic ic--16" aria-hidden="true"><use href="#i-repere"/></svg>Maps</li>
+                </ul>
+                <ul class="gardes">
+                  <li><span class="garde__trait" aria-hidden="true"></span><svg class="ic ic--18 garde__signe" aria-hidden="true"><use href="#i-interdit"/></svg><span class="garde__nom"><span lang="fr">Exclusions de marque</span><span lang="en">Brand exclusions</span></span></li>
+                  <li><span class="garde__trait" aria-hidden="true"></span><svg class="ic ic--18 garde__signe" aria-hidden="true"><use href="#i-interdit"/></svg><span class="garde__nom"><span lang="fr">Mots-clés exclus</span><span lang="en">Negative keywords</span></span></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="temps temps--2">
+              <h3 class="temps__titre"><span class="ligne"><span><span lang="fr">Ce que Google décide</span><span lang="en">What Google decides</span></span></span></h3>
+              <p class="temps__texte" lang="fr">L'assemblage de chaque annonce, l'enchère et l'emplacement. La même campagne se montre sur six réseaux, selon la personne et le moment.</p>
+              <p class="temps__texte" lang="en">How each ad is assembled, the bid and the placement. The same campaign shows across six networks, depending on the person and the moment.</p>
+            </div>
+
+            <div class="temps temps--3">
+              <h3 class="temps__titre"><span class="ligne"><span><span lang="fr">Ce qu'on lui apprend</span><span lang="en">What we teach it</span></span></span></h3>
+              <p class="temps__texte" lang="fr">Quelles conversions comptent vraiment&nbsp;: un lead qualifié, une vente, un essai en concession. Nous les faisons remonter depuis votre CRM, et nous excluons ce qui ne doit pas être acheté.</p>
+              <p class="temps__texte" lang="en">Which conversions really matter: a qualified lead, a sale, a test drive. We send them back from your CRM, and we exclude what should not be bought.</p>
+            </div>
+          </div>
+
+          <p class="conclusion">
+            <span class="ligne"><span class="conclusion__1"><span lang="fr">Google choisit où montrer l'annonce.</span><span lang="en">Google chooses where the ad shows.</span></span></span>
+            <span class="ligne"><span class="conclusion__2"><span lang="fr">Nous choisissons ce qu'il apprend.</span><span lang="en">We choose what it learns.</span></span></span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         4. Les formats (brume) : Performance Max et Search pèsent plus.
+         ====================================================================== -->
+    <section class="section section--brume formats" id="formats">
+      <div class="conteneur">
+        <header class="tete" data-entree>
+          <h2 class="titre-2"><span class="ligne"><span>
+            <span lang="fr">Les formats que nous gérons</span>
+            <span lang="en">The formats we run</span>
+          </span></span></h2>
+          <p class="chapeau" lang="fr">Le bon format dépend de ce que cherche votre client, pas de ce que la plateforme pousse.</p>
+          <p class="chapeau" lang="en">The right format depends on what your customer is looking for, not on what the platform pushes.</p>
+        </header>
+
+        <div class="formats__grille">
+          <article class="format format--pmax" data-entree style="--i:0">
+            <h3 class="format__nom">Performance Max</h3>
+            <p class="format__texte" lang="fr">Une seule campagne pour les six réseaux de Google, pilotée par les signaux et les conversions qu'on lui donne.</p>
+            <p class="format__texte" lang="en">One campaign across Google's six networks, steered by the signals and conversions we give it.</p>
+            <ul class="etiquettes">
+              <li><span lang="fr">Groupes d'éléments</span><span lang="en">Asset groups</span></li>
+              <li><span lang="fr">Signaux d'audience</span><span lang="en">Audience signals</span></li>
+              <li><span lang="fr">Conversions importées</span><span lang="en">Imported conversions</span></li>
+              <li>Exclusions</li>
+            </ul>
+            <ul class="format__reseaux" aria-hidden="true">
+              <li><svg class="ic ic--18"><use href="#i-loupe"/></svg></li>
+              <li><svg class="ic ic--18"><use href="#i-lecture"/></svg></li>
+              <li><svg class="ic ic--18"><use href="#i-image"/></svg></li>
+              <li><svg class="ic ic--18"><use href="#i-boussole"/></svg></li>
+              <li><svg class="ic ic--18"><use href="#i-enveloppe"/></svg></li>
+              <li><svg class="ic ic--18"><use href="#i-repere"/></svg></li>
+            </ul>
+          </article>
+
+          <article class="format format--search" data-entree style="--i:1">
+            <h3 class="format__nom">Search</h3>
+            <p class="format__texte" lang="fr">Touchez les personnes qui cherchent déjà ce que vous vendez. Votre annonce apparaît en tête de Google au moment où la question est posée.</p>
+            <p class="format__texte" lang="en">Reach people who are already searching for what you sell. Your ad appears at the top of Google at the moment the question is asked.</p>
+            <ul class="etiquettes">
+              <li><span lang="fr">Ciblage par mots-clés</span><span lang="en">Keyword targeting</span></li>
+              <li><span lang="fr">Extensions d'annonce</span><span lang="en">Ad extensions</span></li>
+              <li><span lang="fr">Enchères intelligentes</span><span lang="en">Smart bidding</span></li>
+              <li><span lang="fr">Annonces responsives</span><span lang="en">Responsive ads</span></li>
+            </ul>
+          </article>
+
+          <article class="format format--second" data-entree style="--i:2">
+            <h3 class="format__nom">Shopping</h3>
+            <p class="format__texte" lang="fr">Vos produits avec leur image et leur prix, directement dans les résultats. Le flux fait la moitié du travail, nous le tenons propre.</p>
+            <p class="format__texte" lang="en">Your products with their image and price, right in the results. The feed does half the work, and we keep it clean.</p>
+            <ul class="etiquettes">
+              <li><span lang="fr">Flux produits</span><span lang="en">Product feeds</span></li>
+              <li>Merchant Center</li>
+              <li><span lang="fr">Inventaire local</span><span lang="en">Local inventory</span></li>
+            </ul>
+          </article>
+
+          <article class="format format--second" data-entree style="--i:3">
+            <h3 class="format__nom"><span lang="fr">Display et vidéo</span><span lang="en">Display and video</span></h3>
+            <p class="format__texte" lang="fr">Faire connaître la marque et retrouver les visiteurs qui n'ont pas converti, sur les sites partenaires et sur YouTube.</p>
+            <p class="format__texte" lang="en">Build awareness and bring back visitors who did not convert, across partner sites and YouTube.</p>
+            <ul class="etiquettes">
+              <li>Remarketing</li>
+              <li>YouTube</li>
+              <li><span lang="fr">Display responsive</span><span lang="en">Responsive display</span></li>
+              <li><span lang="fr">Audiences personnalisées</span><span lang="en">Custom audiences</span></li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         5. La méthode (blanc) : la seconde scène. Un seul objet voyage et change
+         de forme. L'ordre se lit par la position, aucune pastille numérotée.
+         ====================================================================== -->
+    <section class="section methode" id="methode">
+      <div class="conteneur">
+        <header class="tete tete--ligne" data-entree>
+          <h2 class="titre-2"><span class="ligne"><span>
+            <span lang="fr">De l'audit au reporting, en quatre temps</span>
+            <span lang="en">From audit to reporting, in four stages</span>
+          </span></span></h2>
+        </header>
+
+        <div class="scene-methode" id="scene-methode">
+          <ol class="stations">
+            <li class="station">
+              <span class="station__rail" aria-hidden="true"><span class="station__avance"></span></span>
+              <h3 class="station__titre">
+                <button type="button" class="station__bouton" data-aller="0" data-tenir="1.5" data-jusqua="1.8" aria-pressed="false">
+                  <span class="station__ancre" aria-hidden="true">
+                    <svg class="station__trace" viewBox="-100 -100 200 200"><path d="M9.7 22.5L8.6 23.1L7.4 23.7L6.3 24.3L5.1 24.8L3.9 25.3L2.7 25.8L1.4 26.2L0.2 26.6L-1.1 26.9L-2.4 27.2L-3.7 27.5L-5.0 27.6L-6.3 27.8L-7.6 27.9L-8.9 27.9L-10.2 28.0L-11.5 28.0L-12.8 27.9L-14.1 27.7L-15.4 27.6L-16.7 27.4L-17.9 27.1L-19.2 26.8L-20.5 26.5L-21.7 26.1L-23.0 25.7L-24.2 25.2L-25.4 24.7L-26.6 24.2L-27.7 23.6L-28.9 23.0L-30.0 22.3L-31.1 21.6L-32.2 20.8L-33.2 20.0L-34.3 19.2L-35.2 18.4L-36.2 17.5L-37.1 16.6L-38.0 15.6L-38.9 14.6L-39.7 13.6L-40.5 12.6L-41.3 11.5L-42.0 10.5L-42.7 9.3L-43.3 8.2L-44.0 7.0L-44.5 5.8L-45.0 4.7L-45.5 3.4L-45.9 2.2L-46.4 1.0L-46.7 -0.3L-47.0 -1.6L-47.3 -2.8L-47.5 -4.1L-47.7 -5.4L-47.9 -6.7L-47.9 -8.0L-48.0 -9.3L-48.0 -10.6L-47.9 -11.9L-47.8 -13.2L-47.7 -14.5L-47.5 -15.8L-47.3 -17.1L-47.0 -18.4L-46.7 -19.7L-46.4 -20.9L-46.0 -22.2L-45.5 -23.4L-45.1 -24.6L-44.5 -25.8L-43.9 -27.0L-43.4 -28.2L-42.7 -29.3L-42.0 -30.4L-41.3 -31.5L-40.5 -32.6L-39.7 -33.6L-38.9 -34.6L-38.0 -35.6L-37.2 -36.5L-36.2 -37.5L-35.3 -38.3L-34.3 -39.2L-33.3 -40.0L-32.2 -40.8L-31.2 -41.6L-30.0 -42.2L-28.9 -42.9L-27.8 -43.6L-26.6 -44.1L-25.4 -44.7L-24.2 -45.2L-23.0 -45.7L-21.8 -46.1L-20.5 -46.5L-19.3 -46.8L-18.0 -47.1L-16.7 -47.4L-15.4 -47.6L-14.1 -47.8L-12.8 -47.9L-11.5 -47.9L-10.2 -48.0L-8.9 -47.9L-7.6 -47.9L-6.3 -47.8L-5.0 -47.6L-3.7 -47.4L-2.4 -47.2L-1.1 -46.9L0.1 -46.6L1.4 -46.2L2.6 -45.8L3.9 -45.4L5.1 -44.8L6.2 -44.3L7.4 -43.8L8.6 -43.1L9.7 -42.5L10.8 -41.8L11.9 -41.0L12.9 -40.3L14.0 -39.5L15.0 -38.6L15.9 -37.7L16.9 -36.8L17.8 -35.9L18.7 -34.9L19.5 -33.9L20.3 -32.9L21.1 -31.8L21.8 -30.7L22.5 -29.6L23.2 -28.5L23.8 -27.4L24.3 -26.2L24.9 -25.0L25.4 -23.8L25.8 -22.6L26.2 -21.3L26.6 -20.1L27.0 -18.8L27.2 -17.5L27.4 -16.2L27.7 -14.9L27.8 -13.6L27.9 -12.3L28.0 -11.0L28.0 -9.7L27.9 -8.4L27.9 -7.1L27.7 -5.8L27.6 -4.5L27.4 -3.2L27.1 -2.0L26.8 -0.7L26.5 0.6L26.1 1.8L25.7 3.1L25.2 4.3L24.7 5.5L24.1 6.7L23.5 7.8L22.9 9.0L22.8 10.0L23.7 11.0L24.6 11.9L25.6 12.8L26.5 13.7L27.4 14.7L28.3 15.6L29.2 16.5L30.2 17.4L31.1 18.4L32.0 19.3L32.9 20.2L33.9 21.1L34.8 22.1L35.7 23.0L36.6 23.9L37.6 24.8L38.5 25.8L39.4 26.7L40.3 27.6L41.3 28.5L42.2 29.5L43.1 30.4L44.0 31.3L45.0 32.2L45.9 33.2L46.7 34.2L47.4 35.3L47.8 36.5L48.1 37.8L48.2 39.1L48.0 40.4L47.7 41.6L47.1 42.8L46.3 43.9L45.5 44.8L44.5 45.8L43.5 46.6L42.4 47.3L41.2 47.8L40.0 48.1L38.7 48.2L37.4 48.1L36.1 47.7L34.9 47.2L33.8 46.4L32.9 45.6L31.9 44.7L31.0 43.7L30.1 42.8L29.2 41.9L28.2 41.0L27.3 40.0L26.4 39.1L25.5 38.2L24.5 37.3L23.6 36.3L22.7 35.4L21.8 34.5L20.8 33.6L19.9 32.6L19.0 31.7L18.1 30.8L17.1 29.9L16.2 28.9L15.3 28.0L14.4 27.1L13.4 26.2L12.5 25.2L11.6 24.3L10.7 23.4Z"/><circle class="station__oeil" cx="-10" cy="-10" r="25"/></svg>
+                  </span>
+                  <span class="station__nom"><span lang="fr">Audit et découverte</span><span lang="en">Audit and discovery</span></span>
+                </button>
+              </h3>
+              <p class="station__texte" lang="fr">Nous analysons vos campagnes actuelles et le paysage concurrentiel, et nous repérons les gains rapides.</p>
+              <p class="station__texte" lang="en">We analyse your current campaigns and the competitive landscape, and we identify the quick wins.</p>
+            </li>
+            <li class="station">
+              <span class="station__rail" aria-hidden="true"><span class="station__avance"></span></span>
+              <h3 class="station__titre">
+                <button type="button" class="station__bouton" data-aller="1.8" data-tenir="3.9" data-jusqua="4.2" aria-pressed="false">
+                  <span class="station__ancre" aria-hidden="true">
+                    <svg class="station__trace" viewBox="-100 -100 200 200"><path d="M-1.9 4.0L-4.4 4.0L-6.8 4.0L-9.3 4.0L-11.7 4.0L-14.1 4.0L-16.6 4.0L-19.0 4.0L-21.5 4.0L-23.9 4.0L-26.4 4.0L-28.8 4.0L-31.3 4.0L-32.9 5.6L-33.0 8.0L-33.0 10.5L-33.0 12.9L-33.0 15.3L-32.2 17.6L-29.9 18.0L-27.5 18.0L-25.0 18.1L-22.7 18.9L-20.8 20.3L-19.5 22.4L-19.0 24.8L-19.0 27.2L-19.0 29.7L-19.0 32.1L-19.0 34.6L-19.0 37.0L-19.0 39.5L-19.1 41.9L-19.8 44.2L-21.3 46.1L-23.3 47.5L-25.7 48.0L-28.1 48.0L-30.6 48.0L-33.0 48.0L-35.5 48.0L-37.9 48.0L-40.4 48.0L-42.8 48.0L-45.3 48.0L-47.7 48.0L-50.2 48.0L-52.5 47.5L-54.6 46.2L-56.1 44.3L-56.9 42.0L-57.0 39.6L-57.0 37.2L-57.0 34.7L-57.0 32.3L-57.0 29.8L-57.0 27.4L-57.0 24.9L-56.5 22.5L-55.3 20.5L-53.4 18.9L-51.1 18.1L-48.7 18.0L-46.2 18.0L-43.9 17.6L-43.0 15.5L-43.0 13.0L-43.0 10.6L-43.0 8.1L-43.0 5.7L-43.0 3.3L-43.0 0.8L-42.9 -1.6L-42.1 -3.9L-40.2 -5.4L-37.9 -6.0L-35.4 -6.0L-33.0 -6.0L-30.5 -6.0L-28.1 -6.0L-25.7 -6.0L-23.2 -6.0L-20.8 -6.0L-18.3 -6.0L-15.9 -6.0L-13.4 -6.0L-11.0 -6.0L-8.5 -6.0L-6.1 -6.2L-5.0 -8.2L-5.0 -10.7L-5.0 -13.1L-5.0 -15.6L-5.0 -18.0L-5.0 -20.4L-5.2 -22.9L-7.2 -24.0L-9.6 -24.0L-12.1 -24.0L-14.5 -24.1L-16.9 -24.6L-18.9 -26.0L-20.3 -28.0L-20.9 -30.3L-21.0 -32.8L-21.0 -35.2L-21.0 -37.7L-21.0 -40.1L-21.0 -42.6L-21.0 -45.0L-20.6 -47.4L-19.3 -49.5L-17.5 -51.0L-15.2 -51.9L-12.8 -52.0L-10.3 -52.0L-7.9 -52.0L-5.4 -52.0L-3.0 -52.0L-0.5 -52.0L1.9 -52.0L4.4 -52.0L6.8 -52.0L9.3 -52.0L11.7 -52.0L14.1 -52.0L16.5 -51.5L18.6 -50.2L20.1 -48.3L20.9 -46.1L21.0 -43.6L21.0 -41.2L21.0 -38.7L21.0 -36.3L21.0 -33.8L21.0 -31.4L20.7 -29.0L19.6 -26.8L17.8 -25.1L15.6 -24.2L13.1 -24.0L10.7 -24.0L8.3 -24.0L5.9 -23.7L5.0 -21.5L5.0 -19.1L5.0 -16.6L5.0 -14.2L5.0 -11.7L5.0 -9.3L5.3 -6.9L7.5 -6.0L9.9 -6.0L12.4 -6.0L14.8 -6.0L17.3 -6.0L19.7 -6.0L22.1 -6.0L24.6 -6.0L27.0 -6.0L29.5 -6.0L31.9 -6.0L34.4 -6.0L36.8 -6.0L39.2 -5.8L41.4 -4.7L42.7 -2.7L43.0 -0.2L43.0 2.2L43.0 4.6L43.0 7.1L43.0 9.5L43.0 12.0L43.0 14.4L43.2 16.8L45.2 18.0L47.6 18.0L50.1 18.0L52.5 18.5L54.5 19.7L56.1 21.6L56.9 23.9L57.0 26.3L57.0 28.8L57.0 31.2L57.0 33.7L57.0 36.1L57.0 38.5L57.0 41.0L56.6 43.4L55.3 45.5L53.5 47.0L51.2 47.9L48.8 48.0L46.3 48.0L43.9 48.0L41.4 48.0L39.0 48.0L36.5 48.0L34.1 48.0L31.7 48.0L29.2 48.0L26.8 48.0L24.3 47.8L22.1 46.8L20.4 45.1L19.3 42.9L19.0 40.5L19.0 38.1L19.0 35.6L19.0 33.2L19.0 30.7L19.0 28.3L19.0 25.8L19.2 23.4L20.1 21.2L21.8 19.4L24.0 18.3L26.4 18.0L28.8 18.0L31.3 18.0L33.0 16.4L33.0 14.0L33.0 11.5L33.0 9.1L33.0 6.6L32.2 4.4L29.9 4.0L27.4 4.0L25.0 4.0L22.5 4.0L20.1 4.0L17.6 4.0L15.2 4.0L12.8 4.0L10.3 4.0L7.9 4.0L5.4 4.0L3.0 4.0L0.5 4.0Z"/></svg>
+                  </span>
+                  <span class="station__nom"><span lang="fr">Stratégie et mise en place</span><span lang="en">Strategy and setup</span></span>
+                </button>
+              </h3>
+              <p class="station__texte" lang="fr">Structure des campagnes, rédaction des annonces, suivi des conversions et paramétrage des audiences.</p>
+              <p class="station__texte" lang="en">Campaign structure, ad copy, conversion tracking and audience configuration.</p>
+            </li>
+            <li class="station">
+              <span class="station__rail" aria-hidden="true"><span class="station__avance"></span></span>
+              <h3 class="station__titre">
+                <button type="button" class="station__bouton" data-aller="4.2" data-tenir="6.3" data-jusqua="6.6" aria-pressed="false">
+                  <span class="station__ancre" aria-hidden="true">
+                    <svg class="station__trace" viewBox="-100 -100 200 200"><path d="M-2.3 10.8L-2.8 9.7L-3.3 8.7L-3.7 7.6L-4.1 6.6L-5.1 6.0L-6.2 6.0L-7.4 6.0L-8.5 6.0L-9.7 6.0L-10.8 6.0L-12.0 6.0L-13.1 6.0L-14.3 6.0L-15.4 6.0L-16.6 6.0L-17.7 6.0L-18.9 6.0L-20.0 6.0L-21.2 6.0L-22.3 6.0L-23.5 6.0L-24.6 6.0L-25.8 6.0L-26.9 6.0L-28.1 6.0L-29.2 6.0L-30.4 6.0L-31.5 6.0L-32.7 6.0L-33.8 6.0L-35.0 6.0L-36.1 6.0L-37.3 6.0L-38.4 6.0L-39.6 6.0L-40.7 6.0L-41.9 6.0L-43.0 6.0L-44.2 6.0L-45.3 6.0L-46.5 6.0L-47.6 6.0L-48.8 6.0L-49.9 6.0L-51.1 6.0L-52.2 6.0L-53.4 5.8L-54.4 5.5L-55.4 4.9L-56.3 4.2L-57.0 3.3L-57.6 2.2L-57.9 1.1L-58.0 -0.0L-57.9 -1.1L-57.6 -2.2L-57.0 -3.3L-56.3 -4.2L-55.4 -4.9L-54.4 -5.5L-53.4 -5.8L-52.2 -6.0L-51.1 -6.0L-49.9 -6.0L-48.8 -6.0L-47.6 -6.0L-46.5 -6.0L-45.3 -6.0L-44.2 -6.0L-43.0 -6.0L-41.9 -6.0L-40.7 -6.0L-39.6 -6.0L-38.4 -6.0L-37.3 -6.0L-36.1 -6.0L-35.0 -6.0L-33.8 -6.0L-32.7 -6.0L-31.5 -6.0L-30.4 -6.0L-29.2 -6.0L-28.1 -6.0L-26.9 -6.0L-25.8 -6.0L-24.6 -6.0L-23.5 -6.0L-22.3 -6.0L-21.2 -6.0L-20.0 -6.0L-18.9 -6.0L-17.7 -6.0L-16.6 -6.0L-15.4 -6.0L-14.3 -6.0L-13.1 -6.0L-12.0 -6.0L-10.8 -6.0L-9.7 -6.0L-8.5 -6.0L-7.4 -6.0L-6.2 -6.0L-5.1 -6.0L-4.1 -6.6L-3.7 -7.6L-3.3 -8.7L-2.8 -9.7L-2.3 -10.8L-1.7 -11.8L-1.1 -12.7L-0.5 -13.7L0.3 -14.6L1.0 -15.5L1.8 -16.3L2.6 -17.1L3.5 -17.8L4.4 -18.5L5.3 -19.2L6.3 -19.8L7.3 -20.4L8.4 -20.9L9.4 -21.3L10.5 -21.7L11.6 -22.1L12.7 -22.4L13.8 -22.6L15.0 -22.8L16.1 -22.9L17.2 -23.0L18.4 -23.0L19.5 -22.9L20.7 -22.8L21.8 -22.7L22.9 -22.4L24.1 -22.2L25.2 -21.8L26.2 -21.5L27.3 -21.0L28.4 -20.5L29.4 -20.0L30.3 -19.4L31.3 -18.7L32.2 -18.1L33.1 -17.3L33.9 -16.6L34.8 -15.7L35.5 -14.9L36.2 -14.0L36.9 -13.1L37.6 -12.1L38.1 -11.1L38.7 -10.1L39.1 -9.0L39.6 -8.0L39.9 -6.9L40.7 -6.1L41.9 -6.0L43.0 -6.0L44.2 -6.0L45.3 -6.0L46.5 -6.0L47.6 -6.0L48.8 -6.0L49.9 -6.0L51.1 -6.0L52.2 -6.0L53.4 -5.8L54.4 -5.5L55.4 -4.9L56.3 -4.2L57.0 -3.3L57.6 -2.2L57.9 -1.1L58.0 -0.0L57.9 1.1L57.6 2.2L57.0 3.3L56.3 4.2L55.4 4.9L54.4 5.5L53.4 5.8L52.2 6.0L51.1 6.0L49.9 6.0L48.8 6.0L47.6 6.0L46.5 6.0L45.3 6.0L44.2 6.0L43.0 6.0L41.9 6.0L40.7 6.1L39.9 6.9L39.6 8.0L39.1 9.0L38.7 10.1L38.1 11.1L37.6 12.1L36.9 13.1L36.2 14.0L35.5 14.9L34.8 15.7L33.9 16.6L33.1 17.3L32.2 18.1L31.3 18.7L30.3 19.4L29.4 20.0L28.4 20.5L27.3 21.0L26.2 21.5L25.2 21.8L24.1 22.2L22.9 22.4L21.8 22.7L20.7 22.8L19.5 22.9L18.4 23.0L17.2 23.0L16.1 22.9L15.0 22.8L13.8 22.6L12.7 22.4L11.6 22.1L10.5 21.7L9.4 21.3L8.4 20.9L7.3 20.4L6.3 19.8L5.3 19.2L4.4 18.5L3.5 17.8L2.6 17.1L1.8 16.3L1.0 15.5L0.3 14.6L-0.5 13.7L-1.1 12.7L-1.7 11.8Z"/><circle class="station__oeil" cx="18" cy="0" r="9"/></svg>
+                  </span>
+                  <span class="station__nom"><span lang="fr">Lancement et optimisation</span><span lang="en">Launch and optimisation</span></span>
+                </button>
+              </h3>
+              <p class="station__texte" lang="fr">Suivi quotidien, tests A/B et ajustement des enchères, sur la base des performances réelles.</p>
+              <p class="station__texte" lang="en">Daily monitoring, A/B testing and bid adjustments, based on real performance data.</p>
+            </li>
+            <li class="station">
+              <h3 class="station__titre">
+                <button type="button" class="station__bouton" data-aller="6.6" data-tenir="9" data-jusqua="9" data-dernier aria-pressed="true">
+                  <span class="station__ancre" aria-hidden="true">
+                    <!-- Le voyageur : au repos, il est chez lui sur la dernière station. -->
+                    <span class="voyageur">
+                      <span class="voyageur__ombre"></span>
+                      <span class="voyageur__corps">
+                        <svg viewBox="-100 -100 200 200">
+                          <circle class="voyageur__disque" r="100"/>
+                          <path class="voyageur__forme" d="M-11.1 17.5L-12.3 16.5L-13.4 15.6L-14.5 14.7L-15.6 13.7L-16.8 12.8L-18.1 12.1L-19.5 11.7L-20.9 11.6L-22.4 11.7L-23.8 12.2L-25.0 13.0L-26.1 13.9L-27.1 15.0L-28.1 16.1L-29.1 17.1L-30.1 18.2L-31.1 19.3L-32.1 20.3L-33.1 21.4L-34.1 22.5L-35.2 23.5L-36.2 24.6L-37.2 25.6L-38.2 26.7L-39.2 27.8L-40.2 28.8L-41.2 29.9L-42.2 31.0L-43.2 32.0L-44.2 33.1L-45.2 34.2L-46.2 35.2L-47.3 36.2L-48.5 37.1L-49.8 37.7L-51.2 38.1L-52.7 38.2L-54.1 38.0L-55.5 37.6L-56.8 36.9L-58.0 36.0L-59.0 34.9L-59.7 33.6L-60.2 32.3L-60.4 30.8L-60.4 29.4L-60.1 27.9L-59.6 26.6L-58.8 25.3L-57.9 24.2L-56.9 23.2L-55.8 22.1L-54.8 21.0L-53.8 20.0L-52.8 18.9L-51.8 17.8L-50.8 16.8L-49.8 15.7L-48.8 14.6L-47.8 13.6L-46.8 12.5L-45.8 11.5L-44.8 10.4L-43.7 9.3L-42.7 8.3L-41.7 7.2L-40.7 6.1L-39.7 5.1L-38.7 4.0L-37.7 2.9L-36.7 1.9L-35.7 0.8L-34.7 -0.3L-33.7 -1.3L-32.7 -2.4L-31.7 -3.4L-30.6 -4.5L-29.6 -5.6L-28.6 -6.6L-27.6 -7.7L-26.6 -8.7L-25.4 -9.5L-24.0 -10.1L-22.6 -10.3L-21.1 -10.3L-19.7 -9.9L-18.4 -9.3L-17.2 -8.4L-16.1 -7.5L-14.9 -6.5L-13.8 -5.6L-12.7 -4.7L-11.6 -3.7L-10.4 -2.8L-9.3 -1.8L-8.2 -0.9L-7.1 0.0L-5.9 1.0L-4.8 1.9L-3.7 2.9L-2.5 3.7L-1.1 4.2L0.3 4.4L1.8 4.4L3.2 4.0L4.5 3.4L5.7 2.5L6.7 1.4L7.7 0.4L8.7 -0.7L9.7 -1.8L10.7 -2.8L11.7 -3.9L12.8 -4.9L13.8 -6.0L14.8 -7.1L15.8 -8.1L16.8 -9.2L17.8 -10.3L18.8 -11.3L19.8 -12.4L20.8 -13.4L21.8 -14.5L22.9 -15.6L23.9 -16.6L24.9 -17.7L25.9 -18.8L26.9 -19.8L27.9 -20.9L28.9 -21.9L29.9 -23.0L30.9 -24.1L31.9 -25.1L32.9 -26.2L33.4 -27.6L32.8 -28.9L31.7 -29.9L30.6 -30.9L29.6 -31.9L28.8 -33.1L28.6 -34.5L29.0 -35.9L30.1 -36.9L31.5 -37.3L32.9 -37.5L34.4 -37.7L35.8 -37.9L37.3 -38.1L38.7 -38.3L40.2 -38.5L41.6 -38.7L43.1 -38.9L44.5 -39.1L46.0 -39.3L47.4 -39.5L48.9 -39.7L50.3 -39.8L51.8 -40.0L53.3 -40.0L54.6 -39.5L55.9 -38.7L56.7 -37.6L57.3 -36.2L57.4 -34.8L57.3 -33.3L57.2 -31.8L57.1 -30.4L56.9 -28.9L56.8 -27.4L56.7 -26.0L56.6 -24.5L56.5 -23.1L56.4 -21.6L56.2 -20.1L56.1 -18.7L56.0 -17.2L55.9 -15.8L55.8 -14.3L55.4 -12.9L54.5 -11.8L53.1 -11.2L51.7 -11.3L50.5 -12.1L49.4 -13.1L48.3 -14.1L47.3 -15.1L45.9 -15.7L44.6 -15.2L43.6 -14.1L42.6 -13.1L41.5 -12.0L40.5 -11.0L39.5 -9.9L38.5 -8.8L37.5 -7.8L36.5 -6.7L35.5 -5.6L34.5 -4.6L33.5 -3.5L32.5 -2.5L31.5 -1.4L30.4 -0.3L29.4 0.7L28.4 1.8L27.4 2.9L26.4 3.9L25.4 5.0L24.4 6.0L23.4 7.1L22.4 8.2L21.4 9.2L20.3 10.3L19.3 11.4L18.3 12.4L17.3 13.5L16.3 14.6L15.3 15.6L14.3 16.7L13.3 17.7L12.3 18.8L11.3 19.9L10.3 20.9L9.2 22.0L8.2 23.1L7.2 24.1L6.1 25.1L4.8 25.8L3.4 26.2L2.0 26.3L0.5 26.2L-0.8 25.7L-2.1 25.0L-3.2 24.0L-4.4 23.1L-5.5 22.2L-6.6 21.2L-7.7 20.3L-8.9 19.4L-10.0 18.4Z"/>
+                          <circle class="voyageur__trou" r="0"/>
+                        </svg>
+                      </span>
+                    </span>
+                  </span>
+                  <span class="station__nom"><span lang="fr">Montée en charge et reporting</span><span lang="en">Scale and reporting</span></span>
+                </button>
+              </h3>
+              <p class="station__texte" lang="fr">Nous augmentons ce qui fonctionne. Un rapport mensuel avec des indicateurs clairs et des recommandations.</p>
+              <p class="station__texte" lang="en">We scale what works. A monthly report with clear KPIs and recommendations.</p>
+            </li>
+          </ol>
+
+          <button type="button" class="rejouer rejouer--clair" data-rejouer>
+            <svg class="ic ic--18"><use href="#i-rejouer"/></svg>
+            <span lang="fr">Rejouer</span><span lang="en">Replay</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         6. La preuve (ENCRE) : trois lignes de chiffres, très grands.
+         ====================================================================== -->
+    <section class="section section--encre section--scene preuve" id="preuve">
+      <div class="conteneur">
+        <header class="tete" data-entree>
+          <h2 class="titre-2"><span class="ligne"><span>
+            <span lang="fr">Leurs chiffres, pas les nôtres</span>
+            <span lang="en">Their numbers, not ours</span>
+          </span></span></h2>
+          <p class="chapeau" lang="fr">Trois groupes de concessions, trois comptes Google Ads repris en main.</p>
+          <p class="chapeau" lang="en">Three dealer groups, three Google Ads accounts turned around.</p>
+        </header>
+
+        <ul class="lignes" id="scene-preuve">
+          <li class="ligne-preuve" data-entree style="--i:0">
+            <div class="ligne-preuve__client">
+              <span class="pastille"><img src="../../public/images/accueil/logos/theobald.webp" alt="" width="95" height="96" loading="lazy" decoding="async" style="--h:34px"></span>
+              <span class="ligne-preuve__nom"><span lang="fr">Groupe Théobald</span><span lang="en">Theobald Group</span></span>
+            </div>
+            <p class="ligne-preuve__chiffre"><span class="compte" data-compte="112" data-signe="+">+112</span><span lang="fr">&nbsp;%</span><span lang="en">%</span></p>
+            <div class="ligne-preuve__detail">
+              <p class="ligne-preuve__libelle"><span lang="fr">conversions Google Ads</span><span lang="en">Google Ads conversions</span></p>
+              <p class="ligne-preuve__second"><span lang="fr">-50&nbsp;% de coût par conversion</span><span lang="en">-50% cost per conversion</span></p>
+            </div>
+            <a class="lien-fleche" href="#"><span lang="fr">Lire l'étude de cas</span><span lang="en">Read the case study</span><svg class="ic ic--18" aria-hidden="true"><use href="#i-fleche-haut"/></svg><span class="sr"><span lang="fr">, Groupe Théobald</span><span lang="en">, Theobald Group</span></span></a>
+          </li>
+          <li class="ligne-preuve" data-entree style="--i:1">
+            <div class="ligne-preuve__client">
+              <span class="pastille"><img src="../../public/images/accueil/logos/vulcain.webp" alt="" width="186" height="66" loading="lazy" decoding="async" style="--h:24px"></span>
+              <span class="ligne-preuve__nom"><span lang="fr">Groupe Vulcain</span><span lang="en">Vulcain Group</span></span>
+            </div>
+            <p class="ligne-preuve__chiffre"><span class="compte" data-compte="145" data-signe="+">+145</span><span lang="fr">&nbsp;%</span><span lang="en">%</span></p>
+            <div class="ligne-preuve__detail">
+              <p class="ligne-preuve__libelle"><span lang="fr">volume de leads</span><span lang="en">lead volume</span></p>
+              <p class="ligne-preuve__second"><span lang="fr">-35&nbsp;% de coût par lead</span><span lang="en">-35% cost per lead</span></p>
+            </div>
+            <a class="lien-fleche" href="#"><span lang="fr">Lire l'étude de cas</span><span lang="en">Read the case study</span><svg class="ic ic--18" aria-hidden="true"><use href="#i-fleche-haut"/></svg><span class="sr"><span lang="fr">, Groupe Vulcain</span><span lang="en">, Vulcain Group</span></span></a>
+          </li>
+          <li class="ligne-preuve" data-entree style="--i:2">
+            <div class="ligne-preuve__client">
+              <span class="pastille"><img src="../../public/images/accueil/logos/dmd.webp" alt="" width="192" height="76" loading="lazy" decoding="async" style="--h:26px"></span>
+              <span class="ligne-preuve__nom"><span lang="fr">Groupe DMD</span><span lang="en">DMD Group</span></span>
+            </div>
+            <p class="ligne-preuve__chiffre"><span class="compte" data-compte="225" data-signe="+">+225</span><span lang="fr">&nbsp;%</span><span lang="en">%</span></p>
+            <div class="ligne-preuve__detail">
+              <p class="ligne-preuve__libelle"><span lang="fr">utilisateurs Google Ads</span><span lang="en">Google Ads users</span></p>
+              <p class="ligne-preuve__second"><span lang="fr">+170&nbsp;% de conversions</span><span lang="en">+170% conversions</span></p>
+            </div>
+            <a class="lien-fleche" href="#"><span lang="fr">Lire l'étude de cas</span><span lang="en">Read the case study</span><svg class="ic ic--18" aria-hidden="true"><use href="#i-fleche-haut"/></svg><span class="sr"><span lang="fr">, Groupe DMD</span><span lang="en">, DMD Group</span></span></a>
+          </li>
+        </ul>
+
+        <figure class="verbatim" data-entree>
+          <blockquote>
+            <p lang="fr">«&nbsp;Gérer le marketing digital de 31 concessions semblait impossible jusqu'à ce que MyDigipal nous montre comment bien le faire. Les gains d'efficacité ont été incroyables.&nbsp;»</p>
+            <p lang="en">“Managing 31 dealerships' digital marketing seemed impossible until MyDigipal showed us how to do it right. The efficiency gains have been incredible.”</p>
+          </blockquote>
+          <figcaption>
+            <span lang="fr">Directeur Marketing Digital, Groupe Théobald</span>
+            <span lang="en">Digital Marketing Director, Theobald Group</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         7. Les questions (blanc).
+         ====================================================================== -->
+    <section class="section questions" id="questions">
+      <div class="conteneur questions__grille">
+        <header class="tete tete--ligne" data-entree>
+          <h2 class="titre-2"><span class="ligne"><span>
+            <span lang="fr">Questions fréquentes</span>
+            <span lang="en">Frequently asked questions</span>
+          </span></span></h2>
+        </header>
+
+        <div class="questions__liste" data-entree>
+          <details class="question">
+            <summary><span><span lang="fr">Qu'est-ce que Google Ads et comment ça fonctionne&nbsp;?</span><span lang="en">What is Google Ads and how does it work?</span></span><svg class="ic ic--24" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <p lang="fr">Google Ads est une plateforme publicitaire au coût par clic qui affiche vos annonces sur Google Search, YouTube et les sites partenaires. Vous ne payez que lorsque quelqu'un clique sur votre annonce. Le système fonctionne par enchères, où vous misez sur des mots-clés pertinents pour votre activité.</p>
+            <p lang="en">Google Ads is a pay-per-click advertising platform that displays your ads on Google Search, YouTube and partner websites. You only pay when someone clicks on your ad. It works through an auction system where you bid on keywords relevant to your business.</p>
+          </details>
+          <details class="question">
+            <summary><span><span lang="fr">Quel budget prévoir pour Google Ads&nbsp;?</span><span lang="en">How much should I budget for Google Ads?</span></span><svg class="ic ic--24" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <p lang="fr">Le budget dépend de votre secteur, de la concurrence et de vos objectifs. Nous recommandons de commencer par un budget de test pour collecter des données, puis d'augmenter selon les performances. L'essentiel est de regarder le retour sur investissement, pas seulement la dépense.</p>
+            <p lang="en">Budget depends on your industry, competition and goals. We recommend starting with a test budget to gather data, then scaling based on performance. The key is to look at return on investment, not just spend.</p>
+          </details>
+          <details class="question">
+            <summary><span><span lang="fr">Combien de temps avant de voir des résultats&nbsp;?</span><span lang="en">How long until I see results?</span></span><svg class="ic ic--24" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <p lang="fr">Contrairement au SEO, Google Ads peut générer du trafic dès que vos campagnes sont en ligne. L'optimisation, elle, prend du temps&nbsp;: une phase d'apprentissage pendant laquelle nous collectons des données, puis des améliorations continues.</p>
+            <p lang="en">Unlike SEO, Google Ads can generate traffic as soon as your campaigns are live. Optimisation takes time: a learning phase during which we gather data, then continuous improvement.</p>
+          </details>
+          <details class="question">
+            <summary><span><span lang="fr">Quelle différence entre les campagnes Search et Display&nbsp;?</span><span lang="en">What is the difference between Search and Display campaigns?</span></span><svg class="ic ic--24" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <p lang="fr">Les campagnes Search affichent des annonces textuelles aux personnes qui cherchent vos mots-clés sur Google. Les campagnes Display affichent des annonces visuelles sur les sites partenaires pour développer la notoriété. Search capte l'intention, Display sert le remarketing et la notoriété.</p>
+            <p lang="en">Search campaigns show text ads to people searching for your keywords on Google. Display campaigns show visual ads across partner websites to build awareness. Search captures intent, Display serves remarketing and awareness.</p>
+          </details>
+          <details class="question">
+            <summary><span><span lang="fr">Comment suivez-vous les conversions&nbsp;?</span><span lang="en">How do you track conversions?</span></span><svg class="ic ic--24" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <p lang="fr">Nous installons Google Tag Manager et le suivi des conversions pour mesurer les leads, les ventes, les appels et les autres actions de valeur. Nous relions ces mesures à votre CRM pour voir ce que chaque campagne rapporte réellement.</p>
+            <p lang="en">We set up Google Tag Manager and conversion tracking to measure leads, sales, phone calls and other valuable actions. We connect these measurements to your CRM to see what each campaign really brings in.</p>
+          </details>
+          <details class="question">
+            <summary><span><span lang="fr">Gérez-vous la publicité YouTube&nbsp;?</span><span lang="en">Do you manage YouTube advertising?</span></span><svg class="ic ic--24" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <p lang="fr">Oui. YouTube fait partie de l'écosystème Google Ads. Nous créons et gérons des campagnes vidéo, utiles pour la notoriété en B2B et pour le remarketing.</p>
+            <p lang="en">Yes. YouTube is part of the Google Ads ecosystem. We create and manage video campaigns, useful for B2B awareness and for remarketing.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         8. L'appel final (brume) : un panneau de bleu plein, posé sur la brume.
+         ====================================================================== -->
+    <section class="section section--brume appel" id="appel">
+      <div class="conteneur">
+        <div class="appel__panneau" data-entree>
+          <h2 class="titre-2"><span class="ligne"><span>
+            <span lang="fr">Prêt à propulser votre activité digitale&nbsp;?</span>
+            <span lang="en">Ready to take your digital activity to the next level?</span>
+          </span></span></h2>
+          <p class="chapeau" lang="fr">Calculez votre plan sur mesure en 3 minutes, ou écrivez-nous. Sans engagement, juste des résultats mesurés chaque semaine.</p>
+          <p class="chapeau" lang="en">Calculate your tailored plan in 3 minutes, or get in touch. No commitment, just results measured weekly.</p>
+          <div class="boutons">
+            <a class="bouton bouton--blanc" href="#">
+              <span lang="fr">Calculer mon budget</span><span lang="en">Calculate my budget</span>
+              <svg class="ic ic--18 bouton__fleche"><use href="#i-fleche"/></svg>
+            </a>
+            <a class="bouton bouton--contour-clair" href="#"><span lang="fr">Nous contacter</span><span lang="en">Contact us</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       9. Le pied de page du site (encre).
+       ======================================================================== -->
+  <footer class="pied">
+    <div class="conteneur pied__grille">
+      <div class="pied__marque">
+        <a href="#" aria-label="MyDigipal"><img src="../../public/images/Logos/03_Full%20white.png" alt="MyDigipal" width="111" height="40" loading="lazy" decoding="async"></a>
+        <p class="pied__devise"><span lang="fr">Le meilleur des deux intelligences</span><span lang="en">The best of both intelligences</span></p>
+        <p class="pied__texte"><span lang="fr">Agence de marketing digital basée à Londres, spécialisée en B2B, ABM et automobile.</span><span lang="en">Digital marketing agency based in London, specialised in B2B, ABM and automotive.</span></p>
+      </div>
+      <nav class="pied__colonne" aria-label="Services">
+        <h2>Services</h2>
+        <ul>
+          <li><a href="#">Google Ads</a></li>
+          <li><a href="#">Paid Social</a></li>
+          <li><a href="#">SEO</a></li>
+          <li><a href="#">Emailing</a></li>
+          <li><a href="#">B2B / ABM</a></li>
+          <li><a href="#"><span lang="fr">Tracking et reporting</span><span lang="en">Tracking &amp; Reporting</span></a></li>
+        </ul>
+      </nav>
+      <nav class="pied__colonne" aria-label="IA">
+        <h2><span lang="fr">IA</span><span lang="en">AI</span></h2>
+        <ul>
+          <li><a href="#">AI Academy</a></li>
+          <li><a href="#">AI Training</a></li>
+          <li><a href="#">AI Solutions</a></li>
+          <li><a href="#">AI Content</a></li>
+        </ul>
+      </nav>
+      <nav class="pied__colonne" aria-label="Automobile">
+        <h2><span lang="fr">Automobile</span><span lang="en">Automotive</span></h2>
+        <ul>
+          <li><a href="#">Google Ads</a></li>
+          <li><a href="#">Paid Social</a></li>
+          <li><a href="#">Dynamic Ads</a></li>
+        </ul>
+      </nav>
+      <nav class="pied__colonne" aria-label="Société">
+        <h2><span lang="fr">Société</span><span lang="en">Company</span></h2>
+        <ul>
+          <li><a href="#"><span lang="fr">Études de cas</span><span lang="en">Case Studies</span></a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#"><span lang="fr">Calculer mon budget</span><span lang="en">Calculate my budget</span></a></li>
+          <li><a href="#"><span lang="fr">Recrutement</span><span lang="en">Careers</span></a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="pied__bas">
+      <div class="conteneur pied__bas-grille">
+        <p>© 2026 MyDigipal LTD.</p>
+        <p class="pied__legal">
+          <a href="#"><span lang="fr">Politique de confidentialité</span><span lang="en">Privacy Policy</span></a>
+          <a href="#"><span lang="fr">Conditions d'utilisation</span><span lang="en">Terms of Service</span></a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       Les deux appels flottants, le panneau factice de l'assistant, le bandeau
+       cookies de démonstration : copiés tels quels du gabarit.
+       ======================================================================== -->
+  <div class="flottants">
+    <a class="bouton-flottant" href="#" data-flottant-calculateur>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="16" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="8" y2="18"/><line x1="12" y1="18" x2="16" y2="18"/></svg>
+      <span class="bouton-flottant__long"><span lang="fr">Calculer mon budget</span><span lang="en">Calculate my budget</span></span>
+      <span class="bouton-flottant__court"><span lang="fr">Mon budget</span><span lang="en">My budget</span></span>
+    </a>
+    <button type="button" class="flottants__visage" data-assistant-ouvrir aria-expanded="false">
+      <img src="../../public/images/team/Team_Paul_Andre.webp" alt="" width="52" height="52">
+      <span class="sr"><span lang="fr">Ouvrir la conversation avec MyDigipal</span><span lang="en">Open the chat with MyDigipal</span></span>
+    </button>
+  </div>
+
+  <section data-assistant-panneau role="dialog" aria-label="MyDigipal" hidden>
+    <div class="panneau__tete">
+      <img src="../../public/images/team/Team_Paul_Andre.webp" alt="" width="40" height="40">
+      <div>
+        <strong>MyDigipal</strong>
+        <small><span lang="fr">Assistant IA, Paul lit chaque conversation</span><span lang="en">AI assistant, Paul reads every conversation</span></small>
+      </div>
+      <button type="button" data-assistant-fermer>
+        <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span class="sr"><span lang="fr">Fermer</span><span lang="en">Close</span></span>
+      </button>
+    </div>
+    <div class="panneau__fil">
+      <p class="panneau__bulle"><span lang="fr">Vous regardez Google Ads. Par quoi je commence&nbsp;?</span><span lang="en">You are looking at Google Ads. What should I start with?</span></p>
+    </div>
+    <form class="panneau__saisie" onsubmit="return false">
+      <input type="text" aria-label="Votre question" placeholder="Votre question...">
+      <button type="submit" aria-label="Envoyer"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+    </form>
+  </section>
+
+  <div data-bandeau role="region" aria-label="Cookies">
+    <span><span lang="fr">Ce site utilise des cookies pour mesurer son audience.</span><span lang="en">This site uses cookies to analyse traffic.</span></span>
+    <span style="display:flex;gap:8px">
+      <button type="button" data-bandeau-fermer><span lang="fr">Refuser</span><span lang="en">Refuse</span></button>
+      <button type="button" data-bandeau-fermer data-principal>OK</button>
+    </span>
+  </div>
+
+  <script src="socle/motion.js"></script>
+  <script src="socle/page.js"></script>
+  <script src="direction-a.js"></script>
+</body>
+</html>

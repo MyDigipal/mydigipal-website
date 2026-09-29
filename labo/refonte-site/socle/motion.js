@@ -172,7 +172,12 @@
     el.dataset.scene = 'posee';
     marquer(tenue);
 
-    var api = { aller: aller, jouer: jouer, finir: finir, tenue: tenue, el: el,
+    /* Redessine l'instant courant sans rien changer d'autre (changement de langue, de
+       taille). `aller` marquerait la scène comme jouée : encore sous l'écran, elle
+       resterait vide à son entrée. */
+    function reposer() { poser(t); marquer(t); }
+
+    var api = { aller: aller, jouer: jouer, finir: finir, reposer: reposer, tenue: tenue, el: el,
       get t() { return t; }, get enLecture() { return enLecture; } };
     el.__scene = api;
     scenes.push(api);

@@ -26,7 +26,7 @@
     try { localStorage.setItem('mdp-maquette-langue', l); } catch (e) { /* stockage indisponible */ }
     /* Une scène dessinée en canvas ou mesurée en pixels se recale sur la nouvelle langue. */
     window.dispatchEvent(new CustomEvent('mdp:langue', { detail: l }));
-    if (window.MDP) window.MDP.scenes.forEach(function (s) { if (!s.enLecture) s.aller(s.t); });
+    if (window.MDP) window.MDP.scenes.forEach(function (s) { if (!s.enLecture) s.reposer(); });
   }
   [].slice.call(document.querySelectorAll('[data-bascule-langue]')).forEach(function (b) {
     b.addEventListener('click', function (e) {

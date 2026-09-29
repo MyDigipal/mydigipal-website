@@ -36,6 +36,8 @@ export interface Scene {
   aller: (t: number) => void;
   jouer: (depuis?: number) => void;
   finir: () => void;
+  /** Redessine l'instant courant (changement de langue, de taille) sans marquer la scène comme jouée. */
+  reposer: () => void;
   arreter: () => void;
   readonly tenue: number;
   readonly t: number;
@@ -143,6 +145,10 @@ export function scene(element: HTMLElement, options: OptionsScene): Scene {
     aller,
     jouer,
     finir,
+    reposer: () => {
+      poser(t);
+      marquer(t);
+    },
     arreter: () => {
       arreter();
       observateur?.disconnect();
