@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type { Devise, Jour30Data, Locale } from '../academy/data';
 import { paramGarde, provenance, trackQuestion } from '../academy/track';
 import { garderConversation, lireConversation, oublierConversation } from './conversation-cookie';
@@ -754,7 +754,10 @@ export default function Question({
         <div
           role="dialog"
           aria-label={c.dialogAria}
-          className="fixed inset-x-3 bottom-3 z-[60] flex max-h-[85dvh] flex-col overflow-hidden rounded-carte border border-filet-nuit bg-salle-2 text-corps-nuit shadow-[0_24px_60px_-12px_rgba(4,8,18,.8)] sm:inset-x-auto sm:bottom-6 sm:right-6 sm:max-h-[min(40rem,calc(100dvh-6rem))] sm:w-[24rem]"
+          className="fixed inset-x-3 bottom-[calc(0.75rem+var(--bandeau,0px))] z-[60] flex max-h-[min(85dvh,calc(100dvh-1.5rem-var(--bandeau,0px)))] flex-col overflow-hidden rounded-carte border border-filet-nuit bg-salle-2 text-corps-nuit shadow-[0_24px_60px_-12px_rgba(4,8,18,.8)] sm:inset-x-auto sm:bottom-[calc(1.5rem+var(--bandeau,0px))] sm:right-6 sm:max-h-[min(40rem,calc(100dvh-6rem-var(--bandeau,0px)))] sm:w-[24rem]"
+          // Posé au-dessus du bandeau cookies tant qu'il est là (29/09/2026) : le panneau le
+          // couvrait, et le choix des cookies devenait inaccessible conversation ouverte.
+          style={{ '--bandeau': `${bandeau}px` } as CSSProperties}
         >
           <div className="flex items-center gap-3 border-b border-filet-nuit py-3 pl-4 pr-2">
             <img src={PHOTO} alt="" width={44} height={44} className="h-11 w-11 flex-none rounded-full border border-filet-nuit object-cover" />

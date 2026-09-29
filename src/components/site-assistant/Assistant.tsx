@@ -17,7 +17,7 @@
 // ⚠️ Le site recharge chaque page : la conversation est gardée dans
 // sessionStorage et reprend telle quelle sur la page suivante.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import {
   QUESTION_INDEX, decodePlan, devis, domainName, encodePlan, guidedProposal, money, optionsFor, prixDeDepart, t,
   visibleQuestions, type Lang, type Question, type QuoteState,
@@ -186,6 +186,8 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   }, []);
 
   const [ouvert, setOuvert] = useState(false);
+  /** La hauteur du bandeau cookies tant qu'il est à l'écran, zéro ensuite. */
+  const [bandeau, setBandeau] = useState(0);
   const [invite, setInvite] = useState(false);
   const [grand, setGrand] = useState(false);
   const [nonLu, setNonLu] = useState(false);
@@ -322,6 +324,28 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     if (lire(CLE_INVITE, false) || sRef.current.items.length) return;
     const t = window.setTimeout(() => { if (!ouvertRef.current && !lire(CLE_INVITE, false)) setInvite(true); }, 10000);
     return () => window.clearTimeout(t);
+  }, []);
+
+  // ⚠️ Le bandeau cookies (`#cookie-consent-banner`, `fixed bottom-0 z-50`) recouvrait le
+  // champ de saisie du panneau sur téléphone tant que le visiteur n'avait pas choisi (vu le
+  // 29/09/2026). Le visage, l'invitation et le panneau se posent donc au-dessus de lui, et
+  // reviennent à leur place dès qu'il se retire. Même mesure que le panneau de l'Academy
+  // (`academy-v2/Question.tsx`) : il se retire par une classe, d'où l'observation de l'attribut.
+  useEffect(() => {
+    const b = document.getElementById('cookie-consent-banner');
+    if (!b) return;
+    const mesurer = () => {
+      const r = b.getBoundingClientRect();
+      setBandeau(r.height > 0 && r.top < window.innerHeight - 1 ? Math.round(window.innerHeight - r.top) : 0);
+    };
+    mesurer();
+    const mo = new MutationObserver(() => window.setTimeout(mesurer, 350));
+    mo.observe(b, { attributes: true, attributeFilter: ['class', 'style'] });
+    window.addEventListener('resize', mesurer);
+    return () => {
+      mo.disconnect();
+      window.removeEventListener('resize', mesurer);
+    };
   }, []);
 
   // La conversation écrite ailleurs (un autre onglet, la page de l'Academy, la visite d'hier) :
@@ -805,14 +829,15 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
         : c.aideIa;
 
   return (
-    <>
+    // `--bandeau` : la place du bandeau cookies, que les positions ci-dessous ajoutent.
+    <div className="contents" style={{ '--bandeau': `${bandeau}px` } as CSSProperties}>
       {/* Fermé : le visage de Paul, et selon la page une phrase discrète ou l'invitation en grand. */}
       {!ouvert && (
         // En colonne : la phrase ou l'invitation AU-DESSUS du visage, pour ne jamais couvrir le
         // bouton « Calculer mon budget » posé à sa gauche (les deux appels à l'action du site).
-        <div className={`fixed right-4 z-[45] flex flex-col items-end gap-2 sm:right-6 ${bas}`}>
+        <div className={`fixed right-4 z-[45] flex flex-col items-end gap-2 sm:right-6 ${bas}`} style={bandeau ? { bottom: Math.max(bandeau + 16, surelever ? 136 : 0) } : undefined}>
           {grand && devisCourant ? (
-            <div className="w-[min(340px,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white p-4 shadow-xl max-sm:fixed max-sm:inset-x-4 max-sm:bottom-4 max-sm:w-auto">
+            <div className="w-[min(340px,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white p-4 shadow-xl max-sm:fixed max-sm:inset-x-4 max-sm:bottom-[calc(1rem+var(--bandeau,0px))] max-sm:w-auto">
               <div className="flex items-start gap-3">
                 {photo(48)}
                 <div className="min-w-0 flex-1">
@@ -853,7 +878,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
         <>
           <div className="fixed inset-0 z-[45] bg-slate-900/30 sm:hidden" onClick={() => setOuvert(false)} aria-hidden="true" />
           <section role="dialog" aria-label={c.nom}
-            className="fixed inset-x-0 bottom-0 z-[46] flex h-[85dvh] flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:inset-x-auto sm:bottom-6 sm:right-6 sm:h-[min(600px,calc(100dvh-3rem))] sm:w-[380px] sm:rounded-3xl sm:border sm:border-slate-200">
+            className="fixed inset-x-0 bottom-[var(--bandeau,0px)] z-[46] flex h-[min(85dvh,calc(100dvh-var(--bandeau,0px)-1rem))] flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:inset-x-auto sm:bottom-[calc(1.5rem+var(--bandeau,0px))] sm:right-6 sm:h-[min(600px,calc(100dvh-3rem-var(--bandeau,0px)))] sm:w-[380px] sm:rounded-3xl sm:border sm:border-slate-200">
             <header className="flex shrink-0 items-center gap-3 border-b border-slate-100 px-4 py-3">
               {photo(38)}
               <div className="min-w-0 flex-1">
@@ -917,6 +942,6 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
           </section>
         </>
       )}
-    </>
+    </div>
   );
 }
