@@ -34,7 +34,9 @@ function push(event: DataLayerEvent): void {
  * tout vrai chat »). `open` et `faq` restent de la mesure : en faire des
  * conversions apprendrait aux campagnes à acheter des ouvertures de panneau.
  */
-export function trackQuestion(action: 'open' | 'faq' | 'sent', params: DataLayerEvent = {}): void {
+// `email` (29/09/2026) : le visiteur a laissé son adresse dans la conversation
+// (academy_question_email). Jamais l'adresse elle-même dans l'événement.
+export function trackQuestion(action: 'open' | 'faq' | 'sent' | 'email', params: DataLayerEvent = {}): void {
   push({ event: `academy_question_${action}`, ...params });
 }
 

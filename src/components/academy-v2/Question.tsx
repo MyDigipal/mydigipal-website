@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Devise, Jour30Data, Locale } from '../academy/data';
 import { paramGarde, provenance, trackQuestion } from '../academy/track';
+import { garderConversation, lireConversation, oublierConversation } from './conversation-cookie';
 import { rendreLeTitre, signalerReponse } from './notif-visiteur';
 import { categoriesVente, faqVente, questionCopy } from './question-copy';
 
@@ -41,6 +42,20 @@ import { categoriesVente, faqVente, questionCopy } from './question-copy';
  * `academy.mydigipal.com/admin/questions`, sa réponse s'affiche ici, et une
  * pastille dorée le signale quand le panneau est fermé.
  *
+ * L'ASSISTANT IA (29/09/2026, maquette `mydigipal-academy/labo/chat-ia-vente.html`
+ * validée par Paul) : la FAQ reste écrite, mais une question tapée par le
+ * visiteur reçoit tout de suite la réponse d'un modèle, tirée de la page de vente
+ * seulement, contrôlée par l'application avant d'arriver ici. Six messages au
+ * plus, l'adresse demandée après la deuxième réponse utile puis au sixième
+ * message, et chaque réponse porte l'étiquette « Assistant IA ». Dès que Paul
+ * répond, l'IA se tait et l'en-tête le dit. Le panneau n'écrit aucun de ces
+ * textes lui-même : ils arrivent dans la conversation renvoyée par l'application.
+ *
+ * LA CONVERSATION SUIT LE VISITEUR (même jour) : dès son premier message, elle
+ * est gardée dans le cookie `mdp_conversation` du domaine `.mydigipal.com`, lu
+ * aussi par le tunnel (academy.mydigipal.com) et par la petite bulle de reprise
+ * des autres pages du site (BaseLayout). Le lien `#une-question` rouvre le panneau.
+ *
  * ⚠️ Sous `lg`, le coin bas droit est déjà pris par « Commencer »
  * (`AppelFlottant`, `bottom-4`, 48 px). La pastille se pose au-dessus, jamais
  * par-dessus : deux boutons empilés sous le pouce se lisent, deux boutons
@@ -54,16 +69,29 @@ const CLE_FIL = 'academy_question_fil';
 const CLE_AUTO = 'academy_question_auto';
 /** Au-delà, le panneau n'interroge plus le fil : la réponse part par courriel. */
 const DUREE_ECOUTE_MS = 30 * 60_000;
+/** La longueur d'un message, la même que celle que l'application accepte. */
+const MAX_CAR = 400;
+/** Le lien qui rouvre le panneau, depuis la bulle de reprise des autres pages. */
+const ANCRE_REPRISE = '#une-question';
 
 type Vue = 'accueil' | 'categorie' | 'reponse' | 'form' | 'envoye' | 'fil';
 interface MessageFil {
-  auteur: 'visiteur' | 'paul';
+  auteur: 'visiteur' | 'paul' | 'ia' | 'auto';
   texte: string;
   at: string;
 }
 interface Fil {
   id: string;
   jeton: string;
+}
+/** Ce que l'application dit de l'assistant pour cette conversation. */
+interface EtatIa {
+  ia_active: boolean;
+  relais: boolean;
+  messages_restants: number;
+  attend_adresse: boolean;
+  a_adresse: boolean;
+  fin: 'limite' | 'adresse' | 'hors_sujet' | null;
 }
 
 const emailValide = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
@@ -109,15 +137,19 @@ export default function Question({
   const [envoi, setEnvoi] = useState(false);
   const [fil, setFil] = useState<Fil | null>(null);
   const [messages, setMessages] = useState<MessageFil[]>([]);
+  const [etat, setEtat] = useState<EtatIa | null>(null);
   /** Paul a répondu pendant que le panneau était fermé. */
   const [nouveau, setNouveau] = useState(false);
   const [bulleReponse, setBulleReponse] = useState(false);
   const pastille = useRef<HTMLButtonElement>(null);
   const fermerBtn = useRef<HTMLButtonElement>(null);
+  const bas = useRef<HTMLDivElement>(null);
   const arrivee = useRef(0);
   const ouvertRef = useRef(false);
-  /** Le nombre de messages de Paul déjà montrés, pour ne signaler que les nouveaux. */
-  const paulVus = useRef(0);
+  /** Le nombre de messages de Paul déjà montrés, pour ne signaler que les nouveaux. -1 : pas encore lu. */
+  const paulVus = useRef(-1);
+  /** Arrivé par le lien de reprise : le panneau s'ouvre dès qu'il apparaît. */
+  const reprise = useRef(false);
   /** La hauteur du bandeau cookies tant qu'il est à l'écran, zéro ensuite. */
   const [bandeau, setBandeau] = useState(0);
 
@@ -134,18 +166,28 @@ export default function Question({
       fait = true;
       setVisible(true);
     };
-    try {
-      const brut = sessionStorage.getItem(CLE_FIL);
-      if (brut) {
-        const f = JSON.parse(brut) as Fil;
-        if (f?.id && f?.jeton) {
-          setFil(f);
-          montrer();
+    // La conversation gardée pour le domaine d'abord (elle a pu commencer hier,
+    // ou au tunnel), puis celle de cet onglet.
+    const gardee = lireConversation();
+    reprise.current = window.location.hash === ANCRE_REPRISE;
+    if (gardee) {
+      setFil(gardee);
+      montrer();
+    } else {
+      try {
+        const brut = sessionStorage.getItem(CLE_FIL);
+        if (brut) {
+          const f = JSON.parse(brut) as Fil;
+          if (f?.id && f?.jeton) {
+            setFil(f);
+            montrer();
+          }
         }
+      } catch {
+        /* stockage indisponible : on repart sans fil */
       }
-    } catch {
-      /* stockage indisponible : on repart sans fil */
     }
+    if (reprise.current) montrer();
     const minuterie = window.setTimeout(montrer, 60_000);
     const cible = document.getElementById(ancreTarifs);
     let io: IntersectionObserver | null = null;
@@ -186,6 +228,13 @@ export default function Question({
   // sur un ordinateur garde sa souris, et c'est le pouce qu'on protège ici.
   useEffect(() => {
     if (!visible || ouvert) return;
+    // Arrivé par la bulle de reprise d'une autre page : le panneau s'ouvre tout
+    // de suite, sur téléphone aussi, puisque c'est ce que la personne a demandé.
+    if (reprise.current) {
+      reprise.current = false;
+      ouvrir('reprise');
+      return;
+    }
     try {
       if (sessionStorage.getItem(CLE_AUTO) === '1') return;
     } catch {
@@ -208,6 +257,11 @@ export default function Question({
     ouvertRef.current = ouvert;
   }, [ouvert]);
 
+  // Le bas de la conversation reste sous les yeux quand un message arrive.
+  useEffect(() => {
+    if (vue === 'fil') bas.current?.scrollIntoView({ block: 'end' });
+  }, [messages, vue, envoi]);
+
   // L'écoute du fil. Panneau ouvert : toutes les 5 s, et il passe sur la
   // conversation dès que Paul répond. Fermé : toutes les 20 s, et la pastille
   // prend un point doré. Onglet caché : on n'interroge pas, donc Paul ne voit
@@ -223,22 +277,37 @@ export default function Question({
         return;
       }
       try {
-        const r = await fetch(`${ENDPOINT}/fil?id=${encodeURIComponent(fil.id)}&jeton=${encodeURIComponent(fil.jeton)}`);
+        // `vu=1` : le panneau est ouvert et au premier plan, les réponses de Paul
+        // sont lues, et l'accusé de sa bulle Google Chat passe à « lu ».
+        const vu = ouvertRef.current ? '&vu=1' : '';
+        const r = await fetch(`${ENDPOINT}/fil?id=${encodeURIComponent(fil.id)}&jeton=${encodeURIComponent(fil.jeton)}${vu}`);
         if (r.status === 404) {
           try {
             sessionStorage.removeItem(CLE_FIL);
           } catch {
             /* rien à retirer */
           }
+          oublierConversation();
           if (actif) setFil(null);
           return;
         }
         if (r.ok && actif) {
-          const d = (await r.json()) as { messages?: MessageFil[] };
+          const d = (await r.json()) as { messages?: MessageFil[]; etat?: EtatIa };
           const liste = d.messages || [];
           setMessages(liste);
+          if (d.etat) setEtat(d.etat);
           const nPaul = liste.filter((m) => m.auteur === 'paul').length;
-          if (nPaul > paulVus.current) {
+          if (paulVus.current < 0) {
+            // Premier passage, souvent au retour d'une visite précédente : ce qui
+            // était déjà là n'est pas nouveau, sauf une réponse de Paul restée la
+            // dernière de la conversation.
+            paulVus.current = nPaul;
+            if (ouvertRef.current && liste.length) setVue('fil');
+            else if (nPaul > 0 && liste[liste.length - 1]?.auteur === 'paul') {
+              setNouveau(true);
+              setBulleReponse(true);
+            }
+          } else if (nPaul > paulVus.current) {
             // Le son et le titre de l'onglet préviennent même quand la personne
             // regarde ailleurs (18/09/2026, après la conversation d'Anthony
             // Turner : sa page était fermée quand la réponse est arrivée).
@@ -348,8 +417,8 @@ export default function Question({
     return () => window.removeEventListener('keydown', touche);
   }, [ouvert]);
 
-  const ouvrir = (source: 'pastille' | 'bulle' | 'reponse' | 'auto' | 'barre') => {
-    paulVus.current = messages.filter((m) => m.auteur === 'paul').length;
+  const ouvrir = (source: 'pastille' | 'bulle' | 'reponse' | 'auto' | 'barre' | 'reprise') => {
+    if (paulVus.current >= 0) paulVus.current = messages.filter((m) => m.auteur === 'paul').length;
     setOuvert(true);
     setBulle(false);
     setBarre(false);
@@ -372,22 +441,25 @@ export default function Question({
     setVue('reponse');
     setLues((l) => (l.includes(id) ? l : [...l, id]));
     trackQuestion('faq', { faq_id: id });
-    const libelle = faq.find((f) => f.id === id)?.q;
+    // La question ET la réponse affichée partent au fil : Paul lit ce que la
+    // personne a lu (29/09/2026).
+    const lue = faq.find((f) => f.id === id);
     void assurerFil().then((f) => {
-      if (!f || !libelle) return;
+      if (!f || !lue) return;
       fetch(`${ENDPOINT}/fil`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'faq', id: f.id, jeton: f.jeton, question: libelle }),
+        body: JSON.stringify({ action: 'faq', id: f.id, jeton: f.jeton, question: lue.q, reponse: lue.a }),
       }).catch(() => undefined);
     });
   };
 
-  const envoyer = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const envoyer = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (envoi) return;
     const texte = question.trim();
-    if (texte.length < 5) return setErreur(c.erreurQuestion);
+    if (texte.length < (fil ? 1 : 5)) return setErreur(c.erreurQuestion);
+    if (texte.length > MAX_CAR) return setErreur(c.erreurLongue(MAX_CAR));
     // L'adresse ne se demande plus dans un champ : si la personne l'écrit dans
     // la conversation, on la reconnaît là.
     const trouvee = emailValide(email) ? email.trim() : adresseDans(texte);
@@ -415,6 +487,13 @@ export default function Question({
         /* stockage indisponible : on compte sur les messages déjà affichés */
       }
       const premier = !messages.some((m) => m.auteur === 'visiteur') && !(f && comptees.includes(f.id));
+      // Le message s'affiche tout de suite, la réponse de l'assistant suit.
+      const avant = messages;
+      if (f) {
+        setMessages((m) => [...m, { auteur: 'visiteur', texte, at: new Date().toISOString() }]);
+        setVue('fil');
+        setQuestion('');
+      }
       const res = await fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -426,12 +505,38 @@ export default function Question({
           fil_id: f?.id,
           jeton: f?.jeton,
           website: piege,
+          // Ce panneau sait afficher les réponses de l'assistant IA (29/09/2026).
+          ia: true,
         }),
       });
-      if (!res.ok) throw new Error(String(res.status));
-      setMessages((m) => [...m, { auteur: 'visiteur', texte, at: new Date().toISOString() }]);
-      setQuestion('');
-      if (trouvee && !emailValide(email)) {
+      const d = (await res.json().catch(() => ({}))) as {
+        messages?: MessageFil[];
+        etat?: EtatIa;
+        ia_mode?: string;
+      };
+      if (!res.ok) {
+        if (d.etat) setEtat(d.etat);
+        if (f) {
+          setMessages(avant);
+          setQuestion(texte);
+        }
+        throw new Error(String(res.status));
+      }
+      if (f) {
+        // La conversation suit le visiteur dès qu'il a écrit : tunnel, autres
+        // pages du site, retour le lendemain.
+        garderConversation(f);
+        if (d.messages) setMessages(d.messages);
+      } else {
+        setMessages((m) => [...m, { auteur: 'visiteur', texte, at: new Date().toISOString() }]);
+        setQuestion('');
+      }
+      if (d.etat) {
+        if (d.etat.a_adresse && !etat?.a_adresse) trackQuestion('email', { question_source: 'page' });
+        setEtat(d.etat);
+      } else if (trouvee && !emailValide(email)) {
+        // Une conversation sans assistant (ouverte avant le 29/09) : l'adresse et
+        // sa demande restent gérées ici, comme avant.
         setEmail(trouvee);
         setAdresseNotee(true);
         setDemandeAdresse(false);
@@ -440,7 +545,7 @@ export default function Question({
       }
       setVue(f ? 'fil' : 'envoye');
       if (premier) {
-        trackQuestion('sent', { faq_lues: lues.length });
+        trackQuestion('sent', { faq_lues: lues.length, ia_mode: d.ia_mode || 'paul' });
         if (f) {
           try {
             sessionStorage.setItem(CLE_COMPTEES, JSON.stringify([...comptees, f.id]));
@@ -463,8 +568,6 @@ export default function Question({
   const champ =
     'w-full rounded-bouton border border-filet-nuit bg-salle px-3 py-2.5 text-[15px] leading-[1.45] text-ivoire outline-none transition placeholder:text-brume-nuit focus:border-or';
   const lien = 'self-start py-1.5 text-left text-[14px] font-medium text-or underline-offset-4 hover:underline';
-  const bouton =
-    'min-h-11 w-full rounded-bouton bg-or text-[15px] font-semibold text-salle transition hover:bg-or-vif disabled:opacity-60';
   const carte =
     'w-full rounded-bouton border border-filet-nuit px-3.5 py-2.5 text-left text-[15px] leading-[1.35] text-ivoire transition hover:border-or hover:bg-salle-3 active:translate-y-px';
   const bullePaul =
@@ -484,26 +587,94 @@ export default function Question({
   );
   const texteBulle = bulleReponse ? c.paulARepondu : c.bulle;
 
-  /** Le champ d'écriture : la question seule, jamais l'adresse. */
+  // L'état de l'assistant, tel que l'application le renvoie. Avant le premier
+  // message, on annonce l'assistant : c'est lui qui répondra.
+  const aIa = messages.some((m) => m.auteur === 'ia' || m.auteur === 'auto');
+  const iaActive = etat ? etat.ia_active : !messages.some((m) => m.auteur === 'paul');
+  const close = etat?.fin === 'hors_sujet';
+  const attendAdresse = !!etat?.attend_adresse;
+  const role = etat?.relais ? c.roleRelais : iaActive ? c.roleIa : c.role;
+  const aide = close
+    ? c.finHors
+    : etat?.fin || etat?.relais
+      ? c.aideFin
+      : iaActive && etat && etat.messages_restants < 6
+        ? c.restants(etat.messages_restants)
+        : iaActive
+          ? c.aideIa
+          : c.aidePaul;
+  const trop = question.length > MAX_CAR;
+
+  /** Le champ d'écriture : la question, ou l'adresse quand l'assistant l'a demandée. */
   const champLibre = (placeholder: string, titre?: string) => (
     <form onSubmit={envoyer} className="flex flex-col gap-2 border-t border-filet-nuit p-3" noValidate>
       {titre && <p className="m-0 text-[12.5px] font-semibold uppercase tracking-[0.08em] text-brume-nuit">{titre}</p>}
-      <textarea
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-        placeholder={nb(placeholder)}
-        aria-label={c.labelQuestion}
-        rows={2}
-        maxLength={2000}
-        className={`${champ} resize-none`}
-      />
+      <div className="flex items-end gap-2">
+        <textarea
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          onKeyDown={(e) => {
+            // Entrée envoie, Maj+Entrée va à la ligne, comme dans toute messagerie.
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              void envoyer();
+            }
+          }}
+          placeholder={nb(attendAdresse ? c.placeholderAdresse : placeholder)}
+          aria-label={c.labelQuestion}
+          rows={2}
+          maxLength={MAX_CAR + 80}
+          disabled={close}
+          className={`${champ} resize-none disabled:opacity-55`}
+        />
+        <button
+          type="submit"
+          disabled={envoi || close || trop || !question.trim()}
+          aria-busy={envoi}
+          aria-label={c.envoyer}
+          className="grid h-11 w-11 flex-none place-items-center rounded-bouton bg-or text-salle transition hover:bg-or-vif active:translate-y-px disabled:bg-salle-3 disabled:text-brume-nuit"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </button>
+      </div>
       {piegeChamp}
+      <div className="flex justify-between gap-3 text-[12px] leading-[1.4] text-brume-nuit">
+        <span>{nb(aide)}</span>
+        {question.length > MAX_CAR - 80 && (
+          <span className={trop ? 'text-[#f0a39a]' : ''}>
+            {question.length}/{MAX_CAR}
+          </span>
+        )}
+      </div>
       {erreur && <p className="m-0 text-[13.5px] text-[#f0a39a]">{erreur}</p>}
-      <button type="submit" disabled={envoi} aria-busy={envoi} className={bouton}>
-        {c.envoyer}
-      </button>
     </form>
   );
+
+  /** Un message de la conversation : le visiteur à droite, l'assistant et Paul à gauche, chacun nommé. */
+  const bulleMessage = (m: MessageFil, i: number) =>
+    m.auteur === 'visiteur' ? (
+      <p
+        key={`${m.at}-${i}`}
+        className="m-0 max-w-[85%] self-end whitespace-pre-wrap break-words rounded-carte rounded-tr-[4px] bg-or px-3.5 py-2.5 text-[15px] leading-[1.4] text-salle"
+      >
+        {m.texte}
+      </p>
+    ) : (
+      <div key={`${m.at}-${i}`} className="max-w-[92%] self-start">
+        <p className={`m-0 mb-1 text-[12.5px] font-semibold ${m.auteur === 'paul' ? 'text-or' : 'text-brume-nuit'}`}>
+          {m.auteur === 'paul' ? c.signe : c.signeIa}
+        </p>
+        <p
+          className={`m-0 whitespace-pre-wrap break-words rounded-carte rounded-tl-[4px] px-3.5 py-3 text-[15px] leading-[1.55] text-ivoire ${
+            m.auteur === 'paul' ? 'bg-filet-nuit' : 'bg-salle-3'
+          }`}
+        >
+          {nb(m.texte)}
+        </p>
+      </div>
+    );
 
   return (
     <>
@@ -589,7 +760,7 @@ export default function Question({
             <img src={PHOTO} alt="" width={44} height={44} className="h-11 w-11 flex-none rounded-full border border-filet-nuit object-cover" />
             <div className="min-w-0 flex-1">
               <p className="m-0 text-[16px] font-semibold leading-tight text-ivoire">{c.nom}</p>
-              <p className="m-0 text-[13px] leading-snug text-brume-nuit">{c.role}</p>
+              <p className="m-0 text-[13px] leading-snug text-brume-nuit">{nb(role)}</p>
             </div>
             <button
               ref={fermerBtn}
@@ -686,29 +857,23 @@ export default function Question({
           {vue === 'fil' && (
             <>
               <div className="flex flex-col gap-2.5 overflow-y-auto p-4" aria-live="polite">
-                {messages.map((m, i) =>
-                  m.auteur === 'paul' ? (
-                    <p key={`${m.at}-${i}`} className={bullePaul}>
-                      <span className="mb-1 block text-[12.5px] font-semibold text-or">{c.signe}</span>
-                      {m.texte}
-                    </p>
-                  ) : (
-                    <p
-                      key={`${m.at}-${i}`}
-                      className="m-0 max-w-[85%] self-end whitespace-pre-line rounded-carte rounded-tr-[4px] bg-or px-3.5 py-2.5 text-[15px] leading-[1.4] text-salle"
-                    >
-                      {m.texte}
-                    </p>
-                  ),
+                {messages.map(bulleMessage)}
+                {envoi && (
+                  <p role="status" className="m-0 self-start rounded-carte rounded-tl-[4px] bg-salle-3 px-3.5 py-2.5 text-[13.5px] text-brume-nuit">
+                    {c.ecrit}…
+                  </p>
                 )}
-                {/* L'adresse se demande ici, comme un message, jamais dans un champ. */}
-                {adresseNotee && emailValide(email) && (
+                {etat?.relais && <p className="m-0 self-center text-center text-[13px] leading-[1.45] text-brume-nuit">{nb(c.relais)}</p>}
+                {/* Une conversation sans assistant (ouverte avant le 29/09) : l'adresse
+                    se demande ici, comme un message, jamais dans un champ. Avec
+                    l'assistant, ces messages arrivent de l'application. */}
+                {!aIa && !etat?.ia_active && adresseNotee && emailValide(email) && (
                   <p className={bullePaul}>
                     <span className="mb-1 block text-[12.5px] font-semibold text-or">{c.signe}</span>
                     {nb(c.adresseNotee(email.trim()))}
                   </p>
                 )}
-                {demandeAdresse && !emailValide(email) && (
+                {!aIa && !etat?.ia_active && demandeAdresse && !emailValide(email) && (
                   <p className={bullePaul}>
                     <span className="mb-1 block text-[12.5px] font-semibold text-or">{c.signe}</span>
                     {nb(c.demandeAdresse)}
@@ -717,8 +882,9 @@ export default function Question({
                 <button type="button" onClick={() => setVue('accueil')} className={lien}>
                   {c.autres}
                 </button>
+                <div ref={bas} />
               </div>
-              {champLibre(demandeAdresse && !emailValide(email) ? c.labelEmail : c.repondre)}
+              {champLibre(c.repondre)}
             </>
           )}
         </div>
