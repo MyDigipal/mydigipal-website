@@ -283,6 +283,11 @@ def questions_html() -> str:
 
 
 COMPOSANTS = [
+    ("Système Encre", "aucun", "Les jetons, les trois fonds de section, les titres, les pilules : ce que toutes les pages partagent.",
+     ".section-encre, .section-brume, .section-blanc, .section-monte, .titre-grand, .titre-moyen, .chapo, .rubrique, .pilule",
+     "Écrit, dans global.css (étape 1)", "fait"),
+    ("Bande de logos", "aucun", "Les clients, immobiles et en gris, entre deux filets.",
+     "titre, slugs ou logos", "Écrit, ui/BandeauLogos.astro", "fait"),
     ("Scène (socle)", "courbes-signature", "Le moteur commun : jouer une fois, tenir, rejouer un temps.",
      "tenue, rendu, mode, repères", "Écrit, dans src/lib/motion/", "fait"),
     ("Apparition et titre sous masque", "courbes-signature", "L'ordre de lecture d'une section.",
@@ -497,6 +502,9 @@ JOURNAL = [
     ("29/09/2026", "Socle porté dans src/lib/motion/. Apparitions du site corrigées sur la branche : contenu visible par défaut, courbe A, septième enfant d'une cascade enfin affiché. Construit, check-seo au vert."),
     ("30/09/2026", "Les trois directions sont livrées, contrôlées à 390 et 1 440 px dans les deux langues, et publiées en galerie privée. Défaut du socle corrigé : au changement de langue, une scène encore sous l'écran restait vide."),
     ("30/09/2026", "Consigne de Paul : limiter la dépense. Plus aucun agent lancé, la suite se fait un groupe à la fois, coût annoncé avant."),
+    ("30/09/2026", "Direction A « Encre » retenue par Paul."),
+    ("30/09/2026", "Étape 1, le système global, sur la branche refonte-design : jetons et fonds de section dans global.css, HeroService (panneau d'encre, logos entre deux filets), FinalCTA (panneau bleu sur la brume), ServiceFAQ (deux colonnes, sans numéros), TestimonialSpotlight (section d'encre qui monte), CaseStudyCarousel (chiffres lus dans les études de cas, plus aucun chiffre inventé), TrustedBy, PageHero, pied de page en encre. 53 rubriques retirées au-dessus des titres de section. Les questions passent avant l'appel final sur les pages de services."),
+    ("30/09/2026", "Vérifié en local (build, check-seo, Chromium) sur 15 gabarits à 1 440, 390 et 360 px : aucun débordement, aucun bouton empilé ni sur deux lignes, un H1 par page, rien d'invisible. Non déployé, donc pas vu sur Render : l'origine Render ne publie que main."),
 ]
 
 

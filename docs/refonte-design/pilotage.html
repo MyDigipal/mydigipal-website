@@ -115,15 +115,15 @@ tr.groupe td{font:700 13px/1 Inter,sans-serif;color:var(--marque);padding-top:28
 <h2>Où on en est</h2>
 <div class="deux">
 <div>
-<p class="chapeau">L'audit est fait, le socle de mouvement est écrit, trois directions sont en maquette sur une page type. Rien n'a été touché en production.</p>
+<p class="chapeau">Paul a retenu la direction A « Encre » le 30/09. L'étape 1, le système global, est écrite sur la branche refonte-design : jetons, fonds de section, boutons, et les sept composants partagés. Rien n'a été touché en production.</p>
 <div class="defile"><table>
 <thead><tr><th>Étape</th><th>Ce qu'elle produit</th><th>État</th></tr></thead>
 <tbody>
 <tr><td class="page">Dépôt</td><td>Copie Drive en retard de 55 commits, écartée. Travail dans le clone <code>C:\dev\sv</code>, à jour sur <code>bc48cc0</code>, branche <code>refonte-design</code>.</td><td><span class="etat fait">Fait</span></td></tr>
 <tr><td class="page">Lecture</td><td>Avis de Paul, recherche, 19 essais et leurs notes, base <code>avis</code> de la galerie. Digest technique de l'adaptation au web.</td><td><span class="etat fait">Fait</span></td></tr>
 <tr><td class="page">Audit</td><td>39 gabarits mesurés au bureau et à 390 px, tour visuel, éléments flottants, code.</td><td><span class="etat fait">Fait</span></td></tr>
-<tr><td class="page">Système de design</td><td>Socle de mouvement et trois directions en maquette, sur la page Google Ads.</td><td><span class="etat attente">À choisir par Paul</span></td></tr>
-<tr><td class="page">Composants</td><td>Chaque animation retenue devient un composant du site, paramétré et documenté.</td><td><span class="etat afaire">Après le choix</span></td></tr>
+<tr><td class="page">Système de design</td><td>Direction A « Encre » retenue. Étape 1 sur la branche : jetons dans global.css, fonds de section, pilules, HeroService, FinalCTA, ServiceFAQ, TestimonialSpotlight, CaseStudyCarousel, TrustedBy, PageHero, pied de page, 53 rubriques retirées.</td><td><span class="etat attente">Écrit, à vérifier</span></td></tr>
+<tr><td class="page">Composants</td><td>Chaque animation retenue devient un composant du site, paramétré et documenté : CarteVerre et RailMorphing d'abord (étape 2).</td><td><span class="etat afaire">À faire</span></td></tr>
 <tr><td class="page">Groupe 1</td><td>Les pages intelligence artificielle.</td><td><span class="etat afaire">À faire</span></td></tr>
 <tr><td class="page">Groupe 2</td><td>Les pages de services.</td><td><span class="etat afaire">À faire</span></td></tr>
 <tr><td class="page">Groupe 3</td><td>Les pages automobile.</td><td><span class="etat afaire">À faire</span></td></tr>
@@ -135,7 +135,7 @@ tr.groupe td{font:700 13px/1 Inter,sans-serif;color:var(--marque);padding-top:28
 <div class="bloc">
 <h3>Ce que j'attends de toi</h3>
 <ul>
-<li><strong>Choisir une direction</strong> parmi les trois (ou dire ce que tu prends dans chacune). Regarde-les sur ton téléphone, en anglais, puis sur ton ordinateur.</li>
+<li><strong>Faire relire l'étape 1</strong> (branche refonte-design) par une autre session, puis dire si elle part en ligne seule ou avec le groupe 1. Elle n'est visible sur Render qu'une fois sur main.</li>
 <li>Répondre aux <a href="#questions">questions ouvertes</a>. Les deux qui bloquent la suite : la seconde couleur, et les chiffres sans source.</li>
 <li><strong>Donner ton feu vert au correctif des éléments flottants</strong> : il est prêt sur sa branche, je ne l'ai pas mis en ligne sans toi.</li>
 <li>M'envoyer le lien de l'intervention vue sur Instagram, ou des captures des vignettes suivantes : la capture reçue ne montre que le titre.</li>
@@ -419,6 +419,8 @@ tr.groupe td{font:700 13px/1 Inter,sans-serif;color:var(--marque);padding-top:28
 <div class="defile"><table>
 <thead><tr><th>Composant</th><th>Essai d'origine</th><th>Ce qu'il sert à expliquer</th><th>Paramètres</th><th>État</th></tr></thead>
 <tbody>
+<tr><td class="page">Système Encre</td><td><code>aucun</code></td><td>Les jetons, les trois fonds de section, les titres, les pilules : ce que toutes les pages partagent.</td><td>.section-encre, .section-brume, .section-blanc, .section-monte, .titre-grand, .titre-moyen, .chapo, .rubrique, .pilule</td><td><span class="etat fait">Écrit, dans global.css (étape 1)</span></td></tr>
+<tr><td class="page">Bande de logos</td><td><code>aucun</code></td><td>Les clients, immobiles et en gris, entre deux filets.</td><td>titre, slugs ou logos</td><td><span class="etat fait">Écrit, ui/BandeauLogos.astro</span></td></tr>
 <tr><td class="page">Scène (socle)</td><td><code>courbes-signature</code></td><td>Le moteur commun : jouer une fois, tenir, rejouer un temps.</td><td>tenue, rendu, mode, repères</td><td><span class="etat fait">Écrit, dans src/lib/motion/</span></td></tr>
 <tr><td class="page">Apparition et titre sous masque</td><td><code>courbes-signature</code></td><td>L'ordre de lecture d'une section.</td><td>rang dans la section</td><td><span class="etat fait">Écrit, dans global.css</span></td></tr>
 <tr><td class="page">Éléments flottants</td><td><code>aucun</code></td><td>Deux appels, un panneau, un bandeau, sans recouvrement.</td><td>hauteur de l'en-tête</td><td><span class="etat fait">Écrit, dans le socle des maquettes</span></td></tr>
@@ -555,6 +557,9 @@ tr.groupe td{font:700 13px/1 Inter,sans-serif;color:var(--marque);padding-top:28
 <li><b>29/09/2026</b> Socle porté dans src/lib/motion/. Apparitions du site corrigées sur la branche : contenu visible par défaut, courbe A, septième enfant d'une cascade enfin affiché. Construit, check-seo au vert.</li>
 <li><b>30/09/2026</b> Les trois directions sont livrées, contrôlées à 390 et 1 440 px dans les deux langues, et publiées en galerie privée. Défaut du socle corrigé : au changement de langue, une scène encore sous l'écran restait vide.</li>
 <li><b>30/09/2026</b> Consigne de Paul : limiter la dépense. Plus aucun agent lancé, la suite se fait un groupe à la fois, coût annoncé avant.</li>
+<li><b>30/09/2026</b> Direction A « Encre » retenue par Paul.</li>
+<li><b>30/09/2026</b> Étape 1, le système global, sur la branche refonte-design : jetons et fonds de section dans global.css, HeroService (panneau d'encre, logos entre deux filets), FinalCTA (panneau bleu sur la brume), ServiceFAQ (deux colonnes, sans numéros), TestimonialSpotlight (section d'encre qui monte), CaseStudyCarousel (chiffres lus dans les études de cas, plus aucun chiffre inventé), TrustedBy, PageHero, pied de page en encre. 53 rubriques retirées au-dessus des titres de section. Les questions passent avant l'appel final sur les pages de services.</li>
+<li><b>30/09/2026</b> Vérifié en local (build, check-seo, Chromium) sur 15 gabarits à 1 440, 390 et 360 px : aucun débordement, aucun bouton empilé ni sur deux lignes, un H1 par page, rien d'invisible. Non déployé, donc pas vu sur Render : l'origine Render ne publie que main.</li>
 </ul>
 </div></section>
 

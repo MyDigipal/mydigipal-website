@@ -717,6 +717,28 @@ des animations qui EXPLIQUENT une notion difficile, jamais qui décorent.
 - **Les goûts de Paul en mouvement** : `projects/_shared/motion-lib/AVIS-PAUL.md`, et l'adaptation
   au web des essais dans `projects/_shared/motion-lib/ADAPTATION-WEB.md`.
 
+### Le système Encre (étape 1, 30/09/2026, branche `refonte-design`)
+
+Direction A « Encre » retenue par Paul. Ce que toutes les pages partagent, dans `global.css` :
+- **Jetons** : classes Tailwind `bg-encre`, `bg-encre-2`, `bg-brume-clair`, `text-marque-clair`,
+  `text-sur-encre`, `text-sur-encre-2` ; noms courts pour les `<style>` (`--encre`, `--brume`,
+  `--marque-clair`, `--texte-sombre`, `--texte-sombre-2`, `--rayon-scene`...).
+  ⚠️ Le fond brume s'appelle `brume-clair` en Tailwind : `--color-brume` est déjà un GRIS de texte
+  dans `academy.css`, le redéfinir éteindrait l'Academy.
+- **Fonds de section** : `.section-blanc`, `.section-brume`, `.section-encre` (lueur fixe, titres en
+  blanc), et `.section-monte` pour poser une section d'encre sur la précédente (coins de 32 px,
+  32 px de recouvrement). Jamais deux sections d'encre collées, 35 à 45 % de sombre par page.
+- **Titres et boutons** : `.titre-grand` (H1), `.titre-moyen` (H2 de section), `.chapo`, `.rubrique`
+  (une par haut de page, plus aucune au-dessus des titres de section : 53 retirées) ; `.pilules` et
+  `.pilule` + `-pleine` / `-contour` / `-blanche` / `-claire`, côte à côte jusqu'à 360 px.
+- **Composants refaits** : `HeroService` (panneau d'encre des résultats, trois au plus, champ `client`
+  facultatif ; logos entre deux filets par `ui/BandeauLogos.astro`), `FinalCTA` (panneau bleu sur la
+  brume), `ServiceFAQ` (`<details>`, deux colonnes, sans numéros, placée AVANT l'appel final),
+  `TestimonialSpotlight` (section d'encre qui monte), `CaseStudyCarousel` (plus un carrousel : une
+  ligne par étude, chiffres LUS dans `case-studies`, le build s'arrête sur une étude introuvable),
+  `TrustedBy` (bande immobile, plus de « 50+ »), `PageHero`, pied de page en `bg-encre`.
+- Le rythme de chaque page (ses sections d'encre) se fait au groupe de la page, étape 3.
+
 ### Les éléments flottants partagent une seule mesure : `--bandeau`
 
 Branche `flottants-sans-recouvrement` (commit `5b0e768`), à déployer après accord de Paul.
