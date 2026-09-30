@@ -16,6 +16,10 @@
  *
  * Chiffres, clients, canaux et images : `lireResultats()` (collection
  * `case-studies`). Ici, rien que la mise en page.
+ *
+ * Direction Encre (groupe 5, 30/09/2026) : la section d'encre qui monte sur
+ * les services, comme les preuves des autres pages. Les logos des clients
+ * sont en couleur, sur une plaque blanche.
  */
 import Icon from '@/components/ui/Icon.astro';
 import { LOGOS, hauteurLogo, lireResultats, serrer, type Lang } from './donnees';
@@ -42,7 +46,7 @@ const t = fr
     };
 ---
 
-<section class="resultats bloc" aria-labelledby="resultats-titre">
+<section class="resultats bloc section-encre section-monte" aria-labelledby="resultats-titre">
   <div class="container-custom resultats-grille">
     <header class="resultats-tete" data-reveal>
       <h2 id="resultats-titre" class="titre-section" set:html={serrer(t.titre)} />
@@ -82,16 +86,18 @@ const t = fr
               <p class="cas-libelle">{r.libelle}</p>
               <div class="cas-client">
                 {LOGOS[r.logo] && (
-                  <img
-                    src={LOGOS[r.logo].src}
-                    alt=""
-                    width={LOGOS[r.logo].largeur}
-                    height={LOGOS[r.logo].hauteur}
-                    style={`height:${hauteurLogo(r.logo, 1500, 16, 34)}px`}
-                    class:list={['cas-logo', { 'fond-blanc': LOGOS[r.logo].fondBlanc }]}
-                    loading="lazy"
-                    decoding="async"
-                  />
+                  <span class="cas-plaque">
+                    <img
+                      src={LOGOS[r.logo].src}
+                      alt=""
+                      width={LOGOS[r.logo].largeur}
+                      height={LOGOS[r.logo].hauteur}
+                      style={`height:${hauteurLogo(r.logo, 1500, 16, 34)}px`}
+                      class:list={['cas-logo', { 'fond-blanc': LOGOS[r.logo].fondBlanc }]}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </span>
                 )}
                 <p class="cas-nom">{r.client}</p>
                 <p class="cas-secteur">{r.secteur}</p>
@@ -108,8 +114,22 @@ const t = fr
 </section>
 
 <style>
-  .resultats {
-    background: #fff;
+  /* Sur l'encre : les titres en blanc, le texte en clair, le bleu du logo
+     éclairci pour les unités et la ligne active. */
+  .resultats .titre-section {
+    color: #fff;
+  }
+  .resultats .chapeau {
+    color: var(--texte-sombre-2);
+  }
+  .resultats .lien-fleche {
+    color: #fff;
+  }
+  .resultats .lien-fleche:hover {
+    color: var(--marque-clair);
+  }
+  .resultats :is(a, button):focus-visible {
+    outline-color: #fff;
   }
   .resultats-grille {
     display: grid;
@@ -147,7 +167,7 @@ const t = fr
     padding: 0;
   }
   .cas + .cas {
-    border-top: 1px solid var(--trait);
+    border-top: 1px solid rgb(255 255 255 / 0.14);
   }
   /* Téléphone : le chiffre et son client côte à côte, la ligne entière est
      le lien (pas de flèche, pas de canaux : la fiche les donne). */
@@ -167,7 +187,7 @@ const t = fr
     .cas-lien .cas-canaux {
       display: none;
     }
-    .cas-logo {
+    .cas-plaque {
       margin-bottom: 0.5rem;
     }
   }
@@ -192,7 +212,7 @@ const t = fr
     line-height: 0.9;
     letter-spacing: -0.05em;
     font-variant-numeric: tabular-nums;
-    color: var(--color-encre);
+    color: #fff;
     white-space: nowrap;
     transition: color 0.35s var(--ease-sortie);
   }
@@ -204,13 +224,13 @@ const t = fr
     vertical-align: 0.72em;
     margin-left: 0.08em;
     letter-spacing: -0.02em;
-    color: var(--color-marque);
+    color: var(--marque-clair);
   }
   .cas-libelle {
     grid-area: libelle;
     margin: 0.6rem 0 0;
     font-size: 1rem;
-    color: var(--texte);
+    color: var(--texte-sombre-2);
   }
   @media (min-width: 768px) {
     .cas-libelle {
@@ -222,15 +242,21 @@ const t = fr
     grid-area: client;
     padding-top: 0.25rem;
   }
+  /* Le logo en couleur sur sa plaque blanche : sur l'encre, un logo sombre
+     disparaîtrait, et un fichier livré sur fond blanc ferait un rectangle. */
+  .cas-plaque {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 10px;
+    background: #fff;
+  }
   .cas-logo {
     display: block;
     width: auto;
-    margin-bottom: 0.75rem;
-    filter: grayscale(1) contrast(1.1);
-    opacity: 0.8;
-    transition:
-      filter 0.4s var(--ease-sortie),
-      opacity 0.4s var(--ease-sortie);
+    max-width: 11rem;
+    object-fit: contain;
   }
   .cas-logo.fond-blanc {
     mix-blend-mode: multiply;
@@ -239,12 +265,13 @@ const t = fr
     margin: 0;
     font-weight: 600;
     font-size: 1.0625rem;
+    color: #fff;
   }
   .cas-secteur,
   .cas-canaux {
     margin: 0.15rem 0 0;
     font-size: 0.9375rem;
-    color: var(--gris);
+    color: var(--texte-sombre-2);
   }
 
   .cas-fleche {
@@ -256,8 +283,8 @@ const t = fr
     width: 2.75rem;
     height: 2.75rem;
     border-radius: 999px;
-    border: 1px solid var(--trait);
-    color: var(--color-encre);
+    border: 1px solid rgb(255 255 255 / 0.22);
+    color: #fff;
     transition:
       background-color 0.35s var(--ease-sortie),
       border-color 0.35s var(--ease-sortie),
@@ -267,12 +294,7 @@ const t = fr
 
   .cas-lien:hover .cas-chiffre,
   .cas-lien:focus-visible .cas-chiffre {
-    color: var(--color-marque);
-  }
-  .cas-lien:hover .cas-logo,
-  .cas-lien:focus-visible .cas-logo {
-    filter: none;
-    opacity: 1;
+    color: var(--marque-clair);
   }
   .cas-lien:hover .cas-fleche,
   .cas-lien:focus-visible .cas-fleche {
@@ -294,7 +316,7 @@ const t = fr
       aspect-ratio: 16 / 10;
       border-radius: 14px;
       overflow: hidden;
-      background: var(--brume);
+      background: rgb(255 255 255 / 0.06);
     }
     .resultats-visuel img {
       position: absolute;
@@ -314,11 +336,7 @@ const t = fr
     }
   }
   .cas.est-actif .cas-chiffre {
-    color: var(--color-marque);
-  }
-  .cas.est-actif .cas-logo {
-    filter: none;
-    opacity: 1;
+    color: var(--marque-clair);
   }
 </style>
 
