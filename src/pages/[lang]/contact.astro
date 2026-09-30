@@ -40,7 +40,7 @@ const t = {
     },
     contact: {
       title: "Get in Touch",
-      subtitle: "YOUR SUCCESS, OUR MISSION",
+      subtitle: "Your success, our mission",
       locations: "London • Paris • Remote",
     },
     values: {
@@ -89,7 +89,7 @@ const t = {
       badge: "Réponse sous 24h · Aucune obligation · Audit offert",
       title: "Décrivez-nous votre projet,",
       titleHighlight: "on vous renvoie un plan d'action sous 24h",
-      subtitle: "+50 clients dont Genesys, Quantum Metric, BYmyCAR. 9.4/10 sur 339 retours.",
+      subtitle: "+50 clients dont Genesys, Quantum Metric, BYmyCAR. 9,4/10 sur 339 retours.",
     },
     form: {
       name: "Nom Complet",
@@ -109,7 +109,7 @@ const t = {
     },
     contact: {
       title: "Contactez-nous",
-      subtitle: "VOTRE SUCCÈS, NOTRE MISSION",
+      subtitle: "Votre succès, notre mission",
       locations: "Londres • Paris • Remote",
     },
     values: {
@@ -138,7 +138,7 @@ const t = {
         },
         {
           icon: "zap",
-          title: "SLA Courts",
+          title: "SLA courts",
           description: "Pas de système de tickets, pas de boîte mail déserte. Nous travaillons 7/7 pour faire avancer les choses rapidement et avec qualité.",
         },
         {
@@ -172,19 +172,21 @@ const seo = {
   description={seo.description}
   lang={lang}
 >
-  <!-- Hero Section -->
-  <!-- Style de l'accueil depuis le 25/09/2026 : fond gris très pâle au lieu du dégradé
-       sombre, le formulaire en carte blanche, un seul bleu. -->
-  <section class="relative pt-12 pb-20 lg:pt-20 lg:pb-28 bg-[#f3f6f9]">
+  <!-- Le haut de la page et le formulaire, direction Encre (groupe 4, 30/09/2026) : la brume,
+       la rubrique, le grand titre, le formulaire en carte blanche. ⚠️ Rien n'a changé DANS le
+       formulaire : identifiants, noms des champs, antispam et script d'envoi sont ceux d'avant
+       (lus par le script du bas de page, par BaseLayout pour form_start et form_abandon, et par
+       academy.mydigipal.com/api/site/contact). -->
+  <section class="section-brume relative pt-10 pb-20 sm:pt-14 lg:pt-18 lg:pb-28">
     <div class="container-custom relative">
-      <div class="max-w-3xl mb-12 lg:mb-14">
-        <span class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-5">
+      <div class="mb-12 grid max-w-3xl justify-items-start gap-5 lg:mb-14 lg:gap-6">
+        <p class="rubrique">
           {t.hero.badge}
-        </span>
-        <h1 class="contact-titre font-display text-[2.375rem] sm:text-5xl lg:text-[3.75rem] font-extrabold text-encre mb-6">
+        </p>
+        <h1 class="titre-grand text-encre">
           {t.hero.title} <span class="text-marque">{t.hero.titleHighlight}</span>
         </h1>
-        <p class="text-lg sm:text-xl text-slate-600">
+        <p class="chapo">
           {t.hero.subtitle}
         </p>
       </div>
@@ -193,7 +195,7 @@ const seo = {
       <div class="grid lg:grid-cols-5 gap-6 lg:gap-8">
 
         <!-- Form (3 columns) -->
-        <div class="lg:col-span-3 bg-white rounded-[20px] p-6 sm:p-8 border border-slate-200">
+        <div class="carte lg:col-span-3 p-6 sm:p-8">
           <form id="contact-form" class="space-y-6">
             <!-- 3 OBLIGATOIRES en gros (Nom + Email puis Message) -->
             <div class="grid md:grid-cols-2 gap-6">
@@ -328,8 +330,8 @@ const seo = {
         <!-- Contact Info (2 columns) -->
         <div class="lg:col-span-2 space-y-6">
           <!-- Get in Touch Card -->
-          <div class="bg-encre rounded-[20px] p-8 text-white">
-            <h2 class="font-display text-2xl font-bold mb-2">{t.contact.title}</h2>
+          <div class="carte-encre p-8 text-white">
+            <h2 class="titre-carte text-white mb-2">{t.contact.title}</h2>
             <p class="text-slate-300 text-sm mb-8">{t.contact.subtitle}</p>
 
             <div class="space-y-6">
@@ -345,7 +347,7 @@ const seo = {
           </div>
 
           <!-- Social Links -->
-          <div class="bg-white rounded-[20px] p-6 border border-slate-200">
+          <div class="carte p-6">
             <p class="text-slate-500 text-sm font-semibold mb-4">{lang === 'fr' ? 'Suivez-nous' : 'Follow us'}</p>
             <div class="flex gap-4">
               <a href="https://www.linkedin.com/company/mydigipal/" target="_blank" rel="noopener" class="w-12 h-12 bg-slate-100 text-slate-700 hover:bg-marque hover:text-white rounded-full flex items-center justify-center transition-colors">
@@ -361,37 +363,35 @@ const seo = {
     </div>
   </section>
 
-  <!-- Values Section -->
-  <section class="py-20 lg:py-28 bg-slate-50">
+  <!-- Les valeurs (encre) : six cartes de verre de tailles variées (deux, une ; une, deux ; une, deux). -->
+  <section class="section-encre section-monte py-20 lg:py-28">
     <div class="container-custom">
-      <div class="text-center mb-16">
-        <h2 class="font-display text-3xl lg:text-4xl font-bold text-slate-900">
+      <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16">
+        <h2 class="titre-moyen">
           {t.values.title}
         </h2>
-      </div>
+      </header>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <ul class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
         {t.values.items.map((value, index) => (
-          <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow duration-300 group">
-            <div class="mb-4 text-marque">
-              <Icon name={value.icon} size={24} />
-            </div>
-            <h3 class="text-lg font-semibold text-slate-900 mb-2">{value.title}</h3>
-            <p class="text-slate-600">{value.description}</p>
-          </div>
+          <li class:list={['carte-verre grid content-start gap-3 p-6 lg:p-8', { 'lg:col-span-2': [0, 3, 5].includes(index) }]} data-reveal style={`--i:${index % 3}`}>
+            <span class="tuile tuile-pleine"><Icon name={value.icon} size={26} /></span>
+            <h3 class="titre-carte text-white">{value.title}</h3>
+            <p class="text-sur-encre-2 text-pretty">{value.description}</p>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   </section>
 
   <!-- Team Section Placeholder -->
-  <section class="py-20 lg:py-28">
+  <section class="section-blanc py-20 lg:py-28">
     <div class="container-custom">
-      <div class="text-center mb-16">
-        <h2 class="font-display text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
+      <div class="mb-12 grid max-w-[880px] gap-5 lg:mb-16">
+        <h2 class="titre-moyen text-encre">
           {t.team.title}
         </h2>
-        <p class="text-slate-600 max-w-2xl mx-auto">
+        <p class="chapo">
           {lang === 'en'
             ? 'A diverse team of marketing experts from around the world, united by a passion for results.'
             : 'Une équipe diverse d\'experts marketing du monde entier, unis par une passion pour les résultats.'}
@@ -416,8 +416,8 @@ const seo = {
           { name: "Sophie Roe", role: "Digital Marketing Executive", image: "/images/team/Team_Sophie_Roe.avif" },
           { name: "Chirag Solanki", role: "Marketing Ops Manager", image: "/images/team/Team_Chirag_Solanki.avif" },
         ].map((member) => (
-          <div class="text-center group">
-            <div class="aspect-square rounded-xl mb-3 overflow-hidden">
+          <div class="group">
+            <div class="aspect-square rounded-[16px] mb-3 overflow-hidden">
               <img
                 src={member.image}
                 alt={member.name}
@@ -425,7 +425,7 @@ const seo = {
                 loading="lazy"
               />
             </div>
-            <h3 class="font-semibold text-slate-900 text-sm">{member.name}</h3>
+            <h3 class="font-semibold text-encre text-sm">{member.name}</h3>
             <p class="text-slate-500 text-xs">{member.role}</p>
           </div>
         ))}
