@@ -1,0 +1,396 @@
+---
+/**
+ * Le tableau à palettes (direction Encre, 30/09/2026 ; essai `tableau-chiffres`, fiche
+ * B.5 de `docs/refonte-design/motion/ADAPTATION-WEB.md`). Ce qu'il fait : il met en avant
+ * trois chiffres au plus, un par ligne. Chaque caractère du chiffre est un volet qui
+ * bascule en 3D jusqu'à sa valeur, comme sur un tableau de gare ; l'unité est sur des
+ * volets bleus. La phrase qui dit ce que compte le chiffre est du texte normal, écrit à
+ * côté : un volet par lettre serait illisible sur un téléphone.
+ *
+ * Contrat du socle : le HTML porte déjà les caractères finaux, c'est l'état sans script ;
+ * les volets sont `aria-hidden`, la phrase entière est lue une fois par ligne.
+ * Gardé de l'essai : la chute en p^1,75 sans rebond, les trois couches de rythme (bascule,
+ * décalage par colonne, gigue déterministe). Retiré : la vague de retour à vide, la
+ * légende en dépassement. Lignes espacées de 0,7 s au lieu de 2 s.
+ *
+ * `auChargement` : pour un tableau posé dans le premier écran (le hero d'AI Training), la
+ * lecture part au chargement au lieu d'attendre l'entrée dans l'écran.
+ * À poser sur un fond d'encre (panneau du hero, `.section-encre`).
+ */
+import type { Language } from '@/i18n/config';
+
+interface Ligne {
+  /** Le chiffre, tel qu'il s'affiche (« 2 500 », « 9,4 »). */
+  chiffre: string;
+  /** L'unité, sur des volets bleus (« + », « /10 »). */
+  unite?: string;
+  /** Ce que compte le chiffre. */
+  texte: string;
+  /** D'où vient le chiffre, écrit sous la phrase. */
+  source?: string;
+}
+
+interface Props {
+  lang: Language;
+  lignes: Ligne[];
+  auChargement?: boolean;
+  /** La première ligne en plus grand (le hero). */
+  tete?: boolean;
+}
+
+const { lang, lignes, auChargement = false, tete = false } = Astro.props;
+if (lignes.length < 1 || lignes.length > 3) throw new Error(`TableauPalettes : d'une à trois lignes, pas ${lignes.length}.`);
+void lang;
+
+// Une espace fine insécable dans « 2 500 » compte comme une case vide.
+const cases = (l: Ligne) => [
+  ...Array.from(l.chiffre.replace(/[  ]/g, ' ')).map((c) => ({ c, unite: false })),
+  ...Array.from(l.unite ?? '').map((c) => ({ c, unite: true })),
+];
+---
+
+<div
+  class:list={['tp', { 'tp-avec-tete': tete }]}
+  data-tableau-palettes
+  data-au-chargement={auChargement ? '' : undefined}
+>
+  <ul class="tp-lignes">
+    {lignes.map((l, i) => (
+      <li class="tp-ligne" data-ligne={i}>
+        <p class="sr-only">{`${l.chiffre}${l.unite ?? ''} ${l.texte}`}</p>
+        <span class="tp-cases" aria-hidden="true">
+          {cases(l).map(({ c, unite }) => (
+            <span class:list={['tp-case', { 'tp-unite': unite, 'tp-vide': c === ' ', 'tp-etroit': c === ',' || c === '.' }]} data-c={c}>
+              <span class="tp-moitie tp-haut"><span>{c}</span></span>
+              <span class="tp-moitie tp-bas"><span>{c}</span><i class="tp-ombre"></i></span>
+              <span class="tp-volet">
+                <span class="tp-face tp-avant"><span>{c}</span><i class="tp-ombre"></i></span>
+                <span class="tp-face tp-arriere"><span>{c}</span><i class="tp-ombre"></i></span>
+              </span>
+              <i class="tp-charniere"></i>
+            </span>
+          ))}
+        </span>
+        <span class="tp-texte" aria-hidden="true">
+          <span class="tp-phrase">{l.texte}</span>
+          {l.source && <span class="tp-source">{l.source}</span>}
+        </span>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .tp {
+    /* La taille des volets suit la largeur du tableau, pas celle de l'écran : un panneau
+       de hero à 1 024 px est plus étroit qu'un téléphone posé à plat. Six volets tiennent
+       toujours sur une ligne. */
+    container-type: inline-size;
+    --ivoire: var(--texte-sombre);
+  }
+  .tp-lignes {
+    --h: min(64px, 19cqi);
+  }
+  .tp-avec-tete .tp-ligne:first-child {
+    --h: min(92px, 20cqi);
+  }
+  .tp-lignes {
+    display: grid;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .tp-ligne {
+    display: grid;
+    gap: 12px;
+    padding-block: 22px;
+  }
+  .tp-ligne:first-child {
+    padding-top: 0;
+  }
+  .tp-ligne:last-child {
+    padding-bottom: 0;
+  }
+  .tp-ligne + .tp-ligne {
+    border-top: 1px solid var(--filet-sombre);
+  }
+  .tp-cases {
+    display: flex;
+    gap: calc(var(--h) * 0.07);
+  }
+
+  /* Une case : deux moitiés fixes et un volet qui tourne autour de la charnière. */
+  .tp-case {
+    position: relative;
+    flex: none;
+    width: calc(var(--h) * 0.7);
+    height: var(--h);
+    perspective: calc(var(--h) * 14);
+    border-radius: calc(var(--h) * 0.12);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: calc(var(--h) * 0.78);
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 10px 22px -12px rgb(0 0 0 / 0.7);
+  }
+  .tp-vide,
+  .tp-etroit {
+    width: calc(var(--h) * 0.4);
+  }
+  .tp-moitie,
+  .tp-face {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    background: var(--ivoire);
+    color: var(--encre);
+  }
+  .tp-unite .tp-moitie,
+  .tp-unite .tp-face {
+    background: var(--color-marque);
+    color: #fff;
+  }
+  .tp-moitie {
+    height: 50%;
+  }
+  .tp-haut,
+  .tp-avant {
+    top: 0;
+    border-radius: calc(var(--h) * 0.12) calc(var(--h) * 0.12) 0 0;
+    background-image: linear-gradient(rgb(255 255 255 / 0.28), rgb(255 255 255 / 0));
+  }
+  .tp-bas,
+  .tp-arriere {
+    border-radius: 0 0 calc(var(--h) * 0.12) calc(var(--h) * 0.12);
+    background-image: linear-gradient(rgb(0 0 0 / 0), rgb(0 0 0 / 0.12));
+  }
+  .tp-bas {
+    top: 50%;
+  }
+  .tp-moitie > span,
+  .tp-face > span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .tp-haut > span,
+  .tp-avant > span {
+    top: 0;
+  }
+  .tp-bas > span,
+  .tp-arriere > span {
+    top: -100%;
+  }
+  .tp-volet {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 50%;
+    transform-origin: 50% 100%;
+    transform-style: preserve-3d;
+  }
+  .tp-face {
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .tp-arriere {
+    top: 0;
+    transform: rotateX(180deg);
+  }
+  .tp-ombre {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .tp-charniere {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    margin-top: -1px;
+    background: rgb(11 27 43 / 0.55);
+    z-index: 2;
+  }
+
+  .tp-texte {
+    display: grid;
+    gap: 2px;
+  }
+  .tp-phrase {
+    font-size: 1.0625rem;
+    line-height: 1.4;
+    color: var(--texte-sombre);
+  }
+  .tp-source {
+    font-size: 0.9375rem;
+    color: var(--texte-sombre-2);
+  }
+  .tp-avec-tete .tp-ligne:first-child .tp-phrase {
+    font-size: 1.25rem;
+  }
+
+
+  /* Un tableau du premier écran part vide : sans cela, le visiteur verrait les chiffres,
+     puis les verrait disparaître au lancement. Si le script ne monte pas, l'animation de
+     secours les rend visibles au bout de trois secondes. */
+  :global(html.mv) [data-au-chargement]:not([data-monte]) .tp-case > *,
+  :global(html.mv) [data-au-chargement]:not([data-monte]) .tp-texte {
+    opacity: 0;
+    animation: tp-secours 0s 3s forwards;
+  }
+  @keyframes tp-secours {
+    to {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  import { scene, courbes as C, seg, clamp, mouvementReduit } from '@/lib/motion';
+
+  const CHIFFRES = ' 0123456789';
+  /** Au plus huit bascules par volet : un 9 ne passe pas par les dix chiffres. */
+  const BASCULES = 8;
+  const T = { debut: 0.25, ligne: 0.7, colonne: 0.045, bascule: 0.1, texte: 0.3 };
+
+  /** Les caractères qu'un volet traverse pour arriver à sa cible. */
+  function suite(cible: string): string[] {
+    const i = CHIFFRES.indexOf(cible);
+    if (cible === ' ') return [' '];
+    if (i < 0) return [' ', cible];
+    const s = [' '];
+    for (let k = Math.max(1, i - BASCULES + 1); k <= i; k++) s.push(CHIFFRES[k]);
+    return s;
+  }
+  /** Le petit retard propre à chaque volet, sans tirage au sort. */
+  const gigue = (ligne: number, col: number) => (((col * 7919 + ligne * 104729 + 17) % 97) / 97) * 0.03;
+
+  interface Case {
+    haut: HTMLElement;
+    bas: HTMLElement;
+    avant: HTMLElement;
+    arriere: HTMLElement;
+    volet: HTMLElement;
+    ombreAvant: HTMLElement;
+    ombreArriere: HTMLElement;
+    ombreBas: HTMLElement;
+    suite: string[];
+    t0: number;
+    cur: string;
+    nxt: string;
+  }
+
+  function monter(el: HTMLElement) {
+    if (el.dataset.monte) return;
+    const lignes = Array.from(el.querySelectorAll<HTMLElement>('.tp-ligne'));
+    const cases: Case[] = [];
+    const textes: { el: HTMLElement; t0: number }[] = [];
+    let fin = 0;
+
+    lignes.forEach((li, l) => {
+      const depart = T.debut + l * T.ligne;
+      const cs = Array.from(li.querySelectorAll<HTMLElement>('.tp-case'));
+      cs.forEach((c, col) => {
+        const q = (s: string) => c.querySelector<HTMLElement>(s)!;
+        const cible = c.dataset.c ?? ' ';
+        const s = suite(cible);
+        const t0 = depart + col * T.colonne + gigue(l, col);
+        fin = Math.max(fin, t0 + (s.length - 1) * T.bascule);
+        cases.push({
+          haut: q('.tp-haut > span'),
+          bas: q('.tp-bas > span'),
+          avant: q('.tp-avant > span'),
+          arriere: q('.tp-arriere > span'),
+          volet: q('.tp-volet'),
+          ombreAvant: q('.tp-avant .tp-ombre'),
+          ombreArriere: q('.tp-arriere .tp-ombre'),
+          ombreBas: q('.tp-bas .tp-ombre'),
+          suite: s,
+          t0,
+          cur: cible,
+          nxt: cible,
+        });
+      });
+      const texte = li.querySelector<HTMLElement>('.tp-texte');
+      if (texte) {
+        const t0 = depart + cs.length * T.colonne + T.texte;
+        textes.push({ el: texte, t0 });
+        fin = Math.max(fin, t0 + 0.55);
+      }
+    });
+    const TENUE = +(fin + 0.1).toFixed(2);
+
+    function poser(c: Case, t: number) {
+      let cur: string, nxt: string, p: number;
+      if (t < c.t0) {
+        cur = nxt = ' ';
+        p = 0;
+      } else {
+        const k = (t - c.t0) / T.bascule;
+        const i = Math.floor(k);
+        if (i >= c.suite.length - 1) {
+          cur = nxt = c.suite[c.suite.length - 1];
+          p = 0;
+        } else {
+          cur = c.suite[i];
+          nxt = c.suite[i + 1];
+          p = k - i;
+        }
+      }
+      if (c.cur !== cur) {
+        c.bas.textContent = cur;
+        c.avant.textContent = cur;
+        c.cur = cur;
+      }
+      if (c.nxt !== nxt) {
+        c.haut.textContent = nxt;
+        c.arriere.textContent = nxt;
+        c.nxt = nxt;
+      }
+      const r = C.chute(p);
+      c.volet.style.transform = r > 0 ? `rotateX(${(-180 * r).toFixed(2)}deg)` : '';
+      // Au repos (r = 0), on rend la main à la feuille de style : aucune ombre.
+      c.ombreAvant.style.opacity = r > 0 ? (0.5 * r).toFixed(3) : '';
+      c.ombreArriere.style.opacity = r > 0 ? (0.5 * (1 - r)).toFixed(3) : '';
+      c.ombreBas.style.opacity = r > 0 ? (0.3 * Math.sin(r * Math.PI)).toFixed(3) : '';
+    }
+
+    function rendu(t: number) {
+      for (const c of cases) poser(c, t);
+      for (const x of textes) {
+        if (t >= TENUE - 0.001) {
+          x.el.style.opacity = '';
+          x.el.style.transform = '';
+          continue;
+        }
+        const e = C.entree(seg(t, x.t0, x.t0 + 0.55));
+        x.el.style.opacity = seg(t, x.t0, x.t0 + 0.14).toFixed(3);
+        x.el.style.transform = `translate3d(${((1 - e) * 12).toFixed(2)}px,0,0)`;
+      }
+    }
+
+    const h = el.getBoundingClientRect().height || 1;
+    const s = scene(el, { tenue: TENUE, rendu, seuil: clamp((window.innerHeight * 0.4) / h, 0.2, 0.6) });
+    el.dataset.monte = '1';
+    // Dans le premier écran, la scène est déjà « vue » : on la lance nous-mêmes.
+    if (el.dataset.auChargement != null && !mouvementReduit() && s.t >= TENUE - 0.001) s.jouer(0);
+  }
+
+  function monterTout() {
+    document.querySelectorAll<HTMLElement>('[data-tableau-palettes]').forEach(monter);
+  }
+  monterTout();
+  document.addEventListener('astro:page-load', monterTout);
+</script>
