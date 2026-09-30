@@ -1,9 +1,9 @@
 ---
 /**
  * Le haut des pages d'index (services, IA, automobile, études de cas, blog,
- * recrutement), dans le style de l'accueil depuis le 25/09/2026 : fond blanc,
- * sur-titre gris, titre serré en graisse 800 aligné à gauche, une ligne en bleu du
- * logo, et au plus les deux portes du site. Il remplace six bandeaux sombres en
+ * recrutement) : fond blanc, rubrique en bleu du logo, titre serré en graisse 800
+ * aligné à gauche, et au plus les deux portes du site, en pilules côte à côte
+ * (direction Encre, 30/09/2026). Il remplace six bandeaux sombres en
  * dégradé, chacun avec ses halos. Aucune animation d'entrée : le titre est là dès
  * le premier rendu.
  */
@@ -27,26 +27,28 @@ interface Props {
 const { eyebrow, title, subtitle, description, actions = [] } = Astro.props;
 ---
 
-<section class="page-hero bg-white border-b border-slate-100">
-  <div class="container-custom pt-12 pb-14 sm:pt-16 lg:pt-20 lg:pb-20">
-    <div class="max-w-4xl">
-      {eyebrow && <p class="mb-5 text-sm font-semibold text-slate-500">{eyebrow}</p>}
-      <h1 class="page-hero-titre font-display text-[2.375rem] sm:text-5xl lg:text-[4rem] font-extrabold text-encre break-words hyphens-auto">
+<!-- Direction Encre (30/09/2026) : la rubrique en bleu du logo (la seule de la page),
+     le titre aux mesures communes (`titre-grand`), les boutons en pilules côte à côte. -->
+<section class="page-hero section-blanc border-b border-slate-200">
+  <div class="container-custom pt-10 pb-14 sm:pt-14 lg:pt-18 lg:pb-20">
+    <div class="grid max-w-4xl justify-items-start gap-5 lg:gap-6">
+      {eyebrow && <p class="rubrique">{eyebrow}</p>}
+      <h1 class="titre-grand text-encre break-words hyphens-auto">
         {title}
       </h1>
-      {subtitle && <p class="mt-5 text-lg sm:text-xl font-semibold text-marque text-pretty">{subtitle}</p>}
-      {description && <p class="mt-4 text-base sm:text-lg text-slate-600 max-w-[60ch] text-pretty">{description}</p>}
+      {subtitle && <p class="text-lg sm:text-xl font-semibold text-encre text-pretty">{subtitle}</p>}
+      {description && <p class="chapo">{description}</p>}
       {actions.length > 0 && (
-        <div class="mt-9 flex flex-wrap gap-3">
+        <div class="pilules mt-3">
           {actions.map((a) =>
             a.style === 'contour' ? (
-              <a href={a.href} class="inline-flex items-center justify-center h-13 px-6 rounded-full border border-slate-300 text-encre font-semibold hover:border-slate-400 hover:bg-slate-50 transition-colors">
+              <a href={a.href} class="pilule pilule-contour">
                 {a.label}
               </a>
             ) : (
-              <a href={a.href} class="group inline-flex items-center justify-center gap-2 h-13 px-6 rounded-full bg-marque text-white font-semibold hover:bg-marque-fonce active:scale-[0.98] transition-colors">
+              <a href={a.href} class="pilule pilule-pleine">
                 {a.label}
-                <Icon name="arrow-right" size={18} class="transition-transform group-hover:translate-x-0.5" />
+                <Icon name="arrow-right" size={18} class="pilule-fleche" />
               </a>
             ),
           )}
@@ -56,11 +58,3 @@ const { eyebrow, title, subtitle, description, actions = [] } = Astro.props;
     </div>
   </div>
 </section>
-
-<style>
-  .page-hero-titre {
-    line-height: 1.04;
-    letter-spacing: -0.035em;
-    text-wrap: balance;
-  }
-</style>
