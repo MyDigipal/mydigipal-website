@@ -12,27 +12,21 @@ const translations = {
   en: {
     training: {
       badge: "Connected stack",
-      headline: "20+ platforms. One interface.",
+      headline: "Your whole stack. One interface.",
       subtitle:
-        "From Google Ads to Lemlist through BigQuery : we connect everything your team already uses. Here's what we orchestrate in production for our clients.",
+        "From Google Ads to Lemlist through BigQuery, we connect everything your team already uses. Here's what we orchestrate in production for our clients.",
     },
     solutions: {
       badge: "What we connect",
       headline: "Your stack, orchestrated.",
       subtitle:
-        "From Google Ads to Lemlist through BigQuery : we build MCPs and automations on top of the tools you already rely on. Here's what we operate in production today.",
+        "From Google Ads to Lemlist through BigQuery, we build MCPs and automations on top of the tools you already rely on. Here's what we operate in production today.",
     },
-    proofTitle: "MCP Gateway in production",
-    proofs: [
-      { value: "244", label: "tools exposed" },
-      { value: "21", label: "platforms connected" },
-      { value: "18+", label: "active clients" },
-    ],
   },
   fr: {
     training: {
       badge: "Stack connectée",
-      headline: "20+ plateformes. Une seule interface.",
+      headline: "Toute votre stack. Une seule interface.",
       subtitle:
         "De Google Ads à Lemlist en passant par BigQuery : on connecte tout ce que votre équipe utilise déjà. Voici ce qu'on orchestre en production pour nos clients.",
     },
@@ -42,18 +36,12 @@ const translations = {
       subtitle:
         "De Google Ads à Lemlist en passant par BigQuery : on construit des MCPs et des automatisations par-dessus les outils que vous utilisez déjà. Voici ce qu'on opère en production aujourd'hui.",
     },
-    proofTitle: "MCP Gateway en production",
-    proofs: [
-      { value: "244", label: "outils exposés" },
-      { value: "21", label: "plateformes connectées" },
-      { value: "18+", label: "clients actifs" },
-    ],
   },
 };
 
 const tBlock = translations[lang] || translations.en;
 const tVariant = tBlock[variant] || tBlock.training;
-const t = { ...tVariant, proofTitle: tBlock.proofTitle, proofs: tBlock.proofs };
+const t = tVariant;
 
 type Category = "ppc" | "data" | "seo" | "sales" | "content" | "ops";
 
@@ -108,15 +96,6 @@ const platforms: Platform[] = [
     useCase: { en: "Deploy services, env vars, logs, suspend & resume", fr: "Déployer services, env vars, logs, suspendre & reprendre" } },
 ];
 
-const categoryColors: Record<Category, string> = {
-  ppc: "bg-amber-100 text-amber-700 ring-amber-200",
-  data: "bg-cyan-100 text-cyan-700 ring-cyan-200",
-  seo: "bg-emerald-100 text-emerald-700 ring-emerald-200",
-  sales: "bg-violet-100 text-violet-700 ring-violet-200",
-  content: "bg-rose-100 text-rose-700 ring-rose-200",
-  ops: "bg-slate-100 text-slate-700 ring-slate-200",
-};
-
 const categoryLabels: Record<Category, { en: string; fr: string }> = {
   ppc: { en: "Paid Media", fr: "Paid Media" },
   data: { en: "Data", fr: "Data" },
@@ -125,154 +104,36 @@ const categoryLabels: Record<Category, { en: string; fr: string }> = {
   content: { en: "Content", fr: "Contenu" },
   ops: { en: "Ops", fr: "Ops" },
 };
+// Les outils rangés par famille, dans l'ordre où on les présente.
+const familles = (['ppc', 'data', 'seo', 'sales', 'content', 'ops'] as Category[]).map((c) => ({
+  nom: categoryLabels[c][lang] || categoryLabels[c].en,
+  outils: platforms.filter((p) => p.category === c),
+}));
 ---
 
-<section class="relative overflow-hidden py-24 md:py-32 bg-[#f8f9fc]">
-  <div class="absolute inset-0 pointer-events-none">
-    <div
-      class="absolute inset-0 opacity-[0.04]"
-      style="background-image: radial-gradient(circle, #64748b 1px, transparent 1px); background-size: 28px 28px;"
-    ></div>
-  </div>
-
-  <div class="container-custom relative z-10">
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 leading-tight mb-6">
-        {t.headline}
-      </h2>
-      <p class="text-lg text-slate-500 leading-relaxed">{t.subtitle}</p>
-    </div>
-
-    <!-- Grid -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5 mb-20">
-      {
-        platforms.map((p, i) => (
-          <div
-            class="stack-tile group relative animate-on-scroll"
-            style={`animation-delay: ${Math.min(i * 40, 600)}ms`}
-          >
-            <div class="stack-card">
-              <!-- Face -->
-              <div class="stack-face">
-                <div
-                  class="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white text-sm shadow-md mb-3"
-                  style={`background: linear-gradient(135deg, ${p.color}, ${p.color}cc)`}
-                >
-                  {p.initials}
-                </div>
-                <h3 class="font-semibold text-slate-900 text-sm leading-tight mb-1">
-                  {p.name}
-                </h3>
-                <span
-                  class={`inline-block text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full ring-1 ${categoryColors[p.category]}`}
-                >
-                  {categoryLabels[p.category][lang] || categoryLabels[p.category].en}
-                </span>
-              </div>
-
-              <!-- Hover overlay -->
-              <div class="stack-hover">
-                <h3 class="font-semibold text-white text-sm mb-2">{p.name}</h3>
-                <p class="text-xs text-slate-200 leading-relaxed">
-                  {p.useCase[lang] || p.useCase.en}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))
-      }
-    </div>
-
-    <!-- Proof badges -->
-    <div class="relative">
-      <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-violet-500/10 to-emerald-500/10 rounded-3xl blur-2xl"></div>
-      <div class="relative bg-white/80 backdrop-blur-xl border border-white/60 rounded-3xl p-8 md:p-12 shadow-xl">
-        <div class="text-center mb-8">
-          <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-            <span class="inline-block w-8 h-px bg-slate-300"></span>
-            {t.proofTitle}
-            <span class="inline-block w-8 h-px bg-slate-300"></span>
-          </span>
+<!-- Direction Encre (30/09/2026) : les outils rangés par famille, en noms seuls avec leur
+     usage. Plus de tuiles à initiales colorées à la place des logos, plus de « 20+ »
+     dans le titre, plus de bloc 244 / 21 / 18+ (chiffres sans source affichée). -->
+<section class="section-blanc py-20 lg:py-32">
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <div class="grid gap-x-10 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+      {familles.map((f, index) => (
+        <div class="border-t border-slate-200 py-7" data-reveal style={`--i:${index % 3}`}>
+          <h3 class="mb-4 font-display text-xl font-extrabold tracking-[-0.02em] text-encre">{f.nom}</h3>
+          <ul class="grid gap-3">
+            {f.outils.map((o) => (
+              <li>
+                <span class="font-semibold text-encre">{o.name}</span>
+                <span class="block text-slate-600">{o.useCase[lang] || o.useCase.en}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-        <div class="grid grid-cols-3 gap-4 md:gap-8">
-          {
-            t.proofs.map((proof) => (
-              <div class="text-center">
-                <div class="font-display text-4xl md:text-6xl font-bold bg-gradient-to-br from-cyan-500 via-violet-500 to-emerald-500 bg-clip-text text-transparent mb-2">
-                  {proof.value}
-                </div>
-                <div class="text-sm md:text-base text-slate-600 font-medium">
-                  {proof.label}
-                </div>
-              </div>
-            ))
-          }
-        </div>
-      </div>
+      ))}
     </div>
   </div>
 </section>
-
-<style>
-  .stack-tile {
-    perspective: 800px;
-  }
-
-  .stack-card {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: 1rem;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-style: preserve-3d;
-  }
-
-  .stack-tile:hover .stack-card {
-    transform: rotateY(180deg);
-  }
-
-  .stack-face,
-  .stack-hover {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 1rem;
-    border-radius: 1rem;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-  }
-
-  .stack-face {
-    background: #ffffff;
-    border: 1px solid rgb(226 232 240);
-    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05);
-    transition: border-color 0.3s, box-shadow 0.3s;
-  }
-
-  .stack-tile:hover .stack-face {
-    border-color: rgb(103 232 249);
-    box-shadow: 0 10px 30px -10px rgba(94, 166, 235, 0.3);
-  }
-
-  .stack-hover {
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-    transform: rotateY(180deg);
-    justify-content: center;
-    border: 1px solid rgba(29, 113, 184, 0.3);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .stack-card {
-      transition: none;
-    }
-    .stack-tile:hover .stack-card {
-      transform: none;
-    }
-    .stack-hover {
-      display: none;
-    }
-  }
-</style>
