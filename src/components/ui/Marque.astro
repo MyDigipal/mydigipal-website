@@ -1,0 +1,32 @@
+---
+/**
+ * La marque d'un outil ou d'une plateforme, en couleur, par son nom (30/09/2026).
+ * Les tracés viennent de `sections/logos-outils.ts` (simple-icons, CC0, fichier généré).
+ * LinkedIn n'est plus dans simple-icons : son glyphe vient de `Icon`, dans sa couleur.
+ * Un nom sans marque libre rend une icône neutre, jamais une fausse marque.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { LOGOS_OUTILS } from '@/components/sections/logos-outils';
+
+interface Props {
+  nom: string;
+  taille?: number;
+  /** L'icône neutre quand la marque n'a pas de logo libre. */
+  secours?: string;
+  class?: string;
+}
+
+const { nom, taille = 24, secours = 'box', class: classe } = Astro.props;
+const logo = LOGOS_OUTILS[nom];
+const linkedin = /^linkedin/i.test(nom);
+---
+
+{logo ? (
+  <svg viewBox={logo.viewBox} width={taille} height={taille} fill={logo.couleur} class={classe} aria-hidden="true" focusable="false">
+    <path d={logo.trace} />
+  </svg>
+) : linkedin ? (
+  <span class={classe} style="color:#0A66C2;display:inline-grid" aria-hidden="true"><Icon name="linkedin" size={taille} /></span>
+) : (
+  <span class={classe} style="color:#94a3b8;display:inline-grid" aria-hidden="true"><Icon name={secours} size={taille} /></span>
+)}
