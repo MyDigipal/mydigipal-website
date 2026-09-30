@@ -305,13 +305,19 @@ COMPOSANTS = [
     ("Tableau à palettes", "tableau-chiffres", "Trois chiffres d'un client.",
      "lignes : chiffre, unité, libellé ; auChargement, tete", "Écrit, components/motion/TableauPalettes.astro (pilotes) : hero d'AI Training, formation sur /ai", "fait"),
     ("Caméra qui tient", "demo-interface", "Une interface, zone par zone : l'Academy, un tableau de bord, une réponse d'IA.",
-     "une vraie capture, deux à quatre zones (rectangle, titre, texte, zoom)", "Écrit, components/motion/CameraInterface.astro (pilotes) : l'Academy sur /ai. Sous 1 024 px, cartes recadrées", "fait"),
+     "une vraie capture, deux à quatre zones (rectangle, titre, texte, zoom)", "Écrit, components/motion/CameraInterface.astro. Retiré de /ai à la demande de Paul (capture périmée), gardé pour une interface à jour", "attente"),
     ("Grille suisse", "grille-suisse", "Une méthode nommée en trois à six mots, posée sur douze colonnes : CRAFT.",
      "mots : lettre, mot, question, exemple ; conclusion", "Écrit, components/motion/GrilleSuisse.astro (pilotes) : CRAFT sur AI Training, à la place de la grille de mots", "fait"),
     ("Cartes de départements", "aucun", "Un service par carte : une grande icône, un exemple de demande. Tailles variées.",
      "icône, nom, exemple, autres usages ; fond encre ou clair", "Écrit, sections/CartesDepartements.astro (pilotes)", "fait"),
     ("Ruban du calculateur", "aucun", "Chiffrer le service de la page, déjà coché dans le calculateur.",
      "identifiant du calculateur", "Écrit, sections/RubanCalculateur.astro, sur toutes les pages services", "fait"),
+    ("Marque d'un outil", "aucun", "La vraie marque d'un outil ou d'une plateforme, en couleur, par son nom.",
+     "nom, taille, icône de secours", "Écrit, ui/Marque.astro (31 marques simple-icons)", "fait"),
+    ("Cartes et tuiles", "aucun", "Les cartes blanches, de verre et d'encre, les tuiles d'icône et les puces du modèle AI Training.",
+     "classes .carte, .carte-verre, .carte-encre, .tuile, .puces", "Écrit, dans global.css (groupe 2)", "fait"),
+    ("Fenêtre d'exemple", "aucun", "Un exemple d'annonce par format, dans une fenêtre qui s'ouvre au bouton.",
+     "une <dialog> par format", "Écrit, dans GoogleAdsChannels.astro", "fait"),
     ("Grille de mots", "grille-suisse", "Une méthode nommée en quatre à six mots : CRAFT.",
      "mots : lettre, mot, description, ligne d'exemple ; titre et conclusion", "Écrit, components/motion/GrilleMots.astro (groupe 1)", "fait"),
     ("Révélation en particules", "particules-texte", "Faire apparaître un logo, celui d'un client en tête d'étude de cas.",
@@ -388,9 +394,15 @@ PAGES = {
 }
 
 ETATS = {  # page : (libellé, classe) quand une page avance
-    "/ai": ("Pilote écrit, à valider par Paul", "attente"),
-    "/services/ai-training": ("Pilote écrit, à valider par Paul", "attente"),
-    "/services/google-ads": ("Écrit, retours de Paul en cours", "attente"),
+    "/ai": ("Validé par Paul, corrigé (vidéos de l'Academy)", "fait"),
+    "/services/ai-training": ("Validé par Paul : le modèle du site", "fait"),
+    "/services/google-ads": ("Retours de Paul faits (ruban, logos, fenêtres)", "attente"),
+    "/services": ("Groupe 2 écrit, à relire par Paul", "attente"),
+    "/services/seo": ("Groupe 2 écrit, à relire par Paul", "attente"),
+    "/services/paid-social": ("Groupe 2 écrit, à relire par Paul", "attente"),
+    "/services/emailing": ("Groupe 2 écrit, à relire par Paul", "attente"),
+    "/services/b2b-abm": ("Groupe 2 écrit, à relire par Paul", "attente"),
+    "/services/tracking-reporting": ("Groupe 2 écrit, à relire par Paul", "attente"),
     "/services/ai-solutions": ("Écrit, à vérifier", "attente"),
     "/services/ai-content": ("Écrit, à vérifier", "attente"),
 }
@@ -528,6 +540,10 @@ JOURNAL = [
     ("30/09/2026", "Chiffres de l'agence remis à la demande de Paul : 2 500+ personnes formées (hero d'AI Training, /ai, logos des clients), passerelle MCP 244 / 21 / 18+ (grille des outils, sections MCP)."),
     ("30/09/2026", "Retours de Paul sur Google Ads : ruban du calculateur avec le service coché (toutes les pages services, et le bouton du hero), logos clients en couleur. Les fenêtres d'exemple des formats restent à refaire."),
     ("30/09/2026", "Pilotes écrits : tableau à palettes, caméra qui tient, grille suisse, cartes de départements, vraies marques des outils (simple-icons, CC0). Vérifié par script en local à 1 440, 1 024, 768, 390 et 360 px et sans JavaScript : 0 débordement, 0 section d'encre collée, sombre 37 à 48 %, 0 erreur JavaScript. Pas encore vu sur Render."),
+    ("30/09/2026", "Retours de Paul : AI Training validée et devient le modèle ; /ai validée avec une correction. Sur /ai, la capture de l'Academy (périmée) laisse la place à la vidéo de présentation v4 dans la carte, et à la section Academy de l'accueil (boucles filmées, films parlants)."),
+    ("30/09/2026", "Google Ads : les fenêtres d'exemple des formats sont revenues, au style Encre, sans leurs pourcentages."),
+    ("30/09/2026", "Groupe 2 écrit en français au modèle d'AI Training : SEO (carte de verre du LLMO, tableau à palettes, rail), Paid Social (rail, tableau), Emailing (tableau, rail, carte de verre), B2B (carte de verre de l'ABM, rail, entonnoir), Tracking (tableau, carte de verre du serveur), index des services (tableau lu dans trois études de cas, rail)."),
+    ("30/09/2026", "Vérifié par script en local sur les six pages et les pilotes, FR et EN, à 1 440, 1 024, 768, 390 et 360 px et sans JavaScript : 0 débordement, 0 section d'encre collée, 0 erreur JavaScript, 0 tiret long en français. Sombre de 31 à 45 % : Paid Social, Emailing et B2B passent sous 35 % à certaines largeurs. Pas encore vu sur Render."),
 ]
 
 
