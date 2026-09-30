@@ -33,6 +33,8 @@ interface Props {
   testimonial?: HeroTestimonial;
   /** Logos propres à la page (AI Training passe ses clients de formation). */
   heroLogos?: { name: string; logo: string }[];
+  /** L'identifiant du calculateur : « Calculer mon budget » ouvre avec ce service coché. */
+  serviceCalculateur?: string;
 }
 
 const {
@@ -46,6 +48,7 @@ const {
   proofPoints = [],
   testimonial,
   heroLogos,
+  serviceCalculateur,
 } = Astro.props;
 
 // `color` et `testimonial` restent acceptés : toutes les pages portent le bleu du
@@ -90,7 +93,7 @@ const showPanel = resultats.length > 0 || points.length > 0;
         </p>
 
         <div class="pilules mt-3">
-          <a href={`/${lang}/calculator`} class="pilule pilule-pleine">
+          <a href={`/${lang}/calculator${serviceCalculateur ? `?service=${serviceCalculateur}` : ''}`} class="pilule pilule-pleine">
             {t(lang, 'cta.calculateBudget')}
             <Icon name="arrow-right" size={18} class="pilule-fleche" />
           </a>
