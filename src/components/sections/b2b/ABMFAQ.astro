@@ -77,100 +77,44 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<!-- FAQ Structured Data -->
 <FAQSchema faqs={t.faqs} />
 
-<section class="py-24 bg-gradient-to-b from-slate-50 to-white">
-  <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- FAQ Accordion -->
-    <div class="max-w-3xl mx-auto space-y-4">
-      {t.faqs.map((faq, index) => (
-        <div
-          class="faq-item bg-white rounded-2xl border border-slate-200 overflow-hidden animate-on-scroll"
-          style={`animation-delay: ${index * 80}ms`}
-        >
-          <button
-            class="faq-trigger w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition-colors"
-            aria-expanded="false"
-          >
-            <span class="font-semibold text-slate-900 pr-4">{faq.question}</span>
-            <span class="faq-icon w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 transition-transform duration-300">
-              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </span>
-          </button>
-          <div class="faq-content hidden px-6 pb-6">
-            <p class="text-slate-600 leading-relaxed">{faq.answer}</p>
-          </div>
-        </div>
+<!-- B2B, les questions (direction Encre, 30/09/2026) : la mise en page de `ServiceFAQ`, le titre
+     collé à gauche, les questions en `<details>` à droite. -->
+<section class="service-faq section-blanc py-20 lg:py-32">
+  <div class="container-custom grid items-start gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-18">
+    <header class="grid gap-5 lg:sticky lg:top-28 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <div>
+      {t.faqs.map((faq) => (
+        <details class="faq-question border-b border-slate-200 first:border-t">
+          <summary class="flex cursor-pointer items-start justify-between gap-5 py-[22px] lg:py-[26px]">
+            <span class="font-display text-lg font-bold leading-snug tracking-[-0.01em] text-encre lg:text-xl">{faq.question}</span>
+            <svg class="faq-plus mt-0.5 h-6 w-6 flex-none text-marque" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          </summary>
+          <p class="max-w-[66ch] pb-[26px] pr-11 text-base leading-relaxed text-slate-600 text-pretty lg:text-[1.0625rem]">{faq.answer}</p>
+        </details>
       ))}
     </div>
   </div>
 </section>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const faqItems = document.querySelectorAll('.faq-item');
-
-    faqItems.forEach(item => {
-      const trigger = item.querySelector('.faq-trigger');
-      const content = item.querySelector('.faq-content');
-      const icon = item.querySelector('.faq-icon');
-
-      trigger?.addEventListener('click', () => {
-        const isOpen = content?.classList.contains('hidden') === false;
-
-        // Close all other items
-        faqItems.forEach(otherItem => {
-          const otherContent = otherItem.querySelector('.faq-content');
-          const otherIcon = otherItem.querySelector('.faq-icon');
-          const otherTrigger = otherItem.querySelector('.faq-trigger');
-          otherContent?.classList.add('hidden');
-          otherIcon?.classList.remove('rotate-180');
-          otherTrigger?.setAttribute('aria-expanded', 'false');
-        });
-
-        // Toggle current item
-        if (!isOpen) {
-          content?.classList.remove('hidden');
-          icon?.classList.add('rotate-180');
-          trigger?.setAttribute('aria-expanded', 'true');
-        }
-      });
-    });
-  });
-</script>
-
 <style>
-  .faq-item {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
+  .faq-question summary {
+    list-style: none;
   }
-
-  .faq-icon {
-    transition: transform 0.3s ease;
+  .faq-question summary::-webkit-details-marker {
+    display: none;
   }
-
-  .faq-icon.rotate-180 {
-    transform: rotate(180deg);
+  .faq-question summary:hover span {
+    color: var(--color-marque);
   }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .faq-plus {
+    transition: transform 400ms var(--mdp-entree);
+  }
+  .faq-question[open] .faq-plus {
+    transform: rotate(45deg);
   }
 </style>
