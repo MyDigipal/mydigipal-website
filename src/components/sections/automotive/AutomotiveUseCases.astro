@@ -1,6 +1,10 @@
 ---
+/**
+ * Les cas d'usage, pages automobile (direction Encre, 30/09/2026) : une ligne par cas,
+ * l'image de la fiche en grand dans son cadre gris clair, alternée à gauche et à droite,
+ * le texte de l'autre côté, ce qui est compris en puces. Sur le blanc.
+ */
 import type { Language } from '@/i18n/config';
-import Icon from '@/components/ui/Icon.astro';
 
 interface UseCase {
   id: string;
@@ -13,109 +17,67 @@ interface UseCase {
 interface Props {
   lang: Language;
   useCases: UseCase[];
-  color?: 'automotive' | 'ads' | 'social' | 'primary';
+  /** Le titre et le chapeau propres à la page ; à défaut, un titre commun. */
+  titre?: string;
+  chapo?: string;
+  /** Accepté pour ne pas toucher aux pages. */
+  color?: string;
 }
 
-const { lang, useCases, color = 'automotive' } = Astro.props;
+const { lang, useCases, titre, chapo, color } = Astro.props;
+void color;
 
-const colorConfig = {
-  automotive: {
-    gradient: 'from-sky-500 to-blue-600',
-    accent: 'text-sky-500',
-    checkBg: 'bg-sky-100',
-    checkColor: 'text-sky-600',
-  },
-  ads: {
-    gradient: 'from-amber-500 to-orange-600',
-    accent: 'text-amber-500',
-    checkBg: 'bg-amber-100',
-    checkColor: 'text-amber-600',
-  },
-  social: {
-    gradient: 'from-violet-500 to-purple-600',
-    accent: 'text-violet-500',
-    checkBg: 'bg-violet-100',
-    checkColor: 'text-violet-600',
-  },
-  primary: {
-    gradient: 'from-blue-500 to-indigo-600',
-    accent: 'text-blue-500',
-    checkBg: 'bg-blue-100',
-    checkColor: 'text-blue-600',
-  },
+const t = {
+  titre: titre ?? (lang === 'fr' ? 'Ce qu’on met en place' : 'What we put in place'),
+  chapo,
 };
-
-const colors = colorConfig[color];
-
-const content = {
-  en: {
-    badge: 'Use Cases',
-    title: 'Tailored Strategies for Every Segment',
-    subtitle: 'Whether you\'re promoting new models, moving used inventory, or driving event registrations.',
-  },
-  fr: {
-    badge: 'Cas d\'Usage',
-    title: 'Stratégies adaptées à chaque segment',
-    subtitle: 'Que vous promouviez des modèles neufs, écouliez des véhicules d\'occasion ou génériez des inscriptions événementielles.',
-  },
-};
-
-const t = content[lang];
 ---
 
-<section class="section bg-slate-50">
+<section class="section-blanc py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Section Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="heading-2 mb-4">{t.title}</h2>
-      <p class="body-large text-slate-600">{t.subtitle}</p>
-    </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-20 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.titre}</h2>
+      {t.chapo && <p class="chapo">{t.chapo}</p>}
+    </header>
 
-    <!-- Use Cases -->
-    <div class="space-y-16">
-      {useCases.map((useCase, index) => (
-        <div
-          class={`flex flex-col ${index % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-12 items-center animate-on-scroll`}
-          style={`animation-delay: ${index * 150}ms`}
-        >
-          <!-- Image -->
-          {useCase.image && (
-            <div class="lg:w-1/2">
-              <div class="relative">
-                <div class={`absolute inset-0 bg-gradient-to-br ${colors.gradient} rounded-2xl transform ${index % 2 === 1 ? '-rotate-3' : 'rotate-3'} opacity-20`}></div>
-                <img
-                  src={useCase.image}
-                  alt={useCase.title}
-                  class="relative rounded-2xl shadow-lg w-full object-cover aspect-[4/3]"
-                  loading="lazy"
-                />
-              </div>
-            </div>
+    <div class="grid gap-16 lg:gap-24">
+      {useCases.map((u, i) => (
+        <article class="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16" data-reveal>
+          {u.image && (
+            <figure class:list={['auto-cas-visuel', { 'lg:order-last': i % 2 === 1 }]}>
+              <img src={u.image} alt="" loading="lazy" decoding="async" />
+            </figure>
           )}
-
-          <!-- Content -->
-          <div class={`lg:w-1/2 ${!useCase.image ? 'lg:w-full' : ''}`}>
-            <span class={`text-sm font-semibold ${colors.accent} uppercase tracking-wider mb-2 block`}>
-              {useCase.id}
-            </span>
-            <h3 class="heading-3 mb-4">{useCase.title}</h3>
-            <p class="text-slate-600 mb-6 leading-relaxed">{useCase.description}</p>
-
-            {useCase.features && useCase.features.length > 0 && (
-              <ul class="space-y-3">
-                {useCase.features.map((feature) => (
-                  <li class="flex items-start gap-3">
-                    <div class={`flex-shrink-0 w-6 h-6 rounded-full ${colors.checkBg} flex items-center justify-center mt-0.5`}>
-                      <Icon name="check" size={14} class={colors.checkColor} />
-                    </div>
-                    <span class="text-slate-700">{feature}</span>
-                  </li>
-                ))}
+          <div class="grid content-start gap-4">
+            <p class="text-sm font-semibold text-slate-500">{u.id}</p>
+            <h3 class="titre-carte text-encre lg:text-[2rem]">{u.title}</h3>
+            <p class="text-lg leading-relaxed text-slate-600 text-pretty">{u.description}</p>
+            {u.features && u.features.length > 0 && (
+              <ul class="puces mt-2">
+                {u.features.map((f) => <li>{f}</li>)}
               </ul>
             )}
           </div>
-        </div>
+        </article>
       ))}
     </div>
   </div>
 </section>
+
+<style>
+  .auto-cas-visuel {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 10;
+    margin: 0;
+    padding: 28px;
+    border-radius: var(--rayon-scene);
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet), 0 24px 50px -36px rgb(11 27 43 / 0.35);
+  }
+  .auto-cas-visuel img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+</style>

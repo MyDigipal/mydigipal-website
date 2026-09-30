@@ -1,6 +1,9 @@
 ---
+/**
+ * L'équipe, pages automobile (direction Encre, 30/09/2026) : les portraits en couleur et en
+ * grand, puis ce dont chacun s'occupe, par rubrique. Plus de voile sombre sur les photos.
+ */
 import type { Language } from '@/i18n/config';
-import Icon from '@/components/ui/Icon.astro';
 
 interface TeamMember {
   name: string;
@@ -15,78 +18,48 @@ interface TeamMember {
 interface Props {
   lang: Language;
   team: TeamMember[];
+  fond?: 'blanc' | 'brume';
 }
 
-const { lang, team } = Astro.props;
+const { lang, team, fond = 'blanc' } = Astro.props;
 
-const content = {
-  en: {
-    badge: 'Our Team',
-    title: 'The People Behind Your Success',
-    subtitle: 'Meet the dedicated automotive marketing specialists who will drive your campaigns.',
-  },
-  fr: {
-    badge: 'Notre équipe',
-    title: 'Les personnes derrière votre succès',
-    subtitle: 'Découvrez les spécialistes marketing automobile dédiés qui piloteront vos campagnes.',
-  },
-};
-
-const t = content[lang];
+const t = {
+  en: { titre: 'The people who run your campaigns', chapo: 'A small automotive team: the same people from the audit to the monthly review.' },
+  fr: { titre: 'Les personnes qui pilotent vos campagnes', chapo: 'Une équipe automobile resserrée : les mêmes personnes de l’audit au point mensuel.' },
+}[lang];
 ---
 
-<section class="section bg-white">
+<section class:list={['py-20 lg:py-32', fond === 'brume' ? 'section-brume' : 'section-blanc']}>
   <div class="container-custom">
-    <!-- Section Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="heading-2 mb-4">{t.title}</h2>
-      <p class="body-large text-slate-600">{t.subtitle}</p>
-    </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.titre}</h2>
+      <p class="chapo">{t.chapo}</p>
+    </header>
 
-    <!-- Team Grid -->
-    <div class="grid md:grid-cols-3 gap-8">
-      {team.map((member, index) => (
-        <div
-          class="group relative animate-on-scroll"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-soft overflow-hidden hover:shadow-lg transition-all duration-300">
-            <!-- Photo -->
-            <div class="relative h-64 overflow-hidden">
-              <img
-                src={member.image}
-                alt={member.name}
-                class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                loading="lazy"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
-              <div class="absolute bottom-4 left-4 right-4">
-                <h3 class="text-xl font-bold text-white">{member.name}</h3>
-                <p class="text-sky-300 font-medium">{member.role}</p>
-              </div>
-            </div>
-
-            <!-- Responsibilities -->
-            <div class="p-6">
-              {member.responsibilities.map((resp) => (
-                <div class="mb-4 last:mb-0">
-                  <h4 class="text-sm font-semibold text-slate-900 mb-2 flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
-                    {resp.category}
-                  </h4>
-                  <ul class="space-y-1 pl-4">
-                    {resp.items.map((item) => (
-                      <li class="text-sm text-slate-600 relative before:content-['–'] before:absolute before:-left-3 before:text-slate-400">
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+    <ul class="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-6 lg:gap-8">
+      {team.map((m, i) => (
+        <li class="grid content-start gap-5" data-reveal style={`--i:${i}`}>
+          <img
+            src={m.image}
+            alt={m.name}
+            class="aspect-[4/3] w-full rounded-[var(--rayon-panneau)] object-cover object-[50%_20%] md:aspect-[4/5] md:object-top"
+            loading="lazy"
+            decoding="async"
+          />
+          <div>
+            <h3 class="titre-carte text-encre">{m.name}</h3>
+            <p class="mt-1 font-medium text-marque">{m.role}</p>
           </div>
-        </div>
+          <dl class="grid gap-3 border-t border-slate-200 pt-4">
+            {m.responsibilities.map((r) => (
+              <div>
+                <dt class="text-sm font-semibold text-encre">{r.category}</dt>
+                {r.items.map((item) => <dd class="mt-0.5 text-[0.9375rem] leading-snug text-slate-600">{item}</dd>)}
+              </div>
+            ))}
+          </dl>
+        </li>
       ))}
-    </div>
+    </ul>
   </div>
 </section>
