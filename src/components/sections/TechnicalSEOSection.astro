@@ -183,155 +183,174 @@ const content = {
 const t = content[lang];
 ---
 
-<section id="technical-seo" class="py-24 bg-slate-50 overflow-hidden">
+<!-- SEO, phase 2 : le SEO technique (direction Encre, 30/09/2026). Les cartes qui se
+     retournent sont gardées : le recto dit le chantier, le verso son détail. Tailles
+     variées (la première et la dernière sur deux colonnes). Au clavier et au doigt, le
+     bouton de la carte la retourne. -->
+<section id="technical-seo" class="section-brume py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Section Header -->
-    <div class="text-center max-w-3xl mx-auto mb-12">
-      <h2 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
-        {t.title}
-      </h2>
-      <p class="text-lg text-slate-600 mb-4">
-        {t.subtitle}
-      </p>
-      <p class="text-sm text-slate-400 flex items-center justify-center gap-2">
-        <svg class="w-4 h-4 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-        </svg>
-        {t.hint}
-      </p>
-    </div>
-
-    <!-- Flip Cards Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {t.items.map((item, index) => (
-        <div
-          class="flip-card h-80 perspective-1000"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <div class="flip-card-inner relative w-full h-full transition-transform duration-700 transform-style-preserve-3d">
-            {/* Front of card */}
-            <div class="flip-card-front absolute inset-0 backface-hidden">
-              <div class="h-full bg-white rounded-3xl border border-slate-200 p-8 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-lg transition-shadow">
-                <div class="mb-6 text-marque">
-                  <Icon name={item.icon} size={32} />
-                </div>
-                <h3 class="text-xl font-bold text-slate-900 mb-2">
-                  {item.title}
-                </h3>
-                <p class="text-slate-500 text-sm">
-                  {item.frontText}
-                </p>
-                <div class={`mt-6 w-12 h-1 rounded-full bg-gradient-to-r ${colors.gradient}`}></div>
-              </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.title}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <ul class="retournes">
+      {t.items.map((item, i) => (
+        <li class:list={['retourne', { 'retourne-large': i === 0 || i === 3 }]} data-retourne data-reveal style={`--i:${i % 3}`}>
+          <div class="retourne-int">
+            <div class="retourne-face retourne-recto carte">
+              <span class="tuile tuile-grande"><Icon name={item.icon} size={32} /></span>
+              <h3 class="titre-carte text-encre">{item.title}</h3>
+              <p class="text-slate-600">{item.frontText}</p>
+              <button type="button" class="retourne-bouton" data-retourner aria-expanded="false">
+                {lang === 'fr' ? 'Voir le détail' : 'See the detail'}<Icon name="refresh-cw" size={16} />
+              </button>
             </div>
-
-            {/* Back of card - use <p> instead of <h3> to avoid duplicate headings */}
-            <div class="flip-card-back absolute inset-0 backface-hidden rotate-y-180">
-              <div class={`h-full bg-gradient-to-br ${colors.gradientDark} rounded-3xl p-6 flex flex-col text-white shadow-xl`}>
-                <p class="text-lg font-bold mb-4 flex items-center gap-2" aria-hidden="true">
-                  <Icon name={item.icon} size={20} />
-                  {item.title}
-                </p>
-                <ul class="space-y-2 flex-1">
-                  {item.backDetails.map((detail) => (
-                    <li class="flex items-start gap-2 text-sm text-white/90">
-                      <svg class="w-4 h-4 flex-shrink-0 mt-0.5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                      <span>{detail}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <div class="retourne-face retourne-verso carte-encre">
+              <p class="titre-carte text-white" aria-hidden="true">{item.title}</p>
+              <ul class="retourne-liste">
+                {item.backDetails.map((d) => <li>{d}</li>)}
+              </ul>
+              <button type="button" class="retourne-bouton retourne-bouton-clair" data-retourner aria-expanded="true">
+                {lang === 'fr' ? 'Retour' : 'Back'}<Icon name="refresh-cw" size={16} />
+              </button>
             </div>
           </div>
-        </div>
+        </li>
       ))}
-    </div>
-
-    <!-- Micro-CTA -->
-    <div class="text-center mt-12">
-      <a
-        href={`/${lang}/contact`}
-        class="inline-flex items-center gap-3 px-8 py-4 rounded-full text-white font-semibold text-lg hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-marque hover:bg-marque-fonce"
-      >
-        <Icon name="settings" size={20} />
+    </ul>
+    <div class="mt-12 flex flex-wrap items-center gap-x-5 gap-y-3">
+      <a href={`/${lang}/contact`} class="pilule pilule-pleine">
         {t.cta.text}
+        <Icon name="arrow-right" size={18} class="pilule-fleche" />
       </a>
-      <p class="text-sm text-slate-400 mt-3">{t.cta.subtext}</p>
+      <p class="text-slate-500">{t.cta.subtext}</p>
     </div>
   </div>
 </section>
 
 <style>
-  .perspective-1000 {
-    perspective: 1000px;
+  .retournes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
   }
-
-  .transform-style-preserve-3d {
+  .retourne {
+    perspective: 1400px;
+    min-height: 340px;
+  }
+  .retourne-int {
+    position: relative;
+    height: 100%;
+    min-height: inherit;
+    transition: transform 0.7s cubic-bezier(0.15, 1, 0.32, 1);
     transform-style: preserve-3d;
   }
-
-  .backface-hidden {
+  .retourne-face {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 28px 24px;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }
-
-  .rotate-y-180 {
+  .retourne-verso {
     transform: rotateY(180deg);
   }
-
-  .flip-card {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(30px);
+  .retourne.est-retournee .retourne-int {
+    transform: rotateY(180deg);
   }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+  @media (hover: hover) {
+    .retourne:not(.est-manuel):hover .retourne-int {
+      transform: rotateY(180deg);
     }
   }
-
-  .flip-card:hover .flip-card-inner,
-  .flip-card:focus-within .flip-card-inner,
-  .flip-card.is-flipped .flip-card-inner {
-    transform: rotateY(180deg);
+  @media (prefers-reduced-motion: reduce) {
+    .retourne-int {
+      transition: none;
+    }
   }
-
-  /* Touch device support */
-  @media (hover: none) {
-    .flip-card {
-      cursor: pointer;
+  .retourne-bouton {
+    align-self: end;
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    margin-top: auto;
+    font-weight: 600;
+    color: var(--color-marque);
+  }
+  .retourne-bouton-clair {
+    color: var(--marque-clair);
+  }
+  .retourne-recto {
+    grid-template-rows: auto auto auto 1fr;
+  }
+  .retourne-verso {
+    grid-template-rows: auto 1fr auto;
+  }
+  .retourne-liste {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+  }
+  .retourne-liste li {
+    position: relative;
+    padding-left: 18px;
+    color: var(--texte-sombre);
+  }
+  .retourne-liste li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 8px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--marque-clair);
+  }
+  @media (min-width: 768px) {
+    .retournes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .retournes {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .retourne-large {
+      grid-column: span 2;
+    }
+    .retourne-face {
+      padding: 32px;
+    }
+    .retourne-large .retourne-liste {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 24px;
     }
   }
 </style>
 
 <script>
-  // Touch support for mobile
-  document.querySelectorAll('.flip-card').forEach((card) => {
-    card.addEventListener('click', (e) => {
-      // Only toggle on touch devices
-      if (window.matchMedia('(hover: none)').matches) {
-        card.classList.toggle('is-flipped');
-      }
-    });
-  });
-
-  // Intersection Observer for animation
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate');
-        }
+  function monterRetournes() {
+    document.querySelectorAll<HTMLElement>('[data-retourne]').forEach((carte) => {
+      if (carte.dataset.monte) return;
+      carte.dataset.monte = '1';
+      carte.querySelectorAll<HTMLButtonElement>('[data-retourner]').forEach((b) => {
+        b.addEventListener('click', () => {
+          // Après un clic, le survol ne retourne plus la carte : c'est le bouton qui décide.
+          carte.classList.add('est-manuel');
+          const oui = carte.classList.toggle('est-retournee');
+          // Le focus suit la face visible.
+          const cible = carte.querySelector<HTMLButtonElement>(oui ? '.retourne-verso [data-retourner]' : '.retourne-recto [data-retourner]');
+          window.setTimeout(() => cible?.focus({ preventScroll: true }), 60);
+        });
       });
-    },
-    { threshold: 0.1 }
-  );
-
-  document.querySelectorAll('.flip-card').forEach((card) => {
-    observer.observe(card);
-  });
+    });
+  }
+  monterRetournes();
+  document.addEventListener('astro:page-load', monterRetournes);
 </script>
