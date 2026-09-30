@@ -1,5 +1,6 @@
 ---
 import { type Language } from '@/i18n/config';
+import { lireAcademy, faitsAcademy } from '@/components/accueil/donnees';
 
 interface Props {
   lang: Language;
@@ -24,7 +25,7 @@ const testimonials = [
   {
     company: "KERING",
     logo: "/images/Training Logo/Kering.svg",
-    program: "Gen AI for Finance - AMER All Brands",
+    program: "Gen AI for Finance, AMER All Brands",
     rating: 10,
     quote: lang === 'fr'
       ? "Le formateur et sa présentation ont rendu cette formation fantastique. Il nous a gardés engagés."
@@ -46,7 +47,7 @@ const testimonials = [
   {
     company: "LA POSTE",
     logo: "/images/Training Logo/La poste.png",
-    program: lang === 'fr' ? "Ateliers Copilot - Collectif de l'Institut" : "Copilot Workshops - Institute Collective",
+    program: lang === 'fr' ? "Ateliers Copilot, Collectif de l'Institut" : "Copilot Workshops, Institute Collective",
     rating: 10,
     quote: lang === 'fr'
       ? "Une bonne animation, dynamique et ludique qui permet d'apprendre sans effort. Bon équilibre entre théorie et pratique."
@@ -68,7 +69,7 @@ const testimonials = [
   {
     company: "MOËT HENNESSY",
     logo: "/images/Training Logo/Moet_Hennessy_Logo.png",
-    program: "Media Path - Groupe 2",
+    program: "Media Path, groupe 2",
     rating: 10,
     quote: lang === 'fr'
       ? "C'était vraiment intéressant. Même si la session a duré 2h30, elle a captivé mon attention tout du long. J'ai vraiment apprécié cette formation."
@@ -78,176 +79,42 @@ const testimonials = [
   }
 ];
 
-// Generate stars
-const generateStars = (count: number) => Array(count).fill('★').join('');
+
+// La note vient de l'API de l'Academy (les retours des formations en salle et à
+// distance), l'instantané prend le relais si elle ne répond pas : plus de « 9.44 »
+// écrit à la main.
+const faits = faitsAcademy(await lireAcademy(lang), lang);
+const note = lang === 'fr'
+  ? `${faits.note}/10, note moyenne sur ${faits.retours} retours de participants`
+  : `${faits.note}/10 average rating across ${faits.retours} participant reviews`;
 ---
 
-<section class="py-24 bg-gradient-to-b from-slate-50 to-white">
+<!-- Direction Encre (30/09/2026) : les verbatims sur une section d'encre, mot pour mot,
+     entre des filets (plus de cartes, plus d'étoiles). La note est lue dans l'API de
+     l'Academy. -->
+<section class="section-encre section-monte py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-16 animate-on-scroll">
-      <div class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-6">
-        <span class="text-yellow-500"></span>
-        <span>9.44/10 {lang === 'fr' ? 'Note Moyenne' : 'Average Rating'}</span>
-      </div>
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-600">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Testimonials Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen">{t.headline}</h2>
+      <p class="chapo">{note}</p>
+    </header>
+    <div class="grid gap-x-12 md:grid-cols-2 lg:grid-cols-3">
       {testimonials.map((testimonial, index) => (
-        <div
-          class="testimonial-card group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-cyan-200 animate-on-scroll"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <!-- Company Header with Logo -->
-          <div class="flex items-center gap-4 mb-4">
-            {testimonial.logo && (
-              <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-white border border-slate-100 p-2 flex items-center justify-center">
-                <img
-                  src={testimonial.logo}
-                  alt={testimonial.company}
-                  class="w-full h-full object-contain"
-                  loading="lazy"
-                />
-              </div>
-            )}
-            <div class="flex-1 min-w-0">
-              <h3 class={`text-lg font-bold bg-gradient-to-r ${testimonial.color} bg-clip-text text-transparent`}>
-                {testimonial.company}
-              </h3>
-              <p class="text-sm text-slate-500 truncate">{testimonial.program}</p>
-            </div>
-          </div>
-
-          <!-- Rating -->
-          <div class="flex items-center gap-3 mb-4">
-            <span class="text-yellow-400 text-lg tracking-wider">
-              {generateStars(testimonial.rating)}
+        <figure class="flex flex-col gap-6 border-t border-white/10 py-8" data-reveal style={`--i:${index % 3}`}>
+          <blockquote class="flex-1 font-display text-xl font-bold leading-snug tracking-[-0.015em] text-white">
+            {lang === 'fr' ? `« ${testimonial.quote} »` : `“${testimonial.quote}”`}
+          </blockquote>
+          <figcaption class="flex items-center gap-4">
+            <span class="grid h-12 w-20 flex-none place-items-center rounded-xl bg-white px-2.5 py-2">
+              <img src={testimonial.logo} alt={testimonial.company} class="max-h-full w-auto object-contain" loading="lazy" decoding="async" />
             </span>
-            <span class="text-cyan-600 font-bold">{testimonial.rating}/10</span>
-          </div>
-
-          <!-- Quote -->
-          <div class="relative mb-4">
-            <span class="absolute -top-2 -left-1 text-4xl text-cyan-200 font-serif">"</span>
-            <p class="text-slate-700 italic pl-4 leading-relaxed">
-              {testimonial.quote}
-            </p>
-            <span class="absolute -bottom-4 right-0 text-4xl text-cyan-200 font-serif">"</span>
-          </div>
-
-          <!-- Author -->
-          <div class="pt-4 mt-4 border-t border-slate-100">
-            <p class="text-slate-500 text-sm">— {testimonial.author}</p>
-          </div>
-
-          <!-- Decorative gradient border on hover -->
-          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-        </div>
+            <span class="min-w-0">
+              <span class="block font-semibold text-sur-encre">{testimonial.author}</span>
+              <span class="block text-sur-encre-2">{testimonial.program}</span>
+            </span>
+          </figcaption>
+        </figure>
       ))}
-    </div>
-
-    <!-- Training Photos Section -->
-    <div class="mt-20 animate-on-scroll">
-      <h3 class="text-2xl font-bold text-slate-900 text-center mb-8">
-        {lang === 'fr' ? 'En action' : 'In Action'}
-      </h3>
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="relative group overflow-hidden rounded-2xl shadow-lg">
-          <img
-            src="/images/Traning pictures/AI Training La poste 1.jpg"
-            alt="AI Training session at La Poste"
-            class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 text-white">
-            <p class="font-semibold">La Poste</p>
-            <p class="text-sm text-white/80">{lang === 'fr' ? 'Formation IA' : 'AI Training'}</p>
-          </div>
-        </div>
-        <div class="relative group overflow-hidden rounded-2xl shadow-lg">
-          <img
-            src="/images/Traning pictures/AI Training La poste 2.jpg"
-            alt="AI Training workshop at La Poste"
-            class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 text-white">
-            <p class="font-semibold">{lang === 'fr' ? 'Atelier Pratique' : 'Hands-on Workshop'}</p>
-            <p class="text-sm text-white/80">{lang === 'fr' ? 'Exercices en groupe' : 'Group exercises'}</p>
-          </div>
-        </div>
-        <div class="relative group overflow-hidden rounded-2xl shadow-lg">
-          <img
-            src="/images/Traning pictures/Ai training Leclerc.avif"
-            alt="AI Training at E.Leclerc"
-            class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 text-white">
-            <p class="font-semibold">E.Leclerc</p>
-            <p class="text-sm text-white/80">{lang === 'fr' ? 'Session IA' : 'AI Session'}</p>
-          </div>
-        </div>
-        <div class="relative group overflow-hidden rounded-2xl shadow-lg">
-          <img
-            src="/images/Traning pictures/ABM training.jpeg"
-            alt="ABM Training session"
-            class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 text-white">
-            <p class="font-semibold">ABM Training</p>
-            <p class="text-sm text-white/80">{lang === 'fr' ? 'Formation Marketing' : 'Marketing Training'}</p>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
-
-<style>
-  .testimonial-card {
-    position: relative;
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
-
-<script>
-  // Intersection Observer for scroll animations
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('animate-visible');
-      }
-    });
-  }, observerOptions);
-
-  document.querySelectorAll('.animate-on-scroll').forEach(el => {
-    observer.observe(el);
-  });
-</script>
