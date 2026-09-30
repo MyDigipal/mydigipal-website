@@ -82,86 +82,71 @@ const translations = {
 };
 
 const t = translations[lang] || translations.en;
+
+// Les icônes de l'ancienne version qui n'existent pas dans `Icon`.
+const iconeDe: Record<string, string> = { lightbulb: 'sparkles', 'user-plus': 'user' };
+
 ---
 
-<section class="relative py-24 bg-gradient-to-b from-slate-900 to-indigo-950 text-white overflow-hidden">
-  <div class="container-custom relative">
-    <!-- Background Effects -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-    </div>
-
-    <div class="relative z-10">
-      <!-- Header -->
-      <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-4">
-          {t.headline}
-        </h2>
-        <p class="text-xl text-slate-300 max-w-3xl mx-auto">
-          {t.subtitle}
-        </p>
-      </div>
-
-      <!-- Funnel Stages -->
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {t.stages.map((stage, index) => (
-          <div
-            class="funnel-stage group relative animate-on-scroll"
-            style={`animation-delay: ${index * 100}ms`}
-          >
-            <!-- Card -->
-            <div class="relative p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-500 h-full">
-              <!-- Stage Number -->
-              <div class="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold shadow-lg">
-                {index + 1}
-              </div>
-
-              <!-- Icon -->
-              <div class="mb-5 text-primary-300">
-                <Icon name={stage.icon} size={28} class="text-primary-300" />
-              </div>
-
-              <!-- Content -->
-              <h3 class="text-xl font-bold text-white mb-3">{stage.name}</h3>
-              <p class="text-slate-300 text-sm mb-5 leading-relaxed">{stage.description}</p>
-
-              <!-- Tactics -->
-              <div class="flex flex-wrap gap-2">
-                {stage.tactics.map(tactic => (
-                  <span class="px-2 py-1 text-xs bg-white/10 text-slate-300 rounded-md">
-                    {tactic}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <!-- Arrow (hidden on last item) -->
-            {index < t.stages.length - 1 && (
-              <div class="hidden lg:flex absolute top-1/2 -right-3 transform -translate-y-1/2 z-20">
-                <svg class="w-6 h-6 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M10 6l6 6-6 6V6z" />
-                </svg>
-              </div>
-            )}
+<!-- B2B, le paid media à chaque étape (direction Encre, 30/09/2026) : l'entonnoir dessiné, une
+     tranche par étape, de plus en plus étroite et de plus en plus bleue. Ce qu'on y fait
+     est écrit à côté de sa tranche. -->
+<section class="section-encre section-monte py-20 lg:py-32">
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <ol class="entonnoir">
+      {t.stages.map((s, i) => (
+        <li class="etape" style={`--k:${i}`} data-reveal>
+          <div class="tranche">
+            <span class="tuile h-11 w-11 rounded-xl bg-white/15 text-white"><Icon name={iconeDe[s.icon] ?? s.icon} size={22} /></span>
+            <h3 class="font-display text-xl font-extrabold text-white lg:text-2xl">{s.name}</h3>
           </div>
-        ))}
-      </div>
-    </div>
+          <div class="grid content-center gap-3">
+            <p class="text-sur-encre-2">{s.description}</p>
+            <ul class="puces">{s.tactics.map((x) => <li>{x}</li>)}</ul>
+          </div>
+        </li>
+      ))}
+    </ol>
   </div>
 </section>
 
 <style>
-  .funnel-stage {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(30px);
+  .entonnoir {
+    display: grid;
+    gap: 28px;
   }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+  .etape {
+    display: grid;
+    gap: 14px;
+  }
+  /* La tranche : un trapèze, plus étroit et plus bleu à chaque étape. */
+  .tranche {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 84px;
+    padding: 16px 32px;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 100%, 22px 100%);
+    background: color-mix(in srgb, var(--color-marque) calc(28% + var(--k) * 22%), rgb(255 255 255 / 0.08));
+  }
+  @media (min-width: 1024px) {
+    .entonnoir {
+      gap: 10px;
+    }
+    .etape {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 48px;
+      align-items: center;
+    }
+    .tranche {
+      width: calc(100% - var(--k) * 12%);
+      margin-inline: calc(var(--k) * 6%);
+      justify-content: center;
+      min-height: 112px;
     }
   }
 </style>
