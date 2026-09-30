@@ -16,7 +16,7 @@ const translations = {
     beforeLabel: "Today, by hand",
     afterLabel: "Once automated",
     humanLabel: "Still done by a human",
-    footnote: "Durations are orders of magnitude, to be adjusted to your volume and your tools. Every setup starts by looking at how you actually work.",
+    footnote: "Every setup starts by looking at how you actually work, with your volume and your tools.",
     tasks: [
       {
         icon: "mail",
@@ -59,7 +59,7 @@ const translations = {
     beforeLabel: "Aujourd'hui, à la main",
     afterLabel: "Une fois automatisé",
     humanLabel: "Ce qui reste à un humain",
-    footnote: "Les durées sont des ordres de grandeur, à ajuster selon votre volume et vos outils. Chaque mise en place commence par regarder comment vous travaillez vraiment.",
+    footnote: "Chaque mise en place commence par regarder comment vous travaillez vraiment, avec votre volume et vos outils.",
     tasks: [
       {
         icon: "mail",
@@ -100,79 +100,38 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-white overflow-hidden">
+<!-- Direction Encre (30/09/2026) : fond blanc, une ligne par tâche entre des filets :
+     aujourd'hui à la main, une fois automatisé, ce qui reste à un humain. Plus de cartes
+     ni de durées affichées (des ordres de grandeur sans source ; le champ `time` reste
+     dans les données). -->
+<section class="section-blanc py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <h2 class="font-display text-3xl lg:text-5xl font-bold text-slate-900 mb-4">{t.headline}</h2>
-      <p class="text-xl text-slate-600">{t.subheadline}</p>
-    </div>
-
-    <!-- Tasks -->
-    <div class="space-y-6 max-w-6xl mx-auto">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subheadline}</p>
+    </header>
+    <div class="grid">
       {t.tasks.map((task, index) => (
-        <div
-          class="ba-card bg-white rounded-3xl p-6 lg:p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:border-indigo-200 transition-all duration-500"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          {/* Card header */}
-          <div class="flex flex-wrap items-center gap-4 mb-6">
-            <div class="shrink-0 text-marque">
-              <Icon name={task.icon} size={24} />
-            </div>
-            <h3 class="text-lg lg:text-xl font-bold text-slate-900 flex-1 min-w-[12rem]">{task.title}</h3>
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
-              <Icon name="clock" size={14} />
-              {task.time}
-            </span>
+        <article class="grid gap-6 border-t border-slate-200 py-9 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-10" data-reveal style={`--i:${index % 2}`}>
+          <h3 class="flex items-start gap-3 font-display text-xl font-extrabold tracking-[-0.02em] text-encre">
+            <Icon name={task.icon} size={22} class="mt-0.5 flex-none text-marque" />
+            <span>{task.title}</span>
+          </h3>
+          <div class="grid content-start gap-2">
+            <p class="text-sm font-semibold text-slate-500">{t.beforeLabel}</p>
+            <p class="text-slate-600">{task.before}</p>
           </div>
-
-          {/* Avant, flèche, après */}
-          <div class="grid md:grid-cols-[1fr_auto_1fr] gap-4 items-stretch">
-            <div class="rounded-2xl bg-slate-50 border border-slate-100 p-5">
-              <div class="flex items-center gap-2 mb-3">
-                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">{t.beforeLabel}</span>
-              </div>
-              <p class="text-slate-600 text-sm lg:text-base">{task.before}</p>
-            </div>
-
-            <div class="flex items-center justify-center text-indigo-400">
-              <Icon name="arrow-right" size={24} class="rotate-90 md:rotate-0" />
-            </div>
-
-            <div class="rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 p-5">
-              <div class="flex items-center gap-2 mb-3">
-                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                <span class="text-xs font-semibold uppercase tracking-wider text-indigo-600">{t.afterLabel}</span>
-              </div>
-              <p class="text-slate-700 text-sm lg:text-base mb-4">{task.after}</p>
-              <div class="pt-4 border-t border-indigo-100">
-                <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">{t.humanLabel}</span>
-                <p class="text-slate-600 text-sm">{task.human}</p>
-              </div>
-            </div>
+          <div class="grid content-start gap-2">
+            <p class="text-sm font-semibold text-marque">{t.afterLabel}</p>
+            <p class="text-encre">{task.after}</p>
           </div>
-        </div>
+          <div class="grid content-start gap-2">
+            <p class="text-sm font-semibold text-slate-500">{t.humanLabel}</p>
+            <p class="text-slate-600">{task.human}</p>
+          </div>
+        </article>
       ))}
     </div>
-
-    <!-- Footnote -->
-    <p class="text-center text-sm text-slate-500 max-w-2xl mx-auto mt-10">{t.footnote}</p>
+    <p class="mt-8 max-w-2xl text-slate-500">{t.footnote}</p>
   </div>
 </section>
-
-<style>
-  .ba-card {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease forwards;
-  }
-
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
