@@ -1,0 +1,349 @@
+---
+/**
+ * La grille suisse (direction Encre, 30/09/2026 ; essai `grille-suisse`, fiche B.8 de
+ * `docs/refonte-design/motion/ADAPTATION-WEB.md`, « Joli, ça se garde »). Ce qu'elle
+ * explique : une méthode nommée en quatre à six mots, CRAFT par exemple. La grille de
+ * douze colonnes se déploie, puis chaque rang pose sa lettre, son mot révélé par une
+ * barre qui passe, et ce que le champ demande avec un exemple.
+ *
+ * Adaptation : la grille est une vraie grille CSS (douze colonnes, quatre sous 768 px),
+ * les mots sont de vrais titres. Gardé : la grille qui se déploie colonne par colonne, la
+ * barre qui passe, le bloc qui glisse le long de la grille (deuxième rang), la barre
+ * d'encre du dernier rang. Retiré : les sorties, l'estompage, le monospace.
+ *
+ * Contrat du socle : l'état final est celui de la feuille de style, le même sans script.
+ * À poser sur un fond clair (`.section-brume`).
+ */
+import type { Language } from '@/i18n/config';
+
+interface Mot {
+  lettre: string;
+  mot: string;
+  description: string;
+  exemple: string;
+}
+
+interface Props {
+  lang: Language;
+  mots: Mot[];
+  conclusion?: string;
+}
+
+const { lang, mots, conclusion } = Astro.props;
+if (mots.length < 3 || mots.length > 6) throw new Error(`GrilleSuisse : de trois à six mots, pas ${mots.length}.`);
+const fr = lang === 'fr';
+const dernier = mots.length - 1;
+---
+
+<div class="gs" data-grille-suisse data-n={mots.length}>
+  <div class="gs-guides" aria-hidden="true">
+    {Array.from({ length: 12 }, () => <span class="gs-guide"></span>)}
+  </div>
+
+  <ol class="gs-rangs">
+    {mots.map((m, i) => (
+      <li class:list={['gs-rang', { 'gs-rang-bloc': i === 1, 'gs-rang-encre': i === dernier }]}>
+        {i === 1 && <span class="gs-bloc" aria-hidden="true"></span>}
+        {i === dernier && <span class="gs-barre-rang" aria-hidden="true"></span>}
+        <span class="gs-lettre" aria-hidden="true">{m.lettre}</span>
+        <h3 class="gs-mot">
+          <span class="gs-mot-texte">{m.mot}</span>
+          <span class="gs-barre" aria-hidden="true"></span>
+        </h3>
+        <div class="gs-detail">
+          <p class="gs-question">{m.description}</p>
+          <p class="gs-exemple">
+            <span class="sr-only">{fr ? 'Exemple : ' : 'Example: '}</span>
+            {fr ? `« ${m.exemple} »` : `“${m.exemple}”`}
+          </p>
+        </div>
+      </li>
+    ))}
+  </ol>
+
+  {conclusion && <p class="gs-conclusion">{conclusion}</p>}
+
+  <button type="button" class="gs-rejouer" data-rejouer>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7" stroke-linecap="round" /><path d="M3 4v5h5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    {fr ? 'Rejouer' : 'Replay'}
+  </button>
+</div>
+
+<style>
+  .gs {
+    --colonnes: 4;
+    --gout: 12px;
+    --papier: var(--brume);
+    position: relative;
+    display: grid;
+    gap: 0;
+  }
+  /* Les guides : les colonnes de la grille, visibles, derrière les rangs. */
+  .gs-guides {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--colonnes), minmax(0, 1fr));
+    column-gap: var(--gout);
+    pointer-events: none;
+  }
+  .gs-guide {
+    background: rgb(11 27 43 / 0.045);
+    border-radius: 2px;
+    transform-origin: 50% 0;
+  }
+  .gs-guide:nth-child(n + 5) {
+    display: none;
+  }
+  .gs-rangs {
+    position: relative;
+    display: grid;
+    gap: var(--gout);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .gs-rang {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--colonnes), minmax(0, 1fr));
+    column-gap: var(--gout);
+    row-gap: 14px;
+    align-items: center;
+    padding-block: 18px;
+    border-top: 2px solid var(--encre);
+  }
+  .gs-lettre {
+    grid-column: 1 / 2;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    background: var(--encre);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.25rem, 1.4rem + 3.4vw, 4.75rem);
+    line-height: 1;
+  }
+  .gs-mot {
+    grid-column: 2 / -1;
+    position: relative;
+    justify-self: start;
+    overflow: clip;
+    padding: 4px 6px 4px 0;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2rem, 1.2rem + 3.2vw, 4.25rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    color: var(--encre);
+  }
+  .gs-barre {
+    position: absolute;
+    inset: 0;
+    background: var(--encre);
+    transform: translateX(-101%);
+  }
+  .gs-detail {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 6px;
+  }
+  .gs-question {
+    font-weight: 600;
+    color: var(--encre);
+  }
+  .gs-exemple {
+    color: #4b5b6b;
+  }
+
+  /* Deuxième rang : le mot sur un bloc bleu qui a glissé le long de la grille. */
+  .gs-bloc {
+    grid-column: 2 / -1;
+    grid-row: 1;
+    align-self: stretch;
+    margin-block: -6px;
+    border-radius: 6px;
+    background: var(--color-marque);
+  }
+  .gs-rang-bloc .gs-mot {
+    grid-row: 1;
+    color: #fff;
+    padding-left: 14px;
+  }
+  .gs-rang-bloc .gs-barre {
+    background: #fff;
+  }
+  /* Dernier rang : une barre d'encre sur toute la largeur, le texte en clair. */
+  .gs-barre-rang {
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    background: var(--encre);
+    transform-origin: 0 50%;
+  }
+  .gs-rang-encre {
+    padding-inline: 14px;
+    border-top-color: transparent;
+  }
+  /* La barre est posée en absolu : le contenu du rang passe au-dessus. */
+  .gs-rang-encre > :not(.gs-barre-rang) {
+    position: relative;
+    z-index: 1;
+  }
+  .gs-rang-encre .gs-lettre {
+    background: var(--color-marque);
+  }
+  .gs-rang-encre .gs-mot,
+  .gs-rang-encre .gs-question {
+    color: #fff;
+  }
+  .gs-rang-encre .gs-exemple {
+    color: var(--texte-sombre-2);
+  }
+  .gs-rang-encre .gs-barre {
+    background: var(--marque-clair);
+  }
+
+  .gs-conclusion {
+    position: relative;
+    margin-top: 28px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.375rem, 1.1rem + 1.2vw, 2rem);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--encre);
+    text-wrap: pretty;
+  }
+  .gs-rejouer {
+    position: relative;
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    margin-top: 12px;
+    font-weight: 600;
+    color: var(--color-marque);
+  }
+  .gs-rejouer:hover {
+    color: var(--color-marque-fonce);
+  }
+
+  @media (min-width: 768px) {
+    .gs {
+      --colonnes: 12;
+      --gout: 16px;
+    }
+    .gs-guide:nth-child(n + 5) {
+      display: block;
+    }
+    .gs-rang {
+      padding-block: 22px;
+    }
+    .gs-lettre {
+      grid-column: 1 / 3;
+    }
+    .gs-mot {
+      grid-column: 3 / 7;
+    }
+    .gs-bloc {
+      grid-column: 3 / 7;
+    }
+    .gs-detail {
+      grid-column: 7 / -1;
+    }
+    .gs-rang-bloc .gs-detail {
+      grid-row: 1;
+    }
+    .gs-conclusion {
+      margin-left: calc((100% - 11 * var(--gout)) / 12 * 6 + 6 * var(--gout));
+    }
+  }
+</style>
+
+<script>
+  import { scene, courbes as C, seg, mix, depasse, clamp } from '@/lib/motion';
+
+  const T = { guides: 0.04, rang: 0.7, pas: 0.35, barre: 0.28 };
+
+  function monter(el: HTMLElement) {
+    if (el.dataset.monte) return;
+    el.dataset.monte = '1';
+    const guides = Array.from(el.querySelectorAll<HTMLElement>('.gs-guide'));
+    const rangs = Array.from(el.querySelectorAll<HTMLElement>('.gs-rang'));
+    const conclusion = el.querySelector<HTMLElement>('.gs-conclusion');
+    const n = rangs.length;
+    const TENUE = +(T.rang + T.pas * n + 0.75).toFixed(2);
+    const parties = rangs.map((r) => ({
+      lettre: r.querySelector<HTMLElement>('.gs-lettre')!,
+      mot: r.querySelector<HTMLElement>('.gs-mot-texte')!,
+      barre: r.querySelector<HTMLElement>('.gs-barre')!,
+      detail: r.querySelector<HTMLElement>('.gs-detail')!,
+      bloc: r.querySelector<HTMLElement>('.gs-bloc'),
+      barreRang: r.querySelector<HTMLElement>('.gs-barre-rang'),
+    }));
+    const touches = [
+      ...guides,
+      ...parties.flatMap((p) => [p.lettre, p.mot, p.barre, p.detail, p.bloc, p.barreRang]),
+      conclusion,
+    ].filter(Boolean) as HTMLElement[];
+
+    function rendu(t: number) {
+      if (t >= TENUE - 0.001) {
+        for (const nd of touches) {
+          nd.style.transform = '';
+          nd.style.opacity = '';
+        }
+        return;
+      }
+      guides.forEach((g, i) => {
+        const a = i * T.guides;
+        g.style.transform = `scaleY(${C.entree(seg(t, a, a + 0.5)).toFixed(4)})`;
+      });
+      parties.forEach((p, i) => {
+        const a = T.rang + T.pas * i;
+        // Le bloc glisse le long de la grille, la barre du dernier rang se déroule : ce
+        // sont des objets, ils peuvent dépasser un peu.
+        if (p.bloc) {
+          const q = depasse(1.2)(seg(t, a - 0.2, a + 0.35));
+          p.bloc.style.transform = `translateX(${mix(60, 0, q).toFixed(2)}%)`;
+          p.bloc.style.opacity = seg(t, a - 0.2, a - 0.05).toFixed(3);
+        }
+        if (p.barreRang) {
+          p.barreRang.style.transform = `scaleX(${C.entree(seg(t, a - 0.25, a + 0.3)).toFixed(4)})`;
+        }
+        const l = Math.max(0, depasse(1.4)(seg(t, a, a + 0.45)));
+        p.lettre.style.transform = `scale(${mix(0.7, 1, l).toFixed(4)})`;
+        p.lettre.style.opacity = seg(t, a, a + 0.12).toFixed(3);
+        // La barre couvre, le mot apparaît d'un coup, la barre découvre.
+        const couvre = C.inOutQuart(seg(t, a + 0.08, a + 0.08 + T.barre));
+        const decouvre = C.inOutQuart(seg(t, a + 0.08 + T.barre, a + 0.08 + 2 * T.barre));
+        const x = decouvre > 0 ? mix(0, 101, decouvre) : mix(-101, 0, couvre);
+        p.barre.style.transform = `translateX(${x.toFixed(2)}%)`;
+        p.mot.style.opacity = couvre >= 0.999 ? '1' : '0';
+        const d = C.entree(seg(t, a + 0.3, a + 0.85));
+        p.detail.style.transform = `translate3d(${((1 - d) * 14).toFixed(2)}px,0,0)`;
+        p.detail.style.opacity = seg(t, a + 0.3, a + 0.45).toFixed(3);
+      });
+      if (conclusion) {
+        const a = T.rang + T.pas * n;
+        const e = C.entree(seg(t, a, a + 0.55));
+        conclusion.style.transform = `translate3d(0,${((1 - e) * 16).toFixed(2)}px,0)`;
+        conclusion.style.opacity = seg(t, a, a + 0.14).toFixed(3);
+      }
+    }
+
+    const h = el.getBoundingClientRect().height || 1;
+    scene(el, { tenue: TENUE, rendu, seuil: clamp((window.innerHeight * 0.4) / h, 0.12, 0.5) });
+  }
+
+  function monterTout() {
+    document.querySelectorAll<HTMLElement>('[data-grille-suisse]').forEach(monter);
+  }
+  monterTout();
+  document.addEventListener('astro:page-load', monterTout);
+</script>
