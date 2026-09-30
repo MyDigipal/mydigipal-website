@@ -1,4 +1,10 @@
 ---
+/**
+ * Ce qu'on fait, pages automobile (direction Encre, modèle AI Training, 30/09/2026) :
+ * des cartes blanches sur la brume, de tailles variées. La première porte le visuel de
+ * la page (la structure d'un compte, le gestionnaire de campagnes, le flux de stock) sur
+ * deux colonnes ; la dernière complète la grille, en largeur, quand elle serait seule.
+ */
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 
@@ -13,61 +19,116 @@ interface Props {
       description: string;
     }>;
   };
-  color?: 'automotive' | 'ads' | 'social' | 'primary';
+  /** Le visuel de la première carte. */
+  image?: string;
+  imageAlt?: string;
+  /** La brume par défaut ; l'encre quand la page manque de sombre (Paid Social). */
+  fond?: 'brume' | 'encre';
+  /** Accepté pour ne pas toucher aux pages. */
+  color?: string;
 }
 
-const { lang, data, color = 'automotive' } = Astro.props;
+const { lang, data, image, imageAlt = '', fond = 'brume', color } = Astro.props;
+const encre = fond === 'encre';
+void lang;
+void color;
 
-const colorConfig = {
-  automotive: {
-    gradient: 'from-sky-500 to-blue-600',
-    cardBorder: 'hover:border-sky-300',
-    iconBg: 'bg-gradient-to-br from-sky-500 to-blue-600',
-  },
-  ads: {
-    gradient: 'from-amber-500 to-orange-600',
-    cardBorder: 'hover:border-amber-300',
-    iconBg: 'bg-gradient-to-br from-amber-500 to-orange-600',
-  },
-  social: {
-    gradient: 'from-violet-500 to-purple-600',
-    cardBorder: 'hover:border-violet-300',
-    iconBg: 'bg-gradient-to-br from-violet-500 to-purple-600',
-  },
-  primary: {
-    gradient: 'from-blue-500 to-indigo-600',
-    cardBorder: 'hover:border-blue-300',
-    iconBg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
-  },
-};
-
-const colors = colorConfig[color];
+const n = data.items.length;
+// Sur trois colonnes, la première en prend deux : la dernière comble ce qui reste.
+const reste = (n - 2) % 3;
+const derniere = reste === 1 ? 'auto-service-pleine' : reste === 2 ? 'auto-service-double' : '';
 ---
 
-<section class="section bg-slate-50">
+<section class:list={['py-20 lg:py-32', encre ? 'section-encre section-monte' : 'section-brume']}>
   <div class="container-custom">
-    <!-- Section Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="heading-2 mb-4">{data.title}</h2>
-      {data.subtitle && (
-        <p class="body-large text-slate-600">{data.subtitle}</p>
-      )}
-    </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class:list={['titre-moyen', { 'text-encre': !encre }]}>{data.title}</h2>
+      {data.subtitle && <p class="chapo">{data.subtitle}</p>}
+    </header>
 
-    <!-- Services Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {data.items.map((item, index) => (
-        <div
-          class={`group p-6 rounded-2xl bg-white border border-slate-200 shadow-soft ${colors.cardBorder} hover:shadow-lg transition-all duration-300 animate-on-scroll`}
-          style={`animation-delay: ${index * 75}ms`}
+    <ul class="auto-services">
+      {data.items.map((item, i) => (
+        <li
+          class:list={['auto-service', encre ? 'carte-verre' : 'carte', { 'auto-service-tete': i === 0 && image, [derniere]: i === n - 1 && n > 2 }]}
+          data-reveal
+          style={`--i:${i}`}
         >
-          <div class={`w-12 h-12 rounded-xl ${colors.iconBg} flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform`}>
-            <Icon name={item.icon} size={24} />
+          <div class="grid content-start gap-4">
+            <span class:list={['tuile', { 'tuile-pleine': i === 0 || encre, 'tuile-grande': i === 0 }]}><Icon name={item.icon} size={i === 0 ? 32 : 26} /></span>
+            <h3 class:list={['titre-carte', encre ? 'text-white' : 'text-encre', { 'lg:text-[1.75rem]': i === 0 }]}>{item.title}</h3>
+            <p class:list={['text-pretty', encre ? 'text-sur-encre-2' : 'text-slate-600']}>{item.description}</p>
           </div>
-          <h3 class="heading-5 mb-2">{item.title}</h3>
-          <p class="text-slate-600 text-sm leading-relaxed">{item.description}</p>
-        </div>
+          {i === 0 && image && (
+            <figure class="auto-service-visuel">
+              <img src={image} alt={imageAlt} loading="lazy" decoding="async" />
+            </figure>
+          )}
+        </li>
       ))}
-    </div>
+    </ul>
   </div>
 </section>
+
+<style>
+  .auto-services {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .auto-service {
+    display: grid;
+    gap: 24px;
+    padding: 28px 24px;
+  }
+  .auto-service-visuel {
+    margin: 0;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--brume);
+    box-shadow: inset 0 0 0 1px var(--filet);
+  }
+  .section-encre .auto-service-visuel {
+    padding: 12px;
+    background: #fff;
+  }
+  .auto-service-visuel img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 340px;
+    object-fit: contain;
+  }
+  @media (min-width: 768px) {
+    .auto-services {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .auto-service-tete,
+    .auto-service-pleine {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (min-width: 1024px) {
+    .auto-services {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .auto-service {
+      padding: 32px;
+    }
+    .auto-service-tete {
+      grid-column: span 2;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      align-items: center;
+    }
+    .auto-service-pleine > div {
+      grid-template-columns: 56px minmax(0, 1fr);
+      column-gap: 24px;
+    }
+    .auto-service-pleine > div > .tuile {
+      grid-row: span 2;
+    }
+    .auto-service-double {
+      grid-column: span 2;
+    }
+  }
+</style>
