@@ -286,7 +286,7 @@ COMPOSANTS = [
     ("Système Encre", "aucun", "Les jetons, les trois fonds de section, les titres, les pilules : ce que toutes les pages partagent.",
      ".section-encre, .section-brume, .section-blanc, .section-monte, .titre-grand, .titre-moyen, .chapo, .rubrique, .pilule",
      "Écrit, dans global.css (étape 1)", "fait"),
-    ("Bande de logos", "aucun", "Les clients, immobiles et en gris, entre deux filets.",
+    ("Bande de logos", "aucun", "Les clients, immobiles et en couleur (Paul, 30/09), entre deux filets.",
      "titre, slugs ou logos", "Écrit, ui/BandeauLogos.astro", "fait"),
     ("Scène (socle)", "courbes-signature", "Le moteur commun : jouer une fois, tenir, rejouer un temps.",
      "tenue, rendu, mode, repères", "Écrit, dans src/lib/motion/", "fait"),
@@ -303,9 +303,15 @@ COMPOSANTS = [
     ("Morphing sur rail", "morph-formes", "Un process ou une évolution, en trois à cinq états.",
      "deux à cinq stations : titre, texte, forme", "Écrit, components/motion/RailMorphing.astro (étape 2)", "fait"),
     ("Tableau à palettes", "tableau-chiffres", "Trois chiffres d'un client.",
-     "lignes : chiffre, unité, libellé, source", "En maquette, direction B", "attente"),
+     "lignes : chiffre, unité, libellé ; auChargement, tete", "Écrit, components/motion/TableauPalettes.astro (pilotes) : hero d'AI Training, formation sur /ai", "fait"),
     ("Caméra qui tient", "demo-interface", "Une interface, zone par zone : l'Academy, un tableau de bord, une réponse d'IA.",
-     "gabarit de l'interface, clés de caméra, repères", "À construire", "afaire"),
+     "une vraie capture, deux à quatre zones (rectangle, titre, texte, zoom)", "Écrit, components/motion/CameraInterface.astro (pilotes) : l'Academy sur /ai. Sous 1 024 px, cartes recadrées", "fait"),
+    ("Grille suisse", "grille-suisse", "Une méthode nommée en trois à six mots, posée sur douze colonnes : CRAFT.",
+     "mots : lettre, mot, question, exemple ; conclusion", "Écrit, components/motion/GrilleSuisse.astro (pilotes) : CRAFT sur AI Training, à la place de la grille de mots", "fait"),
+    ("Cartes de départements", "aucun", "Un service par carte : une grande icône, un exemple de demande. Tailles variées.",
+     "icône, nom, exemple, autres usages ; fond encre ou clair", "Écrit, sections/CartesDepartements.astro (pilotes)", "fait"),
+    ("Ruban du calculateur", "aucun", "Chiffrer le service de la page, déjà coché dans le calculateur.",
+     "identifiant du calculateur", "Écrit, sections/RubanCalculateur.astro, sur toutes les pages services", "fait"),
     ("Grille de mots", "grille-suisse", "Une méthode nommée en quatre à six mots : CRAFT.",
      "mots : lettre, mot, description, ligne d'exemple ; titre et conclusion", "Écrit, components/motion/GrilleMots.astro (groupe 1)", "fait"),
     ("Révélation en particules", "particules-texte", "Faire apparaître un logo, celui d'un client en tête d'étude de cas.",
@@ -382,8 +388,9 @@ PAGES = {
 }
 
 ETATS = {  # page : (libellé, classe) quand une page avance
-    "/ai": ("Écrit, à vérifier", "attente"),
-    "/services/ai-training": ("Écrit, à vérifier", "attente"),
+    "/ai": ("Pilote écrit, à valider par Paul", "attente"),
+    "/services/ai-training": ("Pilote écrit, à valider par Paul", "attente"),
+    "/services/google-ads": ("Écrit, retours de Paul en cours", "attente"),
     "/services/ai-solutions": ("Écrit, à vérifier", "attente"),
     "/services/ai-content": ("Écrit, à vérifier", "attente"),
 }
@@ -517,6 +524,10 @@ JOURNAL = [
     ("30/09/2026", "Groupe 1 écrit : /ai, AI Training, AI Solutions, AI Content, en français et en anglais. Sombre à 1 440 / 390 px : /ai 37 / 42 %, AI Training 40-41 / 42-43 %, AI Solutions 42 / 45 %, AI Content 33-35 / 35 %. Aucune section sombre collée, aucun tiret long, aucune pastille numérotée. Animations : grille de mots (CRAFT) et carte de verre (MCP) sur AI Training, rail (une automatisation) et carte de verre (MCP) sur AI Solutions, rail en quatre états sur AI Content, aiguillage vers les quatre offres sur /ai."),
     ("30/09/2026", "Chiffres retirés du groupe 1 (sans source affichée) : 300 % / 50+ / 100+, 40 %+, 30-50 % McKinsey/Deloitte, 450-750 € et 5 000 € « du marché », 2500+ formés, 9.44 et 339 (remplacés par la note et le nombre de retours de l'API de l'Academy), 244 outils / 21 plateformes / 18+ clients, 72 %, 40 %, 2-4x, 86 %, 45 %, 2,4x, densités de mots-clés, durées des tâches de l'avant/après, et les métriques des fiches MDX. Gardés : les prix, remises, tailles de groupe et durées de projet, qui sont les conditions des offres."),
     ("30/09/2026", "Vérifié par script sur les huit pages à 1 440, 390 et 360 px et sans JavaScript : 0 débordement, 0 bouton empilé ni sur deux lignes, un H1, 0 erreur JavaScript, scènes balayées de 0 à la tenue sans style restant, rien de caché sans script. check-seo au vert."),
+    ("30/09/2026", "Correction de cap de Paul : un visuel dominant par section, des cartes seulement si elles ressortent, au moins deux animations du labo par page. Deux pilotes en français, /ai et AI Training, puis arrêt."),
+    ("30/09/2026", "Chiffres de l'agence remis à la demande de Paul : 2 500+ personnes formées (hero d'AI Training, /ai, logos des clients), passerelle MCP 244 / 21 / 18+ (grille des outils, sections MCP)."),
+    ("30/09/2026", "Retours de Paul sur Google Ads : ruban du calculateur avec le service coché (toutes les pages services, et le bouton du hero), logos clients en couleur. Les fenêtres d'exemple des formats restent à refaire."),
+    ("30/09/2026", "Pilotes écrits : tableau à palettes, caméra qui tient, grille suisse, cartes de départements, vraies marques des outils (simple-icons, CC0). Vérifié par script en local à 1 440, 1 024, 768, 390 et 360 px et sans JavaScript : 0 débordement, 0 section d'encre collée, sombre 37 à 48 %, 0 erreur JavaScript. Pas encore vu sur Render."),
 ]
 
 
