@@ -1,6 +1,7 @@
 ---
 import { type Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
+import Marque from '@/components/ui/Marque.astro';
 
 interface Props {
   lang: Language;
@@ -114,84 +115,81 @@ const translations = {
 };
 
 const t = translations[lang] || translations.en;
+
+// Les vraies marques quand elles existent ; les autres gardent leur icône.
+const marques: Record<string, string> = { 'Google Ads': 'Google Ads', 'LinkedIn Ads': 'LinkedIn', SEO: 'Search Console', 'Analytics & Reporting': 'Google Analytics 4' };
+const iconeDe: Record<string, string> = { 'bar-chart-2': 'bar-chart' };
+
 ---
 
-<section class="py-24 bg-gradient-to-b from-white to-indigo-50">
+<!-- B2B, les services à la carte (direction Encre, 30/09/2026) : six cartes, les vraies marques
+     de Google Ads et de LinkedIn, la première sur deux colonnes, la dernière sur toute la
+     largeur. Chaque carte mène à la page du service quand elle existe. -->
+<section class="section-brume py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-600 max-w-3xl mx-auto">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Services Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {t.services.map((service, index) => (
-        <div
-          class="service-card group relative p-6 bg-white rounded-2xl border border-slate-200 hover:border-indigo-300 transition-all duration-300 hover:shadow-xl animate-on-scroll"
-          style={`animation-delay: ${index * 80}ms`}
-        >
-          <!-- Icon -->
-          <div class="mb-5 text-marque">
-            <Icon name={service.icon} size={28} class="text-marque" />
-          </div>
-
-          <!-- Content -->
-          <h3 class="text-xl font-bold text-slate-900 mb-2">{service.name}</h3>
-          <p class="text-slate-600 text-sm mb-4 leading-relaxed">{service.description}</p>
-
-          <!-- Features -->
-          <div class="flex flex-wrap gap-2 mb-5">
-            {service.features.map(feature => (
-              <span class="px-2 py-1 text-xs bg-indigo-50 text-indigo-700 rounded-md">
-                {feature}
-              </span>
-            ))}
-          </div>
-
-          <!-- CTA -->
-          {service.link ? (
-            <a
-              href={service.link}
-              class="inline-flex items-center gap-2 text-indigo-600 font-medium text-sm hover:text-indigo-700 transition-colors group/link"
-            >
-              <span>{t.cta}</span>
-              <svg class="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </a>
-          ) : (
-            <a
-              href={`/${lang}/contact`}
-              class="inline-flex items-center gap-2 text-slate-500 font-medium text-sm hover:text-indigo-600 transition-colors group/link"
-            >
-              <span>{t.contactCta}</span>
-              <svg class="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </a>
-          )}
-        </div>
-      ))}
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <ul class="briques">
+      {t.services.map((s, i) => {
+        const marque = marques[s.name];
+        return (
+          <li class:list={['brique carte', { 'brique-large': i === 0, 'brique-pleine': i === t.services.length - 1 && t.services.length === 6 }]} data-reveal style={`--i:${i % 3}`}>
+            <span class="tuile tuile-grande bg-white shadow-[inset_0_0_0_1px_var(--filet)]">
+              {marque ? <Marque nom={marque} taille={34} /> : <Icon name={iconeDe[s.icon] ?? s.icon} size={32} />}
+            </span>
+            <h3 class="titre-carte text-encre">{s.name}</h3>
+            <p class="text-slate-600">{s.description}</p>
+            <ul class="puces">{s.features.map((f) => <li>{f}</li>)}</ul>
+            {s.link && (
+              <a href={s.link} class="mt-auto inline-flex min-h-[44px] items-center gap-2 font-semibold text-marque hover:text-marque-fonce">
+                {t.cta}<Icon name="arrow-right" size={16} />
+              </a>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+    <div class="mt-12">
+      <a href={`/${lang}/contact`} class="pilule pilule-pleine">
+        {t.contactCta}
+        <Icon name="arrow-right" size={18} class="pilule-fleche" />
+      </a>
     </div>
   </div>
 </section>
 
 <style>
-  .service-card {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
+  .briques {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
   }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+  .brique {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 28px 24px;
+  }
+  @media (min-width: 768px) {
+    .briques {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .briques {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .brique {
+      padding: 32px;
+    }
+    .brique-large {
+      grid-column: span 2;
+    }
+    .brique-pleine {
+      grid-column: 1 / -1;
     }
   }
 </style>
