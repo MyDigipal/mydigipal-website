@@ -90,116 +90,76 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-white">
+<!-- B2B, les clients (direction Encre, 30/09/2026) : sur l'encre, trois verbatims mot pour mot ;
+     le premier en grand, les deux autres à côté, chacun avec le repère chiffré du client. -->
+<section class="section-encre section-monte py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Testimonials Grid -->
-    <div class="grid lg:grid-cols-3 gap-8 mb-12">
-      {t.testimonials.map((testimonial, index) => (
-        <div
-          class="testimonial-card group relative bg-white rounded-2xl border border-slate-200 hover:border-indigo-200 transition-all duration-500 overflow-hidden animate-on-scroll hover:shadow-xl"
-          style={`animation-delay: ${index * 150}ms`}
-        >
-          <!-- Metric Badge -->
-          <div class="absolute top-4 right-4 text-right">
-            <div class="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
-              {testimonial.metric}
-            </div>
-            <div class="text-xs text-slate-500">{testimonial.metricLabel}</div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <div class="avis">
+      {t.testimonials.map((x, i) => (
+        <figure class:list={['carte-verre avis-carte', { 'avis-grand': i === 0 }]} data-reveal style={`--i:${i}`}>
+          <div class="flex items-start justify-between gap-4">
+            <span class="grid h-14 w-28 place-items-center rounded-xl bg-white px-3 py-2"><img src={x.logo} alt={x.company} class="max-h-full w-auto object-contain" loading="lazy" decoding="async" /></span>
+            <p class="text-right">
+              <span class="block font-display text-3xl font-extrabold tracking-[-0.03em] text-white">{x.metric}</span>
+              <span class="text-sm text-sur-encre-2">{x.metricLabel}</span>
+            </p>
           </div>
-
-          <div class="p-8">
-            <!-- Company Logo -->
-            <div class="h-8 mb-6">
-              <img
-                src={testimonial.logo}
-                alt={testimonial.company}
-                class="h-full w-auto object-contain opacity-60 group-hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            <!-- Quote -->
-            <div class="relative mb-6">
-              <svg class="absolute -top-2 -left-2 w-8 h-8 text-indigo-100" fill="currentColor" viewBox="0 0 32 32">
-                <path d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H8c0-1.1.9-2 2-2V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-6c0-1.1.9-2 2-2V8z"/>
-              </svg>
-              <p class="text-slate-600 text-sm leading-relaxed line-clamp-6 relative z-10">
-                {testimonial.quote}
-              </p>
-            </div>
-
-            <!-- Author -->
-            <div class="flex items-center gap-4 pt-6 border-t border-slate-100">
-              <div class="overflow-hidden text-marque">
-                {testimonial.image ? (
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.author}
-                    class="w-full h-full object-cover"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                  />
-                  <span class="hidden w-full h-full items-center justify-center text-indigo-600 font-bold text-lg">
-                    {testimonial.author.charAt(0)}
-                  </span>
-                ) : (
-                  <span class="text-indigo-600 font-bold text-lg">
-                    {testimonial.author.charAt(0)}
-                  </span>
-                )}
-              </div>
-              <div>
-                <div class="font-semibold text-slate-900">{testimonial.author}</div>
-                <div class="text-sm text-slate-500">{testimonial.role}</div>
-                <div class="text-sm text-indigo-600 font-medium">{testimonial.company}</div>
-              </div>
-            </div>
-          </div>
-        </div>
+          <blockquote class="avis-texte">{lang === 'fr' ? `« ${x.quote} »` : `“${x.quote}”`}</blockquote>
+          <figcaption class="mt-auto flex items-center gap-3">
+            {x.image && <img src={x.image} alt="" width="44" height="44" class="h-11 w-11 rounded-full object-cover" loading="lazy" decoding="async" />}
+            <span><b class="block text-white">{x.author}</b><span class="text-sm text-sur-encre-2">{x.role}, {x.company}</span></span>
+          </figcaption>
+        </figure>
       ))}
     </div>
-
-    <!-- CTA -->
-    <div class="text-center animate-on-scroll">
-      <a
-        href={`/${lang}/case-studies`}
-        class="inline-flex items-center gap-3 px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-indigo-100 hover:text-indigo-700 transition-all duration-300 group"
-      >
-        <span>{t.caseStudiesCta}</span>
-        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
+    <div class="mt-12">
+      <a href={`/${lang}/case-studies`} class="pilule pilule-blanche">
+        {t.caseStudiesCta}
+        <Icon name="arrow-right" size={18} class="pilule-fleche" />
       </a>
     </div>
   </div>
 </section>
 
 <style>
-  .testimonial-card {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(30px);
+  .avis {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
   }
-
-  .line-clamp-6 {
-    display: -webkit-box;
-    -webkit-line-clamp: 6;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .avis-carte {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin: 0;
+    padding: 28px 24px;
   }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+  .avis-texte {
+    color: var(--texte-sombre);
+    text-wrap: pretty;
+  }
+  @media (min-width: 1024px) {
+    .avis {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 20px;
+    }
+    .avis-grand {
+      grid-row: span 2;
+      padding: 40px;
+      background:
+        radial-gradient(90% 80% at 0% 0%, rgb(29 113 184 / 0.45), transparent 65%),
+        rgb(255 255 255 / 0.06);
+    }
+    .avis-grand .avis-texte {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.375rem;
+      line-height: 1.4;
+      color: #fff;
     }
   }
 </style>
