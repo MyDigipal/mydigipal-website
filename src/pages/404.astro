@@ -2,7 +2,8 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
-import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
 import { t } from '@/i18n/utils';
 import type { Language } from '@/i18n/config';
 
@@ -23,75 +24,45 @@ const pageDescription = t(lang, 'error404.metaDescription');
 >
   <Header lang={lang} />
 
-  <main class="flex-1 flex items-center justify-center px-4 py-16 sm:py-24">
-    <div class="text-center max-w-2xl mx-auto">
-      <!-- 404 Visual -->
-      <div class="mb-8">
-        <span class="text-[120px] sm:text-[180px] font-bold text-primary-100 leading-none select-none">
-          404
-        </span>
-      </div>
-
-      <!-- Content -->
-      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4 font-display">
-        {t(lang, 'error404.heading')}
-      </h1>
-
-      <p class="text-lg text-slate-600 mb-8 max-w-md mx-auto">
-        {t(lang, 'error404.description')}
-      </p>
-
-      <!-- CTAs -->
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button href={`/${lang}`} variant="primary" size="lg">
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          {t(lang, 'error404.backHome')}
-        </Button>
-
-        <Button href={`/${lang}/contact`} variant="outline" size="lg">
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-          {t(lang, 'error404.contact')}
-        </Button>
-      </div>
-
-      <!-- Popular Links -->
-      <div class="mt-12 pt-8 border-t border-slate-200">
-        <p class="text-sm text-slate-500 mb-4">
-          {lang === 'fr' ? 'Ou explorez nos pages populaires :' : 'Or explore our popular pages:'}
+  <!-- La page 404, direction Encre (groupe 4, 30/09/2026) : le code tombe sur le tableau à
+       palettes, puis les deux portes et les pages les plus demandées. -->
+  <main class="section-blanc flex-1">
+    <div class="container-custom grid grid-cols-1 items-center gap-10 py-16 sm:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:gap-16">
+      <div class="grid justify-items-start gap-5 lg:gap-6">
+        <p class="rubrique">{lang === 'fr' ? 'Erreur 404' : 'Error 404'}</p>
+        <h1 class="titre-grand text-encre">
+          {t(lang, 'error404.heading')}
+        </h1>
+        <p class="chapo max-w-md">
+          {t(lang, 'error404.description')}
         </p>
-        <div class="flex flex-wrap justify-center gap-3">
-          <a
-            href={`/${lang}/services`}
-            class="text-sm text-primary-600 hover:text-primary-700 hover:underline"
-          >
-            {t(lang, 'nav.services')}
+        <div class="pilules mt-2">
+          <a href={`/${lang}`} class="pilule pilule-pleine">
+            {t(lang, 'error404.backHome')}
+            <Icon name="arrow-right" size={18} class="pilule-fleche" />
           </a>
-          <span class="text-slate-300">•</span>
-          <a
-            href={`/${lang}/case-studies`}
-            class="text-sm text-primary-600 hover:text-primary-700 hover:underline"
-          >
-            {t(lang, 'nav.caseStudies')}
-          </a>
-          <span class="text-slate-300">•</span>
-          <a
-            href={`/${lang}/blog`}
-            class="text-sm text-primary-600 hover:text-primary-700 hover:underline"
-          >
-            {t(lang, 'nav.blog')}
-          </a>
-          <span class="text-slate-300">•</span>
-          <a
-            href={`/${lang}/calculator`}
-            class="text-sm text-primary-600 hover:text-primary-700 hover:underline"
-          >
-            {t(lang, 'nav.calculator')}
+          <a href={`/${lang}/contact`} class="pilule pilule-contour">
+            {t(lang, 'error404.contact')}
           </a>
         </div>
+        <div class="mt-6 grid gap-3 border-t border-slate-200 pt-6">
+          <p class="text-sm font-semibold text-slate-500">
+            {lang === 'fr' ? 'Ou explorez nos pages les plus lues :' : 'Or explore our most visited pages:'}
+          </p>
+          <ul class="flex flex-wrap gap-2">
+            {[
+              { href: `/${lang}/services`, label: t(lang, 'nav.services') },
+              { href: `/${lang}/case-studies`, label: t(lang, 'nav.caseStudies') },
+              { href: `/${lang}/blog`, label: t(lang, 'nav.blog') },
+              { href: `/${lang}/calculator`, label: t(lang, 'nav.calculator') },
+            ].map((l) => (
+              <li><a href={l.href} class="inline-block rounded-full bg-brume-clair px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-marque hover:text-white">{l.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div class="carte-encre p-8 lg:p-10">
+        <TableauPalettes lang={lang} lignes={[{ chiffre: '404', texte: lang === 'fr' ? 'cette adresse ne mène à aucune page' : 'this address leads to no page' }]} tete auChargement />
       </div>
     </div>
   </main>
