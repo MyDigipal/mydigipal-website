@@ -16,13 +16,15 @@ interface Props {
   showCount?: boolean;
   /** Les logos à montrer (noms de `src/data/accueil/logos.json`) ; par défaut, les clients de l'agence. */
   slugs?: string[];
+  /** Le libellé à gauche des logos ; par défaut, les campagnes. */
+  titre?: string;
 }
 
-const { lang, variant, showCount, slugs } = Astro.props;
+const { lang, variant, showCount, slugs, titre: titrePage } = Astro.props;
 void variant;
 void showCount;
 
-const titre = lang === 'fr' ? 'Ils nous confient leurs campagnes' : 'They trust us with their campaigns';
+const titre = titrePage ?? (lang === 'fr' ? 'Ils nous confient leurs campagnes' : 'They trust us with their campaigns');
 ---
 
 <section class="trusted-by section-blanc border-y border-slate-200 py-10 lg:py-12">
