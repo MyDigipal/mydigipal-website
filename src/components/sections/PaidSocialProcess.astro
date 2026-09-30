@@ -5,6 +5,8 @@
  */
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
+import RailMorphing from '@/components/motion/RailMorphing.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
 
 interface Props {
   lang: Language;
@@ -103,80 +105,49 @@ const content = {
 };
 
 const t = content[lang] || content.en;
+
+// Le rail : une forme par temps du plan d'action.
+const formes = ['loupe', 'bulle', 'curseur', 'courbe'] as const;
+const stations = t.steps.map((s, i) => ({ titre: s.title, texte: s.description, forme: formes[i] ?? 'cible' }));
+// Le tableau à palettes : « -45% » devient le chiffre « -45 » et l'unité « % ».
+const resultats = t.results.metrics.map((m) => {
+  const [, chiffre = m.value, unite = ''] = m.value.match(/^([+\-−]?[\d.,]+)\s*(.*)$/) ?? [];
+  return { chiffre: lang === 'fr' ? chiffre.replace('.', ',') : chiffre, unite, texte: m.label };
+});
+
 ---
 
-<section class="section bg-white overflow-hidden">
+<!-- Paid Social, le plan d'action (direction Encre, 30/09/2026) : le rail (un seul objet qui
+     change de forme de la recherche d'audience au rapport), les livrables de chaque temps,
+     puis les résultats sur le tableau à palettes (chiffres de l'agence, gardés, à sourcer). -->
+<section class="section-blanc py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="heading-2 mb-4">{t.title}</h2>
-      <p class="body-large text-slate-600">{t.subtitle}</p>
-    </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.title}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <RailMorphing lang={lang} stations={stations} />
 
-    <!-- Timeline Steps -->
-    <div class="relative max-w-5xl mx-auto">
-      <!-- Vertical line -->
-      <div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-violet-500 via-purple-500 to-pink-500 hidden md:block"></div>
+    <ul class="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+      {t.steps.map((s) => (
+        <li class="rounded-[20px] bg-brume-clair p-5">
+          <p class="mb-3 text-sm font-semibold text-slate-500">{s.title}</p>
+          <ul class="puces livrables">{s.deliverables.map((d) => <li>{d}</li>)}</ul>
+        </li>
+      ))}
+    </ul>
 
-      <div class="space-y-12">
-        {t.steps.map((step, index) => (
-          <div class={`relative flex flex-col md:flex-row gap-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
-            <!-- Step number bubble -->
-            <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full text-white flex items-center justify-center font-bold text-xl z-10 shadow-lg hidden md:flex bg-marque">
-              {step.number}
-            </div>
-
-            <!-- Content card -->
-            <div class={`md:w-[calc(50%-4rem)] ${index % 2 === 0 ? 'md:pr-8' : 'md:pl-8'}`}>
-              <div class="step-card group bg-white rounded-2xl border-2 border-slate-200 hover:border-violet-400 p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                <!-- Mobile number -->
-                <div class="md:hidden w-12 h-12 rounded-full text-white flex items-center justify-center font-bold mb-4 bg-marque">
-                  {step.number}
-                </div>
-
-                <div class="flex items-start gap-4 mb-4">
-                  <div class="text-marque">
-                    <Icon name={step.icon} size={24} />
-                  </div>
-                  <div>
-                    <h3 class="heading-4">{step.title}</h3>
-                  </div>
-                </div>
-
-                <p class="text-slate-600 mb-4">{step.description}</p>
-
-                <!-- Deliverables (revealed on hover) -->
-                <div class="deliverables overflow-hidden transition-all duration-300 max-h-0 group-hover:max-h-40">
-                  <div class="pt-4 border-t border-slate-100">
-                    <p class="text-xs font-semibold text-violet-600 uppercase tracking-wide mb-2">
-                      {lang === 'fr' ? 'Livrables' : 'Deliverables'}
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                      {step.deliverables.map((item) => (
-                        <span class="px-2 py-1 bg-violet-50 text-violet-700 rounded text-sm">
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+    <div class="mt-16 grid grid-cols-1 items-center gap-8 lg:mt-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
+      <h3 class="titre-moyen text-encre">{t.results.title}</h3>
+      <div class="carte-encre px-6 py-8 lg:px-9 lg:py-10">
+        <TableauPalettes lang={lang} lignes={resultats} tete />
       </div>
     </div>
   </div>
 </section>
 
 <style>
-  .step-card:hover .deliverables {
-    max-height: 160px;
-  }
-
-  /* Timeline animation */
-  @keyframes draw-line {
-    from { height: 0; }
-    to { height: 100%; }
+  .livrables > li {
+    background: #fff;
   }
 </style>
