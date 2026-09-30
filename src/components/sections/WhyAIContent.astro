@@ -11,7 +11,7 @@ const { lang } = Astro.props;
 const translations = {
   en: {
     badge: "The Content Challenge",
-    headline: "Why AI content matters in 2025",
+    headline: "Why AI content matters now",
     subtitle: "Generic AI content floods the internet. Quality human content takes too long. The solution? A hybrid approach that combines the best of both.",
     stats: [
       { value: "86%", label: "of SEO professionals now use AI tools", source: "Ahrefs 2025" },
@@ -22,8 +22,8 @@ const translations = {
       title: "The problem with generic AI",
       items: [
         { icon: "alert-triangle", text: "Sounds robotic and impersonal" },
-        { icon: "alert-triangle", text: "Keyword stuffing (5%+ density)" },
-        { icon: "alert-triangle", text: "Thin 500-word articles" },
+        { icon: "alert-triangle", text: "Keyword stuffing" },
+        { icon: "alert-triangle", text: "Thin, shallow articles" },
         { icon: "alert-triangle", text: "No brand voice consistency" },
         { icon: "alert-triangle", text: "Detected and penalized by Google" },
       ]
@@ -32,8 +32,8 @@ const translations = {
       title: "Our AI content approach",
       items: [
         { icon: "check", text: "Trained on YOUR brand voice" },
-        { icon: "check", text: "Natural keyword density (1-2%)" },
-        { icon: "check", text: "Comprehensive 1500+ word guides" },
+        { icon: "check", text: "Natural keyword use" },
+        { icon: "check", text: "In-depth, complete guides" },
         { icon: "check", text: "Human review before publishing" },
         { icon: "check", text: "Continuously optimized for performance" },
       ]
@@ -41,7 +41,7 @@ const translations = {
   },
   fr: {
     badge: "Le défi du contenu",
-    headline: "Pourquoi le contenu IA compte en 2025",
+    headline: "Pourquoi le contenu IA compte aujourd'hui",
     subtitle: "Le contenu IA générique inonde internet. Le contenu humain de qualité prend trop de temps. La solution ? Une approche hybride qui combine le meilleur des deux.",
     stats: [
       { value: "86%", label: "des professionnels SEO utilisent des outils IA", source: "Ahrefs 2025" },
@@ -52,8 +52,8 @@ const translations = {
       title: "Le problème avec l'IA générique",
       items: [
         { icon: "alert-triangle", text: "Sonne robotique et impersonnel" },
-        { icon: "alert-triangle", text: "Bourrage de mots-clés (5%+ densité)" },
-        { icon: "alert-triangle", text: "Articles légers de 500 mots" },
+        { icon: "alert-triangle", text: "Bourrage de mots-clés" },
+        { icon: "alert-triangle", text: "Articles minces et superficiels" },
         { icon: "alert-triangle", text: "Pas de cohérence de voix de marque" },
         { icon: "alert-triangle", text: "Détecté et pénalisé par Google" },
       ]
@@ -62,8 +62,8 @@ const translations = {
       title: "Notre approche contenu IA",
       items: [
         { icon: "check", text: "Entraîné sur VOTRE voix de marque" },
-        { icon: "check", text: "Densité de mots-clés naturelle (1-2%)" },
-        { icon: "check", text: "Guides complets de 1500+ mots" },
+        { icon: "check", text: "Des mots-clés employés naturellement" },
+        { icon: "check", text: "Des guides complets et approfondis" },
         { icon: "check", text: "Revue humaine avant publication" },
         { icon: "check", text: "Optimisé en continu pour la performance" },
       ]
@@ -74,67 +74,34 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-white">
+<!-- Direction Encre (30/09/2026) : une section d'encre qui monte sur le hero. Plus de
+     statistiques aux sources vagues (86 %, 45 %, 2,4x), plus de densités chiffrées ; l'IA
+     générique face à notre approche, entre des filets, sans encadrés rouge et vert. -->
+<section class="section-encre section-monte py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-600 max-w-3xl mx-auto">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Stats Row -->
-    <div class="grid md:grid-cols-3 gap-8 mb-20">
-      {t.stats.map((stat, index) => (
-        <div
-          class="text-center p-8 bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl border border-violet-100 animate-on-scroll"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <div class="text-5xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            {stat.value}
-          </div>
-          <div class="text-slate-700 font-medium mb-2">{stat.label}</div>
-          <div class="text-sm text-slate-500">{stat.source}</div>
-        </div>
-      ))}
-    </div>
-
-    <!-- Problem vs Solution -->
-    <div class="grid md:grid-cols-2 gap-8">
-      <!-- Problem -->
-      <div class="bg-red-50 border border-red-200 rounded-2xl p-8 animate-on-scroll">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="text-marque">
-            <Icon name="x" size={24} class="text-marque" />
-          </div>
-          <h3 class="text-2xl font-bold text-slate-900">{t.problems.title}</h3>
-        </div>
-        <ul class="space-y-4">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <div class="grid gap-10 border-t border-white/10 pt-10 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <h3 class="mb-5 text-xl font-semibold text-sur-encre-2">{t.problems.title}</h3>
+        <ul class="grid gap-3">
           {t.problems.items.map((item) => (
-            <li class="flex items-start gap-3">
-              <Icon name={item.icon} size={20} class="text-red-500 flex-shrink-0 mt-1" />
-              <span class="text-slate-700">{item.text}</span>
+            <li class="flex items-start gap-3 text-sur-encre-2">
+              <Icon name="ban" size={18} class="mt-1 flex-none text-sur-encre-2" />
+              <span>{item.text}</span>
             </li>
           ))}
         </ul>
       </div>
-
-      <!-- Solution -->
-      <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-8 animate-on-scroll" style="animation-delay: 150ms">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="text-marque">
-            <Icon name="check" size={24} class="text-marque" />
-          </div>
-          <h3 class="text-2xl font-bold text-slate-900">{t.solution.title}</h3>
-        </div>
-        <ul class="space-y-4">
+      <div>
+        <h3 class="mb-5 text-xl font-semibold text-white">{t.solution.title}</h3>
+        <ul class="grid gap-3">
           {t.solution.items.map((item) => (
-            <li class="flex items-start gap-3">
-              <Icon name={item.icon} size={20} class="text-emerald-500 flex-shrink-0 mt-1" />
-              <span class="text-slate-700">{item.text}</span>
+            <li class="flex items-start gap-3 text-sur-encre">
+              <Icon name="check" size={18} class="mt-1 flex-none text-marque-clair" />
+              <span>{item.text}</span>
             </li>
           ))}
         </ul>
@@ -142,18 +109,3 @@ const t = translations[lang] || translations.en;
     </div>
   </div>
 </section>
-
-<style>
-  .animate-on-scroll {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
