@@ -1,0 +1,31 @@
+---
+/**
+ * Un parcours sur le rail (`RailMorphing.astro`), pages automobile (direction Encre,
+ * 30/09/2026) : le tunnel d'un concessionnaire sur `/automotive`, du formulaire Meta au CRM
+ * sur Paid Social. Un seul objet voyage d'une station à l'autre et change de forme. Sur le
+ * blanc ou la brume, jamais sur l'encre.
+ */
+import type { Language } from '@/i18n/config';
+import type { NomForme } from '@/lib/motion/formes';
+import RailMorphing from '@/components/motion/RailMorphing.astro';
+
+interface Props {
+  lang: Language;
+  titre: string;
+  chapo?: string;
+  stations: { titre: string; texte: string; forme: NomForme }[];
+  fond?: 'blanc' | 'brume';
+}
+
+const { lang, titre, chapo, stations, fond = 'blanc' } = Astro.props;
+---
+
+<section class:list={['py-20 lg:py-32', fond === 'brume' ? 'section-brume' : 'section-blanc']}>
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{titre}</h2>
+      {chapo && <p class="chapo">{chapo}</p>}
+    </header>
+    <RailMorphing lang={lang} stations={stations} />
+  </div>
+</section>
