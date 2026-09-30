@@ -1,0 +1,42 @@
+# Reprendre la refonte du design : direction A « Encre » retenue (30/09/2026)
+
+À coller dans une nouvelle session Claude Code ouverte sur le dépôt du site.
+
+---
+
+Tu reprends la refonte du design de mydigipal.com. Paul a choisi la **direction A « Encre »**.
+
+**À lire d'abord, dans cet ordre :**
+1. `CLAUDE.md` du dépôt, section « Chantier en cours : la refonte du design ».
+2. `docs/refonte-design/pilotage.html` : audit, décisions, questions ouvertes, pages et avancement.
+3. `labo/refonte-site/direction-a.html`, `.css`, `.js` et la fiche `direction-a.md` : la maquette retenue.
+4. `projects/_shared/motion-lib/AVIS-PAUL.md` et la galerie https://claude.ai/artifact/QoQy1ihqHnBJZmE7BYEcbf (base `avis`) : ses goûts en mouvement.
+
+**Travailler dans `C:\dev\sv`, branche `refonte-design`** (`git fetch` d'abord, retard sur origin/main = 0). Rien sur `main` sans l'accord de Paul.
+
+**Ce que Paul a aimé en particulier :** la carte de verre de Performance Max (le texte à gauche, la carte qui se remplit). Les essais du labo motion (isométrie, morphing, tableau à palettes, caméra qui tient, particules) servent à expliquer les autres notions, repeints dans la palette Encre.
+
+**Budget serré** : pas d'agents en parallèle, un groupe de pages par session, coût annoncé avant chaque groupe, mesurer par script plutôt que capturer.
+
+## Étape 1 : le système global (une session, corrige tout le site d'un coup)
+- Jetons de la direction A dans `src/styles/global.css` : `--encre #0B1B2B`, `--encre-2 #102A43`, `--brume #F3F6FA`, `--marque-clair #7DB8EE`, textes sur sombre `#F4F7FA` / `#A9B8C8`.
+- Classes de fond de section : `.section-encre` (avec lueur fixe et coins hauts arrondis de 32 px quand elle monte sur la précédente), `.section-brume`, `.section-blanc`. Règle : jamais deux sections sombres collées, 35 à 45 % de surface sombre par page.
+- Les composants partagés à reprendre une fois : `HeroService`, `FinalCTA`, `ServiceFAQ`, `TestimonialSpotlight`, `CaseStudyCarousel`, `TrustedBy`, `PageHero`. Retirer les pilules de rubrique au-dessus de chaque titre (une pour trois sections au plus).
+- Déployer ce socle seul, vérifier sur `mydigipal-website.onrender.com` au bureau et à 390 px, montrer à Paul.
+
+## Étape 2 : les composants animés (une session)
+Porter de `direction-a.js` vers des composants Astro autonomes, sur `src/lib/motion/` (déjà écrit) :
+- `CarteVerre.astro` (entrées, sorties, retours, trois textes, en props) ;
+- `RailMorphing.astro` (stations : titre, texte, forme) ;
+- plus tard `SceneIso.astro` (usine de la direction C, repeinte) et `TableauPalettes.astro` (direction B).
+Règles du socle : état final par défaut, `rendu(t)` pur, repères cliquables, `?fige=1`. Sur téléphone, garder le dessin collé sous l'en-tête pendant la lecture (solution de la direction C).
+
+## Étape 3 : les pages, un groupe par session
+Ordre de Paul : IA (`/ai`, AI Training, AI Solutions, AI Content), services, automobile, le reste, l'accueil en dernier. Pour chaque page : sections sombres qui ponctuent, retrait des pastilles 01/02/03 et des cartes égales, chiffres sans source retirés (seuls ceux des études de cas restent), tirets longs corrigés, une animation qui explique la notion de la page (tableau « Les pages » du pilotage). Toujours FR et EN ensemble. Vérifier sur Render à 390 px avant de passer au groupe suivant.
+
+## Étape 4 : l'accueil
+Garder la vidéo Academy, replier « Paul shows you around » et la liste des fonctionnalités (ouverture au clic), puis avis, puis services.
+
+## À régler en passant
+- Correctif des éléments flottants prêt sur la branche `flottants-sans-recouvrement` (`5b0e768`) : à fusionner avec l'accord de Paul.
+- Tenir `pilotage.html` à jour via `generer-pilotage.py`, et la mémoire du projet.
