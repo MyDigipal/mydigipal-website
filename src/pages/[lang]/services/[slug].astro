@@ -4,6 +4,7 @@ import { type Language, languages } from '@/i18n/config';
 import { t } from '@/i18n/utils';
 import { getCollection } from 'astro:content';
 import { lireAcademy, faitsAcademy } from '@/components/accueil/donnees';
+import { kpiDe } from '@/lib/etudes-de-cas';
 
 // SEO Schemas
 import ServiceSchema from '@/components/seo/ServiceSchema.astro';
@@ -30,7 +31,7 @@ import FAQSection from '@/components/sections/FAQSection.astro';
 
 // Google Ads specific sections
 import GoogleAdsChannels from '@/components/sections/GoogleAdsChannels.astro';
-import WhyGoogleAds from '@/components/sections/WhyGoogleAds.astro';
+import GoogleAdsPmax from '@/components/sections/GoogleAdsPmax.astro';
 import GoogleAdsProcess from '@/components/sections/GoogleAdsProcess.astro';
 
 // Paid Social specific sections
@@ -147,6 +148,14 @@ const {
 // dans l'API de l'Academy (instantané en secours). Les fiches d'AI Solutions et d'AI
 // Content n'ont plus de `metrics` : leur panneau montre « ce que vous obtenez ».
 let metricsHero = metrics;
+// Les pages de services dont le hero montre trois résultats d'études de cas, lus dans les
+// fiches (libellé anglais vérifié au build). Les autres gardent les `metrics` de leur fiche.
+const heroCas: Record<string, [string, number, string][]> = {
+  'google-ads': [['theobald-group', 0, 'google ads conversions'], ['vulcain-group', 1, 'cost per lead'], ['dmd-group', 2, 'google ads users']],
+};
+if (heroCas[slug]) {
+  metricsHero = await Promise.all(heroCas[slug].map(([cas, i, verif]) => kpiDe(lang, cas, i, verif)));
+}
 if (slug === 'ai-training') {
   const faits = faitsAcademy(await lireAcademy(lang), lang);
   metricsHero = lang === 'fr'
@@ -346,9 +355,11 @@ const breadcrumbItems = [
   <!-- Google Ads Service: Interactive Sections -->
   {isGoogleAdsService && (
     <>
-      <WhyGoogleAds lang={lang} color={color} />
-      <GoogleAdsChannels lang={lang} color={color} />
-      <GoogleAdsProcess lang={lang} color={color} />
+      <!-- La maquette Encre (30/09/2026) : Performance Max sur l'encre, les formats sur la
+           brume, la méthode sur le blanc, puis la preuve sur l'encre. -->
+      <GoogleAdsPmax lang={lang} />
+      <GoogleAdsChannels lang={lang} />
+      <GoogleAdsProcess lang={lang} />
     </>
   )}
 
@@ -450,11 +461,20 @@ const breadcrumbItems = [
 
   <!-- Google Ads Case Studies -->
   {isGoogleAdsService && (
-    <CaseStudyCarousel lang={lang} caseStudyIds={['dmd-group', 'quantum-metrics', 'genesys']} color={color} />
+    <CaseStudyCarousel
+      lang={lang}
+      fond="encre"
+      verbatim="theobald-group"
+      caseStudyIds={[
+        { id: 'theobald-group', kpi: 0, second: 2 },
+        { id: 'vulcain-group', kpi: 0, second: 1 },
+        { id: 'dmd-group', kpi: 2, second: 0 },
+      ]}
+    />
   )}
 
   <!-- Testimonial Spotlight (skip for AI Training and B2B ABM which have their own testimonials) -->
-  {testimonial && !isAITrainingService && !isB2BABMService && (
+  {testimonial && !isAITrainingService && !isB2BABMService && !isGoogleAdsService && (
     <TestimonialSpotlight
       lang={lang}
       quote={testimonial.quote}
