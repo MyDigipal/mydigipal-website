@@ -561,6 +561,73 @@
   .pilule-claire:hover {
     background-color: rgb(255 255 255 / 0.10);
   }
+
+  /* Les cartes et les tuiles d'icône du modèle AI Training (groupe 2, 30/09/2026).
+     Une carte n'a de sens que si son contenu est distinct : tailles variées, une carte
+     d'encre ou blanche pour celle qui compte. `carte-verre` se pose sur l'encre. */
+  .carte {
+    border-radius: var(--rayon-panneau);
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet), 0 18px 40px -28px rgb(11 27 43 / 0.35);
+  }
+  .carte-verre {
+    border-radius: var(--rayon-panneau);
+    background: rgb(255 255 255 / 0.06);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 30px 60px -36px rgb(2 9 16 / 0.9);
+  }
+  .carte-encre {
+    border-radius: var(--rayon-panneau);
+    color: var(--texte-sombre);
+    background:
+      radial-gradient(110% 80% at 100% 0%, rgb(29 113 184 / 0.5), transparent 65%),
+      var(--encre);
+    box-shadow: var(--ombre-forte);
+  }
+  .tuile {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--color-marque-doux);
+    color: var(--color-marque);
+  }
+  .tuile-pleine {
+    background: var(--color-marque);
+    color: #fff;
+  }
+  .tuile-grande {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+  }
+  .puces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .puces > li {
+    border-radius: 999px;
+    padding: 5px 12px;
+    background: var(--brume);
+    color: #334155;
+    font-size: 0.875rem;
+    line-height: 1.3;
+  }
+  .carte-verre .puces > li,
+  .carte-encre .puces > li,
+  .section-encre .puces > li {
+    background: rgb(255 255 255 / 0.08);
+    color: var(--texte-sombre);
+  }
+  .titre-carte {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.375rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
 }
 
 /* ===== UTILITIES ===== */
