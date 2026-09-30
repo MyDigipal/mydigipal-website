@@ -859,6 +859,28 @@ lu dans les `metrics` de la fiche.
 - Icônes ajoutées : `monitor`, `video`, `shopping-cart`, `dollar-sign`, `pie-chart` (un nom
   inconnu de `Icon.astro` rend une loupe, sans erreur).
 
+### Groupe 4 : études de cas, blog, contact, recrutement, légal, 404 (30/09/2026, `refonte-design`)
+
+Groupe 3 validé par Paul ; les chiffres sans source affichée sont GARDÉS partout (décision de Paul).
+- **Études de cas** (`case-studies/[slug].astro`) : le logo du client se forme en particules
+  (`motion/RevelationLogo.astro`, essai `particules-texte`, Canvas 2D), des points pris dans les
+  COULEURS du logo, puis le vrai logo monte ; la toile couvre la section (premier ancêtre
+  positionné) et passe sous le texte (le texte porte `relative z-[1]`). Le logo vient de
+  `LOGOS` de l'accueil (détouré), à surface égale. Chiffres sur le tableau à palettes dans le
+  panneau d'encre, défi et solution sur l'encre avec la photo du cas.
+  ⚠️ **`lib/rehype-parties-cas.mjs`** découpe le récit en `<section class="cas-partie">` par titre
+  de niveau 2 (la stratégie sur la brume, « Les résultats » sur l'encre, en pleine largeur par
+  ombre portée et `clip-path`). Il ne s'applique qu'aux fichiers de `content/case-studies`.
+- **Blog** : l'article le plus récent à la une sur l'encre ; la recherche et les deux filtres
+  gardent leurs identifiants (`blog-search`, `category-filter`, `industry-filter`, `.blog-card`
+  et ses `data-*`). Le texte des articles n'est PAS touché : les tirets longs des données
+  structurées sont retirés à l'écriture du JSON-LD (`ArticleSchema`, `sansTiret`).
+- **Contact** : ⚠️ rien n'a changé DANS le formulaire (identifiants, noms des champs, `AntiSpam`,
+  script d'envoi vers `academy.mydigipal.com/api/site/contact`, `form_start`/`form_abandon` de
+  BaseLayout). Testé de bout en bout le 30/09 avec l'envoi intercepté.
+- Pages légales : sommaire collé à gauche (`#partie-n`). 404 : le code sur le tableau à palettes.
+  La 404 servie est `dist/404.html`, construite une fois, donc en anglais sur toutes les adresses.
+
 ### Les éléments flottants partagent une seule mesure : `--bandeau`
 
 Branche `flottants-sans-recouvrement` (commit `5b0e768`), à déployer après accord de Paul.

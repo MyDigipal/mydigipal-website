@@ -323,7 +323,7 @@ COMPOSANTS = [
     ("Grille de mots", "grille-suisse", "Une méthode nommée en quatre à six mots : CRAFT.",
      "mots : lettre, mot, description, ligne d'exemple ; titre et conclusion", "Écrit, components/motion/GrilleMots.astro (groupe 1)", "fait"),
     ("Révélation en particules", "particules-texte", "Faire apparaître un logo, celui d'un client en tête d'étude de cas.",
-     "fichier du logo, densité", "À construire, sous la ligne de flottaison", "afaire"),
+     "fichier du logo, taille d'affichage", "Écrit, components/motion/RevelationLogo.astro (groupe 4) : haut des sept études de cas, points dans les couleurs du logo", "fait"),
     ("Collage", "collage", "Présenter des personnes ou des réalisations.",
      "images, poses", "En maquette, direction C (hero)", "attente"),
 ]
@@ -405,10 +405,18 @@ ETATS = {  # page : (libellé, classe) quand une page avance
     "/services/emailing": ("Groupe 2 validé par Paul (« une bonne base »)", "fait"),
     "/services/b2b-abm": ("Groupe 2 validé par Paul (« une bonne base »)", "fait"),
     "/services/tracking-reporting": ("Groupe 2 validé par Paul (« une bonne base »)", "fait"),
-    "/automotive": ("Groupe 3 écrit, à relire par Paul", "attente"),
-    "/automotive/google-ads": ("Groupe 3 écrit, à relire par Paul", "attente"),
-    "/automotive/paid-social": ("Groupe 3 écrit, à relire par Paul", "attente"),
-    "/automotive/dynamic-ads": ("Groupe 3 écrit, à relire par Paul", "attente"),
+    "/automotive": ("Groupe 3 validé par Paul", "fait"),
+    "/automotive/google-ads": ("Groupe 3 validé par Paul", "fait"),
+    "/automotive/paid-social": ("Groupe 3 validé par Paul", "fait"),
+    "/automotive/dynamic-ads": ("Groupe 3 validé par Paul", "fait"),
+    "/case-studies": ("Groupe 4 écrit, à relire", "attente"),
+    "/case-studies/theobald-group": ("Groupe 4 écrit, à relire", "attente"),
+    "/blog": ("Groupe 4 écrit, à relire", "attente"),
+    "/blog/how-to-rank-on-chatgpt": ("Groupe 4 écrit, à relire", "attente"),
+    "/contact": ("Groupe 4 écrit, formulaire testé", "attente"),
+    "/careers": ("Groupe 4 écrit, à relire", "attente"),
+    "/privacy-policy": ("Groupe 4 écrit, à relire", "attente"),
+    "/calculator": ("Flottants : correctif prêt, fusion en attente", "attente"),
     "/services/ai-solutions": ("Écrit, à vérifier", "attente"),
     "/services/ai-content": ("Écrit, à vérifier", "attente"),
 }
@@ -555,6 +563,10 @@ JOURNAL = [
     ("30/09/2026", "Groupe 3 écrit en français au modèle d'AI Training : /automotive (tableau à palettes, tunnel du concessionnaire sur le rail, trois leviers, verbatims sur l'encre), Google Ads (tableau, carte de verre du compte), Paid Social (tableau, rail du formulaire Meta au CRM), Dynamic Ads (tableau, carte de verre du flux de stock). Logos clients en couleur à surface égale, ruban du calculateur, études de cas automobiles lues dans la collection, questions avec leurs données structurées."),
     ("30/09/2026", "Défaut trouvé : le schéma de la collection automobile n'avait pas le champ isDynamicAds, retiré par la validation. Les trois sections propres aux Dynamic Ads (le flux, les plateformes, l'avant et l'après) n'avaient jamais été affichées. Elles le sont, restylées, avec leurs chiffres sans source (10 h, 3x, 2,9 Mrd, 2 Mrd, 90 %)."),
     ("30/09/2026", "Vérifié par script en local sur les quatre pages à 1 440, 1 024, 768, 390 et 360 px et sans JavaScript : 0 débordement, 0 section d'encre collée, sombre 33 à 40 %, deux scènes par page, 0 erreur JavaScript, 0 tiret long. check-seo au vert. Pas encore vu sur Render."),
+    ("30/09/2026", "Groupe 3 validé par Paul. Les chiffres sans source affichée sont gardés partout, sections Dynamic Ads comprises. Juliette Joire porte désormais le même titre qu'Alexandre Echement et Jordan Langlois (pages automobile, équipe de la page contact, accueil)."),
+    ("30/09/2026", "Groupe 4 écrit en français : les sept études de cas (logo du client en particules de ses couleurs, chiffres sur le tableau à palettes, défi et solution sur l'encre avec la photo du cas, récit découpé en bandes : la stratégie sur la brume, les résultats sur l'encre), leur index (l'étude à la une sur l'encre, grille filtrable, verbatim), le blog (l'article à la une sur l'encre, recherche et filtres gardés) et le gabarit d'article (texte inchangé, articles liés sur l'encre), contact (valeurs sur l'encre, formulaire inchangé), merci, recrutement, pages légales (sommaire collé), 404 (tableau à palettes). 61 tirets longs retirés des études de cas ; ceux des données structurées des articles sont retirés à l'écriture du JSON-LD, sans toucher au texte."),
+    ("30/09/2026", "Vérifié par script en local sur onze gabarits à 1 440, 1 024, 768, 390 et 360 px et sans JavaScript : 0 débordement, 0 section d'encre collée, 0 erreur JavaScript, rien de caché sans script. Formulaire de contact testé de bout en bout, envoi intercepté : charge complète, redirection vers la page merci."),
+    ("30/09/2026", "Mise en ligne demandée par Paul (fusion de flottants-sans-recouvrement dans refonte-design, puis dans main) : refusée par le contrôle de sécurité de la session, qui exige l'accord de Paul donné directement dans la session. Rien n'est fusionné ni publié."),
 ]
 
 
