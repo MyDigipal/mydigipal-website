@@ -1,0 +1,50 @@
+---
+/**
+ * AI Solutions : ce que fait une automatisation, expliqué par le morphing sur rail
+ * (direction Encre, 30/09/2026). Un seul objet voyage et change de forme : le courriel
+ * qui arrive, sa lecture, les tâches qui en partent, la personne qui valide. C'est la
+ * notion du tableau « Les pages » du pilotage : un courriel entre, des tâches sortent.
+ * Aucun chiffre.
+ */
+import type { Language } from '@/i18n/config';
+import RailMorphing from '@/components/motion/RailMorphing.astro';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const contenu = {
+  fr: {
+    titre: 'Ce que fait une automatisation',
+    chapo: 'Un courriel entre, des tâches sortent. Voici le chemin, de la boîte de réception à la personne qui décide.',
+    stations: [
+      { titre: 'Un courriel arrive', texte: 'Une demande entre par la boîte de réception, un formulaire du site ou le chat.', forme: 'bulle' as const },
+      { titre: 'Il est lu et trié', texte: 'L’automatisation en tire l’essentiel et le range : prospect, client ou fournisseur, urgent ou non.', forme: 'loupe' as const },
+      { titre: 'Les tâches partent', texte: 'Elle crée la fiche dans le CRM, prévient la bonne personne et prépare un projet de réponse.', forme: 'structure' as const },
+      { titre: 'Un humain valide', texte: 'La personne concernée relit, ajuste et envoie. Le système prépare, il ne décide pas à sa place.', forme: 'curseur' as const },
+    ],
+  },
+  en: {
+    titre: 'What an automation actually does',
+    chapo: 'An email comes in, tasks go out. Here is the path, from the inbox to the person who decides.',
+    stations: [
+      { titre: 'An email arrives', texte: 'A request comes in through the inbox, a website form or the chat.', forme: 'bulle' as const },
+      { titre: 'It is read and sorted', texte: 'The automation pulls out what matters and files it: prospect, client or supplier, urgent or not.', forme: 'loupe' as const },
+      { titre: 'The tasks go out', texte: 'It creates the record in the CRM, alerts the right person and drafts a reply.', forme: 'structure' as const },
+      { titre: 'A human approves', texte: 'The person in charge reads, adjusts and sends. The system prepares, it does not decide for them.', forme: 'curseur' as const },
+    ],
+  },
+}[lang];
+---
+
+<section class="section-brume py-20 lg:py-32">
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{contenu.titre}</h2>
+      <p class="chapo">{contenu.chapo}</p>
+    </header>
+    <RailMorphing lang={lang} stations={contenu.stations} />
+  </div>
+</section>
