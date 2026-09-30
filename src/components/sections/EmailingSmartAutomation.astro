@@ -1,5 +1,8 @@
 ---
 import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import CarteVerre from '@/components/motion/CarteVerre.astro';
+import { carteSequence } from '@/components/motion/donnees-emailing';
 
 interface Props {
   lang: Language;
@@ -92,84 +95,41 @@ const icons: Record<string, string> = {
   brain: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>`,
   zap: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`
 };
+
+const carte = carteSequence(lang);
+// Les noms d'icônes de l'ancienne version qui n'existent pas dans `Icon`.
+const iconeDe: Record<string, string> = { refresh: 'refresh-cw', brain: 'cpu' };
+
 ---
 
-<section class="py-24 bg-slate-950 bg-gradient-to-br from-slate-950 via-rose-950/20 to-slate-950 overflow-hidden relative">
-  <!-- Background Effects -->
-  <div class="absolute inset-0 pointer-events-none">
-    <div class="absolute top-40 -right-32 w-96 h-96 bg-rose-500/8 rounded-full blur-[120px]"></div>
-    <div class="absolute bottom-20 -left-32 w-80 h-80 bg-pink-500/8 rounded-full blur-[100px]"></div>
-  </div>
-
-  <div class="container-custom relative z-10">
-    <!-- Header -->
-    <div class="text-center mb-16">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-400 max-w-3xl mx-auto">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Features Grid -->
-    <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
-      {t.features.map((feature, index) => (
-        <div
-          class="automation-card group relative bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-rose-500/30 transition-all duration-500"
-          style={`animation-delay: ${index * 120}ms`}
-        >
-          <div class="flex items-start gap-5">
-            <!-- Icon -->
-            <div class="flex-shrink-0 text-primary-300">
-              <Fragment set:html={icons[feature.icon]} />
-            </div>
-
-            <div class="flex-1">
-              <h3 class="text-xl font-bold text-white mb-2">{feature.title}</h3>
-              <p class="text-slate-400 text-sm leading-relaxed mb-4">{feature.description}</p>
-
-              <!-- Stat -->
-              <div class="flex items-baseline gap-2">
-                <span class="text-3xl font-bold bg-gradient-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent">
-                  {feature.stat}
-                </span>
-                <span class="text-sm text-slate-500">{feature.statLabel}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-rose-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        </div>
+<!-- Emailing, l'automation cross-canal (direction Encre, 30/09/2026) : la carte de verre
+     explique ce qu'une séquence reçoit, déclenche et récupère. Puis les quatre leviers en
+     cartes de verre, avec leurs chiffres (gardés tels quels, à sourcer). -->
+<section class="section-encre section-monte py-20 lg:py-32">
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 id="automation-titre" class="titre-moyen">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <CarteVerre lang={lang} titreId="automation-titre" {...carte} />
+    <ul class="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:mt-24 lg:grid-cols-4 lg:gap-5">
+      {t.features.map((f, i) => (
+        <li class="carte-verre grid content-start gap-3 p-6" data-reveal style={`--i:${i}`}>
+          <span class="tuile tuile-pleine"><Icon name={iconeDe[f.icon] ?? f.icon} size={26} /></span>
+          <h3 class="titre-carte text-white">{f.title}</h3>
+          <p class="text-sur-encre-2">{f.description}</p>
+          <p class="mt-auto border-t border-white/10 pt-4">
+            <span class="block font-display text-3xl font-extrabold tracking-[-0.03em] text-white">{f.stat}</span>
+            <span class="text-sm text-sur-encre-2">{f.statLabel}</span>
+          </p>
+        </li>
       ))}
-    </div>
-
-    <!-- CTA -->
-    <div class="text-center">
-      <a
-        href={t.ctaLink}
-        class="inline-flex items-center gap-2 px-8 py-4 text-white font-bold rounded-full transition-all duration-300 hover:-translate-y-0.5 shadow-lg bg-marque hover:bg-marque-fonce"
-      >
-        <span>{t.cta}</span>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
+    </ul>
+    <div class="mt-12">
+      <a href={t.ctaLink} class="pilule pilule-blanche">
+        {t.cta}
+        <Icon name="arrow-right" size={18} class="pilule-fleche" />
       </a>
     </div>
   </div>
 </section>
-
-<style>
-  .automation-card {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease forwards;
-  }
-
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
