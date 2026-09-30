@@ -128,36 +128,151 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<!-- Direction Encre (30/09/2026) : fond brume, les trois parcours côte à côte entre des
-     filets, le plus demandé sur un panneau blanc. Les prix sont ceux de l'offre. Le lien
-     de contact garde son `?topic=parcours-technique`. -->
+<!-- Direction Encre (30/09/2026), correction de cap : les trois parcours en cartes, le
+     plus demandé en encre et plus large, qui dépasse des deux autres. Grande tuile d'icône
+     par parcours. Les prix sont ceux de l'offre. Le lien de contact garde son
+     `?topic=parcours-technique`. -->
 <section class="section-brume py-20 lg:py-32">
   <div class="container-custom">
     <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
       <h2 class="titre-moyen text-encre">{t.headline}</h2>
       <p class="chapo">{t.subtitle}</p>
     </header>
-    <div class="grid gap-4 md:grid-cols-3 md:gap-0">
-      {t.tracks.map((track) => (
-        <div class:list={['flex flex-col gap-4 rounded-[20px] p-7 md:px-8', track.highlighted ? 'bg-white shadow-[0_1px_2px_rgb(11_27_43/0.05),0_16px_40px_-16px_rgb(11_27_43/0.2)]' : 'border-t border-slate-300/60 md:rounded-none md:border-t-0 md:[&:not(:first-child)]:border-l']}>
-          {track.highlighted && <span class="self-start rounded-full bg-marque-doux px-3 py-1 text-sm font-semibold text-marque">{lang === 'fr' ? 'Le plus demandé' : 'Most asked for'}</span>}
-          <Icon name={track.icon} size={24} class="text-marque" />
-          <p class="text-sm font-semibold text-slate-500">{track.duration}, {track.audience}</p>
-          <h3 class="font-display text-2xl font-extrabold tracking-[-0.02em] text-encre">{track.name}</h3>
-          <p class="text-slate-600">{track.description}</p>
+    <div class="parcours">
+      {t.tracks.map((track, i) => (
+        <article class:list={['parcours-carte', { 'parcours-vedette': track.highlighted }]} data-reveal style={`--i:${i}`}>
+          <div class="flex items-start justify-between gap-4">
+            <span class="parcours-icone" aria-hidden="true"><Icon name={track.icon} size={28} /></span>
+            {track.highlighted && <span class="parcours-badge">{lang === 'fr' ? 'Le plus demandé' : 'Most asked for'}</span>}
+          </div>
+          <p class="parcours-public">{track.duration}, {track.audience}</p>
+          <h3 class="parcours-nom">{track.name}</h3>
+          <p class="parcours-texte">{track.description}</p>
           <ul class="grid flex-grow content-start gap-3">
             {track.outcomes.map((outcome) => (
-              <li class="flex items-start gap-3 text-slate-700">
-                <Icon name="check" size={16} class="mt-1 flex-none text-marque" />
+              <li class="parcours-acquis">
+                <Icon name="arrow-right" size={16} class="mt-1 flex-none" />
                 <span>{outcome}</span>
               </li>
             ))}
           </ul>
-          {track.bonus && <p class="border-t border-slate-200 pt-4 text-slate-600">{track.bonus}</p>}
-          <p class="font-display text-2xl font-extrabold text-encre">{track.price}</p>
-          <a href={t.ctaHref} class:list={['pilule self-start', track.highlighted ? 'pilule-pleine' : 'pilule-contour']}>{t.cta}</a>
-        </div>
+          {track.bonus && <p class="parcours-bonus">{track.bonus}</p>}
+          <p class="parcours-prix">{track.price}</p>
+          <a href={t.ctaHref} class:list={['pilule self-start', track.highlighted ? 'pilule-blanche' : 'pilule-contour']}>{t.cta}</a>
+        </article>
       ))}
     </div>
   </div>
 </section>
+
+<style>
+  .parcours {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    align-items: stretch;
+  }
+  .parcours-carte {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 28px 24px;
+    border-radius: var(--rayon-panneau);
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet), 0 18px 40px -28px rgb(11 27 43 / 0.35);
+  }
+  .parcours-icone {
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    background: var(--color-marque-doux);
+    color: var(--color-marque);
+  }
+  .parcours-badge {
+    border-radius: 999px;
+    padding: 4px 12px;
+    background: var(--color-marque);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .parcours-public {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #5b6b7b;
+  }
+  .parcours-nom {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.625rem;
+    letter-spacing: -0.02em;
+    color: var(--encre);
+  }
+  .parcours-texte {
+    color: #4b5b6b;
+  }
+  .parcours-acquis {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #334155;
+  }
+  .parcours-acquis :global(svg) {
+    color: var(--color-marque);
+  }
+  .parcours-bonus {
+    padding-top: 16px;
+    border-top: 1px solid var(--filet);
+    color: #4b5b6b;
+  }
+  .parcours-prix {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.625rem;
+    color: var(--encre);
+  }
+  /* Le parcours le plus demandé : une carte d'encre qui dépasse des deux autres. */
+  .parcours-vedette {
+    background:
+      radial-gradient(110% 70% at 100% 0%, rgb(29 113 184 / 0.5), transparent 65%),
+      var(--encre);
+    box-shadow: var(--ombre-forte);
+  }
+  .parcours-vedette .parcours-icone {
+    background: var(--color-marque);
+    color: #fff;
+  }
+  .parcours-vedette .parcours-nom,
+  .parcours-vedette .parcours-prix {
+    color: #fff;
+  }
+  .parcours-vedette .parcours-public,
+  .parcours-vedette .parcours-texte,
+  .parcours-vedette .parcours-bonus {
+    color: var(--texte-sombre-2);
+  }
+  .parcours-vedette .parcours-acquis {
+    color: var(--texte-sombre);
+  }
+  .parcours-vedette .parcours-acquis :global(svg) {
+    color: var(--marque-clair);
+  }
+  .parcours-vedette .parcours-bonus {
+    border-top-color: var(--filet-sombre);
+  }
+  @media (min-width: 1024px) {
+    .parcours {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: 20px;
+    }
+    .parcours-carte {
+      padding: 32px 28px;
+    }
+    .parcours-vedette {
+      margin-block: -20px;
+      padding: 44px 36px;
+    }
+  }
+</style>
