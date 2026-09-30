@@ -13,7 +13,7 @@ interface Props {
 const { lang, color = 'primary', title, subtitle } = Astro.props;
 
 // `color` reste accepté (les pages le passent), mais la fin de page est la même
-// partout depuis le 25/09/2026 : celle de l'accueil, dans le bleu du logo.
+// partout depuis le 25/09/2026, dans le bleu du logo.
 void color;
 
 const content = {
@@ -34,31 +34,25 @@ const content = {
 const t = { ...content[lang], ...(title ? { title } : {}), ...(subtitle ? { subtitle } : {}) };
 ---
 
-<!-- La fin de page commune, dans le style de l'accueil : titre serré à gauche,
-     texte et les deux portes à droite (« Calculer mon budget », « Nous contacter »),
-     sur le bleu très pâle du logo pour se détacher des sections blanches et du pied
-     de page sombre. -->
-<section class="final-cta bg-marque-doux py-20 lg:py-28">
-  <div class="container-custom grid gap-8 lg:grid-cols-12 lg:gap-12 lg:items-end">
-    <h2 class="final-cta-titre lg:col-span-7 font-display font-extrabold text-encre text-[2.125rem] sm:text-[2.75rem] lg:text-[3.5rem]">
-      {t.title}
-    </h2>
-    <div class="lg:col-span-5">
-      <p class="text-base sm:text-lg text-slate-600 mb-8 max-w-[46ch]">
+<!-- La fin de page commune, direction Encre (30/09/2026) : un panneau de bleu plein
+     posé sur la brume. Le bleu du logo y apparaît une fois en surface, et la bande
+     de brume dessous sépare l'appel de l'encre du pied de page. Les deux mêmes portes
+     que partout sur le site. -->
+<section class="final-cta section-brume py-16 lg:py-24">
+  <div class="container-custom">
+    <div class="final-cta-panneau grid justify-items-start gap-5 lg:gap-6">
+      <h2 class="titre-moyen text-white lg:max-w-[16ch]">
+        {t.title}
+      </h2>
+      <p class="chapo final-cta-texte max-w-[52ch]">
         {t.subtitle}
       </p>
-      <div class="flex flex-wrap gap-3">
-        <a
-          href={`/${lang}/calculator`}
-          class="group inline-flex items-center justify-center gap-2 h-13 px-6 rounded-full bg-marque text-white font-semibold hover:bg-marque-fonce active:scale-[0.98] transition-colors"
-        >
+      <div class="pilules mt-3">
+        <a href={`/${lang}/calculator`} class="pilule pilule-blanche">
           {t.primaryButton}
-          <Icon name="arrow-right" size={18} class="transition-transform group-hover:translate-x-0.5" />
+          <Icon name="arrow-right" size={18} class="pilule-fleche" />
         </a>
-        <a
-          href={`/${lang}/contact`}
-          class="inline-flex items-center justify-center h-13 px-6 rounded-full border border-slate-300 bg-white text-encre font-semibold hover:border-slate-400 transition-colors"
-        >
+        <a href={`/${lang}/contact`} class="pilule pilule-claire">
           {t.secondaryButton}
         </a>
       </div>
@@ -67,9 +61,32 @@ const t = { ...content[lang], ...(title ? { title } : {}), ...(subtitle ? { subt
 </section>
 
 <style>
-  .final-cta-titre {
-    line-height: 1.04;
-    letter-spacing: -0.035em;
-    text-wrap: balance;
+  .final-cta-panneau {
+    margin-inline: -1rem;
+    padding: 56px 1rem;
+    border-radius: 28px;
+    color: #fff;
+    background:
+      radial-gradient(60% 80% at 100% 0%, rgb(125 184 238 / 0.24), transparent 62%),
+      var(--color-marque);
+    box-shadow: 0 32px 64px -28px rgb(21 90 147 / 0.60);
+  }
+  .final-cta-panneau :focus-visible {
+    outline-color: #fff;
+  }
+  .final-cta-texte {
+    color: rgb(255 255 255 / 0.92);
+  }
+  @media (min-width: 640px) {
+    .final-cta-panneau {
+      margin-inline: 0;
+      padding: 64px 48px;
+      border-radius: var(--rayon-scene);
+    }
+  }
+  @media (min-width: 1024px) {
+    .final-cta-panneau {
+      padding: 96px 88px;
+    }
   }
 </style>
