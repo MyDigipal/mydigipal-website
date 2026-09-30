@@ -44,9 +44,14 @@ void color;
 
 const avecCarte = Astro.slots.has('default');
 // « 47% taux de conversion » : le chiffre d'un côté, ce qu'il compte de l'autre.
+// « 47 % » et « 37 € » en français ; « 47% » et « €37 » en anglais.
+const typo = (c: string) =>
+  lang === 'fr'
+    ? c.replace(/(\d)\s?%$/, '$1 %').replace(/(\d)€$/, '$1 €')
+    : c.replace(/(\d)\s+%$/, '$1%').replace(/^([\d.,]+)\s?€$/, '€$1');
 const enChiffre = (b: Benefit) => {
-  const m = b.title.match(/^([+\-−]?[\d.,\s]+\s?(?:%|€|x|K€|K)?)\s+(.+)$/);
-  return m ? { chiffre: m[1].trim().replace(/(\d)\s?%$/, '$1 %').replace(/(\d)€$/, '$1 €'), texte: m[2], description: b.description } : null;
+  const m = b.title.match(/^([€$£]?[+\-−]?[\d.,\s]+\s?(?:%|€|x|K€|K)?)\s+(.+)$/);
+  return m ? { chiffre: typo(m[1].trim()), texte: m[2], description: b.description } : null;
 };
 const chiffres = avecCarte ? [] : data.benefits.map(enChiffre).filter((c) => c !== null);
 const raisons = avecCarte ? data.benefits : data.benefits.filter((b) => !enChiffre(b));
