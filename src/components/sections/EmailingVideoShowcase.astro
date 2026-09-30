@@ -81,46 +81,49 @@ const colorMap: Record<string, { border: string; bg: string; text: string }> = {
 };
 ---
 
-<section class="py-24 bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
+<!-- Emailing, les vidéos (direction Encre, 30/09/2026) : la première en grand, les deux autres
+     à côté, avec leurs affiches (prises à la troisième seconde). -->
+<section class="section-blanc py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <h2 class="font-display text-4xl lg:text-5xl font-bold text-white mb-4">
-        {t.title}
-      </h2>
-      <p class="text-lg text-slate-400">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Video Grid: 3 columns -->
-    <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto stagger-children">
-      {t.videos.map((video, index) => {
-        const colors = colorMap[video.color] || colorMap.rose;
-        return (
-          <div
-            class={`animate-on-scroll rounded-2xl overflow-hidden border ${colors.border} bg-slate-900/50 backdrop-blur-sm hover:border-opacity-60 transition-all duration-300 hover:-translate-y-1`}
-            style={`animation-delay: ${index * 120}ms`}
-          >
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.title}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <ul class="films">
+      {t.videos.map((video, i) => (
+        <li class:list={['film', { 'film-grand': i === 0 }]} data-reveal style={`--i:${i}`}>
+          <div class="overflow-hidden rounded-[20px] shadow-[var(--ombre-forte)]">
             <VideoEmbed
               src={video.src}
+              poster={video.src.replace(/\.mp4$/, '.jpg')}
               title={video.title}
               description={video.description}
               schemaName={video.schemaName}
               schemaDescription={video.schemaDescription}
-              schemaUploadDate="2026-03-01"
+              schemaUploadDate="2026-02-10"
             />
-            <div class="p-5">
-              <h3 class="text-lg font-bold text-white mb-1">
-                {video.title}
-              </h3>
-              <p class="text-sm text-slate-400">
-                {video.description}
-              </p>
-            </div>
           </div>
-        );
-      })}
-    </div>
+          <p class="mt-4 font-semibold text-encre">{video.title}</p>
+          <p class="text-slate-600">{video.description}</p>
+        </li>
+      ))}
+    </ul>
   </div>
 </section>
+
+<style>
+  .films {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  @media (min-width: 1024px) {
+    .films {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      gap: 24px 28px;
+    }
+    .film-grand {
+      grid-row: span 2;
+    }
+  }
+</style>
