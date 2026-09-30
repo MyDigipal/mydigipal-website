@@ -1,13 +1,20 @@
 ---
+/**
+ * Dynamic Ads, avant et après (direction Encre, 30/09/2026) : sur le blanc, quatre chiffres
+ * en grand, puis la publicité classique sur une carte grise et les Dynamic Ads sur une carte
+ * d'encre. Chiffres de l'agence sans source affichée, gardés en attendant la décision de Paul.
+ */
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 
 interface Props {
   lang: Language;
-  color?: 'automotive' | 'ads' | 'social' | 'primary';
+  /** Accepté pour ne pas toucher aux pages. */
+  color?: string;
 }
 
-const { lang, color = 'automotive' } = Astro.props;
+const { lang, color } = Astro.props;
+void color;
 
 const translations = {
   en: {
@@ -46,35 +53,35 @@ const translations = {
   },
   fr: {
     title: 'Le ROI des Dynamic Ads',
-    subtitle: 'Pourquoi les concessionnaires leaders passent à la publicité inventaire automatisée',
+    subtitle: 'Pourquoi les concessions passent à une publicité qui suit leur stock toute seule.',
     comparison: {
       title: 'Publicité traditionnelle vs Dynamic Ads',
       traditional: {
         label: 'Publicité traditionnelle',
         items: [
-          { label: 'Coût par lead', value: '€25-80', negative: true },
-          { label: 'Temps de setup', value: '10+ heures/sem', negative: true },
+          { label: 'Coût par lead', value: '25 à 80 €', negative: true },
+          { label: 'Temps passé', value: '10 h et plus par semaine', negative: true },
           { label: 'Personnalisation', value: 'Manuelle', negative: true },
-          { label: 'Mises à jour inventaire', value: 'Manuelles', negative: true },
-          { label: 'Multi-Plateforme', value: 'Campagnes séparées', negative: true }
+          { label: 'Mises à jour du stock', value: 'Manuelles', negative: true },
+          { label: 'Plateformes', value: 'Campagnes séparées', negative: true }
         ]
       },
       dynamic: {
         label: 'Dynamic Ads',
         items: [
-          { label: 'Coût par lead', value: '€3-10', positive: true },
-          { label: 'Temps de setup', value: '< 1 heure/sem', positive: true },
+          { label: 'Coût par lead', value: '3 à 10 €', positive: true },
+          { label: 'Temps passé', value: 'moins d\'1 h par semaine', positive: true },
           { label: 'Personnalisation', value: 'Automatique', positive: true },
-          { label: 'Mises à jour inventaire', value: 'Temps réel', positive: true },
-          { label: 'Multi-Plateforme', value: 'Un seul catalogue', positive: true }
+          { label: 'Mises à jour du stock', value: 'En temps réel', positive: true },
+          { label: 'Plateformes', value: 'Un seul catalogue', positive: true }
         ]
       }
     },
     stats: [
-      { value: '85%', label: 'Coût par Lead Réduit', icon: 'trending-down' },
-      { value: '7x', label: 'Plus de leads générés', icon: 'users' },
-      { value: '10h', label: 'Économisées par semaine', icon: 'clock' },
-      { value: '3x', label: 'Taux de conversion supérieur', icon: 'target' }
+      { value: '85 %', label: 'de coût par lead en moins', icon: 'trending-down' },
+      { value: '7x', label: 'plus de leads générés', icon: 'users' },
+      { value: '10 h', label: 'économisées par semaine', icon: 'clock' },
+      { value: '3x', label: 'de taux de conversion', icon: 'target' }
     ],
     cta: 'Calculer votre ROI'
   }
@@ -83,87 +90,52 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="section bg-white overflow-hidden">
+<section class="section-blanc py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="heading-2 mb-4">{t.title}</h2>
-      <p class="body-large text-slate-600">{t.subtitle}</p>
-    </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.title}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
 
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-      {t.stats.map((stat, index) => (
-        <div
-          class="relative group p-6 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white text-center animate-on-scroll hover:scale-105 transition-transform"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Icon name={stat.icon} size={24} />
-          </div>
-          <div class="text-3xl md:text-4xl font-bold mb-1">{stat.value}</div>
-          <div class="text-sm text-sky-100">{stat.label}</div>
+    <dl class="grid grid-cols-2 gap-x-6 gap-y-8 border-y border-slate-200 py-10 lg:grid-cols-4 lg:py-12">
+      {t.stats.map((s, i) => (
+        <div class="flex flex-col-reverse gap-2" data-reveal style={`--i:${i}`}>
+          <dt class="text-slate-600">{s.label}</dt>
+          <dd class="font-display text-5xl font-extrabold leading-none tracking-[-0.045em] text-encre lg:text-6xl">{s.value}</dd>
         </div>
       ))}
-    </div>
+    </dl>
 
-    <!-- Comparison Table -->
-    <div class="max-w-4xl mx-auto animate-on-scroll">
-      <h3 class="heading-4 text-center mb-8">{t.comparison.title}</h3>
-
-      <div class="grid md:grid-cols-2 gap-6">
-        <!-- Traditional -->
-        <div class="rounded-2xl border-2 border-slate-200 bg-slate-50 overflow-hidden">
-          <div class="bg-slate-200 p-4 text-center">
-            <span class="font-bold text-slate-700">{t.comparison.traditional.label}</span>
-          </div>
-          <div class="p-6 space-y-4">
-            {t.comparison.traditional.items.map((item) => (
-              <div class="flex justify-between items-center pb-3 border-b border-slate-200 last:border-0">
-                <span class="text-slate-600">{item.label}</span>
-                <span class="font-semibold text-red-500 flex items-center gap-1">
-                  <Icon name="x" size={16} class="text-red-400" />
-                  {item.value}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <!-- Dynamic -->
-        <div class="rounded-2xl border-2 border-sky-500 bg-sky-50 overflow-hidden relative">
-          <!-- Recommended Badge -->
-          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 px-4 py-1 bg-sky-500 text-white text-xs font-bold rounded-full">
-            {lang === 'fr' ? 'RECOMMANDÉ' : 'RECOMMENDED'}
-          </div>
-
-          <div class="bg-gradient-to-r from-sky-500 to-blue-600 p-4 text-center mt-2">
-            <span class="font-bold text-white">{t.comparison.dynamic.label}</span>
-          </div>
-          <div class="p-6 space-y-4">
-            {t.comparison.dynamic.items.map((item) => (
-              <div class="flex justify-between items-center pb-3 border-b border-sky-200 last:border-0">
-                <span class="text-slate-700">{item.label}</span>
-                <span class="font-semibold text-emerald-600 flex items-center gap-1">
-                  <Icon name="check" size={16} class="text-emerald-500" />
-                  {item.value}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+    <h3 class="titre-carte mt-16 mb-6 text-encre lg:mt-24">{t.comparison.title}</h3>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-5">
+      <div class="rounded-[var(--rayon-panneau)] bg-brume-clair p-6 lg:p-8" data-reveal>
+        <p class="mb-5 font-semibold text-slate-600">{t.comparison.traditional.label}</p>
+        <ul class="grid gap-0">
+          {t.comparison.traditional.items.map((item) => (
+            <li class="flex items-center justify-between gap-4 border-b border-slate-200 py-3.5 last:border-0">
+              <span class="text-slate-600">{item.label}</span>
+              <span class="flex items-center gap-1.5 text-right font-semibold text-slate-800">
+                <Icon name="x" size={16} class="flex-none text-red-500" />
+                {item.value}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
-    </div>
-
-    <!-- CTA -->
-    <div class="text-center mt-12 animate-on-scroll">
-      <a
-        href={`/${lang}/calculator`}
-        class="inline-flex items-center gap-3 px-8 py-4 rounded-full text-white font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 bg-marque hover:bg-marque-fonce"
-      >
-        <Icon name="calculator" size={24} />
-        {t.cta}
-      </a>
+      <div class="carte-encre p-6 lg:p-8" data-reveal style="--i:1">
+        <p class="mb-5 font-semibold text-white">{t.comparison.dynamic.label}</p>
+        <ul class="grid gap-0">
+          {t.comparison.dynamic.items.map((item) => (
+            <li class="flex items-center justify-between gap-4 border-b border-white/10 py-3.5 last:border-0">
+              <span class="text-sur-encre-2">{item.label}</span>
+              <span class="flex items-center gap-1.5 text-right font-semibold text-white">
+                <Icon name="check" size={16} class="flex-none text-marque-clair" />
+                {item.value}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   </div>
 </section>
