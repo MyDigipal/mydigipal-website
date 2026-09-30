@@ -101,6 +101,7 @@ import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
 
 // Case Study Carousel
 import CaseStudyCarousel from '@/components/sections/CaseStudyCarousel.astro';
+import RubanCalculateur from '@/components/sections/RubanCalculateur.astro';
 
 // Social proof
 
@@ -317,6 +318,7 @@ const breadcrumbItems = [
     proofPoints={heroProofPoints}
     testimonial={testimonial}
     heroLogos={heroLogos}
+    serviceCalculateur={calculatorServiceId}
   />
 
   <!-- Les chiffres sont dans le panneau du hero : la bande MetricsCounter qui les
@@ -458,6 +460,10 @@ const breadcrumbItems = [
       <ContentTypes lang={lang} />        <!-- brume -->
     </>
   )}
+
+  <!-- Le ruban vers le calculateur, le service de la page déjà coché (30/09/2026). Rien
+       pour un service que le calculateur ne connaît pas (B2B ABM a son propre appel). -->
+  <RubanCalculateur lang={lang} service={calculatorServiceId} />
 
   <!-- Google Ads Case Studies -->
   {isGoogleAdsService && (
