@@ -57,7 +57,7 @@ const translations = {
     excludedTitle: "Not included",
     excluded: [
       "The on-site surcharge and the travel & accommodation flat fee (neither applies to remote formats)",
-      "AI tool subscriptions (Claude Pro, ChatGPT Plus, ~€20/mo per user) — we advise on the best picks",
+      "AI tool subscriptions (Claude Pro, ChatGPT Plus): we advise on the best picks",
       "Room rental if your premises aren't suitable",
       "Development of agents or automations on your infrastructure (separate project, quoted separately)",
       "Operational management of your ad campaigns (separate offer)"
@@ -70,18 +70,18 @@ const translations = {
       { count: "5-7 sessions", discount: "-15%" },
       { count: "8 sessions +", discount: "-20%" }
     ],
-    scaleNote: "Applied across all sessions in the program, formats mixed. Sessions don't have to run in the same month — a program can spread over the semester.",
+    scaleNote: "Applied across all sessions in the program, formats mixed. Sessions don't have to run in the same month: a program can spread over the semester.",
     groupTitle: "How many people per session?",
-    groupSubtitle: "The price doesn't depend on headcount, so you can gather widely. But let's be transparent about one thing few providers will tell you: group size changes what we can do for you — not a matter of price, a matter of available attention.",
+    groupSubtitle: "The price doesn't depend on headcount, so you can gather widely. But let's be transparent about one thing few providers will tell you: group size changes what we can do for you. Not a matter of price, a matter of available attention.",
     groups: [
       { size: "Up to 12", label: "Maximum personalization", text: "The ideal format, and the cap we set for the hands-on workshop. We work on each person's files, every question gets answered, and we adapt the pace live." },
       { size: "13-20", label: "Good compromise", text: "Still very effective for discovery and awareness: small enough for questions to flow. Individual cases are followed less closely." },
       { size: "20+", label: "Plenary +15%", text: "We teach, demo and answer the group's questions, but we no longer coach anyone individually. A surcharge of +15% beyond 20, +30% beyond 50." }
     ],
     positioningTitle: "A complete training, at a fair price",
-    positioningText: "On the market, a tailored AI training is commonly billed €450 to €750 per participant, and some ask €5,000+ for a few hours — often without deep customization or a recording. Our hands-on workshop at €1,700 for twelve works out to €142 per head, custom scoping, interactive material and replay included.",
+    positioningText: "Our hands-on workshop at €1,700 for twelve works out to €142 per head, with custom scoping, interactive material and the replay included.",
     positioningStat: "€142",
-    positioningStatLabel: "per head for a hands-on workshop of 12, vs €450-750 at market rate",
+    positioningStatLabel: "per head for a hands-on workshop of 12, scoping and replay included",
     cta: "Get your custom quote"
   },
   fr: {
@@ -132,7 +132,7 @@ const translations = {
     excludedTitle: "Non compris",
     excluded: [
       "Le supplément présentiel et le forfait transport et hébergement (aucun des deux sur les formats à distance)",
-      "Les abonnements aux outils IA (Claude Pro, ChatGPT Plus, ~20 €/mois par utilisateur) — nous vous conseillons sur les choix",
+      "Les abonnements aux outils IA (Claude Pro, ChatGPT Plus) : nous vous conseillons sur les choix",
       "La location d'une salle si vos locaux ne conviennent pas",
       "Le développement d'agents ou d'automatisations sur votre infrastructure (projet distinct, chiffré séparément)",
       "La gestion opérationnelle de vos campagnes publicitaires (offre distincte)"
@@ -147,16 +147,16 @@ const translations = {
     ],
     scaleNote: "Remise appliquée sur l'ensemble des sessions du parcours, formats mélangés. Les sessions n'ont pas besoin de se tenir dans le même mois : un parcours peut s'étaler sur le semestre.",
     groupTitle: "Combien de personnes par session ?",
-    groupSubtitle: "Le tarif ne dépend pas de l'effectif, vous pouvez donc réunir large. Mais soyons transparents sur un point que peu d'organismes disent : la taille du groupe change ce que nous sommes capables de faire — pas une question de prix, une question d'attention disponible.",
+    groupSubtitle: "Le tarif ne dépend pas de l'effectif, vous pouvez donc réunir large. Mais soyons transparents sur un point que peu d'organismes disent : la taille du groupe change ce que nous sommes capables de faire. Pas une question de prix, une question d'attention disponible.",
     groups: [
       { size: "Jusqu'à 12", label: "Personnalisation maximale", text: "Le format idéal, et la limite que nous fixons pour l'atelier pratique. Nous travaillons sur les fichiers de chacun, chaque question trouve sa réponse, et nous adaptons le rythme en direct." },
       { size: "13-20", label: "Bon compromis", text: "Toujours très efficace en découverte et sensibilisation : assez petit pour que les questions circulent. Les cas individuels sont suivis moins finement." },
       { size: "20+", label: "Plénière +15 %", text: "Nous transmettons, démontrons et répondons aux questions du groupe, mais nous n'accompagnons plus personne individuellement. Majoration de +15 % au-delà de 20, +30 % au-delà de 50." }
     ],
     positioningTitle: "Une formation complète, à un tarif juste",
-    positioningText: "Sur le marché, une formation IA sur mesure se facture couramment 450 à 750 € par participant, et certains demandent 5 000 € et plus pour quelques heures, souvent sans conception personnalisée poussée ni restitution vidéo. Notre atelier pratique à 1 700 € pour douze revient à 142 € par tête, cadrage sur mesure, support interactif et replay compris.",
+    positioningText: "Notre atelier pratique à 1 700 € pour douze revient à 142 € par tête, avec le cadrage sur mesure, le support interactif et le replay compris.",
     positioningStat: "142 €",
-    positioningStatLabel: "par tête pour un atelier pratique de 12, contre 450-750 € au prix du marché",
+    positioningStatLabel: "par tête pour un atelier pratique de 12, cadrage et replay compris",
     cta: "Obtenir un devis sur mesure"
   }
 };
@@ -164,89 +164,59 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-white overflow-hidden">
+<!-- Direction Encre (30/09/2026) : l'offre sur une section d'encre. Les trois formats
+     côte à côte entre des filets (le recommandé sur un panneau de verre), ce qui est
+     compris ou non, les remises, les tailles de groupe. Les prix sont ceux de l'offre ;
+     la comparaison avec « le marché », sans source, est retirée. -->
+<section class="section-encre section-monte py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="max-w-3xl mb-14 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-lg text-slate-600 leading-relaxed">{t.subtitle}</p>
-    </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
 
-    <!-- Formats grid -->
-    <div class="grid md:grid-cols-3 gap-6 items-stretch">
-      {t.formats.map((f, index) => (
-        <div
-          class={`
-            fmt-card relative flex flex-col p-8 rounded-2xl border transition-all duration-300 animate-on-scroll
-            ${f.highlighted
-              ? 'bg-slate-950 text-white border-slate-800 shadow-2xl shadow-cyan-500/10'
-              : 'bg-white border-slate-200 hover:border-cyan-200 hover:shadow-lg'}
-          `}
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          {f.highlighted && (
-            <div class="absolute -top-3 left-8">
-              <span class="px-4 py-1 bg-gradient-to-r from-cyan-400 to-blue-500 text-white text-xs font-semibold uppercase tracking-wider rounded-full shadow-lg">
-                {t.recommended}
-              </span>
-            </div>
-          )}
-
-          <div class="flex items-baseline justify-between mb-4">
-            <h3 class={`text-xl font-bold ${f.highlighted ? 'text-white' : 'text-slate-900'}`}>{f.name}</h3>
-            <span class={`text-sm font-semibold px-3 py-1 rounded-full ${f.highlighted ? 'bg-white/10 text-cyan-300' : 'bg-cyan-50 text-cyan-700'}`}>{f.duration}</span>
+    <div class="grid gap-4 md:grid-cols-3 md:gap-0">
+      {t.formats.map((f) => (
+        <div class:list={['relative flex flex-col gap-4 rounded-[20px] p-7 md:px-8', f.highlighted ? 'bg-white/[0.07] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.16)]' : 'border-t border-white/10 md:rounded-none md:border-t-0 md:[&:not(:first-child)]:border-l']}>
+          {f.highlighted && <span class="self-start rounded-full bg-sur-encre px-3 py-1 text-sm font-semibold text-marque-fonce">{t.recommended}</span>}
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="font-display text-2xl font-extrabold tracking-[-0.02em] text-white">{f.name}</h3>
+            <span class="text-sm font-semibold text-marque-clair">{f.duration}</span>
           </div>
-
-          <p class={`text-sm leading-relaxed mb-6 flex-1 ${f.highlighted ? 'text-slate-300' : 'text-slate-600'}`}>{f.description}</p>
-
-          <div class={`grid grid-cols-2 gap-3 pt-5 border-t ${f.highlighted ? 'border-white/10' : 'border-slate-100'}`}>
+          <p class="flex-1 text-sur-encre-2">{f.description}</p>
+          <dl class="grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
             <div>
-              <div class={`text-[11px] uppercase tracking-wider mb-1 ${f.highlighted ? 'text-slate-400' : 'text-slate-400'}`}>{t.priceLabelRemote}</div>
-              <div class={`text-2xl font-bold ${f.highlighted ? 'text-white' : 'text-slate-900'}`}>{f.remote}</div>
+              <dt class="text-sm text-sur-encre-2">{t.priceLabelRemote}</dt>
+              <dd class="font-display text-2xl font-extrabold text-white">{f.remote}</dd>
             </div>
             <div>
-              <div class="text-[11px] uppercase tracking-wider mb-1 text-slate-400">{t.priceLabelOnsite}</div>
-              <div class={`text-2xl font-bold ${f.highlighted ? 'bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent' : 'text-slate-500'}`}>{f.onsite}</div>
+              <dt class="text-sm text-sur-encre-2">{t.priceLabelOnsite}</dt>
+              <dd class="font-display text-2xl font-extrabold text-white">{f.onsite}</dd>
             </div>
-          </div>
+          </dl>
         </div>
       ))}
     </div>
+    <p class="mt-5 max-w-4xl text-sm leading-relaxed text-sur-encre-2">{t.priceNote}</p>
 
-    <p class="text-xs text-slate-500 leading-relaxed mt-5 max-w-4xl">{t.priceNote}</p>
-
-    <!-- Included / Not included -->
-    <div class="grid lg:grid-cols-2 gap-6 mt-16">
-      <div class="rounded-2xl bg-gradient-to-br from-cyan-50 to-white border border-cyan-100 p-8 animate-on-scroll">
-        <h3 class="text-lg font-bold text-slate-900 mb-5 flex items-center gap-2">
-          <span class="w-6 h-6 rounded-full bg-cyan-500 flex items-center justify-center flex-shrink-0">
-            <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-          </span>
-          {t.includedTitle}
-        </h3>
-        <ul class="space-y-3">
-          {t.included.map(item => (
-            <li class="flex items-start gap-2.5 text-sm text-slate-700">
-              <svg class="w-4 h-4 text-cyan-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+    <div class="mt-16 grid gap-10 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <h3 class="mb-5 text-lg font-semibold text-white">{t.includedTitle}</h3>
+        <ul class="grid gap-3">
+          {t.included.map((item) => (
+            <li class="flex items-start gap-3 text-sur-encre">
+              <svg class="mt-1 h-4 w-4 flex-none text-marque-clair" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
               <span>{item}</span>
             </li>
           ))}
         </ul>
       </div>
-
-      <div class="rounded-2xl bg-slate-50 border border-slate-200 p-8 animate-on-scroll" style="animation-delay:100ms">
-        <h3 class="text-lg font-bold text-slate-900 mb-5 flex items-center gap-2">
-          <span class="w-6 h-6 rounded-full bg-slate-300 flex items-center justify-center flex-shrink-0">
-            <svg class="w-3.5 h-3.5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-          </span>
-          {t.excludedTitle}
-        </h3>
-        <ul class="space-y-3">
-          {t.excluded.map(item => (
-            <li class="flex items-start gap-2.5 text-sm text-slate-500">
-              <svg class="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+      <div>
+        <h3 class="mb-5 text-lg font-semibold text-white">{t.excludedTitle}</h3>
+        <ul class="grid gap-3">
+          {t.excluded.map((item) => (
+            <li class="flex items-start gap-3 text-sur-encre-2">
+              <svg class="mt-1 h-4 w-4 flex-none text-sur-encre-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
               <span>{item}</span>
             </li>
           ))}
@@ -254,82 +224,54 @@ const t = translations[lang] || translations.en;
       </div>
     </div>
 
-    <!-- Volume discounts -->
-    <div class="mt-16 animate-on-scroll">
-      <div class="max-w-3xl mb-8">
-        <h3 class="text-2xl md:text-3xl font-bold text-slate-900 mb-3">{t.scaleTitle}</h3>
-        <p class="text-slate-600 leading-relaxed">{t.scaleSubtitle}</p>
+    <div class="mt-16 border-t border-white/10 pt-12">
+      <div class="mb-8 grid max-w-3xl gap-3">
+        <h3 class="font-display text-2xl font-extrabold tracking-[-0.02em] text-white md:text-3xl">{t.scaleTitle}</h3>
+        <p class="text-sur-encre-2">{t.scaleSubtitle}</p>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {t.scale.map((s, i) => (
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 text-center hover:border-cyan-200 hover:shadow-md transition-all duration-300" style={`animation-delay:${i * 80}ms`}>
-            <div class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">{s.discount}</div>
-            <div class="text-sm text-slate-500 mt-2">{s.count}</div>
+      <dl class="grid grid-cols-2 gap-y-6 md:grid-cols-4">
+        {t.scale.map((sc) => (
+          <div class="flex flex-col-reverse gap-1 border-l border-white/10 pl-5">
+            <dt class="text-sur-encre-2">{sc.count}</dt>
+            <dd class="font-display text-3xl font-extrabold text-white md:text-4xl">{sc.discount}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="mt-5 max-w-4xl text-sm leading-relaxed text-sur-encre-2">{t.scaleNote}</p>
+    </div>
+
+    <div class="mt-16 border-t border-white/10 pt-12">
+      <div class="mb-8 grid max-w-3xl gap-3">
+        <h3 class="font-display text-2xl font-extrabold tracking-[-0.02em] text-white md:text-3xl">{t.groupTitle}</h3>
+        <p class="text-sur-encre-2">{t.groupSubtitle}</p>
+      </div>
+      <div class="grid gap-8 md:grid-cols-3">
+        {t.groups.map((g) => (
+          <div class="grid content-start gap-2">
+            <p class="font-display text-2xl font-extrabold text-white">{g.size}</p>
+            <p class="font-semibold text-marque-clair">{g.label}</p>
+            <p class="text-sur-encre-2">{g.text}</p>
           </div>
         ))}
       </div>
-      <p class="text-xs text-slate-500 leading-relaxed mt-4 max-w-4xl">{t.scaleNote}</p>
     </div>
 
-    <!-- Group size -->
-    <div class="mt-16 animate-on-scroll">
-      <div class="max-w-3xl mb-8">
-        <h3 class="text-2xl md:text-3xl font-bold text-slate-900 mb-3">{t.groupTitle}</h3>
-        <p class="text-slate-600 leading-relaxed">{t.groupSubtitle}</p>
+    <div class="mt-16 grid items-center gap-8 rounded-[20px] bg-white/[0.06] p-8 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)] lg:grid-cols-[1.4fr_1fr] lg:p-12">
+      <div>
+        <h3 class="mb-4 font-display text-2xl font-extrabold tracking-[-0.02em] text-white md:text-3xl">{t.positioningTitle}</h3>
+        <p class="text-sur-encre">{t.positioningText}</p>
       </div>
-      <div class="grid md:grid-cols-3 gap-6">
-        {t.groups.map((g, i) => (
-          <div class={`rounded-2xl border p-7 ${i === 0 ? 'border-cyan-200 bg-cyan-50/50' : 'border-slate-200 bg-white'}`}>
-            <div class="text-2xl font-bold text-slate-900 mb-1">{g.size}</div>
-            <div class={`text-sm font-semibold mb-3 ${i === 0 ? 'text-cyan-700' : 'text-slate-500'}`}>{g.label}</div>
-            <p class="text-sm text-slate-600 leading-relaxed">{g.text}</p>
-          </div>
-        ))}
+      <div class="lg:border-l lg:border-white/10 lg:pl-8">
+        <p class="font-display text-5xl font-extrabold tracking-[-0.04em] text-white md:text-6xl">{t.positioningStat}</p>
+        <p class="mt-3 text-sur-encre-2">{t.positioningStatLabel}</p>
       </div>
     </div>
 
-    <!-- Positioning -->
-    <div class="mt-16 rounded-3xl bg-slate-950 text-white p-8 lg:p-12 relative overflow-hidden animate-on-scroll">
-      <div class="absolute -top-20 -right-20 w-72 h-72 bg-cyan-500/20 rounded-full blur-[100px]"></div>
-      <div class="relative z-10 grid lg:grid-cols-[1.4fr_1fr] gap-8 items-center">
-        <div>
-          <h3 class="text-2xl md:text-3xl font-bold mb-4">{t.positioningTitle}</h3>
-          <p class="text-slate-300 leading-relaxed">{t.positioningText}</p>
-        </div>
-        <div class="text-center lg:text-left lg:border-l lg:border-white/10 lg:pl-8">
-          <div class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent">{t.positioningStat}</div>
-          <div class="text-sm text-slate-400 mt-3 leading-relaxed">{t.positioningStatLabel}</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CTA -->
-    <div class="text-center mt-14 animate-on-scroll">
-      <a
-        href={`/${lang}/contact`}
-        class="inline-flex items-center gap-3 px-8 py-4 text-white font-semibold rounded-full hover:shadow-xl transition-all duration-300 bg-marque hover:bg-marque-fonce"
-      >
-        <span>{t.cta}</span>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
+    <div class="mt-12">
+      <a href={`/${lang}/contact`} class="pilule pilule-blanche">
+        {t.cta}
+        <svg class="pilule-fleche h-[18px] w-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
       </a>
     </div>
   </div>
 </section>
-
-<style>
-  .fmt-card {
-    animation: fmt-fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    opacity: 0;
-    transform: translateY(24px);
-  }
-
-  @keyframes fmt-fade-up {
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .fmt-card { animation: none; opacity: 1; transform: none; }
-  }
-</style>
