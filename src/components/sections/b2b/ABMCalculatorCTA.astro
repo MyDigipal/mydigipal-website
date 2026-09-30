@@ -36,128 +36,110 @@ const translations = {
 };
 
 const t = translations[lang] || translations.en;
+
+// L'esquisse du calculateur : ses champs, sans aucun montant.
+const m = lang === 'fr'
+  ? { titre: 'Calculateur MyDigipal', services: 'Vos services', email: 'E-mailing', budget: 'Budget publicitaire mensuel', niveau: 'Accompagnement', niveaux: ['Essentiel', 'Avancé', 'Premium'], resultat: 'Votre prix, calculé en direct' }
+  : { titre: 'MyDigipal calculator', services: 'Your services', email: 'Email marketing', budget: 'Monthly ad budget', niveau: 'Level of support', niveaux: ['Essential', 'Advanced', 'Premium'], resultat: 'Your price, calculated live' };
+
 ---
 
-<section class="py-20 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 relative overflow-hidden">
-  <!-- Background Pattern -->
-  <div class="absolute inset-0 opacity-10">
-    <div class="absolute top-0 left-0 w-full h-full" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-  </div>
-
-  <!-- Floating Elements -->
-  <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-  <div class="absolute bottom-10 right-10 w-32 h-32 bg-purple-300/20 rounded-full blur-2xl"></div>
-
-  <div class="container-custom relative z-10">
-    <div class="flex flex-col lg:flex-row items-center gap-12">
-      <!-- Left: Content -->
-      <div class="flex-1 text-center lg:text-left animate-on-scroll">
-
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-4">
-          {t.headline}
-        </h2>
-
-        <p class="text-xl text-indigo-100 mb-8 max-w-xl">
-          {t.subtitle}
-        </p>
-
-        <!-- Features -->
-        <ul class="space-y-3 mb-8">
-          {t.features.map(feature => (
-            <li class="flex items-center gap-3 text-white">
-              <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-              </span>
-              {feature}
+<!-- B2B, estimer son budget (direction Encre, 30/09/2026) : un panneau d'encre sur la brume, le
+     calculateur esquissé à droite (les champs qu'on y trouve, aucun montant inventé). -->
+<section class="section-brume py-16 lg:py-24">
+  <div class="container-custom">
+    <div class="carte-encre grid grid-cols-1 items-center gap-10 p-7 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14 lg:p-12">
+      <div class="grid content-start gap-5">
+        <h2 class="titre-moyen text-white">{t.headline}</h2>
+        <p class="text-lg text-sur-encre">{t.subtitle}</p>
+        <ul class="grid gap-3">
+          {t.features.map((f) => (
+            <li class="grid grid-cols-[24px_minmax(0,1fr)] items-center gap-3 text-sur-encre">
+              <span class="grid h-6 w-6 place-items-center rounded-full bg-white/15 text-white"><Icon name="check" size={14} /></span>
+              <span>{f}</span>
             </li>
           ))}
         </ul>
-
-        <!-- CTA -->
-        <div class="flex flex-col sm:flex-row items-center gap-4">
-          <a
-            href={`/${lang}/calculator`}
-            class="inline-flex items-center gap-3 px-8 py-4 bg-white text-indigo-700 font-bold rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 group"
-          >
-            <Icon name="calculator" size={20} />
-            <span>{t.cta}</span>
-            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
+        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <a href={`/${lang}/calculator`} class="pilule pilule-blanche">
+            <Icon name="calculator" size={18} />
+            {t.cta}
           </a>
-          <span class="text-indigo-200 text-sm">{t.free}</span>
+          <span class="text-sur-encre-2">{t.free}</span>
         </div>
       </div>
-
-      <!-- Right: Calculator Preview -->
-      <div class="flex-1 max-w-md animate-on-scroll" style="animation-delay: 200ms">
-        <div class="relative">
-          <!-- Mock Calculator Card -->
-          <div class="bg-white rounded-2xl shadow-2xl p-6 transform rotate-2 hover:rotate-0 transition-transform duration-500">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="text-marque">
-                <Icon name="calculator" size={20} class="text-marque" />
-              </div>
-              <div>
-                <div class="font-bold text-slate-900">Marketing Calculator</div>
-                <div class="text-sm text-slate-500">MyDigipal</div>
-              </div>
-            </div>
-
-            <!-- Mock Form Elements -->
-            <div class="space-y-4">
-              <div>
-                <div class="text-xs text-slate-500 mb-1">Industry</div>
-                <div class="h-10 bg-slate-100 rounded-lg flex items-center px-3">
-                  <span class="text-sm text-slate-700">B2B SaaS / Tech</span>
-                </div>
-              </div>
-              <div>
-                <div class="text-xs text-slate-500 mb-1">Monthly Budget</div>
-                <div class="h-10 bg-slate-100 rounded-lg flex items-center px-3">
-                  <span class="text-sm text-slate-700">€10,000 - €25,000</span>
-                </div>
-              </div>
-              <div>
-                <div class="text-xs text-slate-500 mb-1">Primary Goal</div>
-                <div class="h-10 bg-slate-100 rounded-lg flex items-center px-3">
-                  <span class="text-sm text-slate-700">Lead Generation</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Mock Result -->
-            <div class="mt-6 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl">
-              <div class="text-xs text-slate-500 mb-1">Recommended Split</div>
-              <div class="flex gap-2">
-                <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded">LinkedIn 40%</span>
-                <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">Google 35%</span>
-                <span class="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded">Email 25%</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Decorative elements -->
-          <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl -z-10 opacity-50"></div>
-        </div>
+      <div class="esquisse" aria-hidden="true">
+        <p class="flex items-center gap-3 font-semibold text-encre">
+          <span class="tuile h-10 w-10 rounded-xl"><Icon name="calculator" size={20} /></span>
+          {m.titre}
+        </p>
+        <p class="esquisse-libelle">{m.services}</p>
+        <p class="flex flex-wrap gap-2">
+          {['LinkedIn Ads', 'Google Ads', m.email].map((x, i) => (
+            <span class:list={['esquisse-choix', { 'esquisse-choisi': i < 2 }]}>{x}</span>
+          ))}
+        </p>
+        <p class="esquisse-libelle">{m.budget}</p>
+        <span class="esquisse-curseur"><span></span></span>
+        <p class="esquisse-libelle">{m.niveau}</p>
+        <p class="grid grid-cols-3 gap-1 rounded-xl bg-brume-clair p-1 text-center text-sm">
+          {m.niveaux.map((x, i) => <span class:list={['rounded-lg py-2', i === 1 ? 'bg-white font-semibold text-encre shadow-sm' : 'text-slate-500']}>{x}</span>)}
+        </p>
+        <p class="mt-2 rounded-xl bg-marque-doux px-4 py-3 font-semibold text-marque">{m.resultat}</p>
       </div>
     </div>
   </div>
 </section>
 
 <style>
-  .animate-on-scroll {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(30px);
+  .esquisse {
+    display: grid;
+    gap: 10px;
+    padding: 24px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 30px 60px -30px rgb(2 9 16 / 0.8);
+    transform: rotate(1.5deg);
   }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .esquisse-libelle {
+    margin-top: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #5b6b7b;
+  }
+  .esquisse-choix {
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: var(--brume);
+    color: #4b5b6b;
+    font-size: 0.875rem;
+  }
+  .esquisse-choisi {
+    background: var(--color-marque);
+    color: #fff;
+  }
+  .esquisse-curseur {
+    position: relative;
+    display: block;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--filet);
+  }
+  .esquisse-curseur span {
+    position: absolute;
+    inset: 0 42% 0 0;
+    border-radius: inherit;
+    background: var(--color-marque);
+  }
+  .esquisse-curseur span::after {
+    content: '';
+    position: absolute;
+    right: -9px;
+    top: -6px;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 0 0 2px var(--color-marque);
   }
 </style>
