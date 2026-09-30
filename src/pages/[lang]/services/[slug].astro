@@ -3,6 +3,7 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
 import { t } from '@/i18n/utils';
 import { getCollection } from 'astro:content';
+import { lireAcademy, faitsAcademy } from '@/components/accueil/donnees';
 
 // SEO Schemas
 import ServiceSchema from '@/components/seo/ServiceSchema.astro';
@@ -72,6 +73,7 @@ import DashboardShowcase from '@/components/sections/DashboardShowcase.astro';
 import WhyAISolutions from '@/components/sections/WhyAISolutions.astro';
 import AIBeforeAfter from '@/components/sections/AIBeforeAfter.astro';
 import AIUseCases from '@/components/sections/AIUseCases.astro';
+import AIAutomationRail from '@/components/sections/AIAutomationRail.astro';
 import AIProcess from '@/components/sections/AIProcess.astro';
 import MCPCustomBuildSection from '@/components/sections/MCPCustomBuildSection.astro';
 import MCPDeliveryPackages from '@/components/sections/MCPDeliveryPackages.astro';
@@ -139,6 +141,24 @@ const {
   calculatorServiceId,
   seo
 } = service.data;
+
+// Les chiffres du hero des pages IA (direction Encre, 30/09/2026). Seuls restent ceux qui
+// ont une source : pour AI Training, la note et le nombre de retours des formations, lus
+// dans l'API de l'Academy (instantané en secours). Les fiches d'AI Solutions et d'AI
+// Content n'ont plus de `metrics` : leur panneau montre « ce que vous obtenez ».
+let metricsHero = metrics;
+if (slug === 'ai-training') {
+  const faits = faitsAcademy(await lireAcademy(lang), lang);
+  metricsHero = lang === 'fr'
+    ? [
+        { value: `${faits.note}/10`, label: 'note moyenne des participants' },
+        { value: String(faits.retours), label: 'retours de participants' },
+      ]
+    : [
+        { value: `${faits.note}/10`, label: 'average rating from participants' },
+        { value: String(faits.retours), label: 'participant reviews' },
+      ];
+}
 
 // Top feature titles surfaced as scannable "what you get" proof in the hero.
 const heroProofPoints = (features || []).slice(0, 4).map((f: { title: string }) => f.title);
@@ -284,7 +304,7 @@ const breadcrumbItems = [
     subheadline={hero?.subheadline}
     description={description}
     color={color}
-    metrics={metrics}
+    metrics={metricsHero}
     proofPoints={heroProofPoints}
     testimonial={testimonial}
     heroLogos={heroLogos}
@@ -346,24 +366,20 @@ const breadcrumbItems = [
   <!-- AI Training Service: Interactive Sections -->
   {isAITrainingService && (
     <>
-      <!-- Why train / for whom -->
-      <WhyAITraining lang={lang} />
-      <TrainingUseCases lang={lang} />
-      <!-- Value for both audiences -->
-      <TrainingBenefitsManagers lang={lang} />
-      <TrainingBenefitsEmployees lang={lang} />
-      <!-- What they learn & how we build it -->
-      <TrainingAgenda lang={lang} />
-      <TrainingProcess lang={lang} />
-      <!-- Core offer: formats & pricing -->
-      <AITrainingModules lang={lang} />
-      <!-- Go further: technical / automation tracks -->
-      <MCPBuildSection lang={lang} />
-      <MarketingStackGrid lang={lang} />
-      <MCPTrainingTracks lang={lang} />
-      <!-- Proof -->
-      <TrainingTestimonials lang={lang} />
-      <TrainingClients lang={lang} />
+      <!-- Direction Encre (30/09/2026) : l'encre ponctue, jamais deux sections sombres
+           collées, 40 à 45 % de sombre. -->
+      <WhyAITraining lang={lang} />                <!-- encre -->
+      <TrainingBenefitsManagers lang={lang} />     <!-- blanc -->
+      <TrainingUseCases lang={lang} />             <!-- brume -->
+      <TrainingBenefitsEmployees lang={lang} />    <!-- blanc -->
+      <TrainingAgenda lang={lang} />               <!-- encre : CRAFT, grille de mots -->
+      <TrainingProcess lang={lang} />              <!-- blanc -->
+      <AITrainingModules lang={lang} />            <!-- encre : les formats -->
+      <TrainingClients lang={lang} />              <!-- blanc -->
+      <TrainingTestimonials lang={lang} />         <!-- encre -->
+      <MarketingStackGrid lang={lang} />           <!-- blanc -->
+      <MCPBuildSection lang={lang} />              <!-- encre : le serveur MCP, carte de verre -->
+      <MCPTrainingTracks lang={lang} />            <!-- brume -->
     </>
   )}
 
@@ -381,13 +397,15 @@ const breadcrumbItems = [
   <!-- AI Solutions Service: Interactive Sections -->
   {isAISolutionsService && (
     <>
-      <WhyAISolutions lang={lang} />
-      <AIBeforeAfter lang={lang} />
-      <AIUseCases lang={lang} />
-      <MCPCustomBuildSection lang={lang} />
-      <MarketingStackGrid lang={lang} variant="solutions" />
-      <MCPDeliveryPackages lang={lang} />
-      <AIProcess lang={lang} />
+      <!-- Direction Encre (30/09/2026) : jamais deux sections sombres collées. -->
+      <WhyAISolutions lang={lang} />                          <!-- encre -->
+      <AIBeforeAfter lang={lang} />                           <!-- blanc -->
+      <AIUseCases lang={lang} />                              <!-- encre -->
+      <AIAutomationRail lang={lang} />                        <!-- brume : une automatisation, rail morphing -->
+      <MCPCustomBuildSection lang={lang} />                   <!-- encre : le serveur MCP, carte de verre -->
+      <MarketingStackGrid lang={lang} variant="solutions" />  <!-- blanc -->
+      <MCPDeliveryPackages lang={lang} />                     <!-- blanc -->
+      <AIProcess lang={lang} />                               <!-- encre -->
     </>
   )}
 
@@ -422,10 +440,11 @@ const breadcrumbItems = [
   <!-- AI Content Service: Comprehensive Sections -->
   {isAIContentService && (
     <>
-      <WhyAIContent lang={lang} />
-      <AIContentProcess lang={lang} />
-      <ContentTypes lang={lang} />
-      <AIContentDelivery lang={lang} />
+      <!-- Direction Encre (30/09/2026) : puis le verbatim, en encre, après ContentTypes. -->
+      <WhyAIContent lang={lang} />        <!-- encre -->
+      <AIContentProcess lang={lang} />    <!-- blanc : rail morphing en quatre états -->
+      <AIContentDelivery lang={lang} />   <!-- encre -->
+      <ContentTypes lang={lang} />        <!-- brume -->
     </>
   )}
 
@@ -452,25 +471,21 @@ const breadcrumbItems = [
 
   <!-- AI Blog Articles Section (for AI service pages only) -->
   {isAIService && (
-    <section class="py-24 bg-white">
+    <section class="section-blanc py-20 lg:py-28">
       <div class="container-custom">
-        <div class="text-center mb-16 animate-on-scroll">
-          <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-            {blogContent.title}
-          </h2>
-          <p class="text-lg text-slate-500">
-            {blogContent.subtitle}
-          </p>
-        </div>
+        <header class="mb-12 grid max-w-[880px] gap-5">
+          <h2 class="titre-moyen text-encre">{blogContent.title}</h2>
+          <p class="chapo">{blogContent.subtitle}</p>
+        </header>
 
         <div class="grid md:grid-cols-3 gap-8">
           {articles.map((article, index) => (
             <a
               href={article.href}
-              class="group block bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-violet-300 hover:shadow-xl transition-all duration-300 animate-on-scroll"
-              style={`animation-delay: ${index * 100}ms`}
+              class="group block overflow-hidden rounded-[20px] border border-slate-200 bg-white transition-shadow duration-300 hover:shadow-xl" data-reveal
+              style={`--i:${index}`}
             >
-              <div class="aspect-video overflow-hidden">
+              <div class="hidden aspect-video overflow-hidden sm:block">
                 <img
                   src={article.image}
                   alt={article.title}
@@ -478,13 +493,13 @@ const breadcrumbItems = [
                 />
               </div>
               <div class="p-6">
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-violet-600 transition-colors">
+                <h3 class="mb-2 text-lg font-bold text-encre transition-colors group-hover:text-marque">
                   {article.title}
                 </h3>
                 <p class="text-slate-600 text-sm mb-4">
                   {article.description}
                 </p>
-                <div class="flex items-center gap-2 text-violet-600 font-medium text-sm group-hover:gap-3 transition-all">
+                <div class="flex items-center gap-2 font-semibold text-marque transition-all group-hover:gap-3">
                   <span>{blogContent.readMore}</span>
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
