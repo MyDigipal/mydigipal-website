@@ -134,89 +134,61 @@ const icons = {
 };
 ---
 
-<section class="py-24 bg-gradient-to-b from-slate-50 to-white">
+<!-- Emailing, le service complet (direction Encre, 30/09/2026) : huit chantiers en cartes, le
+     premier sur deux colonnes et en encre, trois rangs pleins. -->
+<section class="section-blanc py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-16">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Services Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {t.services.map((service, index) => (
-        <div
-          class="service-card group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-rose-200"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <!-- Icon -->
-          <div class="mb-5 text-marque">
-            <Fragment set:html={icons[service.icon as keyof typeof icons]} />
-          </div>
-
-          <!-- Content -->
-          <h3 class="text-xl font-bold text-slate-900 mb-3">{service.title}</h3>
-          <p class="text-slate-600 text-sm leading-relaxed mb-4">{service.description}</p>
-
-          <!-- Features -->
-          <div class="flex flex-wrap gap-2">
-            {service.features.map((feature) => (
-              <span class="text-xs px-2 py-1 bg-rose-50 text-rose-600 rounded-full">
-                {feature}
-              </span>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-
-    <!-- Calculator CTA Ribbon -->
-    <div class="mt-12">
-      <a
-        href={`/${lang}/calculator`}
-        class="group flex flex-col sm:flex-row items-center justify-between gap-4 p-6 bg-gradient-to-r from-rose-500 to-pink-600 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-      >
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <div class="text-left">
-            <p class="text-white font-bold text-lg">
-              {lang === 'fr' ? 'Estimez votre budget email marketing' : 'Estimate your Email Marketing budget'}
-            </p>
-            <p class="text-rose-100 text-sm">
-              {lang === 'fr' ? 'Calculateur de financement gratuit' : 'Free funding calculator'}
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 px-6 py-3 bg-white text-rose-600 font-bold rounded-xl group-hover:bg-rose-50 transition-colors">
-          <span>{lang === 'fr' ? 'Calculer maintenant' : 'Calculate now'}</span>
-          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </div>
-      </a>
-    </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <ul class="chantiers">
+      {t.services.map((s, i) => {
+        const fonce = i === 0;
+        return (
+          <li class:list={['chantier', fonce ? 'carte-encre chantier-large' : 'carte']} data-reveal style={`--i:${i % 3}`}>
+            <span class:list={['tuile tuile-grande', { 'tuile-pleine': fonce }]}><Fragment set:html={icons[s.icon as keyof typeof icons]} /></span>
+            <h3 class:list={['titre-carte', fonce ? 'text-white' : 'text-encre']}>{s.title}</h3>
+            <p class={fonce ? 'text-sur-encre-2' : 'text-slate-600'}>{s.description}</p>
+            <ul class="puces">{s.features.map((f) => <li>{f}</li>)}</ul>
+          </li>
+        );
+      })}
+    </ul>
   </div>
 </section>
 
 <style>
-  .service-card {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease forwards;
+  .chantiers {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
   }
-
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+  .chantier {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 28px 24px;
+  }
+  .chantier :global(svg) {
+    width: 32px;
+    height: 32px;
+  }
+  @media (min-width: 768px) {
+    .chantiers {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .chantiers {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .chantier {
+      padding: 32px;
+    }
+    .chantier-large {
+      grid-column: span 2;
     }
   }
 </style>
