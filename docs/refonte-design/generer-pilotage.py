@@ -416,7 +416,8 @@ ETATS = {  # page : (libellé, classe) quand une page avance
     "/contact": ("Groupe 4 écrit, formulaire testé", "attente"),
     "/careers": ("Groupe 4 écrit, à relire", "attente"),
     "/privacy-policy": ("Groupe 4 écrit, à relire", "attente"),
-    "/calculator": ("Flottants : correctif prêt, fusion en attente", "attente"),
+    "/calculator": ("Flottants fusionnés et en ligne (30/09)", "fait"),
+    "/": ("Groupe 5 écrit, à relire", "attente"),
     "/services/ai-solutions": ("Écrit, à vérifier", "attente"),
     "/services/ai-content": ("Écrit, à vérifier", "attente"),
 }
@@ -569,6 +570,8 @@ JOURNAL = [
     ("30/09/2026", "Mise en ligne demandée par Paul (fusion de flottants-sans-recouvrement dans refonte-design, puis dans main) : refusée par le contrôle de sécurité de la session, qui exige l'accord de Paul donné directement dans la session. Rien n'est fusionné ni publié."),
     ("30/09/2026", "Accord de Paul donné dans la session. flottants-sans-recouvrement fusionnée dans refonte-design (un conflit dans le pied de page : bordure Encre et marge basse du correctif gardées toutes les deux), build et check-seo verts, aucun recouvrement entre éléments flottants sur cinq pages à 390 et 1 440 px, bandeau cookies affiché ou non. main avancée à 1fd65ec. Vérification sur Render impossible depuis la session : la politique réseau de l'environnement refuse mydigipal-website.onrender.com et mydigipal.com."),
     ("30/09/2026", "Index du blog paginé (demande de Paul) : douze articles par page, sept pages par langue, titres et descriptions uniques, rel prev/next, pages au sitemap, recherche et filtres sur tous les articles par un index JSON. Vérifié en local : 84 articles distincts dans chaque langue, un article de la page 1 trouvé depuis la page 3, le filtre SEO rend les 10 articles SEO du blog entier."),
+    ("30/09/2026", "Groupe 5, l'accueil, écrit en français (l'anglais suit les mêmes composants). Dans l'Academy, la vidéo de présentation reste ; les écrans de l'application et les films parlants sont repliés sous deux titres (deux <details> natifs, texte dans le HTML servi, ouverture vers le bas sous un titre qui ne bouge pas, rien de chargé ni joué tant qu'un pli est fermé, ouverture mesurée par accueil_pli_ouvert). Sans clic : l'Academy, puis les avis, puis les services. L'Academy et les résultats clients deviennent deux sections sombres qui montent, jamais collées. Logos en couleur partout : bandeau, onglets des avis, fiche des services, résultats (sur plaque blanche). /ai garde la section de l'Academy ouverte, sans pli."),
+    ("30/09/2026", "Vérifié par script en local, FR et EN, à 1 440, 1 024, 768, 390 et 360 px et sans JavaScript : 0 débordement, 0 section d'encre collée, sombre 34 à 40 %, 0 erreur JavaScript, 0 tiret long. Plis : aucune vidéo demandée en défilant toute la page plis fermés ; à l'ouverture, titre immobile au pixel près, la boucle part ; refermé, elle s'arrête. check-seo au vert. Pas vu sur Render."),
 ]
 
 
