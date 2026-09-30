@@ -6,6 +6,8 @@
  * (direction Encre, 30/09/2026). Il remplace six bandeaux sombres en
  * dégradé, chacun avec ses halos. Aucune animation d'entrée : le titre est là dès
  * le premier rendu.
+ *
+ * Le créneau `apres` pose un bloc pleine largeur sous le texte (l'aiguillage de `/ai`).
  */
 import Icon from '@/components/ui/Icon.astro';
 
@@ -56,5 +58,6 @@ const { eyebrow, title, subtitle, description, actions = [] } = Astro.props;
       )}
       <slot />
     </div>
+    <slot name="apres" />
   </div>
 </section>
