@@ -1,0 +1,199 @@
+---
+/**
+ * La révélation d'un logo en particules (groupe 4, 30/09/2026 ; essai `particules-texte`,
+ * fiche B.6 de `docs/refonte-design/motion/ADAPTATION-WEB.md`). Paul : « vraiment cool »,
+ * pour « un fond qui fait apparaître un logo ». Sert au haut des études de cas.
+ *
+ * Ce qu'elle fait : des points, pris dans les COULEURS du logo (Paul, 30/09/2026 : les logos
+ * restent en couleur), tournent autour de lui puis rejoignent chacun sa place par une
+ * trajectoire courbe, à des instants échelonnés par une graine fixe. Quand le dessin est
+ * formé, le vrai logo, net, monte en fondu et les points s'effacent.
+ *
+ * Contrat du socle : le logo est une vraie `<img>` dans le DOM ; c'est l'état final, sans
+ * script, sous mouvement réduit et avec `?fige=1`. La toile est un décor `aria-hidden`, posée
+ * sur le premier ancêtre positionné (la section du haut de page), sous le texte.
+ * Gardé de l'essai : l'assemblage échelonné, les trajectoires courbes. Retiré : la dispersion,
+ * le tourbillon permanent, le WebGL (quelques milliers de points suffisent en Canvas 2D).
+ * Joue au chargement, une fois l'image décodée : elle est dans le premier écran.
+ */
+interface Props {
+  src: string;
+  alt: string;
+  /** Taille d'affichage du logo, en pixels CSS. */
+  largeur: number;
+  hauteur: number;
+  class?: string;
+}
+
+const { src, alt, largeur, hauteur, class: classe } = Astro.props;
+---
+
+<span class:list={['rl', classe]} data-revelation-logo style={`--rl-l:${largeur}px;--rl-h:${hauteur}px`}>
+  <canvas class="rl-toile" aria-hidden="true"></canvas>
+  <img class="rl-logo" src={src} alt={alt} width={largeur} height={hauteur} decoding="async" fetchpriority="high" />
+</span>
+
+<style>
+  .rl {
+    display: inline-block;
+  }
+  .rl-logo {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: min(var(--rl-l), 100%);
+    height: auto;
+    max-height: var(--rl-h);
+    object-fit: contain;
+    object-position: left center;
+  }
+  /* La toile couvre le premier ancêtre positionné : les points viennent de toute la section. */
+  .rl-toile {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  import { scene, courbes as C, seg, clamp, graine, mouvementReduit } from '@/lib/motion';
+
+  /** L'instant où tout est posé : le logo net, plus aucun point. */
+  const TENUE = 2.9;
+  /** Pas d'échantillonnage du logo, en pixels CSS : un point tous les 1,6 px. */
+  const PAS = 1.6;
+  const MAX_POINTS = 4200;
+
+  interface Point {
+    x0: number; y0: number; // départ, sur l'anneau
+    x1: number; y1: number; // arrivée, dans le logo
+    a0: number; w: number; r: number; // angle, vitesse et rayon de l'anneau
+    t0: number; // départ du trajet
+    bombe: number; // courbure de la trajectoire
+    c: string;
+  }
+
+  function monter(el: HTMLElement) {
+    if (el.dataset.monte) return;
+    el.dataset.monte = '1';
+    const toile = el.querySelector<HTMLCanvasElement>('.rl-toile')!;
+    const logo = el.querySelector<HTMLImageElement>('.rl-logo')!;
+    const hote = (toile.offsetParent as HTMLElement | null) ?? el;
+    const ctx = toile.getContext('2d');
+    if (!ctx) return;
+
+    let points: Point[] = [];
+    let dpr = 1;
+    let cx = 0, cy = 0; // centre du logo dans la toile
+
+    /** Lit le logo à sa taille d'affichage et place un point par pixel coloré. */
+    function preparer(): boolean {
+      const rh = hote.getBoundingClientRect();
+      const rl = logo.getBoundingClientRect();
+      if (!rl.width || !rl.height || !rh.width) return false;
+      dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      toile.width = Math.round(rh.width * dpr);
+      toile.height = Math.round(rh.height * dpr);
+      const ox = rl.left - rh.left;
+      const oy = rl.top - rh.top;
+      cx = ox + rl.width / 2;
+      cy = oy + rl.height / 2;
+
+      // L'image est dessinée comme `object-fit: contain`, calée à gauche.
+      const ratio = logo.naturalWidth / logo.naturalHeight || 1;
+      let w = rl.width, h = rl.width / ratio;
+      if (h > rl.height) { h = rl.height; w = h * ratio; }
+      const dy = (rl.height - h) / 2;
+      const hors = document.createElement('canvas');
+      hors.width = Math.max(1, Math.round(w / PAS));
+      hors.height = Math.max(1, Math.round(h / PAS));
+      const hc = hors.getContext('2d', { willReadFrequently: true });
+      if (!hc) return false;
+      hc.drawImage(logo, 0, 0, hors.width, hors.height);
+      let px: Uint8ClampedArray;
+      try {
+        px = hc.getImageData(0, 0, hors.width, hors.height).data;
+      } catch {
+        return false; // image d'une autre origine : pas de particules, le logo reste
+      }
+      const cibles: { x: number; y: number; c: string }[] = [];
+      for (let j = 0; j < hors.height; j++) {
+        for (let i = 0; i < hors.width; i++) {
+          const k = (j * hors.width + i) * 4;
+          const [r, g, b, a] = [px[k], px[k + 1], px[k + 2], px[k + 3]];
+          if (a < 140) continue;
+          if (r > 236 && g > 236 && b > 236) continue; // le blanc d'un fond de fichier
+          cibles.push({ x: ox + (i + 0.5) * PAS, y: oy + dy + (j + 0.5) * PAS, c: `rgb(${r},${g},${b})` });
+        }
+      }
+      if (cibles.length < 40) return false;
+      const alea = graine(7);
+      // Au-delà du plafond, on en garde un sur n, régulièrement.
+      const garde = cibles.length > MAX_POINTS ? cibles.filter((_, i) => i % Math.ceil(cibles.length / MAX_POINTS) === 0) : cibles;
+      const rMax = Math.min(Math.max(rh.width, rh.height) * 0.55, 620);
+      points = garde.map((p) => {
+        const a0 = alea() * Math.PI * 2;
+        const r = clamp(rMax * (0.35 + alea() * 0.65), 90, rMax);
+        return {
+          x0: cx, y0: cy, x1: p.x, y1: p.y,
+          a0, r, w: (0.35 + alea() * 0.5) * (alea() < 0.5 ? -1 : 1),
+          t0: 0.15 + alea() * 1.05 + ((p.x - ox) / (rl.width || 1)) * 0.25,
+          bombe: (alea() - 0.5) * 140,
+          c: p.c,
+        };
+      });
+      return true;
+    }
+
+    const DUREE = 1.15; // un trajet
+    function rendu(t: number) {
+      ctx!.setTransform(1, 0, 0, 1, 0, 0);
+      ctx!.clearRect(0, 0, toile.width, toile.height);
+      if (t >= TENUE - 0.001 || points.length === 0) {
+        logo.style.opacity = '';
+        return;
+      }
+      // Le vrai logo monte quand le dessin est formé ; les points s'effacent ensuite.
+      logo.style.opacity = C.entree(seg(t, 2.05, 2.55)).toFixed(3);
+      const effacement = 1 - seg(t, 2.35, 2.85);
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const cote = PAS * 1.05;
+      for (const p of points) {
+        const e = C.outQuart(seg(t, p.t0, p.t0 + DUREE));
+        // Avant son départ, le point tourne sur l'anneau, comme dans l'essai.
+        const ang = p.a0 + p.w * Math.min(t, p.t0 + DUREE);
+        const lx = p.x0 + Math.cos(ang) * p.r * 1.35;
+        const ly = p.y0 + Math.sin(ang) * p.r * 0.7;
+        const dx = p.x1 - lx, dy = p.y1 - ly;
+        const n = Math.hypot(dx, dy) || 1;
+        const b = Math.sin(Math.PI * e) * p.bombe;
+        const x = lx + dx * e + (-dy / n) * b;
+        const y = ly + dy * e + (dx / n) * b;
+        const alpha = seg(t, 0, 0.35) * effacement * (0.55 + 0.45 * e);
+        if (alpha <= 0.01) continue;
+        ctx!.globalAlpha = alpha;
+        ctx!.fillStyle = p.c;
+        ctx!.fillRect(x - cote / 2, y - cote / 2, cote, cote);
+      }
+      ctx!.globalAlpha = 1;
+    }
+
+    const s = scene(el, { tenue: TENUE, rendu });
+    if (mouvementReduit()) return;
+    const lancer = () => {
+      if (!preparer()) return;
+      s.jouer(0);
+    };
+    if (logo.complete && logo.naturalWidth) lancer();
+    else logo.addEventListener('load', lancer, { once: true });
+  }
+
+  function monterTout() {
+    document.querySelectorAll<HTMLElement>('[data-revelation-logo]').forEach(monter);
+  }
+  monterTout();
+  document.addEventListener('astro:page-load', monterTout);
+</script>
