@@ -68,23 +68,103 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<!-- Direction Encre (30/09/2026) : une section d'encre qui monte sur le hero, le propos
-     à gauche, quatre raisons entre des filets à droite (plus de cartes égales). Plus de
-     « 40 %+ » : aucune source. Tout est visible sans script. -->
+<!-- Direction Encre (30/09/2026), correction de cap : le propos, puis quatre cartes de
+     verre de tailles différentes, chacune avec sa grande icône (la première sur toute la
+     largeur, les trois autres dessous). Plus de « 40 %+ » : aucune source. -->
 <section class="section-encre section-monte py-20 lg:py-32">
-  <div class="container-custom grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
-    <header class="grid content-start gap-5 lg:gap-6">
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
       <h2 class="titre-moyen">{t.headline}</h2>
       <p class="chapo">{t.description}</p>
     </header>
-    <ul class="grid gap-x-10 sm:grid-cols-2">
+    <ul class="raisons">
       {t.features.map((feature, index) => (
-        <li class="grid content-start gap-2 border-t border-white/10 py-6" data-reveal style={`--i:${index}`}>
-          <Icon name={feature.icon} size={22} class="mb-1 text-marque-clair" />
-          <h3 class="text-lg font-semibold text-white">{feature.title}</h3>
+        <li class:list={['raison', `raison-${index}`]} data-reveal style={`--i:${index}`}>
+          <span class="raison-icone" aria-hidden="true"><Icon name={feature.icon} size={index === 0 ? 36 : 30} /></span>
+          <h3 class="raison-titre">{feature.title}</h3>
           <p class="text-sur-encre-2">{feature.description}</p>
         </li>
       ))}
     </ul>
   </div>
 </section>
+
+<style>
+  .raisons {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .raison {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 28px 24px;
+    border-radius: var(--rayon-panneau);
+    background: rgb(255 255 255 / 0.06);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 30px 60px -36px rgb(2 9 16 / 0.9);
+  }
+  .raison-icone {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 6px;
+    border-radius: 18px;
+    background: var(--color-marque);
+    color: #fff;
+  }
+  .raison-titre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.375rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  /* La première carte est la raison qui compte : plus grande, sur un verre bleuté. */
+  .raison-0 {
+    background:
+      radial-gradient(90% 120% at 100% 0%, rgb(29 113 184 / 0.45), transparent 65%),
+      rgb(255 255 255 / 0.06);
+  }
+  .raison-0 .raison-icone {
+    width: 80px;
+    height: 80px;
+    border-radius: 22px;
+  }
+  @media (min-width: 768px) {
+    .raisons {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .raison-0 {
+      grid-column: span 2;
+    }
+  }
+  @media (min-width: 1024px) {
+    .raisons {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .raison {
+      padding: 32px;
+    }
+    .raison-0 {
+      grid-column: 1 / -1;
+      grid-template-columns: 80px minmax(0, 1fr);
+      column-gap: 28px;
+      align-items: center;
+      padding: 40px;
+    }
+    .raison-0 .raison-icone {
+      grid-row: span 2;
+      margin-bottom: 0;
+    }
+    .raison-0 .raison-titre {
+      font-size: 2rem;
+    }
+  }
+</style>
