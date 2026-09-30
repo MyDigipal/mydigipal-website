@@ -2,8 +2,8 @@
 import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
-import Button from '@/components/ui/Button.astro';
 import TrustedBy from '@/components/sections/TrustedBy.astro';
+import TrainingTestimonials from '@/components/sections/TrainingTestimonials.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import { ENDPOINT, prixDe, type Jour30Data } from '@/components/academy/data';
 import secoursFr from '@/data/academy/jour30-fr.json';
@@ -113,14 +113,19 @@ const content = {
       description: "AI is transforming every industry. Whether you need to train your team, build custom solutions, or scale content creation, we're here to guide your AI journey."
     },
     intro: {
-      title: "AI Is Not the Future — It's Now",
+      title: "AI is not the future. It's now.",
       description: "Companies that embrace AI today will lead tomorrow. We help you navigate this transformation with practical, results-driven AI solutions.",
-      paragraph: "From executive training to custom automation, our AI services are designed to deliver immediate value while building long-term capabilities.",
-      stats: [
-        { value: "300%", label: "Productivity Gain" },
-        { value: "50+", label: "Teams Trained" },
-        { value: "100+", label: "AI Projects" }
-      ]
+      paragraph: "From executive training to custom automation, our AI services are designed to deliver immediate value while building long-term capabilities."
+    },
+    aiguillage: {
+      titre: "Four ways to put AI to work",
+      chapo: "And which one to start with.",
+      lignes: [
+        { nom: "AI Academy", pour: "To learn on your own, at your pace", phrase: "The online course: the CRAFT method, the writing workshop, all the way to agents and MCP servers.", href: "/en/academy" },
+        { nom: "AI Training", pour: "To train a team, on site or remote", phrase: "Hands-on workshops built on your use cases, with your tools.", href: "/en/services/ai-training" },
+        { nom: "AI Solutions", pour: "To have an automation built", phrase: "An agent, a workflow or an MCP server plugged into your tools.", href: "/en/services/ai-solutions" },
+        { nom: "AI Content", pour: "To produce content that sounds like you", phrase: "Drafted by AI in your voice, reviewed by a human.", href: "/en/services/ai-content" },
+      ],
     },
     servicesSection: {
       badge: "Our AI Expertise",
@@ -174,10 +179,10 @@ const content = {
         color: "from-cyan-500 to-blue-600"
       },
       {
-        icon: "edit-3",
+        icon: "edit",
         name: "AI Content",
         tagline: "Scale Your Content",
-        description: "AI-powered content creation at scale. Blog posts, social media, ad copy — we combine AI efficiency with human creativity for quality content.",
+        description: "AI-powered content creation at scale. Blog posts, social media, ad copy: we combine AI efficiency with human creativity for quality content.",
         href: "/en/services/ai-content",
         features: ["Blog Articles", "Social Media", "Ad Copy", "Email Sequences"],
         highlights: [
@@ -195,7 +200,7 @@ const content = {
       items: [
         { icon: "trending-up", name: "Marketing", description: "Content creation, campaign optimization, audience analysis" },
         { icon: "users", name: "Sales", description: "Lead scoring, email personalization, CRM automation" },
-        { icon: "headphones", name: "Customer Service", description: "Chatbots, ticket routing, response suggestions" },
+        { icon: "message-circle", name: "Customer Service", description: "Chatbots, ticket routing, response suggestions" },
         { icon: "bar-chart", name: "Analytics", description: "Data visualization, trend prediction, reporting" }
       ]
     },
@@ -238,16 +243,21 @@ const content = {
     intro: {
       title: "L'IA n'est pas le futur, c'est maintenant",
       description: "Les entreprises qui adoptent l'IA aujourd'hui seront les leaders de demain. On vous aide à naviguer cette transformation avec des solutions IA pratiques et orientées résultats.",
-      paragraph: "De la formation executive à l'automatisation sur-mesure, nos services IA sont conçus pour délivrer une valeur immédiate tout en construisant des capacités long terme.",
-      stats: [
-        { value: "300%", label: "Gain Productivité" },
-        { value: "50+", label: "Équipes Formées" },
-        { value: "100+", label: "Projets IA" }
-      ]
+      paragraph: "De la formation executive à l'automatisation sur-mesure, nos services IA sont conçus pour délivrer une valeur immédiate tout en construisant des capacités long terme."
+    },
+    aiguillage: {
+      titre: "Quatre façons de mettre l'IA au travail",
+      chapo: "Et par laquelle commencer.",
+      lignes: [
+        { nom: "AI Academy", pour: "Pour apprendre seul, à votre rythme", phrase: "La formation en ligne : la méthode CRAFT, l'atelier d'écriture, jusqu'aux agents et aux serveurs MCP.", href: "/fr/academy" },
+        { nom: "AI Training", pour: "Pour former une équipe, en salle ou à distance", phrase: "Des ateliers pratiques bâtis sur vos cas d'usage, avec vos outils.", href: "/fr/services/ai-training" },
+        { nom: "AI Solutions", pour: "Pour faire construire une automatisation", phrase: "Un agent, un workflow ou un serveur MCP branché sur vos outils.", href: "/fr/services/ai-solutions" },
+        { nom: "AI Content", pour: "Pour produire du contenu qui sonne comme vous", phrase: "Rédigé par l'IA dans votre voix, relu par un humain.", href: "/fr/services/ai-content" },
+      ],
     },
     servicesSection: {
       badge: "Nos expertises IA",
-      title: "Comment Pouvons-Nous Vous Aider ?",
+      title: "Comment pouvons-nous vous aider ?",
       subtitle: "Cliquez sur un service pour en découvrir les détails"
     },
     services: [
@@ -297,10 +307,10 @@ const content = {
         color: "from-cyan-500 to-blue-600"
       },
       {
-        icon: "edit-3",
+        icon: "edit",
         name: "Contenu IA",
         tagline: "Scalez votre contenu",
-        description: "Création de contenu IA à grande échelle. Articles de blog, réseaux sociaux, copy pub — on combine l'efficacité de l'IA avec la créativité humaine pour du contenu de qualité.",
+        description: "Création de contenu IA à grande échelle. Articles de blog, réseaux sociaux, textes publicitaires : on combine l'efficacité de l'IA avec la créativité humaine pour du contenu de qualité.",
         href: "/fr/services/ai-content",
         features: ["Articles Blog", "Réseaux sociaux", "Copy Publicitaire", "Séquences email"],
         highlights: [
@@ -318,7 +328,7 @@ const content = {
       items: [
         { icon: "trending-up", name: "Marketing", description: "Création contenu, optimisation campagnes, analyse audience" },
         { icon: "users", name: "Sales", description: "Lead scoring, personnalisation email, automatisation CRM" },
-        { icon: "headphones", name: "Service Client", description: "Chatbots, routage tickets, suggestions réponses" },
+        { icon: "message-circle", name: "Service Client", description: "Chatbots, routage tickets, suggestions réponses" },
         { icon: "bar-chart", name: "Analytics", description: "Visualisation data, prédiction tendances, reporting" }
       ]
     },
@@ -366,316 +376,125 @@ const articles = blogArticles[lang] || blogArticles.en;
   />
 
 
-  <!-- Intro Section with Stats -->
-  <section class="py-24 bg-gradient-to-b from-slate-50 to-white">
+  <!-- Direction Encre (30/09/2026). Le rythme : l'aiguillage sur l'encre, le détail des
+       quatre offres sur le blanc, les départements sur l'encre, les articles sur le blanc,
+       les avis des formations sur l'encre. Plus de « 300 % / 50+ / 100+ » (aucune
+       source), plus d'avis hors sujet (emailing, Google Ads). -->
+  <section class="section-encre section-monte py-20 lg:py-32">
     <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center mb-16 animate-on-scroll">
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-          {c.intro.title}
-        </h2>
-        <p class="text-xl text-slate-600 mb-4">
-          {c.intro.description}
-        </p>
-        <p class="text-lg text-slate-500">
-          {c.intro.paragraph}
-        </p>
-      </div>
+      <header class="mb-12 grid max-w-[900px] gap-5 lg:mb-16 lg:gap-6">
+        <h2 class="titre-moyen">{c.intro.title}</h2>
+        <p class="chapo">{c.intro.description}</p>
+      </header>
+      <h3 class="font-display text-2xl font-extrabold tracking-[-0.02em] text-white lg:text-3xl">{c.aiguillage.titre}</h3>
+      <p class="mb-6 mt-2 text-sur-encre-2">{c.aiguillage.chapo}</p>
+      <ul>
+        {c.aiguillage.lignes.map((l) => (
+          <li class="border-t border-white/10">
+            <a href={l.href} class="group grid gap-2 py-6 lg:grid-cols-[200px_minmax(0,1fr)_minmax(0,1.2fr)_auto] lg:items-center lg:gap-8">
+              <span class="font-display text-2xl font-extrabold tracking-[-0.02em] text-white">{l.nom}</span>
+              <span class="font-semibold text-sur-encre">{l.pour}</span>
+              <span class="text-sur-encre-2">{l.phrase}</span>
+              <span class="inline-flex items-center gap-2 font-semibold text-marque-clair transition-colors group-hover:text-white">
+                {c.cta}
+                <Icon name="arrow-right" size={18} class="transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
 
-      <!-- Stats -->
-      <div class="grid md:grid-cols-3 gap-8 max-w-3xl mx-auto mb-16">
-        {c.intro.stats.map((stat, index) => (
-          <div
-            class="text-center p-6 bg-white rounded-2xl shadow-lg border border-slate-100 animate-on-scroll"
-            style={`animation-delay: ${index * 100}ms`}
-          >
-            <div class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              {stat.value}
+  <section class="section-blanc py-20 lg:py-32">
+    <div class="container-custom">
+      <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-14">
+        <h2 class="titre-moyen text-encre">{c.servicesSection.title}</h2>
+        <p class="chapo">{c.intro.paragraph}</p>
+      </header>
+      {c.services.map((service, index) => (
+        <article class="grid gap-8 border-t border-slate-200 py-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16" data-reveal style={`--i:${index % 2}`}>
+          <div class="grid content-start justify-items-start gap-4">
+            <div class="flex items-center gap-3">
+              <Icon name={service.icon} size={26} class="text-marque" />
+              <h3 class="font-display text-2xl font-extrabold tracking-[-0.02em] text-encre">{service.name}</h3>
             </div>
-            <div class="text-slate-600">{stat.label}</div>
+            <p class="font-semibold text-marque">{service.tagline}</p>
+            <p class="text-slate-600">{service.description}</p>
+            <p class="text-slate-500">{service.features.join(', ')}</p>
+            <a href={service.href} class="pilule pilule-contour mt-2">
+              {c.cta}
+              <Icon name="arrow-right" size={18} class="pilule-fleche" />
+            </a>
           </div>
-        ))}
-      </div>
+          <div>
+            <h4 class="mb-4 font-semibold text-encre">{lang === 'fr' ? 'Points clés' : 'Key highlights'}</h4>
+            <ul class="grid gap-3">
+              {service.highlights.map((highlight) => (
+                <li class="flex items-start gap-3 text-slate-700">
+                  <Icon name="check" size={16} class="mt-1 flex-none text-marque" />
+                  <span>{highlight}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </article>
+      ))}
     </div>
   </section>
 
-  <!-- Services Grid -->
-  <section class="py-24 bg-white">
+  <section class="section-encre section-monte py-20 lg:py-28">
     <div class="container-custom">
-      <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          {c.servicesSection.title}
-        </h2>
-        <p class="text-lg text-slate-500 flex items-center justify-center gap-2">
-          <svg class="w-5 h-5 text-violet-500 animate-bounce-subtle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-          </svg>
-          {c.servicesSection.subtitle}
-        </p>
-      </div>
-
-      <div class="space-y-8">
-        {c.services.map((service, index) => (
-          <a
-            href={service.href}
-            class="service-card group block p-8 md:p-10 bg-white rounded-3xl border-2 border-slate-200 hover:border-violet-300 hover:shadow-xl transition-all duration-500 animate-on-scroll overflow-hidden cursor-pointer"
-            style={`animation-delay: ${index * 150}ms`}
-          >
-            <div class="grid lg:grid-cols-2 gap-8 items-center">
-              <!-- Left: Content -->
-              <div>
-                <div class="flex items-center gap-4 mb-4">
-                  <div class="text-marque">
-                    <Icon name={service.icon} size={28} class="text-marque" />
-                  </div>
-                  <div>
-                    <h3 class="text-2xl font-bold text-slate-900 group-hover:text-violet-600 transition-colors">{service.name}</h3>
-                    <p class={`text-sm font-medium bg-gradient-to-r ${service.color} bg-clip-text text-transparent`}>{service.tagline}</p>
-                  </div>
-                </div>
-
-                <p class="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
-
-                <!-- Features -->
-                <div class="flex flex-wrap gap-2 mb-6">
-                  {service.features.map(feature => (
-                    <span class="px-3 py-1 text-sm bg-slate-100 text-slate-600 rounded-full">
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-
-                <!-- CTA with shine effect -->
-                <div class="cta-button inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-marque text-white hover:bg-marque-fonce font-semibold group-hover:gap-3 transition-all shadow-lg">
-                  <span>{c.cta}</span>
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </div>
-              </div>
-
-              <!-- Right: Highlights -->
-              <div class="bg-slate-50 rounded-2xl p-6 group-hover:bg-violet-50/50 transition-colors">
-                <h4 class="font-semibold text-slate-900 mb-4">{lang === 'fr' ? 'Points clés' : 'Key highlights'}</h4>
-                <ul class="space-y-3">
-                  {service.highlights.map(highlight => (
-                    <li class="flex items-start gap-3">
-                      <div class={`w-5 h-5 rounded-full bg-gradient-to-br ${service.color} flex items-center justify-center flex-shrink-0 mt-0.5`}>
-                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                      </div>
-                      <span class="text-slate-600">{highlight}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Use Cases -->
-  <section class="py-24 bg-gradient-to-b from-violet-50 to-white">
-    <div class="container-custom">
-      <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          {c.useCases.title}
-        </h2>
-      </div>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <h2 class="titre-moyen mb-10 lg:mb-14">{c.useCases.title}</h2>
+      <ul class="grid gap-x-10 sm:grid-cols-2 lg:grid-cols-4">
         {c.useCases.items.map((useCase, index) => (
-          <div
-            class="p-6 bg-white rounded-2xl border border-slate-200 hover:border-violet-200 hover:shadow-lg transition-all animate-on-scroll"
-            style={`animation-delay: ${index * 100}ms`}
-          >
-            <div class="mb-4 text-marque">
-              <Icon name={useCase.icon} size={24} class="text-marque" />
-            </div>
-            <h3 class="text-lg font-bold text-slate-900 mb-2">{useCase.name}</h3>
-            <p class="text-slate-600 text-sm">{useCase.description}</p>
-          </div>
+          <li class="grid content-start gap-2 border-t border-white/10 py-7" data-reveal style={`--i:${index}`}>
+            <Icon name={useCase.icon} size={24} class="mb-1 text-marque-clair" />
+            <h3 class="text-lg font-semibold text-white">{useCase.name}</h3>
+            <p class="text-sur-encre-2">{useCase.description}</p>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   </section>
 
-  <!-- Blog Articles Section -->
-  <section class="py-24 bg-white">
+  <section class="section-blanc py-20 lg:py-28">
     <div class="container-custom">
-      <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          {c.blogSection.title}
-        </h2>
-        <p class="text-lg text-slate-500">
-          {c.blogSection.subtitle}
-        </p>
-      </div>
-
-      <div class="grid md:grid-cols-3 gap-8">
+      <header class="mb-12 grid max-w-[880px] gap-5">
+        <h2 class="titre-moyen text-encre">{c.blogSection.title}</h2>
+        <p class="chapo">{c.blogSection.subtitle}</p>
+      </header>
+      <div class="grid gap-8 md:grid-cols-3">
         {articles.map((article, index) => (
-          <a
-            href={article.href}
-            class="group block bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-violet-300 hover:shadow-xl transition-all duration-300 animate-on-scroll"
-            style={`animation-delay: ${index * 100}ms`}
-          >
-            <div class="aspect-video overflow-hidden">
-              <img
-                src={article.image}
-                alt={article.title}
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
+          <a href={article.href} class="group block overflow-hidden rounded-[20px] border border-slate-200 bg-white transition-shadow duration-300 hover:shadow-xl" data-reveal style={`--i:${index}`}>
+            <div class="hidden aspect-video overflow-hidden sm:block">
+              <img src={article.image} alt={article.title} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" />
             </div>
             <div class="p-6">
-              <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-violet-600 transition-colors">
-                {article.title}
-              </h3>
-              <p class="text-slate-600 text-sm mb-4">
-                {article.description}
-              </p>
-              <div class="flex items-center gap-2 text-violet-600 font-medium text-sm group-hover:gap-3 transition-all">
-                <span>{lang === 'fr' ? 'Lire l\'article' : 'Read article'}</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </div>
+              <h3 class="mb-2 text-lg font-bold text-encre transition-colors group-hover:text-marque">{article.title}</h3>
+              <p class="mb-4 text-slate-600">{article.description}</p>
+              <span class="flex items-center gap-2 font-semibold text-marque">
+                {lang === 'fr' ? 'Lire l’article' : 'Read article'}
+                <Icon name="arrow-right" size={16} />
+              </span>
             </div>
           </a>
         ))}
       </div>
-
-      <div class="text-center mt-12">
-        <Button href={`/${lang}/blog?category=ai`} variant="outline" size="lg">
-          {lang === 'fr' ? 'Voir tous les articles IA' : 'View all AI articles'}
-        </Button>
+      <div class="mt-12">
+        <a href={`/${lang}/blog?category=ai`} class="pilule pilule-contour">{lang === 'fr' ? 'Voir tous les articles IA' : 'View all AI articles'}</a>
       </div>
     </div>
   </section>
 
-  <!-- Testimonials -->
-  <section class="py-24 bg-gradient-to-b from-slate-50 to-white">
-    <div class="container-custom">
-      <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          {c.testimonials.title}
-        </h2>
-      </div>
+  <TrainingTestimonials lang={lang} />
 
-      <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-        {c.testimonials.items.map((testimonial, index) => (
-          <div
-            class="p-8 bg-white rounded-2xl border border-slate-200 shadow-lg animate-on-scroll"
-            style={`animation-delay: ${index * 150}ms`}
-          >
-            <div class="flex gap-1 mb-4">
-              {[1,2,3,4,5].map(() => (
-                <svg class="w-5 h-5 text-violet-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-            </div>
-            <p class="text-lg text-slate-700 mb-6 italic leading-relaxed">"{testimonial.quote}"</p>
-            <div class="flex items-center gap-4">
-              <img
-                src={testimonial.image}
-                alt={testimonial.author}
-                class="w-14 h-14 rounded-full object-cover border-2 border-violet-100"
-              />
-              <div>
-                <p class="font-semibold text-slate-900">{testimonial.author}</p>
-                <p class="text-violet-600 text-sm font-medium">{testimonial.role}</p>
-                <p class="text-slate-500 text-sm">{testimonial.company}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Trusted By -->
-  <TrustedBy lang={lang} variant="compact" />
+  <TrustedBy
+    lang={lang}
+    titre={lang === 'fr' ? 'Ils nous ont confié leurs équipes' : 'They trusted us with their teams'}
+    slugs={['la-poste', 'leclerc', 'pierre-fabre', 'moet-hennessy', 'yves-saint-laurent', 'la-redoute', 'pernod-ricard', 'gucci', 'kaufman-broad', 'gl-events', 'grands-moulins', 'balenciaga']}
+  />
 
   <!-- Final CTA -->
   <FinalCTA lang={lang} color="primary" />
 </PageLayout>
-
-<style>
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  @keyframes fadeIn {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
-  }
-
-  .animate-bounce-subtle {
-    animation: bounce-subtle 2s ease-in-out infinite;
-  }
-
-  @keyframes bounce-subtle {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-  }
-
-  .service-card {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* CTA Button Shine Effect */
-  .cta-button {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .cta-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.3),
-      transparent
-    );
-    animation: shine 3s ease-in-out infinite;
-  }
-
-  @keyframes shine {
-    0% { left: -100%; }
-    50% { left: 100%; }
-    100% { left: 100%; }
-  }
-
-  .service-card:hover .cta-button::before {
-    animation: shine 1.5s ease-in-out infinite;
-  }
-</style>
