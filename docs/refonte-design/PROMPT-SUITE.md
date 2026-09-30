@@ -1,6 +1,6 @@
 # Reprendre la refonte du design : direction A « Encre » retenue (30/09/2026)
 
-À coller dans une nouvelle session Claude Code ouverte sur le dépôt du site.
+À coller dans une nouvelle session Claude Code (cloud ou locale) ouverte sur le dépôt `mydigipal-website`, **branche `refonte-design`**.
 
 ---
 
@@ -10,9 +10,9 @@ Tu reprends la refonte du design de mydigipal.com. Paul a choisi la **direction 
 1. `CLAUDE.md` du dépôt, section « Chantier en cours : la refonte du design ».
 2. `docs/refonte-design/pilotage.html` : audit, décisions, questions ouvertes, pages et avancement.
 3. `labo/refonte-site/direction-a.html`, `.css`, `.js` et la fiche `direction-a.md` : la maquette retenue.
-4. `projects/_shared/motion-lib/AVIS-PAUL.md` et la galerie https://claude.ai/artifact/QoQy1ihqHnBJZmE7BYEcbf (base `avis`) : ses goûts en mouvement.
+4. `docs/refonte-design/motion/AVIS-PAUL.md` (ses goûts en mouvement) et `docs/refonte-design/motion/ADAPTATION-WEB.md` (les essais du labo motion lus ligne à ligne, avec leur adaptation au web).
 
-**Travailler dans `C:\dev\sv`, branche `refonte-design`** (`git fetch` d'abord, retard sur origin/main = 0). Rien sur `main` sans l'accord de Paul.
+**Travailler sur la branche `refonte-design`** (`git fetch`, puis `git merge origin/main` si elle est en retard). Commits fichier par fichier, poussés sur cette branche. Rien sur `main` sans l'accord de Paul. Si tu n'as pas de navigateur pour vérifier à l'écran, dis-le et donne à Paul les adresses à regarder.
 
 **Ce que Paul a aimé en particulier :** la carte de verre de Performance Max (le texte à gauche, la carte qui se remplit). Les essais du labo motion (isométrie, morphing, tableau à palettes, caméra qui tient, particules) servent à expliquer les autres notions, repeints dans la palette Encre.
 
