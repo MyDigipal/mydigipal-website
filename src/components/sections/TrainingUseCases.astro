@@ -1,5 +1,12 @@
 ---
+/**
+ * AI Training : l'IA par département (direction Encre, 30/09/2026, correction de cap de
+ * Paul). Une carte par département, une grande icône et UN exemple concret, écrit comme la
+ * demande que le participant fera à l'assistant en sortant. Les autres usages de l'ancienne
+ * liste restent, en une ligne.
+ */
 import { type Language } from '@/i18n/config';
+import CartesDepartements from '@/components/sections/CartesDepartements.astro';
 
 interface Props {
   lang: Language;
@@ -9,169 +16,76 @@ const { lang } = Astro.props;
 
 const translations = {
   en: {
-    badge: "Department Use Cases",
-    headline: "AI for Every Department",
-    subtitle: "Discover how AI transforms daily work across your organization",
+    headline: "AI for every department",
+    subtitle: "Each session is built on the tasks of the people in the room. Here is what one of them asks the assistant once the training is over.",
     departments: [
       {
-        icon: "briefcase",
-        title: "Managers & Directors",
-        color: "from-blue-500 to-indigo-600",
-        lightBg: "bg-blue-50",
-        textColor: "text-blue-600",
-        tasks: [
-          "Summarize long reports and meeting notes instantly",
-          "Draft strategic presentations and executive summaries",
-          "Analyze data trends and generate insights",
-          "Create action plans from complex documents",
-          "Prepare board meeting materials faster"
-        ]
+        icone: "briefcase",
+        nom: "Managers and directors",
+        exemple: "Here are the minutes of the last three steering committees. List the decisions made, who has to act and by when, and flag what was left unanswered.",
+        aussi: ["draft strategic presentations", "prepare board meeting materials"],
       },
       {
-        icon: "users",
-        title: "Human Resources",
-        color: "from-emerald-500 to-teal-600",
-        lightBg: "bg-emerald-50",
-        textColor: "text-emerald-600",
-        tasks: [
-          "Write and optimize job descriptions",
-          "Screen and summarize CVs automatically",
-          "Draft employee communications and policies",
-          "Generate onboarding materials",
-          "Create training documentation"
-        ]
+        icone: "users",
+        nom: "Human resources",
+        exemple: "Rewrite this job ad for a field sales rep: what they will do in their first week, what we expect, no HR jargon.",
+        aussi: ["summarise CVs", "draft onboarding materials"],
       },
       {
-        icon: "chart",
-        title: "Finance",
-        color: "from-amber-500 to-orange-600",
-        lightBg: "bg-amber-50",
-        textColor: "text-amber-600",
-        tasks: [
-          "Analyze financial reports and extract key metrics",
-          "Generate variance explanations automatically",
-          "Draft budget narratives and forecasts",
-          "Clean and validate data entries",
-          "Create dashboards and visualizations"
-        ]
+        icone: "bar-chart",
+        nom: "Finance",
+        exemple: "From this export, explain the gap between budget and actuals this month in three causes, with the figures, for the leadership team.",
+        aussi: ["clean and check data entries", "draft budget narratives"],
       },
       {
-        icon: "building",
-        title: "Property & Real Estate",
-        color: "from-violet-500 to-purple-600",
-        lightBg: "bg-violet-50",
-        textColor: "text-violet-600",
-        tasks: [
-          "Generate property descriptions and listings",
-          "Analyze market trends and comparables",
-          "Draft lease agreements and contracts",
-          "Create virtual tour scripts",
-          "Summarize due diligence documents"
-        ]
-      }
-    ]
+        icone: "building",
+        nom: "Property and real estate",
+        exemple: "Write the listing for this two-bedroom flat from the technical sheet, without promising anything the sheet does not say.",
+        aussi: ["summarise due diligence documents", "compare market listings"],
+      },
+    ],
   },
   fr: {
-    badge: "Cas d'usage par département",
     headline: "L'IA pour chaque département",
-    subtitle: "Découvrez comment l'IA transforme le travail quotidien dans votre organisation",
+    subtitle: "Chaque session se construit sur les tâches des personnes présentes. Voici ce que l'une d'elles demande à l'assistant en sortant de la formation.",
     departments: [
       {
-        icon: "briefcase",
-        title: "Managers & Directeurs",
-        color: "from-blue-500 to-indigo-600",
-        lightBg: "bg-blue-50",
-        textColor: "text-blue-600",
-        tasks: [
-          "Résumer instantanément rapports et comptes-rendus",
-          "Rédiger présentations stratégiques et synthèses",
-          "Analyser les tendances et générer des insights",
-          "Créer des plans d'action à partir de documents",
-          "Préparer les supports de réunion plus vite"
-        ]
+        icone: "briefcase",
+        nom: "Managers et directions",
+        exemple: "Voici les comptes rendus des trois derniers comités. Liste les décisions prises, qui doit agir et pour quand, et signale ce qui est resté sans réponse.",
+        aussi: ["rédiger présentations stratégiques et synthèses", "préparer les supports de réunion"],
       },
       {
-        icon: "users",
-        title: "Ressources Humaines",
-        color: "from-emerald-500 to-teal-600",
-        lightBg: "bg-emerald-50",
-        textColor: "text-emerald-600",
-        tasks: [
-          "Rédiger et optimiser les offres d'emploi",
-          "Filtrer et résumer les CV automatiquement",
-          "Rédiger communications et politiques internes",
-          "Générer les supports d'onboarding",
-          "Créer la documentation de formation"
-        ]
+        icone: "users",
+        nom: "Ressources humaines",
+        exemple: "Réécris cette offre d'emploi pour un commercial terrain : ce qu'il fera la première semaine, ce qu'on attend de lui, sans jargon RH.",
+        aussi: ["résumer les CV", "rédiger les supports d'onboarding"],
       },
       {
-        icon: "chart",
-        title: "Finance",
-        color: "from-amber-500 to-orange-600",
-        lightBg: "bg-amber-50",
-        textColor: "text-amber-600",
-        tasks: [
-          "Analyser les rapports et extraire les KPIs",
-          "Générer automatiquement les analyses d'écarts",
-          "Rédiger narratifs budgétaires et prévisions",
-          "Nettoyer et valider les données",
-          "Créer tableaux de bord et visualisations"
-        ]
+        icone: "bar-chart",
+        nom: "Finance",
+        exemple: "À partir de cet export, explique l'écart entre le budget et le réalisé du mois en trois causes, chiffres à l'appui, pour le comité de direction.",
+        aussi: ["nettoyer et valider les données", "rédiger les narratifs budgétaires"],
       },
       {
-        icon: "building",
-        title: "Immobilier",
-        color: "from-violet-500 to-purple-600",
-        lightBg: "bg-violet-50",
-        textColor: "text-violet-600",
-        tasks: [
-          "Générer descriptions et annonces immobilières",
-          "Analyser les tendances du marché",
-          "Rédiger baux et contrats",
-          "Créer des scripts de visite virtuelle",
-          "Résumer les documents de due diligence"
-        ]
-      }
-    ]
-  }
+        icone: "building",
+        nom: "Immobilier",
+        exemple: "Rédige l'annonce de ce T3 à partir de la fiche technique, sans rien promettre que la fiche ne dit pas.",
+        aussi: ["résumer les documents de due diligence", "comparer les annonces du marché"],
+      },
+    ],
+  },
 };
 
 const t = translations[lang] || translations.en;
-
-const icons = {
-  briefcase: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>`,
-  users: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>`,
-  chart: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>`,
-  building: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>`
-};
 ---
 
-<!-- Direction Encre (30/09/2026) : fond brume, quatre services de l'entreprise en listes
-     entre des filets (plus de cartes, plus de tâches cachées tant que le script n'a pas
-     tourné). Claire : la page AI Training dépassait 45 % de sombre avec elle en encre. -->
 <section class="section-brume py-20 lg:py-32">
   <div class="container-custom">
     <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
       <h2 class="titre-moyen text-encre">{t.headline}</h2>
       <p class="chapo">{t.subtitle}</p>
     </header>
-    <div class="grid gap-x-12 gap-y-2 md:grid-cols-2">
-      {t.departments.map((dept, index) => (
-        <div class="border-t border-slate-300/60 py-8" data-reveal style={`--i:${index}`}>
-          <div class="mb-5 flex items-center gap-3">
-            <span class="text-marque [&_svg]:h-7 [&_svg]:w-7"><Fragment set:html={icons[dept.icon as keyof typeof icons]} /></span>
-            <h3 class="font-display text-2xl font-extrabold tracking-[-0.02em] text-encre">{dept.title}</h3>
-          </div>
-          <ul class="grid gap-3">
-            {dept.tasks.map((task) => (
-              <li class="flex items-start gap-3 text-slate-700">
-                <svg class="mt-1 h-4 w-4 flex-none text-marque" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                <span>{task}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
+    <CartesDepartements lang={lang} departements={t.departments} fond="clair" />
   </div>
 </section>
