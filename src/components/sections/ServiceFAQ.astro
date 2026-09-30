@@ -10,90 +10,9 @@ interface Props {
 
 const { lang, service, color = 'primary' } = Astro.props;
 
-const colorConfig = {
-  seo: {
-    gradient: 'from-emerald-500 to-teal-600',
-    text: 'text-emerald-500',
-    bg: 'bg-emerald-500',
-    border: 'border-emerald-500/30',
-    hover: 'hover:border-emerald-500/50',
-    glow: 'shadow-emerald-500/20',
-  },
-  ads: {
-    gradient: 'from-amber-500 to-orange-600',
-    text: 'text-amber-500',
-    bg: 'bg-amber-500',
-    border: 'border-amber-500/30',
-    hover: 'hover:border-amber-500/50',
-    glow: 'shadow-amber-500/20',
-  },
-  social: {
-    gradient: 'from-violet-500 to-purple-600',
-    text: 'text-violet-500',
-    bg: 'bg-violet-500',
-    border: 'border-violet-500/30',
-    hover: 'hover:border-violet-500/50',
-    glow: 'shadow-violet-500/20',
-  },
-  abm: {
-    gradient: 'from-pink-500 to-rose-600',
-    text: 'text-pink-500',
-    bg: 'bg-pink-500',
-    border: 'border-pink-500/30',
-    hover: 'hover:border-pink-500/50',
-    glow: 'shadow-pink-500/20',
-  },
-  training: {
-    gradient: 'from-cyan-500 to-blue-600',
-    text: 'text-cyan-500',
-    bg: 'bg-cyan-500',
-    border: 'border-cyan-500/30',
-    hover: 'hover:border-cyan-500/50',
-    glow: 'shadow-cyan-500/20',
-  },
-  emailing: {
-    gradient: 'from-rose-500 to-pink-600',
-    text: 'text-rose-500',
-    bg: 'bg-rose-500',
-    border: 'border-rose-500/30',
-    hover: 'hover:border-rose-500/50',
-    glow: 'shadow-rose-500/20',
-  },
-  ai: {
-    gradient: 'from-indigo-500 to-purple-600',
-    text: 'text-indigo-500',
-    bg: 'bg-indigo-500',
-    border: 'border-indigo-500/30',
-    hover: 'hover:border-indigo-500/50',
-    glow: 'shadow-indigo-500/20',
-  },
-  tracking: {
-    gradient: 'from-teal-500 to-cyan-600',
-    text: 'text-teal-500',
-    bg: 'bg-teal-500',
-    border: 'border-teal-500/30',
-    hover: 'hover:border-teal-500/50',
-    glow: 'shadow-teal-500/20',
-  },
-  content: {
-    gradient: 'from-violet-500 to-purple-600',
-    text: 'text-violet-500',
-    bg: 'bg-violet-500',
-    border: 'border-violet-500/30',
-    hover: 'hover:border-violet-500/50',
-    glow: 'shadow-violet-500/20',
-  },
-  primary: {
-    gradient: 'from-blue-500 to-indigo-600',
-    text: 'text-blue-500',
-    bg: 'bg-blue-500',
-    border: 'border-blue-500/30',
-    hover: 'hover:border-blue-500/50',
-    glow: 'shadow-blue-500/20',
-  },
-};
-
-const colors = colorConfig[color];
+// `color` reste accepté (les pages le passent) : les questions ont un seul style
+// depuis la direction Encre (30/09/2026).
+void color;
 
 // FAQ content for each service
 const faqContent = {
@@ -664,112 +583,47 @@ const faqs = t.faqs;
 <!-- FAQ Structured Data -->
 <FAQSchema faqs={faqs} />
 
-<section class="py-24 bg-white relative overflow-hidden faq-content">
-  <!-- Background decoration -->
-  <div class="absolute inset-0">
-    <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-slate-100 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
-    <div class="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-slate-100 to-transparent rounded-full translate-y-1/2 -translate-x-1/2"></div>
-  </div>
+<!-- Les questions, direction Encre (30/09/2026) : le titre à gauche, collé en haut
+     de l'écran sur ordinateur, les questions à droite entre des filets. Des
+     `<details>` : les réponses sont dans le HTML servi, elles s'ouvrent sans script,
+     et aucune n'est ouverte d'office. Plus de numéros 01, 02, 03. -->
+<section class="service-faq section-blanc py-20 lg:py-32">
+  <div class="container-custom grid items-start gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-18">
+    <header class="grid gap-5 lg:sticky lg:top-28 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.title}</h2>
+      {t.subtitle && <p class="chapo">{t.subtitle}</p>}
+    </header>
 
-  <div class="container-custom relative z-10">
-    <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="font-display text-3xl lg:text-5xl font-bold text-slate-900 mb-4">
-        {t.title}
-      </h2>
-      <p class="text-xl text-slate-600">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- FAQ Grid -->
-    <div class="max-w-4xl mx-auto space-y-4">
-      {t.faqs.map((faq, index) => (
-        <div
-          class={`faq-item group bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 ${colors.hover} hover:shadow-lg ${colors.glow} animate-on-scroll`}
-          data-index={index}
-          style={`animation-delay: ${index * 60}ms`}
-        >
-          <button
-            class="faq-trigger w-full flex items-center justify-between p-6 text-left cursor-pointer"
-            aria-expanded="false"
-          >
-            <span class="flex items-center gap-4">
-              <span class="flex-shrink-0 font-bold text-sm text-marque">
-                {String(index + 1).padStart(2, '0')}
-              </span>
-              <span class="text-lg font-semibold text-slate-900 group-hover:text-slate-700 transition-colors">
-                {faq.question}
-              </span>
-            </span>
-            <span class={`faq-icon flex-shrink-0 w-8 h-8 rounded-full ${colors.border} border-2 flex items-center justify-center transition-all duration-300`}>
-              <svg class="w-4 h-4 text-slate-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </span>
-          </button>
-          <div class="faq-content overflow-hidden max-h-0 transition-all duration-500 ease-out">
-            <div class="px-6 pb-6 pl-20">
-              <p class="text-slate-600 leading-relaxed">
-                {faq.answer}
-              </p>
-            </div>
-          </div>
-        </div>
+    <div>
+      {t.faqs.map((faq) => (
+        <details class="faq-question border-b border-slate-200 first:border-t">
+          <summary class="flex cursor-pointer items-start justify-between gap-5 py-[22px] lg:py-[26px]">
+            <span class="font-display text-lg font-bold leading-snug tracking-[-0.01em] text-encre lg:text-xl">{faq.question}</span>
+            <svg class="faq-plus mt-0.5 h-6 w-6 flex-none text-marque" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          </summary>
+          <p class="max-w-[66ch] pb-[26px] pr-11 text-base leading-relaxed text-slate-600 text-pretty lg:text-[1.0625rem]">
+            {faq.answer}
+          </p>
+        </details>
       ))}
     </div>
   </div>
 </section>
 
 <style>
-  .faq-item.active {
-    border-color: var(--active-border-color, #3C8BD4);
+  .faq-question summary {
+    list-style: none;
   }
-
-  .faq-item.active .faq-icon {
-    background: linear-gradient(135deg, #3C8BD4, #1D71B8);
-    border-color: transparent;
+  .faq-question summary::-webkit-details-marker {
+    display: none;
   }
-
-  .faq-item.active .faq-icon svg {
-    color: white;
-    transform: rotate(180deg);
+  .faq-question summary:hover span {
+    color: var(--color-marque);
   }
-
-  .faq-item.active .faq-content {
-    max-height: 500px;
+  .faq-plus {
+    transition: transform 400ms var(--mdp-entree);
   }
-
-  /* Hover effect on number badge */
-  .faq-item:hover .faq-icon {
-    transform: scale(1.1);
+  .faq-question[open] .faq-plus {
+    transform: rotate(45deg);
   }
 </style>
-
-<script>
-  document.querySelectorAll('.faq-trigger').forEach((trigger) => {
-    trigger.addEventListener('click', () => {
-      const item = trigger.closest('.faq-item');
-      const isActive = item?.classList.contains('active');
-
-      // Close all other items
-      document.querySelectorAll('.faq-item.active').forEach((activeItem) => {
-        if (activeItem !== item) {
-          activeItem.classList.remove('active');
-          activeItem.querySelector('.faq-trigger')?.setAttribute('aria-expanded', 'false');
-        }
-      });
-
-      // Toggle current item
-      if (item) {
-        item.classList.toggle('active');
-        trigger.setAttribute('aria-expanded', (!isActive).toString());
-      }
-    });
-  });
-
-  // Open first item by default
-  const firstItem = document.querySelector('.faq-item');
-  firstItem?.classList.add('active');
-  firstItem?.querySelector('.faq-trigger')?.setAttribute('aria-expanded', 'true');
-</script>
