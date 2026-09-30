@@ -199,24 +199,40 @@ const text = lang === 'fr' ? {
     window.dispatchEvent(new CustomEvent('consentUpdated', { detail: consent }));
   }
 
+  // La place que le bandeau prend en bas de l'écran, publiée sur <html> dans `--bandeau`.
+  // Le bouton du calculateur et l'appel de l'Academy s'en servent pour monter au-dessus de
+  // lui : le 29/09/2026 le bandeau les recouvrait tant que le visiteur n'avait pas choisi.
+  var bannerShown = false;
+  function publishHeight() {
+    var banner = document.getElementById('cookie-consent-banner');
+    var h = bannerShown && banner ? Math.round(banner.getBoundingClientRect().height) : 0;
+    document.documentElement.style.setProperty('--bandeau', h + 'px');
+  }
+
   function showBanner() {
     var banner = document.getElementById('cookie-consent-banner');
     if (banner) { banner.classList.remove('translate-y-full'); banner.classList.add('translate-y-0'); }
+    bannerShown = true;
+    publishHeight();
   }
 
   function hideBanner() {
     var banner = document.getElementById('cookie-consent-banner');
     if (banner) { banner.classList.remove('translate-y-0'); banner.classList.add('translate-y-full'); }
+    bannerShown = false;
+    publishHeight();
   }
 
   function showCustomize() {
     document.getElementById('cookie-main-view').classList.add('hidden');
     document.getElementById('cookie-customize-view').classList.remove('hidden');
+    publishHeight();
   }
 
   function showMain() {
     document.getElementById('cookie-main-view').classList.remove('hidden');
     document.getElementById('cookie-customize-view').classList.add('hidden');
+    publishHeight();
   }
 
   function handleConsent(type) {
@@ -249,6 +265,9 @@ const text = lang === 'fr' ? {
     } else {
       updateConsentMode(consent);
     }
+
+    // Le bandeau change de hauteur avec la largeur de l'écran (une ligne, puis deux).
+    window.addEventListener('resize', publishHeight);
 
     var acceptBtn = document.getElementById('cookie-accept-btn');
     var rejectBtn = document.getElementById('cookie-reject-btn');

@@ -13,8 +13,8 @@ import type { Locale } from './data';
  *
  * En bas à droite, et pas en haut : la page fait vingt écrans de long sur un
  * téléphone, et c'est le pouce qui décide. Le bouton de la barre du haut est
- * retiré sous `lg` en échange — deux « Ouvrir mon compte » simultanés à
- * l'écran, c'est une hésitation, pas une insistance — et cela règle au passage
+ * retiré sous `lg` en échange : deux « Ouvrir mon compte » simultanés à
+ * l'écran, c'est une hésitation, pas une insistance. Cela règle au passage
  * son texte tronqué quand « Jour n / 30 » s'affiche à côté.
  *
  * ⚠️ UN SEUL bouton depuis le 13/09/2026. Il y en avait deux, empilés : la
@@ -75,7 +75,7 @@ export default function AppelFlottant({
     <div
       ref={boite}
       aria-label={c.aria}
-      className={`fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2 transition-[opacity,transform] duration-300 lg:hidden ${
+      className={`fixed bottom-[calc(1rem+var(--bandeau,0px))] right-4 z-40 flex flex-col items-end gap-2 transition-[opacity,transform] duration-300 lg:hidden ${
         visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
       }`}
     >

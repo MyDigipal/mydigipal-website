@@ -345,12 +345,15 @@ export default function Question({
     if (!visible) return;
     const b = document.getElementById('cookie-consent-banner');
     if (!b) return;
+    // On lit l'ÉTAT du bandeau (sa classe) et sa hauteur, pas sa position : il entre en
+    // glissant pendant 300 ms, et une mesure prise pendant ce glissement donnait une hauteur
+    // partielle qui ne se corrigeait plus (29/09/2026).
     const mesurer = () => {
-      const r = b.getBoundingClientRect();
-      setBandeau(r.height > 0 && r.top < window.innerHeight - 1 ? Math.round(window.innerHeight - r.top) : 0);
+      const affiche = b.classList.contains('translate-y-0');
+      setBandeau(affiche ? Math.round(b.getBoundingClientRect().height) : 0);
     };
     mesurer();
-    const mo = new MutationObserver(() => window.setTimeout(mesurer, 350));
+    const mo = new MutationObserver(mesurer);
     mo.observe(b, { attributes: true, attributeFilter: ['class', 'style'] });
     window.addEventListener('resize', mesurer);
     return () => {
@@ -680,8 +683,10 @@ export default function Question({
     <>
       {!ouvert && (
         <div
-          className="fixed bottom-[5.5rem] right-4 z-40 flex flex-col items-end gap-3 lg:bottom-6 lg:right-6"
-          style={bandeau ? { bottom: `${bandeau + 16}px` } : undefined}
+          // Le bandeau cookies pousse le visage ET « Commencer » de la même hauteur : avant le
+          // 29/09/2026 le visage descendait à la place du bouton, resté sous le bandeau.
+          className="fixed bottom-[calc(5.5rem+var(--bandeau,0px))] right-4 z-40 flex flex-col items-end gap-3 lg:bottom-[calc(1.5rem+var(--bandeau,0px))] lg:right-6"
+          style={{ '--bandeau': `${bandeau}px` } as CSSProperties}
         >
           {(bulle || bulleReponse) && (
             // Sur téléphone, la tête seule au-dessus de « Commencer », sans bulle
