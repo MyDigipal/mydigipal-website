@@ -14,12 +14,12 @@ const translations = {
     headline: "What's included with every piece",
     subtitle: "Complete content packages ready for publishing, delivered your way.",
     deliverables: [
-      { label: "Meta Title", detail: "max 60 characters", icon: "tag" },
+      { label: "Meta Title", detail: "max 60 characters", icon: "type" },
       { label: "Meta Description", detail: "max 155 characters", icon: "file-text" },
-      { label: "H1 + 4-7 H2", detail: "optimized structure", icon: "list" },
+      { label: "H1 + 4-7 H2", detail: "optimized structure", icon: "layers" },
       { label: "Primary Keyword", detail: "+ ~5 secondary", icon: "target" },
       { label: "Internal Links", detail: "8-12 strategic links", icon: "link" },
-      { label: "FAQ Section", detail: "for featured snippets", icon: "help-circle" },
+      { label: "FAQ Section", detail: "for featured snippets", icon: "message-circle" },
     ],
     deliveryOptions: {
       title: "Choose your delivery method",
@@ -55,12 +55,12 @@ const translations = {
     headline: "Ce qui est inclus avec chaque contenu",
     subtitle: "Des packages de contenu complets prêts à publier, livrés comme vous le souhaitez.",
     deliverables: [
-      { label: "Meta Title", detail: "max 60 caractères", icon: "tag" },
+      { label: "Meta Title", detail: "max 60 caractères", icon: "type" },
       { label: "Meta Description", detail: "max 155 caractères", icon: "file-text" },
-      { label: "H1 + 4-7 H2", detail: "structure optimisée", icon: "list" },
+      { label: "H1 + 4-7 H2", detail: "structure optimisée", icon: "layers" },
       { label: "Mot-clé principal", detail: "+ ~5 secondaires", icon: "target" },
       { label: "Liens Internes", detail: "8-12 liens stratégiques", icon: "link" },
-      { label: "Section FAQ", detail: "pour featured snippets", icon: "help-circle" },
+      { label: "Section FAQ", detail: "pour featured snippets", icon: "message-circle" },
     ],
     deliveryOptions: {
       title: "Choisissez votre mode de livraison",
@@ -96,94 +96,46 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-gradient-to-br from-violet-900 via-purple-900 to-slate-900 text-white overflow-hidden">
+<!-- Direction Encre (30/09/2026) : une section d'encre (plus de dégradé violet). Ce qui
+     est livré avec chaque contenu, les modes de livraison et les plateformes, en listes
+     entre des filets. -->
+<section class="section-encre section-monte py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-violet-200 max-w-3xl mx-auto">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Deliverables Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
-      {t.deliverables.map((item, index) => (
-        <div
-          class="deliverable-card bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5 hover:bg-white/10 hover:border-white/20 transition-all duration-300 animate-on-scroll"
-          style={`animation-delay: ${index * 50}ms`}
-        >
-          <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-lg bg-violet-500/30 flex items-center justify-center">
-              <Icon name={item.icon} size={20} class="text-violet-300" />
-            </div>
-            <div>
-              <div class="font-semibold text-white">{item.label}</div>
-              <div class="text-sm text-violet-300">{item.detail}</div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-
-    <!-- Delivery Options -->
-    <div class="mb-16">
-      <div class="text-center mb-12">
-        <h3 class="text-3xl font-bold text-white mb-4">{t.deliveryOptions.title}</h3>
-        <p class="text-violet-200">{t.deliveryOptions.subtitle}</p>
-      </div>
-
-      <div class="grid md:grid-cols-3 gap-6">
-        {t.deliveryOptions.options.map((option, index) => (
-          <div
-            class={`delivery-option bg-slate-900/50 border rounded-2xl p-8 text-center hover:-translate-y-2 transition-all duration-300 animate-on-scroll ${
-              option.color === 'blue' ? 'border-blue-500/30 hover:border-blue-500/50' :
-              option.color === 'emerald' ? 'border-emerald-500/30 hover:border-emerald-500/50' :
-              'border-purple-500/30 hover:border-purple-500/50'
-            }`}
-            style={`animation-delay: ${index * 100}ms`}
-          >
-            <div class={`w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center ${
-              option.color === 'blue' ? 'bg-blue-500/20 text-blue-400' :
-              option.color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400' :
-              'bg-purple-500/20 text-purple-400'
-            }`}>
-              <Icon name={option.icon} size={32} />
-            </div>
-            <h4 class="text-xl font-bold text-white mb-3">{option.title}</h4>
-            <p class="text-slate-400">{option.description}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <!-- Supported Platforms -->
-    <div class="text-center animate-on-scroll">
-      <h4 class="text-lg font-medium text-violet-300 mb-6">{t.platforms.title}</h4>
-      <div class="flex flex-wrap justify-center gap-3">
-        {t.platforms.items.map((platform) => (
-          <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-white hover:bg-white/10 transition-colors">
-            {platform}
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <ul class="grid gap-x-10 border-t border-white/10 pt-2 sm:grid-cols-2 lg:grid-cols-3">
+      {t.deliverables.map((item) => (
+        <li class="flex items-start gap-3 py-4">
+          <Icon name={item.icon} size={20} class="mt-0.5 flex-none text-marque-clair" />
+          <span>
+            <span class="block font-semibold text-white">{item.label}</span>
+            <span class="block text-sur-encre-2">{item.detail}</span>
           </span>
+        </li>
+      ))}
+    </ul>
+
+    <div class="mt-16 lg:mt-24">
+      <h3 class="mb-2 font-display text-2xl font-extrabold tracking-[-0.02em] text-white lg:text-3xl">{t.deliveryOptions.title}</h3>
+      <p class="mb-8 text-sur-encre-2">{t.deliveryOptions.subtitle}</p>
+      <div class="grid gap-x-10 md:grid-cols-3">
+        {t.deliveryOptions.options.map((option, index) => (
+          <div class="grid content-start gap-2 border-t border-white/10 py-7" data-reveal style={`--i:${index}`}>
+            <Icon name={option.icon} size={24} class="mb-1 text-marque-clair" />
+            <h4 class="text-lg font-semibold text-white">{option.title}</h4>
+            <p class="text-sur-encre-2">{option.description}</p>
+          </div>
         ))}
       </div>
+    </div>
+
+    <div class="mt-12 border-t border-white/10 pt-8">
+      <h4 class="mb-5 text-lg font-semibold text-white">{t.platforms.title}</h4>
+      <ul class="flex flex-wrap gap-x-8 gap-y-3 text-sur-encre">
+        {t.platforms.items.map((platform) => <li>{platform}</li>)}
+      </ul>
     </div>
   </div>
 </section>
-
-<style>
-  .animate-on-scroll {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
