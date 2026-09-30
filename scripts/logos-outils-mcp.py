@@ -10,7 +10,8 @@ la relecture.
 
 Absents de simple-icons, donc sans logo sur la page (le nom seul, jamais une fausse
 marque) : LinkedIn (retiré de simple-icons à la demande de la marque), Ahrefs,
-Lemlist, Airscale.
+Lemlist, Airscale, Salesforce, Marketo, Pipedrive, Cookiebot, OneTrust, Axeptio,
+Didomi.
 
 Relancer après tout changement de source : python3 scripts/logos-outils-mcp.py
 """
@@ -41,6 +42,22 @@ OUTILS = {
     "Calendar": ("googlecalendar", "#4285F4"),
     "n8n": ("n8n", "#EA4B71"),
     "Render": ("render", "#000000"),
+    # Les plateformes et outils des pages de services (groupe 2, 30/09/2026).
+    "YouTube": ("youtube", "#FF0000"),
+    "X": ("x", "#000000"),
+    "TikTok": ("tiktok", "#000000"),
+    "WordPress": ("wordpress", "#21759B"),
+    "Shopify": ("shopify", "#7AB55C"),
+    "Wix": ("wix", "#0C6EFC"),
+    "PrestaShop": ("prestashop", "#DF0067"),
+    "Webflow": ("webflow", "#146EF5"),
+    "HubSpot": ("hubspot", "#FF7A59"),
+    "Zoho": ("zoho", "#E42527"),
+    "Instagram": ("instagram", "#FF0069"),
+    "Facebook": ("facebook", "#0866FF"),
+    "Mailchimp": ("mailchimp", "#FFE01B"),
+    "Brevo": ("brevo", "#0B996E"),
+    "Looker": ("looker", "#4285F4"),
 }
 
 ENTETE = '''/**
