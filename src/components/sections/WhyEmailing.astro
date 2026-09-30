@@ -1,5 +1,7 @@
 ---
 import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
 
 interface Props {
   lang: Language;
@@ -61,81 +63,57 @@ const translations = {
 };
 
 const t = translations[lang] || translations.en;
+
+// Trois chiffres au tableau à palettes, le quatrième écrit à côté. « 36-40€ » devient le
+// chiffre « 36-40 » et l'unité « € ».
+const coupe = (v: string) => {
+  const m = v.match(/^([^\d+\-−]*)([+\-−]?[\d.,\-]+)\s*(.*)$/);
+  return m ? { chiffre: `${m[1]}${m[2]}`, unite: m[3] } : { chiffre: v, unite: '' };
+};
+const tableau = t.stats.slice(0, 3).map((s) => ({ ...coupe(s.value), texte: `${s.label}. ${s.detail}` }));
+const quatrieme = t.stats[3];
+
 ---
 
-<section class="py-24 bg-slate-950 text-white overflow-hidden relative">
-  <!-- Background Effects -->
-  <div class="absolute inset-0 pointer-events-none">
-    <div class="absolute top-20 -left-20 w-96 h-96 bg-rose-500/10 rounded-full blur-[120px]"></div>
-    <div class="absolute bottom-20 -right-20 w-96 h-96 bg-pink-500/10 rounded-full blur-[120px]"></div>
-  </div>
-
-  <div class="container-custom relative z-10">
-    <!-- Header -->
-    <div class="text-center mb-16">
-      <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-2xl text-rose-300 font-medium mb-6">{t.subheadline}</p>
-      <p class="text-xl text-slate-400 max-w-3xl mx-auto">{t.description}</p>
-    </div>
-
-    <!-- Stats Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
-      {t.stats.map((stat, index) => (
-        <div
-          class="stat-card relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-rose-500/30 transition-all duration-500 group"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <div class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent mb-2">
-            {stat.value}
-          </div>
-          <div class="text-lg font-semibold text-white mb-1">{stat.label}</div>
-          <div class="text-sm text-slate-400">{stat.detail}</div>
-          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-rose-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        </div>
-      ))}
-    </div>
-
-    <!-- Warning & Solution -->
-    <div class="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-      <!-- Warning -->
-      <div class="relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 border border-yellow-500/30">
-        <h3 class="text-2xl font-bold text-yellow-300 mb-4">{t.warning.title}</h3>
-        <p class="text-slate-300 leading-relaxed">{t.warning.description}</p>
+<!-- Emailing, pourquoi (direction Encre, modèle AI Training, 30/09/2026) : sur l'encre, trois
+     chiffres du canal au tableau à palettes (gardés tels quels, à sourcer), le quatrième à
+     côté, puis le problème et la réponse en deux cartes. -->
+<section class="section-encre section-monte py-20 lg:py-32">
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen">{t.headline} <span class="block text-marque-clair">{t.subheadline}</span></h2>
+      <p class="chapo">{t.description}</p>
+    </header>
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-6">
+      <div class="carte-verre grid content-start gap-8 px-6 py-8 lg:px-9 lg:py-10">
+        <TableauPalettes lang={lang} lignes={tableau} tete />
+        {quatrieme && (
+          <p class="grid gap-1 border-t border-white/10 pt-6">
+            <span class="font-display text-4xl font-extrabold tracking-[-0.04em] text-white">{quatrieme.value}</span>
+            <span class="text-sur-encre">{quatrieme.label}</span>
+            <span class="text-sm text-sur-encre-2">{quatrieme.detail}</span>
+          </p>
+        )}
       </div>
-
-      <!-- Solution -->
-      <div class="relative bg-gradient-to-br from-rose-900/30 to-pink-900/30 rounded-3xl p-8 border border-rose-500/30">
-        <h3 class="text-2xl font-bold text-rose-300 mb-4">{t.solution.title}</h3>
-        <ul class="space-y-3">
-          {t.solution.points.map((point) => (
-            <li class="flex items-start gap-3 text-slate-300">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mt-0.5">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-              </span>
-              <span>{point}</span>
-            </li>
-          ))}
-        </ul>
+      <div class="grid content-start gap-5">
+        <div class="carte-verre grid gap-3 p-6 lg:p-8" data-reveal>
+          <span class="tuile bg-yellow-400/15 text-yellow-300"><Icon name="alert-triangle" size={26} /></span>
+          <h3 class="titre-carte text-white">{t.warning.title}</h3>
+          <p class="text-sur-encre-2">{t.warning.description}</p>
+        </div>
+        <div class="grid gap-4 rounded-[20px] bg-white p-6 text-encre shadow-[var(--ombre-forte)] lg:p-8" data-reveal style="--i:1">
+          <span class="tuile tuile-pleine"><Icon name="sparkles" size={26} /></span>
+          <h3 class="titre-carte text-encre">{t.solution.title}</h3>
+          <ul class="grid gap-3">
+            {t.solution.points.map((p) => (
+              <li class="grid grid-cols-[24px_minmax(0,1fr)] gap-3 text-slate-700">
+                <span class="mt-0.5 grid h-6 w-6 place-items-center rounded-full bg-marque-doux text-marque"><Icon name="check" size={14} /></span>
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 </section>
-
-<style>
-  .stat-card {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease forwards;
-  }
-
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
