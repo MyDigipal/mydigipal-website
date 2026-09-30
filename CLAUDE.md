@@ -739,6 +739,19 @@ Direction A « Encre » retenue par Paul. Ce que toutes les pages partagent, dan
   `TrustedBy` (bande immobile, plus de « 50+ »), `PageHero`, pied de page en `bg-encre`.
 - Le rythme de chaque page (ses sections d'encre) se fait au groupe de la page, étape 3.
 
+### Les composants animés (étape 2, 30/09/2026)
+
+Dans `src/components/motion/`, sur le socle `src/lib/motion/` ; à voir sur `/{lang}/test-encre`
+(noindex, hors sitemap). Chaque composant embarque sa scène et ne reçoit que des DONNÉES.
+- **`CarteVerre.astro`** (un objet, ce qui y entre et ce qui en sort) : `nom`, `entrees`, `sorties`,
+  `retours`, `gardes`, `temps` (trois `{ titre, texte }`), `conclusion`, icônes de `ui/Icon.astro`.
+  À poser dans une `.section-encre`. Sous 1 024 px, le dessin réduit aux icônes est collé sous
+  l'en-tête et les libellés passent en listes (aria-hidden) sous chaque temps.
+- **`RailMorphing.astro`** (un process en deux à cinq états) : `stations` `{ titre, texte, forme }`,
+  formes de `src/lib/motion/formes.ts` (loupe, structure, curseur, courbe, cible, bulle). Les tracés
+  de l'état final sont calculés au build. Sur fond clair.
+- Vérifier une scène : `document.querySelector('[data-carte-verre]').__scene.aller(7.6)`.
+
 ### Les éléments flottants partagent une seule mesure : `--bandeau`
 
 Branche `flottants-sans-recouvrement` (commit `5b0e768`), à déployer après accord de Paul.

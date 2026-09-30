@@ -295,13 +295,13 @@ COMPOSANTS = [
     ("Éléments flottants", "aucun", "Deux appels, un panneau, un bandeau, sans recouvrement.",
      "hauteur de l'en-tête", "Écrit, dans le socle des maquettes", "fait"),
     ("Carte de verre", "carte-3d", "Un objet, ce qui y entre et ce qui en sort : une campagne, un serveur MCP, un flux de stock.",
-     "titre, entrées, sorties, retours, trois textes", "En maquette, direction A", "attente"),
+     "nom, entrées, sorties, retours, garde-fous, trois textes, conclusion", "Écrit, components/motion/CarteVerre.astro (étape 2)", "fait"),
     ("Schéma sur grille", "grille-suisse", "Le même propos, à plat, sur douze colonnes.",
      "entrées, bloc central, sorties, retours", "En maquette, direction B", "attente"),
     ("Scène isométrique", "isometrique", "Un système où quelque chose circule : automatisation, suivi côté serveur, routage d'un lead.",
      "blocs, tapis, jetons, étiquettes", "En maquette, direction C", "attente"),
     ("Morphing sur rail", "morph-formes", "Un process ou une évolution, en trois à cinq états.",
-     "stations : titre, texte, forme", "En maquette, directions A, B et C", "attente"),
+     "deux à cinq stations : titre, texte, forme", "Écrit, components/motion/RailMorphing.astro (étape 2)", "fait"),
     ("Tableau à palettes", "tableau-chiffres", "Trois chiffres d'un client.",
      "lignes : chiffre, unité, libellé, source", "En maquette, direction B", "attente"),
     ("Caméra qui tient", "demo-interface", "Une interface, zone par zone : l'Academy, un tableau de bord, une réponse d'IA.",
@@ -505,6 +505,9 @@ JOURNAL = [
     ("30/09/2026", "Direction A « Encre » retenue par Paul."),
     ("30/09/2026", "Étape 1, le système global, sur la branche refonte-design : jetons et fonds de section dans global.css, HeroService (panneau d'encre, logos entre deux filets), FinalCTA (panneau bleu sur la brume), ServiceFAQ (deux colonnes, sans numéros), TestimonialSpotlight (section d'encre qui monte), CaseStudyCarousel (chiffres lus dans les études de cas, plus aucun chiffre inventé), TrustedBy, PageHero, pied de page en encre. 53 rubriques retirées au-dessus des titres de section. Les questions passent avant l'appel final sur les pages de services."),
     ("30/09/2026", "Vérifié en local (build, check-seo, Chromium) sur 15 gabarits à 1 440, 390 et 360 px : aucun débordement, aucun bouton empilé ni sur deux lignes, un H1 par page, rien d'invisible. Non déployé, donc pas vu sur Render : l'origine Render ne publie que main."),
+    ("30/09/2026", "Relecture de l'étape 1 par la session « Website » : 15 rubriques en pilule manquées (badge-ads, badge-primary, pilules en gabarit) retirées, césure retirée des grands titres (« résul-tats » à 390 px)."),
+    ("30/09/2026", "Étape 2 : CarteVerre et RailMorphing écrits en composants autonomes, textes en propriétés, sur src/lib/motion (formes du morphing en module pur, tracés finaux calculés au build). Sur téléphone, la carte suit la solution de la direction C : dessin réduit aux icônes, collé sous l'en-tête (285 px à 390 px), libellés en listes à 16 px sous chaque temps. Page de validation /fr/test-encre et /en/test-encre, en noindex."),
+    ("30/09/2026", "Vérifié par script à 1 440, 390 et 360 px, FR et EN : aucune erreur, chaque scène posée de 0 à sa tenue par pas de 0,05 s, 0 style en ligne restant à la tenue, rien de caché dans l'état final avec ou sans JavaScript, aucun texte sous 16 px sur téléphone, aucun débordement. Six instants vus en planche. Le mouvement lui-même n'a pas été vu jouer."),
 ]
 
 
