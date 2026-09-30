@@ -243,6 +243,11 @@ const automotiveCollection = defineCollection({
 
     calculatorServiceId: z.string().optional(),
 
+    // La page Dynamic Ads porte trois sections de plus (le flux de stock, les plateformes,
+    // l'avant et l'après). Absent du schéma jusqu'au 30/09/2026, le champ était retiré par
+    // la validation : ces trois sections n'avaient jamais été affichées.
+    isDynamicAds: z.boolean().optional(),
+
     testimonial: z.object({
       quote: z.string(),
       author: z.string(),
