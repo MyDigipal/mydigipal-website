@@ -4,6 +4,11 @@
  * maquette. Deux formats qui pèsent (Performance Max en panneau d'encre sur ordinateur,
  * Search), deux qui accompagnent (Shopping, Display et vidéo). Plus de cartes égales,
  * plus de pourcentages de performance sans source.
+ *
+ * Chaque format ouvre une fenêtre d'exemple (retour de Paul, 30/09/2026) : le contenu des
+ * fenêtres de l'ancienne version (commit 72ff7cd), refait au style Encre, sans « jusqu'à
+ * 65 % des clics », « +30 % de CTR » ni « 90 % de portée ». Une `<dialog>` par format :
+ * Échap la ferme, le navigateur garde le focus dedans et le rend au bouton.
  */
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
@@ -59,6 +64,71 @@ const t = {
   ],
 };
 const reseaux = ['search', 'play', 'image', 'compass', 'mail', 'map-pin'];
+
+// Les fenêtres d'exemple. Les annonces montrées sont des maquettes : « votre-site.fr »,
+// des produits et des prix d'exemple, aucun résultat chiffré.
+const ex = {
+  voir: fr ? 'Voir un exemple' : 'See an example',
+  fermer: fr ? 'Fermer' : 'Close',
+  etiquette: fr ? 'Exemple' : 'Example',
+  sponsorise: fr ? 'Sponsorisé' : 'Sponsored',
+  search: {
+    intro: fr
+      ? 'Voici à quoi ressemble une annonce Search quand quelqu’un tape l’un de vos mots-clés :'
+      : 'Here is what a Search ad looks like when someone types one of your keywords:',
+    domaine: fr ? 'votre-site.fr' : 'yoursite.com',
+    titre: fr ? 'Votre entreprise | Produits et services de qualité' : 'Your business | Quality products and services',
+    texte: fr
+      ? 'Découvrez notre sélection. Livraison offerte dès 50 €. Des milliers de clients nous font confiance. Commencez dès aujourd’hui.'
+      : 'Shop our selection. Free delivery over $50. Trusted by thousands of customers. Get started today.',
+    liens: fr ? ['Livraison offerte', 'Nous contacter', 'Voir les produits'] : ['Free delivery', 'Contact us', 'View products'],
+    note: fr
+      ? 'Vous apparaissez au moment exact où la personne cherche ce que vous vendez : l’intention d’achat est déjà là.'
+      : 'You appear at the exact moment people search for what you sell: the purchase intent is already there.',
+  },
+  pmax: {
+    intro: fr
+      ? 'Une campagne Performance Max diffuse vos annonces sur tous les réseaux de Google à partir d’une seule campagne :'
+      : 'A Performance Max campaign shows your ads across all of Google’s networks from a single campaign:',
+    reseaux: fr
+      ? [['search', 'Search', 'Annonces texte'], ['play', 'YouTube', 'Annonces vidéo'], ['mail', 'Gmail', 'Annonces e-mail'], ['image', 'Display', 'Bannières'], ['map-pin', 'Maps', 'Annonces locales'], ['compass', 'Discover', 'Annonces dans le fil']]
+      : [['search', 'Search', 'Text ads'], ['play', 'YouTube', 'Video ads'], ['mail', 'Gmail', 'Email ads'], ['image', 'Display', 'Banner ads'], ['map-pin', 'Maps', 'Local ads'], ['compass', 'Discover', 'Feed ads']],
+    note: fr
+      ? 'L’apprentissage automatique de Google répartit le budget et les enchères entre les réseaux pour aller chercher les conversions. Notre travail : ce qu’on lui donne, puis ce qu’on lui apprend.'
+      : 'Google’s machine learning spreads budget and bids across the networks to go after conversions. Our job: what we feed it, then what we teach it.',
+  },
+  shopping: {
+    intro: fr
+      ? 'Les annonces Shopping montrent vos produits avec leur image et leur prix, directement dans les résultats :'
+      : 'Shopping ads show your products with their image and price, right in the results:',
+    resultats: fr ? 'Résultats Shopping' : 'Shopping results',
+    boutique: fr ? 'Votre boutique' : 'Your store',
+    produits: fr
+      ? [['129 €', 'Produit phare, la meilleure vente'], ['89 €', 'Article qualité, le préféré des clients'], ['199 €', 'Édition premium, stock limité']]
+      : [['$129', 'Flagship product, best seller'], ['$89', 'Quality item, customer favourite'], ['$199', 'Premium edition, limited stock']],
+    livraison: fr ? 'Livraison offerte' : 'Free delivery',
+    note: fr
+      ? 'L’internaute voit l’image, le prix et les avis avant de cliquer : ceux qui cliquent savent déjà ce qu’ils vont trouver.'
+      : 'People see the image, the price and the reviews before they click: those who click already know what they will find.',
+  },
+  display: {
+    intro: fr
+      ? 'Les annonces Display et vidéo touchent les internautes sur les sites partenaires de Google et sur YouTube :'
+      : 'Display and video ads reach people across Google’s partner sites and on YouTube:',
+    banniere: fr ? 'Bannière Display' : 'Display banner',
+    marque: fr ? 'Votre marque ici' : 'Your brand here',
+    message: fr ? 'Un message qui arrête le regard et donne envie d’agir.' : 'A message that catches the eye and makes people act.',
+    bouton: fr ? 'En savoir plus' : 'Learn more',
+    video: fr ? 'Annonce vidéo YouTube' : 'YouTube video ad',
+    annonce: fr ? 'Annonce' : 'Ad',
+    passer: fr ? 'Passer l’annonce dans 5 s' : 'Skip ad in 5s',
+    note: fr
+      ? 'Idéal pour faire connaître la marque et pour retrouver les visiteurs qui sont venus sans acheter.'
+      : 'Ideal for building awareness and for bringing back visitors who came without buying.',
+  },
+};
+const noms = { search: t.search.nom, pmax: t.pmax.nom, shopping: t.seconds[0].nom, display: t.seconds[1].nom };
+const idDe = (f: string) => `exemple-${f}-${lang}`;
 ---
 
 <section class="section-brume py-20 lg:py-32" id="formats">
@@ -76,22 +146,164 @@ const reseaux = ['search', 'play', 'image', 'compass', 'mail', 'map-pin'];
         <ul class="format-reseaux" aria-hidden="true">
           {reseaux.map((r) => <li><Icon name={r} size={18} /></li>)}
         </ul>
+        <button type="button" class="format-exemple" data-exemple={idDe('pmax')} aria-haspopup="dialog">
+          <Icon name="play" size={16} />{ex.voir}
+        </button>
       </article>
       <article class="format format-search" data-reveal style="--i:1">
         <h3 class="format-nom">{t.search.nom}</h3>
         <p class="format-texte">{t.search.texte}</p>
         <ul class="etiquettes">{t.search.etiquettes.map((e) => <li>{e}</li>)}</ul>
+        <button type="button" class="format-exemple" data-exemple={idDe('search')} aria-haspopup="dialog">
+          <Icon name="play" size={16} />{ex.voir}
+        </button>
       </article>
       {t.seconds.map((f, i) => (
         <article class="format format-second" data-reveal style={`--i:${i + 2}`}>
           <h3 class="format-nom">{f.nom}</h3>
           <p class="format-texte">{f.texte}</p>
           <ul class="etiquettes">{f.etiquettes.map((e) => <li>{e}</li>)}</ul>
+          <button type="button" class="format-exemple" data-exemple={idDe(i === 0 ? 'shopping' : 'display')} aria-haspopup="dialog">
+            <Icon name="play" size={16} />{ex.voir}
+          </button>
         </article>
       ))}
     </div>
   </div>
+
+  <!-- Les fenêtres d'exemple. -->
+  <dialog class="exemple" id={idDe('search')} aria-labelledby={`${idDe('search')}-titre`}>
+    <div class="exemple-tete">
+      <div>
+        <p class="exemple-etiquette">{ex.etiquette}</p>
+        <h3 id={`${idDe('search')}-titre`} class="exemple-titre">{noms.search}</h3>
+      </div>
+      <button type="button" class="exemple-fermer" data-fermer aria-label={ex.fermer}><Icon name="close" size={20} /></button>
+    </div>
+    <p class="exemple-intro">{ex.search.intro}</p>
+    <div class="exemple-scene">
+      <div class="serp">
+        <p class="serp-sponsorise">{ex.sponsorise}</p>
+        <p class="serp-domaine"><span class="serp-favicon" aria-hidden="true">A</span>{ex.search.domaine}</p>
+        <p class="serp-titre">{ex.search.titre}</p>
+        <p class="serp-texte">{ex.search.texte}</p>
+        <p class="serp-liens">{ex.search.liens.map((l, i) => <>{i > 0 && <span aria-hidden="true"> · </span>}<span>{l}</span></>)}</p>
+      </div>
+    </div>
+    <p class="exemple-note"><span class="exemple-note-icone" aria-hidden="true"><Icon name="target" size={20} /></span>{ex.search.note}</p>
+  </dialog>
+
+  <dialog class="exemple" id={idDe('pmax')} aria-labelledby={`${idDe('pmax')}-titre`}>
+    <div class="exemple-tete">
+      <div>
+        <p class="exemple-etiquette">{ex.etiquette}</p>
+        <h3 id={`${idDe('pmax')}-titre`} class="exemple-titre">{noms.pmax}</h3>
+      </div>
+      <button type="button" class="exemple-fermer" data-fermer aria-label={ex.fermer}><Icon name="close" size={20} /></button>
+    </div>
+    <p class="exemple-intro">{ex.pmax.intro}</p>
+    <ul class="exemple-scene pmax-reseaux">
+      {ex.pmax.reseaux.map(([icone, nom, type]) => (
+        <li>
+          <span class="pmax-icone" aria-hidden="true"><Icon name={icone} size={22} /></span>
+          <span class="font-semibold text-encre">{nom}</span>
+          <span class="text-sm text-slate-500">{type}</span>
+        </li>
+      ))}
+    </ul>
+    <p class="exemple-note"><span class="exemple-note-icone" aria-hidden="true"><Icon name="zap" size={20} /></span>{ex.pmax.note}</p>
+  </dialog>
+
+  <dialog class="exemple" id={idDe('shopping')} aria-labelledby={`${idDe('shopping')}-titre`}>
+    <div class="exemple-tete">
+      <div>
+        <p class="exemple-etiquette">{ex.etiquette}</p>
+        <h3 id={`${idDe('shopping')}-titre`} class="exemple-titre">{noms.shopping}</h3>
+      </div>
+      <button type="button" class="exemple-fermer" data-fermer aria-label={ex.fermer}><Icon name="close" size={20} /></button>
+    </div>
+    <p class="exemple-intro">{ex.shopping.intro}</p>
+    <div class="exemple-scene">
+      <p class="serp-sponsorise">{ex.shopping.resultats}</p>
+      <ul class="produits">
+        {ex.shopping.produits.map(([prix, nom], i) => (
+          <li class:list={['produit', { 'produit-large': i === 2 }]}>
+            <span class="produit-image" aria-hidden="true"><Icon name="image" size={36} /></span>
+            <span class="produit-prix">{prix}</span>
+            <span class="produit-nom">{nom}</span>
+            <span class="produit-boutique">{ex.shopping.boutique}</span>
+            <span class="produit-etoiles" aria-hidden="true">★★★★★</span>
+            {i === 0 && <span class="produit-livraison">{ex.shopping.livraison}</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+    <p class="exemple-note"><span class="exemple-note-icone" aria-hidden="true"><Icon name="eye" size={20} /></span>{ex.shopping.note}</p>
+  </dialog>
+
+  <dialog class="exemple" id={idDe('display')} aria-labelledby={`${idDe('display')}-titre`}>
+    <div class="exemple-tete">
+      <div>
+        <p class="exemple-etiquette">{ex.etiquette}</p>
+        <h3 id={`${idDe('display')}-titre`} class="exemple-titre">{noms.display}</h3>
+      </div>
+      <button type="button" class="exemple-fermer" data-fermer aria-label={ex.fermer}><Icon name="close" size={20} /></button>
+    </div>
+    <p class="exemple-intro">{ex.display.intro}</p>
+    <div class="exemple-scene display-grille">
+      <figure class="m-0">
+        <figcaption class="mb-3 font-semibold text-encre">{ex.display.banniere}</figcaption>
+        <div class="banniere">
+          <span class="banniere-annonce">{ex.display.annonce}</span>
+          <div class="grid gap-2">
+            <p class="banniere-marque">{ex.display.marque}</p>
+            <p class="banniere-message">{ex.display.message}</p>
+            <span class="banniere-bouton">{ex.display.bouton}</span>
+          </div>
+        </div>
+      </figure>
+      <figure class="m-0">
+        <figcaption class="mb-3 font-semibold text-encre">{ex.display.video}</figcaption>
+        <div class="youtube">
+          <span class="youtube-lecture" aria-hidden="true"><Icon name="play" size={28} /></span>
+          <div class="youtube-bas">
+            <span class="youtube-annonce">{ex.display.annonce}</span>
+            <span>{ex.display.passer}</span>
+            <span class="ml-auto opacity-70">0:15 / 0:30</span>
+          </div>
+        </div>
+      </figure>
+    </div>
+    <p class="exemple-note"><span class="exemple-note-icone" aria-hidden="true"><Icon name="eye" size={20} /></span>{ex.display.note}</p>
+  </dialog>
 </section>
+
+<script>
+  /** Les fenêtres d'exemple : un bouton ouvre sa `<dialog>`, la croix, Échap ou un clic à côté la ferment. */
+  function monterExemples() {
+    document.querySelectorAll<HTMLButtonElement>('[data-exemple]').forEach((b) => {
+      if (b.dataset.monte) return;
+      b.dataset.monte = '1';
+      const d = document.getElementById(b.dataset.exemple ?? '') as HTMLDialogElement | null;
+      if (!d) return;
+      b.addEventListener('click', () => {
+        d.showModal();
+        document.documentElement.style.overflow = 'hidden';
+      });
+      if (d.dataset.monte) return;
+      d.dataset.monte = '1';
+      d.querySelector('[data-fermer]')?.addEventListener('click', () => d.close());
+      d.addEventListener('click', (e) => {
+        if (e.target === d) d.close();
+      });
+      d.addEventListener('close', () => {
+        document.documentElement.style.overflow = '';
+      });
+    });
+  }
+  monterExemples();
+  document.addEventListener('astro:page-load', monterExemples);
+</script>
 
 <style>
   .formats-grille {
@@ -177,6 +389,327 @@ const reseaux = ['search', 'play', 'image', 'compass', 'mail', 'map-pin'];
   .format-second .etiquettes li {
     background: rgb(11 27 43 / 0.05);
   }
+  /* Le bouton d'exemple, et les fenêtres. */
+  .format-exemple {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    margin-top: 4px;
+    padding: 0 18px 0 14px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-marque);
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1.5px var(--color-marque);
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .format-exemple:hover {
+    background: var(--color-marque);
+    color: #fff;
+  }
+  .exemple {
+    width: min(760px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    margin: auto;
+    padding: 24px;
+    overflow: auto;
+    border: 0;
+    border-radius: var(--rayon-panneau);
+    background: #fff;
+    color: var(--encre);
+    box-shadow: var(--ombre-forte);
+  }
+  .exemple[open] {
+    display: grid;
+    gap: 18px;
+    animation: exemple-entree 0.55s cubic-bezier(0.15, 1, 0.32, 1);
+  }
+  .exemple::backdrop {
+    background: rgb(11 27 43 / 0.6);
+    backdrop-filter: blur(4px);
+  }
+  @keyframes exemple-entree {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .exemple[open] {
+      animation: none;
+    }
+  }
+  .exemple-tete {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .exemple-etiquette {
+    font-weight: 600;
+    color: #5b6b7b;
+  }
+  .exemple-titre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.75rem;
+    letter-spacing: -0.03em;
+  }
+  .exemple-fermer {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: var(--brume);
+    color: var(--encre);
+  }
+  .exemple-fermer:hover {
+    background: var(--filet);
+  }
+  .exemple-intro {
+    color: #4b5b6b;
+  }
+  .exemple-scene {
+    margin: 0;
+    padding: 20px;
+    border-radius: 16px;
+    background: var(--brume);
+    list-style: none;
+  }
+  .exemple-note {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--color-marque-doux);
+    color: #334155;
+  }
+  .exemple-note-icone {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--color-marque);
+    color: #fff;
+  }
+  /* La page de résultats Google, en maquette. */
+  .serp {
+    padding: 16px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet);
+  }
+  .serp-sponsorise {
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #5b6b7b;
+  }
+  .serp-domaine {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: #4b5b6b;
+  }
+  .serp-favicon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: var(--color-marque);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .serp-titre {
+    margin-top: 4px;
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #1a0dab;
+  }
+  .serp-texte {
+    margin-top: 4px;
+    font-size: 0.9375rem;
+    color: #4b5b6b;
+  }
+  .serp-liens {
+    margin-top: 8px;
+    font-size: 0.9375rem;
+    color: #1a0dab;
+  }
+  .pmax-reseaux {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .pmax-reseaux li {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    padding: 16px 10px;
+    border-radius: 12px;
+    background: #fff;
+    text-align: center;
+    box-shadow: inset 0 0 0 1px var(--filet);
+  }
+  .pmax-icone {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 4px;
+    border-radius: 12px;
+    background: var(--color-marque-doux);
+    color: var(--color-marque);
+  }
+  .produits {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .produit {
+    display: grid;
+    gap: 2px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet);
+  }
+  .produit-large {
+    display: none;
+  }
+  .produit-image {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    background: var(--brume);
+    color: #94a3b8;
+  }
+  .produit-prix {
+    font-weight: 700;
+    font-size: 1.125rem;
+  }
+  .produit-nom {
+    font-size: 0.875rem;
+    color: #334155;
+  }
+  .produit-boutique {
+    font-size: 0.8125rem;
+    color: #5b6b7b;
+  }
+  .produit-etoiles {
+    font-size: 0.8125rem;
+    color: #eab308;
+    letter-spacing: 1px;
+  }
+  .produit-livraison {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #15803d;
+  }
+  .display-grille {
+    display: grid;
+    gap: 20px;
+  }
+  .banniere {
+    position: relative;
+    display: grid;
+    align-content: space-between;
+    aspect-ratio: 4 / 3;
+    padding: 20px;
+    border-radius: 12px;
+    background:
+      radial-gradient(100% 90% at 100% 0%, rgb(125 184 238 / 0.45), transparent 60%),
+      var(--color-marque);
+    color: #fff;
+  }
+  .banniere-annonce,
+  .youtube-annonce {
+    justify-self: start;
+    border-radius: 4px;
+    padding: 1px 6px;
+    background: rgb(255 255 255 / 0.22);
+    font-size: 0.75rem;
+  }
+  .banniere-marque {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+  }
+  .banniere-message {
+    font-size: 0.9375rem;
+    opacity: 0.85;
+  }
+  .banniere-bouton {
+    justify-self: start;
+    border-radius: 999px;
+    padding: 8px 14px;
+    background: #fff;
+    color: var(--color-marque);
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+  .youtube {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    background: var(--encre);
+    color: #fff;
+  }
+  .youtube-lecture {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.14);
+  }
+  .youtube-bas {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+  }
+  .youtube-annonce {
+    background: #facc15;
+    color: var(--encre);
+  }
+  @media (min-width: 640px) {
+    .exemple {
+      padding: 32px 36px;
+    }
+    .pmax-reseaux,
+    .produits {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .produit-large {
+      display: grid;
+    }
+    .display-grille {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+  }
   @media (min-width: 1024px) {
     .formats-grille {
       grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -221,6 +754,15 @@ const reseaux = ['search', 'play', 'image', 'compass', 'mail', 'map-pin'];
     .format-pmax .format-reseaux li {
       background: var(--verre);
       box-shadow: inset 0 0 0 1px var(--verre-bord);
+    }
+    .format-pmax .format-exemple {
+      background: transparent;
+      color: #fff;
+      box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.5);
+    }
+    .format-pmax .format-exemple:hover {
+      background: #fff;
+      color: var(--encre);
     }
     /* Search est moins haut que son voisin : ses étiquettes se posent en bas du panneau. */
     .format-search {
