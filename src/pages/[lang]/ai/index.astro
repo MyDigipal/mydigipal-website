@@ -9,7 +9,8 @@ import { ENDPOINT, prixDe, type Jour30Data } from '@/components/academy/data';
 import secoursFr from '@/data/academy/jour30-fr.json';
 import secoursEn from '@/data/academy/jour30-en.json';
 import PageHero from '@/components/ui/PageHero.astro';
-import CameraInterface from '@/components/motion/CameraInterface.astro';
+import Academie from '@/components/accueil/Academie.astro';
+import '@/components/accueil/accueil.css';
 import TableauPalettes from '@/components/motion/TableauPalettes.astro';
 import CartesDepartements from '@/components/sections/CartesDepartements.astro';
 import { LOGOS_OUTILS } from '@/components/sections/logos-outils';
@@ -57,7 +58,7 @@ const prixEntree = Math.min(
 );
 const entree =
   lang === 'fr'
-    ? `${Math.round(prixEntree / 100)} €`
+    ? `${Math.round(prixEntree / 100)}\u202f€`
     : `$${Math.round(prixEntree / 100)}`;
 const leconsAcademy = academy.faits.lessons;
 const joursAcademy = academy.acces_jours ?? 60;
@@ -372,23 +373,15 @@ const articles = blogArticles[lang] || blogArticles.en;
 // retours viennent de l'API de l'Academy (instantané en secours).
 const faits = faitsAcademy(academy, lang);
 const fr = lang === 'fr';
-const capture = {
-  src: fr ? '/academy/captures/fr/tableau-de-bord.jpg' : '/academy/captures/tableau-de-bord.jpg',
-  largeur: 1252,
-  hauteur: 782,
-  alt: fr ? 'Le tableau de bord de l’AI Academy' : 'The AI Academy dashboard',
+// La vidéo de présentation de l'Academy (v4, 30 s, sous-titrée), la même que sur l'accueil,
+// le hero de la page de vente et le calculateur : muette en boucle, avec le son au clic.
+const videoPresentation = {
+  mp4: `/academy/videos/presentation-v4-${lang}.mp4`,
+  affiche: `/academy/videos/presentation-v4-${lang}.webp`,
+  titre: fr ? 'L’AI Academy en 30 secondes' : 'The AI Academy in 30 seconds',
+  ecouter: fr ? 'Regarder avec le son' : 'Watch with sound',
+  couper: fr ? 'Couper le son' : 'Mute',
 };
-const zonesAcademy = fr
-  ? [
-      { x: 0.045, y: 0.12, l: 0.66, h: 0.376, titre: 'Votre parcours, en un coup d’œil', texte: 'Les leçons, le temps de formation et votre progression. « Reprendre » vous ramène à la leçon où vous vous êtes arrêté.' },
-      { x: 0.045, y: 0.545, l: 0.66, h: 0.445, titre: 'Un module par sujet', texte: 'Comprendre l’IA générative, la méthode CRAFT, puis votre outil : Copilot, Gemini, Claude ou ChatGPT. Chaque module annonce ses leçons et sa durée.' },
-      { x: 0.75, y: 0.12, l: 0.236, h: 0.78, titre: 'Les outils à côté de chaque leçon', texte: 'L’assistant, l’atelier CRAFT pour écrire vos prompts, la bibliothèque de prompts, les cas d’usage, les exercices et les quiz.', zoom: 1.45 },
-    ]
-  : [
-      { x: 0.045, y: 0.12, l: 0.66, h: 0.376, titre: 'Your course at a glance', texte: 'The lessons, the training time and your progress. “Resume” takes you back to the lesson where you stopped.' },
-      { x: 0.045, y: 0.545, l: 0.66, h: 0.445, titre: 'One module per topic', texte: 'Understanding generative AI, the CRAFT method, then your tool: Copilot, Gemini, Claude or ChatGPT. Each module shows its lessons and length.' },
-      { x: 0.75, y: 0.12, l: 0.236, h: 0.78, titre: 'The tools next to every lesson', texte: 'The assistant, the CRAFT workshop to write your prompts, the prompt library, use cases, exercises and quizzes.', zoom: 1.45 },
-    ];
 const tableauFormation = fr
   ? [
       { chiffre: '2 500', unite: '+', texte: 'personnes formées à l’IA' },
@@ -407,9 +400,6 @@ const outilsSolutions = ['n8n', 'Gmail', 'Google Ads', 'Notion', 'BigQuery', 'Sh
 const [sAcademy, sTraining, sSolutions, sContent] = c.services;
 const v = fr
   ? {
-      academyTitre: 'L’AI Academy, vue de l’intérieur',
-      academyChapo: `La formation en ligne, telle que vous la trouverez en ouvrant votre compte. ${leconsAcademy} leçons, ${joursAcademy} jours d’accès, dès ${entree}.`,
-      academyBouton: 'Découvrir l’AI Academy',
       trainingTitre: 'Former une équipe, en salle ou à distance',
       trainingChapo: 'Des ateliers bâtis sur les tâches des personnes présentes, avec leurs outils et leurs fichiers. Trois formats, d’une heure de découverte à un atelier pratique de 3 h 30.',
       trainingPhoto: 'Une session de formation à l’IA chez La Poste',
@@ -420,9 +410,6 @@ const v = fr
       departementsChapo: 'Ce que l’IA change dans une journée de travail, service par service. Un exemple de demande pour chacun.',
     }
   : {
-      academyTitre: 'The AI Academy, from the inside',
-      academyChapo: `The online course, as you will find it when you open your account. ${leconsAcademy} lessons, ${joursAcademy} days of access, from ${entree}.`,
-      academyBouton: 'Explore the AI Academy',
       trainingTitre: 'Train a team, on site or remote',
       trainingChapo: 'Workshops built on the tasks of the people in the room, with their tools and their files. Three formats, from a one-hour overview to a 3.5-hour hands-on workshop.',
       trainingPhoto: 'An AI training session at La Poste',
@@ -449,8 +436,9 @@ const departements = fr
 
 <PageLayout lang={lang} title={c.seo.title} description={c.seo.description}>
   <!-- La vitrine de l'IA (correction de cap de Paul, 30/09/2026). Un visuel dominant par
-       section : l'aiguillage en cartes de tailles différentes, la caméra sur le tableau de
-       bord de l'Academy (encre), la photo et le tableau à palettes de la formation, les
+       section : l'aiguillage en cartes de tailles différentes (la vidéo de présentation
+       dans celle de l'Academy), les écrans filmés et les films de l'Academy (nuit), la
+       photo et le tableau à palettes de la formation, les
        vraies marques des outils, les départements en cartes (encre), les articles, les avis
        (encre). Jamais deux sections d'encre collées. Plus de « 300 % / 50+ / 100+ ». -->
   <PageHero
@@ -468,18 +456,38 @@ const departements = fr
       <p class="chapo mt-3">{c.aiguillage.chapo}</p>
       <ul class="offres mt-8 lg:mt-10">
         <li class="offre offre-academy" data-reveal style="--i:0">
-          <a href={c.aiguillage.lignes[0].href} class="offre-lien">
-            <span class="offre-image offre-image-capture" aria-hidden="true">
-              <img src={capture.src} alt="" width={capture.largeur} height={capture.hauteur} loading="lazy" decoding="async" />
-            </span>
-            <span class="offre-corps">
-              <span class="offre-nom">{c.aiguillage.lignes[0].nom}</span>
+          <div class="offre-lien">
+            <figure class="offre-video" data-offre-video>
+              <video
+                muted
+                loop
+                playsinline
+                preload="none"
+                disablepictureinpicture
+                poster={videoPresentation.affiche}
+                aria-label={videoPresentation.titre}
+                width="1280"
+                height="720"
+              >
+                <source src={videoPresentation.mp4} type="video/mp4" />
+              </video>
+              <button type="button" class="offre-son" data-son data-ecouter={videoPresentation.ecouter} data-couper={videoPresentation.couper}>
+                <Icon name="play" size={16} class="offre-son-lire" />
+                <Icon name="pause" size={16} class="offre-son-couper" />
+                <span data-son-libelle>{videoPresentation.ecouter}</span>
+              </button>
+            </figure>
+            <div class="offre-corps">
+              <a href={c.aiguillage.lignes[0].href} class="offre-nom offre-nom-lien">{c.aiguillage.lignes[0].nom}</a>
               <span class="offre-pour">{c.aiguillage.lignes[0].pour}</span>
               <span class="offre-phrase">{c.aiguillage.lignes[0].phrase}</span>
-              <span class="offre-fait">{fr ? `${leconsAcademy} leçons, dès ${entree}` : `${leconsAcademy} lessons, from ${entree}`}</span>
-              <span class="offre-suite">{c.cta}<Icon name="arrow-right" size={18} /></span>
-            </span>
-          </a>
+              <span class="offre-fait">{fr ? `${leconsAcademy} leçons, ${joursAcademy} jours d’accès, dès ${entree}` : `${leconsAcademy} lessons, ${joursAcademy} days of access, from ${entree}`}</span>
+              <ul class="offre-puces">
+                {sAcademy.highlights.slice(1).map((h) => <li>{h}</li>)}
+              </ul>
+              <a href={c.aiguillage.lignes[0].href} class="offre-suite">{c.cta}<Icon name="arrow-right" size={18} /></a>
+            </div>
+          </div>
         </li>
         <li class="offre offre-training" data-reveal style="--i:1">
           <a href={c.aiguillage.lignes[1].href} class="offre-lien">
@@ -525,27 +533,14 @@ const departements = fr
     </div>
   </PageHero>
 
-  <!-- L'AI Academy : la caméra qui tient, sur le vrai tableau de bord. -->
-  <section class="section-encre section-monte py-20 lg:py-32" aria-labelledby="ai-academy-titre">
-    <div class="container-custom">
-      <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-14 lg:gap-6">
-        <h2 id="ai-academy-titre" class="titre-moyen">{v.academyTitre}</h2>
-        <p class="chapo">{v.academyChapo}</p>
-      </header>
-      <CameraInterface lang={lang} image={capture} zones={zonesAcademy} />
-      <div class="mt-12 grid grid-cols-1 gap-8 border-t border-white/10 pt-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-        <ul class="flex flex-wrap gap-2">
-          {[...sAcademy.features.slice(1).filter((f) => !sAcademy.highlights.some((h) => h.toLowerCase().includes(f.toLowerCase()))), ...sAcademy.highlights.slice(1)].map((f) => (
-            <li class="rounded-full bg-white/[0.07] px-4 py-2 text-sur-encre shadow-[inset_0_0_0_1px_rgb(255_255_255/0.1)]">{f}</li>
-          ))}
-        </ul>
-        <a href={sAcademy.href} class="pilule pilule-blanche justify-self-start">
-          {v.academyBouton}
-          <Icon name="arrow-right" size={18} class="pilule-fleche" />
-        </a>
-      </div>
-    </div>
-  </section>
+  <!-- L'AI Academy vue de l'intérieur (retour de Paul, 30/09/2026) : la section de
+       l'accueil, telle quelle, sans sa vidéo de présentation (elle est dans la carte
+       ci-dessus). Les boucles filmées de l'application en onglets, puis les films
+       parlants de la page de vente ; une seule vidéo, chargée à l'approche ; rien
+       d'automatique sous mouvement réduit ; chiffres lus dans l'API. -->
+  <div class="accueil accueil-ai">
+    <Academie lang={lang} academy={academy} presentation={false} />
+  </div>
 
   <!-- La formation en équipe : la photo d'une session et le tableau à palettes. -->
   <section class="section-blanc py-20 lg:py-32">
@@ -672,8 +667,8 @@ const departements = fr
 </PageLayout>
 
 <style>
-  /* L'aiguillage : quatre cartes de tailles différentes. L'Academy sur l'encre avec la
-     capture de son tableau de bord, la formation en hauteur avec la photo d'une session. */
+  /* L'aiguillage : quatre cartes de tailles différentes. L'Academy sur l'encre avec sa
+     vidéo de présentation, la formation en hauteur avec la photo d'une session. */
   .offres {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -740,14 +735,69 @@ const departements = fr
     height: 100%;
     object-fit: cover;
   }
-  .offre-image-capture {
-    aspect-ratio: 16 / 8;
+  /* Le fond de la section de l'Academy est le sien (la nuit), pas le blanc de l'accueil. */
+  .accueil-ai {
+    background: transparent;
+  }
+  /* La vidéo de présentation : muette en boucle, le son au clic. */
+  .offre-video {
+    position: relative;
     margin: 20px 20px 0;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
     border-radius: 12px;
+    background: #000;
     box-shadow: 0 24px 48px -24px rgb(2 9 16 / 0.8);
   }
-  .offre-image-capture img {
-    object-position: 0 0;
+  .offre-video video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .offre-son {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 16px 0 14px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--encre);
+    font-weight: 600;
+    box-shadow: 0 8px 20px -8px rgb(2 9 16 / 0.6);
+  }
+  .offre-son:hover {
+    color: var(--color-marque);
+  }
+  .offre-son :global(.offre-son-couper),
+  .offre-son.avec-son :global(.offre-son-lire) {
+    display: none;
+  }
+  .offre-son.avec-son :global(.offre-son-couper) {
+    display: block;
+  }
+  .offre-nom-lien:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .offre-puces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .offre-puces li {
+    border-radius: 999px;
+    padding: 4px 12px;
+    background: rgb(255 255 255 / 0.08);
+    color: var(--texte-sombre);
+    font-size: 0.875rem;
   }
   .offre-image-photo {
     aspect-ratio: 16 / 10;
@@ -923,9 +973,8 @@ const departements = fr
       grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
       align-items: center;
     }
-    .offre-academy .offre-image-capture {
+    .offre-academy .offre-video {
       margin: 28px 0 28px 28px;
-      aspect-ratio: 4 / 3;
     }
     .offre-academy .offre-corps {
       padding: 32px;
@@ -945,3 +994,63 @@ const departements = fr
     }
   }
 </style>
+
+<script>
+  /**
+   * La vidéo de présentation dans la carte de l'Academy : muette et en boucle quand elle
+   * est à l'écran (jamais seule sous mouvement réduit), avec le son depuis le début au clic.
+   * Le son coupé, elle reprend sa boucle muette. Un film parlant de la section suivante la
+   * fait taire.
+   */
+  function monterVideo(bloc: HTMLElement) {
+    if (bloc.dataset.monte) return;
+    bloc.dataset.monte = '1';
+    const v = bloc.querySelector('video');
+    const b = bloc.querySelector<HTMLButtonElement>('[data-son]');
+    const libelle = bloc.querySelector<HTMLElement>('[data-son-libelle]');
+    if (!v || !b || !libelle) return;
+    const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]fige=1/.test(location.search);
+    let visible = false;
+    const muet = () => {
+      v.muted = true;
+      v.loop = true;
+      b.classList.remove('avec-son');
+      libelle.textContent = b.dataset.ecouter ?? '';
+      if (visible && !reduit) v.play().catch(() => {});
+      else v.pause();
+    };
+    new IntersectionObserver(
+      ([e]) => {
+        visible = e.isIntersecting;
+        if (!v.muted) return;
+        if (visible && !reduit) v.play().catch(() => {});
+        else if (!visible && !v.paused) v.pause();
+      },
+      { threshold: 0.35 },
+    ).observe(v);
+    b.addEventListener('click', () => {
+      if (!v.muted) {
+        muet();
+        return;
+      }
+      v.muted = false;
+      v.loop = false;
+      v.currentTime = 0;
+      b.classList.add('avec-son');
+      libelle.textContent = b.dataset.couper ?? '';
+      v.play().catch(() => muet());
+      (window as unknown as { dataLayer?: Record<string, unknown>[] }).dataLayer?.push({
+        event: 'academy_video_play',
+        video_id: 'presentation-ai',
+      });
+    });
+    v.addEventListener('ended', muet);
+    window.addEventListener('accueil-film-lecture', () => {
+      if (!v.muted) muet();
+      v.pause();
+    });
+  }
+  const monterVideos = () => document.querySelectorAll<HTMLElement>('[data-offre-video]').forEach(monterVideo);
+  monterVideos();
+  document.addEventListener('astro:page-load', monterVideos);
+</script>
