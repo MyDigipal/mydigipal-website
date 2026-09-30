@@ -238,35 +238,52 @@ const c = content[lang] || content.en;
 ---
 
 <PageLayout lang={lang} title={lang === 'en' ? "Privacy Policy - Your Data and GDPR Rights" : "Politique de Confidentialité - Vos Droits RGPD"} description={lang === 'en' ? "Read MyDigipal's Privacy Policy. Learn how we collect, use, and protect your personal data. GDPR compliant with clear data rights for EU visitors." : "Lisez la Politique de Confidentialité de MyDigipal. Découvrez comment nous collectons, utilisons et protégeons vos données personnelles. Conforme au RGPD."}>
-  <section class="py-16 lg:py-24 bg-gradient-to-b from-slate-50 to-white">
-    <div class="container-custom">
-      <div class="max-w-3xl mx-auto">
-        <!-- Header -->
-        <div class="mb-12">
-          <h1 class="font-display text-4xl font-bold text-slate-900 mb-4">{c.title}</h1>
-          <p class="text-slate-500">{c.lastUpdated}</p>
-        </div>
+  <!-- Page légale, direction Encre (groupe 4, 30/09/2026) : le haut aux mesures communes, puis
+       un sommaire collé à gauche sur ordinateur, qui mène à chaque partie. Le texte ne change pas. -->
+  <section class="section-blanc border-b border-slate-200">
+    <div class="container-custom grid justify-items-start gap-5 pt-10 pb-12 sm:pt-14 lg:pt-18 lg:pb-16">
+      <p class="rubrique">{lang === 'fr' ? 'Informations légales' : 'Legal'}</p>
+      <h1 class="titre-grand text-encre">{c.title}</h1>
+      <p class="text-slate-500">{c.lastUpdated}</p>
+      <p class="chapo">{c.intro}</p>
+    </div>
+  </section>
 
-        <!-- Intro -->
-        <p class="text-lg text-slate-600 mb-12 leading-relaxed">
-          {c.intro}
-        </p>
-
-        <!-- Sections -->
-        <div class="space-y-10">
-          {c.sections.map((section) => (
-            <div class="prose prose-slate max-w-none">
-              <h2 class="text-xl font-bold text-slate-900 mb-4">{section.title}</h2>
-              <div class="texte-legal text-slate-600 leading-relaxed" set:html={texteSimple(section.content)} />
-            </div>
+  <section class="section-brume py-14 lg:py-20">
+    <div class="container-custom grid grid-cols-1 items-start gap-8 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-12">
+      <nav class="legal-sommaire" aria-label={lang === 'fr' ? 'Sommaire' : 'Contents'}>
+        <p class="mb-3 text-sm font-semibold text-slate-500">{lang === 'fr' ? 'Sommaire' : 'Contents'}</p>
+        <ol class="grid gap-1.5">
+          {c.sections.map((section, i) => (
+            <li><a href={`#partie-${i + 1}`} class="block rounded-lg px-3 py-1.5 text-[0.9375rem] leading-snug text-slate-600 transition-colors hover:bg-white hover:text-marque">{section.title}</a></li>
           ))}
-        </div>
+        </ol>
+      </nav>
+      <div class="carte grid gap-10 p-6 sm:p-8 lg:p-12">
+        {c.sections.map((section, i) => (
+          <div id={`partie-${i + 1}`} class="legal-partie">
+            <h2 class="titre-carte text-encre mb-4">{section.title}</h2>
+            <div class="texte-legal text-slate-600 leading-relaxed" set:html={texteSimple(section.content)} />
+          </div>
+        ))}
       </div>
     </div>
   </section>
 </PageLayout>
 
 <style>
+  .legal-sommaire {
+    position: sticky;
+    top: 96px;
+  }
+  .legal-partie {
+    scroll-margin-top: 110px;
+  }
+  @media (max-width: 1023px) {
+    .legal-sommaire {
+      position: static;
+    }
+  }
   .texte-legal :global(p) {
     margin: 0 0 0.9em;
   }
