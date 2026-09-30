@@ -1,0 +1,165 @@
+---
+/**
+ * Les départements en cartes (direction Encre, 30/09/2026, correction de cap de Paul) :
+ * une carte par département, une grande icône et UN exemple concret, écrit comme la
+ * demande qu'on ferait à l'assistant. Les cartes n'ont pas toutes la même taille : sur
+ * ordinateur, la première et la dernière prennent deux colonnes.
+ *
+ * `fond` : `encre` (cartes de verre, dans une `.section-encre`) ou `clair` (cartes
+ * blanches, dans une `.section-brume`). Sert à `/ai` et à AI Training.
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Departement {
+  icone: string;
+  nom: string;
+  /** La demande d'exemple, sans guillemets. */
+  exemple: string;
+  /** Les autres usages, en une ligne. */
+  aussi?: string[];
+}
+
+interface Props {
+  lang: Language;
+  departements: Departement[];
+  fond?: 'encre' | 'clair';
+}
+
+const { lang, departements, fond = 'clair' } = Astro.props;
+const fr = lang === 'fr';
+const encre = fond === 'encre';
+const n = departements.length;
+// Quatre cartes : 2 + 1, puis 1 + 2 (une diagonale). Sinon, toutes de la même taille.
+const large = (i: number) => n === 4 && (i === 0 || i === 3);
+---
+
+<ul class:list={['depts', { 'depts-encre': encre }]}>
+  {departements.map((d, i) => (
+    <li class:list={['dept', { 'dept-large': large(i) }]} data-reveal style={`--i:${i % 3}`}>
+      <span class="dept-icone" aria-hidden="true"><Icon name={d.icone} size={34} /></span>
+      <h3 class="dept-nom">{d.nom}</h3>
+      <figure class="dept-exemple">
+        <figcaption class="dept-etiquette">{fr ? 'Un exemple de demande' : 'An example request'}</figcaption>
+        <blockquote><p>{fr ? `« ${d.exemple} »` : `“${d.exemple}”`}</p></blockquote>
+      </figure>
+      {d.aussi && d.aussi.length > 0 && (
+        <p class="dept-aussi">
+          <span class="font-semibold">{fr ? 'Aussi : ' : 'Also: '}</span>
+          {d.aussi.join(fr ? ', ' : ', ')}.
+        </p>
+      )}
+    </li>
+  ))}
+</ul>
+
+<style>
+  .depts {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .dept {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    padding: 26px 24px;
+    border-radius: var(--rayon-panneau);
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet), 0 18px 40px -28px rgb(11 27 43 / 0.35);
+  }
+  .dept-icone {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    background: var(--color-marque-doux);
+    color: var(--color-marque);
+  }
+  .dept-nom {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    color: var(--encre);
+  }
+  .dept-exemple {
+    margin: 0;
+    padding: 16px 18px;
+    border-radius: var(--rayon-interieur);
+    background: var(--brume);
+  }
+  .dept-etiquette {
+    margin-bottom: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #5b6b7b;
+  }
+  .dept-exemple p {
+    font-size: 1.0625rem;
+    line-height: 1.5;
+    color: var(--encre);
+    text-wrap: pretty;
+  }
+  .dept-aussi {
+    font-size: 0.9375rem;
+    color: #5b6b7b;
+  }
+
+  /* Sur l'encre : des cartes de verre, l'icône sur une tuile bleue. */
+  .depts-encre .dept {
+    background: rgb(255 255 255 / 0.06);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 30px 60px -36px rgb(2 9 16 / 0.9);
+  }
+  .depts-encre .dept-icone {
+    background: var(--color-marque);
+    color: #fff;
+  }
+  .depts-encre .dept-nom {
+    color: #fff;
+  }
+  .depts-encre .dept-exemple {
+    background: rgb(255 255 255 / 0.07);
+  }
+  .depts-encre .dept-etiquette,
+  .depts-encre .dept-aussi {
+    color: var(--texte-sombre-2);
+  }
+  .depts-encre .dept-exemple p {
+    color: var(--texte-sombre);
+  }
+
+  @media (min-width: 768px) {
+    .depts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .depts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .dept {
+      padding: 32px;
+    }
+    .dept-large {
+      grid-column: span 2;
+      grid-template-columns: 72px minmax(0, 1fr);
+      column-gap: 24px;
+    }
+    .dept-large .dept-icone {
+      grid-row: span 3;
+      width: 72px;
+    }
+    .dept-large .dept-nom {
+      font-size: 1.75rem;
+    }
+    .dept-large .dept-exemple p {
+      font-size: 1.25rem;
+    }
+  }
+</style>
