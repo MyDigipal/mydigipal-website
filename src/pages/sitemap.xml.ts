@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { OUTILS_PUBLIES } from '@/components/academy-tools';
+import { ARTICLES_PAR_PAGE, articlesPublies } from '@/lib/blog-pages';
 
 const site = 'https://mydigipal.com';
 const languages = ['en', 'fr'];
@@ -73,6 +74,16 @@ export const GET: APIRoute = async () => {
 
   // Blog index
   addBilingualPage('/blog', 0.9, 'daily');
+
+  // Les pages 2 et suivantes de l'index du blog (douze articles par page, 30/09/2026), langue
+  // par langue : le nombre d'articles publiés peut différer d'une langue à l'autre, et une URL
+  // annoncée sans page générée fait échouer scripts/check-seo.mjs.
+  for (const lang of languages) {
+    const pages = Math.ceil((await articlesPublies(lang)).length / ARTICLES_PAR_PAGE);
+    for (let p = 2; p <= pages; p++) {
+      urls.push({ loc: `${site}/${lang}/blog/page/${p}`, lastmod: today, changefreq: 'daily', priority: 0.5 });
+    }
+  }
 
   // Case studies index
   addBilingualPage('/case-studies', 0.8, 'weekly');

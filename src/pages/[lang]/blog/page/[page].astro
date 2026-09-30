@@ -1,0 +1,25 @@
+---
+/**
+ * Les pages 2 et suivantes de l'index du blog, douze articles chacune (30/09/2026). La page 1
+ * est `/{lang}/blog` : `/{lang}/blog/page/1` n'existe pas, pour ne pas doubler la même page.
+ */
+import { type Language, languages } from '@/i18n/config';
+import IndexBlog from '@/components/blog/IndexBlog.astro';
+import { ARTICLES_PAR_PAGE, articlesPublies } from '@/lib/blog-pages';
+
+export async function getStaticPaths() {
+  const chemins = [];
+  for (const lang of Object.keys(languages)) {
+    const n = (await articlesPublies(lang)).length;
+    const pages = Math.ceil(n / ARTICLES_PAR_PAGE);
+    for (let page = 2; page <= pages; page++) {
+      chemins.push({ params: { lang, page: String(page) } });
+    }
+  }
+  return chemins;
+}
+
+const { lang, page } = Astro.params as { lang: Language; page: string };
+---
+
+<IndexBlog lang={lang} page={Number(page)} />
