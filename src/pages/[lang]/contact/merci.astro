@@ -74,7 +74,9 @@ const t = content[lang];
   description={t.pageDescription}
   noindex={true}
 >
-  <section class="py-16 lg:py-24 bg-gradient-to-b from-white to-slate-50">
+  <!-- La page de remerciement, direction Encre (groupe 4, 30/09/2026). L'encart jaune sur les
+       spams garde sa couleur : c'est une alerte, et le jaune est réservé à ce sens. -->
+  <section class="section-brume py-16 lg:py-24">
     <div class="container-custom max-w-3xl mx-auto">
 
       <!-- Heading + checkmark animé -->
@@ -84,10 +86,10 @@ const t = content[lang];
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
         </div>
-        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight mb-4">
+        <h1 class="titre-grand text-encre mb-5">
           {t.h1}
         </h1>
-        <p class="text-lg text-slate-600 max-w-xl mx-auto">
+        <p class="chapo max-w-xl mx-auto">
           {t.intro}
         </p>
       </div>
@@ -127,42 +129,42 @@ const t = content[lang];
 
       <!-- Nurture cards -->
       <div class="mb-6">
-        <h2 class="font-display text-xl sm:text-2xl font-bold text-slate-900 mb-6 text-center">
+        <h2 class="titre-carte text-encre mb-6 text-center">
           {t.nurtureHeading}
         </h2>
 
         <div class="grid sm:grid-cols-3 gap-4">
-          <a href={t.cardCaseHref} class="merci-card group p-5 bg-white rounded-2xl border border-slate-200 hover:border-indigo-400 hover:shadow-lg transition-all duration-300">
+          <a href={t.cardCaseHref} class="merci-card carte group grid content-start p-5 transition-shadow duration-300 hover:shadow-lg">
             <div class="mb-3 text-marque">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
               </svg>
             </div>
-            <h3 class="font-bold text-slate-900 mb-1 text-sm sm:text-base leading-tight">{t.cardCaseTitle}</h3>
-            <p class="text-xs text-slate-600 mb-3 leading-snug">{t.cardCaseDesc}</p>
-            <span class="text-xs font-semibold text-indigo-600 inline-flex items-center gap-1">
+            <h3 class="font-display font-bold text-encre mb-1.5 text-base leading-tight group-hover:text-marque">{t.cardCaseTitle}</h3>
+            <p class="text-sm text-slate-600 mb-4 leading-snug">{t.cardCaseDesc}</p>
+            <span class="text-sm font-semibold text-marque inline-flex items-center gap-1.5 transition-all group-hover:gap-2.5">
               {t.cardCaseCta}
               <Icon name="arrow-right" size={12} />
             </span>
           </a>
 
-          <a href={t.cardMethodHref} class="merci-card group p-5 bg-white rounded-2xl border border-slate-200 hover:border-emerald-400 hover:shadow-lg transition-all duration-300">
+          <a href={t.cardMethodHref} class="merci-card carte group grid content-start p-5 transition-shadow duration-300 hover:shadow-lg">
             <div class="mb-3 text-marque">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
               </svg>
             </div>
-            <h3 class="font-bold text-slate-900 mb-1 text-sm sm:text-base leading-tight">{t.cardMethodTitle}</h3>
-            <p class="text-xs text-slate-600 mb-3 leading-snug">{t.cardMethodDesc}</p>
-            <span class="text-xs font-semibold text-emerald-600 inline-flex items-center gap-1">
+            <h3 class="font-display font-bold text-encre mb-1.5 text-base leading-tight group-hover:text-marque">{t.cardMethodTitle}</h3>
+            <p class="text-sm text-slate-600 mb-4 leading-snug">{t.cardMethodDesc}</p>
+            <span class="text-sm font-semibold text-marque inline-flex items-center gap-1.5 transition-all group-hover:gap-2.5">
               {t.cardMethodCta}
               <Icon name="arrow-right" size={12} />
             </span>
           </a>
 
-          <a href={t.cardBlogHref} class="merci-card group p-5 bg-white rounded-2xl border border-slate-200 hover:border-violet-400 hover:shadow-lg transition-all duration-300">
+          <a href={t.cardBlogHref} class="merci-card carte group grid content-start p-5 transition-shadow duration-300 hover:shadow-lg">
             <div class="mb-3 text-marque">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l4 4v12a2 2 0 0 1-2 2z"></path>
@@ -171,9 +173,9 @@ const t = content[lang];
                 <line x1="9" y1="17" x2="15" y2="17"></line>
               </svg>
             </div>
-            <h3 class="font-bold text-slate-900 mb-1 text-sm sm:text-base leading-tight">{t.cardBlogTitle}</h3>
-            <p class="text-xs text-slate-600 mb-3 leading-snug">{t.cardBlogDesc}</p>
-            <span class="text-xs font-semibold text-violet-600 inline-flex items-center gap-1">
+            <h3 class="font-display font-bold text-encre mb-1.5 text-base leading-tight group-hover:text-marque">{t.cardBlogTitle}</h3>
+            <p class="text-sm text-slate-600 mb-4 leading-snug">{t.cardBlogDesc}</p>
+            <span class="text-sm font-semibold text-marque inline-flex items-center gap-1.5 transition-all group-hover:gap-2.5">
               {t.cardBlogCta}
               <Icon name="arrow-right" size={12} />
             </span>
