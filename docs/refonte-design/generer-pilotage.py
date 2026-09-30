@@ -411,13 +411,13 @@ ETATS = {  # page : (libellé, classe) quand une page avance
     "/automotive/dynamic-ads": ("Groupe 3 validé par Paul", "fait"),
     "/case-studies": ("Groupe 4 écrit, à relire", "attente"),
     "/case-studies/theobald-group": ("Groupe 4 écrit, à relire", "attente"),
-    "/blog": ("Groupe 4 écrit, à relire", "attente"),
+    "/blog": ("Groupe 4 en ligne, pagination en ligne (bc32233)", "attente"),
     "/blog/how-to-rank-on-chatgpt": ("Groupe 4 écrit, à relire", "attente"),
     "/contact": ("Groupe 4 écrit, formulaire testé", "attente"),
     "/careers": ("Groupe 4 écrit, à relire", "attente"),
     "/privacy-policy": ("Groupe 4 écrit, à relire", "attente"),
     "/calculator": ("Flottants fusionnés et en ligne (30/09)", "fait"),
-    "/": ("Groupe 5 écrit, à relire", "attente"),
+    "/": ("Validé par Paul, en ligne (bc32233)", "fait"),
     "/services/ai-solutions": ("Écrit, à vérifier", "attente"),
     "/services/ai-content": ("Écrit, à vérifier", "attente"),
 }
@@ -572,6 +572,7 @@ JOURNAL = [
     ("30/09/2026", "Index du blog paginé (demande de Paul) : douze articles par page, sept pages par langue, titres et descriptions uniques, rel prev/next, pages au sitemap, recherche et filtres sur tous les articles par un index JSON. Vérifié en local : 84 articles distincts dans chaque langue, un article de la page 1 trouvé depuis la page 3, le filtre SEO rend les 10 articles SEO du blog entier."),
     ("30/09/2026", "Groupe 5, l'accueil, écrit en français (l'anglais suit les mêmes composants). Dans l'Academy, la vidéo de présentation reste ; les écrans de l'application et les films parlants sont repliés sous deux titres (deux <details> natifs, texte dans le HTML servi, ouverture vers le bas sous un titre qui ne bouge pas, rien de chargé ni joué tant qu'un pli est fermé, ouverture mesurée par accueil_pli_ouvert). Sans clic : l'Academy, puis les avis, puis les services. L'Academy et les résultats clients deviennent deux sections sombres qui montent, jamais collées. Logos en couleur partout : bandeau, onglets des avis, fiche des services, résultats (sur plaque blanche). /ai garde la section de l'Academy ouverte, sans pli."),
     ("30/09/2026", "Vérifié par script en local, FR et EN, à 1 440, 1 024, 768, 390 et 360 px et sans JavaScript : 0 débordement, 0 section d'encre collée, sombre 34 à 40 %, 0 erreur JavaScript, 0 tiret long. Plis : aucune vidéo demandée en défilant toute la page plis fermés ; à l'ouverture, titre immobile au pixel près, la boucle part ; refermé, elle s'arrête. check-seo au vert. Pas vu sur Render."),
+    ("30/09/2026", "Accord de Paul donné dans la session : la pagination du blog et l'accueil sont en ligne. main avancée de 1fd65ec à bc32233 sans fusion (rien d'autre n'y était arrivé). Build et check-seo verts, contrôles relancés juste avant : 84 articles distincts par langue, recherche et filtres sur tout le blog, plis de l'accueil conformes, 0 débordement, 0 erreur JavaScript. L'ordre de l'accueil est gardé : la question « les services avant l'Academy ? » reste ouverte. Vérification sur Render toujours impossible depuis la session (réseau)."),
 ]
 
 
