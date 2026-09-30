@@ -96,22 +96,86 @@ const icons: Record<string, string> = {
 
 ---
 
-<!-- Direction Encre (30/09/2026) : fond blanc, cinq acquis entre des filets. Plus de
-     pastilles 01 à 05, plus de liseré coloré au survol, plus de carte vedette. -->
-<section class="section-blanc py-20 lg:py-32">
-  <div class="container-custom grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
-    <header class="grid content-start gap-5 lg:sticky lg:top-28 lg:gap-6">
-      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+<!-- Direction Encre (30/09/2026), correction de cap : les cinq acquis en escalier, sur
+     l'encre. Chaque marche monte d'un cran, de la peur de l'IA aux cas d'usage avancés :
+     la progression se voit avant de se lire. -->
+<section class="section-encre section-monte py-20 lg:py-32">
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen">{t.headline}</h2>
       <p class="chapo">{t.intro}</p>
     </header>
-    <ul class="grid">
+    <ol class="marches">
       {t.benefits.map((b, index) => (
-        <li class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 border-t border-slate-200 py-7 first:border-t-0 first:pt-0" data-reveal style={`--i:${index}`}>
-          <span class="row-span-2 mt-0.5 text-marque"><Fragment set:html={icons[b.icon]} /></span>
-          <h3 class="font-display text-xl font-extrabold tracking-[-0.02em] text-encre">{b.title}</h3>
-          <p class="text-slate-600">{b.description}</p>
+        <li class="marche" data-reveal style={`--i:${index};--m:${index}`}>
+          <span class="marche-icone" aria-hidden="true"><Fragment set:html={icons[b.icon]} /></span>
+          <h3 class="marche-titre">{b.title}</h3>
+          <p class="text-sur-encre-2">{b.description}</p>
         </li>
       ))}
-    </ul>
+    </ol>
   </div>
 </section>
+
+<style>
+  .marches {
+    display: grid;
+    gap: 14px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .marche {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 24px;
+    border-radius: var(--rayon-panneau);
+    background: rgb(255 255 255 / 0.06);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  }
+  /* La dernière marche est la plus haute : un verre bleuté. */
+  .marche:last-child {
+    background:
+      linear-gradient(180deg, rgb(29 113 184 / 0.55), rgb(29 113 184 / 0.18) 70%),
+      rgb(255 255 255 / 0.06);
+  }
+  .marche-icone {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--color-marque);
+    color: #fff;
+  }
+  .marche-icone :global(svg) {
+    width: 28px;
+    height: 28px;
+  }
+  .marche-titre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    /* Sur tablette, l'escalier descend : chaque marche décale d'un cran. */
+    .marche {
+      margin-left: calc(var(--m) * 28px);
+    }
+  }
+  @media (min-width: 1024px) {
+    .marches {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      align-items: end;
+      gap: 12px;
+    }
+    .marche {
+      min-height: calc(400px + var(--m) * 64px);
+      padding: 24px 20px;
+    }
+  }
+</style>
