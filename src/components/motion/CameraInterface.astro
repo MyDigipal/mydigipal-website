@@ -1,0 +1,385 @@
+---
+/**
+ * La caméra qui tient (direction Encre, 30/09/2026 ; essai `demo-interface`, fiche B.1 de
+ * `docs/refonte-design/motion/ADAPTATION-WEB.md`, « ça, j'adore », « pour montrer
+ * l'académie et les différentes sections, il faut absolument qu'on utilise ça »).
+ *
+ * Ce qu'elle montre : une vraie capture d'une application, posée en perspective. La caméra
+ * glisse vers une zone, la tient pendant qu'un libellé naît à côté, puis passe à la
+ * suivante, et revient au plan large. Zoom de 1,5 au plus, une destination visible et une
+ * tenue à chaque mouvement (règle de Paul, jamais de zoom continu). Le reste de l'écran est
+ * voilé en `opacity` seule : aucun flou sur ce qu'on lit.
+ *
+ * Sous 1 024 px, pas de caméra : la capture à plat, puis une carte par zone avec son
+ * recadrage. Sans script, l'état est celui du plan large, zones numérotées.
+ * Les zones sont en fractions de la capture (0 à 1). À poser dans une `.section-encre`.
+ */
+import type { Language } from '@/i18n/config';
+
+interface Zone {
+  /** Le rectangle de la zone, en fractions de l'image. */
+  x: number;
+  y: number;
+  l: number;
+  h: number;
+  titre: string;
+  texte: string;
+  /** Le zoom de la tenue (1,5 au plus). */
+  zoom?: number;
+}
+
+interface Props {
+  lang: Language;
+  image: { src: string; largeur: number; hauteur: number; alt: string };
+  zones: Zone[];
+}
+
+const { lang, image, zones } = Astro.props;
+if (zones.length < 2 || zones.length > 4) throw new Error(`CameraInterface : de deux à quatre zones, pas ${zones.length}.`);
+const fr = lang === 'fr';
+
+// La partition : l'entrée, puis une zone toutes les 2 s (0,8 s de glissé, 1,2 s de tenue),
+// puis le retour au plan large.
+const ENTREE = 0.9;
+const PAS = 2;
+const GLISSE = 0.8;
+const TENUE = +(ENTREE + PAS * zones.length + GLISSE).toFixed(2);
+
+const cadres = zones.map((z, i) => {
+  const s = Math.min(1.5, z.zoom ?? 1.4);
+  const demi = 0.5 / s;
+  const fx = z.x + z.l / 2;
+  const fy = z.y + z.h / 2;
+  // La caméra ne sort jamais de la capture : le centre visé reste à un demi-champ du bord.
+  const cx = Math.min(1 - demi, Math.max(demi, fx));
+  const cy = Math.min(1 - demi, Math.max(demi, fy));
+  // Où tombe la zone à l'écran pendant la tenue : le libellé se pose de l'autre côté.
+  const ecranX = 0.5 + (fx - cx) * s;
+  const debut = +(ENTREE + PAS * i).toFixed(2);
+  return {
+    ...z,
+    s,
+    cx,
+    cy,
+    cote: ecranX > 0.5 ? 'gauche' : 'droite',
+    aller: debut,
+    tenir: +(debut + GLISSE + 0.9).toFixed(2),
+    jusqua: +(debut + PAS).toFixed(2),
+  };
+});
+
+const pct = (v: number) => `${+(v * 100).toFixed(3)}%`;
+// Le recadrage d'une zone en CSS seul, pour les cartes sous 1 024 px.
+const recadrage = (z: Zone) =>
+  [
+    `background-image:url("${encodeURI(image.src)}")`,
+    `background-size:${+(100 / z.l).toFixed(3)}% auto`,
+    `background-position:${z.l >= 1 ? '0' : pct(z.x / (1 - z.l))} ${z.h >= 1 ? '0' : pct(z.y / (1 - z.h))}`,
+    `aspect-ratio:${Math.round(z.l * image.largeur)} / ${Math.round(z.h * image.hauteur)}`,
+  ].join(';');
+---
+
+<div
+  class="cam"
+  data-camera
+  data-tenue={TENUE}
+  data-cadres={JSON.stringify(cadres.map((c) => ({ s: c.s, cx: c.cx, cy: c.cy })))}
+>
+  <div class="cam-scene" style={`aspect-ratio:${image.largeur} / ${image.hauteur}`}>
+    <div class="cam-app">
+      <img src={image.src} width={image.largeur} height={image.hauteur} alt={image.alt} loading="lazy" decoding="async" />
+      {cadres.map((z, i) => (
+        <span class="cam-zone" style={`left:${pct(z.x)};top:${pct(z.y)};width:${pct(z.l)};height:${pct(z.h)}`} aria-hidden="true">
+          <span class="cam-voile"></span>
+          <span class="cam-pastille">{i + 1}</span>
+        </span>
+      ))}
+    </div>
+    {cadres.map((z, i) => (
+      <div class:list={['cam-bulle', `cam-bulle-${z.cote}`]} aria-hidden="true">
+        <span class="cam-bulle-numero">{i + 1}</span>
+        <span class="grid gap-1">
+          <span class="font-semibold text-encre">{z.titre}</span>
+          <span class="text-[0.9375rem] leading-snug text-slate-600">{z.texte}</span>
+        </span>
+      </div>
+    ))}
+  </div>
+
+  <ol class="cam-legendes">
+    {cadres.map((z, i) => (
+      <li class="cam-legende">
+        <span class="cam-recadrage" style={recadrage(z)} aria-hidden="true"></span>
+        <button
+          type="button"
+          class="cam-bouton"
+          data-aller={z.aller}
+          data-tenir={z.tenir}
+          data-jusqua={z.jusqua}
+          aria-pressed="false"
+        >
+          <span class="cam-numero" aria-hidden="true">{i + 1}</span>
+          <span class="cam-legende-titre">{z.titre}</span>
+        </button>
+        <h3 class="cam-titre"><span class="cam-numero" aria-hidden="true">{i + 1}</span>{z.titre}</h3>
+        <p class="text-sur-encre-2">{z.texte}</p>
+      </li>
+    ))}
+  </ol>
+  <button type="button" class="cam-rejouer" data-rejouer>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7" stroke-linecap="round" /><path d="M3 4v5h5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    {fr ? 'Rejouer la visite' : 'Replay the tour'}
+  </button>
+</div>
+
+<style>
+  .cam {
+    display: grid;
+    gap: 28px;
+  }
+  .cam-scene {
+    position: relative;
+    perspective: 2400px;
+  }
+  .cam-app {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 14px;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 40px 80px -30px rgb(2 9 16 / 0.85);
+    transform-style: flat;
+    will-change: transform;
+  }
+  .cam-app img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cam-zone {
+    position: absolute;
+    border-radius: 10px;
+  }
+  /* Le voile : tout ce qui est hors de la zone s'assombrit, la zone reste nette. */
+  .cam-voile {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 0 2px var(--marque-clair), 0 0 0 200vmax rgb(11 27 43 / 0.55);
+    opacity: 0;
+  }
+  .cam-pastille {
+    position: absolute;
+    top: -12px;
+    left: -12px;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: var(--color-marque);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    box-shadow: 0 0 0 3px #fff, 0 6px 16px -4px rgb(2 9 16 / 0.5);
+  }
+  .cam-bulle {
+    position: absolute;
+    bottom: 6%;
+    z-index: 2;
+    display: none;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 12px;
+    width: min(340px, 36%);
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: rgb(255 255 255 / 0.96);
+    box-shadow: 0 24px 48px -20px rgb(2 9 16 / 0.7);
+    opacity: 0;
+  }
+  .cam-bulle-gauche {
+    left: 4%;
+  }
+  .cam-bulle-droite {
+    right: 4%;
+  }
+  .cam-bulle-numero,
+  .cam-numero {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: var(--color-marque);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+
+  .cam-legendes {
+    display: grid;
+    gap: 28px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cam-legende {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  .cam-recadrage {
+    display: block;
+    width: 100%;
+    border-radius: 12px;
+    background-repeat: no-repeat;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  }
+  .cam-titre {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .cam-bouton {
+    display: none;
+  }
+  .cam-rejouer {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .cam-bulle {
+      display: grid;
+    }
+    .cam-legendes {
+      grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
+      gap: 32px;
+    }
+    .cam-recadrage,
+    .cam-titre {
+      display: none;
+    }
+    .cam-bouton {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 44px;
+      padding: 6px 14px 6px 6px;
+      margin-left: -6px;
+      border-radius: 999px;
+      text-align: left;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #fff;
+      transition: background-color 0.2s;
+    }
+    .cam-bouton:hover,
+    .cam-bouton[aria-pressed='true'] {
+      background: rgb(255 255 255 / 0.1);
+    }
+    .cam-bouton[aria-pressed='true'] .cam-numero {
+      background: #fff;
+      color: var(--color-marque);
+    }
+    .cam-rejouer {
+      display: inline-flex;
+      justify-self: start;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      font-weight: 600;
+      color: var(--marque-clair);
+    }
+    .cam-rejouer:hover {
+      color: #fff;
+    }
+  }
+</style>
+
+<script>
+  import { scene, courbes as C, seg, mix, piste, clamp, type Cle } from '@/lib/motion';
+
+  const ENTREE = 0.9;
+  const PAS = 2;
+  const GLISSE = 0.8;
+
+  function monter(el: HTMLElement) {
+    if (el.dataset.monte) return;
+    // Sous 1 024 px, pas de caméra : la capture à plat et les cartes recadrées.
+    if (!window.matchMedia('(min-width: 1024px)').matches) return;
+    el.dataset.monte = '1';
+    const TENUE = Number(el.dataset.tenue);
+    const cadres = JSON.parse(el.dataset.cadres || '[]') as { s: number; cx: number; cy: number }[];
+    const app = el.querySelector<HTMLElement>('.cam-app')!;
+    const voiles = Array.from(el.querySelectorAll<HTMLElement>('.cam-voile'));
+    const pastilles = Array.from(el.querySelectorAll<HTMLElement>('.cam-pastille'));
+    const bulles = Array.from(el.querySelectorAll<HTMLElement>('.cam-bulle'));
+    el.querySelector<HTMLElement>('.cam-legendes')?.style.setProperty('--n', String(cadres.length));
+
+    // La caméra : deux clés identiques font une tenue, deux clés différentes un glissé.
+    // Au plan large, l'application est inclinée ; en approchant, elle se redresse.
+    const large = { s: 0.9, cx: 0.5, cy: 0.5, rx: 8, ry: -9 };
+    const cles: Cle[] = [{ t: 0, ...large }, { t: ENTREE, ...large }];
+    cadres.forEach((c, i) => {
+      const a = ENTREE + PAS * i;
+      const pose = { s: c.s, cx: c.cx, cy: c.cy, rx: 2, ry: -2.5 };
+      cles.push({ t: a + GLISSE, ...pose }, { t: a + PAS, ...pose });
+    });
+    cles.push({ t: TENUE, s: 1, cx: 0.5, cy: 0.5, rx: 0, ry: 0 });
+
+    function rendu(t: number) {
+      if (t >= TENUE - 0.001) {
+        app.style.transform = '';
+        app.style.transformOrigin = '';
+        app.style.opacity = '';
+        for (const v of voiles) v.style.opacity = '';
+        for (const p of pastilles) p.style.opacity = '';
+        for (const b of bulles) {
+          b.style.opacity = '';
+          b.style.transform = '';
+        }
+        return;
+      }
+      const s = piste(cles, t, 's');
+      const cx = piste(cles, t, 'cx');
+      const cy = piste(cles, t, 'cy');
+      const rx = piste(cles, t, 'rx');
+      const ry = piste(cles, t, 'ry');
+      // L'entrée : l'application apparaît en 0,45 s en venant d'un peu plus loin.
+      const e = C.entree(seg(t, 0, 0.8));
+      app.style.opacity = seg(t, 0, 0.45).toFixed(3);
+      app.style.transformOrigin = `${(cx * 100).toFixed(3)}% ${(cy * 100).toFixed(3)}%`;
+      app.style.transform =
+        `translate(${((0.5 - cx) * 100).toFixed(3)}%, ${((0.5 - cy) * 100).toFixed(3)}%) ` +
+        `scale(${(s * mix(0.94, 1, e)).toFixed(4)}) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+      cadres.forEach((_, i) => {
+        const a = ENTREE + PAS * i;
+        const monte = seg(t, a + 0.3, a + GLISSE);
+        const descend = seg(t, a + PAS, a + PAS + 0.35);
+        voiles[i].style.opacity = (C.entree(monte) * (1 - descend)).toFixed(3);
+        // Le libellé naît à côté de la zone, une fois la caméra posée.
+        const b = C.entree(seg(t, a + GLISSE - 0.05, a + GLISSE + 0.45));
+        const sortie = C.sortie(seg(t, a + PAS, a + PAS + 0.25));
+        bulles[i].style.opacity = (seg(t, a + GLISSE - 0.05, a + GLISSE + 0.1) * (1 - sortie)).toFixed(3);
+        bulles[i].style.transform = `translate3d(0,${((1 - b) * 14).toFixed(2)}px,0)`;
+      });
+      // Les pastilles numérotées n'arrivent qu'au retour au plan large.
+      const p = seg(t, TENUE - 0.5, TENUE - 0.1);
+      for (const x of pastilles) x.style.opacity = p.toFixed(3);
+    }
+
+    const h = el.getBoundingClientRect().height || 1;
+    scene(el, { tenue: TENUE, rendu, seuil: clamp((window.innerHeight * 0.45) / h, 0.25, 0.6) });
+  }
+
+  function monterTout() {
+    document.querySelectorAll<HTMLElement>('[data-camera]').forEach(monter);
+  }
+  monterTout();
+  document.addEventListener('astro:page-load', monterTout);
+</script>
