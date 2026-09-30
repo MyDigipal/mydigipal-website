@@ -832,6 +832,33 @@ est validée avec une correction.
   4,6 Mds, 41 %, 40x, 67 %, 40 %, 3x, « Partenaire certifié »...). Les quatre vignettes
   « Nos créations » de Paid Social, des aplats sans image, ont été retirées.
 
+### Groupe 3, les pages automobile (30/09/2026, branche `refonte-design`)
+
+Groupe 2 validé par Paul (« une bonne base ») ; la passe dédiée au mouvement viendra plus tard.
+`/automotive` et les trois pages (Google Ads, Paid Social, Dynamic Ads), en français, au modèle
+d'AI Training. Les scènes sont dans `motion/donnees-automobile.ts` : `railParcours` (le tunnel
+d'un concessionnaire, sur `/automotive`), `carteCompte` (une campagne par marque, un groupe par
+modèle, Google Ads), `railFormulaire` (du formulaire Meta au CRM puis retour à Meta, Paid Social),
+`carteStock` (le stock devient l'annonce, Dynamic Ads). Plus un tableau à palettes par page,
+lu dans les `metrics` de la fiche.
+- ⚠️ **`isDynamicAds` manquait au schéma** de la collection : la validation le retirait, et les
+  trois sections des Dynamic Ads (`DynamicAdsFlow`, `Channels`, `ROI`) n'avaient JAMAIS été
+  affichées. Le champ est dans `content.config.ts` ; les sections sont restylées, avec des
+  chiffres sans source (10 h, 3x, 2,9 Mrd, 2 Mrd, 90 %) laissés à la décision de Paul.
+- **Logos à surface égale** : `lib/logos-mesures.ts` (`mesurerLogos`) prend la version détourée de
+  l'accueil quand elle existe, sinon lit la taille du fichier au build (sharp) ; `BandeauLogos`
+  n'applique la surface égale qu'aux logos qui portent `largeur` et `hauteur`, donc AI Training
+  ne bouge pas. `HeroService` accepte `titreLogos`. Le défilé gris `AutomotiveClients` n'est plus
+  rendu (les logos sont dans le hero), `AutomotiveMidCTA` est remplacé par le ruban.
+- `AutomotiveWhySection` choisit son visuel dominant par la donnée : la carte passée en créneau,
+  sinon les raisons dont le titre commence par un chiffre (« 47% taux de conversion »), sinon
+  l'image. `AutomotiveServices` et `AutomotiveTeam` prennent un `fond`.
+- Les preuves des pages automobile sont les études de cas Théobald, Vulcain et DMD
+  (`CaseStudyCarousel`, fond encre, un verbatim par page). Le logo de ce composant est désormais
+  plafonné à 36 px : celui de Théobald débordait de sa plaque (aussi sur `/services/google-ads`).
+- Icônes ajoutées : `monitor`, `video`, `shopping-cart`, `dollar-sign`, `pie-chart` (un nom
+  inconnu de `Icon.astro` rend une loupe, sans erreur).
+
 ### Les éléments flottants partagent une seule mesure : `--bandeau`
 
 Branche `flottants-sans-recouvrement` (commit `5b0e768`), à déployer après accord de Paul.
