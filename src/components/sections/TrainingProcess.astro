@@ -1,5 +1,6 @@
 ---
 import { type Language } from '@/i18n/config';
+import RailMorphing from '@/components/motion/RailMorphing.astro';
 
 interface Props {
   lang: Language;
@@ -97,23 +98,28 @@ const translations = {
 };
 
 const t = translations[lang] || translations.en;
+
+// Le rail : cinq stations. La réalisation et son enregistrement sont un même moment,
+// leurs deux textes sont réunis sur la même station.
+const e = t.steps;
+const stations = [
+  { titre: e[0].title, texte: e[0].description, forme: 'loupe' as const },
+  { titre: e[1].title, texte: e[1].description, forme: 'cible' as const },
+  { titre: e[2].title, texte: e[2].description, forme: 'structure' as const },
+  { titre: e[3].title, texte: `${e[3].description} ${e[4].description}`, forme: 'bulle' as const },
+  { titre: e[5].title, texte: e[5].description, forme: 'courbe' as const },
+];
 ---
 
-<!-- Direction Encre (30/09/2026) : fond blanc, les six étapes dans l'ordre, entre des
-     filets. Plus de pastilles numérotées, plus d'emoji, plus de frise en zigzag. -->
+<!-- Direction Encre (30/09/2026), correction de cap : la fabrication de la formation sur
+     le rail. Un seul objet voyage de la découverte au suivi et change de forme à chaque
+     étape (loupe, cible, structure, bulle, courbe). -->
 <section class="section-blanc py-20 lg:py-32">
-  <div class="container-custom grid gap-10 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-16">
-    <header class="grid content-start gap-5 lg:sticky lg:top-28 lg:gap-6">
+  <div class="container-custom">
+    <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
       <h2 class="titre-moyen text-encre">{t.headline}</h2>
       <p class="chapo">{t.subtitle}</p>
     </header>
-    <ol class="grid gap-x-10 sm:grid-cols-2">
-      {t.steps.map((step, index) => (
-        <li class="grid content-start gap-2 border-t border-slate-200 py-7" data-reveal style={`--i:${index % 2}`}>
-          <h3 class="font-display text-xl font-extrabold tracking-[-0.02em] text-encre">{step.title}</h3>
-          <p class="text-slate-600">{step.description}</p>
-        </li>
-      ))}
-    </ol>
+    <RailMorphing lang={lang} stations={stations} />
   </div>
 </section>
