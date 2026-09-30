@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Transitions au tempo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  /* Essai « transitions au tempo » : quatre plans de 2 s (une mesure à 120 BPM chacun)
+     enchaînés par des masques qui se referment exactement sur le temps fort. Le son, en
+     Web Audio, est facultatif : il se déclenche au clic sur « Son » et se cale sur t. */
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+  #stage { position: relative; overflow: hidden; background: #111; font-family: Syne, sans-serif; }
+  #plans { position: absolute; inset: 0; transform-origin: 50% 50%; }
+  .plan { position: absolute; inset: 0; overflow: hidden; display: none; transform-origin: 50% 50%; }
+  #pA { background: #e8ef5a; color: #111; }
+  #pB { background: #111; }
+  #pC { background: #f3efe6; color: #111; }
+  #pD { background: #2244ff; color: #fff; }
+  #lame { position: absolute; inset: 0; background: #111; z-index: 5; display: none; }
+  .mot { position: absolute; font-weight: 800; font-size: 170px; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; transform-origin: 0% 100%; opacity: 0; }
+  #mA1 { left: 160px; top: 190px; } #mA2 { left: 620px; top: 420px; } #mA3 { left: 160px; top: 650px; }
+  #regle, #regleC { position: absolute; left: 160px; width: 1600px; height: 6px; background: currentColor; transform-origin: 0 50%; }
+  #regle { top: 940px; } #regleC { top: 820px; }
+  #forme { position: absolute; left: 700px; top: 280px; width: 520px; height: 520px; background: #ff4d2e; transform-origin: 50% 50%; opacity: 0; }
+  #anneau { position: absolute; left: 700px; top: 280px; width: 520px; height: 520px; border: 6px solid #ff4d2e; border-radius: 50%; box-sizing: border-box; transform-origin: 50% 50%; opacity: 0; }
+  .chiffre { position: absolute; top: 300px; width: 280px; text-align: center; font-weight: 800; font-size: 420px; line-height: 1; letter-spacing: -0.04em; transform-origin: 50% 60%; opacity: 0; }
+  #marque { position: absolute; left: 0; right: 0; top: 370px; text-align: center; font-weight: 800; font-size: 230px; line-height: 1; letter-spacing: -0.02em; white-space: nowrap; transform-origin: 50% 50%; }
+  #marque span { display: inline-block; transform-origin: 50% 80%; opacity: 0; }
+  #tagD { position: absolute; left: 0; right: 0; top: 660px; text-align: center; font-family: Archivo, sans-serif; font-weight: 500; font-size: 34px; letter-spacing: .32em; text-transform: uppercase; opacity: 0; }
+  /* Commandes hors scène : jamais dans la vidéo. */
+  #hud { position: fixed; right: 20px; bottom: 20px; display: flex; align-items: center; gap: 12px; z-index: 10000; font-family: Archivo, sans-serif; font-size: 14px; color: #fff; }
+  #hud button { font: inherit; color: #fff; background: rgba(20,20,20,.88); border: 1px solid rgba(255,255,255,.22); border-radius: 999px; padding: 10px 18px; cursor: pointer; }
+  #hud button.actif { background: #e8ef5a; color: #111; border-color: #e8ef5a; }
+  #tempo { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px; background: rgba(20,20,20,.88); border: 1px solid rgba(255,255,255,.22); }
+  #tempo i { width: 10px; height: 10px; border-radius: 50%; background: #e8ef5a; display: block; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="plans">
+    <div class="plan" id="pA">
+      <div class="mot" id="mA1">Une idée.</div>
+      <div class="mot" id="mA2">Un geste.</div>
+      <div class="mot" id="mA3">Un rythme.</div>
+      <div id="regle"></div>
+    </div>
+    <div class="plan" id="pB"><div id="anneau"></div><div id="forme"></div></div>
+    <div class="plan" id="pC">
+      <div class="chiffre" style="left:380px">2</div>
+      <div class="chiffre" style="left:660px">0</div>
+      <div class="chiffre" style="left:940px">2</div>
+      <div class="chiffre" style="left:1220px">6</div>
+      <div id="regleC"></div>
+    </div>
+    <div class="plan" id="pD">
+      <div id="marque"><span>M</span><span>y</span><span>D</span><span>i</span><span>g</span><span>i</span><span>p</span><span>a</span><span>l</span></div>
+      <div id="tagD">mydigipal.com</div>
+    </div>
+    <div id="lame"></div>
+  </div>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><clipPath id="tuiles"></clipPath></defs></svg>
+</div>
+<div id="hud">
+  <div id="tempo"><i id="tempoPoint"></i><span>120 BPM</span></div>
+  <button id="wav" type="button">Exporter le WAV (8 s)</button>
+  <button id="son" type="button">Son : coupé</button>
+</div>
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 8;   // quatre mesures à 120 BPM
+
+(function () {
+  'use strict';
+  const D = window.DUREE, TEMPS = 0.5;   // une noire à 120 BPM
+  const $ = function (id) { return document.getElementById(id); };
+  const c01 = function (x) { return x < 0 ? 0 : x > 1 ? 1 : x; };
+  const eio = function (x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+  const cine = function (x) { return x < 0.5 ? 16 * Math.pow(x, 5) : 1 - Math.pow(-2 * x + 2, 5) / 2; };
+  const eout = function (x) { return 1 - Math.pow(1 - x, 3); };
+  const eoq = function (x) { return 1 - Math.pow(1 - x, 4); };
+  const slam = eoq;
+  const ressort = function (x) { const c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+  const seg = function (t, t0, d, e) { return (e || eio)(c01((t - t0) / d)); };
+  // Impulsion sur chaque temps, à partir du deuxième temps suivant l'apparition.
+  const pulse = function (x) { return x >= TEMPS ? Math.exp(-(x % TEMPS) * 14) : 0; };
+
+  const E = {};
+  ['plans', 'pA', 'pB', 'pC', 'pD', 'lame', 'mA1', 'mA2', 'mA3', 'regle', 'forme', 'anneau', 'regleC', 'marque', 'tagD', 'tempoPoint', 'son', 'wav']
+    .forEach(function (id) { E[id] = $(id); });
+  E.chiffres = Array.prototype.slice.call(document.querySelectorAll('#pC .chiffre'));
+  E.lettres = Array.prototype.slice.call(document.querySelectorAll('#marque span'));
+  const PLANS = [E.pA, E.pB, E.pC, E.pD];
+  const DEBUT = [0, 2, 4, 6];
+
+  // ---------- Les tuiles du dernier masque : un clipPath SVG réutilisé par clip-path: url() ----------
+  const TUILES = [];
+  (function () {
+    const cp = $('tuiles'), NS = 'http://www.w3.org/2000/svg';
+    const nc = 8, nr = 5, w = 1920 / nc, h = 1080 / nr;
+    let dmax = 0;
+    for (let r = 0; r < nr; r++) for (let c = 0; c < nc; c++) {
+      const cx = (c + 0.5) * w, cy = (r + 0.5) * h, d = Math.hypot(cx - 960, cy - 540);
+      dmax = Math.max(dmax, d);
+      const rect = document.createElementNS(NS, 'rect');
+      rect.setAttribute('x', (-w / 2).toFixed(1)); rect.setAttribute('y', (-h / 2).toFixed(1));
+      rect.setAttribute('width', w.toFixed(1)); rect.setAttribute('height', h.toFixed(1));
+      cp.appendChild(rect);
+      TUILES.push({ rect: rect, cx: cx, cy: cy, d: d });
+    }
+    TUILES.forEach(function (tu) { tu.delai = 0.55 * tu.d / dmax; });
+  })();
+
+  // ---------- Les quatre masques. u = 0 : rien du plan entrant ; u = 1 : il couvre tout. ----------
+  function iris(sortant, entrant, u) {
+    entrant.style.clipPath = 'circle(' + (1130 * cine(u)).toFixed(1) + 'px at 960px 540px)';
+    sortant.style.transform = 'scale(' + (1 + 0.08 * eio(u)).toFixed(4) + ')';
+  }
+  function bandes(sortant, entrant, u) {
+    // Un seul polygone en escalier : sept bandes qui partent de la gauche, du haut vers le bas.
+    const n = 7, h = 1080 / n, pts = ['0px 0px'];
+    for (let i = 0; i < n; i++) {
+      const x = (1920 * eoq(c01((u - i * 0.07) / 0.58))).toFixed(1);
+      pts.push(x + 'px ' + (i * h).toFixed(1) + 'px', x + 'px ' + ((i + 1) * h).toFixed(1) + 'px');
+    }
+    pts.push('0px 1080px');
+    entrant.style.clipPath = 'polygon(' + pts.join(',') + ')';
+    sortant.style.transform = 'translateX(' + (-120 * eio(u)).toFixed(1) + 'px)';
+  }
+  function diagonale(sortant, entrant, u) {
+    const v = cine(u), X = -560 + 2880 * v, Xt = X + 320, Xb = X - 320, L = 150;
+    entrant.style.clipPath = 'polygon(0px 0px,' + Xt.toFixed(1) + 'px 0px,' + Xb.toFixed(1) + 'px 1080px,0px 1080px)';
+    E.lame.style.display = 'block';   // une lame sombre précède le front : le balayage a une épaisseur
+    E.lame.style.clipPath = 'polygon(' + Xt.toFixed(1) + 'px 0px,' + (Xt + L).toFixed(1) + 'px 0px,' + (Xb + L).toFixed(1) + 'px 1080px,' + Xb.toFixed(1) + 'px 1080px)';
+    sortant.style.transform = 'translateX(' + (60 * v).toFixed(1) + 'px)';
+  }
+  function tuiles(sortant, entrant, u) {
+    entrant.style.clipPath = 'url(#tuiles)';
+    TUILES.forEach(function (tu) {
+      const v = ressort(c01((u - tu.delai) / 0.45));
+      tu.rect.setAttribute('transform', 'translate(' + tu.cx.toFixed(1) + ' ' + tu.cy.toFixed(1) + ') rotate(' + (45 * (1 - v)).toFixed(2) + ') scale(' + Math.max(0, 1.5 * v).toFixed(4) + ')');
+    });
+    sortant.style.transform = 'scale(' + (1 - 0.05 * eio(u)).toFixed(4) + ')';
+  }
+  // Transition k : du plan k vers le plan k + 1, elle se TERMINE sur le temps fort 2 (k + 1).
+  const TRANS = [{ dur: 0.45, fn: iris }, { dur: 0.40, fn: bandes }, { dur: 0.40, fn: diagonale }, { dur: 0.50, fn: tuiles }];
+
+  // ---------- Le contenu de chaque plan, en temps local tau (négatif pendant qu'on le découvre) ----------
+  function contenuA(tau) {
+    [[E.mA1, 0], [E.mA2, 0.5], [E.mA3, 1.0]].forEach(function (m) {
+      const el = m[0], u = (tau - m[1]) / 0.22;
+      if (u < 0) { el.style.opacity = '0'; el.style.transform = 'scale(1.7) rotate(-4deg)'; return; }
+      const v = slam(Math.min(1, u));
+      const k = (1.7 - 0.7 * v) * (1 + 0.045 * pulse(tau - m[1]));
+      el.style.opacity = '1';
+      el.style.transform = 'scale(' + k.toFixed(4) + ') rotate(' + (-4 * (1 - v)).toFixed(2) + 'deg)';
+    });
+    E.regle.style.transform = 'scaleX(' + c01(tau / 2).toFixed(4) + ')';
+  }
+  function contenuB(tau) {
+    if (tau < 0) { E.forme.style.opacity = '0'; E.anneau.style.opacity = '0'; return; }
+    const bat = tau % TEMPS;
+    const k = ressort(c01(tau / 0.25)) * (1 + 0.12 * Math.exp(-bat * 12));
+    const morph = ressort(c01((tau - 1.0) / 0.35));
+    const rot = 45 * ressort(c01((tau - 1.5) / 0.4));
+    E.forme.style.opacity = '1';
+    E.forme.style.borderRadius = (50 - 28 * morph).toFixed(2) + '%';
+    E.forme.style.transform = 'rotate(' + rot.toFixed(2) + 'deg) scale(' + Math.max(0, k).toFixed(4) + ')';
+    const va = c01(bat / 0.45);
+    E.anneau.style.opacity = (0.6 * (1 - va)).toFixed(3);
+    E.anneau.style.transform = 'scale(' + (1 + 1.1 * eout(va)).toFixed(4) + ')';
+  }
+  function contenuC(tau) {
+    E.chiffres.forEach(function (el, i) {
+      const t0 = i * 0.5, u = (tau - t0) / 0.2;
+      if (u < 0) { el.style.opacity = '0'; el.style.transform = 'translateY(-90px) scale(1.9)'; return; }
+      const v = slam(Math.min(1, u));
+      const k = (1.9 - 0.9 * v) * (1 + 0.04 * pulse(tau - t0));
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(' + (-90 * (1 - v)).toFixed(2) + 'px) scale(' + k.toFixed(4) + ')';
+    });
+    E.regleC.style.transform = 'scaleX(' + c01(tau / 2).toFixed(4) + ')';
+  }
+  function contenuD(tau) {
+    E.lettres.forEach(function (el, i) {
+      const t0 = i * 0.125, u = (tau - t0) / 0.18;   // une lettre par double-croche
+      if (u < 0) { el.style.opacity = '0'; el.style.transform = 'translateY(70px) scale(1.4)'; return; }
+      const v = slam(Math.min(1, u));
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(' + (70 * (1 - v)).toFixed(2) + 'px) scale(' + (1.4 - 0.4 * v).toFixed(4) + ')';
+    });
+    const kick = tau >= 1.0 ? 1 + 0.03 * Math.exp(-(tau % TEMPS) * 14) : 1;
+    E.marque.style.transform = 'scale(' + kick.toFixed(4) + ')';
+    const tg = seg(tau, 1.25, 0.3, eout);
+    E.tagD.style.opacity = tg.toFixed(3);
+    E.tagD.style.transform = 'translateY(' + (20 * (1 - tg)).toFixed(2) + 'px)';
+  }
+  const CONTENU = [contenuA, contenuB, contenuC, contenuD];
+
+  window.render = function (t0) {
+    const t = ((t0 % D) + D) % D;
+    const k = Math.floor(t / 2), suivant = (k + 1) % 4, tr = TRANS[k];
+    const u = (t - (2 * (k + 1) - tr.dur)) / tr.dur;
+    const enTransition = u >= 0;
+    PLANS.forEach(function (p, idx) {
+      const visible = idx === k || (enTransition && idx === suivant);
+      p.style.display = visible ? 'block' : 'none';
+      p.style.zIndex = (enTransition && idx === suivant) ? '3' : '2';
+      p.style.clipPath = 'none';
+      p.style.transform = 'none';
+    });
+    E.lame.style.display = 'none';
+    if (enTransition) tr.fn(PLANS[k], PLANS[suivant], c01(u));
+    if (!(enTransition && k === 3)) TUILES.forEach(function (tu) { tu.rect.setAttribute('transform', 'scale(0)'); });
+    // Le contenu de TOUS les plans est posé, même cachés : l'état du DOM ne dépend que de t.
+    PLANS.forEach(function (p, idx) {
+      const tau = ((t - DEBUT[idx] + 4) % 8) - 4;   // temps local, dans [-4, 4)
+      CONTENU[idx](tau);
+    });
+    // Un léger coup de caméra sur chaque temps, commun à tous les plans.
+    E.plans.style.transform = 'scale(' + (1 + 0.012 * Math.exp(-(t % TEMPS) * 16)).toFixed(4) + ')';
+    E.tempoPoint.style.transform = 'scale(' + (1 + 0.8 * Math.exp(-(t % TEMPS) * 18)).toFixed(3) + ')';
+    audioSuivre(t);   // lecture seule : le son écoute t, jamais l'inverse
+  };
+
+  // ======================= SON (Web Audio, tout synthétisé, jamais dans render) =======================
+  // Temps de motif absolu P = temps audio + phase. Un événement à q secondes dans la boucle
+  // se joue à chaque tour k, à l'instant audio k * D + q - phase. Le pointeur (tour, idx)
+  // avance de manière monotone ; un saut de t (seek, reprise) recale la phase et le pointeur.
+  const ACCORDS = [[220, 261.63, 329.63, 392], [220, 261.63, 329.63, 392], [174.61, 220, 261.63, 329.63], [196, 246.94, 293.66, 329.63]];
+  const BASSE = [55, 55, 43.65, 49];
+  function motif() {
+    const ev = [];
+    for (let m = 0; m < 4; m++) {
+      const m0 = m * 2;
+      for (let b = 0; b < 4; b++) ev.push({ q: m0 + b * TEMPS, type: 'kick' });
+      for (let c = 0; c < 8; c++) ev.push({ q: m0 + c * TEMPS / 2, type: 'charley', ouvert: c === 7, fort: c % 2 === 0 });
+      [0, 2, 3, 5, 7].forEach(function (c) { ev.push({ q: m0 + c * TEMPS / 2, type: 'basse', f: BASSE[m], d: c === 7 ? 0.22 : 0.18 }); });
+      [1.5, 3].forEach(function (b) { ev.push({ q: m0 + b * TEMPS, type: 'accord', notes: ACCORDS[m] }); });
+      ev.push({ q: m0 + 2 - TRANS[m].dur, type: 'souffle', d: TRANS[m].dur });   // le souffle monte pendant le masque
+      ev.push({ q: (m0 + 2) % D, type: 'impact' });                                // et l'impact tombe sur le temps fort
+    }
+    return ev.sort(function (a, b) { return a.q - b.q; });
+  }
+  const EVENEMENTS = motif();
+
+  function graine(s) { return function () { s |= 0; s = s + 0x6D2B79F5 | 0; let x = Math.imul(s ^ s >>> 15, 1 | s); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
+  function tamponBruit(c) {
+    const n = c.sampleRate * 2, b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0), r = graine(20260929);
+    for (let i = 0; i < n; i++) d[i] = r() * 2 - 1;   // bruit blanc à graine fixe : le rendu hors ligne est reproductible
+    return b;
+  }
+  function chaine(c) {
+    const comp = c.createDynamicsCompressor();
+    comp.threshold.value = -14; comp.ratio.value = 4; comp.attack.value = 0.004; comp.release.value = 0.12;
+    const g = c.createGain(); g.gain.value = 0.85;
+    comp.connect(g); g.connect(c.destination);
+    return { entree: comp, volume: g };
+  }
+  function kick(c, dest, a) {
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(160, a); o.frequency.exponentialRampToValueAtTime(42, a + 0.13);
+    g.gain.setValueAtTime(0.0001, a); g.gain.exponentialRampToValueAtTime(1.0, a + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, a + 0.38);
+    o.connect(g); g.connect(dest); o.start(a); o.stop(a + 0.4);
+  }
+  function charley(c, dest, bruit, a, ouvert, fort) {
+    const s = c.createBufferSource(); s.buffer = bruit;
+    const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 7500;
+    const g = c.createGain(), d = ouvert ? 0.28 : 0.06, v = fort ? 0.22 : 0.12;
+    g.gain.setValueAtTime(v, a); g.gain.exponentialRampToValueAtTime(0.0001, a + d);
+    s.connect(hp); hp.connect(g); g.connect(dest); s.start(a, ouvert ? 0.6 : 0.2); s.stop(a + d + 0.02);
+  }
+  function basse(c, dest, a, f, d) {
+    const o = c.createOscillator(), sub = c.createOscillator(), lp = c.createBiquadFilter(), g = c.createGain();
+    o.type = 'sawtooth'; o.frequency.value = f; sub.type = 'sine'; sub.frequency.value = f;
+    lp.type = 'lowpass'; lp.Q.value = 6; lp.frequency.setValueAtTime(900, a); lp.frequency.exponentialRampToValueAtTime(140, a + d);
+    g.gain.setValueAtTime(0.0001, a); g.gain.exponentialRampToValueAtTime(0.45, a + 0.01); g.gain.setValueAtTime(0.45, a + d - 0.05); g.gain.exponentialRampToValueAtTime(0.0001, a + d);
+    o.connect(lp); sub.connect(lp); lp.connect(g); g.connect(dest);
+    o.start(a); sub.start(a); o.stop(a + d + 0.02); sub.stop(a + d + 0.02);
+  }
+  function accord(c, dest, a, notes) {
+    const g = c.createGain(), lp = c.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.setValueAtTime(2400, a); lp.frequency.exponentialRampToValueAtTime(500, a + 0.35);
+    g.gain.setValueAtTime(0.0001, a); g.gain.exponentialRampToValueAtTime(0.16, a + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, a + 0.4);
+    notes.forEach(function (f, i) { const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = i % 2 ? 6 : -6; o.connect(lp); o.start(a); o.stop(a + 0.42); });
+    lp.connect(g); g.connect(dest);
+  }
+  function souffle(c, dest, bruit, a, d) {
+    const s = c.createBufferSource(); s.buffer = bruit; s.loop = true;
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.2;
+    bp.frequency.setValueAtTime(250, a); bp.frequency.exponentialRampToValueAtTime(4200, a + d);
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, a); g.gain.exponentialRampToValueAtTime(0.35, a + d * 0.9); g.gain.linearRampToValueAtTime(0, a + d + 0.02);
+    s.connect(bp); bp.connect(g); g.connect(dest); s.start(a, 0.3); s.stop(a + d + 0.05);
+  }
+  function impact(c, dest, bruit, a) {
+    const s = c.createBufferSource(); s.buffer = bruit;
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(3000, a); lp.frequency.exponentialRampToValueAtTime(200, a + 0.25);
+    const g = c.createGain(); g.gain.setValueAtTime(0.6, a); g.gain.exponentialRampToValueAtTime(0.0001, a + 0.3);
+    s.connect(lp); lp.connect(g); g.connect(dest); s.start(a, 0.8); s.stop(a + 0.32);
+  }
+  function jouer(c, dest, bruit, ev, a) {
+    if (ev.type === 'kick') kick(c, dest, a);
+    else if (ev.type === 'charley') charley(c, dest, bruit, a, ev.ouvert, ev.fort);
+    else if (ev.type === 'basse') basse(c, dest, a, ev.f, ev.d);
+    else if (ev.type === 'accord') accord(c, dest, a, ev.notes);
+    else if (ev.type === 'souffle') souffle(c, dest, bruit, a, ev.d);
+    else if (ev.type === 'impact') impact(c, dest, bruit, a);
+  }
+
+  // --- lecture en direct, calée sur le t que render reçoit ---
+  let ctx = null, sortie = null, bruit = null, actif = false, enPause = false;
+  let phase = 0, tour = 0, idx = 0, tVu = 0, tVuAvant = -1, figes = 0, minuteur = null;
+  const AVANCE = 0.25;
+  function caler(P0) {
+    tour = Math.floor(P0 / D);
+    const q0 = P0 - tour * D;
+    idx = -1;
+    for (let i = 0; i < EVENEMENTS.length; i++) if (EVENEMENTS[i].q >= q0) { idx = i; break; }
+    if (idx < 0) { idx = 0; tour++; }
+  }
+  function recaler(t) { const a = ctx.currentTime; phase = t - a + 100 * D; caler(a + phase); }
+  function planifier() {
+    if (!ctx || !actif || enPause) return;
+    const maintenant = ctx.currentTime, limite = maintenant + AVANCE + phase;
+    for (let n = 0; n < 200; n++) {
+      const ev = EVENEMENTS[idx], P = tour * D + ev.q;
+      if (P > limite) break;
+      const quand = P - phase;
+      if (quand >= maintenant - 0.005) jouer(ctx, sortie.entree, bruit, ev, Math.max(quand, maintenant + 0.001));
+      idx++; if (idx >= EVENEMENTS.length) { idx = 0; tour++; }
+    }
+  }
+  function audioSuivre(t) {
+    tVuAvant = tVu; tVu = t;
+    if (!ctx || !actif) return;
+    if (t === tVuAvant) { figes++; if (figes >= 3) enPause = true; return; }   // le lecteur est en pause : on se tait
+    figes = 0;
+    const a = ctx.currentTime;
+    if (enPause) { enPause = false; recaler(t); planifier(); return; }
+    let d = t - (((a + phase) % D) + D) % D;   // écart entre t et le t que l'audio prédit
+    d = ((d % D) + D) % D; if (d > D / 2) d -= D;
+    if (Math.abs(d) > 0.06) { recaler(t); }
+    planifier();
+  }
+  E.son.addEventListener('click', function () {
+    if (!ctx) {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      sortie = chaine(ctx); bruit = tamponBruit(ctx);
+      minuteur = setInterval(planifier, 50);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    actif = !actif;
+    sortie.volume.gain.setTargetAtTime(actif ? 0.85 : 0, ctx.currentTime, 0.02);
+    if (actif) { enPause = false; figes = 0; recaler(tVu); planifier(); }
+    E.son.textContent = actif ? 'Son : activé' : 'Son : coupé';
+    E.son.classList.toggle('actif', actif);
+  });
+
+  // --- rendu hors ligne : la même piste, en WAV, pour le montage vidéo ---
+  // OfflineAudioContext rejoue exactement le même graphe (mêmes instruments, même bruit à graine
+  // fixe) sur une boucle de D secondes, sans passer par les haut-parleurs. Le fichier obtenu se
+  // pose sous la vidéo rendue image par image : ffmpeg -i video.mp4 -i piste.wav -c:v copy -shortest.
+  function versWav(buffer) {
+    const n = buffer.length, ch = buffer.numberOfChannels, sr = buffer.sampleRate;
+    const octets = 44 + n * ch * 2, dv = new DataView(new ArrayBuffer(octets));
+    const ecrire = function (o, s) { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+    ecrire(0, 'RIFF'); dv.setUint32(4, octets - 8, true); ecrire(8, 'WAVE'); ecrire(12, 'fmt ');
+    dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, ch, true); dv.setUint32(24, sr, true);
+    dv.setUint32(28, sr * ch * 2, true); dv.setUint16(32, ch * 2, true); dv.setUint16(34, 16, true);
+    ecrire(36, 'data'); dv.setUint32(40, n * ch * 2, true);
+    const canaux = []; for (let c = 0; c < ch; c++) canaux.push(buffer.getChannelData(c));
+    let o = 44;
+    for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++) { const v = Math.max(-1, Math.min(1, canaux[c][i])); dv.setInt16(o, v < 0 ? v * 32768 : v * 32767, true); o += 2; }
+    return new Blob([dv.buffer], { type: 'audio/wav' });
+  }
+  function exporterWav() {
+    const sr = 48000, off = new OfflineAudioContext(2, sr * D, sr);
+    const s = chaine(off), br = tamponBruit(off);
+    EVENEMENTS.forEach(function (ev) { jouer(off, s.entree, br, ev, ev.q); });
+    return off.startRendering().then(function (buf) {
+      const url = URL.createObjectURL(versWav(buf)), a = document.createElement('a');
+      a.href = url; a.download = 'transition-rythme-120bpm-8s.wav';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    });
+  }
+  E.wav.addEventListener('click', function () { exporterWav(); });
+  window.exporterWav = exporterWav;
+
+  window.PRET = document.fonts.ready;
+})();
+</script>
+<script src="../lecteur.js"></script>
+</body>
+</html>

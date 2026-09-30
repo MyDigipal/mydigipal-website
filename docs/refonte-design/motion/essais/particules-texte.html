@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Particules en lettres</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;800&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: #000; }
+  #stage {
+    position: relative; width: 1920px; height: 1080px; overflow: hidden;
+    background: radial-gradient(ellipse at 50% 50%, #0b1c18 0%, #06120f 60%, #030908 100%);
+    font-family: "Sora", system-ui, sans-serif;
+  }
+  #gl { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: block; }
+  #cap { position: absolute; left: 0; right: 0; top: 722px; display: flex; justify-content: center; pointer-events: none; }
+  .mask { overflow: hidden; padding: 0 .1em .14em; margin-bottom: -.14em; }
+  .ln {
+    display: block; white-space: nowrap; font-weight: 500; font-size: 26px; line-height: 1.5;
+    letter-spacing: .22em; text-transform: uppercase; color: rgba(190, 255, 225, .85);
+    transform: translate3d(0, 140%, 0);
+  }
+  /* Préchargeur : la graisse 800 sert à tracer le texte dans un canvas hors écran, elle doit être chargée avant. */
+  #prechargeur { position: absolute; left: -9999px; top: -9999px; visibility: hidden; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl" width="1920" height="1080"></canvas>
+  <div id="cap"><div class="mask"><span class="ln" id="c1">La formation IA de MyDigipal</span></div></div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Sora';font-weight:800">a</span>
+  <span style="font-family:'Sora';font-weight:500">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 8;
+window.DUR = window.DUREE; /* alias lu par render.js du moteur vidéo */
+
+(function () {
+  'use strict';
+  var D = window.DUREE;
+  var canvas = document.getElementById('gl');
+  var c1 = document.getElementById('c1');
+
+  /* ---------- Courbes et hasard fixé ---------- */
+  function clamp01(x) { return x < 0 ? 0 : (x > 1 ? 1 : x); }
+  function seg(t, a, b) { return clamp01((t - a) / (b - a)); }
+  function outExpo(x) { return x >= 1 ? 1 : 1 - Math.pow(2, -10 * x); }
+  function inQuart(x) { return x * x * x * x; }
+  /* mulberry32 : un générateur seedé, donc la même semence donne toujours les mêmes particules. */
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function poseCap(t) {
+    var e = outExpo(seg(t, 3.75, 4.65));
+    var s = inQuart(seg(t, 5.55, 6.05));
+    var y = (1 - e) * 140 - s * 140;
+    c1.style.transform = 'translate3d(0,' + y.toFixed(3) + '%,0)';
+  }
+
+  /* ---------- WebGL ---------- */
+  var gl = canvas.getContext('webgl', {
+    preserveDrawingBuffer: true, antialias: false, alpha: false, depth: false, stencil: false,
+    powerPreference: 'high-performance'
+  });
+  function repli() {
+    canvas.style.display = 'none';
+    window.render = function (t) { poseCap(Math.max(0, Math.min(D, +t || 0))); };
+  }
+  if (!gl) { repli(); return; }
+
+  var VERT_FOND = [
+    'attribute vec2 a_pos;',
+    'varying vec2 v_uv;',
+    'void main() { v_uv = a_pos * 0.5 + 0.5; gl_Position = vec4(a_pos, 0.0, 1.0); }'
+  ].join('\n');
+  var FRAG_FOND = [
+    'precision mediump float;',
+    'uniform float u_ph;',
+    'varying vec2 v_uv;',
+    'void main() {',
+    '  vec2 p = (v_uv - 0.5) * vec2(1.7778, 1.0);',
+    '  float d = length(p);',
+    '  vec3 centre = vec3(0.045, 0.110, 0.095);',
+    '  vec3 bord = vec3(0.012, 0.035, 0.030);',
+    '  vec3 col = mix(centre, bord, smoothstep(0.15, 0.95, d));',
+    '  /* une lueur qui respire et derive, fermee sur la boucle */',
+    '  float a = u_ph * 6.2831853;',
+    '  float resp = 0.5 + 0.5 * sin(a);',
+    '  vec2 q = p - vec2(0.15 * cos(a), 0.08 * sin(a));',
+    '  col += vec3(0.05, 0.16, 0.12) * exp(-dot(q, q) * 3.0) * (0.6 + 0.4 * resp);',
+    '  gl_FragColor = vec4(col, 1.0);',
+    '}'
+  ].join('\n');
+
+  var VERT_PTS = [
+    'attribute vec2 a_cible;   /* position de la particule dans le texte, en pixels de scene */',
+    'attribute vec4 a_graine;  /* quatre nombres fixes entre 0 et 1 */',
+    'uniform float u_t;',
+    'uniform float u_duree;',
+    'uniform vec2  u_res;',
+    'uniform float u_taille;',
+    'varying float v_w;',
+    'varying float v_teinte;',
+    'varying float v_alpha;',
+    'varying float v_balaye;',
+    'const float PI = 3.14159265;',
+    'const float TAU = 6.28318531;',
+    'void main() {',
+    '  float ph = u_t / u_duree;',
+    '  /* Flux libre : un tourbillon elliptique, ferme sur la boucle parce que le nombre de tours est entier. */',
+    '  float r0 = 150.0 + 640.0 * pow(a_graine.x, 0.65);',
+    '  float th0 = a_graine.y * TAU;',
+    '  float tours = 1.0 + floor(a_graine.z * 2.0);',
+    '  float th = th0 + tours * TAU * ph;',
+    '  float r = r0 * (1.0 + 0.16 * sin(TAU * ph * 2.0 + a_graine.w * TAU));',
+    '  vec2 libre = vec2(960.0, 540.0) + vec2(cos(th) * r * 1.35, sin(th) * r * 0.62);',
+    '  libre.y += 36.0 * sin(TAU * ph * 3.0 + th0 * 2.0);',
+    '  /* Assemblage : chaque particule part a son heure ; la dispersion balaie le texte de gauche a droite. */',
+    '  float depart = 0.9 + 1.5 * a_graine.z;',
+    '  float w1 = smoothstep(depart, depart + 1.1, u_t);',
+    '  float xn = clamp((a_cible.x - 200.0) / 1520.0, 0.0, 1.0);',
+    '  float fin = 5.4 + 1.3 * xn + 0.4 * a_graine.w;',
+    '  float w2 = smoothstep(fin, fin + 0.7, u_t);',
+    '  float e = w1 * (1.0 - w2);',
+    '  /* Trajectoire courbe : une bombee perpendiculaire au trajet, nulle aux deux bouts. */',
+    '  vec2 dir = a_cible - libre;',
+    '  vec2 perp = vec2(-dir.y, dir.x);',
+    '  float bombe = sin(PI * e) * (a_graine.y - 0.5) * 0.9;',
+    '  vec2 pos = mix(libre, a_cible, e) + perp * bombe;',
+    '  /* Respiration une fois en place, tres faible, nulle hors du texte. */',
+    '  pos += vec2(sin(u_t * 7.0 + a_graine.x * TAU), cos(u_t * 6.3 + a_graine.y * TAU)) * 0.7 * e;',
+    '  /* Une lumiere balaie les lettres de gauche a droite pendant la tenue. */',
+    '  float sx = (xn - (u_t - 3.3) / 1.8) * 3.5;',
+    '  float balaye = exp(-sx * sx) * e;',
+    '  vec2 clip = pos / u_res * 2.0 - 1.0;',
+    '  clip.y = -clip.y;',
+    '  gl_Position = vec4(clip, 0.0, 1.0);',
+    '  gl_PointSize = mix(2.6 + 5.0 * a_graine.x, 2.4, e) * u_taille;',
+    '  v_w = e;',
+    '  v_teinte = a_graine.w;',
+    '  v_alpha = mix(0.55, 0.95, e);',
+    '  v_balaye = balaye;',
+    '}'
+  ].join('\n');
+  var FRAG_PTS = [
+    'precision mediump float;',
+    'uniform float u_halo;   /* 1 : passe de halo large et faible ; 0 : passe du coeur net */',
+    'varying float v_w;',
+    'varying float v_teinte;',
+    'varying float v_alpha;',
+    'varying float v_balaye;',
+    'void main() {',
+    '  vec2 c = gl_PointCoord - 0.5;',
+    '  float d = length(c) * 2.0;',
+    '  if (d > 1.0) discard;',
+    '  float forme = (u_halo > 0.5) ? (1.0 - d) * (1.0 - d) : smoothstep(1.0, 0.25, d);',
+    '  vec3 menthe = vec3(0.50, 0.96, 0.78);',
+    '  vec3 citron = vec3(0.80, 1.00, 0.48);',
+    '  vec3 blanc  = vec3(1.00, 0.99, 0.94);',
+    '  vec3 col = mix(menthe, citron, v_teinte);',
+    '  float coeur = (1.0 - u_halo) * v_w * 0.35 * (1.0 - d);',
+    '  col = mix(col, blanc, clamp(v_balaye * 0.9 + coeur, 0.0, 1.0));',
+    '  float a = forme * v_alpha * ((u_halo > 0.5) ? 0.16 : 1.0);',
+    '  gl_FragColor = vec4(col * a, a);',
+    '}'
+  ].join('\n');
+
+  function compiler(type, src) {
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error('Shader : ' + gl.getShaderInfoLog(s));
+    return s;
+  }
+  function programme(vs, fs, attribs) {
+    var p = gl.createProgram();
+    gl.attachShader(p, compiler(gl.VERTEX_SHADER, vs));
+    gl.attachShader(p, compiler(gl.FRAGMENT_SHADER, fs));
+    for (var i = 0; i < attribs.length; i++) gl.bindAttribLocation(p, i, attribs[i]);
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error('Programme : ' + gl.getProgramInfoLog(p));
+    return p;
+  }
+
+  var pFond, pPts, uPhFond, uT, uDuree, uRes, uTaille, uHalo;
+  try {
+    pFond = programme(VERT_FOND, FRAG_FOND, ['a_pos']);
+    pPts = programme(VERT_PTS, FRAG_PTS, ['a_cible', 'a_graine']);
+  } catch (e) { console.error(e); repli(); return; }
+  uPhFond = gl.getUniformLocation(pFond, 'u_ph');
+  uT = gl.getUniformLocation(pPts, 'u_t');
+  uDuree = gl.getUniformLocation(pPts, 'u_duree');
+  uRes = gl.getUniformLocation(pPts, 'u_res');
+  uTaille = gl.getUniformLocation(pPts, 'u_taille');
+  uHalo = gl.getUniformLocation(pPts, 'u_halo');
+
+  var bufTri = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, bufTri);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  var bufPts = gl.createBuffer();
+  var N = 0, initFait = false;
+  /* La taille maximale d'un point varie selon la carte graphique : la passe de halo s'y plie. */
+  var plage = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE);
+  var haloK = Math.min(3.4, plage[1] / 7.6);
+
+  /* ---------- Le texte devient un nuage de cibles : tracé hors écran, échantillonné sur une grille jitterée ---------- */
+  function init() {
+    if (initFait) return;
+    initFait = true;
+    var off = document.createElement('canvas');
+    off.width = 1920; off.height = 1080;
+    var x = off.getContext('2d', { willReadFrequently: true });
+    var taille = 250;
+    x.font = '800 ' + taille + 'px "Sora"';
+    var largeur = x.measureText('AI Academy').width;
+    if (largeur > 1560) { taille = Math.floor(taille * 1560 / largeur); x.font = '800 ' + taille + 'px "Sora"'; }
+    x.textAlign = 'center';
+    x.textBaseline = 'middle';
+    x.fillStyle = '#fff';
+    x.fillText('AI Academy', 960, 540);
+    var img = x.getImageData(0, 0, 1920, 1080).data;
+    var rnd = mulberry32(20260929);
+    var pas = 2.3, pts = [];
+    for (var gy = 200; gy < 880; gy += pas) {
+      for (var gx = 100; gx < 1820; gx += pas) {
+        var px = gx + (rnd() - 0.5) * 1.6, py = gy + (rnd() - 0.5) * 1.6;
+        var ix = Math.round(px), iy = Math.round(py);
+        if (img[(iy * 1920 + ix) * 4 + 3] > 140) {
+          pts.push(px, py, rnd() * 0.998 + 0.001, rnd() * 0.998 + 0.001, rnd() * 0.998 + 0.001, rnd() * 0.998 + 0.001);
+        }
+      }
+    }
+    N = pts.length / 6;
+    gl.bindBuffer(gl.ARRAY_BUFFER, bufPts);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pts), gl.STATIC_DRAW);
+  }
+  window.PRET = document.fonts.load('800 250px "Sora"')
+    .then(function () { return document.fonts.ready; })
+    .then(init, init);
+
+  gl.viewport(0, 0, 1920, 1080);
+  gl.disable(gl.DEPTH_TEST);
+
+  /* ---------- La scène à l'instant t, pure et déterministe ---------- */
+  window.render = function (t) {
+    t = Math.max(0, Math.min(D, +t || 0));
+    if (!initFait) init();
+    var ph = t / D;
+
+    gl.disable(gl.BLEND);
+    gl.useProgram(pFond);
+    gl.bindBuffer(gl.ARRAY_BUFFER, bufTri);
+    gl.enableVertexAttribArray(0);
+    gl.disableVertexAttribArray(1);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform1f(uPhFond, ph);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    if (N > 0) {
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE);
+      gl.useProgram(pPts);
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufPts);
+      gl.enableVertexAttribArray(0);
+      gl.enableVertexAttribArray(1);
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 24, 0);
+      gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 24, 8);
+      gl.uniform1f(uT, t);
+      gl.uniform1f(uDuree, D);
+      gl.uniform2f(uRes, 1920, 1080);
+      gl.uniform1f(uHalo, 1);
+      gl.uniform1f(uTaille, haloK);
+      gl.drawArrays(gl.POINTS, 0, N);
+      gl.uniform1f(uHalo, 0);
+      gl.uniform1f(uTaille, 1);
+      gl.drawArrays(gl.POINTS, 0, N);
+      gl.disable(gl.BLEND);
+    }
+    poseCap(t);
+  };
+})();
+</script>
+<script src="../lecteur.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teaser vertical</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=JetBrains+Mono:wght@400;600&display=block" rel="stylesheet">
+<style>
+/* Teaser vertical 1080 x 1920 pour Reels et Shorts, huit secondes à 120 BPM (seize temps).
+   Cinq plans à fond plein qui se recouvrent par un volet montant, chacun posé sur un temps ;
+   les mots claquent (échelle et chasse qui se posent en expo), les détails tombent sur les
+   croches et les doubles. Tout le texte tient dans la zone sûre commune de 900 x 1400 px. */
+:root{--noir:#101010;--craie:#f2eee6;--cobalt:#1e40d8;--foret:#0f4d3a;--terre:#e3552b;--menthe:#bfeedd}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--noir);font-family:'Bricolage Grotesque',sans-serif;-webkit-font-smoothing:antialiased}
+.plan{position:absolute;inset:0;clip-path:inset(100% 0 0 0)}
+#acc{background:var(--noir);color:var(--craie);clip-path:none}
+#p1{background:var(--craie);color:var(--noir)}
+#p2{background:var(--cobalt);color:var(--craie)}
+#p3{background:var(--foret);color:var(--craie)}
+#cta{background:var(--terre);color:var(--noir)}
+#fin{background:var(--noir)}
+.mono{font-family:'JetBrains Mono',monospace}
+.slam{position:absolute;left:120px;font-weight:800;line-height:1;white-space:nowrap;transform-origin:0 50%;opacity:0;letter-spacing:-.02em;font-variation-settings:'opsz' 96,'wdth' 100,'wght' 800}
+#m3{color:var(--terre)}
+#regle{position:absolute;left:120px;top:1210px;width:840px;height:6px;background:var(--craie);transform:scaleX(0);transform-origin:0 50%}
+#tags{position:absolute;left:120px;top:800px;display:flex;gap:26px;perspective:900px}
+.tag{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:80px;line-height:1;transform-origin:50% 100%;opacity:0;letter-spacing:-.04em}
+#carte{position:absolute;left:120px;top:780px;width:840px;height:400px;background:var(--craie);color:var(--noir);border-radius:28px;opacity:0}
+#prompt{position:absolute;left:44px;top:44px;width:752px;font-size:34px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+#caret{display:inline-block;width:18px;height:38px;background:var(--cobalt);vertical-align:-6px;margin-left:4px}
+#reponse{position:absolute;left:44px;top:300px;font-size:30px;color:var(--cobalt);opacity:0}
+#chaine{position:absolute;left:120px;top:880px;width:840px;height:300px}
+#fil{position:absolute;left:8px;top:18px;width:3px;height:260px;background:var(--craie);opacity:.5;transform:scaleY(0);transform-origin:50% 0}
+#point{position:absolute;left:2px;top:12px;width:15px;height:15px;border-radius:50%;background:var(--menthe);opacity:0}
+.etape{position:absolute;left:0;height:40px;display:flex;align-items:center;gap:30px;opacity:.35}
+.etape i{display:block;width:19px;height:19px;background:var(--menthe)}
+.etape span{font-weight:600;font-size:44px;line-height:1;white-space:nowrap;letter-spacing:-.01em}
+#adr{position:absolute;left:120px;top:990px;font-size:40px;font-weight:600;letter-spacing:.02em;white-space:nowrap;clip-path:inset(0 100% 0 0)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <section class="plan" id="acc">
+    <div class="slam" id="m1" style="top:700px;font-size:132px">Faites</div>
+    <div class="slam" id="m2" style="top:860px;font-size:132px">travailler</div>
+    <div class="slam" id="m3" style="top:1020px;font-size:132px">l'IA.</div>
+    <div id="regle"></div>
+  </section>
+  <section class="plan" id="p1">
+    <div class="slam" id="t1" style="top:600px;font-size:108px">Une méthode.</div>
+    <div id="tags"><span class="tag">[C]</span><span class="tag">[R]</span><span class="tag">[A]</span><span class="tag">[F]</span><span class="tag">[T]</span></div>
+  </section>
+  <section class="plan" id="p2">
+    <div class="slam" id="t2" style="top:600px;font-size:116px">Vos outils.</div>
+    <div id="carte">
+      <div id="prompt" class="mono"><span id="tape"></span><span id="caret"></span></div>
+      <div id="reponse" class="mono">&gt; Relance rédigée en trois lignes.</div>
+    </div>
+  </section>
+  <section class="plan" id="p3">
+    <div class="slam" id="t3a" style="top:560px;font-size:88px">Vos</div>
+    <div class="slam" id="t3b" style="top:670px;font-size:88px">automatisations.</div>
+    <div id="chaine">
+      <div id="fil"></div>
+      <div class="etape" id="e1" style="top:0"><i></i><span>Un e-mail arrive</span></div>
+      <div class="etape" id="e2" style="top:130px"><i></i><span>Le CRM se remplit</span></div>
+      <div class="etape" id="e3" style="top:260px"><i></i><span>La tâche est faite</span></div>
+      <div id="point"></div>
+    </div>
+  </section>
+  <section class="plan" id="cta">
+    <div class="slam" id="c1" style="top:640px;font-size:112px">Commencez</div>
+    <div class="slam" id="c2" style="top:790px;font-size:112px">gratuitement</div>
+    <div id="adr" class="mono">academy.mydigipal.com</div>
+  </section>
+  <section class="plan" id="fin"></section>
+</div>
+
+<script>
+window.STAGE = { w: 1080, h: 1920 };
+window.DUREE = 8;
+
+/* ---------- le tempo ---------- */
+const BPM = 120, B = 60 / BPM, beat = n => n * B;
+const VOLET = 0.25;   /* durée d'un volet, qui FINIT sur le temps */
+/* les plans et leur temps d'arrivée ; l'accroche est là dès le début, `fin` referme la boucle */
+const PLANS = [
+  { id: 'acc', entre: -1 },
+  { id: 'p1',  entre: beat(4) },
+  { id: 'p2',  entre: beat(7) },
+  { id: 'p3',  entre: beat(10) },
+  { id: 'cta', entre: beat(13) },
+  { id: 'fin', entre: beat(16) }
+];
+/* Géométrie de contrôle : chaque texte avec son coin haut gauche, sa taille et une largeur
+   estimée (caractères x 0,62 em, Bricolage 800), pour vérifier hors navigateur que tout tient
+   dans la zone sûre 90..990 x 260..1660. À confirmer à l'écran. */
+window.GEOM = {
+  m1: { x: 120, y: 700, taille: 132, texte: 'Faites' }, m2: { x: 120, y: 860, taille: 132, texte: 'travailler' }, m3: { x: 120, y: 1020, taille: 132, texte: "l'IA." },
+  regle: { x: 120, y: 1210, w: 840, h: 6 },
+  t1: { x: 120, y: 600, taille: 108, texte: 'Une méthode.' }, tags: { x: 120, y: 800, w: 5 * 144 + 4 * 26, h: 80 },
+  t2: { x: 120, y: 600, taille: 116, texte: 'Vos outils.' }, carte: { x: 120, y: 780, w: 840, h: 400 },
+  t3a: { x: 120, y: 560, taille: 88, texte: 'Vos' }, t3b: { x: 120, y: 670, taille: 88, texte: 'automatisations.', facteur: 0.56 }, chaine: { x: 120, y: 880, w: 840, h: 300 },
+  c1: { x: 120, y: 640, taille: 112, texte: 'Commencez' }, c2: { x: 120, y: 790, taille: 112, texte: 'gratuitement' }, adr: { x: 120, y: 990, w: 21 * 24, h: 40 }
+};
+
+/* ---------- outils de temps, purs ---------- */
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
+const mix = (a, b, p) => a + (b - a) * p;
+const outExpo = p => p >= 1 ? 1 : 1 - Math.pow(2, -10 * p);
+const inOutQuart = p => p < 0.5 ? 8 * p * p * p * p : 1 - Math.pow(-2 * p + 2, 4) / 2;
+const inOutSine = p => -(Math.cos(Math.PI * p) - 1) / 2;
+const outBack = s => p => 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2);
+
+const $ = id => document.getElementById(id);
+const EL = {};
+['m1', 'm2', 'm3', 'regle', 't1', 't2', 'carte', 'tape', 'caret', 'reponse', 't3a', 't3b', 'fil', 'point', 'e1', 'e2', 'e3', 'c1', 'c2', 'adr'].forEach(id => { EL[id] = $(id); });
+PLANS.forEach(p => { EL[p.id] = $(p.id); });
+const TAGS = Array.from(document.querySelectorAll('.tag'));
+const PROMPT = 'Prépare la relance de ce client, ton courtois, trois lignes.';
+
+/* Un mot qui claque : il arrive trop grand et trop étroit, et se pose en expo sur 0,32 s.
+   L'opacité monte en deux images pour que la première image visible soit déjà presque posée. */
+function slam(e, t, t0) {
+  const p = outExpo(seg(t, t0, t0 + 0.32));
+  e.style.transform = 'scale(' + mix(1.55, 1, p).toFixed(4) + ')';
+  e.style.opacity = seg(t, t0, t0 + 0.04).toFixed(3);
+  e.style.fontVariationSettings = "'opsz' 96, 'wdth' " + mix(78, 100, p).toFixed(1) + ", 'wght' 800";
+}
+
+/* ---------- render(t) : pur, déterministe ---------- */
+window.render = function (t) {
+  /* les volets : chaque plan monte depuis le bas et finit exactement sur son temps */
+  for (let i = 1; i < PLANS.length; i++) {
+    const k = inOutQuart(seg(t, PLANS[i].entre - VOLET, PLANS[i].entre));
+    EL[PLANS[i].id].style.clipPath = 'inset(' + (100 * (1 - k)).toFixed(3) + '% 0 0 0)';
+  }
+
+  /* accroche : trois mots sur les temps 0, 1, 2 ; la règle claque sur le temps 3 */
+  slam(EL.m1, t, beat(0));
+  slam(EL.m2, t, beat(1));
+  slam(EL.m3, t, beat(2));
+  EL.regle.style.transform = 'scaleX(' + outExpo(seg(t, beat(3), beat(3) + 0.25)).toFixed(4) + ')';
+
+  /* plan 1 : le titre sur le temps 4, les cinq lettres CRAFT basculent sur les doubles-croches */
+  slam(EL.t1, t, beat(4));
+  for (let i = 0; i < TAGS.length; i++) {
+    const t0 = beat(4) + 0.25 + i * 0.125;
+    const p = outBack(1.5)(seg(t, t0, t0 + 0.24));
+    TAGS[i].style.transform = 'rotateX(' + mix(-90, 0, p).toFixed(2) + 'deg)';
+    TAGS[i].style.opacity = seg(t, t0, t0 + 0.06).toFixed(3);
+  }
+
+  /* plan 2 : le titre sur le temps 7, la carte deux images après, le prompt se tape, la réponse
+     tombe sur le temps 9 avec un petit sursaut de la carte */
+  slam(EL.t2, t, beat(7));
+  const pc = outExpo(seg(t, beat(7) + 0.07, beat(7) + 0.52));
+  const sursaut = 14 * Math.sin(Math.PI * seg(t, beat(9), beat(9) + 0.3));
+  EL.carte.style.transform = 'translateY(' + (mix(60, 0, pc) - sursaut).toFixed(2) + 'px)';
+  EL.carte.style.opacity = seg(t, beat(7) + 0.07, beat(7) + 0.22).toFixed(3);
+  const n = Math.floor(PROMPT.length * seg(t, beat(7) + 0.15, beat(7) + 0.9));
+  EL.tape.textContent = PROMPT.slice(0, n);
+  const tape = n < PROMPT.length || t < beat(7) + 0.9;
+  EL.caret.style.opacity = tape ? '1' : (Math.floor((t - beat(7) - 0.9) / 0.25) % 2 === 0 ? '1' : '0');
+  const pr = outExpo(seg(t, beat(9), beat(9) + 0.35));
+  EL.reponse.style.transform = 'translateY(' + mix(18, 0, pr).toFixed(2) + 'px)';
+  EL.reponse.style.opacity = seg(t, beat(9), beat(9) + 0.1).toFixed(3);
+
+  /* plan 3 : deux lignes de titre sur le temps 10, le fil se trace, le point passe de station en
+     station sur les croches et chaque étape s'allume à son passage */
+  slam(EL.t3a, t, beat(10));
+  slam(EL.t3b, t, beat(10) + 0.07);
+  EL.fil.style.transform = 'scaleY(' + inOutSine(seg(t, beat(10) + 0.2, beat(10) + 1.1)).toFixed(4) + ')';
+  const s1 = inOutSine(seg(t, beat(10) + 0.25, beat(10) + 0.75)), s2 = inOutSine(seg(t, beat(10) + 0.75, beat(10) + 1.25));
+  EL.point.style.transform = 'translateY(' + (130 * (s1 + s2)).toFixed(2) + 'px)';
+  EL.point.style.opacity = seg(t, beat(10) + 0.15, beat(10) + 0.25).toFixed(3);
+  [EL.e1, EL.e2, EL.e3].forEach((e, i) => {
+    const tk = beat(10) + 0.25 + i * 0.5;
+    e.style.opacity = mix(0.35, 1, outExpo(seg(t, tk, tk + 0.2))).toFixed(3);
+  });
+
+  /* appel à l'action : deux mots sur le temps 13, l'adresse balayée sur le temps 14 */
+  slam(EL.c1, t, beat(13));
+  slam(EL.c2, t, beat(13) + 0.07);
+  EL.adr.style.clipPath = 'inset(0 ' + (100 * (1 - outExpo(seg(t, beat(14), beat(14) + 0.35)))).toFixed(2) + '% 0 0)';
+};
+
+window.PRET = Promise.all([
+  document.fonts.load("800 132px 'Bricolage Grotesque'"),
+  document.fonts.load("600 44px 'Bricolage Grotesque'"),
+  document.fonts.load("600 80px 'JetBrains Mono'"),
+  document.fonts.load("400 34px 'JetBrains Mono'")
+]).then(function () { return document.fonts.ready; });
+</script>
+<script src="../lecteur.js"></script>
+</body>
+</html>

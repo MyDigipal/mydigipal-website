@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>L'usine isométrique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=JetBrains+Mono:wght@500&display=block" rel="stylesheet">
+<style>
+/* Une automatisation vue en isométrie : un e-mail entre dans une petite usine, l'agent le trie,
+   trois tâches sortent sur un tapis vers un tableau. Toute la géométrie est calculée en
+   JavaScript à l'instant t (projection, faces visibles, ombres portées nettes) et posée en SVG. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#0a1626;font-family:'Bricolage Grotesque',sans-serif;color:#f4f1ea;-webkit-font-smoothing:antialiased}
+#scene{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block}
+#titre{position:absolute;left:120px;top:126px;font-size:74px;font-weight:600;line-height:1.06;letter-spacing:-.022em;font-variation-settings:'opsz' 96,'wdth' 100}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(125%)}
+.ln .b{color:#7fc4dd}
+.ln .o{color:#c8a951}
+.lab{position:absolute;left:0;top:0;transform-origin:0 0;font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:#7fc4dd;white-space:nowrap;opacity:0}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="scene" viewBox="0 0 1920 1080" width="1920" height="1080"></svg>
+  <div id="titre">
+    <div class="mask"><span class="ln" id="t1">Un e-mail <span class="b">entre,</span></span></div>
+    <div class="mask"><span class="ln" id="t2">des tâches <span class="o">sortent.</span></span></div>
+  </div>
+  <span class="lab" id="lab0">e-mail entrant</span>
+  <span class="lab" id="lab1">l’agent trie</span>
+  <span class="lab" id="lab2">tâches</span>
+  <span class="lab" id="lab3">tableau</span>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Bricolage Grotesque';font-weight:600">a</span>
+  <span style="font-family:'JetBrains Mono';font-weight:500">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 9;
+window.DUR = window.DUREE; /* alias lu par le render.js du moteur vidéo */
+window.PRET = Promise.all([
+  document.fonts.load("600 74px 'Bricolage Grotesque'"),
+  document.fonts.load("500 19px 'JetBrains Mono'")
+]).then(function () { return document.fonts.ready; });
+
+(function () {
+'use strict';
+var D = window.DUREE, TAU = Math.PI * 2;
+/* Projection isométrique vraie : x vers la droite et le bas, y vers la gauche et le bas, z vers le haut. */
+var U = 72, OX = 960, OY = 580, C = Math.cos(Math.PI / 6), S = 0.5;
+
+/* ---------- courbes, toutes pures ---------- */
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function mod(a, n) { return ((a % n) + n) % n; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outQuart(p) { return 1 - Math.pow(1 - p, 4); }
+function inQuad(p) { return p * p; }
+function inCubic(p) { return p * p * p; }
+function inOutCubic(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+function outBack(s) { return function (p) { return 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2); }; }
+function inBack(s) { return function (p) { return (s + 1) * p * p * p - s * p * p; }; }
+function bosse(p) { return p <= 0 || p >= 1 ? 0 : Math.sin(Math.PI * p); }
+
+/* ---------- couleurs et lumière ---------- */
+var PLAQUE = [26, 47, 79], BLOC = [59, 95, 153], TAPIS = [16, 29, 50], RAIL = [38, 62, 102],
+    BLEU = [127, 196, 221], OR = [200, 169, 81], IVOIRE = [244, 241, 234];
+function rgb(c, k) { return 'rgb(' + Math.round(c[0] * k) + ',' + Math.round(c[1] * k) + ',' + Math.round(c[2] * k) + ')'; }
+function melC(a, b, p) { return [mix(a[0], b[0], p), mix(a[1], b[1], p), mix(a[2], b[2], p)]; }
+/* Lumière venant de la gauche et du haut : la face du dessus est la plus claire, la face droite la plus sombre,
+   et les ombres portées partent vers la droite (+x). Le vecteur pointe VERS la lumière. */
+var L = (function () { var v = [-0.6, 0.2, 0.75], n = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); return [v[0] / n, v[1] / n, v[2] / n]; })();
+function lum(n) { var d = n[0] * L[0] + n[1] * L[1] + n[2] * L[2]; return 0.46 + 0.54 * Math.pow(clamp((d + 0.2) / 0.965, 0, 1), 0.8); }
+
+/* ---------- projection et primitives SVG ---------- */
+var DZ = 0; /* décalage vertical de toute la scène (la sortie l'enfonce dans la nuit), posé par render */
+var DEFS = '';
+function proj(p) { return [OX + (p[0] - p[1]) * C * U, OY + (p[0] + p[1]) * S * U - (p[2] + DZ) * U]; }
+function fx(v) { return v.toFixed(1); }
+function ptsList(P) { var s = ''; for (var i = 0; i < P.length; i++) { var q = proj(P[i]); s += (i ? ' ' : '') + fx(q[0]) + ',' + fx(q[1]); } return s; }
+function quad(P, attrs) { return '<polygon points="' + ptsList(P) + '"' + (attrs ? ' ' + attrs : '') + '/>'; }
+function ligne(a, b) { var A = proj(a), B = proj(b); return '<line x1="' + fx(A[0]) + '" y1="' + fx(A[1]) + '" x2="' + fx(B[0]) + '" y2="' + fx(B[1]) + '"/>'; }
+function trace(P, attrs) { return '<polyline points="' + ptsList(P) + '" ' + attrs + '/>'; }
+function longueur(P) { var l = 0; for (var i = 1; i < P.length; i++) { var a = proj(P[i - 1]), b = proj(P[i]); l += Math.hypot(b[0] - a[0], b[1] - a[1]); } return l; }
+
+/* Un solide est une boîte : centre, dimensions, rotation autour de x puis de z. Sommets indexés par bits (x, y, z). */
+var FACES = [[1, 3, 7, 5], [0, 4, 6, 2], [2, 6, 7, 3], [0, 1, 5, 4], [4, 5, 7, 6], [0, 2, 3, 1]];
+var NORM = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+function tourner(p, rx, rz) {
+  var cr = Math.cos(rx), sr = Math.sin(rx), cz = Math.cos(rz), sz = Math.sin(rz);
+  var y1 = p[1] * cr - p[2] * sr, z1 = p[1] * sr + p[2] * cr;
+  return [p[0] * cz - y1 * sz, p[0] * sz + y1 * cz, z1];
+}
+function solide(c, d, rx, rz) {
+  rx = rx || 0; rz = rz || 0;
+  var V = [], N = [], i;
+  for (i = 0; i < 8; i++) {
+    var q = tourner([(i & 1 ? d[0] : -d[0]) / 2, (i & 2 ? d[1] : -d[1]) / 2, (i & 4 ? d[2] : -d[2]) / 2], rx, rz);
+    V.push([c[0] + q[0], c[1] + q[1], c[2] + q[2]]);
+  }
+  for (i = 0; i < 6; i++) N.push(tourner(NORM[i], rx, rz));
+  return { V: V, N: N, c: c, rx: rx, rz: rz };
+}
+function local(sol, p) { var q = tourner(p, sol.rx, sol.rz); return [sol.c[0] + q[0], sol.c[1] + q[1], sol.c[2] + q[2]]; }
+/* La caméra isométrique regarde depuis (1, 1, 1) : une face est visible si sa normale pointe vers elle. */
+function visible(n) { return n[0] + n[1] + n[2] > 1e-6; }
+function facePts(sol, f) { return [sol.V[FACES[f][0]], sol.V[FACES[f][1]], sol.V[FACES[f][2]], sol.V[FACES[f][3]]]; }
+function faces(sol, base, attrs) {
+  var s = '';
+  for (var f = 0; f < 6; f++) {
+    if (!visible(sol.N[f])) continue;
+    s += quad(facePts(sol, f), 'fill="' + rgb(base, lum(sol.N[f])) + '"' + (attrs ? ' ' + attrs : ''));
+  }
+  return s;
+}
+/* Enveloppe convexe de points écran (chaîne monotone). */
+function coque(P) {
+  P = P.slice().sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
+  var cr = function (o, a, b) { return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); };
+  var bas = [], haut = [], i;
+  for (i = 0; i < P.length; i++) { while (bas.length >= 2 && cr(bas[bas.length - 2], bas[bas.length - 1], P[i]) <= 0) bas.pop(); bas.push(P[i]); }
+  for (i = P.length - 1; i >= 0; i--) { while (haut.length >= 2 && cr(haut[haut.length - 2], haut[haut.length - 1], P[i]) <= 0) haut.pop(); haut.push(P[i]); }
+  bas.pop(); haut.pop();
+  return bas.concat(haut);
+}
+/* Ombre portée nette d'un solide sur un plan : le sol (z = val) ou une paroi tournée vers +y (y = val).
+   Chaque sommet est projeté le long de la lumière, l'ombre est l'enveloppe convexe des projections. */
+function ombre(V, plan, val) {
+  var P = [], i, v, h;
+  for (i = 0; i < V.length; i++) {
+    v = V[i];
+    if (plan === 'z') { h = v[2] - val; if (h < -1e-6) continue; P.push(proj([v[0] - L[0] / L[2] * h, v[1] - L[1] / L[2] * h, val])); }
+    else { h = v[1] - val; if (h < -1e-6) continue; P.push(proj([v[0] - L[0] / L[1] * h, val, v[2] - L[2] / L[1] * h])); }
+  }
+  if (P.length < 3) return '';
+  var H = coque(P), s = '';
+  for (i = 0; i < H.length; i++) s += (i ? ' ' : '') + fx(H[i][0]) + ',' + fx(H[i][1]);
+  return '<polygon points="' + s + '"/>';
+}
+/* Un groupe d'ombres découpé au plan qui les reçoit : une seule opacité pour tout le groupe, donc pas de double noir aux recouvrements. */
+function groupeOmbres(polys, clipP, id) {
+  if (!polys) return '';
+  DEFS += '<clipPath id="' + id + '"><polygon points="' + ptsList(clipP) + '"/></clipPath>';
+  return '<g clip-path="url(#' + id + ')" fill="#03091a" opacity=".5">' + polys + '</g>';
+}
+
+/* ---------- la partition (secondes, 120 BPM : un temps = 0,5 s) ---------- */
+var VIT = 2.4, PAS = 0.45;                    /* vitesse des tapis (unités par seconde) et pas des bandes */
+var TK = [4.75, 5.25, 5.75];                  /* sortie des trois tâches, sur les temps */
+var XT = [-1.35, 0, 1.35];                    /* colonnes du tableau */
+var HOP = 1.3333, DHOP = 0.42;                /* le saut vers le tableau commence 1,33 s après la sortie, dure 0,42 s */
+var ANCRES = [[0.95, 6.0, 0], [2.0, 1.7, 0], [0.95, -1.9, 0], [2.7, -4.1, 0]];
+var LABT = [0.7, 1.0, 1.25, 1.5];
+var HA = 0.45;                                /* hauteur d'un tapis, une fois monté */
+
+/* Un tapis roulant : corps, rail arrière, bandes qui défilent vers -y (le sens du flux). Le rail avant (+x)
+   est dessiné à part, APRÈS ce qui roule sur le tapis, parce qu'il est plus proche de la caméra. */
+function tapisCorps(x0, x1, y0, y1, h, t) {
+  if (h < 0.005) return '';
+  var s = faces(solide([(x0 + x1) / 2, (y0 + y1) / 2, h / 2], [x1 - x0, y1 - y0, h]), TAPIS);
+  s += faces(solide([x0 + 0.06, (y0 + y1) / 2, (h + 0.1) / 2], [0.12, y1 - y0, h + 0.1]), RAIL);
+  var len = y1 - y0, n = Math.round(len / PAS), ph = VIT * t, b = '<g fill="rgba(127,196,221,.26)">';
+  for (var k = 0; k < n; k++) {
+    var ya = y1 - mod(k * PAS + ph, len), yb = Math.max(y0, ya - 0.1);
+    if (ya - yb < 0.005) continue;
+    b += quad([[x0 + 0.14, yb, h + 0.002], [x1 - 0.14, yb, h + 0.002], [x1 - 0.14, ya, h + 0.002], [x0 + 0.14, ya, h + 0.002]]);
+  }
+  return s + b + '</g>';
+}
+function tapisRail(x1, y0, y1, h) {
+  if (h < 0.005) return '';
+  return faces(solide([x1 - 0.06, (y0 + y1) / 2, (h + 0.1) / 2], [0.12, y1 - y0, h + 0.1]), RAIL);
+}
+
+/* Une tâche : sur le tapis B, puis un saut en arc jusqu'à sa case du tableau où elle se dresse et passe à l'or. */
+function tache(i, t, hB) {
+  var tk = TK[i];
+  if (t < tk - 0.05) return null;
+  var th = tk + HOP, p = seg(t, th, th + DHOP), q = inOutCubic(p), c;
+  if (p <= 0) c = [0, -0.6 - VIT * (t - tk) + 0.3, hB + 0.08];
+  else c = [mix(0, XT[i], q), mix(-3.5, -4.12, q), mix(hB + 0.08, 1.5, q) + 0.55 * bosse(p)];
+  var g = seg(t, th + DHOP, th + DHOP + 0.25);
+  var pose = 1 + 0.06 * bosse(seg(t, th + DHOP, th + DHOP + 0.22));
+  var sol = solide(c, [0.8 * pose, 0.6 * pose, 0.16], -Math.PI / 2 * q, 0);
+  return { sol: sol, c: c, g: g, coche: seg(t, th + DHOP + 0.1, th + DHOP + 0.45), surTapis: p <= 0, posee: q >= 1 };
+}
+function dessinerTache(k) {
+  var sol = k.sol, s = faces(sol, melC(BLEU, OR, k.g));
+  var z = 0.081;
+  if (k.g < 1) {
+    s += trace([local(sol, [-0.25, -0.12, z]), local(sol, [0.2, -0.12, z])], 'fill="none" stroke="rgba(10,22,38,' + (0.5 * (1 - k.g)).toFixed(3) + ')" stroke-width="3" stroke-linecap="round"');
+    s += trace([local(sol, [-0.25, 0.05, z]), local(sol, [0.02, 0.05, z])], 'fill="none" stroke="rgba(10,22,38,' + (0.5 * (1 - k.g)).toFixed(3) + ')" stroke-width="3" stroke-linecap="round"');
+  }
+  if (k.coche > 0) {
+    var P = [local(sol, [-0.22, 0.0, z]), local(sol, [-0.06, 0.16, z]), local(sol, [0.22, -0.18, z])], Lp = longueur(P);
+    s += trace(P, 'fill="none" stroke="#0a1626" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="' + Lp.toFixed(1) + ' ' + Lp.toFixed(1) + '" stroke-dashoffset="' + (Lp * (1 - k.coche)).toFixed(1) + '"');
+  }
+  return s;
+}
+
+/* L'enveloppe : surgit au-dessus du tapis A, tombe dessus avec un petit rebond, puis est portée jusqu'à la fente de l'usine.
+   Ce qui est déjà entré (y < 2,2) n'est pas dessiné : c'est la découpe en y qui fait « entrer » l'objet. */
+function enveloppe(t) {
+  if (t < 1.75) return null;
+  var kE = outBack(1.6)(seg(t, 1.75, 1.95));
+  var z = mix(HA + 2.3, HA, inQuad(seg(t, 1.95, 2.3)));
+  var pb = seg(t, 2.3, 2.62);
+  z += 0.28 * Math.abs(Math.sin(TAU * pb)) * Math.pow(1 - pb, 2);
+  var y0 = 5.2 - VIT * Math.max(0, t - 2.3), y1 = y0 + 1.3, ya = Math.max(y0, 2.2);
+  if (y1 - ya < 0.02) return null;
+  return { sol: solide([0, (ya + y1) / 2, z + 0.06 * kE], [0.9 * kE, y1 - ya, 0.12 * kE]), y0: y0, y1: y1, ya: ya, z: z + 0.12 * kE + 0.002, k: kE };
+}
+function dessinerEnveloppe(e) {
+  var s = faces(e.sol, IVOIRE);
+  /* le rabat : un V du bord arrière vers le milieu, coupé au plan d'entrée */
+  var M = [0, e.y0 + 0.6, e.z], A = [-0.45 * e.k, e.y1, e.z], B = [0.45 * e.k, e.y1, e.z];
+  function coupe(P0, P1) { /* segment de P0 (y grand) vers P1 : garde la partie y >= 2,2 */
+    if (P1[1] >= 2.2) return [P0, P1];
+    if (P0[1] <= 2.2) return null;
+    var u = (P0[1] - 2.2) / (P0[1] - P1[1]);
+    return [P0, [mix(P0[0], P1[0], u), 2.2, mix(P0[2], P1[2], u)]];
+  }
+  var a = coupe(A, M), b = coupe(B, M);
+  if (a) s += trace(a, 'fill="none" stroke="rgba(10,22,38,.5)" stroke-width="2"');
+  if (b) s += trace(b, 'fill="none" stroke="rgba(10,22,38,.5)" stroke-width="2"');
+  return s;
+}
+
+var $ = function (id) { return document.getElementById(id); };
+var scene = $('scene'), t1 = $('t1'), t2 = $('t2'), labs = [$('lab0'), $('lab1'), $('lab2'), $('lab3')];
+
+/* ---------- render(t) : pur, déterministe ---------- */
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  DEFS = '';
+  DZ = -4 * inCubic(seg(t, 8.25, 9.0));
+  var opa = Math.min(seg(t, 0, 0.3), 1 - seg(t, 8.65, 9.0));
+  var zp = -2.5 * (1 - outExpo(seg(t, 0, 0.8)));
+  var kA = outBack(1.3)(seg(t, 0.5, 0.95)), kU = outBack(1.3)(seg(t, 0.75, 1.25)), kB = outBack(1.3)(seg(t, 1.0, 1.45)),
+      kT = outBack(1.3)(seg(t, 1.25, 1.7)), kH = outBack(1.6)(seg(t, 1.5, 1.9));
+  var hA = HA * kA, hB = HA * kB, hU = 2.4 * kU, hT = 2.8 * kT;
+  var s = '', i, k;
+
+  /* la plaque et sa grille fine */
+  var plaque = solide([0, 0.9, zp - 0.14], [6.8, 12.2, 0.28]);
+  s += faces(plaque, PLAQUE);
+  var gop = 0.11 * seg(t, 0.15, 0.75);
+  if (gop > 0.001) {
+    s += '<g stroke="rgba(127,196,221,' + gop.toFixed(3) + ')" stroke-width="1" fill="none">';
+    for (i = -3; i <= 3; i++) s += ligne([i, -5.2, zp], [i, 7.0, zp]);
+    for (i = -5; i <= 6; i++) s += ligne([-3.4, i, zp], [3.4, i, zp]);
+    s += '</g>';
+  }
+
+  /* les solides fixes et leurs ombres au sol */
+  var usine = solide([0, 0.8, hU / 2], [3.2, 2.8, hU]);
+  var tableau = solide([0, -4.35, hT / 2], [4.4, 0.3, hT]);
+  var corpsA = solide([0, 4.45, hA / 2], [1.2, 4.5, hA]);
+  var corpsB = solide([0, -2.4, hB / 2], [1.2, 3.6, hB]);
+  var om = '';
+  if (hA > 0.01) om += ombre(corpsA.V, 'z', 0);
+  if (hB > 0.01) om += ombre(corpsB.V, 'z', 0);
+  if (hU > 0.01) om += ombre(usine.V, 'z', 0);
+  if (hT > 0.01) om += ombre(tableau.V, 'z', 0);
+  s += groupeOmbres(om, facePts(plaque, 4), 'sol');
+
+  /* le tableau, ses cases, les tâches posées (ombre sur la paroi, puis la tuile) */
+  var taches = [tache(0, t, hB), tache(1, t, hB), tache(2, t, hB)];
+  if (hT > 0.01) s += faces(tableau, BLOC);
+  if (hT > 2.0) for (i = 0; i < 3; i++) s += quad([[XT[i] - 0.55, -4.199, 1.05], [XT[i] + 0.55, -4.199, 1.05], [XT[i] + 0.55, -4.199, 1.95], [XT[i] - 0.55, -4.199, 1.95]], 'fill="rgba(4,10,22,.5)"');
+  om = '';
+  for (i = 0; i < 3; i++) if (taches[i] && taches[i].posee) om += ombre(taches[i].sol.V, 'y', -4.2);
+  s += groupeOmbres(om, facePts(tableau, 2), 'paroi');
+  for (i = 0; i < 3; i++) if (taches[i] && taches[i].posee) s += dessinerTache(taches[i]);
+
+  /* le tapis B, les ombres des tâches qui roulent, les tâches (les plus lointaines d'abord), le rail avant,
+     puis la tâche qui saute vers la colonne de droite : elle passe au-dessus de ce rail */
+  s += tapisCorps(-0.6, 0.6, -4.2, -0.6, hB, t);
+  om = '';
+  var roulent = [], survolent = [];
+  for (i = 0; i < 3; i++) if (taches[i] && !taches[i].posee) {
+    if (!taches[i].surTapis && taches[i].c[0] > 0.2) survolent.push(taches[i]); else roulent.push(taches[i]);
+    if (taches[i].surTapis && taches[i].c[1] > -3.9) om += ombre(taches[i].sol.V, 'z', hB);
+  }
+  s += groupeOmbres(om, [[-0.46, -4.2, hB], [0.46, -4.2, hB], [0.46, -0.6, hB], [-0.46, -0.6, hB]], 'tapisB');
+  roulent.sort(function (a, b) { return a.c[1] - b.c[1]; });
+  for (i = 0; i < roulent.length; i++) s += dessinerTache(roulent[i]);
+  s += tapisRail(0.6, -4.2, -0.6, hB);
+  for (i = 0; i < survolent.length; i++) s += dessinerTache(survolent[i]);
+
+  /* l'usine : la fente d'entrée, la barre de lumière qui balaie pendant le tri */
+  if (hU > 0.01) s += faces(usine, BLOC);
+  if (hU > HA + 0.05) s += quad([[-0.65, 2.201, HA], [0.65, 2.201, HA], [0.65, 2.201, Math.min(HA + 0.42, hU)], [-0.65, 2.201, Math.min(HA + 0.42, hU)]], 'fill="#060d1a"');
+  var scan = bosse(seg(t, 3.7, 4.9));
+  var zb = 2.05 - 1.65 * scan, zt = Math.min(zb + 0.1, hU);
+  if (zt > zb + 0.02) s += quad([[-1.35, 2.203, zb], [1.35, 2.203, zb], [1.35, 2.203, zt], [-1.35, 2.203, zt]], 'fill="#7fc4dd" opacity="' + mix(0.32, 0.95, scan).toFixed(3) + '" style="filter:drop-shadow(0 0 ' + (4 + 10 * scan).toFixed(1) + 'px rgba(127,196,221,.9))"');
+
+  /* sur le toit : l'agent (un cube qui tourne, un oeil bleu) et trois pistons qui pompent pendant le tri */
+  if (kH > 0.001) {
+    var angle = TAU * t / D + TAU * inOutCubic(seg(t, 3.7, 4.7));
+    var socle = solide([0, 0.8, hU + 0.125 * kH], [0.6 * kH, 0.6 * kH, 0.25 * kH]);
+    var tete = solide([0, 0.8, hU + 0.25 * kH + 0.4 * kH], [0.8 * kH, 0.8 * kH, 0.8 * kH], 0, angle);
+    var pistons = [], PX = [-1.1, -0.35, 0.4];
+    for (i = 0; i < 3; i++) {
+      var pompe = 0;
+      for (k = 0; k < 5; k++) if (k % 3 === i) pompe += bosse(seg(t, 3.75 + 0.25 * k, 4.05 + 0.25 * k));
+      var hp = (0.3 + 0.35 * pompe) * kH;
+      pistons.push(solide([PX[i], 1.7, hU + hp / 2], [0.36, 0.36, hp]));
+    }
+    om = ombre(socle.V, 'z', hU) + ombre(tete.V, 'z', hU);
+    for (i = 0; i < 3; i++) om += ombre(pistons[i].V, 'z', hU);
+    s += groupeOmbres(om, facePts(usine, 4), 'toit');
+    s += faces(socle, RAIL) + faces(tete, BLOC);
+    if (visible(tete.N[0])) s += quad([local(tete, [0.401 * kH, -0.2 * kH, -0.2 * kH]), local(tete, [0.401 * kH, 0.2 * kH, -0.2 * kH]), local(tete, [0.401 * kH, 0.2 * kH, 0.2 * kH]), local(tete, [0.401 * kH, -0.2 * kH, 0.2 * kH])], 'fill="#7fc4dd" style="filter:drop-shadow(0 0 9px rgba(127,196,221,.85))"');
+    for (i = 0; i < 3; i++) s += faces(pistons[i], RAIL); /* les pistons sont devant la tête : dessinés après */
+  }
+
+  /* le tapis A, l'ombre de l'enveloppe, l'enveloppe, puis le rail avant qui passe devant elle */
+  s += tapisCorps(-0.6, 0.6, 2.2, 6.7, hA, t);
+  var env = enveloppe(t);
+  if (env) {
+    s += groupeOmbres(ombre(env.sol.V, 'z', hA), [[-0.46, 2.2, hA], [0.46, 2.2, hA], [0.46, 6.7, hA], [-0.46, 6.7, hA]], 'tapisA');
+    s += dessinerEnveloppe(env);
+  }
+  s += tapisRail(0.6, 2.2, 6.7, hA);
+
+  scene.innerHTML = '<defs>' + DEFS + '</defs><g opacity="' + opa.toFixed(3) + '">' + s + '</g>';
+
+  /* étiquettes couchées sur le sol, dans le sens du flux */
+  for (i = 0; i < 4; i++) {
+    var pa = outQuart(seg(t, LABT[i], LABT[i] + 0.5)), px = seg(t, 8.1, 8.4);
+    var q = proj([ANCRES[i][0], ANCRES[i][1] + 0.35 * (1 - pa), ANCRES[i][2]]);
+    labs[i].style.transform = 'matrix(' + C.toFixed(4) + ',' + (-S) + ',' + C.toFixed(4) + ',' + S + ',' + q[0].toFixed(2) + ',' + q[1].toFixed(2) + ')';
+    labs[i].style.opacity = (pa * (1 - px) * opa).toFixed(3);
+  }
+
+  /* le titre : deux lignes, chacune à sa place, jamais l'une remplaçant l'autre */
+  var e1 = outBack(1.3)(seg(t, 0.45, 1.3)), x1 = inBack(1.2)(seg(t, 8.2, 8.65));
+  t1.style.transform = 'translateY(' + (x1 > 0 ? mix(0, 135, x1) : mix(125, 0, e1)).toFixed(2) + '%)';
+  var e2 = outBack(1.3)(seg(t, 4.75, 5.6)), x2 = inBack(1.2)(seg(t, 8.3, 8.75));
+  t2.style.transform = 'translateY(' + (x2 > 0 ? mix(0, 135, x2) : mix(125, 0, e2)).toFixed(2) + '%)';
+};
+})();
+</script>
+<script src="../lecteur.js"></script>
+</body>
+</html>

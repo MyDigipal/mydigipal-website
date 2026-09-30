@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tableau à palettes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=block" rel="stylesheet">
+<style>
+/* Un tableau à palettes : chaque caractère est un volet qui bascule en 3D, avec son propre rythme. */
+:root{--vert:#0f3b30;--ivoire:#f3ede0;--encre:#151412;--corail:#ff6a4d}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--vert);font-family:'Barlow Semi Condensed',sans-serif;color:var(--ivoire);-webkit-font-smoothing:antialiased}
+#cap{position:absolute;left:176px;top:84px;font-size:22px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:rgba(243,237,224,.7);overflow:hidden;line-height:1.3;padding:.05em 0 .2em}
+#cap .ln{display:inline-block;transform:translateY(125%)}
+#board{position:absolute;left:120px;top:150px;width:1680px;height:800px;border-radius:28px;background:rgba(0,0,0,.22);box-shadow:inset 0 2px 0 rgba(255,255,255,.05)}
+.cell{position:absolute;perspective:1100px;border-radius:10px;box-shadow:0 10px 24px -10px rgba(0,0,0,.6)}
+.cell.petit{border-radius:6px}
+.half,.face{position:absolute;left:0;width:100%;overflow:hidden;background:var(--ivoire);color:var(--encre);text-align:center}
+.half{height:50%}
+.face{height:100%}
+.cell.unite .half,.cell.unite .face{background:var(--corail);color:var(--ivoire)}
+.half.top,.face.front{top:0;border-radius:10px 10px 0 0;background-image:linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,0))}
+.half.bottom,.face.back{top:50%;border-radius:0 0 10px 10px;background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.14))}
+.cell.petit .half.top,.cell.petit .face.front{border-radius:6px 6px 0 0}
+.cell.petit .half.bottom,.cell.petit .face.back{border-radius:0 0 6px 6px}
+.half span,.face span{position:absolute;left:0;width:100%;height:200%;line-height:1;display:flex;align-items:center;justify-content:center;font-weight:700}
+.half.top span,.face.front span{top:0}
+.half.bottom span,.face.back span{top:-100%}
+.flap{position:absolute;left:0;top:0;width:100%;height:50%;transform-origin:50% 100%;transform-style:preserve-3d}
+.face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.face.back{top:0;transform:rotateX(180deg)}
+.ombre{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+.charniere{position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:rgba(0,0,0,.5);z-index:5}
+.gros{width:150px;height:210px;font-size:172px}
+.petit{width:50px;height:80px;font-size:54px}
+.petit span{font-weight:600}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="cap"><span class="ln" id="capLn">Une semaine type, après la formation</span></div>
+  <div id="board"></div>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 9;
+window.PRET = Promise.all([
+  document.fonts.load("700 100px 'Barlow Semi Condensed'"),
+  document.fonts.load("600 50px 'Barlow Semi Condensed'")
+]).then(function () { return document.fonts.ready; });
+
+/* ---------- outils de temps (purs) ---------- */
+var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
+var seg = function (t, a, b) { return clamp((t - a) / (b - a), 0, 1); };
+var mix = function (a, b, p) { return a + (b - a) * p; };
+var outBack = function (s) { return function (p) { return 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2); }; };
+var inBack = function (s) { return function (p) { return (s + 1) * p * p * p - s * p * p; }; };
+/* la chute d'un volet : lâché, il accélère (gravité), et s'arrête net en bas */
+var chute = function (p) { return Math.pow(p, 1.75); };
+
+/* ---------- le contenu ---------- */
+var LIGNES = [
+  { gros: '3h', texte: 'gagnées par semaine' },
+  { gros: '12', texte: 'tâches automatisées' },
+  { gros: '7j', texte: 'pour un premier agent' }
+];
+var ALPHA = {
+  chiffre: ' 0123456789',
+  unite: ' kmsxhj',
+  lettre: " abcdefghijklmnopqrstuvwxyzàâçéèêîôù'"
+};
+var TEXTE_CELLULES = 22;
+var T = { lignes: [0.5, 2.5, 4.5], pasColonne: 0.045, sortie: 7.6, pasSortie: 0.03, pasLigneSortie: 0.05,
+          volet: { gros: 0.11, petit: 0.085 }, cap: [0.25, 0.9], capOut: [8.25, 8.65] };
+
+/* Suite des caractères qu'un volet traverse pour arriver à sa cible (au plus k bascules), puis pour repartir. */
+function suiteEntree(cible, alpha, k) {
+  var idx = alpha.indexOf(cible); if (idx < 0) idx = 0;
+  var s = [' '];
+  for (var i = Math.max(1, idx - k + 1); i <= idx; i++) s.push(alpha[i]);
+  return s;
+}
+function suiteSortie(cible, alpha) {
+  var idx = alpha.indexOf(cible); if (idx <= 0) return [' '];
+  var n = alpha.length;
+  return [cible, alpha[(idx + 1) % n === 0 ? 1 : (idx + 1) % n], alpha[(idx + 2) % n === 0 ? 1 : (idx + 2) % n], ' '];
+}
+/* Irrégularité déterministe (aucun tirage aléatoire) : chaque volet a son petit retard propre, comme sur un vrai tableau. */
+function gigue(ligne, col) { return (((col * 7919 + ligne * 104729 + 17) % 97) / 97) * 0.03; }
+
+/* ---------- construction des cellules (une fois) ---------- */
+var stage = document.getElementById('stage');
+var CELLULES = [];
+function cellule(x, y, classe, cible, alpha, k, ligne, col, unite) {
+  var el = document.createElement('div');
+  el.className = 'cell ' + classe + (unite ? ' unite' : '');
+  el.style.left = x + 'px'; el.style.top = y + 'px';
+  el.innerHTML =
+    '<div class="half top"><span></span></div>' +
+    '<div class="half bottom"><span></span><div class="ombre"></div></div>' +
+    '<div class="flap"><div class="face front"><span></span><div class="ombre"></div></div>' +
+    '<div class="face back"><span></span><div class="ombre"></div></div></div>' +
+    '<div class="charniere"></div>';
+  stage.appendChild(el);
+  var q = function (sel) { return el.querySelector(sel); };
+  var c = {
+    hautFixe: q('.half.top span'), basFixe: q('.half.bottom span'), ombreBas: q('.half.bottom .ombre'),
+    volet: q('.flap'), avant: q('.face.front span'), ombreAvant: q('.face.front .ombre'),
+    arriere: q('.face.back span'), ombreArriere: q('.face.back .ombre'),
+    seqE: suiteEntree(cible, alpha, k), seqX: suiteSortie(cible, alpha),
+    t0: T.lignes[ligne] + col * T.pasColonne + gigue(ligne, col),
+    tx: T.sortie + col * T.pasSortie + ligne * T.pasLigneSortie + gigue(ligne, col + 3),
+    duree: T.volet[classe],
+    cur: null, nxt: null
+  };
+  CELLULES.push(c);
+}
+LIGNES.forEach(function (L, ligne) {
+  var y = 195 + ligne * 270, col = 0;
+  var gros = (L.gros + '  ').slice(0, 2);
+  for (var i = 0; i < 2; i++, col++) {
+    var ch = gros[i], chiffre = /[0-9]/.test(ch);
+    cellule(176 + i * 156, y, 'gros', ch, chiffre ? ALPHA.chiffre : ALPHA.unite, chiffre ? 8 : 5, ligne, col, !chiffre && ch !== ' ');
+  }
+  var texte = (L.texte + new Array(TEXTE_CELLULES + 1).join(' ')).slice(0, TEXTE_CELLULES);
+  for (var j = 0; j < TEXTE_CELLULES; j++, col++) cellule(528 + j * 55, y + 65, 'petit', texte[j], ALPHA.lettre, 9, ligne, col, false);
+});
+var capLn = document.getElementById('capLn');
+
+/* ---------- état d'une cellule à l'instant t ---------- */
+function etat(c, t) {
+  var suite, k;
+  if (t >= c.tx) { suite = c.seqX; k = (t - c.tx) / c.duree; }
+  else if (t >= c.t0) { suite = c.seqE; k = (t - c.t0) / c.duree; }
+  else return { cur: ' ', nxt: ' ', p: 0 };
+  var i = Math.floor(k);
+  if (i >= suite.length - 1) return { cur: suite[suite.length - 1], nxt: suite[suite.length - 1], p: 0 };
+  return { cur: suite[i], nxt: suite[i + 1], p: k - i };
+}
+function poser(c, e) {
+  if (c.cur !== e.cur) { c.basFixe.textContent = e.cur; c.avant.textContent = e.cur; c.cur = e.cur; }
+  if (c.nxt !== e.nxt) { c.hautFixe.textContent = e.nxt; c.arriere.textContent = e.nxt; c.nxt = e.nxt; }
+  var r = chute(e.p);
+  c.volet.style.transform = 'rotateX(' + (-180 * r).toFixed(2) + 'deg)';
+  c.ombreAvant.style.opacity = (0.55 * r).toFixed(3);
+  c.ombreArriere.style.opacity = (0.55 * (1 - r)).toFixed(3);
+  c.ombreBas.style.opacity = (0.35 * Math.sin(r * Math.PI)).toFixed(3);
+}
+
+/* ---------- render(t) : pur, déterministe ---------- */
+window.render = function (t) {
+  for (var i = 0; i < CELLULES.length; i++) poser(CELLULES[i], etat(CELLULES[i], t));
+  var pc = outBack(1.3)(seg(t, T.cap[0], T.cap[1])), pcx = inBack(1.2)(seg(t, T.capOut[0], T.capOut[1]));
+  capLn.style.transform = 'translateY(' + (pcx > 0 ? mix(0, 135, pcx) : mix(125, 0, pc)).toFixed(2) + '%)';
+};
+</script>
+<script src="../lecteur.js"></script>
+</body>
+</html>

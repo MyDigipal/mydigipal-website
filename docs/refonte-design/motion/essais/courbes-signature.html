@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Courbes signature</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..900&family=JetBrains+Mono:wght@400;500&display=block" rel="stylesheet">
+<style>
+/* Trois colonnes, un seul mouvement. Le décor est neutre exprès (galet, graphite, une touche de
+   terre cuite) : la courbe est le sujet, rien ne doit la concurrencer. */
+:root{--galet:#e6e3dc;--trait:#cfcbc2;--graphite:#1e2024;--ivoire:#f4f2ec;--terre:#d9663a;--sourd:#7a7e86;--brume:#a2a6ad}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--galet);font-family:'Schibsted Grotesk',sans-serif;color:var(--graphite);-webkit-font-smoothing:antialiased}
+.mono{font-family:'JetBrains Mono',monospace}
+#entete{position:absolute;left:0;right:0;top:66px;text-align:center;font-size:15px;letter-spacing:.26em;text-transform:uppercase;color:var(--sourd)}
+.col{position:absolute;top:0;width:640px;height:1080px}
+.sep{position:absolute;top:0;width:1px;height:1080px;background:var(--trait)}
+.ombre{position:absolute;left:80px;top:280px;width:480px;height:300px;border-radius:22px;background:rgba(20,22,26,.6);filter:blur(30px);opacity:0;transform-origin:50% 50%}
+.carte{position:absolute;left:80px;top:280px;width:480px;height:300px;border-radius:18px;background:var(--graphite);color:var(--ivoire);overflow:hidden;opacity:0;transform-origin:50% 50%}
+.dedans{position:absolute;inset:0}
+.etiq{position:absolute;left:36px;top:32px;font-size:14px;letter-spacing:.22em;text-transform:uppercase;color:var(--brume)}
+.trait{position:absolute;left:36px;top:70px;width:44px;height:3px;background:var(--terre);transform-origin:0 50%;transform:scaleX(0)}
+.titre{position:absolute;left:36px;right:36px;bottom:34px;font-size:64px;font-weight:700;line-height:1;letter-spacing:-.025em}
+.masque{position:absolute;left:80px;top:612px;width:480px;overflow:hidden;line-height:1.15;padding:.1em 0 .18em}
+.ligne{display:block;font-size:44px;font-weight:600;letter-spacing:-.02em;transform:translateY(125%)}
+.souligne{position:absolute;left:80px;top:692px;width:480px;height:3px;background:var(--terre);transform:scaleX(0);transform-origin:0 50%}
+.legende{position:absolute;left:0;right:0;top:922px;display:flex;align-items:center;justify-content:center;gap:20px;color:var(--sourd)}
+.legende .textes{display:flex;flex-direction:column;gap:6px}
+.legende .nom{font-size:17px;letter-spacing:.14em;text-transform:uppercase}
+.legende .detail{font-size:13px;letter-spacing:.06em;color:var(--brume)}
+.legende svg{display:block}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="entete" class="mono">Le même mouvement, trois courbes</div>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 6;
+
+/* ---------- outils de temps, tous purs ---------- */
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
+const mix = (a, b, p) => a + (b - a) * p;
+const outExpo = p => p >= 1 ? 1 : 1 - Math.pow(2, -10 * p);
+const inCubic = p => p * p * p;
+const outQuint = p => 1 - Math.pow(1 - p, 5);
+const inQuint = p => p * p * p * p * p;
+/* Ressort amorti, réponse indicielle en forme fermée : x en secondes, z amortissement (0..1),
+   w pulsation (rad/s). Aucune simulation, aucun état : la position ne dépend que de x. */
+const ressort = (x, z, w) => {
+  if (x <= 0) return 0;
+  const wd = w * Math.sqrt(1 - z * z);
+  return 1 - Math.exp(-z * w * x) * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x));
+};
+/* Sortie par renversement du temps : la courbe d'entrée rejouée à l'envers sur d secondes,
+   normalisée pour partir de 0 exactement. Un ressort renversé recule avant de partir : c'est
+   l'anticipation, obtenue sans rien ajouter. */
+const renverse = (f, d) => s => s <= 0 ? 0 : s >= d ? 1 : (f(d) - f(d - s)) / f(d);
+const F = 1 / 30;   /* une image à 30 i/s */
+
+/* ---------- la chorégraphie, commune aux trois colonnes (secondes) ---------- */
+const CHOREO = {
+  carte:    { t0: 0.40, tx: 4.40 },
+  texte:    { t0: 1.25, tx: 4.55 },
+  souligne: { t0: 2.10, tx: 4.50 }
+};
+const COURSE = 220;   /* trajet d'entrée de la carte, en px */
+const FUITE = 240;    /* trajet de sortie */
+
+/* ---------- les trois personnalités ----------
+   entree(s) et sortie(s) reçoivent des SECONDES écoulées depuis le début du geste et rendent une
+   progression (0 à 1, dépassement possible). retard : ce que les éléments secondaires (intérieur
+   de la carte, ombre) attendent avant de suivre. suivi(s) : mouvement résiduel après l'arrivée. */
+const PERSONNALITES = [
+  { id: 'A', nom: 'nette', detail: 'expo 0,55 s · sortie cubique 0,40 s',
+    dEntree: 0.55, retard: 1 * F,
+    entree: s => outExpo(clamp(s / 0.55, 0, 1)),
+    sortie: s => inCubic(clamp(s / 0.40, 0, 1)),
+    suivi: () => 0 },
+  { id: 'B', nom: 'élastique', detail: 'ressort ζ 0,55 · ω 14 · sortie renversée',
+    dEntree: 0.85, retard: 2 * F,
+    entree: s => ressort(s, 0.55, 14),
+    entreeTexte: s => ressort(s, 0.78, 16),          /* le texte ne rebondit presque pas : 2 % */
+    sortie: renverse(s => ressort(s, 0.55, 14), 0.55),
+    sortieTexte: renverse(s => ressort(s, 0.78, 16), 0.45),
+    suivi: () => 0 },
+  { id: 'C', nom: 'souple', detail: 'quint 1,15 s · suivi 0,9 s · sortie quint 0,80 s',
+    dEntree: 1.15, retard: 4 * F,
+    entree: s => outQuint(clamp(s / 1.15, 0, 1)),
+    sortie: s => inQuint(clamp(s / 0.80, 0, 1)),
+    /* après la pose, la carte continue de 10 px et revient, lentement : le suivi */
+    suivi: s => Math.sin(Math.PI * seg(s, 0.85, 1.75)) * 0.045 }
+];
+
+/* ---------- construction des colonnes ---------- */
+const stage = document.getElementById('stage');
+const el = (tag, cls, texte) => { const e = document.createElement(tag); if (cls) e.className = cls; if (texte) e.textContent = texte; return e; };
+const NS = 'http://www.w3.org/2000/svg';
+function ligneSvg(x1, y1, x2, y2, couleur, pointille) {
+  const l = document.createElementNS(NS, 'line');
+  l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+  l.setAttribute('stroke', couleur); l.setAttribute('stroke-width', '1');
+  if (pointille) l.setAttribute('stroke-dasharray', '2 3');
+  return l;
+}
+/* Petit tracé de la courbe d'entrée (avec son suivi), statique : l'icône de la personnalité. */
+function glyphe(P) {
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('width', '96'); svg.setAttribute('height', '56'); svg.setAttribute('viewBox', '0 0 96 56');
+  svg.appendChild(ligneSvg(0, 46, 96, 46, '#cfcbc2', false));
+  svg.appendChild(ligneSvg(0, 12, 96, 12, '#cfcbc2', true));
+  const pts = [];
+  const fenetre = P.dEntree * 1.6;
+  for (let i = 0; i <= 48; i++) {
+    const s = fenetre * i / 48;
+    const v = P.entree(s) + P.suivi(s);
+    pts.push((96 * i / 48).toFixed(1) + ',' + (46 - 34 * v).toFixed(1));
+  }
+  const trace = document.createElementNS(NS, 'polyline');
+  trace.setAttribute('points', pts.join(' '));
+  trace.setAttribute('fill', 'none'); trace.setAttribute('stroke', '#1e2024');
+  trace.setAttribute('stroke-width', '2'); trace.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(trace);
+  return svg;
+}
+function construire(P, i) {
+  if (i > 0) { const sep = el('div', 'sep'); sep.style.left = (i * 640) + 'px'; stage.appendChild(sep); }
+  const col = el('div', 'col'); col.style.left = (i * 640) + 'px';
+  const ombre = el('div', 'ombre');
+  const carte = el('div', 'carte');
+  const dedans = el('div', 'dedans');
+  const etiq = el('div', 'etiq mono', 'MyDigipal · AI Academy');
+  const trait = el('div', 'trait');
+  const titre = el('div', 'titre', 'Une courbe,');
+  dedans.appendChild(etiq); dedans.appendChild(trait); dedans.appendChild(titre);
+  carte.appendChild(dedans);
+  const masque = el('div', 'masque');
+  const ligne = el('span', 'ligne', 'une signature.');
+  masque.appendChild(ligne);
+  const soul = el('div', 'souligne');
+  const legende = el('div', 'legende');
+  const textes = el('div', 'textes');
+  textes.appendChild(el('div', 'nom mono', P.id + ' · ' + P.nom));
+  textes.appendChild(el('div', 'detail mono', P.detail));
+  legende.appendChild(glyphe(P)); legende.appendChild(textes);
+  col.appendChild(ombre); col.appendChild(carte); col.appendChild(masque); col.appendChild(soul); col.appendChild(legende);
+  stage.appendChild(col);
+  return { P, ombre, carte, dedans, trait, ligne, soul };
+}
+const COLS = PERSONNALITES.map(construire);
+
+/* ---------- l'état d'une colonne à l'instant t, puis sa pose ---------- */
+function poserColonne(c, t) {
+  const P = c.P;
+  /* position de la carte (px vers le bas) selon les secondes écoulées depuis son entrée */
+  const yC = s => COURSE * (1 - P.entree(s)) - COURSE * P.suivi(s);
+  const s = t - CHOREO.carte.t0, sx = t - CHOREO.carte.tx;
+  const e = P.entree(s), q = P.sortie(sx);
+
+  /* la carte */
+  const y = yC(s) - FUITE * q;
+  const a = clamp(e / 0.35, 0, 1) * (1 - clamp(q / 0.6, 0, 1));
+  const k = mix(0.94, 1, clamp(e, 0, 1.25));
+  c.carte.style.transform = 'translateY(' + y.toFixed(2) + 'px) scale(' + k.toFixed(4) + ')';
+  c.carte.style.opacity = a.toFixed(3);
+
+  /* l'intérieur arrive `retard` après la carte : sa position relative est la différence entre
+     la carte en retard et la carte maintenant. Même chose à la sortie. */
+  const sr = s - P.retard, sxr = sx - P.retard, er = P.entree(sr), qr = P.sortie(sxr);
+  const yi = (yC(sr) - FUITE * qr) - (yC(s) - FUITE * q);
+  c.dedans.style.transform = 'translateY(' + yi.toFixed(2) + 'px)';
+  c.dedans.style.opacity = (clamp(er / 0.5, 0, 1) * (1 - clamp(qr / 0.5, 0, 1))).toFixed(3);
+
+  /* le petit trait, deux fois plus en retard : le détail qui arrive en dernier */
+  const s2 = s - 2 * P.retard, sx2 = sx - 2 * P.retard, e2 = P.entree(s2), q2 = P.sortie(sx2);
+  const yt = (yC(s2) - FUITE * q2) - (yC(sr) - FUITE * qr);
+  c.trait.style.transform = 'translateY(' + yt.toFixed(2) + 'px) scaleX(' + clamp(e2, 0, 1.3).toFixed(3) + ')';
+
+  /* l'ombre suit la carte avec une image de plus de retard, et s'étale quand la carte se pose */
+  const so = s - P.retard - F, sxo = sx - P.retard - F, eo = P.entree(so), qo = P.sortie(sxo);
+  const yo = yC(so) + 30 - FUITE * qo;
+  c.ombre.style.transform = 'translateY(' + yo.toFixed(2) + 'px) scale(' + mix(0.9, 1, clamp(eo, 0, 1)).toFixed(4) + ')';
+  c.ombre.style.opacity = (0.85 * clamp(eo, 0, 1) * (1 - clamp(qo / 0.5, 0, 1))).toFixed(3);
+
+  /* la ligne qui sort du masque */
+  const eT = P.entreeTexte || P.entree, fT = P.sortieTexte || P.sortie;
+  const ty = 125 * (1 - eT(t - CHOREO.texte.t0)) - 130 * fT(t - CHOREO.texte.tx);
+  c.ligne.style.transform = 'translateY(' + ty.toFixed(2) + '%)';
+
+  /* le souligné : se trace depuis la gauche, se retire par la droite (sans reculer) */
+  const scU = Math.max(0, P.entree(t - CHOREO.souligne.t0));
+  const qU = Math.max(0, P.sortie(t - CHOREO.souligne.tx));
+  if (t >= CHOREO.souligne.tx) {
+    c.soul.style.transformOrigin = '100% 50%';
+    c.soul.style.transform = 'scaleX(' + (scU * (1 - qU)).toFixed(4) + ')';
+  } else {
+    c.soul.style.transformOrigin = '0 50%';
+    c.soul.style.transform = 'scaleX(' + scU.toFixed(4) + ')';
+  }
+}
+
+/* ---------- render(t) : pur, déterministe ---------- */
+window.render = function (t) {
+  for (let i = 0; i < COLS.length; i++) poserColonne(COLS[i], t);
+};
+
+window.PRET = Promise.all([
+  document.fonts.load("700 64px 'Schibsted Grotesk'"),
+  document.fonts.load("600 44px 'Schibsted Grotesk'"),
+  document.fonts.load("500 17px 'JetBrains Mono'")
+]).then(function () { return document.fonts.ready; });
+</script>
+<script src="../lecteur.js"></script>
+</body>
+</html>

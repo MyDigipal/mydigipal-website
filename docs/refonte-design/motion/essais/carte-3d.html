@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>La carte de verre</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: #000; }
+  #stage {
+    position: relative; width: 1920px; height: 1080px; overflow: hidden;
+    background: #17110e; font-family: "Inter", system-ui, sans-serif;
+  }
+  #gl { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: block; }
+  #texte {
+    position: absolute; left: 1180px; top: 0; width: 660px; height: 1080px;
+    display: flex; flex-direction: column; justify-content: center; pointer-events: none;
+  }
+  .mask { overflow: hidden; padding: 0 .06em .14em; margin-bottom: -.14em; }
+  .ln { display: block; white-space: nowrap; transform: translate3d(0, 130%, 0); }
+  .k .ln {
+    font-family: "JetBrains Mono", monospace; font-weight: 500; font-size: 17px; line-height: 1.6;
+    letter-spacing: .28em; text-transform: uppercase; color: #e39a6a; margin-bottom: 26px;
+  }
+  .t .ln {
+    font-family: "Fraunces", Georgia, serif; font-weight: 500; font-size: 88px; line-height: 1.04;
+    letter-spacing: -.012em; color: #f7efe4;
+  }
+  .s .ln {
+    font-family: "Inter", sans-serif; font-weight: 400; font-size: 24px; line-height: 1.5;
+    color: rgba(247, 239, 228, .70); margin-top: 30px; white-space: normal; max-width: 560px;
+  }
+  /* Préchargeur : chaque police et graisse dessinée dans la texture Canvas est aussi référencée ici, donc document.fonts.ready les attend. */
+  #prechargeur { position: absolute; left: -9999px; top: -9999px; visibility: hidden; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl" width="1920" height="1080"></canvas>
+  <div id="texte">
+    <div class="mask k"><span class="ln" id="k1">Les automatisations</span></div>
+    <div class="mask t"><span class="ln" id="t1">Construisez</span></div>
+    <div class="mask t"><span class="ln" id="t2">votre premier</span></div>
+    <div class="mask t"><span class="ln" id="t3">agent.</span></div>
+    <div class="mask s"><span class="ln" id="s1">Vous le montez pas à pas dans la formation, et il tourne sans vous.</span></div>
+  </div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Fraunces';font-weight:500">a</span>
+  <span style="font-family:'Fraunces';font-weight:600">a</span>
+  <span style="font-family:'Inter';font-weight:400">a</span>
+  <span style="font-family:'Inter';font-weight:500">a</span>
+  <span style="font-family:'Inter';font-weight:600">a</span>
+  <span style="font-family:'JetBrains Mono';font-weight:500">a</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 8;
+window.DUR = window.DUREE; /* alias lu par render.js du moteur vidéo */
+window.PRET = Promise.all([
+  '500 40px "Fraunces"', '600 40px "Fraunces"',
+  '400 20px "Inter"', '500 20px "Inter"', '600 20px "Inter"',
+  '500 20px "JetBrains Mono"'
+].map(function (f) { return document.fonts.load(f); })).then(function () { return document.fonts.ready; });
+
+(function () {
+  'use strict';
+  var D = window.DUREE;
+  var TAU = Math.PI * 2;
+  var canvas = document.getElementById('gl');
+  var el = function (id) { return document.getElementById(id); };
+  var lignes = { k: el('k1'), t1: el('t1'), t2: el('t2'), t3: el('t3'), s: el('s1') };
+
+  /* ---------- Courbes ---------- */
+  function clamp01(x) { return x < 0 ? 0 : (x > 1 ? 1 : x); }
+  function seg(t, a, b) { return clamp01((t - a) / (b - a)); }
+  function lerp(a, b, x) { return a + (b - a) * x; }
+  function outExpo(x) { return x >= 1 ? 1 : 1 - Math.pow(2, -10 * x); }
+  function inExpo(x) { return x <= 0 ? 0 : Math.pow(2, 10 * x - 10); }
+  function inQuart(x) { return x * x * x * x; }
+  function inOutSine(x) { return -(Math.cos(Math.PI * x) - 1) / 2; }
+  /* Ressort amorti : réponse indicielle d'un second ordre, en forme fermée. zeta < 1 dépasse la cible puis revient. */
+  function ressort(x, zeta, omega) {
+    if (x <= 0) return 0;
+    var wd = omega * Math.sqrt(1 - zeta * zeta);
+    var e = Math.exp(-zeta * omega * x);
+    return 1 - e * (Math.cos(wd * x) + (zeta * omega / wd) * Math.sin(wd * x));
+  }
+
+  function poseLigne(node, t, tIn, dIn, tOut, dOut) {
+    var e = outExpo(seg(t, tIn, tIn + dIn));
+    var s = inQuart(seg(t, tOut, tOut + dOut));
+    var y = (1 - e) * 130 - s * 130;
+    node.style.transform = 'translate3d(0,' + y.toFixed(3) + '%,0)';
+  }
+  function poseTexte(t) {
+    poseLigne(lignes.k, t, 2.30, 0.90, 6.00, 0.50);
+    poseLigne(lignes.t1, t, 2.45, 1.00, 6.08, 0.50);
+    poseLigne(lignes.t2, t, 2.57, 1.00, 6.16, 0.50);
+    poseLigne(lignes.t3, t, 2.69, 1.00, 6.24, 0.50);
+    poseLigne(lignes.s, t, 3.05, 0.90, 6.32, 0.50);
+  }
+
+  /* ---------- Repli sans Three ni WebGL : le texte seul ---------- */
+  function repli() {
+    canvas.style.display = 'none';
+    window.render = function (t) { poseTexte(Math.max(0, Math.min(D, +t || 0))); };
+  }
+  if (typeof THREE === 'undefined') { repli(); return; }
+  var renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({
+      canvas: canvas, antialias: true, preserveDrawingBuffer: true, alpha: false,
+      powerPreference: 'high-performance'
+    });
+  } catch (e) { console.error(e); repli(); return; }
+  renderer.setPixelRatio(1);
+  renderer.setSize(1920, 1080, false);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x17110e);
+  scene.fog = new THREE.Fog(0x17110e, 7, 15);
+  var camera = new THREE.PerspectiveCamera(32, 1920 / 1080, 0.1, 60);
+  camera.position.set(0, 0.35, 7.4);
+  camera.lookAt(0, 0.05, 0);
+
+  /* ---------- Textures dessinées, jamais chargées ---------- */
+  function texDegrade(w, h, stops, radial) {
+    var c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    var x = c.getContext('2d');
+    var g = radial
+      ? x.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.max(w, h) / 2)
+      : x.createLinearGradient(0, 0, 0, h);
+    stops.forEach(function (s) { g.addColorStop(s[0], s[1]); });
+    x.fillStyle = g;
+    x.fillRect(0, 0, w, h);
+    var tex = new THREE.CanvasTexture(c);
+    tex.encoding = THREE.sRGBEncoding;
+    return tex;
+  }
+
+  /* ---------- Environnement : un studio de trois sources, cuit une fois en PMREM ---------- */
+  function panneauLumiere(w, h, tex, pos) {
+    var m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
+    m.position.set(pos[0], pos[1], pos[2]);
+    m.lookAt(0, 0, 0);
+    return m;
+  }
+  var envScene = new THREE.Scene();
+  envScene.background = new THREE.Color(0x070504);
+  envScene.add(panneauLumiere(7, 5, texDegrade(64, 64, [[0, '#fff3e2'], [0.55, '#e9c9a6'], [1, '#2a1c14']], true), [-5, 4.5, 3]));
+  envScene.add(panneauLumiere(1.4, 9, texDegrade(16, 128, [[0, '#4a2a1a'], [0.5, '#f0a26e'], [1, '#4a2a1a']], false), [6.5, 1, -2]));
+  envScene.add(panneauLumiere(3, 3, texDegrade(64, 64, [[0, '#ffffff'], [0.6, '#f2dcc4'], [1, '#1a120e']], true), [2, 6, 5]));
+  envScene.add(panneauLumiere(24, 24, texDegrade(4, 4, [[0, '#2b1e17'], [1, '#2b1e17']], false), [0, -8, 0]));
+  var pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(envScene, 0.035).texture;
+
+  /* ---------- La carte : un corps sombre, un écran, une dalle de verre épaisse aux bords ronds ---------- */
+  var CW = 3.6, CH = 2.4, CR = 0.22;
+  function formeArrondie(w, h, r) {
+    var s = new THREE.Shape();
+    var x = -w / 2, y = -h / 2;
+    s.moveTo(x + r, y);
+    s.lineTo(x + w - r, y);
+    s.absarc(x + w - r, y + r, r, -Math.PI / 2, 0, false);
+    s.lineTo(x + w, y + h - r);
+    s.absarc(x + w - r, y + h - r, r, 0, Math.PI / 2, false);
+    s.lineTo(x + r, y + h);
+    s.absarc(x + r, y + h - r, r, Math.PI / 2, Math.PI, false);
+    s.lineTo(x, y + r);
+    s.absarc(x + r, y + r, r, Math.PI, Math.PI * 1.5, false);
+    return s;
+  }
+  var verreGeo = new THREE.ExtrudeGeometry(formeArrondie(CW - 0.08, CH - 0.08, CR - 0.04), {
+    depth: 0.10, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.04, bevelOffset: 0,
+    bevelSegments: 5, curveSegments: 18
+  });
+  verreGeo.translate(0, 0, -0.05);
+  /* r128 : transmission rend le verre transparent là où il ne reflète rien, et opaque dans ses reflets. */
+  var verreMat = new THREE.MeshPhysicalMaterial({
+    color: 0xdfe9e6, metalness: 0, roughness: 0.10, transmission: 0.95, transparent: true,
+    clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 1.6, reflectivity: 0.7, depthWrite: false
+  });
+  var verre = new THREE.Mesh(verreGeo, verreMat);
+
+  var corps = new THREE.Mesh(
+    new THREE.ShapeGeometry(formeArrondie(CW - 0.16, CH - 0.16, CR - 0.08), 18),
+    new THREE.MeshStandardMaterial({ color: 0x1f1714, roughness: 0.55, metalness: 0.1 })
+  );
+  corps.position.z = -0.075;
+
+  var EW = 1024, EH = 645;
+  var ecranCanvas = document.createElement('canvas');
+  ecranCanvas.width = EW; ecranCanvas.height = EH;
+  var ctx = ecranCanvas.getContext('2d');
+  var ecranTex = new THREE.CanvasTexture(ecranCanvas);
+  ecranTex.encoding = THREE.sRGBEncoding;
+  ecranTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  var ecran = new THREE.Mesh(new THREE.PlaneGeometry(3.24, 2.04), new THREE.MeshBasicMaterial({ map: ecranTex, alphaTest: 0.5 }));
+  ecran.position.z = -0.03;
+
+  var carte = new THREE.Group();
+  carte.add(corps);
+  carte.add(ecran);
+  carte.add(verre);
+  scene.add(carte);
+
+  /* ---------- Le studio : sol, mur, halo derrière la carte, ombre douce ---------- */
+  var sol = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ color: 0x1c1411, roughness: 0.92, metalness: 0 }));
+  sol.rotation.x = -Math.PI / 2;
+  sol.position.y = -1.62;
+  scene.add(sol);
+  var mur = new THREE.Mesh(new THREE.PlaneGeometry(40, 24), new THREE.MeshStandardMaterial({ color: 0x1a1210, roughness: 0.95, metalness: 0 }));
+  mur.position.set(0, 6, -4.5);
+  scene.add(mur);
+
+  var halo = new THREE.Mesh(
+    new THREE.PlaneGeometry(9, 9),
+    new THREE.MeshBasicMaterial({
+      map: texDegrade(256, 256, [[0, 'rgba(227,154,106,0.95)'], [0.35, 'rgba(180,100,60,0.35)'], [1, 'rgba(0,0,0,0)']], true),
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0, fog: false
+    })
+  );
+  halo.position.set(-1.2, 0.6, -4.4);
+  scene.add(halo);
+
+  var ombre = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({
+      map: texDegrade(256, 256, [[0, 'rgba(0,0,0,0.9)'], [0.45, 'rgba(0,0,0,0.45)'], [1, 'rgba(0,0,0,0)']], true),
+      transparent: true, depthWrite: false, opacity: 0, fog: false
+    })
+  );
+  ombre.rotation.x = -Math.PI / 2;
+  ombre.position.y = -1.60;
+  scene.add(ombre);
+
+  /* ---------- Lumières : une clé fixe, un contre cuivré, et une source qui glisse sur le verre ---------- */
+  scene.add(new THREE.HemisphereLight(0x6b5646, 0x0d0907, 0.55));
+  var cle = new THREE.DirectionalLight(0xfff0dc, 0.9);
+  cle.position.set(3, 6, 5);
+  scene.add(cle);
+  var contre = new THREE.DirectionalLight(0xe39a6a, 0.5);
+  contre.position.set(-4, 2, -3);
+  scene.add(contre);
+  var glisse = new THREE.PointLight(0xffd9b4, 0, 12, 1.6);
+  scene.add(glisse);
+
+  /* ---------- L'écran : une leçon fictive, dessinée en Canvas 2D dans le style de l'application ---------- */
+  var PROMPT = 'Chaque matin à 8 h, lis mes nouveaux e-mails, classe-les par urgence, et prépare un brouillon de réponse pour les trois plus importants.';
+  var PARA = 'Un agent est un assistant à qui vous confiez une tâche complète, pas une question. Il lit, décide, agit, puis vous rend compte.';
+  function decouper(texte, maxW) {
+    var mots = texte.split(' '), out = [], cur = '';
+    for (var i = 0; i < mots.length; i++) {
+      var essai = cur ? cur + ' ' + mots[i] : mots[i];
+      if (ctx.measureText(essai).width > maxW && cur) { out.push(cur); cur = mots[i]; }
+      else { cur = essai; }
+    }
+    if (cur) out.push(cur);
+    return out;
+  }
+  function arrondi(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+  function espacement(v) { if ('letterSpacing' in ctx) ctx.letterSpacing = v; }
+  var derniereCle = null;
+  function dessinerEcran(nChars, curseur) {
+    var cle = nChars + ':' + (curseur ? 1 : 0);
+    if (cle === derniereCle) return;
+    derniereCle = cle;
+    ctx.clearRect(0, 0, EW, EH);
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+    arrondi(0, 0, EW, EH, 40);
+    ctx.fillStyle = '#f7f5f0';
+    ctx.fill();
+    ctx.save();
+    arrondi(0, 0, EW, EH, 40);
+    ctx.clip();
+
+    /* Le rail de gauche */
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 232, EH);
+    ctx.fillStyle = '#e8e3d8';
+    ctx.fillRect(232, 0, 1, EH);
+    ctx.fillStyle = '#0f1a2e';
+    ctx.font = '600 22px "Fraunces"';
+    ctx.fillText('AI Academy', 32, 52);
+    var modules = ['Le socle', 'Vos données', 'Monter sa base MCP', 'Agents et automatisations'];
+    for (var i = 0; i < modules.length; i++) {
+      var y = 118 + i * 44, actif = i === 3;
+      ctx.fillStyle = actif ? '#0f1a2e' : '#6b685f';
+      ctx.font = (actif ? '600' : '500') + ' 15px "Inter"';
+      ctx.fillText(modules[i], 32, y);
+      if (actif) {
+        ctx.fillStyle = '#C8A951';
+        ctx.beginPath();
+        ctx.arc(20, y - 5, 3.5, 0, TAU);
+        ctx.fill();
+      }
+    }
+    ctx.fillStyle = '#8a8577';
+    ctx.font = '500 12px "Inter"';
+    ctx.fillText('Vous en êtes là', 32, EH - 72);
+    ctx.fillStyle = '#e8e3d8';
+    arrondi(32, EH - 56, 168, 6, 3);
+    ctx.fill();
+    ctx.fillStyle = '#0f1a2e';
+    arrondi(32, EH - 56, 168 * 0.42, 6, 3);
+    ctx.fill();
+
+    /* La leçon */
+    var X = 284;
+    ctx.fillStyle = '#8a8577';
+    ctx.font = '500 12px "JetBrains Mono"';
+    espacement('0.2em');
+    ctx.fillText('MODULE · AGENTS ET AUTOMATISATIONS', X, 64);
+    espacement('0px');
+    ctx.fillStyle = '#0f1a2e';
+    ctx.font = '600 46px "Fraunces"';
+    ctx.fillText('Votre premier agent', X, 128);
+    ctx.fillStyle = '#3a3a38';
+    ctx.font = '400 17px "Inter"';
+    var para = decouper(PARA, 690);
+    for (var p = 0; p < para.length; p++) ctx.fillText(para[p], X, 176 + p * 28);
+
+    /* Le bloc de prompt, tapé sous nos yeux */
+    var by = 176 + para.length * 28 + 22, bh = 214;
+    ctx.fillStyle = '#0f1a2e';
+    arrondi(X, by, 700, bh, 14);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(247,245,240,0.55)';
+    ctx.font = '500 11px "JetBrains Mono"';
+    espacement('0.2em');
+    ctx.fillText('PROMPT', X + 26, by + 34);
+    espacement('0px');
+    ctx.font = '500 16px "JetBrains Mono"';
+    var lp = decouper(PROMPT, 648);
+    var reste = nChars, ly = by + 72;
+    ctx.fillStyle = '#f7f5f0';
+    for (var k = 0; k < lp.length; k++) {
+      var n = Math.min(lp[k].length, reste);
+      var part = lp[k].slice(0, n);
+      ctx.fillText(part, X + 26, ly);
+      if (n < lp[k].length || k === lp.length - 1) {
+        if (curseur) {
+          var cw = ctx.measureText(part).width;
+          ctx.fillStyle = '#C8A951';
+          ctx.fillRect(X + 26 + cw + 4, ly - 15, 9, 20);
+        }
+        break;
+      }
+      reste -= lp[k].length + 1;
+      ly += 28;
+    }
+
+    /* La question de contrôle, celle qui ferme les leçons de l'Academy */
+    var qy = by + bh + 22;
+    ctx.fillStyle = '#ffffff';
+    arrondi(X, qy, 700, 118, 14);
+    ctx.fill();
+    ctx.strokeStyle = '#e8e3d8';
+    ctx.lineWidth = 1;
+    arrondi(X + 0.5, qy + 0.5, 699, 117, 14);
+    ctx.stroke();
+    ctx.fillStyle = '#8a8577';
+    ctx.font = '500 11px "JetBrains Mono"';
+    espacement('0.2em');
+    ctx.fillText('QUESTION DE CONTRÔLE', X + 26, qy + 34);
+    espacement('0px');
+    ctx.fillStyle = '#0f1a2e';
+    ctx.font = '500 16px "Inter"';
+    var q = decouper('Avant de le lancer : qu’est-ce qui pourrait être faux, et comment le verrez-vous ?', 648);
+    for (var qi = 0; qi < q.length; qi++) ctx.fillText(q[qi], X + 26, qy + 66 + qi * 26);
+    ctx.restore();
+    ecranTex.needsUpdate = true;
+  }
+
+  /* ---------- La chorégraphie ---------- */
+  var P0 = [2.8, -4.4, -1.4], P1 = [-1.18, 0.0, 0.0], P2 = [-1.7, 4.8, -1.2];
+  var R0 = [-0.8, 2.4, 0.45], R1 = [0.05, -0.18, 0.0], R2 = [0.55, -1.35, -0.15];
+  function poseCarte(t) {
+    var u = t - 0.2;
+    var ep = ressort(u, 0.85, 3.8);
+    var er = ressort(u, 0.60, 3.4);
+    var x = inExpo(seg(t, 6.2, 7.5));
+    var vis = seg(t, 2.2, 3.0) * (1 - seg(t, 5.8, 6.4));
+    var fl = vis * Math.sin(TAU * (t - 2.2) / 3.6);
+    var px = lerp(P0[0], P1[0], ep), py = lerp(P0[1], P1[1], ep) + 0.035 * fl, pz = lerp(P0[2], P1[2], ep);
+    var rx = lerp(R0[0], R1[0], er) + 0.012 * fl, ry = lerp(R0[1], R1[1], er) - 0.02 * fl, rz = lerp(R0[2], R1[2], er);
+    px = lerp(px, P2[0], x); py = lerp(py, P2[1], x); pz = lerp(pz, P2[2], x);
+    rx = lerp(rx, R2[0], x); ry = lerp(ry, R2[1], x); rz = lerp(rz, R2[2], x);
+    carte.position.set(px, py, pz);
+    carte.rotation.set(rx, ry, rz);
+
+    var h = py + 1.62;
+    var force = clamp01(1 - (h - 1.2) / 3.0) * clamp01((h + 1.0) / 1.5);
+    ombre.position.set(px + 0.35, -1.6, pz + 0.1);
+    ombre.scale.set(4.4 + h * 0.5, 3.2 + h * 0.4, 1);
+    ombre.material.opacity = 0.62 * force * (1 - x);
+  }
+  function poseLumiere(t) {
+    var ha = outExpo(seg(t, 1.0, 2.6)) * (1 - inQuart(seg(t, 6.3, 7.6)));
+    halo.material.opacity = 0.55 * ha;
+    var sg = seg(t, 2.0, 4.3);
+    glisse.position.set(-5 + 10 * inOutSine(sg), 1.8, 2.6);
+    glisse.intensity = 2.6 * Math.sin(Math.PI * sg);
+  }
+
+  window.render = function (t) {
+    t = Math.max(0, Math.min(D, +t || 0));
+    poseCarte(t);
+    poseLumiere(t);
+    var nChars = Math.floor(Math.max(0, t - 2.6) * 40);
+    var tape = nChars < PROMPT.length;
+    dessinerEcran(Math.min(nChars, PROMPT.length), tape || Math.floor(t * 2.5) % 2 === 0);
+    renderer.render(scene, camera);
+    poseTexte(t);
+  };
+})();
+</script>
+<script src="../lecteur.js"></script>
+</body>
+</html>

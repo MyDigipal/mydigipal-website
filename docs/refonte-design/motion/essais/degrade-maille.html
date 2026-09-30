@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Dégradé maillé</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: #000; }
+  /* Repli si WebGL manque : un dégradé fixe dans la même palette, le texte reste lisible. */
+  #stage {
+    position: relative; width: 1920px; height: 1080px; overflow: hidden;
+    background: linear-gradient(135deg, #fff1d6 0%, #ffb65c 38%, #ff6a5c 70%, #7fe0c8 100%);
+    font-family: "Inter", system-ui, sans-serif; color: #1e1418;
+  }
+  #gl { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: block; }
+
+  #texte {
+    position: absolute; left: 140px; top: 0; width: 1000px; height: 1080px;
+    display: flex; flex-direction: column; justify-content: center; pointer-events: none;
+  }
+  .mask { overflow: hidden; padding: 0 .08em .16em; margin-bottom: -.16em; }
+  .ln { display: block; white-space: nowrap; transform: translate3d(0, 130%, 0); }
+  .k .ln {
+    font-family: "JetBrains Mono", monospace; font-weight: 500; font-size: 17px; line-height: 1.6;
+    letter-spacing: .32em; text-transform: uppercase; color: #1e1418; margin-bottom: 30px;
+  }
+  .t .ln {
+    font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 144px; line-height: .96;
+    letter-spacing: -.03em; color: #1e1418; font-variation-settings: "opsz" 144;
+  }
+  .t .ln em { font-style: italic; font-weight: 500; letter-spacing: -.02em; }
+  .s .ln {
+    font-family: "Inter", sans-serif; font-weight: 500; font-size: 26px; line-height: 1.5;
+    color: rgba(30, 20, 24, .72); margin-top: 36px; white-space: normal; max-width: 620px;
+  }
+
+  /* Les panneaux de verre dépoli : le fond qui bouge derrière eux est ce qui les fait exister. */
+  .verre {
+    position: absolute; left: 0; top: 0; border-radius: 24px; box-sizing: border-box;
+    background: rgba(255, 252, 246, .26);
+    -webkit-backdrop-filter: blur(24px) saturate(1.45); backdrop-filter: blur(24px) saturate(1.45);
+    box-shadow: 0 34px 80px rgba(80, 30, 20, .18), inset 0 1px 0 rgba(255, 255, 255, .62);
+    color: #1e1418; transform-origin: 50% 50%; opacity: 0; visibility: hidden;
+  }
+  .etq {
+    font-family: "JetBrains Mono", monospace; font-weight: 500; font-size: 12px; letter-spacing: .26em;
+    text-transform: uppercase; color: rgba(30, 20, 24, .62);
+  }
+  #v1 { width: 460px; height: 262px; padding: 30px 34px; }
+  #v1 h3 { margin: 12px 0 0; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1.1; letter-spacing: -.015em; font-variation-settings: "opsz" 40; }
+  #v1 .jauge { position: relative; height: 6px; border-radius: 3px; background: rgba(30, 20, 24, .14); margin-top: 26px; overflow: hidden; }
+  #v1 .jauge i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 3px; background: #1e1418; }
+  #v1 .ou { display: flex; justify-content: space-between; margin-top: 12px; font-size: 14px; font-weight: 500; color: rgba(30, 20, 24, .62); }
+  #v1 .bouton {
+    position: absolute; right: 34px; bottom: 30px; padding: 0 22px; height: 44px; line-height: 44px; border-radius: 22px;
+    background: #1e1418; color: #fff1d6; font-weight: 600; font-size: 16px;
+  }
+  #v2 { width: 640px; height: 78px; padding: 0 30px; display: flex; align-items: center; gap: 14px; white-space: nowrap; font-family: "JetBrains Mono", monospace; font-weight: 500; font-size: 19px; }
+  #v2 .chevron { color: rgba(30, 20, 24, .5); }
+  #v2 .curseur { display: inline-block; width: 10px; height: 24px; background: #1e1418; margin-left: 2px; }
+  #v3 { width: 330px; height: 66px; padding: 0 24px; display: flex; align-items: center; gap: 14px; font-weight: 600; font-size: 16px; }
+  #v3 .point { flex: none; width: 12px; height: 12px; border-radius: 50%; background: #1e7f8c; box-shadow: 0 0 0 0 rgba(30, 127, 140, .35); }
+  #v3 .heure { margin-left: auto; font-family: "JetBrains Mono", monospace; font-weight: 500; font-size: 14px; color: rgba(30, 20, 24, .62); }
+
+  #prechargeur { position: absolute; left: -9999px; top: -9999px; visibility: hidden; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl" width="1920" height="1080"></canvas>
+  <div id="texte">
+    <div class="mask k"><span class="ln" id="k1">AI Academy · MyDigipal</span></div>
+    <div class="mask t"><span class="ln" id="t1">Apprenez l’IA</span></div>
+    <div class="mask t"><span class="ln" id="t2">avec <em>méthode.</em></span></div>
+    <div class="mask s"><span class="ln" id="s1">La méthode, puis vos automatisations, sur vos propres cas de travail.</span></div>
+  </div>
+  <div class="verre" id="v1">
+    <div class="etq">Leçon · en cours</div>
+    <h3>Votre premier agent</h3>
+    <div class="jauge"><i id="jauge"></i></div>
+    <div class="ou"><span>Vous en êtes là</span><span id="pct">0 %</span></div>
+    <div class="bouton">Continuer</div>
+  </div>
+  <div class="verre" id="v2"><span class="chevron">&gt;</span><span id="tape"></span><span class="curseur" id="curseur"></span></div>
+  <div class="verre" id="v3"><span class="point" id="point"></span><span>Agent en route</span><span class="heure">lundi · 8 h</span></div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Fraunces';font-weight:500">a</span>
+  <span style="font-family:'Fraunces';font-weight:600">a</span>
+  <span style="font-family:'Fraunces';font-weight:500;font-style:italic">a</span>
+  <span style="font-family:'Inter';font-weight:400">a</span>
+  <span style="font-family:'Inter';font-weight:500">a</span>
+  <span style="font-family:'Inter';font-weight:600">a</span>
+  <span style="font-family:'JetBrains Mono';font-weight:500">a</span>
+</div>
+
+<script>
+/* L'état de la scène à l'instant t : une fonction pure, sans DOM, testable dans Node. */
+window.ETAT = (function () {
+  'use strict';
+  var D = 8;
+  var TAU = Math.PI * 2;
+  var PROMPT = 'Résume mes e-mails du matin, par urgence.';
+  function clamp01(x) { return x < 0 ? 0 : (x > 1 ? 1 : x); }
+  function seg(t, a, b) { return clamp01((t - a) / (b - a)); }
+  function outExpo(x) { return x >= 1 ? 1 : 1 - Math.pow(2, -10 * x); }
+  function inQuart(x) { return x * x * x * x; }
+  function inCubic(x) { return x * x * x; }
+  function outCubic(x) { return 1 - Math.pow(1 - x, 3); }
+  function ressort(x, zeta, omega) {
+    if (x <= 0) return 0;
+    var wd = omega * Math.sqrt(1 - zeta * zeta);
+    var e = Math.exp(-zeta * omega * x);
+    return 1 - e * (Math.cos(wd * x) + (zeta * omega / wd) * Math.sin(wd * x));
+  }
+  function ligne(t, tIn, dIn, tOut, dOut) {
+    var e = outExpo(seg(t, tIn, tIn + dIn));
+    var s = inQuart(seg(t, tOut, tOut + dOut));
+    return (1 - e) * 130 - s * 130;
+  }
+  /* Un panneau de verre : il monte en ressort depuis 70 px plus bas, flotte pendant sa tenue, puis retombe en accélérant. */
+  var PANNEAUX = [
+    { id: 'v1', x: 1230, y: 300, tIn: 1.30, tOut: 6.60, phase: 0.0, rot: 1.6 },
+    { id: 'v2', x: 1150, y: 640, tIn: 1.60, tOut: 6.72, phase: 2.1, rot: -1.2 },
+    { id: 'v3', x: 1460, y: 790, tIn: 1.90, tOut: 6.84, phase: 4.2, rot: 2.2 }
+  ];
+  function panneau(p, t) {
+    var e = ressort(t - p.tIn, 0.62, 11);
+    var sortie = inCubic(seg(t, p.tOut, p.tOut + 0.55));
+    var visible = t > p.tIn && sortie < 1;
+    var flotte = 9 * Math.sin(TAU * (t / 4.0) + p.phase);
+    return {
+      visible: visible,
+      x: p.x, y: p.y + 70 * (1 - e) + flotte + 90 * sortie,
+      rot: p.rot * Math.sin(TAU * (t / 6.0) + p.phase) - 3 * sortie,
+      op: Math.min(1, e * 1.4) * (1 - sortie),
+      s: 0.94 + 0.06 * Math.min(1, e)
+    };
+  }
+  return function etat(t) {
+    t = Math.max(0, Math.min(D, +t || 0));
+    var ph = t / D;
+    /* La bande de lumière traverse une fois par boucle et s'éteint aux deux bouts, donc aucun saut visible. */
+    var band = -1.3 + 2.6 * ph;
+    var bandI = Math.sin(Math.PI * ph);
+    bandI = bandI * bandI;
+    var panneaux = {};
+    for (var i = 0; i < PANNEAUX.length; i++) panneaux[PANNEAUX[i].id] = panneau(PANNEAUX[i], t);
+    /* Dans la leçon : la jauge avance pendant la tenue ; dans la barre : le prompt se tape ; dans la puce : le point respire. */
+    var jauge = 0.42 + 0.26 * outCubic(seg(t, 2.6, 4.2));
+    var nChars = Math.max(0, Math.min(PROMPT.length, Math.floor((t - 2.2) * 30)));
+    var curseur = t > 1.6 && (nChars < PROMPT.length || Math.floor(t * 2.5) % 2 === 0);
+    var pointR = 0.5 + 0.5 * Math.sin(TAU * t / 2.0);
+    return {
+      ph: ph, band: band, bandI: bandI,
+      panneaux: panneaux,
+      jauge: jauge, pct: Math.round(jauge * 100), nChars: nChars, curseur: curseur, point: pointR,
+      texte: {
+        k: ligne(t, 0.55, 0.90, 6.80, 0.50),
+        t1: ligne(t, 0.70, 1.05, 6.88, 0.50),
+        t2: ligne(t, 0.84, 1.05, 6.96, 0.50),
+        s: ligne(t, 1.20, 0.90, 7.04, 0.50)
+      },
+      PROMPT: PROMPT
+    };
+  };
+})();
+</script>
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 8;
+window.DUR = window.DUREE; /* alias lu par render.js du moteur vidéo */
+window.PRET = Promise.all([
+  '500 40px "Fraunces"', '600 40px "Fraunces"', 'italic 500 40px "Fraunces"',
+  '400 20px "Inter"', '500 20px "Inter"', '600 20px "Inter"', '500 20px "JetBrains Mono"'
+].map(function (f) { return document.fonts.load(f); })).then(function () { return document.fonts.ready; });
+
+(function () {
+  'use strict';
+  var etat = window.ETAT;
+  var canvas = document.getElementById('gl');
+  var el = function (id) { return document.getElementById(id); };
+  var lignes = { k: el('k1'), t1: el('t1'), t2: el('t2'), s: el('s1') };
+  var panneaux = { v1: el('v1'), v2: el('v2'), v3: el('v3') };
+  var jauge = el('jauge'), pct = el('pct'), tape = el('tape'), curseur = el('curseur'), point = el('point');
+
+  function poseDom(e) {
+    lignes.k.style.transform = 'translate3d(0,' + e.texte.k.toFixed(3) + '%,0)';
+    lignes.t1.style.transform = 'translate3d(0,' + e.texte.t1.toFixed(3) + '%,0)';
+    lignes.t2.style.transform = 'translate3d(0,' + e.texte.t2.toFixed(3) + '%,0)';
+    lignes.s.style.transform = 'translate3d(0,' + e.texte.s.toFixed(3) + '%,0)';
+    for (var id in panneaux) {
+      var p = e.panneaux[id], node = panneaux[id];
+      if (!p.visible) { node.style.visibility = 'hidden'; node.style.opacity = '0'; continue; }
+      node.style.visibility = 'visible';
+      node.style.opacity = p.op.toFixed(3);
+      node.style.transform = 'translate(' + p.x.toFixed(2) + 'px,' + p.y.toFixed(2) + 'px) rotate(' + p.rot.toFixed(3) + 'deg) scale(' + p.s.toFixed(4) + ')';
+    }
+    jauge.style.width = (e.jauge * 100).toFixed(2) + '%';
+    pct.textContent = e.pct + ' %';
+    tape.textContent = e.PROMPT.slice(0, e.nChars);
+    curseur.style.visibility = e.curseur ? 'visible' : 'hidden';
+    point.style.boxShadow = '0 0 0 ' + (2 + 8 * e.point).toFixed(2) + 'px rgba(30,127,140,' + (0.30 * (1 - e.point)).toFixed(3) + ')';
+  }
+
+  /* ---------- WebGL : un triangle plein écran, un fragment shader ---------- */
+  var gl = canvas.getContext('webgl', {
+    preserveDrawingBuffer: true, antialias: false, alpha: false, depth: false, stencil: false,
+    powerPreference: 'high-performance'
+  });
+  if (!gl) {
+    canvas.style.display = 'none';
+    window.render = function (t) { poseDom(etat(t)); };
+    return;
+  }
+
+  var VERT = [
+    'attribute vec2 a_pos;',
+    'void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }'
+  ].join('\n');
+
+  var FRAG = [
+    '#ifdef GL_FRAGMENT_PRECISION_HIGH',
+    'precision highp float;',
+    '#else',
+    'precision mediump float;',
+    '#endif',
+    'uniform vec2  u_res;',
+    'uniform float u_ph;     /* phase de boucle, 0 a 1 */',
+    'uniform float u_band;   /* position de la bande de lumiere en diagonale */',
+    'uniform float u_bandI;  /* son intensite, nulle aux deux bouts de la boucle */',
+    'const float TAU = 6.28318530718;',
+    '',
+    '/* Bruit de valeur lisse, lu a grande echelle seulement : aucun grain. */',
+    'float hash21(vec2 p) {',
+    '  p = fract(p * vec2(123.34, 456.21));',
+    '  p += dot(p, p + 45.32);',
+    '  return fract(p.x * p.y);',
+    '}',
+    'float vnoise(vec2 p) {',
+    '  vec2 i = floor(p);',
+    '  vec2 f = fract(p);',
+    '  vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);',
+    '  float a = hash21(i);',
+    '  float b = hash21(i + vec2(1.0, 0.0));',
+    '  float c = hash21(i + vec2(0.0, 1.0));',
+    '  float d = hash21(i + vec2(1.0, 1.0));',
+    '  return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);',
+    '}',
+    'float fbm(vec2 p) {',
+    '  float v = 0.0;',
+    '  float a = 0.5;',
+    '  for (int i = 0; i < 3; i++) {',
+    '    v += a * vnoise(p);',
+    '    p = p * 2.03 + vec2(1.7, 9.2);',
+    '    a *= 0.5;',
+    '  }',
+    '  return v;',
+    '}',
+    '/* Trame de Bayer 4x4, fixe dans le temps : elle casse les bandes sans jamais crepiter. */',
+    'float bayer4(vec2 p) {',
+    '  vec2 q = floor(mod(p, 4.0));',
+    '  vec2 f = mod(q, 2.0);',
+    '  vec2 c = floor(q * 0.5);',
+    '  float fine = 2.0 * f.x + 3.0 * f.y - 4.0 * f.x * f.y;',
+    '  float gros = 2.0 * c.x + 3.0 * c.y - 4.0 * c.x * c.y;',
+    '  return (4.0 * fine + gros) / 16.0;',
+    '}',
+    '',
+    'void main() {',
+    '  vec2 p = (gl_FragCoord.xy - 0.5 * u_res) / u_res.y;',
+    '  float ph = u_ph * TAU;',
+    '  vec2 o1 = vec2(cos(ph), sin(ph));',
+    '  vec2 o2 = vec2(cos(2.0 * ph + 1.3), sin(2.0 * ph + 1.3));',
+    '  /* Deformation du domaine en deux couches : le maillage se plie et coule, lentement, sur des orbites fermees. */',
+    '  vec2 w1 = vec2(fbm(p * 1.1 + o1 * 0.30), fbm(p * 1.1 + vec2(3.1, 1.7) - o1.yx * 0.30)) - 0.5;',
+    '  vec2 q = p + w1 * 0.55;',
+    '  vec2 w2 = vec2(fbm(q * 1.7 + o2 * 0.18 + vec2(5.2, 0.4)), fbm(q * 1.7 - o2 * 0.18 + vec2(0.9, 7.7))) - 0.5;',
+    '  vec2 r = q + w2 * 0.35;',
+    '',
+    '  /* La palette du verger : creme solaire, abricot, corail, menthe, rose the, bleu canard. */',
+    '  vec3 creme   = vec3(1.000, 0.953, 0.839);',
+    '  vec3 abricot = vec3(1.000, 0.714, 0.361);',
+    '  vec3 corail  = vec3(1.000, 0.416, 0.361);',
+    '  vec3 menthe  = vec3(0.498, 0.878, 0.784);',
+    '  vec3 rose    = vec3(0.984, 0.780, 0.804);',
+    '  vec3 canard  = vec3(0.145, 0.545, 0.588);',
+    '  vec2 c1 = vec2(-0.55,  0.22) + 0.14 * vec2(cos(ph + 0.4), sin(ph + 0.4));',
+    '  vec2 c2 = vec2( 0.10, -0.30) + 0.16 * vec2(sin(ph), cos(2.0 * ph));',
+    '  vec2 c3 = vec2( 0.62,  0.30) + 0.12 * vec2(cos(2.0 * ph + 2.0), sin(ph + 1.0));',
+    '  vec2 c4 = vec2(-0.20, -0.05) + 0.10 * vec2(sin(2.0 * ph + 0.7), cos(ph + 2.4));',
+    '  vec2 c5 = vec2( 0.75, -0.40) + 0.13 * vec2(cos(ph + 3.0), sin(2.0 * ph));',
+    '  vec2 c6 = vec2(-0.75, -0.35) + 0.10 * vec2(sin(ph + 1.9), cos(ph + 0.2));',
+    '  vec2 d1 = r - c1;',
+    '  vec2 d2 = r - c2;',
+    '  vec2 d3 = r - c3;',
+    '  vec2 d4 = r - c4;',
+    '  vec2 d5 = r - c5;',
+    '  vec2 d6 = r - c6;',
+    '  float w0 = 0.20;',
+    '  float k1 = exp(-dot(d1, d1) * 4.5);',
+    '  float k2 = exp(-dot(d2, d2) * 5.5);',
+    '  float k3 = exp(-dot(d3, d3) * 6.0);',
+    '  float k4 = exp(-dot(d4, d4) * 7.0);',
+    '  float k5 = exp(-dot(d5, d5) * 6.5);',
+    '  float k6 = exp(-dot(d6, d6) * 6.0);',
+    '  vec3 col = (creme * w0 + abricot * k1 + corail * k2 + menthe * k3 + rose * k4 + canard * k5 + creme * k6 * 1.1)',
+    '           / (w0 + k1 + k2 + k3 + k4 + k5 + k6);',
+    '',
+    '  /* Des poches lumineuses : la ou le bruit deforme monte, une fenetre de creme s ouvre, comme un soleil derriere un voile. */',
+    '  float n = fbm(r * 2.2 + vec2(cos(ph), sin(ph)) * 0.2);',
+    '  col = mix(col, creme, smoothstep(0.58, 0.82, n) * 0.5);',
+    '',
+    '  /* La bande de lumiere en diagonale. */',
+    '  float gx = (p.x * 0.78 + p.y * 0.62 - u_band) * 2.6;',
+    '  col += vec3(1.0, 0.97, 0.90) * exp(-gx * gx) * 0.16 * u_bandI;',
+    '',
+    '  /* Une saturation qui tient le lumineux sans virer au pastel. */',
+    '  float lum = dot(col, vec3(0.299, 0.587, 0.114));',
+    '  col = mix(vec3(lum), col, 1.12);',
+    '  col = clamp(col, 0.0, 1.0);',
+    '  col += (bayer4(gl_FragCoord.xy) - 0.5) / 255.0;',
+    '  gl_FragColor = vec4(col, 1.0);',
+    '}'
+  ].join('\n');
+
+  function compiler(type, src) {
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error('Shader : ' + gl.getShaderInfoLog(s));
+    return s;
+  }
+  var prog, uPh, uBand, uBandI;
+  try {
+    prog = gl.createProgram();
+    gl.attachShader(prog, compiler(gl.VERTEX_SHADER, VERT));
+    gl.attachShader(prog, compiler(gl.FRAGMENT_SHADER, FRAG));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error('Programme : ' + gl.getProgramInfoLog(prog));
+  } catch (e) {
+    console.error(e);
+    canvas.style.display = 'none';
+    window.render = function (t) { poseDom(etat(t)); };
+    return;
+  }
+  gl.useProgram(prog);
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  var aPos = gl.getAttribLocation(prog, 'a_pos');
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+  gl.uniform2f(gl.getUniformLocation(prog, 'u_res'), 1920, 1080);
+  uPh = gl.getUniformLocation(prog, 'u_ph');
+  uBand = gl.getUniformLocation(prog, 'u_band');
+  uBandI = gl.getUniformLocation(prog, 'u_bandI');
+  gl.viewport(0, 0, 1920, 1080);
+  gl.disable(gl.DEPTH_TEST);
+  gl.disable(gl.BLEND);
+
+  /* ---------- La scène à l'instant t, pure et déterministe ---------- */
+  window.render = function (t) {
+    var e = etat(t);
+    gl.uniform1f(uPh, e.ph);
+    gl.uniform1f(uBand, e.band);
+    gl.uniform1f(uBandI, e.bandI);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    poseDom(e);
+  };
+})();
+</script>
+<script src="../lecteur.js"></script>
+</body>
+</html>

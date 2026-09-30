@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Démo d'interface</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Essai « démo d'interface » : une fausse application (tableau de bord d'automatisation de
+     l'entreprise fictive Atelier Martin) posée dans une perspective CSS légère. La caméra
+     tient la pose pendant que la souris agit, puis glisse vers la zone suivante. La mise au
+     point floute et assombrit les panneaux qui ne sont pas en jeu. Tout est posé par render(t). */
+  :root {
+    --fond: #15171c; --encre: #171a20; --ui: #ffffff; --ui-2: #f3f4f7; --ligne: #e4e6ec;
+    --sourd: #7a8090; --accent: #ff5533; --vert: #1f9d68;
+  }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+  #stage { position: relative; overflow: hidden; color: var(--encre); font-family: Manrope, sans-serif;
+    background: radial-gradient(ellipse 70% 60% at 50% 42%, #2b2f39 0%, #15171c 70%);
+    perspective: 2600px; perspective-origin: 50% 50%; }
+  #sol { position: absolute; left: 260px; top: 900px; width: 1400px; height: 300px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(110,130,170,.18) 0%, rgba(110,130,170,0) 62%); }
+  #app { position: absolute; left: 160px; top: 90px; width: 1600px; height: 900px; background: var(--ui-2);
+    border-radius: 18px; overflow: hidden; font-size: 18px;
+    box-shadow: 0 50px 120px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06); }
+  .pan { position: absolute; }
+  .carte { background: var(--ui); border-radius: 14px; overflow: hidden;
+    box-shadow: 0 1px 2px rgba(20,24,40,.06), 0 8px 24px rgba(20,24,40,.06); }
+  #barre { left: 0; top: 0; width: 1600px; height: 56px; background: var(--ui); border-bottom: 1px solid var(--ligne);
+    display: flex; align-items: center; padding: 0 24px; box-sizing: border-box; gap: 10px; }
+  #barre .nom { font-weight: 800; letter-spacing: -0.01em; }
+  #barre .sep { color: var(--sourd); font-weight: 500; }
+  #barre .badge { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--vert);
+    background: #e9f7f0; padding: 6px 12px; border-radius: 999px; }
+  #barre .badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--vert); display: block; }
+  #nav { left: 0; top: 57px; width: 220px; height: 843px; background: var(--ui); border-right: 1px solid var(--ligne); padding: 16px 12px; box-sizing: border-box; }
+  .nav-item { padding: 12px 14px; border-radius: 10px; color: var(--sourd); font-weight: 600; font-size: 16px; margin-bottom: 4px; white-space: nowrap; }
+  .nav-item.actif { background: var(--ui-2); color: var(--encre); }
+  #boite { left: 240px; top: 76px; width: 760px; height: 484px; }
+  #agent { left: 1020px; top: 76px; width: 560px; height: 484px; }
+  #taches { left: 240px; top: 580px; width: 1340px; height: 300px; }
+  .entete { position: absolute; left: 24px; right: 24px; top: 0; height: 60px; border-bottom: 1px solid var(--ligne);
+    display: flex; align-items: center; justify-content: space-between; font-size: 20px; font-weight: 700; }
+  .entete span { color: var(--sourd); font-size: 15px; font-weight: 500; }
+  .entete .mono { font-family: "IBM Plex Mono", monospace; font-size: 14px; }
+  .ligne { display: flex; align-items: center; height: 84px; padding: 0 24px; box-sizing: border-box; gap: 16px; border-bottom: 1px solid var(--ligne); width: 100%; }
+  .ligne.tache { height: 64px; gap: 14px; }
+  #boiteLignes, #tachesLignes { position: absolute; left: 0; top: 60px; width: 100%; }
+  #mailNouveau, #tacheNouvelle { position: absolute; left: 0; top: 60px; background: var(--ui); z-index: 2; }
+  .av { width: 40px; height: 40px; border-radius: 50%; color: #fff; font-weight: 700; font-size: 14px; display: grid; place-items: center; flex: none; }
+  .txt { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .txt b { font-weight: 700; font-size: 17px; white-space: nowrap; }
+  .txt span { font-size: 15px; color: var(--sourd); white-space: nowrap; }
+  .heure { margin-left: auto; font-family: "IBM Plex Mono", monospace; font-size: 14px; color: var(--sourd); }
+  .tag { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 5px 9px; border-radius: 6px;
+    background: #fff0ec; color: var(--accent); white-space: nowrap; transform-origin: 50% 50%; }
+  .tag.vert { background: #e9f7f0; color: var(--vert); }
+  #mailNouveau .heure { margin-left: auto; }
+  #mailNouveau .tag { position: absolute; right: 24px; top: 50px; }
+  .etat { position: absolute; left: 24px; top: 84px; font-weight: 700; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+  .etat .pt { width: 10px; height: 10px; border-radius: 50%; display: block; }
+  .pt.gris { background: #c4c8d2; } .pt.orange { background: var(--accent); }
+  #agentAnalyse .barre-p { position: absolute; left: 0; top: 40px; width: 512px; height: 8px; border-radius: 4px; background: var(--ui-2); }
+  #agentBarre { position: absolute; left: 0; top: 0; height: 8px; border-radius: 4px; background: var(--accent); width: 0; }
+  .resultat { position: absolute; left: 24px; top: 152px; width: 512px; background: var(--ui-2); border-radius: 12px; padding: 6px 20px; box-sizing: border-box; transform-origin: 50% 0; }
+  .r { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--ligne); font-size: 17px; }
+  .r:last-child { border-bottom: 0; }
+  .r span { color: var(--sourd); font-weight: 500; }
+  .r b { font-weight: 700; }
+  .bouton { position: absolute; left: 24px; top: 380px; width: 240px; height: 52px; border-radius: 26px; background: var(--accent); color: #fff;
+    font-weight: 700; font-size: 17px; transform-origin: 50% 50%; }
+  .bouton span { position: absolute; inset: 0; display: grid; place-items: center; }
+  .coche { width: 26px; height: 26px; flex: none; }
+  .coche circle { fill: none; stroke: #cfd3dc; stroke-width: 1.8; }
+  .coche path { fill: none; stroke: var(--vert); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 15; stroke-dashoffset: 15; }
+  .coche.faite circle { stroke: var(--vert); fill: #e9f7f0; }
+  .coche.faite path { stroke-dashoffset: 0; }
+  .qui { margin-left: auto; font-size: 15px; color: var(--sourd); white-space: nowrap; }
+  #tacheNouvelle .tag { margin-left: 12px; }
+  #onde { position: absolute; left: 0; top: 0; width: 160px; height: 160px; border-radius: 50%; border: 3px solid var(--accent);
+    background: rgba(255,85,51,.15); transform-origin: 50% 50%; z-index: 9; opacity: 0; }
+  #curseur { position: absolute; left: 0; top: 0; width: 30px; height: 40px; transform-origin: 2px 2px; z-index: 10;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,.35)); }
+  #curseur path { fill: #fff; stroke: #171a20; stroke-width: 1.6; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="sol"></div>
+  <div id="app">
+    <div id="barre" class="pan"><span class="nom">Atelier Martin</span><span class="sep">· Automatisations</span><span class="badge"><i></i>Agent actif</span></div>
+    <div id="nav" class="pan">
+      <div class="nav-item actif">Boîte de réception</div>
+      <div class="nav-item">Règles</div>
+      <div class="nav-item">Tâches</div>
+      <div class="nav-item">Journal</div>
+      <div class="nav-item">Réglages</div>
+    </div>
+    <div id="boite" class="pan carte">
+      <div class="entete"><b>Boîte de réception</b><span>Aujourd'hui</span></div>
+      <div id="mailNouveau" class="ligne">
+        <div class="av" style="background:#ff5533">CR</div>
+        <div class="txt"><b>Camille Roux</b><span>Demande de devis : cuisine sur mesure</span></div>
+        <div class="heure">09:14</div>
+        <div id="tagNouveau" class="tag">Nouveau</div>
+        <div id="tagTrie" class="tag vert">Trié · Devis</div>
+      </div>
+      <div id="boiteLignes">
+        <div class="ligne"><div class="av" style="background:#1e6d68">LF</div><div class="txt"><b>Léa Fontaine</b><span>Relevé de la semaine</span></div><div class="heure">08:52</div></div>
+        <div class="ligne"><div class="av" style="background:#4a5bd8">MD</div><div class="txt"><b>Marc Dubois</b><span>Rendez-vous de mardi confirmé</span></div><div class="heure">08:31</div></div>
+        <div class="ligne"><div class="av" style="background:#b8742f">BC</div><div class="txt"><b>Bois et Cie</b><span>Livraison des panneaux de chêne</span></div><div class="heure">Hier</div></div>
+        <div class="ligne"><div class="av" style="background:#8a8f9c">NL</div><div class="txt"><b>La lettre de l'atelier</b><span>Tendances de l'aménagement</span></div><div class="heure">Hier</div></div>
+      </div>
+    </div>
+    <div id="agent" class="pan carte">
+      <div class="entete"><b>Agent de tri</b><span class="mono">règle : devis entrants</span></div>
+      <div id="agentVeille" class="etat"><i class="pt gris"></i>En veille</div>
+      <div id="agentAnalyse" class="etat"><i class="pt orange"></i>Analyse de l'e-mail<div class="barre-p"><i id="agentBarre"></i></div></div>
+      <div id="agentResultat" class="resultat">
+        <div class="r" id="agentL1"><span>Catégorie</span><b>Devis</b></div>
+        <div class="r" id="agentL2"><span>Priorité</span><b>Haute</b></div>
+        <div class="r" id="agentL3"><span>Action</span><b>Créer une tâche pour Marc</b></div>
+      </div>
+      <div id="agentBouton" class="bouton"><span id="btnTxt1">Créer la tâche</span><span id="btnTxt2">Tâche créée</span></div>
+    </div>
+    <div id="taches" class="pan carte">
+      <div class="entete"><b>Tâches créées</b><span>Cette semaine</span></div>
+      <div id="tacheNouvelle" class="ligne tache">
+        <svg class="coche" id="tacheSvg" viewBox="0 0 24 24"><circle id="tacheCercle" cx="12" cy="12" r="10"/><path id="tacheCoche" d="M7 12.5l3.2 3.2L17 9"/></svg>
+        <div class="txt"><b>Chiffrer la cuisine de Camille Roux</b></div>
+        <div id="tacheAuto" class="tag">Auto</div>
+        <div class="qui">Échéance jeudi · Marc</div>
+      </div>
+      <div id="tachesLignes">
+        <div class="ligne tache"><svg class="coche" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M7 12.5l3.2 3.2L17 9"/></svg><div class="txt"><b>Relancer Bois et Cie pour la livraison</b></div><div class="qui">Mercredi · Marc</div></div>
+        <div class="ligne tache faite"><svg class="coche faite" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M7 12.5l3.2 3.2L17 9"/></svg><div class="txt"><b>Préparer le rendez-vous de mardi</b></div><div class="qui">Fait · Léa</div></div>
+      </div>
+    </div>
+    <div id="onde"></div>
+    <svg id="curseur" viewBox="0 0 24 32"><path d="M2 2 L2 24 L7.6 19 L11.5 28.5 L15.6 26.7 L11.8 17.4 L20 17 Z"/></svg>
+  </div>
+</div>
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 8;
+
+(function () {
+  'use strict';
+  const D = window.DUREE;
+  const $ = function (id) { return document.getElementById(id); };
+  const c01 = function (x) { return x < 0 ? 0 : x > 1 ? 1 : x; };
+  const eio = function (x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+  const cine = function (x) { return x < 0.5 ? 16 * Math.pow(x, 5) : 1 - Math.pow(-2 * x + 2, 5) / 2; };
+  const eout = function (x) { return 1 - Math.pow(1 - x, 3); };
+  const ein = function (x) { return x * x * x; };
+  // Ressort : sortie avec léger dépassement (easeOutBack adouci). Donne du poids sans faire jouet.
+  const ressort = function (x) { const c1 = 1.35, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+  const seg = function (t, t0, d, e) { return (e || eio)(c01((t - t0) / d)); };
+  // Pression d'un clic : enfoncement rapide, relâchement plus lent.
+  const pression = function (t, tc) { const u = t - tc; if (u < 0 || u > 0.22) return 0; return u < 0.06 ? u / 0.06 : 1 - (u - 0.06) / 0.16; };
+
+  // Clés de caméra : cible (x, y) dans l'application, zoom s, inclinaisons rx / ry.
+  // Deux clés identiques à la suite = la caméra TIENT. Une clé différente = elle GLISSE.
+  const CAM = [
+    { t: 0.0,  x: 800,  y: 450, s: 1.0,  rx: 8,  ry: -9 },
+    { t: 1.1,  x: 800,  y: 450, s: 1.0,  rx: 8,  ry: -9 },
+    { t: 1.95, x: 600,  y: 240, s: 1.5,  rx: 3,  ry: -3 },
+    { t: 3.5,  x: 600,  y: 240, s: 1.5,  rx: 3,  ry: -3 },
+    { t: 4.25, x: 1300, y: 330, s: 1.55, rx: 2,  ry: 3 },
+    { t: 5.55, x: 1300, y: 330, s: 1.55, rx: 2,  ry: 3 },
+    { t: 6.3,  x: 800,  y: 700, s: 1.45, rx: -2, ry: -2 },
+    { t: 6.85, x: 800,  y: 700, s: 1.45, rx: -2, ry: -2 },
+    { t: 7.6,  x: 800,  y: 450, s: 1.0,  rx: 8,  ry: -9 },
+    { t: 8.0,  x: 800,  y: 450, s: 1.0,  rx: 8,  ry: -9 }
+  ];
+  const SOURIS = [
+    { t: 0.0,  x: 1180, y: 640, o: 0 },
+    { t: 1.2,  x: 1180, y: 640, o: 0 },
+    { t: 1.5,  x: 1180, y: 640, o: 1 },
+    { t: 1.55, x: 1180, y: 640, o: 1 },
+    { t: 2.35, x: 612,  y: 180, o: 1 },
+    { t: 3.9,  x: 612,  y: 180, o: 1 },
+    { t: 4.75, x: 1170, y: 482, o: 1 },
+    { t: 5.4,  x: 1170, y: 482, o: 1 },
+    { t: 6.15, x: 640,  y: 672, o: 1 },
+    { t: 6.9,  x: 640,  y: 672, o: 1 },
+    { t: 7.5,  x: 900,  y: 600, o: 1 },
+    { t: 7.8,  x: 900,  y: 600, o: 0 },
+    { t: 8.0,  x: 900,  y: 600, o: 0 }
+  ];
+  const CLICS = [{ t: 2.45, x: 612, y: 180 }, { t: 5.2, x: 1170, y: 482 }];
+  // Mise au point : quel panneau reste net. « tout » = image entière nette.
+  const FOYER = [[0, 'tout'], [1.1, 'tout'], [1.95, 'boite'], [3.5, 'boite'], [4.25, 'agent'], [5.55, 'agent'], [6.3, 'taches'], [6.85, 'taches'], [7.6, 'tout'], [8, 'tout']];
+  const PANS = ['barre', 'nav', 'boite', 'agent', 'taches'];
+
+  function piste(cles, t, champ, e) {
+    if (t <= cles[0].t) return cles[0][champ];
+    for (let k = 0; k < cles.length - 1; k++) {
+      const a = cles[k], b = cles[k + 1];
+      if (t < b.t) { const f = e(c01((t - a.t) / (b.t - a.t))); return a[champ] + (b[champ] - a[champ]) * f; }
+    }
+    return cles[cles.length - 1][champ];
+  }
+  function nettete(pan, t) {
+    const v = function (cible) { return (cible === 'tout' || cible === pan) ? 1 : 0; };
+    if (t <= FOYER[0][0]) return v(FOYER[0][1]);
+    for (let k = 0; k < FOYER.length - 1; k++) {
+      const a = FOYER[k], b = FOYER[k + 1];
+      if (t < b[0]) { const f = cine(c01((t - a[0]) / (b[0] - a[0]))); return v(a[1]) + (v(b[1]) - v(a[1])) * f; }
+    }
+    return v(FOYER[FOYER.length - 1][1]);
+  }
+  function hex(h) { return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; }
+  function mix(a, b, u) { const A = hex(a), B = hex(b); return 'rgb(' + A.map(function (v, i) { return Math.round(v + (B[i] - v) * u); }).join(',') + ')'; }
+
+  const E = {};
+  ['app', 'mailNouveau', 'boiteLignes', 'tagNouveau', 'tagTrie', 'agentVeille', 'agentAnalyse', 'agentBarre', 'agentResultat',
+    'agentL1', 'agentL2', 'agentL3', 'agentBouton', 'btnTxt1', 'btnTxt2', 'tacheNouvelle', 'tachesLignes', 'tacheCoche', 'tacheCercle',
+    'tacheAuto', 'curseur', 'onde'].concat(PANS).forEach(function (id) { E[id] = $(id); });
+
+  window.render = function (t0) {
+    const t = ((t0 % D) + D) % D;
+
+    // 1. Caméra : entrée en ressort, tenues et glissés, sortie en fondu. t = 0 et t = D montrent la même scène vide.
+    const intro = seg(t, 0, 0.8, ressort);
+    const sortie = seg(t, 7.5, 0.5, ein);
+    const opa = seg(t, 0, 0.45, eout) * (1 - sortie);
+    const tx = piste(CAM, t, 'x', cine), ty = piste(CAM, t, 'y', cine), sc = piste(CAM, t, 's', cine);
+    const introR = 1 - seg(t, 0, 0.9, eio);
+    const rx = piste(CAM, t, 'rx', cine) + 8 * introR;
+    const ry = piste(CAM, t, 'ry', cine) - 9 * introR + 0.6 * Math.sin(2 * Math.PI * t / D);   // respiration, période = la boucle
+    const s = sc * (0.9 + 0.1 * intro) * (1 - 0.04 * sortie);
+    E.app.style.opacity = opa.toFixed(3);
+    E.app.style.transformOrigin = tx.toFixed(2) + 'px ' + ty.toFixed(2) + 'px';
+    E.app.style.transform = 'translate(' + (800 - tx).toFixed(2) + 'px,' + (450 - ty).toFixed(2) + 'px) scale(' + s.toFixed(4) +
+      ') rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
+
+    // 2. Mise au point : ce qui n'est pas en jeu est flouté et assombri, avec la même courbe que la caméra.
+    PANS.forEach(function (p) {
+      const n = nettete(p, t);
+      E[p].style.filter = n > 0.995 ? 'none' : 'blur(' + (3.2 * (1 - n)).toFixed(2) + 'px) brightness(' + (0.55 + 0.45 * n).toFixed(3) + ')';
+    });
+
+    // 3. Boîte : les lignes font de la place (anticipation), puis le courriel tombe en ressort.
+    const place = seg(t, 0.95, 0.3, eio);
+    E.boiteLignes.style.transform = 'translateY(' + (84 * place).toFixed(2) + 'px)';
+    const arrivee = seg(t, 1.1, 0.55, ressort);
+    E.mailNouveau.style.opacity = seg(t, 1.1, 0.25, eout).toFixed(3);
+    E.mailNouveau.style.transform = 'translateY(' + (-46 * (1 - arrivee)).toFixed(2) + 'px)';
+    const choisi = seg(t, 2.45, 0.25, eout);
+    E.mailNouveau.style.background = choisi > 0 ? mix('#ffffff', '#fff1ed', choisi) : '#ffffff';
+    const trie = seg(t, 5.95, 0.35, ressort);
+    E.tagNouveau.style.opacity = (1 - c01(trie * 2)).toFixed(3);
+    E.tagTrie.style.opacity = c01(trie).toFixed(3);
+    E.tagTrie.style.transform = 'scale(' + (0.7 + 0.3 * trie).toFixed(3) + ')';
+
+    // 4. Agent : veille, analyse (barre), résultat en ressort avec lignes décalées, bouton, clic, état « créée ».
+    const analyse = seg(t, 3.65, 0.25, eout);
+    E.agentVeille.style.opacity = (1 - analyse).toFixed(3);
+    E.agentAnalyse.style.opacity = analyse.toFixed(3);
+    E.agentAnalyse.style.transform = 'translateY(' + (10 * (1 - analyse)).toFixed(2) + 'px)';
+    E.agentBarre.style.width = (100 * seg(t, 3.7, 0.65, eio)).toFixed(2) + '%';
+    const res = seg(t, 4.4, 0.5, ressort);
+    E.agentResultat.style.opacity = seg(t, 4.4, 0.2, eout).toFixed(3);
+    E.agentResultat.style.transform = 'translateY(' + (24 * (1 - res)).toFixed(2) + 'px) scale(' + (0.94 + 0.06 * res).toFixed(4) + ')';
+    [['agentL1', 4.5], ['agentL2', 4.62], ['agentL3', 4.74]].forEach(function (c) {
+      const v = seg(t, c[1], 0.3, eout);
+      E[c[0]].style.opacity = v.toFixed(3);
+      E[c[0]].style.transform = 'translateX(' + (-14 * (1 - v)).toFixed(2) + 'px)';
+    });
+    const btn = seg(t, 4.85, 0.35, ressort);
+    const presse = pression(t, 5.2);
+    const fait = seg(t, 5.35, 0.25, eout);
+    E.agentBouton.style.opacity = seg(t, 4.85, 0.15, eout).toFixed(3);
+    E.agentBouton.style.transform = 'scale(' + ((0.85 + 0.15 * btn) * (1 - 0.06 * presse)).toFixed(4) + ')';
+    E.agentBouton.style.background = fait > 0 ? mix('#ff5533', '#1f9d68', fait) : '#ff5533';
+    E.btnTxt1.style.opacity = (1 - fait).toFixed(3);
+    E.btnTxt2.style.opacity = fait.toFixed(3);
+
+    // 5. Tâches : la liste fait de la place, la tâche arrive en ressort, la coche se dessine, l'étiquette saute.
+    const place2 = seg(t, 5.3, 0.3, eio);
+    E.tachesLignes.style.transform = 'translateY(' + (64 * place2).toFixed(2) + 'px)';
+    const nt = seg(t, 5.4, 0.55, ressort);
+    E.tacheNouvelle.style.opacity = seg(t, 5.4, 0.2, eout).toFixed(3);
+    E.tacheNouvelle.style.transform = 'translateY(' + (30 * (1 - nt)).toFixed(2) + 'px)';
+    const coche = seg(t, 5.8, 0.45, eio);
+    E.tacheCoche.setAttribute('stroke-dashoffset', (15 * (1 - coche)).toFixed(2));
+    E.tacheCercle.setAttribute('fill', coche > 0 ? 'rgba(31,157,104,' + (0.12 * coche).toFixed(3) + ')' : 'none');
+    E.tacheCercle.setAttribute('stroke', coche > 0.5 ? '#1f9d68' : '#cfd3dc');
+    const auto = seg(t, 6.0, 0.35, ressort);
+    E.tacheAuto.style.opacity = c01(auto).toFixed(3);
+    E.tacheAuto.style.transform = 'scale(' + (0.7 + 0.3 * auto).toFixed(3) + ')';
+
+    // 6. Souris et onde de clic. La souris vit dans le plan de l'application : elle suit la caméra.
+    const mx = piste(SOURIS, t, 'x', eio), my = piste(SOURIS, t, 'y', eio), mo = piste(SOURIS, t, 'o', eout);
+    let pr = 0;
+    CLICS.forEach(function (c) { pr = Math.max(pr, pression(t, c.t)); });
+    E.curseur.style.opacity = mo.toFixed(3);
+    E.curseur.style.transform = 'translate(' + mx.toFixed(2) + 'px,' + my.toFixed(2) + 'px) scale(' + (1 - 0.18 * pr).toFixed(3) + ')';
+    let ondeO = 0, ondeK = 0, ox = 0, oy = 0;
+    CLICS.forEach(function (c) {
+      const u = (t - c.t) / 0.6;
+      if (u >= 0 && u < 1) { ondeK = 0.15 + 0.85 * eout(u); ondeO = 0.7 * (1 - u); ox = c.x; oy = c.y; }
+    });
+    E.onde.style.opacity = ondeO.toFixed(3);
+    E.onde.style.transform = 'translate(' + (ox - 80).toFixed(2) + 'px,' + (oy - 80).toFixed(2) + 'px) scale(' + ondeK.toFixed(3) + ')';
+  };
+
+  window.PRET = document.fonts.ready;
+})();
+</script>
+<script src="../lecteur.js"></script>
+</body>
+</html>

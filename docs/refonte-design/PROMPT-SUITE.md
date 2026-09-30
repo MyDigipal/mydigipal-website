@@ -11,6 +11,11 @@ Tu reprends la refonte du design de mydigipal.com. Paul a choisi la **direction 
 2. `docs/refonte-design/pilotage.html` : audit, décisions, questions ouvertes, pages et avancement.
 3. `labo/refonte-site/direction-a.html`, `.css`, `.js` et la fiche `direction-a.md` : la maquette retenue.
 4. `docs/refonte-design/motion/AVIS-PAUL.md` (ses goûts en mouvement) et `docs/refonte-design/motion/ADAPTATION-WEB.md` (les essais du labo motion lus ligne à ligne, avec leur adaptation au web).
+5. `docs/refonte-design/motion/essais/` : le code des douze essais favoris du labo motion (écrits pour la vidéo, `render(t)` en 1920 x 1080) et leurs notes. On les ADAPTE au web selon `ADAPTATION-WEB.md` (état final par défaut, mise en page refaite à 390 px), on ne les colle jamais tels quels.
+
+**Quelle animation pour quelle notion** : tableau « Les pages et leur avancement » du pilotage. En résumé : carte de verre (un objet, ce qui entre et ce qui sort : Performance Max, un serveur MCP, un flux de stock), isométrie (ce qui circule : une automatisation, le suivi côté serveur, le routage d'un lead), morphing sur rail (un process en trois à cinq états), tableau à palettes (trois chiffres d'un client), caméra qui tient (une interface : l'Academy, un tableau de bord), grille de mots (la méthode CRAFT), particules (faire apparaître un logo). Interdits de Paul : zoom continu, flou sur ce qu'on lit, texte qui bouge pour rien, effet sans histoire, polices qui s'enchaînent.
+
+**Toi, la session qui exécute, tu rends compte** à la fin de chaque étape : ce qui est fait, les commits, ce qui est vérifié et comment, ce qui ne l'est pas. Paul fera relire ton travail par une autre session avant toute mise en ligne.
 
 **Travailler sur la branche `refonte-design`** (`git fetch`, puis `git merge origin/main` si elle est en retard). Commits fichier par fichier, poussés sur cette branche. Rien sur `main` sans l'accord de Paul. Si tu n'as pas de navigateur pour vérifier à l'écran, dis-le et donne à Paul les adresses à regarder.
 

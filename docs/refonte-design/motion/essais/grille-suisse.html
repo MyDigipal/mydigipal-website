@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La grille suisse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@500&display=block" rel="stylesheet">
+<style>
+/* Néo-suisse : une grille modulaire de douze colonnes et six rangs se dessine, puis organise tout.
+   Chaque mot de la méthode est ajusté à la largeur exacte de ses colonnes, révélé par une barre qui
+   passe ; les blocs de couleur glissent le long de la grille et s'arrêtent sur ses lignes. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#f7f5f0;font-family:'Archivo',sans-serif;color:#0f1a2e;-webkit-font-smoothing:antialiased}
+#grille{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block}
+.cel{position:absolute;display:flex;align-items:flex-end}
+.mot{display:inline-block;white-space:nowrap;font-weight:600;line-height:.76;letter-spacing:-.035em;font-variation-settings:'wdth' 100;opacity:0}
+.barre{position:absolute;left:0;top:-4%;width:100%;height:108%;background:#0f1a2e;transform:scaleX(0)}
+.bloc{position:absolute}
+.mono{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:20px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;opacity:0;line-height:128px;height:128px}
+.tag{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:30px;letter-spacing:.02em;opacity:0;transform-origin:50% 50%;line-height:128px;height:128px;width:122px;text-align:left}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="grille" viewBox="0 0 1920 1080" width="1920" height="1080"></svg>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Archivo';font-weight:600">a</span>
+  <span style="font-family:'Archivo';font-weight:800">a</span>
+  <span style="font-family:'JetBrains Mono';font-weight:500">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 8;
+window.DUR = window.DUREE; /* alias lu par le render.js du moteur vidéo */
+window.PRET = Promise.all([
+  document.fonts.load("600 100px 'Archivo'"),
+  document.fonts.load("800 100px 'Archivo'"),
+  document.fonts.load("500 30px 'JetBrains Mono'")
+]).then(function () { return document.fonts.ready; }).then(function () { window.__mesurer(); });
+
+(function () {
+'use strict';
+var D = window.DUREE;
+/* La grille : marge 96, gouttière 24, colonne 122, rang 128. */
+var M = 96, GUT = 24, CW = 122, RH = 128, PX = CW + GUT, PY = RH + GUT;
+function cx(i) { return M + i * PX; }
+function cy(j) { return M + j * PY; }
+function lw(n) { return n * PX - GUT; }
+function lh(n) { return n * PY - GUT; }
+
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outQuart(p) { return 1 - Math.pow(1 - p, 4); }
+function inQuart(p) { return p * p * p * p; }
+function inOutQuart(p) { return p < 0.5 ? 8 * p * p * p * p : 1 - Math.pow(-2 * p + 2, 4) / 2; }
+function bosse(p) { return p <= 0 || p >= 1 ? 0 : Math.sin(Math.PI * p); }
+function melC(a, b, p) { return [mix(a[0], b[0], p), mix(a[1], b[1], p), mix(a[2], b[2], p)]; }
+function css(c) { return 'rgb(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ')'; }
+var ENCRE = [15, 26, 46], OR = [200, 169, 81], CRAIE = [247, 245, 240];
+var ENCRE22 = melC(CRAIE, ENCRE, 0.22);
+
+var st = document.getElementById('stage'), grille = document.getElementById('grille');
+function el(tag, cls, cssTexte, parent) { var e = document.createElement(tag); if (cls) e.className = cls; if (cssTexte) e.style.cssText = cssTexte; (parent || st).appendChild(e); return e; }
+
+/* La grille elle-même : douze colonnes de six cellules, chacune un groupe qui se déploie du haut. */
+var g = '', i, j;
+for (i = 0; i < 12; i++) {
+  g += '<g id="col' + i + '">';
+  for (j = 0; j < 6; j++) g += '<rect x="' + cx(i) + '" y="' + cy(j) + '" width="' + CW + '" height="' + RH + '" fill="rgba(15,26,46,.055)"/>';
+  g += '</g>';
+}
+grille.innerHTML = g;
+var cols = [];
+for (i = 0; i < 12; i++) cols.push(document.getElementById('col' + i));
+
+/* Les mots : chacun dans une cellule de la largeur exacte de ses colonnes, avec sa barre de révélation. */
+function cellule(x, y, n, m, texte, couleur, parent, poids) {
+  var c = el('div', 'cel', 'left:' + x + 'px;top:' + y + 'px;width:' + lw(n) + 'px;height:' + lh(m) + 'px', parent);
+  var mot = el('span', 'mot', 'color:' + couleur + (poids ? ';font-weight:' + poids : ''), c);
+  mot.textContent = texte;
+  var barre = el('div', 'barre', '', c);
+  return { c: c, mot: mot, barre: barre, W: lw(n), H: lh(m), fait: false };
+}
+
+/* Rang 1 : les cinq lettres de la méthode en mono, la légende, la cellule renarde. */
+var TAGS = ['[C]', '[R]', '[A]', '[F]', '[T]'], tags = [];
+for (i = 0; i < 5; i++) { var tg = el('span', 'tag', 'left:' + cx(i) + 'px;top:' + cy(0) + 'px'); tg.textContent = TAGS[i]; tags.push(tg); }
+var legende = el('span', 'mono', 'left:' + cx(6) + 'px;top:' + cy(0) + 'px;color:rgba(15,26,46,.62)'); legende.textContent = 'La méthode CRAFT';
+var marque = el('span', 'mono', 'left:' + cx(9) + 'px;top:' + cy(0) + 'px;width:' + lw(2) + 'px;text-align:right;color:rgba(15,26,46,.62)'); marque.textContent = 'AI Academy';
+var renard = el('div', 'bloc', 'left:' + cx(11) + 'px;top:' + cy(0) + 'px;width:' + CW + 'px;height:' + RH + 'px;background:#d9542b');
+
+/* Rangs 2 et 3 : Contexte, puis le bloc or qui porte Rôle. */
+var W1 = cellule(cx(0), cy(1), 7, 2, 'Contexte.', '#0f1a2e');
+var blocOr = el('div', 'bloc', 'left:' + cx(7) + 'px;top:' + cy(1) + 'px;width:' + lw(5) + 'px;height:' + lh(2) + 'px;background:#c8a951');
+var W2 = cellule(PX, 0, 4, 2, 'Rôle.', '#0f1a2e', blocOr);
+
+/* Rangs 4 et 5 : Action, Format, et le grand chiffre. */
+var W3 = cellule(cx(0), cy(3), 5, 2, 'Action.', '#0f1a2e');
+var W4 = cellule(cx(5), cy(3), 5, 2, 'Format.', '#0f1a2e');
+var W5 = cellule(cx(10), cy(3), 2, 2, '5', '#c8a951', null, 800);
+W5.barre.style.cssText = 'left:-4%;top:0;width:108%;height:100%;transform:scaleY(0)';
+
+/* Rang 6 : la barre d'encre, Ton en craie dessus, une ligne en mono. */
+var barreEncre = el('div', 'bloc', 'left:' + cx(0) + 'px;top:' + cy(5) + 'px;width:' + lw(12) + 'px;height:' + lh(1) + 'px;background:#0f1a2e');
+var W6 = cellule(PX, 0, 3, 1, 'Ton.', '#f7f5f0', barreEncre);
+W6.barre.style.background = '#c8a951';
+var ligneMono = el('span', 'mono', 'left:' + (cx(7) - cx(0)) + 'px;top:0;color:rgba(247,245,240,.72)', barreEncre);
+ligneMono.textContent = 'Cinq mots. Une réponse qui tient.';
+
+var MOTS = [W1, W2, W3, W4, W5, W6];
+/* La mesure : chaque mot est mis à la largeur de ses colonnes (ou à la hauteur de ses rangs si c'est plus contraignant).
+   Elle ne dépend que de la police : faite une fois, après son chargement. Sans mesure possible (DOM factice), une estimation. */
+function mesurer() {
+  for (var k = 0; k < MOTS.length; k++) {
+    var w = MOTS[k];
+    if (w.fait) continue;
+    w.mot.style.fontSize = '100px';
+    var larg = w.mot.offsetWidth;
+    if (!(larg > 0)) larg = w.mot.textContent.length * 58;
+    var taille = Math.min(100 * w.W / larg, w.H / 0.73);
+    w.mot.style.fontSize = taille.toFixed(2) + 'px';
+    w.fait = true;
+  }
+}
+window.__mesurer = mesurer;
+
+/* Une barre qui passe : elle couvre la cellule, le mot apparaît dessous, elle se retire. À la sortie, l'inverse. */
+function mot(w, t, t0, tx, vertical) {
+  var dIn = 0.32, dOut = 0.25;
+  var p1 = inOutQuart(seg(t, t0, t0 + dIn)), p2 = inOutQuart(seg(t, t0 + dIn, t0 + 2 * dIn));
+  var q1 = inOutQuart(seg(t, tx, tx + dOut)), q2 = inOutQuart(seg(t, tx + dOut, tx + 2 * dOut));
+  var debut, k;
+  if (t < tx) { if (p2 > 0) { debut = false; k = 1 - p2; } else { debut = true; k = p1; } }
+  else { if (q2 > 0) { debut = true; k = 1 - q2; } else { debut = false; k = q1; } }
+  if (vertical) {
+    w.barre.style.transformOrigin = '50% ' + (debut ? '0%' : '100%');
+    w.barre.style.transform = 'scaleY(' + k.toFixed(4) + ')';
+  } else {
+    w.barre.style.transformOrigin = (debut ? '0%' : '100%') + ' 50%';
+    w.barre.style.transform = 'scaleX(' + k.toFixed(4) + ')';
+  }
+  w.mot.style.opacity = (p1 >= 0.999 && q1 < 0.999) ? '1' : '0';
+}
+
+/* Temps forts (120 BPM) : les mots sur les temps, les lettres s'allument avec leur mot. */
+var TB = [1.5, 2.0, 2.5, 3.0, 4.0], TX = [6.9, 6.5, 6.6, 6.45, 6.3];
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  mesurer();
+  var i;
+  /* la grille se déploie colonne par colonne, se retire de gauche à droite */
+  for (i = 0; i < 12; i++) {
+    var e = outExpo(seg(t, i * 0.045, 0.5 + i * 0.045)), x = inQuart(seg(t, 7.0 + i * 0.045, 7.45 + i * 0.045));
+    var k = Math.max(0, e * (1 - x));
+    cols[i].setAttribute('transform', 'translate(0 ' + M + ') scale(1 ' + k.toFixed(4) + ') translate(0 ' + (-M) + ')');
+  }
+  grille.style.opacity = mix(1, 0.42, seg(t, 4.0, 5.0)).toFixed(3);
+
+  /* les lettres */
+  for (i = 0; i < 5; i++) {
+    var ap = outQuart(seg(t, 1.0 + i * 0.05, 1.4 + i * 0.05)) * (1 - inQuart(seg(t, 6.95, 7.25)));
+    var lit = outQuart(seg(t, TB[i], TB[i] + 0.25)) * (1 - seg(t, TX[i], TX[i] + 0.3));
+    var pop = 1 + 0.16 * bosse(seg(t, TB[i], TB[i] + 0.3));
+    tags[i].style.opacity = ap.toFixed(3);
+    tags[i].style.transform = 'translateY(' + ((1 - ap) * 14).toFixed(2) + 'px) scale(' + pop.toFixed(4) + ')';
+    tags[i].style.color = css(melC(ENCRE22, OR, lit));
+  }
+  var lg = outQuart(seg(t, 0.9, 1.3)) * (1 - inQuart(seg(t, 7.0, 7.3)));
+  legende.style.opacity = lg.toFixed(3);
+  marque.style.opacity = lg.toFixed(3);
+
+  /* les mots, chacun sur son temps */
+  mot(W1, t, 1.5, 6.9, false);
+  mot(W2, t, 2.0, 6.5, false);
+  mot(W3, t, 2.5, 6.6, false);
+  mot(W4, t, 3.0, 6.45, false);
+  mot(W5, t, 3.0, 6.5, true);
+  mot(W6, t, 4.0, 6.3, false);
+
+  /* les blocs glissent le long de la grille et s'arrêtent sur ses lignes */
+  var dOr = 1920 + 20 - cx(7), pb = inOutQuart(seg(t, 1.25, 1.95)), xb = inOutQuart(seg(t, 7.0, 7.7));
+  blocOr.style.transform = 'translateX(' + (dOr * (1 - pb) + dOr * xb).toFixed(2) + 'px)';
+  var dBar = cx(0) + lw(12) + 20, pn = inOutQuart(seg(t, 3.25, 3.95)), xn = inOutQuart(seg(t, 6.8, 7.5));
+  barreEncre.style.transform = 'translateX(' + (-dBar * (1 - pn) - dBar * xn).toFixed(2) + 'px)';
+  var dRen = cy(0) + RH + 10, pr = outQuart(seg(t, 4.5, 4.95)), xr = inQuart(seg(t, 6.6, 7.0));
+  renard.style.transform = 'translateY(' + (-dRen * (1 - pr) - dRen * xr).toFixed(2) + 'px)';
+  ligneMono.style.opacity = (outQuart(seg(t, 4.25, 4.6)) * (1 - seg(t, 6.3, 6.5))).toFixed(3);
+};
+})();
+</script>
+<script src="../lecteur.js"></script>
+</body>
+</html>

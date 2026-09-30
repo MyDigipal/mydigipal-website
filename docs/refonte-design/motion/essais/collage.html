@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Le collage éditorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@500&display=block" rel="stylesheet">
+<style>
+/* Collage éditorial : des papiers découpés aux bords irréguliers (tirés d'une graine fixe), une ombre de papier
+   posé, des rubans adhésifs, une photo fictive dessinée en aplats, et une phrase en mots découpés façon lettre
+   anonyme. Les entrées se font en poses, à douze images par seconde, comme en volume animé. La fibre du papier
+   est une image FIXE : elle ne bouge jamais d'une image à l'autre. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#f3efe6;color:#0f1a2e;-webkit-font-smoothing:antialiased}
+.piece{position:absolute;left:0;top:0;transform-origin:50% 50%;visibility:hidden}
+.ombre{position:absolute;left:0;top:0;width:100%;height:100%;background:#0f1a2e}
+.papier{position:absolute;left:0;top:0;width:100%;height:100%}
+.tape{position:absolute;width:150px;height:38px;background:linear-gradient(180deg,rgba(252,246,226,.86),rgba(232,220,186,.78));opacity:0;transform-origin:50% 50%}
+.mot{position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.legende{position:absolute;left:30px;right:30px;bottom:34px;text-align:center;font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:30px;font-variation-settings:'opsz' 36,'SOFT' 60,'WONK' 1;color:rgba(15,26,46,.8)}
+#stylo{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+#fibre{position:absolute;left:0;top:0;width:1920px;height:1080px;mix-blend-mode:multiply;opacity:.10;pointer-events:none}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="stylo" viewBox="0 0 1920 1080" width="1920" height="1080"><path id="cercleStylo" d="" fill="none" stroke="#d9542b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <svg id="fibre" viewBox="0 0 1920 1080" width="1920" height="1080">
+    <filter id="papierFibre" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="11" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="1920" height="1080" filter="url(#papierFibre)"/>
+  </svg>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Fraunces';font-weight:700">a</span>
+  <span style="font-family:'Fraunces';font-weight:900">a</span>
+  <span style="font-family:'Fraunces';font-weight:500">a</span>
+  <span style="font-family:'Fraunces';font-weight:400;font-style:italic">a</span>
+  <span style="font-family:'Archivo';font-weight:800">a</span>
+  <span style="font-family:'JetBrains Mono';font-weight:500">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 8;
+window.DUR = window.DUREE; /* alias lu par le render.js du moteur vidéo */
+window.PRET = Promise.all([
+  document.fonts.load("700 100px 'Fraunces'"),
+  document.fonts.load("900 100px 'Fraunces'"),
+  document.fonts.load("500 100px 'Fraunces'"),
+  document.fonts.load("italic 400 100px 'Fraunces'"),
+  document.fonts.load("800 100px 'Archivo'"),
+  document.fonts.load("500 100px 'JetBrains Mono'")
+]).then(function () { return document.fonts.ready; }).then(function () { window.__mesurer(); });
+
+(function () {
+'use strict';
+var D = window.DUREE;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outQuart(p) { return 1 - Math.pow(1 - p, 4); }
+function inQuad(p) { return p * p; }
+function inOutSine(p) { return -(Math.cos(Math.PI * p) - 1) / 2; }
+/* Le temps en poses : douze par seconde, arrondies vers le bas. Ce qui est « en volume animé » lit tq, pas t. */
+function q12(t) { return Math.floor(t * 12 + 1e-6) / 12; }
+/* Générateur à graine fixe (mulberry32) : les bords découpés et les inclinaisons ne changent jamais. */
+function graine(s) { return function () { s |= 0; s = s + 0x6D2B79F5 | 0; var r = Math.imul(s ^ s >>> 15, 1 | s); r = r + Math.imul(r ^ r >>> 7, 61 | r) ^ r; return ((r ^ r >>> 14) >>> 0) / 4294967296; }; }
+
+/* Un bord découpé aux ciseaux : chaque côté en sept segments, les sommets intermédiaires décalés de quelques pixels. */
+function decoupe(w, h, rnd, amp) {
+  var n = 7, P = [];
+  function bord(x0, y0, x1, y1, nx, ny) {
+    for (var i = 0; i < n; i++) { var u = i / n, j = i ? (rnd() - 0.5) * 2 * amp : 0; P.push([mix(x0, x1, u) + nx * j, mix(y0, y1, u) + ny * j]); }
+  }
+  bord(0, 0, w, 0, 0, 1); bord(w, 0, w, h, 1, 0); bord(w, h, 0, h, 0, 1); bord(0, h, 0, 0, 1, 0);
+  var s = '';
+  for (var k = 0; k < P.length; k++) s += (k ? ',' : '') + P[k][0].toFixed(1) + 'px ' + P[k][1].toFixed(1) + 'px';
+  return 'polygon(' + s + ')';
+}
+function decoupeRond(r, rnd, amp) {
+  var s = '';
+  for (var k = 0; k < 56; k++) { var a = k / 56 * Math.PI * 2, rr = r + (rnd() - 0.5) * 2 * amp; s += (k ? ',' : '') + (r + rr * Math.cos(a)).toFixed(1) + 'px ' + (r + rr * Math.sin(a)).toFixed(1) + 'px'; }
+  return 'polygon(' + s + ')';
+}
+
+var st = document.getElementById('stage'), stylo = document.getElementById('cercleStylo'), fibre = document.getElementById('fibre');
+function el(tag, cls, cssTexte, parent) { var e = document.createElement(tag); if (cls) e.className = cls; if (cssTexte) e.style.cssText = cssTexte; (parent || st).appendChild(e); return e; }
+
+/* ---------- la photo fictive : une personne de dos devant un portable, une fenêtre, une lampe ---------- */
+var PHOTO = '<svg viewBox="0 0 460 460" width="460" height="460" style="display:block">' +
+  '<rect width="460" height="460" fill="#0f1a2e"/>' +
+  '<rect x="64" y="36" width="332" height="250" fill="#f3efe6" opacity=".92"/>' +
+  '<rect x="226" y="36" width="8" height="250" fill="#0f1a2e"/><rect x="64" y="158" width="332" height="8" fill="#0f1a2e"/>' +
+  '<rect x="0" y="320" width="460" height="140" fill="#f3efe6" opacity=".22"/>' +
+  '<rect x="0" y="316" width="460" height="6" fill="#f3efe6" opacity=".7"/>' +
+  '<rect x="392" y="196" width="6" height="122" fill="#f3efe6" opacity=".85"/><path d="M366 174 L430 174 L444 202 L352 202 Z" fill="#c8a951"/>' +
+  '<path d="M176 318 L344 318 L352 308 L168 308 Z" fill="#f3efe6"/>' +
+  '<rect x="184" y="196" width="152" height="112" rx="4" fill="#f3efe6"/><rect x="192" y="204" width="136" height="96" fill="#0f1a2e"/>' +
+  '<rect x="204" y="222" width="70" height="5" fill="#f3efe6" opacity=".8"/><rect x="204" y="240" width="104" height="5" fill="#f3efe6" opacity=".55"/><rect x="204" y="258" width="88" height="5" fill="#f3efe6" opacity=".55"/><rect x="204" y="276" width="40" height="5" fill="#c8a951"/>' +
+  '<path d="M30 460 L30 352 Q46 300 96 288 L96 262 Q84 246 84 216 Q84 176 122 176 Q160 176 160 216 Q160 246 148 262 L148 288 Q198 300 214 352 L214 460 Z" fill="#0f1a2e"/>' +
+  '</svg>';
+
+/* ---------- les pièces ---------- */
+var pieces = [];
+function piece(o) {
+  var p = el('div', 'piece', 'width:' + o.w + 'px;height:' + o.h + 'px');
+  var ombre = el('div', 'ombre', '', p);
+  var papier = el('div', 'papier', 'background:' + o.couleur, p);
+  if (o.html) papier.innerHTML = o.html;
+  o.el = p; o.ombre = ombre; o.papier = papier; o.tapes = [];
+  (o.rubans || []).forEach(function (r) {
+    var tp = el('div', 'tape', 'left:' + r.x + 'px;top:' + r.y + 'px;transform:rotate(' + r.rot + 'deg)', p);
+    tp.style.clipPath = decoupe(150, 38, graine(o.g * 7 + 3), 2.5);
+    o.tapes.push({ el: tp, t: r.t, base: 'rotate(' + r.rot + 'deg)' });
+  });
+  o.decoupe = function () {
+    var rnd = graine(o.g);
+    var cp = o.rond ? decoupeRond(o.w / 2, rnd, o.amp || 4) : decoupe(o.w, o.h, rnd, o.amp || 3.5);
+    ombre.style.clipPath = cp; papier.style.clipPath = cp;
+  };
+  o.decoupe();
+  pieces.push(o);
+  return o;
+}
+/* Les mots : chacun sa police, sa taille, son papier. Ils sont mesurés une fois les polices chargées. */
+function motStyle(s) {
+  return 'font-family:' + s.fam + ';font-weight:' + s.poids + ';font-size:' + s.taille + 'px;' + (s.ital ? 'font-style:italic;' : '') +
+    (s.fvs ? 'font-variation-settings:' + s.fvs + ';' : '') + (s.maj ? 'text-transform:uppercase;' : '') + 'color:' + s.couleur + ';letter-spacing:' + (s.esp || '0') + ';line-height:1';
+}
+var STYLES = [
+  { fam: "'Fraunces'", poids: 700, taille: 104, fvs: "'opsz' 144,'SOFT' 0,'WONK' 0", couleur: '#0f1a2e', esp: '-.02em' },
+  { fam: "'Archivo'", poids: 800, taille: 84, fvs: "'wdth' 118", maj: true, couleur: '#0f1a2e', esp: '.02em' },
+  { fam: "'Fraunces'", poids: 400, ital: true, taille: 104, fvs: "'opsz' 144,'SOFT' 60,'WONK' 0", couleur: '#0f1a2e' },
+  { fam: "'Fraunces'", poids: 900, taille: 108, fvs: "'opsz' 144,'SOFT' 0,'WONK' 1", couleur: '#0f1a2e', esp: '-.01em' },
+  { fam: "'JetBrains Mono'", poids: 500, taille: 76, couleur: '#0f1a2e' },
+  { fam: "'Fraunces'", poids: 500, taille: 100, fvs: "'opsz' 72,'SOFT' 100,'WONK' 0", couleur: '#f3efe6' }
+];
+var PAPIERS = ['#ffffff', '#e6d8bb', '#ffffff', '#c8a951', '#ffffff', '#0f1a2e'];
+var TEXTES = ['Posez', 'la', 'question.', 'Toute', 'la', 'question.'];
+var CENTRES = [[968, 388], [1257, 396], [1613, 382], [970, 632], [1259, 640], [1614, 628]];
+var ROTS = [-2.6, 3.4, 1.6, -1.8, 2.8, -2.2];
+var ENTREES = [1.5, 1.75, 2.0, 2.5, 2.75, 3.0], SORTIES = [6.8, 6.72, 6.64, 6.56, 6.48, 6.4];
+
+var cercle = piece({ g: 41, rond: true, w: 600, h: 600, cx: 455, cy: 600, rot: 0, couleur: '#c8a951', amp: 5, mode: 'pop', t0: 0.25, tx: 7.3 });
+var photo = piece({ g: 17, w: 520, h: 620, cx: 500, cy: 540, rot: -3.5, couleur: '#ffffff', mode: 'glisse', t0: 0.5, tx: 6.9,
+  html: '<div style="position:absolute;left:30px;top:30px;width:460px;height:460px">' + PHOTO + '</div><div class="legende">lundi, 9 h 12</div>',
+  rubans: [{ x: -34, y: 4, rot: -28, t: 1.0 }, { x: 404, y: 2, rot: 24, t: 1.083 }] });
+var mots = [];
+for (var i = 0; i < 6; i++) {
+  var rub = i === 2 ? [{ x: 0, y: -14, rot: 18, t: 2.33 }] : (i === 3 ? [{ x: -20, y: -12, rot: -16, t: 2.83 }] : []);
+  mots.push(piece({ g: 100 + i * 13, w: 300, h: 150, cx: CENTRES[i][0], cy: CENTRES[i][1], rot: ROTS[i], couleur: PAPIERS[i], mode: 'tampon', t0: ENTREES[i], tx: SORTIES[i],
+    html: '<div class="mot" style="' + motStyle(STYLES[i]) + '">' + TEXTES[i] + '</div>', rubans: rub, style: STYLES[i] }));
+}
+var bandeOr = piece({ g: 77, w: 380, h: 64, cx: 1560, cy: 880, rot: 2.2, couleur: '#c8a951', mode: 'monte', t0: 3.5, tx: 6.7,
+  html: '<div class="mot" style="font-family:\'JetBrains Mono\';font-weight:500;font-size:19px;letter-spacing:.14em;text-transform:uppercase;color:#0f1a2e">MyDigipal · AI Academy</div>',
+  rubans: [{ x: 300, y: -12, rot: 22, t: 3.92 }] });
+var bandeKraft = piece({ g: 91, w: 330, h: 60, cx: 1180, cy: 914, rot: -2.4, couleur: '#e6d8bb', mode: 'monte', t0: 3.75, tx: 6.75,
+  html: '<div class="mot" style="font-family:\'Fraunces\';font-style:italic;font-weight:400;font-size:30px;font-variation-settings:\'opsz\' 36,\'SOFT\' 80,\'WONK\' 1;color:#0f1a2e">à garder sous la main</div>' });
+
+/* Chaque mot prend la largeur de son texte plus une marge de papier. Sans mesure possible, une estimation. */
+var mesure = false;
+function mesurer() {
+  if (mesure) return;
+  for (var k = 0; k < 6; k++) {
+    var m = mots[k], texte = m.papier.firstChild;
+    var larg = texte && texte.firstChild && texte.firstChild.offsetWidth;
+    if (!(larg > 0)) larg = TEXTES[k].length * STYLES[k].taille * (STYLES[k].fam.indexOf('Mono') >= 0 ? 0.6 : 0.55);
+    var w = Math.round(larg + 64), h = Math.round(STYLES[k].taille * 1.18 + 28);
+    m.w = w; m.h = h;
+    m.el.style.width = w + 'px'; m.el.style.height = h + 'px';
+    m.decoupe();
+    if (m.tapes.length) { var tp = m.tapes[0].el; tp.style.left = (k === 2 ? w - 130 : -20) + 'px'; }
+  }
+  mesure = true;
+}
+window.__mesurer = mesurer;
+/* Le texte mesuré doit être dans le flux : on l'enveloppe d'un span inline-block pour lire sa largeur. */
+mots.forEach(function (m, k) { var d = m.papier.firstChild; if (d) { d.innerHTML = '<span style="display:inline-block">' + TEXTES[k] + '</span>'; } });
+
+/* Le cercle au stylo autour de « Toute » : une ellipse un peu tremblée, tracée d'un trait qui se recouvre. */
+var CHEMIN = (function () {
+  var rnd = graine(5), cx = 972, cy = 632, rx = 236, ry = 102, rot = -4 * Math.PI / 180, P = [], L = 0, d = '';
+  for (var k = 0; k <= 72; k++) {
+    var a = -0.35 + k / 72 * (Math.PI * 2 + 0.7), r1 = rx + (rnd() - 0.5) * 7 + k * 0.12, r2 = ry + (rnd() - 0.5) * 6 + k * 0.09;
+    var x = r1 * Math.cos(a), y = r2 * Math.sin(a);
+    P.push([cx + x * Math.cos(rot) - y * Math.sin(rot), cy + x * Math.sin(rot) + y * Math.cos(rot)]);
+  }
+  for (k = 0; k < P.length; k++) { d += (k ? 'L' : 'M') + P[k][0].toFixed(1) + ' ' + P[k][1].toFixed(1); if (k) L += Math.hypot(P[k][0] - P[k - 1][0], P[k][1] - P[k - 1][1]); }
+  return { d: d, L: L };
+})();
+stylo.setAttribute('d', CHEMIN.d);
+stylo.setAttribute('stroke-dasharray', CHEMIN.L.toFixed(1) + ' ' + CHEMIN.L.toFixed(1));
+
+/* ---------- les poses ---------- */
+/* tampon : la pièce claque sur la table en quatre poses ; à la sortie, elle se soulève en trois poses puis disparaît */
+var POSES_TAMPON = [{ s: 1.22, y: -34, r: 5, h: 1 }, { s: 1.06, y: -8, r: 1.5, h: 0.4 }, { s: 0.985, y: 2, r: -0.5, h: 0.1 }, { s: 1, y: 0, r: 0, h: 0 }];
+var POSES_LEVE = [{ s: 1.04, y: -10, r: 1, h: 0.3 }, { s: 1.14, y: -50, r: 4, h: 0.8 }, null];
+var POSES_POP = [0.22, 0.58, 0.88, 1.06, 0.97, 1.0], POSES_DEPOP = [1.03, 0.9, 0.6, 0.25, 0];
+function pose(tq, t0, table) { var k = Math.floor((tq - t0) * 12 + 1e-6); if (k < 0) return undefined; return table[Math.min(k, table.length - 1)]; }
+
+function etatPiece(o, t) {
+  var tq = q12(t), e = { vis: true, dx: 0, dy: 0, rot: 0, s: 1, h: 0 };
+  if (o.mode === 'tampon') {
+    if (t >= o.tx) { var lv = pose(tq, o.tx, POSES_LEVE); if (lv === null) return { vis: false }; if (lv) { e.s = lv.s; e.dy = lv.y; e.rot = lv.r; e.h = lv.h; } return e; }
+    var ps = pose(tq, o.t0, POSES_TAMPON); if (!ps) return { vis: false };
+    e.s = ps.s; e.dy = ps.y; e.rot = ps.r; e.h = ps.h; return e;
+  }
+  if (o.mode === 'pop') {
+    if (t >= o.tx) { var k = pose(tq, o.tx, POSES_DEPOP); if (k === 0) return { vis: false }; if (k !== undefined) e.s = k; return e; }
+    var kk = pose(tq, o.t0, POSES_POP); if (kk === undefined) return { vis: false }; e.s = kk; e.h = kk < 1 ? 0.5 : 0; return e;
+  }
+  if (o.mode === 'glisse') {
+    if (t >= o.tx) { var q = inQuad(seg(tq, o.tx, o.tx + 0.5)); if (q >= 1) return { vis: false }; e.dx = -760 * q; e.rot = -12 * q; e.h = q; return e; }
+    if (tq < o.t0) return { vis: false };
+    var p = outQuart(seg(tq, o.t0, o.t0 + 0.5)); e.dx = -760 * (1 - p); e.rot = -12 * (1 - p); e.h = 1 - p; return e;
+  }
+  if (o.mode === 'monte') {
+    if (t >= o.tx) { var q2 = inQuad(seg(tq, o.tx, o.tx + 0.35)); if (q2 >= 1) return { vis: false }; e.dy = 220 * q2; e.h = q2; return e; }
+    if (tq < o.t0) return { vis: false };
+    var p2 = outQuart(seg(tq, o.t0, o.t0 + 0.4)); e.dy = 180 * (1 - p2); e.h = 1 - p2; return e;
+  }
+  return e;
+}
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  mesurer();
+  for (var i = 0; i < pieces.length; i++) {
+    var o = pieces[i], e = etatPiece(o, t);
+    if (!e.vis) { o.el.style.visibility = 'hidden'; continue; }
+    o.el.style.visibility = 'visible';
+    o.el.style.transform = 'translate(' + (o.cx - o.w / 2 + e.dx).toFixed(2) + 'px,' + (o.cy - o.h / 2 + e.dy).toFixed(2) + 'px) rotate(' + (o.rot + e.rot).toFixed(2) + 'deg) scale(' + e.s.toFixed(4) + ')';
+    /* l'ombre s'écarte et s'adoucit quand la pièce est en l'air, se resserre quand elle est posée */
+    var h = e.h;
+    o.ombre.style.transform = 'translate(' + (4 + 16 * h).toFixed(1) + 'px,' + (7 + 22 * h).toFixed(1) + 'px)';
+    o.ombre.style.filter = 'blur(' + (2.5 + 7 * h).toFixed(1) + 'px)';
+    o.ombre.style.opacity = (0.26 - 0.1 * h).toFixed(3);
+    for (var k = 0; k < o.tapes.length; k++) {
+      var tp = o.tapes[k], kq = Math.floor((q12(t) - tp.t) * 12 + 1e-6);
+      tp.el.style.opacity = kq >= 0 ? '1' : '0';
+      tp.el.style.transform = tp.base + ' scale(' + (kq === 0 ? 1.25 : 1).toFixed(2) + ')';
+    }
+  }
+  /* le trait de stylo : tracé d'un geste continu, effacé à rebours */
+  var trace = inOutSine(seg(t, 4.5, 5.25)) * (1 - seg(t, 6.3, 6.55));
+  stylo.setAttribute('stroke-dashoffset', (CHEMIN.L * (1 - trace)).toFixed(1));
+  stylo.setAttribute('opacity', trace > 0 ? '0.9' : '0');
+  fibre.style.opacity = '0.10';
+};
+})();
+</script>
+<script src="../lecteur.js"></script>
+</body>
+</html>
