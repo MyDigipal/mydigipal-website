@@ -3,6 +3,7 @@ import { type Language } from '@/i18n/config';
 import { t } from '@/i18n/utils';
 import Icon from '@/components/ui/Icon.astro';
 import BandeauLogos from '@/components/ui/BandeauLogos.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
 
 interface Metric {
   value: string;
@@ -35,6 +36,8 @@ interface Props {
   heroLogos?: { name: string; logo: string }[];
   /** L'identifiant du calculateur : « Calculer mon budget » ouvre avec ce service coché. */
   serviceCalculateur?: string;
+  /** Les chiffres montrés sur le tableau à palettes, à la place des `metrics` (AI Training). */
+  tableau?: { chiffre: string; unite?: string; texte: string }[];
 }
 
 const {
@@ -49,6 +52,7 @@ const {
   testimonial,
   heroLogos,
   serviceCalculateur,
+  tableau = [],
 } = Astro.props;
 
 // `color` et `testimonial` restent acceptés : toutes les pages portent le bleu du
@@ -62,10 +66,10 @@ const labels = {
 };
 const lbl = labels[lang] || labels.en;
 
-const resultats = metrics.slice(0, 3);
+const resultats = tableau.length > 0 ? [] : metrics.slice(0, 3);
 const [tete, ...autres] = resultats;
-const points = resultats.length === 0 ? proofPoints.slice(0, 4) : [];
-const showPanel = resultats.length > 0 || points.length > 0;
+const points = resultats.length === 0 && tableau.length === 0 ? proofPoints.slice(0, 4) : [];
+const showPanel = tableau.length > 0 || resultats.length > 0 || points.length > 0;
 ---
 
 <!-- Le hero des pages services, direction Encre (30/09/2026) : le texte à gauche sur
@@ -74,7 +78,7 @@ const showPanel = resultats.length > 0 || points.length > 0;
      titre et le paragraphe sont là dès le premier rendu. -->
 <section class="hero-service section-blanc">
   <div class="container-custom pt-10 pb-16 sm:pt-14 lg:pt-18 lg:pb-24">
-    <div class:list={['grid items-center gap-12', { 'lg:grid-cols-[minmax(0,1.18fr)_minmax(0,0.82fr)] lg:gap-18': showPanel }]}>
+    <div class:list={['grid grid-cols-1 items-center gap-12', { 'lg:grid-cols-[minmax(0,1.18fr)_minmax(0,0.82fr)] lg:gap-18': showPanel }]}>
       <div class:list={['grid justify-items-start gap-5 lg:gap-6', showPanel ? 'max-w-2xl' : 'max-w-3xl']}>
         {badge && <p class="rubrique">{badge}</p>}
 
@@ -105,6 +109,7 @@ const showPanel = resultats.length > 0 || points.length > 0;
 
       {showPanel && (
         <div class="hero-service-panneau">
+          {tableau.length > 0 && <TableauPalettes lang={lang} lignes={tableau.slice(0, 3)} tete auChargement />}
           {tete && (
             <dl class="grid grid-cols-2 gap-x-6 gap-y-7">
               <div class="hero-service-tete col-span-2 flex flex-col-reverse">
