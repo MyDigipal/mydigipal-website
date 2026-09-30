@@ -17,7 +17,10 @@
 
 const isBrowser = typeof window !== 'undefined';
 const prefersReducedMotion = () =>
-  isBrowser && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  isBrowser &&
+  // `?fige=1` montre l'état final partout, comme les scènes (`lib/motion`) : sans
+  // cela, les compteurs `data-counter-section="zero"` restaient à zéro.
+  (/[?&]fige=1/.test(window.location.search) || window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
 /* ============================================================ */
 /* Reveal on scroll - [data-reveal]                             */
