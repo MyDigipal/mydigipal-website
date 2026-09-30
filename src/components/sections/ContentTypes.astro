@@ -22,14 +22,14 @@ const translations = {
         color: "from-blue-500 to-cyan-500"
       },
       {
-        icon: "layout",
+        icon: "layers",
         title: "Landing Pages",
         description: "High-converting landing page copy with compelling headlines, benefits, and CTAs.",
         specs: "Full page copy",
         color: "from-indigo-500 to-purple-500"
       },
       {
-        icon: "shopping-bag",
+        icon: "briefcase",
         title: "Product Descriptions",
         description: "Unique, SEO-friendly product descriptions that highlight benefits and drive conversions.",
         specs: "150-500 words",
@@ -71,14 +71,14 @@ const translations = {
         color: "from-blue-500 to-cyan-500"
       },
       {
-        icon: "layout",
+        icon: "layers",
         title: "Landing Pages",
         description: "Copie de landing page à haute conversion avec titres accrocheurs, bénéfices et CTAs.",
         specs: "Page complète",
         color: "from-indigo-500 to-purple-500"
       },
       {
-        icon: "shopping-bag",
+        icon: "briefcase",
         title: "Descriptions Produit",
         description: "Descriptions produit uniques et SEO-friendly qui mettent en avant les bénéfices.",
         specs: "150-500 mots",
@@ -112,56 +112,24 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-white">
+<!-- Direction Encre (30/09/2026) : fond brume, six formats en liste entre des filets
+     (plus de cartes égales, plus de cartes invisibles sans script). Les longueurs sont des
+     caractéristiques du livrable, pas des résultats. -->
+<section class="section-brume py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-600 max-w-3xl mx-auto">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Content Types Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <div class="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
       {t.types.map((type, index) => (
-        <div
-          class="content-type-card group bg-white border border-slate-200 rounded-2xl p-6 hover:border-violet-300 hover:shadow-lg transition-all duration-300 animate-on-scroll"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <!-- Icon -->
-          <div class="mb-4 text-marque">
-            <Icon name={type.icon} size={24} class="text-marque" />
-          </div>
-
-          <!-- Content -->
-          <h3 class="text-xl font-bold text-slate-900 mb-2">{type.title}</h3>
-          <p class="text-slate-600 mb-4">{type.description}</p>
-
-          <!-- Specs Badge -->
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
-            <Icon name="file" size={14} />
-            {type.specs}
-          </div>
+        <div class="grid content-start gap-2 border-t border-slate-300/60 py-7" data-reveal style={`--i:${index % 3}`}>
+          <Icon name={type.icon} size={24} class="mb-1 text-marque" />
+          <h3 class="font-display text-xl font-extrabold tracking-[-0.02em] text-encre">{type.title}</h3>
+          <p class="text-slate-600">{type.description}</p>
+          {type.specs && <p class="text-sm font-semibold text-slate-500">{type.specs}</p>}
         </div>
       ))}
     </div>
   </div>
 </section>
-
-<style>
-  .animate-on-scroll {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
