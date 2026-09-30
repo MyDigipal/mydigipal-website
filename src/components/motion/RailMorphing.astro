@@ -1,0 +1,463 @@
+---
+/**
+ * Le morphing sur rail (direction Encre, 30/09/2026) : un seul objet voyage d'une
+ * station à l'autre et change de forme, pour dire qu'un process est UN travail qui
+ * change de nature, pas trois ou cinq blocs posés côte à côte. Porté de la maquette
+ * `labo/refonte-site/direction-a.html` (#scene-methode) et de l'essai `morph-formes`
+ * (Paul : « top », pour montrer des process, une évolution).
+ *
+ * Trois à cinq stations `{ titre, texte, forme }`. Les formes viennent de
+ * `src/lib/motion/formes.ts` (loupe, structure, curseur, courbe, cible, bulle) ; leurs
+ * tracés sont calculés AU BUILD : l'état final est écrit dans le HTML, l'objet posé sur
+ * la dernière station, la forme de chaque étape laissée à sa station. Sans script, sous
+ * mouvement réduit ou avec `?fige=1`, c'est ce qu'on voit.
+ *
+ * Aucune pastille numérotée : la liste est un `<ol>` sans numéro affiché, et chaque
+ * titre est un bouton qui rejoue le passage jusqu'à sa station. Les textes sont
+ * toujours lisibles ; seul leur accent s'anime au passage de l'objet.
+ *
+ * Horizontal dès 1 024 px, vertical en dessous. À poser sur un fond clair.
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import { suiteDeFormes, chemin, TROUS, type NomForme } from '@/lib/motion/formes';
+
+interface Station {
+  titre: string;
+  texte: string;
+  forme: NomForme;
+}
+
+interface Props {
+  lang: Language;
+  stations: Station[];
+}
+
+const { lang, stations } = Astro.props;
+if (stations.length < 2 || stations.length > 5) {
+  throw new Error(`RailMorphing : de deux à cinq stations, pas ${stations.length}.`);
+}
+const rejouer = lang === 'fr' ? 'Rejouer' : 'Replay';
+
+const noms = stations.map((s) => s.forme);
+const F = suiteDeFormes(noms);
+const n = stations.length;
+const derniere = F[n - 1];
+const trouFinal = TROUS[noms[n - 1]];
+
+// La partition, la même que celle de la maquette pour quatre stations : un voyage de
+// 1,2 s toutes les 2,4 s, puis 1,2 s de tenue sur la dernière station.
+const VOYAGE = Array.from({ length: n - 1 }, (_, k) => [1.8 + 2.4 * k, 3.0 + 2.4 * k]);
+const TENUE = VOYAGE[n - 2][1] + 1.2;
+const reperes = stations.map((_, i) => ({
+  aller: i === 0 ? 0 : VOYAGE[i - 1][0],
+  tenir: i === 0 ? 1.5 : i === n - 1 ? TENUE : +(VOYAGE[i - 1][1] + 0.9).toFixed(2),
+  jusqua: i < n - 1 ? VOYAGE[i][0] : TENUE,
+}));
+---
+
+<div class="rm" data-rail-morphing data-formes={noms.join(',')} style={`--n:${n}`}>
+  <ol class="rm-stations">
+    {stations.map((s, i) => (
+      <li class="rm-station">
+        {i < n - 1 && <span class="rm-rail" aria-hidden="true"><span class="rm-avance"></span></span>}
+        <h3 class="rm-titre">
+          <button
+            type="button"
+            class="rm-bouton"
+            data-aller={reperes[i].aller}
+            data-tenir={reperes[i].tenir}
+            data-jusqua={reperes[i].jusqua}
+            data-dernier={i === n - 1 ? '' : undefined}
+            aria-pressed={i === n - 1 ? 'true' : 'false'}
+          >
+            <span class="rm-ancre" aria-hidden="true">
+              {i < n - 1 ? (
+                <svg class="rm-trace" viewBox="-100 -100 200 200">
+                  <path d={chemin(F[i])} />
+                  {TROUS[s.forme] && <circle class="rm-oeil" cx={TROUS[s.forme]!.x} cy={TROUS[s.forme]!.y} r={TROUS[s.forme]!.r} />}
+                </svg>
+              ) : (
+                <span class="rm-voyageur">
+                  <span class="rm-ombre"></span>
+                  <span class="rm-corps">
+                    <svg viewBox="-100 -100 200 200">
+                      <circle class="rm-disque" r="100" />
+                      <path class="rm-forme" d={chemin(derniere)} />
+                      <circle class="rm-trou" cx={trouFinal?.x ?? 0} cy={trouFinal?.y ?? 0} r={trouFinal?.r ?? 0} />
+                    </svg>
+                  </span>
+                </span>
+              )}
+            </span>
+            <span class="rm-nom">{s.titre}</span>
+          </button>
+        </h3>
+        <p class="rm-texte">{s.texte}</p>
+      </li>
+    ))}
+  </ol>
+
+  <button type="button" class="rm-rejouer" data-rejouer>
+    <Icon name="refresh-cw" size={18} />
+    {rejouer}
+  </button>
+</div>
+
+<style>
+  .rm {
+    position: relative;
+    --voyageur: 72px;
+    --ancre: 44px;
+    --pas: 44px;
+  }
+  .rm-stations {
+    display: grid;
+    gap: var(--pas);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .rm-station {
+    position: relative;
+    min-height: var(--voyageur);
+    padding-left: calc(var(--voyageur) + 20px);
+    display: grid;
+    gap: 8px;
+    align-content: start;
+  }
+  .rm-titre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.375rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    padding-top: 4px;
+    color: var(--encre);
+  }
+  /* Un bouton centre son contenu en hauteur : on l'aligne en haut, pour que tous les
+     titres partent de la même ligne. */
+  .rm-bouton {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+  }
+  .rm-bouton:hover .rm-nom {
+    color: var(--color-marque);
+  }
+  .rm-nom {
+    transition: color 200ms ease;
+  }
+  .rm-texte {
+    color: #4b5b6b;
+    max-width: 46ch;
+    text-wrap: pretty;
+  }
+
+  .rm-ancre {
+    position: absolute;
+    z-index: 1;
+    left: calc((var(--voyageur) - var(--ancre)) / 2);
+    top: calc((var(--voyageur) - var(--ancre)) / 2);
+    width: var(--ancre);
+    height: var(--ancre);
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: inset 0 0 0 2px var(--filet);
+  }
+  .rm-trace {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--color-marque-doux);
+    overflow: visible;
+  }
+  .rm-trace path {
+    fill: var(--color-marque);
+  }
+  .rm-oeil {
+    fill: var(--color-marque-doux);
+  }
+
+  /* Le rail, par tronçons : de cette station à la suivante. */
+  .rm-rail {
+    position: absolute;
+    left: calc(var(--voyageur) / 2 - 1px);
+    top: calc(var(--voyageur) / 2);
+    width: 2px;
+    height: calc(100% + var(--pas));
+    background: var(--filet);
+  }
+  .rm-avance {
+    position: absolute;
+    inset: 0;
+    background: var(--color-marque);
+    transform-origin: 50% 0;
+  }
+
+  .rm-voyageur {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    top: 50%;
+    pointer-events: none;
+    width: var(--voyageur);
+    height: var(--voyageur);
+    margin: calc(var(--voyageur) / -2) 0 0 calc(var(--voyageur) / -2);
+  }
+  .rm-corps {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: 0 12px 24px -10px rgb(21 90 147 / 0.65);
+  }
+  .rm-corps svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .rm-disque,
+  .rm-trou {
+    fill: var(--color-marque);
+  }
+  .rm-forme {
+    fill: #fff;
+  }
+  .rm-ombre {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    bottom: -16px;
+    height: 14px;
+    background: radial-gradient(closest-side, rgb(11 27 43 / 0.22), transparent);
+  }
+
+  .rm-rejouer {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    margin-top: 32px;
+    margin-left: -12px;
+    padding: 0 14px 0 12px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1;
+    color: #4b5b6b;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+  .rm-rejouer:hover {
+    color: var(--encre);
+    background: var(--brume);
+  }
+
+  @media (min-width: 1024px) {
+    .rm {
+      --voyageur: 104px;
+      --ancre: 48px;
+      --pas: 32px;
+    }
+    .rm-stations {
+      grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    }
+    .rm-station {
+      padding-left: 0;
+      padding-top: calc(var(--voyageur) + 28px);
+      padding-right: 8px;
+      gap: 10px;
+    }
+    .rm-titre {
+      font-size: 1.5rem;
+      padding-top: 0;
+    }
+    .rm-rail {
+      left: calc(var(--voyageur) / 2);
+      top: calc(var(--voyageur) / 2 - 1px);
+      width: calc(100% + var(--pas));
+      height: 2px;
+    }
+    .rm-avance {
+      transform-origin: 0 50%;
+    }
+    .rm-rejouer {
+      margin-top: 48px;
+    }
+  }
+
+  [data-scene='lecture'] .rm-voyageur {
+    will-change: transform;
+  }
+</style>
+
+<script>
+  import { scene, courbes as C, seg, mix, clamp, depasse } from '@/lib/motion';
+  import { suiteDeFormes, melange, TROUS, type NomForme } from '@/lib/motion/formes';
+
+  const px = (v: number) => v.toFixed(2) + 'px';
+  /* Rebond amorti : nul aux deux bouts, il ne fait sauter ni l'arrivée ni la fin. */
+  const rebond = (p: number) => (p <= 0 || p >= 1 ? 0 : Math.sin(p * Math.PI * 3) * Math.pow(1 - p, 2));
+
+  function monter(el: HTMLElement) {
+    if (el.dataset.monte) return;
+    el.dataset.monte = '1';
+    const large = window.matchMedia('(min-width: 1024px)');
+    const noms = (el.dataset.formes || '').split(',') as NomForme[];
+    const n = noms.length;
+    const ancres = Array.from(el.querySelectorAll<HTMLElement>('.rm-ancre'));
+    const avances = Array.from(el.querySelectorAll<HTMLElement>('.rm-avance'));
+    const traces = Array.from(el.querySelectorAll<SVGElement>('.rm-trace'));
+    const nomsTitres = Array.from(el.querySelectorAll<HTMLElement>('.rm-nom'));
+    const textes = Array.from(el.querySelectorAll<HTMLElement>('.rm-texte'));
+    const voyageur = el.querySelector<HTMLElement>('.rm-voyageur');
+    const corps = el.querySelector<HTMLElement>('.rm-corps');
+    const ombre = el.querySelector<HTMLElement>('.rm-ombre');
+    const forme = el.querySelector<SVGPathElement>('.rm-forme');
+    const trou = el.querySelector<SVGCircleElement>('.rm-trou');
+    if (!voyageur || !corps || !ombre || !forme || !trou || ancres.length !== n) return;
+
+    const F = suiteDeFormes(noms);
+    const formeFinale = forme.getAttribute('d') || '';
+    const trouFinal = ['cx', 'cy', 'r'].map((a) => trou.getAttribute(a) || '0');
+    const touches: (HTMLElement | SVGElement)[] = [voyageur, corps, ombre, ...avances, ...traces, ...nomsTitres, ...textes];
+
+    // La partition (secondes), la même que celle du HTML (data-aller, data-tenir).
+    const VOYAGE = Array.from({ length: n - 1 }, (_, k) => [1.8 + 2.4 * k, 3.0 + 2.4 * k]);
+    const MORPH = VOYAGE.map(([a, b]) => [a + 0.1, b + 0.1]);
+    const REBOND = VOYAGE.map(([, b]) => [b, b + 0.7]);
+    const ARRIVE = [0.35, ...VOYAGE.map(([, b]) => b - 0.15)];
+    const NAIT = [0.15, 0.8];
+    const TENUE = VOYAGE[n - 2][1] + 1.2;
+
+    // La place des stations. Elle se mesure au départ de chaque lecture et à chaque
+    // changement de mise en page, jamais à chaque image : une mesure prise avant
+    // l'arrivée de la police posait l'objet à neuf pixels de sa station.
+    let geo: { x: number; y: number }[] | null = null;
+    let dernier = Infinity;
+    const mesurer = () => {
+      const r0 = el.getBoundingClientRect();
+      geo = ancres.map((a) => {
+        const r = a.getBoundingClientRect();
+        return { x: r.left + r.width / 2 - r0.left, y: r.top + r.height / 2 - r0.top };
+      });
+    };
+    const place = (t: number) => {
+      const g = geo!;
+      let x = g[0].x;
+      let y = g[0].y;
+      for (let k = 0; k < n - 1; k++) {
+        const p = C.inOutQuart(seg(t, VOYAGE[k][0], VOYAGE[k][1]));
+        x += (g[k + 1].x - g[k].x) * p;
+        y += (g[k + 1].y - g[k].y) * p;
+      }
+      return { x, y };
+    };
+
+    function rendu(t: number) {
+      if (t >= TENUE - 0.001) {
+        for (const nd of touches) {
+          nd.style.transform = '';
+          nd.style.opacity = '';
+        }
+        forme.setAttribute('d', formeFinale);
+        trou.setAttribute('cx', trouFinal[0]);
+        trou.setAttribute('cy', trouFinal[1]);
+        trou.setAttribute('r', trouFinal[2]);
+        dernier = t;
+        return;
+      }
+      if (!geo || t < dernier) mesurer();
+      dernier = t;
+      const g = geo!;
+      const L = large.matches;
+
+      // Le voyageur : sa place, son étirement selon la vitesse, son rebond.
+      const ici = place(t);
+      const avant = place(t - 0.016);
+      const apres = place(t + 0.016);
+      const v = Math.hypot(apres.x - avant.x, apres.y - avant.y) / 0.032;
+      const etire = Math.min(0.2, v / 5200);
+      const base = Math.max(0, depasse(1.7)(seg(t, NAIT[0], NAIT[1])));
+      let reb = 0;
+      for (const r of REBOND) reb += rebond(seg(t, r[0], r[1]));
+      reb *= 0.11;
+      const lon = base * (1 + etire - reb);
+      const tra = base * (1 / (1 + etire) + reb);
+      voyageur.style.transform = `translate3d(${px(ici.x - g[n - 1].x)},${px(ici.y - g[n - 1].y)},0)`;
+      corps.style.transform = L ? `scale(${lon.toFixed(4)},${tra.toFixed(4)})` : `scale(${tra.toFixed(4)},${lon.toFixed(4)})`;
+      ombre.style.opacity = clamp(base, 0, 1).toFixed(3);
+      ombre.style.transform = `scale(${(L ? lon : tra).toFixed(4)},1)`;
+
+      // La forme : celle de la station, puis le passage vers la suivante.
+      const m = MORPH.map((f) => C.inOutCubic(seg(t, f[0], f[1])));
+      let k = 0;
+      for (let i = 0; i < m.length; i++) if (m[i] > 0) k = i;
+      const p = m[k] ?? 0;
+      forme.setAttribute('d', melange(F[k], F[Math.min(k + 1, n - 1)], p, 2.4));
+      // Les trous ne se morphent pas : celui de A se referme, puis celui de B s'ouvre.
+      const tA = TROUS[noms[k]];
+      const tB = TROUS[noms[Math.min(k + 1, n - 1)]];
+      const rA = tA ? tA.r * (1 - C.inOutCubic(seg(p, 0, 0.4))) : 0;
+      const rB = tB && p > 0 ? tB.r * Math.max(0, depasse(1.5)(seg(p, 0.6, 1))) : 0;
+      const tr = rB > 0 ? tB! : tA;
+      trou.setAttribute('cx', String(tr?.x ?? 0));
+      trou.setAttribute('cy', String(tr?.y ?? 0));
+      trou.setAttribute('r', (rB > 0 ? rB : rA).toFixed(2));
+
+      // Le rail se remplit derrière lui.
+      avances.forEach((nd, i) => {
+        const q = C.inOutQuart(seg(t, VOYAGE[i][0], VOYAGE[i][1]));
+        nd.style.transform = L ? `scale(${q.toFixed(4)},1)` : `scale(1,${q.toFixed(4)})`;
+      });
+
+      // Il laisse sa forme à chaque station qu'il quitte.
+      traces.forEach((nd, i) => {
+        const a = VOYAGE[i] ? VOYAGE[i][0] + 0.3 : TENUE;
+        nd.style.transform = `scale(${Math.max(0, depasse(1.6)(seg(t, a, a + 0.4))).toFixed(4)})`;
+        nd.style.opacity = seg(t, a, a + 0.1).toFixed(3);
+      });
+
+      // Les textes sont toujours là : seul leur accent s'anime. Même atténués, ils
+      // gardent 4,5 de contraste au moins.
+      nomsTitres.forEach((nd, i) => {
+        const e = C.entree(seg(t, ARRIVE[i], ARRIVE[i] + 0.55));
+        nd.style.opacity = mix(0.6, 1, e).toFixed(3);
+        if (textes[i]) textes[i].style.opacity = mix(0.85, 1, e).toFixed(3);
+      });
+    }
+
+    const h = el.getBoundingClientRect().height || 1;
+    const seuil = clamp((window.innerHeight * 0.4) / h, 0.12, 0.6);
+    const s = scene(el, { tenue: TENUE, rendu, seuil });
+    // Une autre largeur, la police qui arrive : les stations ont bougé, on remesure.
+    const rafraichir = () => {
+      geo = null;
+      if (!s.enLecture) s.reposer();
+    };
+    window.addEventListener('resize', rafraichir);
+    if ('ResizeObserver' in window) new ResizeObserver(rafraichir).observe(el);
+    document.fonts?.ready.then(rafraichir);
+  }
+
+  function monterTout() {
+    document.querySelectorAll<HTMLElement>('[data-rail-morphing]').forEach(monter);
+  }
+  monterTout();
+  document.addEventListener('astro:page-load', monterTout);
+</script>
