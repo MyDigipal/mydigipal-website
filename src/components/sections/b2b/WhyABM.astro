@@ -1,6 +1,8 @@
 ---
 import { type Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
+import CarteVerre from '@/components/motion/CarteVerre.astro';
+import { carteAbm } from '@/components/motion/donnees-abm';
 
 interface Props {
   lang: Language;
@@ -70,67 +72,35 @@ const translations = {
 };
 
 const t = translations[lang] || translations.en;
+const carte = carteAbm(lang);
+
 ---
 
-<section class="py-24 bg-gradient-to-b from-slate-50 to-white">
+<!-- B2B, l'ABM expliqué (direction Encre, modèle AI Training, 30/09/2026) : la carte de verre
+     montre la notion (des comptes choisis, chaque canal parle aux mêmes décideurs, c'est
+     l'engagement du compte qui revient), puis quatre raisons en cartes de verre. -->
+<section class="section-encre section-monte py-20 lg:py-32">
   <div class="container-custom">
-    <div class="grid lg:grid-cols-2 gap-16 items-center">
-      <!-- Left: Content -->
-      <div class="animate-on-scroll">
-
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-          {t.headline}
-        </h2>
-
-        <p class="text-xl text-slate-700 mb-4 leading-relaxed">
-          {t.intro}
-        </p>
-
-        <p class="text-lg text-slate-600 mb-8">
-          {t.paragraph}
-        </p>
-
-        <a
-          href={`/${lang}/blog/abm-deck`}
-          class="inline-flex items-center gap-2 text-indigo-600 font-semibold hover:text-indigo-700 transition-colors group"
-        >
-          <span>{t.deckCTA}</span>
-          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </a>
-      </div>
-
-      <!-- Right: Points Grid -->
-      <div class="grid sm:grid-cols-2 gap-6">
-        {t.points.map((point, index) => (
-          <div
-            class="abm-point p-6 bg-white rounded-2xl border border-slate-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 animate-on-scroll"
-            style={`animation-delay: ${index * 100}ms`}
-          >
-            <div class="mb-4 text-marque">
-              <Icon name={point.icon} size={24} class="text-marque" />
-            </div>
-            <h3 class="text-lg font-bold text-slate-900 mb-2">{point.title}</h3>
-            <p class="text-slate-600 text-sm leading-relaxed">{point.description}</p>
-          </div>
-        ))}
-      </div>
+    <header class="mb-12 grid max-w-[900px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 id="abm-titre" class="titre-moyen">{t.headline}</h2>
+      <p class="chapo">{t.intro}</p>
+      <p class="text-sur-encre-2">{t.paragraph}</p>
+    </header>
+    <CarteVerre lang={lang} titreId="abm-titre" {...carte} />
+    <ul class="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:mt-24 lg:grid-cols-4 lg:gap-5">
+      {t.points.map((p, i) => (
+        <li class="carte-verre grid content-start gap-3 p-6" data-reveal style={`--i:${i}`}>
+          <span class="tuile tuile-pleine"><Icon name={p.icon} size={26} /></span>
+          <h3 class="titre-carte text-white">{p.title}</h3>
+          <p class="text-sur-encre-2">{p.description}</p>
+        </li>
+      ))}
+    </ul>
+    <div class="mt-12">
+      <a href={`/${lang}/blog/abm-deck`} class="pilule pilule-blanche">
+        {t.deckCTA}
+        <Icon name="arrow-right" size={18} class="pilule-fleche" />
+      </a>
     </div>
   </div>
 </section>
-
-<style>
-  .abm-point {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
