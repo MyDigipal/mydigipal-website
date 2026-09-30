@@ -11,8 +11,8 @@ const { lang } = Astro.props;
 
 const translations = {
   en: {
-    badge: "Our AI-Powered Process",
-    headline: "Ultra-Personalized Email Sequences",
+    badge: "Our AI-powered process",
+    headline: "Ultra-personalized email sequences",
     subtitle: "How we create highly personalized email campaigns that stand out from typical prospecting",
     objective: {
       title: "Objective",
@@ -21,49 +21,49 @@ const translations = {
     steps: [
       {
         number: "01",
-        title: "Define Audience Targeting",
+        title: "Define audience targeting",
         description: "Based on job titles, geographic location, industry, etc. Alternatively, use an existing list of contacts or target company names.",
         icon: "target"
       },
       {
         number: "02",
-        title: "Gather Contacts via Sales Navigator",
+        title: "Gather contacts via Sales Navigator",
         description: "Identify and collect relevant leads using LinkedIn Sales Navigator's advanced search capabilities.",
         icon: "search"
       },
       {
         number: "03",
-        title: "Build the Email List with Airscale",
+        title: "Build the email list with Airscale",
         description: "Extract email addresses from multiple API sources and validate deliverability to ensure high inbox placement rates.",
         icon: "database"
       },
       {
         number: "04",
-        title: "Create Ultra-Personalized Content",
+        title: "Create ultra-personalized content",
         description: "Use their LinkedIn bio to generate an AI prompt that associates your product/brand with their profile, standing out from typical prospecting emails.",
         icon: "sparkles"
       },
       {
         number: "05",
-        title: "Draft Email Content in Instantly",
+        title: "Draft email content in Instantly",
         description: "Prepare the main sections and include recommendations for design and layout that maximize engagement.",
         icon: "edit"
       },
       {
         number: "06",
-        title: "Build Sequence & Personalization",
+        title: "Build sequence & personalization",
         description: "Define the cadence and configure launch triggers. Integrate personalization elements at each touchpoint.",
         icon: "layers"
       },
       {
         number: "07",
-        title: "Track Results & Optimize",
+        title: "Track results & optimize",
         description: "Analyze performance metrics and adjust the strategy accordingly to continuously improve results.",
         icon: "chart"
       }
     ],
     differentiator: {
-      title: "What Makes This Different?",
+      title: "What makes this different?",
       points: [
         "AI analyzes each prospect's LinkedIn profile",
         "Content feels personal, not templated",
@@ -150,10 +150,11 @@ const icons = {
 
 // Cinq temps sur le rail : les sept étapes, les textes réunis quand deux étapes n'en font qu'une.
 const e = t.steps;
+const sep = lang === 'fr' ? ' : ' : ': ';
 const stations = [
-  { titre: e[0].title, texte: `${e[0].description} ${e[1].title} : ${e[1].description}`, forme: 'loupe' as const },
+  { titre: e[0].title, texte: `${e[0].description} ${e[1].title}${sep}${e[1].description}`, forme: 'loupe' as const },
   { titre: e[2].title, texte: e[2].description, forme: 'structure' as const },
-  { titre: e[3].title, texte: `${e[3].description} ${e[4].title} : ${e[4].description}`, forme: 'bulle' as const },
+  { titre: e[3].title, texte: `${e[3].description} ${e[4].title}${sep}${e[4].description}`, forme: 'bulle' as const },
   { titre: e[5].title, texte: e[5].description, forme: 'curseur' as const },
   { titre: e[6].title, texte: e[6].description, forme: 'courbe' as const },
 ];
