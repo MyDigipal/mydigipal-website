@@ -1,0 +1,27 @@
+---
+/**
+ * Google Ads : comment marche une campagne Performance Max, la scène principale de la
+ * maquette Encre (30/09/2026). Une section d'encre qui monte sur le hero, et la carte de
+ * verre : ce qu'on lui donne, ce que Google décide, ce qu'on lui apprend.
+ */
+import type { Language } from '@/i18n/config';
+import CarteVerre from '@/components/motion/CarteVerre.astro';
+import { cartePmax } from '@/components/motion/donnees-pmax';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const c = cartePmax(lang);
+---
+
+<section class="section-encre section-monte py-20 lg:py-32" id="performance-max">
+  <div class="container-custom">
+    <header class="mb-9 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 id="pmax-titre" class="titre-moyen">{c.titre}</h2>
+      <p class="chapo">{c.chapo}</p>
+    </header>
+    <CarteVerre lang={lang} titreId="pmax-titre" nom={c.nom} entrees={c.entrees} sorties={c.sorties} retours={c.retours} gardes={c.gardes} temps={c.temps} conclusion={c.conclusion} />
+  </div>
+</section>
