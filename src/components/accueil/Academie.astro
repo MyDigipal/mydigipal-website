@@ -146,6 +146,9 @@ const resumeEcrans = (() => {
   return `${noms.charAt(0).toUpperCase()}${noms.slice(1)}.`;
 })();
 
+// « Lire la vidéo : titre » en français, "Play the video: title" en anglais.
+const sep = fr ? ' : ' : ': ';
+
 // Sur l'accueil, chaque pli est un `<details>` et les deux vont ensemble dans
 // `.academie-plis` ; ailleurs (`/ai`), rien autour : le DOM ne change pas.
 const Pli = replie ? 'details' : Fragment;
@@ -302,7 +305,7 @@ const faits = [
           <span class="pli-signe" aria-hidden="true"></span>
         </summary>
       )}
-      <div class="academie-films" data-films data-lire={t.lire}>
+      <div class="academie-films" data-films data-lire={t.lire} data-sep={sep}>
         {!replie && (
           <div class="films-tete" data-reveal>
             <h3 class="films-titre" set:html={serrer(t.filmsTitre)} />
@@ -323,7 +326,7 @@ const faits = [
               data-films-affiche
             />
             <video class="films-video" preload="none" playsinline data-films-video></video>
-            <button type="button" class="films-lire" aria-label={`${t.lire} : ${FILMS[0].titre}`} data-films-lire>
+            <button type="button" class="films-lire" aria-label={`${t.lire}${sep}${FILMS[0].titre}`} data-films-lire>
               <span class="films-rond">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                   <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
@@ -1451,7 +1454,7 @@ const faits = [
     const majTouche = () => {
       const d = durees.get(ids[courant]);
       duree.textContent = d ? mn(d) : '';
-      lire.setAttribute('aria-label', `${bloc.dataset.lire || ''} : ${titre.textContent || ''}`);
+      lire.setAttribute('aria-label', `${bloc.dataset.lire || ''}${bloc.dataset.sep || ': '}${titre.textContent || ''}`);
     };
 
     const sonder = () => {
