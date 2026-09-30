@@ -2,7 +2,8 @@
 import { type Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 import VideoEmbed from '@/components/ui/VideoEmbed.astro';
-import Button from '@/components/ui/Button.astro';
+import CarteVerre from '@/components/motion/CarteVerre.astro';
+import { carteLlmo } from '@/components/motion/donnees-seo';
 
 interface Props {
   lang: Language;
@@ -102,78 +103,43 @@ const content = {
 };
 
 const t = content[lang];
+const carte = carteLlmo(lang);
+
 ---
 
-<section class="py-28 bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 text-white relative overflow-hidden" id="llmo">
-  <!-- Background effects -->
-  <div class="absolute inset-0">
-    <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-20 right-10 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"></div>
-  </div>
+<!-- SEO, phase 3 : le LLMO (direction Encre, 30/09/2026). La carte de verre explique la
+     notion : ce qu'un assistant IA lit, ce qu'il cite, ce qu'il laisse de côté. Puis la
+     différence avec le SEO, la vidéo de l'architecture, les quatre chantiers. -->
+<section class="section-encre section-monte py-20 lg:py-32" id="llmo">
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[900px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 id="llmo-titre" class="titre-moyen">{t.title}</h2>
+      <p class="text-lg font-semibold text-sur-encre sm:text-xl">{t.subtitle}</p>
+      <p class="chapo">{t.definition}</p>
+    </header>
 
-  <div class="container-custom relative z-10">
-    <!-- Badge + Title -->
-    <div class="text-center max-w-4xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl lg:text-5xl font-bold mb-6">
-        {t.title}
-      </h2>
-      <p class="text-xl text-blue-200/80 mb-8">
-        {t.subtitle}
-      </p>
-      <!-- Definition block - optimized for LLM citation -->
-      <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-left max-w-3xl mx-auto">
-        <p class="text-blue-100 leading-relaxed">
-          {t.definition}
-        </p>
-      </div>
-    </div>
+    <CarteVerre lang={lang} titreId="llmo-titre" {...carte} />
 
-    <!-- Stats banner -->
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-8 mb-16 animate-on-scroll">
-      <div class="text-center">
-        <div class="text-5xl font-extrabold text-blue-400 mb-1">{t.stat1Value}</div>
-        <div class="text-sm text-blue-300/70">{t.stat1Label}</div>
-      </div>
-      <div class="hidden sm:block w-px h-16 bg-blue-500/30"></div>
-      <div class="text-center">
-        <div class="text-5xl font-extrabold text-blue-400 mb-1">{t.stat2Value}</div>
-        <div class="text-sm text-blue-300/70">{t.stat2Label}</div>
-      </div>
-    </div>
-
-    <!-- SEO vs LLMO Comparison -->
-    <div class="max-w-4xl mx-auto mb-20 animate-on-scroll">
-      <h3 class="text-2xl font-bold text-center mb-8">{t.comparisonTitle}</h3>
-      <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden">
-        <!-- Header -->
-        <div class="grid grid-cols-2 gap-0">
-          <div class="p-4 text-center bg-emerald-500/20 border-b border-r border-white/10">
-            <span class="font-bold text-emerald-300">{t.seoLabel}</span>
-          </div>
-          <div class="p-4 text-center bg-blue-500/20 border-b border-white/10">
-            <span class="font-bold text-blue-300">{t.llmoLabel}</span>
-          </div>
+    <div class="mt-16 grid grid-cols-1 gap-6 lg:mt-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-10">
+      <div class="carte-verre p-6 lg:p-8" data-reveal>
+        <h3 class="titre-carte mb-6 text-white">{t.comparisonTitle}</h3>
+        <div class="grid grid-cols-2 gap-x-4 border-b border-white/10 pb-3 text-sm font-semibold">
+          <span class="text-sur-encre-2">{t.seoLabel}</span>
+          <span class="text-marque-clair">{t.llmoLabel}</span>
         </div>
-        <!-- Rows -->
-        {t.comparison.map((row, i) => (
-          <div class={`grid grid-cols-2 gap-0 ${i < t.comparison.length - 1 ? 'border-b border-white/5' : ''}`}>
-            <div class="p-4 text-sm text-slate-300 border-r border-white/5">
-              {row.seo}
-            </div>
-            <div class="p-4 text-sm text-blue-200 font-medium">
-              {row.llmo}
-            </div>
-          </div>
-        ))}
+        <ul>
+          {t.comparison.map((row) => (
+            <li class="grid grid-cols-2 gap-x-4 border-b border-white/10 py-3 last:border-b-0">
+              <span class="text-sur-encre-2">{row.seo}</span>
+              <span class="font-semibold text-white">{row.llmo}</span>
+            </li>
+          ))}
+        </ul>
       </div>
-    </div>
-
-
-    <!-- Video: SEO Architecture -->
-    <div class="max-w-4xl mx-auto mb-20 animate-on-scroll">
-      <div class="rounded-2xl overflow-hidden border border-blue-500/20 shadow-lg shadow-blue-500/5">
+      <div class="overflow-hidden rounded-[20px] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12),var(--ombre-forte)]" data-reveal style="--i:1">
         <VideoEmbed
           src="/videos/seo/SEOArchitecture.mp4"
+            poster="/videos/seo/SEOArchitecture.jpg"
           title={lang === 'fr' ? 'Architecture SEO : comment nous structurons votre site' : 'SEO Architecture — How we structure your site for AI and search engines'}
           description={lang === 'fr' ? "Voir l'architecture technique" : 'See the technical architecture'}
           schemaName="SEO Architecture by MyDigipal"
@@ -183,31 +149,27 @@ const t = content[lang];
       </div>
     </div>
 
-    <!-- LLMO Services Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 stagger-children">
+    <ul class="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:mt-20 lg:grid-cols-4 lg:gap-5">
       {t.services.map((service, index) => (
-        <div
-          class="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 animate-on-scroll"
-          style={`animation-delay: ${index * 150}ms`}
-        >
-          <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 mb-4 group-hover:bg-blue-500/30 group-hover:scale-110 transition-all duration-300">
-            <Icon name={service.icon} size={24} />
-          </div>
-          <h3 class="text-lg font-bold text-white mb-2">
-            {service.title}
-          </h3>
-          <p class="text-sm text-blue-200/70 leading-relaxed">
-            {service.description}
-          </p>
-        </div>
+        <li class="carte-verre grid content-start gap-3 p-6" data-reveal style={`--i:${index}`}>
+          <span class="tuile tuile-pleine"><Icon name={service.icon} size={26} /></span>
+          <h3 class="titre-carte text-white">{service.title}</h3>
+          <p class="text-sur-encre-2">{service.description}</p>
+        </li>
       ))}
-    </div>
+    </ul>
 
-    <!-- CTA -->
-    <div class="text-center animate-on-scroll">
-      <Button href={t.ctaHref} variant="primary" size="lg" class="bg-blue-600 hover:bg-blue-500 border-blue-500">
+    <div class="mt-14 grid grid-cols-1 gap-8 border-t border-white/10 pt-10 lg:grid-cols-[auto_auto_minmax(0,1fr)] lg:items-center lg:gap-12">
+      {[[t.stat1Value, t.stat1Label], [t.stat2Value, t.stat2Label]].map(([v, l]) => (
+        <p class="grid max-w-[260px] gap-1">
+          <span class="font-display text-5xl font-extrabold tracking-[-0.04em] text-white">{v}</span>
+          <span class="text-sur-encre-2">{l}</span>
+        </p>
+      ))}
+      <a href={t.ctaHref} class="pilule pilule-blanche lg:justify-self-end">
         {t.cta}
-      </Button>
+        <Icon name="arrow-right" size={18} class="pilule-fleche" />
+      </a>
     </div>
   </div>
 </section>
