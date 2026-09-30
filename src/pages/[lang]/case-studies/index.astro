@@ -27,14 +27,14 @@ const translations = {
     title: 'Case Studies - B2B Tech and Automotive Results',
     description: 'Explore MyDigipal case studies and success stories. See how we help B2B tech and automotive clients achieve exceptional ROI through strategic digital marketing.',
     hero: {
-      badge: 'Success Stories',
-      headline: 'Our Case Studies',
+      badge: 'Success stories',
+      headline: 'Our case studies',
       subheadline: 'Real results for real businesses. See how our strategies drive growth.',
     },
     filterAll: 'All',
     filterAutomotive: 'Automotive',
     filterB2BTech: 'B2B Tech',
-    viewCaseStudy: 'View Case Study',
+    viewCaseStudy: 'View case study',
     services: 'Services',
     noResults: 'No case studies found.',
   },
@@ -66,7 +66,8 @@ const vedettes = caseStudies.filter((s) => s.data.featured);
 const vedette = vedettes[0] ?? caseStudies[0];
 const tableau = (vedette.data.kpis as { value: string; label: string }[]).slice(0, 3).map((k) => {
   const [, c = k.value, unite = ''] = k.value.match(/^([+\-−]?[\d.,\s]*\d)\s*(.*)$/) ?? [];
-  const texte = /^[A-Z]{2}/.test(k.label) ? k.label : k.label.charAt(0).toLowerCase() + k.label.slice(1);
+  // Un sigle ou une marque garde sa majuscule (« SEO traffic », « Google Ads conversions »).
+  const texte = /^([A-Z]{2}|Google|Facebook|LinkedIn|Meta|Instagram|YouTube|TikTok|Waze)/.test(k.label) ? k.label : k.label.charAt(0).toLowerCase() + k.label.slice(1);
   return { chiffre: fr ? c.replace('.', ',') : c, unite, texte };
 });
 const cite = vedettes.find((s) => s !== vedette && s.data.testimonial) ?? caseStudies.find((s) => s !== vedette && s.data.testimonial);
