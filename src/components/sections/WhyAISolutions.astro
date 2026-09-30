@@ -124,118 +124,56 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-slate-950 text-white overflow-hidden relative">
-  <!-- Background Effects -->
-  <div class="absolute inset-0 pointer-events-none">
-    <div class="absolute top-20 -left-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px]"></div>
-    <div class="absolute bottom-20 -right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px]"></div>
-    <!-- Grid pattern -->
-    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiMxZTI5M2IiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6TTEgMWg1OHY1OEgxVjF6IiBmaWxsPSIjMzM0MTU1IiBmaWxsLW9wYWNpdHk9Ii4yIi8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-  </div>
-
-  <div class="container-custom relative z-10">
-    <!-- Header -->
-    <div class="text-center mb-16">
-      <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+<!-- Direction Encre (30/09/2026) : une section d'encre qui monte sur le hero. Plus de
+     statistiques sans source (72 %, 40 %, 2-4x), plus de pastilles 01 / 02 / 03 : le
+     parcours d'adoption est une liste ordonnée, puis les outils génériques face à l'IA
+     sur mesure, entre des filets. -->
+<section class="section-encre section-monte py-20 lg:py-32">
+  <div class="container-custom">
+    <header class="mb-14 grid max-w-[900px] gap-5 lg:mb-20 lg:gap-6">
+      <h2 class="titre-moyen">
         {t.headline}
+        <span class="block text-marque-clair">{t.subheadline}</span>
       </h2>
-      <p class="text-2xl text-indigo-300 font-medium mb-6">{t.subheadline}</p>
-      <p class="text-xl text-slate-400 max-w-3xl mx-auto">{t.description}</p>
-    </div>
+      <p class="chapo">{t.description}</p>
+    </header>
 
-    <!-- Stats -->
-    <div class="grid md:grid-cols-3 gap-6 mb-20">
-      {t.stats.map((stat, index) => (
-        <div
-          class="stat-card relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-indigo-500/30 transition-all duration-500 group text-center"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 mb-4">
-            <Icon name={stat.icon} size={24} />
-          </div>
-          <div class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-2">
-            {stat.value}
-          </div>
-          <div class="text-sm text-slate-400">{stat.label}</div>
-        </div>
+    <h3 class="mb-2 font-display text-2xl font-extrabold tracking-[-0.02em] text-white lg:text-3xl">{t.journey.title}</h3>
+    <p class="mb-8 text-sur-encre-2">{t.journey.subtitle}</p>
+    <ol class="grid gap-x-10 lg:grid-cols-3">
+      {t.journey.steps.map((step, index) => (
+        <li class="grid content-start gap-3 border-t border-white/10 py-7" data-reveal style={`--i:${index}`}>
+          <Icon name={step.icon} size={24} class="text-marque-clair" />
+          <h4 class="font-display text-xl font-extrabold tracking-[-0.02em] text-white">{step.title}</h4>
+          <p class="text-sur-encre-2">{step.description}</p>
+          {step.cta && step.ctaLink && (
+            <a href={`/${lang}/services/${step.ctaLink}`} class="inline-flex min-h-11 items-center gap-2 font-semibold text-marque-clair hover:text-white">
+              {step.cta}
+              <Icon name="arrow-right" size={16} />
+            </a>
+          )}
+        </li>
       ))}
-    </div>
+    </ol>
 
-    <!-- Journey Section -->
-    <div class="mb-20">
-      <div class="text-center mb-12">
-        <h3 class="text-3xl font-bold text-white mb-2">{t.journey.title}</h3>
-        <p class="text-lg text-slate-400">{t.journey.subtitle}</p>
-      </div>
-
-      <div class="grid lg:grid-cols-3 gap-8">
-        {t.journey.steps.map((step, index) => (
-          <div class="relative">
-            {/* Connector line */}
-            {index < t.journey.steps.length - 1 && (
-              <div class="hidden lg:block absolute top-12 left-full w-full h-0.5 bg-gradient-to-r from-indigo-500/50 to-transparent z-0"></div>
-            )}
-
-            <div class="relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 border border-slate-700/50 hover:border-indigo-500/30 transition-all duration-300 group">
-              {/* Step number */}
-              <div class="absolute -top-4 left-8 px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full text-sm font-bold">
-                {step.number}
-              </div>
-
-              <div class="flex items-center gap-4 mb-4 mt-2">
-                <div class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center group-hover:bg-indigo-500/30 transition-colors">
-                  <Icon name={step.icon} size={24} />
-                </div>
-                <h4 class="text-xl font-bold text-white">{step.title}</h4>
-              </div>
-
-              <p class="text-slate-400 mb-4">{step.description}</p>
-
-              {step.cta && step.ctaLink && (
-                <a
-                  href={`/${lang}/services/${step.ctaLink}`}
-                  class="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
-                >
-                  {step.cta}
-                  <Icon name="arrow-right" size={16} />
-                </a>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <!-- Warning & Solution -->
-    <div class="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-      <!-- Warning -->
-      <div class="relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 border border-yellow-500/30">
-        <h3 class="text-2xl font-bold text-yellow-300 mb-6">{t.warning.title}</h3>
-        <ul class="space-y-3">
+    <div class="mt-16 grid gap-10 lg:mt-24 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <h3 class="mb-5 text-xl font-semibold text-sur-encre-2">{t.warning.title}</h3>
+        <ul class="grid gap-3">
           {t.warning.points.map((point) => (
-            <li class="flex items-start gap-3 text-slate-300">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center mt-0.5">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-              </span>
+            <li class="flex items-start gap-3 text-sur-encre-2">
+              <Icon name="ban" size={18} class="mt-0.5 flex-none text-sur-encre-2" />
               <span>{point}</span>
             </li>
           ))}
         </ul>
       </div>
-
-      <!-- Solution -->
-      <div class="relative bg-gradient-to-br from-indigo-900/30 to-purple-900/30 rounded-3xl p-8 border border-indigo-500/30">
-        <h3 class="text-2xl font-bold text-indigo-300 mb-6">{t.solution.title}</h3>
-        <ul class="space-y-3">
+      <div>
+        <h3 class="mb-5 text-xl font-semibold text-white">{t.solution.title}</h3>
+        <ul class="grid gap-3">
           {t.solution.points.map((point) => (
-            <li class="flex items-start gap-3 text-slate-300">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center mt-0.5">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-              </span>
+            <li class="flex items-start gap-3 text-sur-encre">
+              <Icon name="check" size={18} class="mt-0.5 flex-none text-marque-clair" />
               <span>{point}</span>
             </li>
           ))}
@@ -244,18 +182,3 @@ const t = translations[lang] || translations.en;
     </div>
   </div>
 </section>
-
-<style>
-  .stat-card {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease forwards;
-  }
-
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
