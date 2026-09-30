@@ -38,11 +38,17 @@ const {
   lang = 'en'
 } = Astro.props;
 
+// Les données structurées ne portent pas de tiret long (refonte, 30/09/2026) : « outils — sans
+// code » devient « outils, sans code », « stack — CRM, publicités » devient « stack : CRM,
+// publicités ». Le texte affiché de l'article, lui, n'est pas touché.
+const sansTiret = (s: string) =>
+  s.replace(/\s*—\s*(?=(sans|mais|et|ou|without|but|and|or)\b)/gi, ', ').replace(/\s*—\s*/g, ' : ');
+
 const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": title,
-  "description": description,
+  "headline": sansTiret(title),
+  "description": sansTiret(description),
   "author": {
     "@type": "Person",
     "name": author
