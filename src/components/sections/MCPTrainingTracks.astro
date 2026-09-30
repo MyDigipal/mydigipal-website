@@ -128,115 +128,36 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 md:py-32 bg-white">
+<!-- Direction Encre (30/09/2026) : fond brume, les trois parcours côte à côte entre des
+     filets, le plus demandé sur un panneau blanc. Les prix sont ceux de l'offre. Le lien
+     de contact garde son `?topic=parcours-technique`. -->
+<section class="section-brume py-20 lg:py-32">
   <div class="container-custom">
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 leading-tight mb-6">
-        {t.headline}
-      </h2>
-      <p class="text-lg text-slate-500 leading-relaxed">{t.subtitle}</p>
-    </div>
-
-    <div class="grid md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-      {
-        t.tracks.map((track, index) => (
-          <div
-            class={`track-card relative flex flex-col p-8 rounded-2xl transition-all duration-300 animate-on-scroll ${
-              track.highlighted
-                ? "track-highlighted bg-slate-950 text-white border border-white/10 md:-translate-y-4 shadow-2xl shadow-cyan-500/20"
-                : "bg-white border border-slate-200 hover:border-cyan-300 hover:shadow-lg"
-            }`}
-            style={`animation-delay: ${index * 120}ms`}
-          >
-            {track.highlighted && (
-              <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 text-[11px] font-semibold uppercase tracking-wider rounded-full bg-gradient-to-r from-cyan-400 to-violet-400 text-slate-950">
-                {lang === "fr" ? "Le plus demandé" : "Most asked for"}
-              </div>
-            )}
-
-            <div
-              class={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 ${
-                track.highlighted
-                  ? "bg-gradient-to-br from-cyan-500/30 to-violet-500/30 text-cyan-300 border border-white/10"
-                  : "bg-gradient-to-br from-cyan-50 to-violet-50 text-cyan-600 border border-cyan-100"
-              }`}
-            >
-              <Icon name={track.icon} size={26} />
-            </div>
-
-            <div
-              class={`text-xs font-semibold uppercase tracking-[0.15em] mb-2 ${
-                track.highlighted ? "text-cyan-300" : "text-slate-500"
-              }`}
-            >
-              {track.duration} - {track.audience}
-            </div>
-
-            <h3 class={`font-display text-2xl font-bold mb-3 ${track.highlighted ? "text-white" : "text-slate-900"}`}>
-              {track.name}
-            </h3>
-
-            <p class={`text-sm mb-6 leading-relaxed ${track.highlighted ? "text-slate-300" : "text-slate-500"}`}>
-              {track.description}
-            </p>
-
-            <ul class="space-y-3 mb-6 flex-grow">
-              {track.outcomes.map((outcome) => (
-                <li class="flex gap-3 text-sm">
-                  <span
-                    class={`shrink-0 mt-1 inline-flex items-center justify-center w-4 h-4 rounded-full ${
-                      track.highlighted ? "bg-cyan-400/20 text-cyan-300" : "bg-cyan-100 text-cyan-600"
-                    }`}
-                  >
-                    <Icon name="check" size={10} />
-                  </span>
-                  <span class={track.highlighted ? "text-slate-200" : "text-slate-600"}>{outcome}</span>
-                </li>
-              ))}
-            </ul>
-
-            {track.bonus && (
-              <div
-                class={`text-xs leading-relaxed p-3 rounded-lg mb-6 ${
-                  track.highlighted ? "bg-white/5 text-cyan-200 border border-white/10" : "bg-cyan-50 text-cyan-700"
-                }`}
-              >
-                {track.bonus}
-              </div>
-            )}
-
-            <div class="mt-auto">
-              <div
-                class={`font-display text-2xl font-bold mb-4 ${
-                  track.highlighted
-                    ? "bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-transparent"
-                    : "text-slate-900"
-                }`}
-              >
-                {track.price}
-              </div>
-              <a
-                href={t.ctaHref}
-                class={`block text-center px-5 py-3 rounded-xl font-semibold text-sm transition-all ${
-                  track.highlighted
-                    ? "bg-white text-slate-950 hover:bg-slate-100"
-                    : "bg-slate-900 text-white hover:bg-slate-800"
-                }`}
-              >
-                {t.cta}
-              </a>
-            </div>
-          </div>
-        ))
-      }
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <div class="grid gap-4 md:grid-cols-3 md:gap-0">
+      {t.tracks.map((track) => (
+        <div class:list={['flex flex-col gap-4 rounded-[20px] p-7 md:px-8', track.highlighted ? 'bg-white shadow-[0_1px_2px_rgb(11_27_43/0.05),0_16px_40px_-16px_rgb(11_27_43/0.2)]' : 'border-t border-slate-300/60 md:rounded-none md:border-t-0 md:[&:not(:first-child)]:border-l']}>
+          {track.highlighted && <span class="self-start rounded-full bg-marque-doux px-3 py-1 text-sm font-semibold text-marque">{lang === 'fr' ? 'Le plus demandé' : 'Most asked for'}</span>}
+          <Icon name={track.icon} size={24} class="text-marque" />
+          <p class="text-sm font-semibold text-slate-500">{track.duration}, {track.audience}</p>
+          <h3 class="font-display text-2xl font-extrabold tracking-[-0.02em] text-encre">{track.name}</h3>
+          <p class="text-slate-600">{track.description}</p>
+          <ul class="grid flex-grow content-start gap-3">
+            {track.outcomes.map((outcome) => (
+              <li class="flex items-start gap-3 text-slate-700">
+                <Icon name="check" size={16} class="mt-1 flex-none text-marque" />
+                <span>{outcome}</span>
+              </li>
+            ))}
+          </ul>
+          {track.bonus && <p class="border-t border-slate-200 pt-4 text-slate-600">{track.bonus}</p>}
+          <p class="font-display text-2xl font-extrabold text-encre">{track.price}</p>
+          <a href={t.ctaHref} class:list={['pilule self-start', track.highlighted ? 'pilule-pleine' : 'pilule-contour']}>{t.cta}</a>
+        </div>
+      ))}
     </div>
   </div>
 </section>
-
-<style>
-  @media (prefers-reduced-motion: reduce) {
-    .track-highlighted {
-      transform: none !important;
-    }
-  }
-</style>
