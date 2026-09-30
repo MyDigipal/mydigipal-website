@@ -296,12 +296,12 @@ méthode que `academy-v2.astro` : une page et non une suppression, à cause du p
 la section 1). Le titre SEO de l'ancienne accueil est gardé mot pour mot. Pilotage :
 `docs/site-mise-en-avant/refonte-accueil-directions.html`.
 
-La page assemble `src/components/accueil/`, dans cet ordre depuis les retours de Paul du
-24/09/2026 : `Visages` (hero), `Bandeau` (logos), `Academie` (l'AI Academy : les boucles
-filmées de l'app en onglets, puis les films parlants de la page de vente), `Avis` (note,
-photo de La Poste, verbatims), `Offre` (« Ce qu'on fait » : dix services, une phrase
-chacun, fiche au survol), `Resultats` (sept études de cas, descendues exprès),
-`Articles`, `Portes` (calculateur, Academy, contact). Styles communs dans `accueil.css`.
+La page assemble `src/components/accueil/`, dans cet ordre depuis le 30/09/2026 (Paul :
+« mets les services avant l'Academy ») : `Visages` (hero), `Bandeau` (logos), `Offre` (« Ce
+qu'on fait » : dix services, une phrase chacun, fiche au survol), `Academie` (l'AI Academy :
+la vidéo de présentation, puis les écrans de l'app et les films parlants REPLIÉS, groupe 5),
+`Avis` (note, photo de La Poste, verbatims), `Resultats` (sept études de cas), `Articles`,
+`Portes` (calculateur, Academy, contact). Styles communs dans `accueil.css`.
 
 - **Aucun « Réserver un appel » sur TOUT le site** depuis le 25/09/2026 (Paul : « je
   préfère que les gens nous contactent par le biais où ils peuvent faire calculer mon
@@ -700,7 +700,8 @@ des animations qui EXPLIQUENT une notion difficile, jamais qui décorent.
   retouche pas le HTML à la main). Il porte l'audit, les décisions, les questions ouvertes, le
   catalogue des composants et l'avancement page par page.
 - **Branche `refonte-design`**, publiée sur `main` à chaque accord de Paul donné dans la session
-  (groupes 1 à 4 : `1fd65ec` ; pagination du blog et accueil : `bc32233`, 30/09). Ordre de passage : pages
+  (groupes 1 à 4 : `1fd65ec` ; pagination du blog et accueil : `bc32233` ; passe anglaise et services
+  avant l'Academy sur l'accueil : le même soir, 30/09). Ordre de passage : pages
   IA, services, automobile, le reste, l'accueil en dernier.
 - **Les maquettes** : `labo/refonte-site/` (hors du build). Trois directions sur la page Google
   Ads, `direction-a.html` (Encre), `-b` (Grille), `-c` (Atelier), comparées dans `index.html`.
@@ -891,10 +892,9 @@ Groupe 3 validé par Paul ; les chiffres sans source affichée sont GARDÉS part
 
 ### Groupe 5 : l'accueil (30/09/2026, en ligne depuis `bc32233`)
 
-Demande de Paul : garder la vidéo de l'Academy, replier ce qui suit, logos en couleur, et que
-le visiteur arrive sans clic aux avis puis aux services. L'ordre des sections n'a pas bougé ;
-Paul a validé la page telle quelle (« L'accueil me va »). La question « les services avant
-l'Academy ? » lui a été posée et reste ouverte : c'est l'ordre des composants dans `index.astro`.
+Demande de Paul : garder la vidéo de l'Academy, replier ce qui suit, logos en couleur. Paul a
+validé la page (« L'accueil me va »), puis demandé les services AVANT l'Academy : l'ordre est
+depuis `Visages`, `Bandeau`, `Offre`, `Academie`, `Avis`, `Resultats`, `Articles`, `Portes`.
 - **Les plis de l'Academy** (`Academie.astro`, propriété `replie`, l'accueil seul) : les écrans
   de l'application et les films parlants sont dans deux `<details>` natifs. Leur texte est dans
   le HTML servi ; le pli s'ouvre vers le bas sous son titre, qui ne bouge pas (mesuré au pixel).
@@ -904,11 +904,38 @@ l'Academy ? » lui a été posée et reste ouverte : c'est l'ordre des composant
   (dataLayer) mesure l'ouverture. `/ai` n'a pas de pli : même DOM qu'avant (balise dynamique
   `Pli` = `details` ou `Fragment`).
 - **Rythme** : l'Academy (sa nuit) et `Resultats` (encre) sont deux sections qui montent
-  (`section-monte`), jamais collées ; `Bandeau` et `Offre` ont 32 px de plus en bas pour elles.
+  (`section-monte`), jamais collées ; `Offre` et `Avis`, qu'elles recouvrent, ont 32 px de plus
+  en bas pour elles.
   Sombre 34 à 40 % de 360 à 1 440 px.
 - **Logos en couleur** : bandeau, onglets des avis, fiche des services ; dans `Resultats`, sur
   une plaque blanche (sur l'encre, un logo sombre disparaîtrait, un fichier sur fond blanc
   ferait un rectangle).
+
+### La passe anglaise (30/09/2026, toutes les pages refaites)
+
+Demande de Paul : tirets, tournures, casse. Le français n'a PAS bougé : son texte (plis, fenêtres
+et réponses fermées compris) a été extrait avant et après et comparé ligne à ligne, seule la 404
+(commune aux deux langues, servie en anglais) diffère.
+- **Casse de phrase en anglais aussi** (titres, boutons, libellés, étiquettes des chiffres), comme en
+  français. Gardés tels quels : les noms de produits et d'offres (Google Ads, Paid Social, AI Academy,
+  Performance Max, Lead Gen Forms, Stories & Reels, Meta Pixel, Waze Ads, MCP Starter…), les balises
+  `<title>` SEO, les titres des documents légaux (Privacy Policy, Terms of Service), les intitulés de
+  poste des témoignages, les titres d'articles, et la taxonomie du blog (« Marketing Ops », « Paid Ads »).
+- **Aucun tiret long en anglais** hors citation client mot pour mot (Quantum Metrics). Le trait
+  d'union employé comme tiret (« TikTok - we craft ») est remplacé aussi.
+- **Montants à l'anglaise** : « €150K », « €0.20 », « €37 », « 47% », « €6,500 ». Les découpages du
+  tableau à palettes (`automotive/[slug].astro`, `automotive/index.astro`) et de
+  `AutomotiveWhySection` acceptent le symbole avant le chiffre.
+- Le libellé d'un chiffre perd sa majuscule pour se lire après le nombre, SAUF s'il commence par un
+  sigle ou une marque (« +125% Facebook conversions ») : `case-studies/[slug].astro`, leur index,
+  `CaseStudyCarousel`.
+- `BandeauLogos` écrit en `alt` le nom anglais des groupes sur les pages anglaises (« Theobald Group »),
+  le fichier généré des logos gardant le nom français.
+- ⚠️ **Le formulaire de contact n'a pas été touché** : ses options (« Content Creation », « Full
+  Strategy »…) sont envoyées telles quelles au CRM comme valeurs.
+- Restent à trancher par Paul : l'orthographe mêle britannique (textes récents : optimisation,
+  programme) et américaine (textes anciens : optimization) ; le haut de la page contact annonce
+  « 339 reviews » quand l'API en compte 497.
 
 ### Les éléments flottants partagent une seule mesure : `--bandeau`
 
