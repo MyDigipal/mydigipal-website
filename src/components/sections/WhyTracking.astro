@@ -1,6 +1,7 @@
 ---
 import { type Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
 
 interface Props {
   lang: Language;
@@ -80,78 +81,51 @@ const translations = {
 };
 
 const t = translations[lang] || translations.en;
+
+// « 67% » devient le chiffre « 67 » et l'unité « % ».
+const coupe = (v: string) => {
+  const m = v.match(/^([^\d+\-−]*)([+\-−]?[\d.,\-]+)\s*(.*)$/);
+  return m ? { chiffre: `${m[1]}${m[2]}`, unite: m[3] } : { chiffre: v, unite: '' };
+};
+const tableau = t.stats.slice(0, 3).map((s) => ({ ...coupe(s.value), texte: s.label }));
+const quatrieme = t.stats[3];
+
 ---
 
-<section class="py-24 bg-white">
+<!-- Tracking, pourquoi (direction Encre, modèle AI Training, 30/09/2026) : trois chiffres au
+     tableau à palettes dans un panneau d'encre (gardés tels quels, à sourcer), les quatre
+     problèmes en cartes à côté. -->
+<section class="section-brume py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-600 max-w-3xl mx-auto">
-        {t.subtitle}
-      </p>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-6">
+      <div class="carte-encre grid content-start gap-8 px-6 py-8 lg:px-9 lg:py-10">
+        <TableauPalettes lang={lang} lignes={tableau} tete />
+        {quatrieme && (
+          <p class="grid gap-1 border-t border-white/10 pt-6">
+            <span class="font-display text-4xl font-extrabold tracking-[-0.04em] text-white">{quatrieme.value}</span>
+            <span class="text-sur-encre">{quatrieme.label}</span>
+          </p>
+        )}
+      </div>
+      <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {t.problems.map((p, i) => (
+          <li class="carte grid content-start gap-3 p-6" data-reveal style={`--i:${i}`}>
+            <span class="tuile"><Icon name={p.icon} size={26} /></span>
+            <h3 class="titre-carte text-encre">{p.title}</h3>
+            <p class="text-slate-600">{p.description}</p>
+          </li>
+        ))}
+      </ul>
     </div>
-
-    <!-- Stats Row -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-      {t.stats.map((stat, index) => (
-        <div
-          class="text-center p-6 bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl animate-on-scroll"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <div class="flex justify-center mb-4 text-marque">
-            <Icon name={stat.icon} size={24} class="text-marque" />
-          </div>
-          <div class="text-3xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent mb-2">
-            {stat.value}
-          </div>
-          <div class="text-sm text-slate-600">{stat.label}</div>
-        </div>
-      ))}
-    </div>
-
-    <!-- Problems Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {t.problems.map((problem, index) => (
-        <div
-          class="problem-card group p-6 bg-white rounded-2xl border border-slate-200 hover:border-red-200 hover:shadow-xl transition-all duration-300 animate-on-scroll"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <div class="mb-4 text-marque">
-            <Icon name={problem.icon} size={24} class="text-red-500 group-hover:text-marque transition-colors" />
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 mb-2">{problem.title}</h3>
-          <p class="text-sm text-slate-600">{problem.description}</p>
-        </div>
-      ))}
-    </div>
-
-    <!-- CTA -->
-    <div class="text-center mt-12 animate-on-scroll">
-      <a
-        href={`/${lang}/contact`}
-        class="inline-flex items-center gap-3 px-8 py-4 text-white font-semibold rounded-full hover:shadow-xl transition-all duration-300 bg-marque hover:bg-marque-fonce"
-      >
-        <Icon name="search" size={20} />
-        <span>{t.ctaText}</span>
+    <div class="mt-12">
+      <a href={`/${lang}/contact`} class="pilule pilule-pleine">
+        {t.ctaText}
+        <Icon name="arrow-right" size={18} class="pilule-fleche" />
       </a>
     </div>
   </div>
 </section>
-
-<style>
-  .animate-on-scroll {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
