@@ -1,5 +1,6 @@
 ---
 import { type Language } from '@/i18n/config';
+import GrilleMots from '@/components/motion/GrilleMots.astro';
 
 interface Props {
   lang: Language;
@@ -11,137 +12,61 @@ const translations = {
   en: {
     badge: "The foundations",
     headline: "The CRAFT method",
-    subtitle: "Most people think \"AI doesn't work\" — they just don't know how to ask. CRAFT is the prompt structure that turns a correct answer into a usable one. It's part of the foundations every participant leaves with, alongside the non-negotiable data-security module.",
+    subtitle: "Most people think \"AI doesn't work\": they just don't know how to ask. CRAFT is the prompt structure that turns a correct answer into a usable one. It's part of the foundations every participant leaves with, alongside the non-negotiable data-security module.",
     craft: [
-      { letter: "C", word: "Context", description: "What's the situation or background?" },
-      { letter: "R", word: "Role", description: "Who is the AI supposed to act as?" },
-      { letter: "A", word: "Action", description: "What do you want it to do?" },
-      { letter: "F", word: "Format", description: "What should the output look like?" },
-      { letter: "T", word: "Tone", description: "How should it sound?" }
+      { letter: "C", word: "Context", description: "What's the situation or background?", exemple: "I'm preparing Monday's sales meeting with the team." },
+      { letter: "R", word: "Role", description: "Who is the AI supposed to act as?", exemple: "You are an experienced sales director." },
+      { letter: "A", word: "Action", description: "What do you want it to do?", exemple: "Summarise the quarter's sales and suggest three priorities." },
+      { letter: "F", word: "Format", description: "What should the output look like?", exemple: "A table, then a short conclusion." },
+      { letter: "T", word: "Tone", description: "How should it sound?", exemple: "Direct, no jargon." }
     ],
+    exempleTitre: "The prompt, field by field",
+    conclusion: "Each field is one thing the AI no longer has to guess.",
     securityTitle: "Data security, the non-negotiable module",
-    securityText: "A client file, a sales sheet or a contract doesn't get pasted just anywhere. We cover which data never to send, which settings to switch on, and which European options exist — the module we consider mandatory in every sector."
+    securityText: "A client file, a sales sheet or a contract doesn't get pasted just anywhere. We cover which data never to send, which settings to switch on, and which European options exist. We consider this module mandatory in every sector."
   },
   fr: {
     badge: "Les fondations",
     headline: "La méthode CRAFT",
     subtitle: "La plupart des gens pensent que \"l'IA ne fonctionne pas\" : ils ne savent simplement pas la solliciter. CRAFT est la structure de prompt qui transforme un résultat correct en résultat exploitable. Elle fait partie des fondations que chaque participant emporte, avec le module non négociable de sécurité des données.",
     craft: [
-      { letter: "C", word: "Contexte", description: "Quelle est la situation ou le contexte ?" },
-      { letter: "R", word: "Rôle", description: "Quel rôle doit jouer l'IA ?" },
-      { letter: "A", word: "Action", description: "Que voulez-vous qu'elle fasse ?" },
-      { letter: "F", word: "Format", description: "À quoi doit ressembler le résultat ?" },
-      { letter: "T", word: "Ton", description: "Comment doit-elle s'exprimer ?" }
+      { letter: "C", word: "Contexte", description: "Quelle est la situation ou le contexte ?", exemple: "Je prépare la réunion commerciale de lundi avec l'équipe." },
+      { letter: "R", word: "Rôle", description: "Quel rôle doit jouer l'IA ?", exemple: "Tu es un directeur commercial expérimenté." },
+      { letter: "A", word: "Action", description: "Que voulez-vous qu'elle fasse ?", exemple: "Résume les ventes du trimestre et propose trois priorités." },
+      { letter: "F", word: "Format", description: "À quoi doit ressembler le résultat ?", exemple: "Un tableau, puis une conclusion courte." },
+      { letter: "T", word: "Ton", description: "Comment doit-elle s'exprimer ?", exemple: "Direct, sans jargon." }
     ],
+    exempleTitre: "Le prompt, champ par champ",
+    conclusion: "Chaque champ, c'est une chose que l'IA n'a plus à deviner.",
     securityTitle: "La sécurité des données, le module non négociable",
-    securityText: "Un fichier client, un tableau de vente ou un contrat ne se colle pas n'importe où. Nous couvrons quelles données ne jamais envoyer, quels réglages activer et quelles options européennes existent — le module que nous considérons indispensable, quel que soit le secteur."
+    securityText: "Un fichier client, un tableau de vente ou un contrat ne se colle pas n'importe où. Nous couvrons quelles données ne jamais envoyer, quels réglages activer et quelles options européennes existent. Nous considérons ce module indispensable, quel que soit le secteur."
   }
 };
 
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-gradient-to-br from-cyan-50 via-blue-50 to-violet-50 overflow-hidden">
+<!-- Direction Encre (30/09/2026) : la méthode CRAFT sur une section d'encre, expliquée
+     par la grille de mots (chaque lettre est un champ du prompt, sa ligne s'écrit à
+     côté). L'ancienne animation laissait les lettres invisibles sans script. -->
+<section class="section-encre section-monte py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="max-w-3xl mx-auto text-center mb-14">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-slate-600 leading-relaxed">{t.subtitle}</p>
-    </div>
+    <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
 
-    <!-- CRAFT Letters - Scroll Reveal -->
-    <div class="max-w-4xl mx-auto">
-      <div class="craft-container relative py-10">
-        <!-- Connection line -->
-        <div class="absolute top-[52px] md:top-[64px] left-0 right-0 h-1 bg-gradient-to-r from-cyan-200 via-blue-300 to-violet-200 hidden md:block"></div>
+    <GrilleMots
+      lang={lang}
+      mots={t.craft.map((c) => ({ lettre: c.letter, mot: c.word, description: c.description, exemple: c.exemple }))}
+      titreExemple={t.exempleTitre}
+      conclusion={t.conclusion}
+    />
 
-        <div class="grid grid-cols-5 gap-2 md:gap-6">
-          {t.craft.map((item, index) => (
-            <div
-              class="craft-letter relative flex flex-col items-center text-center"
-              data-index={index}
-            >
-              <!-- Letter Circle -->
-              <div class="relative z-10 craft-circle w-16 h-16 md:w-20 md:h-20 rounded-full bg-marque flex items-center justify-center mb-4 transform scale-0 opacity-0">
-                <span class="text-2xl md:text-3xl font-bold text-white">{item.letter}</span>
-              </div>
-
-              <!-- Word -->
-              <h3 class="craft-word font-bold text-slate-900 text-sm md:text-base mb-2 opacity-0 transform translate-y-4">
-                {item.word}
-              </h3>
-
-              <!-- Description -->
-              <p class="craft-desc text-xs md:text-sm text-slate-500 leading-tight opacity-0 transform translate-y-4 hidden md:block">
-                {item.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <!-- Data security callout -->
-      <div class="mt-10 rounded-2xl bg-white/80 backdrop-blur-sm border border-white shadow-sm p-6 md:p-8 flex items-start gap-4">
-        <div class="flex-shrink-0 text-marque">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-        </div>
-        <div>
-          <h3 class="text-lg font-bold text-slate-900 mb-1.5">{t.securityTitle}</h3>
-          <p class="text-slate-600 text-sm leading-relaxed">{t.securityText}</p>
-        </div>
-      </div>
+    <div class="mt-14 grid max-w-[880px] grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 border-t border-white/10 pt-8 lg:mt-20">
+      <svg class="row-span-2 mt-1 h-6 w-6 text-marque-clair" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4" /></svg>
+      <h3 class="text-lg font-semibold text-white">{t.securityTitle}</h3>
+      <p class="text-sur-encre-2">{t.securityText}</p>
     </div>
   </div>
 </section>
-
-<style>
-  .craft-circle.visible {
-    animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-  }
-
-  .craft-word.visible {
-    animation: slideUp 0.4s ease forwards;
-  }
-
-  .craft-desc.visible {
-    animation: slideUp 0.4s ease forwards;
-    animation-delay: 0.1s;
-  }
-
-  @keyframes popIn {
-    to { transform: scale(1); opacity: 1; }
-  }
-
-  @keyframes slideUp {
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .craft-circle, .craft-word, .craft-desc { animation: none !important; opacity: 1 !important; transform: none !important; }
-  }
-</style>
-
-<script>
-  const craftObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const letters = entry.target.querySelectorAll('.craft-letter');
-        letters.forEach((letter, index) => {
-          setTimeout(() => {
-            letter.querySelector('.craft-circle')?.classList.add('visible');
-            setTimeout(() => {
-              letter.querySelector('.craft-word')?.classList.add('visible');
-              letter.querySelector('.craft-desc')?.classList.add('visible');
-            }, 200);
-          }, index * 150);
-        });
-        craftObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.4 });
-
-  const craftContainer = document.querySelector('.craft-container');
-  if (craftContainer) craftObserver.observe(craftContainer);
-</script>
