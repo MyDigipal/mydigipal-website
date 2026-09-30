@@ -2,10 +2,13 @@
 import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
-import Button from '@/components/ui/Button.astro';
 import TrustedBy from '@/components/sections/TrustedBy.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import PageHero from '@/components/ui/PageHero.astro';
+import Marque from '@/components/ui/Marque.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
+import RailMorphing from '@/components/motion/RailMorphing.astro';
+import { kpiDe } from '@/lib/etudes-de-cas';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -103,7 +106,7 @@ const content = {
           author: "Kelly Wright",
           company: "Quantum Metrics",
           role: "Global Marketing Director",
-          image: "https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/65705ec9b5160a80c8b72771_Kelly%20Wright.webp"
+          image: "/images/Client logo/Kelly W.jpeg"
         }
       ]
     }
@@ -195,7 +198,7 @@ const content = {
           author: "Kelly Wright",
           company: "Quantum Metrics",
           role: "Global Marketing Director",
-          image: "https://cdn.prod.website-files.com/64ec8901e801c89308b10a5b/65705ec9b5160a80c8b72771_Kelly%20Wright.webp"
+          image: "/images/Client logo/Kelly W.jpeg"
         }
       ]
     }
@@ -203,187 +206,199 @@ const content = {
 };
 
 const c = content[lang] || content.en;
+
+const fr = lang === 'fr';
+// Les résultats au tableau à palettes : lus dans trois études de cas (libellé anglais
+// vérifié au build), jamais écrits ici.
+const resultats = await Promise.all([
+  kpiDe(lang, 'symbl-ai', 0, 'enterprise leads'),
+  kpiDe(lang, 'gwi', 0, 'engagement rate'),
+  kpiDe(lang, 'dmd-group', 0, 'conversions'),
+]);
+const coupe = (v: string) => {
+  const m = v.replace(/[\u202f\u00a0]/g, ' ').match(/^([^\d+\-−]*)([+\-−]?[\d.,]+)\s*(.*)$/);
+  return m ? { chiffre: `${m[1]}${m[2]}`, unite: m[3] } : { chiffre: v, unite: '' };
+};
+const tableau = resultats.map((r) => ({ ...coupe(r.value), texte: `${r.label}, ${r.client}` }));
+// La marque de chaque service quand elle existe.
+const marquesService: Record<string, string[]> = {
+  'Google Ads': ['Google Ads'],
+  'Paid Social': ['LinkedIn', 'Meta Ads'],
+  SEO: ['Search Console'],
+  'Tracking & Reporting': ['Google Analytics 4', 'Tag Manager'],
+};
+const iconeDe: Record<string, string> = { 'bar-chart-2': 'bar-chart' };
+// Comment on démarre : le parcours commun à tous les services, sur le rail.
+const demarrage = fr
+  ? {
+      titre: 'Comment on démarre',
+      chapo: 'Le même chemin, quel que soit le service : on regarde, on choisit avec vous, on lance, puis on pilote.',
+      stations: [
+        { titre: 'Audit', texte: 'Vos comptes, votre tracking et vos concurrents, avant toute recommandation.', forme: 'loupe' as const },
+        { titre: 'Stratégie', texte: 'Les canaux, le budget et les objectifs, choisis avec vous. Le calculateur donne le prix.', forme: 'cible' as const },
+        { titre: 'Lancement', texte: 'Campagnes, contenus et mesure mis en place par l’équipe qui les pilotera.', forme: 'curseur' as const },
+        { titre: 'Pilotage', texte: 'Optimisation continue et reporting clair : ce qui marche prend le budget.', forme: 'courbe' as const },
+      ],
+    }
+  : {
+      titre: 'How we start',
+      chapo: 'The same path whatever the service: we look, we choose with you, we launch, then we steer.',
+      stations: [
+        { titre: 'Audit', texte: 'Your accounts, your tracking and your competitors, before any recommendation.', forme: 'loupe' as const },
+        { titre: 'Strategy', texte: 'Channels, budget and goals, chosen with you. The calculator gives the price.', forme: 'cible' as const },
+        { titre: 'Launch', texte: 'Campaigns, content and measurement set up by the team that will run them.', forme: 'curseur' as const },
+        { titre: 'Steering', texte: 'Continuous optimisation and clear reporting: what works gets the budget.', forme: 'courbe' as const },
+      ],
+    };
 ---
 
 <PageLayout lang={lang} title={c.seo.title} description={c.seo.description}>
+  <!-- L'index des services, au modèle d'AI Training (30/09/2026) : les six services en cartes de
+       tailles différentes dans le haut de page, les résultats de trois études de cas au
+       tableau à palettes, le démarrage sur le rail, les avis sur l'encre. -->
   <PageHero
     eyebrow={c.hero.badge}
     title={c.hero.headline}
     subtitle={c.hero.subheadline}
     description={c.hero.description}
     actions={[
-      { href: `/${lang}/calculator`, label: lang === 'fr' ? 'Calculer mon budget' : 'Calculate my budget' },
-      { href: `/${lang}/contact`, label: lang === 'fr' ? 'Nous contacter' : 'Contact us', style: 'contour' },
+      { href: `/${lang}/calculator`, label: fr ? 'Calculer mon budget' : 'Calculate my budget' },
+      { href: `/${lang}/contact`, label: fr ? 'Nous contacter' : 'Contact us', style: 'contour' },
     ]}
-  />
-
-
-  <!-- Why Choose Us Section -->
-  <section class="py-24 bg-gradient-to-b from-slate-50 to-white">
-    <div class="container-custom">
-      <div class="grid lg:grid-cols-2 gap-16 items-center">
-        <!-- Left: Content -->
-        <div class="animate-on-scroll">
-
-          <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            {c.intro.title}
-          </h2>
-
-          <p class="text-xl text-slate-600 leading-relaxed">
-            {c.intro.description}
-          </p>
-        </div>
-
-        <!-- Right: Points Grid -->
-        <div class="grid sm:grid-cols-2 gap-6">
-          {c.intro.points.map((point, index) => (
-            <div
-              class="point-card p-6 bg-white rounded-2xl border border-slate-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 animate-on-scroll"
-              style={`animation-delay: ${index * 100}ms`}
-            >
-              <div class="mb-4 text-marque">
-                <Icon name={point.icon} size={24} class="text-marque" />
-              </div>
-              <h3 class="text-lg font-bold text-slate-900 mb-2">{point.title}</h3>
-              <p class="text-slate-600 text-sm leading-relaxed">{point.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+  >
+    <div slot="apres" class="mt-16 lg:mt-24">
+      <h2 class="titre-moyen text-encre">{fr ? 'Choisissez vos services' : 'Choose your services'}</h2>
+      <p class="chapo mt-3">{fr ? 'Chaque service peut être activé individuellement ou combiné pour une stratégie complète.' : 'Each service can be activated individually or combined for a comprehensive strategy.'}</p>
+      <ul class="services mt-8 lg:mt-10">
+        {c.services.map((service, i) => {
+          const fonce = i === 0;
+          const marques = marquesService[service.name] ?? [];
+          return (
+            <li class:list={['service', { 'service-large': i === 0, 'service-pleine': i === 5 }]} data-reveal style={`--i:${i % 3}`}>
+              <a href={service.href} class:list={['service-lien', fonce ? 'carte-encre' : 'carte']}>
+                <span class="flex gap-2">
+                  {marques.length > 0
+                    ? marques.map((m) => <span class="grid h-14 w-14 place-items-center rounded-2xl bg-white shadow-[inset_0_0_0_1px_var(--filet)]"><Marque nom={m} taille={28} /></span>)
+                    : <span class="tuile tuile-grande"><Icon name={iconeDe[service.icon] ?? service.icon} size={30} /></span>}
+                </span>
+                <span class:list={['titre-carte text-2xl', fonce ? 'text-white' : 'text-encre']}>{service.name}</span>
+                <span class={fonce ? 'text-sur-encre-2' : 'text-slate-600'}>{service.description}</span>
+                <ul class="puces">{service.features.map((f) => <li>{f}</li>)}</ul>
+                <span class:list={['mt-auto inline-flex items-center gap-2 font-semibold', fonce ? 'text-marque-clair' : 'text-marque']}>{c.cta}<Icon name="arrow-right" size={16} /></span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
     </div>
-  </section>
+  </PageHero>
 
-  <!-- Services Grid -->
-  <section class="py-24 bg-white">
+  <!-- Les résultats et ce qui nous distingue, sur l'encre. -->
+  <section class="section-encre section-monte py-20 lg:py-32">
     <div class="container-custom">
-      <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          {lang === 'fr' ? 'Choisissez vos services' : 'Choose your services'}
-        </h2>
-        <p class="text-xl text-slate-600 max-w-3xl mx-auto">
-          {lang === 'fr'
-            ? 'Chaque service peut être activé individuellement ou combiné pour une stratégie complète.'
-            : 'Each service can be activated individually or combined for a comprehensive strategy.'
-          }
-        </p>
-      </div>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {c.services.map((service, index) => (
-          <a
-            href={service.href}
-            class="service-card group relative p-8 bg-white rounded-3xl border-2 border-slate-200 hover:border-indigo-300 transition-all duration-500 animate-on-scroll overflow-hidden"
-            style={`animation-delay: ${index * 100}ms`}
-          >
-            <!-- Background Gradient -->
-            <div class={`absolute top-0 right-0 w-48 h-48 bg-gradient-to-br ${service.color} opacity-5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:opacity-10 transition-opacity`}></div>
-
-            <div class="relative z-10">
-              <!-- Icon -->
-              <div class="mb-6 text-marque">
-                <Icon name={service.icon} size={32} class="text-marque" />
-              </div>
-
-              <!-- Content -->
-              <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">{service.name}</h3>
-              <p class="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
-
-              <!-- Features -->
-              <div class="flex flex-wrap gap-2 mb-6">
-                {service.features.map(feature => (
-                  <span class="px-3 py-1 text-xs bg-slate-100 text-slate-600 rounded-full">
-                    {feature}
-                  </span>
-                ))}
-              </div>
-
-              <!-- CTA -->
-              <div class="flex items-center gap-2 text-indigo-600 font-semibold group-hover:gap-3 transition-all">
-                <span>{c.cta}</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </div>
-            </div>
+      <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+        <h2 class="titre-moyen">{c.intro.title}</h2>
+        <p class="chapo">{c.intro.description}</p>
+      </header>
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-6">
+        <div class="carte-verre grid content-start gap-8 px-6 py-8 lg:px-9 lg:py-10">
+          <TableauPalettes lang={lang} lignes={tableau} tete />
+          <a href={`/${lang}/case-studies`} class="pilule pilule-blanche justify-self-start">
+            {fr ? 'Voir les études de cas' : 'See the case studies'}
+            <Icon name="arrow-right" size={18} class="pilule-fleche" />
           </a>
-        ))}
+        </div>
+        <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {c.intro.points.map((point, index) => (
+            <li class="carte-verre grid content-start gap-3 p-6" data-reveal style={`--i:${index}`}>
+              <span class="tuile tuile-pleine"><Icon name={point.icon} size={26} /></span>
+              <h3 class="titre-carte text-white">{point.title}</h3>
+              <p class="text-sur-encre-2">{point.description}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   </section>
 
-  <!-- Testimonials -->
-  <section class="py-24 bg-gradient-to-b from-indigo-50 to-white">
+  <!-- Le démarrage, sur le rail. -->
+  <section class="section-blanc py-20 lg:py-32">
     <div class="container-custom">
-      <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          {c.testimonials.title}
-        </h2>
-      </div>
+      <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+        <h2 class="titre-moyen text-encre">{demarrage.titre}</h2>
+        <p class="chapo">{demarrage.chapo}</p>
+      </header>
+      <RailMorphing lang={lang} stations={demarrage.stations} />
+    </div>
+  </section>
 
-      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-        {c.testimonials.items.map((testimonial, index) => (
-          <div
-            class="p-8 bg-white rounded-2xl shadow-lg border border-slate-100 animate-on-scroll"
-            style={`animation-delay: ${index * 150}ms`}
-          >
-            <div class="flex gap-1 mb-4">
-              {[1,2,3,4,5].map(() => (
-                <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-            </div>
-            <p class="text-slate-700 mb-6 italic leading-relaxed">"{testimonial.quote}"</p>
-            <div class="flex items-center gap-4 pt-4 border-t border-slate-100">
-              <img
-                src={testimonial.image}
-                alt={testimonial.author}
-                class="w-14 h-14 rounded-full object-cover border-2 border-indigo-100"
-                loading="lazy"
-              />
-              <div>
-                <p class="font-bold text-slate-900">{testimonial.author}</p>
-                <p class="text-slate-500 text-sm">{testimonial.role}</p>
-                <p class="text-indigo-600 text-sm font-medium">{testimonial.company}</p>
-              </div>
-            </div>
-          </div>
+  <!-- Les avis, sur l'encre. -->
+  <section class="section-encre section-monte py-20 lg:py-32">
+    <div class="container-custom">
+      <h2 class="titre-moyen mb-12 lg:mb-16">{c.testimonials.title}</h2>
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
+        {c.testimonials.items.map((x, i) => (
+          <figure class:list={['carte-verre m-0 flex flex-col gap-6 p-7 lg:p-9', { 'avis-premier': i === 0 }]} data-reveal style={`--i:${i}`}>
+            <p class="text-yellow-300" aria-hidden="true">★★★★★</p>
+            <blockquote class="text-lg leading-relaxed text-sur-encre">{fr ? `« ${x.quote} »` : `“${x.quote}”`}</blockquote>
+            <figcaption class="mt-auto flex items-center gap-4 border-t border-white/10 pt-5">
+              <img src={x.image} alt="" width="56" height="56" class="h-14 w-14 rounded-full object-cover" loading="lazy" decoding="async" />
+              <span><b class="block text-white">{x.author}</b><span class="text-sm text-sur-encre-2">{x.role}, {x.company}</span></span>
+            </figcaption>
+          </figure>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Trusted By -->
   <TrustedBy lang={lang} variant="compact" />
 
-  <!-- Final CTA -->
   <FinalCTA lang={lang} color="primary" />
 </PageLayout>
 
 <style>
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
+  .services {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
-
-  @keyframes fadeIn {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+  .service-lien {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    padding: 28px 24px;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .service-lien:hover {
+    transform: translateY(-2px);
+  }
+  .avis-premier {
+    background:
+      radial-gradient(90% 80% at 0% 0%, rgb(29 113 184 / 0.45), transparent 65%),
+      rgb(255 255 255 / 0.06);
+  }
+  @media (min-width: 768px) {
+    .services {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
-
-  .point-card, .service-card {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+  @media (min-width: 1024px) {
+    .services {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .service-lien {
+      padding: 32px;
+    }
+    .service-large {
+      grid-column: span 2;
+    }
+    .service-pleine {
+      grid-column: 1 / -1;
     }
   }
 </style>
