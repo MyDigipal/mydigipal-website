@@ -801,6 +801,37 @@ doit seulement se construire). Ensuite, arrêt et compte rendu avant toute autre
   `BandeauLogos`. Restent en gris, à traiter avec leur page : l'accueil (`Resultats`, `Offre`,
   `Avis`, `Bandeau`) et l'automobile (`AutomotiveClients`, `AutomotiveBenchmarks`).
 
+### Pilotes validés, puis le groupe 2 au même modèle (30/09/2026, branche `refonte-design`)
+
+Paul : AI Training est « nickel, très beau boulot » et devient le MODÈLE du reste du site ; `/ai`
+est validée avec une correction.
+- **`/ai`** : la carte « AI Academy » porte la vidéo de présentation v4 (`presentation-v4-{lang}`,
+  muette en boucle à l'écran, le son au clic, `data-offre-video`), et la section de l'Academy
+  est celle de l'accueil, `accueil/Academie.astro` avec `presentation={false}`, dans un
+  `<div class="accueil accueil-ai">` (accueil.css importé par la page, fond rendu transparent).
+  `CameraInterface.astro` n'y est plus : la capture datait (154 leçons). Le composant reste.
+- **Google Ads** : chaque format ouvre une `<dialog>` d'exemple (contenu de 72ff7cd, sans ses
+  pourcentages).
+- **Groupe 2** (SEO, Paid Social, Emailing, B2B, Tracking, index `/services`), en français
+  d'abord (les textes anglais suivent les mêmes gabarits et se construisent) :
+  - classes communes dans `global.css` : `.carte`, `.carte-verre` (sur l'encre), `.carte-encre`,
+    `.tuile` (+ `-pleine`, `-grande`), `.puces`, `.titre-carte` ;
+  - quatre nouvelles cartes de verre, une notion par page : `donnees-seo.ts` (ce qu'un assistant
+    IA lit et cite, le LLMO), `donnees-emailing.ts` (l'automation cross-canal),
+    `donnees-abm.ts` (l'ABM), `donnees-tracking.ts` (le serveur et le consentement) ;
+  - `ui/Marque.astro` : une marque par son nom, en couleur, depuis `logos-outils.ts` (31 marques
+    simple-icons) ; LinkedIn par son glyphe ; sinon une icône neutre, jamais une fausse marque.
+    Salesforce, Marketo et Pipedrive (TrackingTools) restent chargés depuis leurs sites
+    d'origine, faute de marque libre ;
+  - les vidéos SEO et Emailing ont leurs affiches (`public/videos/{seo,emailing}/*.jpg`), prises
+    à la troisième seconde avec le ffmpeg statique du paquet npm `@ffmpeg-installer/linux-x64`
+    (pas de ffmpeg dans l'environnement cloud) ;
+  - `?fige=1` fige aussi les compteurs `data-counter-section` (`lib/scroll.ts`).
+- **Gardé et signalé, pas retiré** : les chiffres de marché et de l'agence de ces pages (53 %,
+  50+, -68 %, 0 %, 40 %, 73 %, +68 % / 3 h / 74 %, 4,9 Mrd, -45 % / +3,2x / +180 %, 36-40 €,
+  4,6 Mds, 41 %, 40x, 67 %, 40 %, 3x, « Partenaire certifié »...). Les quatre vignettes
+  « Nos créations » de Paid Social, des aplats sans image, ont été retirées.
+
 ### Les éléments flottants partagent une seule mesure : `--bandeau`
 
 Branche `flottants-sans-recouvrement` (commit `5b0e768`), à déployer après accord de Paul.
