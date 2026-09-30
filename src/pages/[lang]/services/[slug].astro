@@ -470,6 +470,18 @@ const breadcrumbItems = [
        pour un service que le calculateur ne connaît pas (B2B ABM a son propre appel). -->
   <RubanCalculateur lang={lang} service={calculatorServiceId} />
 
+  <!-- SEO : les résultats de deux études de cas, sur la brume (le verbatim qui suit est
+       sur l'encre). -->
+  {isSEOService && (
+    <CaseStudyCarousel
+      lang={lang}
+      caseStudyIds={[
+        { id: 'dmd-group', kpi: 3, second: 0 },
+        { id: 'vulcain-group', kpi: 2, second: 0 },
+      ]}
+    />
+  )}
+
   <!-- Google Ads Case Studies -->
   {isGoogleAdsService && (
     <CaseStudyCarousel
