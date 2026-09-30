@@ -880,6 +880,13 @@ Groupe 3 validé par Paul ; les chiffres sans source affichée sont GARDÉS part
   BaseLayout). Testé de bout en bout le 30/09 avec l'envoi intercepté.
 - Pages légales : sommaire collé à gauche (`#partie-n`). 404 : le code sur le tableau à palettes.
   La 404 servie est `dist/404.html`, construite une fois, donc en anglais sur toutes les adresses.
+- **Index du blog paginé** (Paul, 30/09/2026) : douze articles par page (`lib/blog-pages.ts`,
+  `ARTICLES_PAR_PAGE`), pages statiques `/{lang}/blog` puis `/{lang}/blog/page/2`… (jamais
+  `/page/1`), contenu dans `components/blog/IndexBlog.astro`. Titre et description uniques par
+  page, `rel="prev"`/`rel="next"`, pages 2+ au sitemap langue par langue. La recherche et les
+  filtres portent sur TOUS les articles : au premier usage, le script lit
+  `/{lang}/blog/articles.json` (hors sitemap) et remplace la grille ; sans filtre, la grille de
+  la page revient. L'article à la une ne vit que sur la page 1.
 
 ### Les éléments flottants partagent une seule mesure : `--bandeau`
 
