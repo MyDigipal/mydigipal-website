@@ -1,6 +1,8 @@
 ---
 import { type Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
+import Marque from '@/components/ui/Marque.astro';
+import { LOGOS_OUTILS } from './logos-outils';
 
 interface Props {
   lang: Language;
@@ -94,84 +96,53 @@ const translations = {
 };
 
 const t = translations[lang] || translations.en;
+
+// Le nom de la marque dans `logos-outils.ts` quand il diffère du libellé affiché.
+const marques: Record<string, string> = {
+  'Google Tag Manager': 'Tag Manager',
+  'Meta Pixel': 'Meta Ads',
+  'LinkedIn Insight': 'LinkedIn',
+  'TikTok Pixel': 'TikTok',
+  Prestashop: 'PrestaShop',
+  'Zoho CRM': 'Zoho',
+};
+
 ---
 
-<section class="py-24 bg-white">
+<!-- Tracking, les outils (direction Encre, 30/09/2026) : trois familles, chaque outil avec sa
+     marque en couleur. Les marques de simple-icons sont servies par le site ; les trois qui
+     n'y sont pas (Salesforce, Marketo, Pipedrive) gardent leur fichier d'origine. -->
+<section class="section-brume py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Categories -->
-    <div class="space-y-12">
-      {t.categories.map((category, catIndex) => (
-        <div class="animate-on-scroll" style={`animation-delay: ${catIndex * 150}ms`}>
-          <div class="text-center mb-8">
-            <h3 class="text-2xl font-bold text-slate-900 mb-2">{category.title}</h3>
-            <p class="text-slate-600">{category.description}</p>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
+      {t.categories.map((c, i) => (
+        <div class="carte grid content-start gap-5 p-6 lg:p-8" data-reveal style={`--i:${i}`}>
+          <div>
+            <h3 class="titre-carte text-encre">{c.title}</h3>
+            <p class="text-slate-600">{c.description}</p>
           </div>
-
-          <div class="flex flex-wrap justify-center gap-6">
-            {category.tools.map((tool, index) => (
-              <div
-                class="tool-card group relative flex flex-col items-center p-6 bg-white rounded-2xl border border-slate-200 hover:border-teal-300 hover:shadow-xl transition-all duration-300 w-36"
-              >
-                {tool.certified && (
-                  <div class="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                    <Icon name="check" size={14} class="text-white" />
-                  </div>
-                )}
-                <div class="w-16 h-16 mb-3 flex items-center justify-center">
-                  <img
-                    src={tool.logo}
-                    alt={tool.name}
-                    class="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                </div>
-                <span class="text-sm font-medium text-slate-700 text-center">{tool.name}</span>
-                {tool.certified && (
-                  <span class="mt-2 text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">
-                    {t.certifiedBadge}
+          <ul class="grid gap-2">
+            {c.tools.map((o) => {
+              const nom = marques[o.name] ?? o.name;
+              return (
+                <li class="grid grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl bg-brume-clair p-2 pr-3">
+                  <span class="grid h-11 w-11 place-items-center rounded-xl bg-white">
+                    {LOGOS_OUTILS[nom] || /^linkedin/i.test(nom)
+                      ? <Marque nom={nom} taille={24} />
+                      : <img src={o.logo} alt="" width="24" height="24" class="h-6 w-6 object-contain" loading="lazy" decoding="async" />}
                   </span>
-                )}
-              </div>
-            ))}
-          </div>
+                  <span class="font-semibold text-encre">{o.name}</span>
+                  {o.certified && <span class="rounded-full bg-marque-doux px-2.5 py-1 text-xs font-semibold text-marque">{t.certifiedBadge}</span>}
+                </li>
+              );
+            })}
+          </ul>
         </div>
       ))}
     </div>
   </div>
 </section>
-
-<style>
-  .animate-on-scroll {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  .tool-card {
-    animation: fade-in 0.4s ease forwards;
-    opacity: 0;
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fade-in {
-    to {
-      opacity: 1;
-    }
-  }
-</style>
