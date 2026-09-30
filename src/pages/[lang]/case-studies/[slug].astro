@@ -6,6 +6,10 @@ import Icon from '@/components/ui/Icon.astro';
 import CaseStudySchema from '@/components/seo/CaseStudySchema.astro';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
+import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
+import RevelationLogo from '@/components/motion/RevelationLogo.astro';
+import { LOGOS } from '@/components/accueil/donnees';
 
 export async function getStaticPaths() {
   const caseStudies = await getCollection('case-studies');
@@ -43,56 +47,69 @@ export async function getStaticPaths() {
 const { lang } = Astro.params as { lang: Language };
 const { caseStudy } = Astro.props;
 const { Content } = await render(caseStudy);
+const fr = lang === 'fr';
+const slugDe = (id: string) => id.replace(/^(en|fr)\//, '');
+const studySlug = slugDe(caseStudy.id);
 
-// Get related case studies (same category, same language, exclude current)
+// Les autres études : la même catégorie d'abord, puis les plus récentes, trois au plus.
 const allCaseStudies = await getCollection('case-studies');
-const relatedStudies = allCaseStudies
-  .filter((s) => {
-    const studyLang = s.id.split('/')[0];
-    return studyLang === lang && s.data.category === caseStudy.data.category && s.id !== caseStudy.id;
-  })
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+const autres = allCaseStudies
+  .filter((s) => s.id.startsWith(`${lang}/`) && s.id !== caseStudy.id)
+  .sort((a, b) => Number(b.data.category === caseStudy.data.category) - Number(a.data.category === caseStudy.data.category) || b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
-const translations = {
+const t = {
   en: {
-    backToStudies: 'Back to Case Studies',
-    challenge: 'The Challenge',
-    solution: 'Our Solution',
-    results: 'Key Results',
-    services: 'Services Used',
-    relatedStudies: 'Related Case Studies',
-    viewStudy: 'View Case Study',
-    share: 'Share this case study',
-    ctaTitle: 'Ready to achieve similar results?',
-    ctaText: 'Let\'s discuss how we can help you reach your business goals.',
-    ctaButton: 'Start Your Project',
+    retour: 'All case studies', defi: 'The challenge', solution: 'Our solution', services: 'Services used',
+    partager: 'Share this case study', autres: 'Other case studies', lire: 'Read the case study',
+    ctaTitle: 'Ready to achieve similar results?', ctaText: 'Calculate your tailored plan in 3 minutes, or tell us where you stand: we reply within 24 hours.',
+    automobile: 'Automotive', copier: 'Copy the link', resultats: 'Results',
   },
   fr: {
-    backToStudies: 'Retour aux études de cas',
-    challenge: 'Le défi',
-    solution: 'Notre solution',
-    results: 'Résultats clés',
-    services: 'Services utilisés',
-    relatedStudies: 'Études de cas similaires',
-    viewStudy: 'Voir l\'étude',
-    share: 'Partager cette étude',
-    ctaTitle: 'Prêt à obtenir des résultats similaires ?',
-    ctaText: 'Discutons de comment nous pouvons vous aider à atteindre vos objectifs.',
-    ctaButton: 'Démarrer votre projet',
+    retour: 'Toutes les études de cas', defi: 'Le défi', solution: 'Notre solution', services: 'Services utilisés',
+    partager: 'Partager cette étude', autres: 'Autres études de cas', lire: 'Lire l’étude de cas',
+    ctaTitle: 'Prêt à obtenir des résultats similaires ?', ctaText: 'Calculez votre plan sur mesure en 3 minutes, ou dites-nous où vous en êtes : on vous répond sous 24 h.',
+    automobile: 'Automobile', copier: 'Copier le lien', resultats: 'Résultats',
   },
-};
+}[lang];
 
-const t = translations[lang] || translations.en;
+const categorie = caseStudy.data.category === 'automotive' ? t.automobile : 'B2B Tech';
+
+// Le logo du client, détouré (celui de l'accueil), à SURFACE égale d'une étude à l'autre.
+const DETOURES: Record<string, string> = {
+  'dmd-group': 'dmd', 'theobald-group': 'theobald', 'vulcain-group': 'vulcain', genesys: 'genesys',
+  gwi: 'gwi', 'symbl-ai': 'symbl', 'quantum-metrics': 'quantum',
+};
+const detoure = LOGOS[DETOURES[studySlug] ?? ''];
+const logo = detoure
+  ? (() => {
+      const ratio = detoure.largeur / detoure.hauteur;
+      const h = Math.round(Math.min(84, Math.max(44, Math.sqrt(9500 / ratio) * detoure.echelle)));
+      return { src: detoure.src, h, l: Math.round(h * ratio) };
+    })()
+  : caseStudy.data.logo
+    ? { src: caseStudy.data.logo, h: 56, l: 200 }
+    : null;
+
+// Les chiffres du client sur le tableau à palettes : « +112% » devient le chiffre « +112 »
+// et l'unité « % » ; le quatrième, quand la fiche en a un, est écrit dessous.
+const decouper = (k: { value: string; label: string }) => {
+  const [, chiffre = k.value, unite = ''] = k.value.match(/^([+\-−]?[\d.,\s]*\d)\s*(.*)$/) ?? [];
+  const texte = /^[A-Z]{2}/.test(k.label) ? k.label : k.label.charAt(0).toLowerCase() + k.label.slice(1);
+  return { chiffre: fr ? chiffre.replace('.', ',') : chiffre, unite, texte };
+};
+const kpis = caseStudy.data.kpis as { value: string; label: string }[];
+const tableau = kpis.slice(0, 3).map(decouper);
+const quatrieme = kpis[3] ? decouper(kpis[3]) : null;
 
 // SEO Schema data
-const studySlug = caseStudy.id.replace(/^(en|fr)\//, '');
 const studyUrl = `https://mydigipal.com/${lang}/case-studies/${studySlug}`;
 const breadcrumbItems = [
-  { name: lang === 'fr' ? 'Accueil' : 'Home', url: `/${lang}` },
-  { name: lang === 'fr' ? 'Études de cas' : 'Case Studies', url: `/${lang}/case-studies` },
+  { name: fr ? 'Accueil' : 'Home', url: `/${lang}` },
+  { name: fr ? 'Études de cas' : 'Case Studies', url: `/${lang}/case-studies` },
   { name: caseStudy.data.client, url: `/${lang}/case-studies/${studySlug}` }
 ];
+const temoignage = caseStudy.data.testimonial;
 ---
 
 <PageLayout
@@ -100,7 +117,6 @@ const breadcrumbItems = [
   title={caseStudy.data.seo?.title ?? `${caseStudy.data.client} - ${caseStudy.data.title}`}
   description={caseStudy.data.seo?.description ?? caseStudy.data.description}
 >
-  <!-- Structured Data -->
   <CaseStudySchema
     client={caseStudy.data.client}
     title={caseStudy.data.title}
@@ -114,235 +130,138 @@ const breadcrumbItems = [
   />
   <BreadcrumbSchema items={breadcrumbItems} />
 
-  <!-- Le haut de l'étude de cas, dans le style de l'accueil depuis le 25/09/2026 :
-       fond blanc, le texte à gauche, le visuel du cas à droite (au lieu d'un fond
-       sombre où l'image n'apparaissait qu'à 20 % d'opacité). -->
-  <section class="bg-white pt-10 pb-12 lg:pt-14 lg:pb-16">
-    <div class="container-custom">
-      <a
-        href={`/${lang}/case-studies`}
-        class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-encre transition-colors mb-8"
-      >
+  <!-- Le haut de l'étude, direction Encre (groupe 4, 30/09/2026) : le logo du client se forme
+       en particules de ses propres couleurs, puis le vrai logo monte ; ses chiffres tombent sur
+       le tableau à palettes, dans le panneau d'encre. La toile des particules couvre la section
+       (premier ancêtre positionné) et passe sous le texte. -->
+  <section class="cas-hero section-blanc relative isolate overflow-hidden">
+    <div class="container-custom pt-8 pb-16 sm:pt-12 lg:pt-14 lg:pb-24">
+      <a href={`/${lang}/case-studies`} class="relative z-[1] mb-10 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-encre">
         <Icon name="arrow-left" size={16} />
-        {t.backToStudies}
+        {t.retour}
       </a>
 
-      <div class="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 items-center">
-        <div>
-          <div class="flex flex-wrap items-center gap-x-4 gap-y-3 mb-6">
-            {caseStudy.data.logo && (
-              <img src={caseStudy.data.logo} alt={caseStudy.data.client} class="h-9 w-auto max-w-[160px] object-contain" />
-            )}
-            <span class="text-sm font-semibold text-slate-500">
-              {caseStudy.data.category === 'automotive' ? (lang === 'fr' ? 'Automobile' : 'Automotive') : 'B2B Tech'}
-            </span>
-          </div>
-
-          <p class="text-lg font-semibold text-marque mb-3">{caseStudy.data.client}</p>
-
-          <h1 class="cas-titre font-display text-[2rem] sm:text-4xl lg:text-[3.25rem] font-extrabold text-encre mb-6 break-words">
-            {caseStudy.data.title}
-          </h1>
-
-          <p class="text-lg text-slate-600 max-w-2xl text-pretty">
-            {caseStudy.data.description}
-          </p>
-
-          <ul class="flex flex-wrap gap-2 mt-8">
-            {caseStudy.data.services.map((service: string) => (
-              <li class="px-3.5 py-1.5 bg-slate-100 text-slate-700 rounded-full text-sm font-medium">
-                {service}
-              </li>
-            ))}
+      <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-16">
+        <div class="grid justify-items-start gap-5 lg:gap-6">
+          {logo && <RevelationLogo src={logo.src} alt={caseStudy.data.client} largeur={logo.l} hauteur={logo.h} class="mb-2" />}
+          <p class="rubrique relative z-[1]">{categorie} · {caseStudy.data.client}</p>
+          <h1 class="titre-grand relative z-[1] text-encre break-words">{caseStudy.data.title}</h1>
+          <p class="chapo relative z-[1] max-w-[56ch]">{caseStudy.data.description}</p>
+          <ul class="puces relative z-[1] mt-1" aria-label={t.services}>
+            {caseStudy.data.services.map((s: string) => <li>{s}</li>)}
           </ul>
         </div>
 
-        {caseStudy.data.image && (
-          <div class="rounded-[20px] overflow-hidden bg-slate-100 aspect-[16/10]">
-            <img
-              src={caseStudy.data.image}
-              alt={caseStudy.data.client}
-              class="w-full h-full object-cover"
-              loading="eager"
-              fetchpriority="high"
-              decoding="async"
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  </section>
-
-  <!-- KPIs Section - Floating Cards -->
-  <section class="relative pb-16">
-    <div class="container-custom">
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {caseStudy.data.kpis.map((kpi: { value: string; label: string; icon?: string }, index: number) => (
-          <div class="kpi-card bg-[#f3f6f9] rounded-2xl p-6">
-            <div class="flex items-center gap-3 mb-3">
-              <div class="text-marque">
-                <Icon name={kpi.icon || 'trending-up'} size={20} />
-              </div>
-            </div>
-            <div
-              class="kpi-value font-display text-3xl lg:text-[2.625rem] font-extrabold tracking-[-0.04em] leading-none text-encre mb-2"
-              data-value={kpi.value}
-            >
-              {kpi.value}
-            </div>
-            <div class="text-sm text-slate-500 font-medium">{kpi.label}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Challenge & Solution -->
-  <section class="py-16 bg-white">
-    <div class="container-custom">
-      <div class="grid lg:grid-cols-2 gap-12">
-        <!-- Challenge -->
-        <div class="group">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="text-marque">
-              <Icon name="target" size={24} />
-            </div>
-            <h2 class="text-2xl font-bold text-slate-900">{t.challenge}</h2>
-          </div>
-          <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-            <p class="text-lg text-slate-600 leading-relaxed">
-              {caseStudy.data.challenge}
+        <div class="cas-panneau relative z-[1]">
+          <p class="mb-6 text-base font-semibold text-sur-encre-2">{t.resultats}</p>
+          <TableauPalettes lang={lang} lignes={tableau} tete auChargement />
+          {quatrieme && (
+            <p class="mt-6 border-t border-white/10 pt-5 text-sur-encre-2">
+              <span class="font-display text-2xl font-extrabold tracking-[-0.03em] text-white">{quatrieme.chiffre}{quatrieme.unite}</span>
+              {' '}{quatrieme.texte}
             </p>
-          </div>
-        </div>
-
-        <!-- Solution -->
-        <div class="group">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="text-marque">
-              <Icon name="check-circle" size={24} />
-            </div>
-            <h2 class="text-2xl font-bold text-slate-900">{t.solution}</h2>
-          </div>
-          <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-            <p class="text-lg text-slate-600 leading-relaxed">
-              {caseStudy.data.solution}
-            </p>
-          </div>
+          )}
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Testimonial -->
-  {caseStudy.data.testimonial && (
-    <section class="py-16 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white relative overflow-hidden">
-      <!-- Background Pattern -->
-      <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-10 left-10 w-64 h-64 border border-white rounded-full"></div>
-        <div class="absolute bottom-10 right-10 w-96 h-96 border border-white rounded-full"></div>
-      </div>
-
-      <div class="container-custom relative z-10">
-        <div class="max-w-4xl mx-auto text-center">
-          <Icon name="quote" size={48} class="text-blue-300 mx-auto mb-6 opacity-50" />
-          <blockquote class="text-2xl md:text-3xl font-medium mb-8 leading-relaxed">
-            "{caseStudy.data.testimonial.quote}"
-          </blockquote>
-          <div class="flex items-center justify-center gap-4">
-            {caseStudy.data.testimonial.image ? (
-              <img
-                src={caseStudy.data.testimonial.image}
-                alt={caseStudy.data.testimonial.author}
-                class="w-14 h-14 rounded-full object-cover border-2 border-white/30"
-              />
-            ) : (
-              <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center text-xl font-bold">
-                {caseStudy.data.testimonial.author.charAt(0)}
-              </div>
-            )}
-            <div class="text-left">
-              <div class="font-semibold text-lg">{caseStudy.data.testimonial.author}</div>
-              <div class="text-blue-200">{caseStudy.data.testimonial.role}</div>
-            </div>
-          </div>
+  <!-- Le défi et la solution (encre), avec la photo du cas. -->
+  <section class="section-encre section-monte py-20 lg:py-32">
+    <div class="container-custom grid grid-cols-1 items-center gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-10">
+      {caseStudy.data.image && (
+        <figure class="cas-photo" data-reveal>
+          <img src={caseStudy.data.image} alt={caseStudy.data.client} loading="lazy" decoding="async" />
+        </figure>
+      )}
+      <div class="grid gap-4 lg:gap-5">
+        <div class="carte-verre grid gap-3 p-6 lg:p-8" data-reveal>
+          <span class="tuile tuile-pleine"><Icon name="target" size={26} /></span>
+          <h2 class="titre-carte text-white lg:text-[1.75rem]">{t.defi}</h2>
+          <p class="text-lg leading-relaxed text-sur-encre text-pretty">{caseStudy.data.challenge}</p>
+        </div>
+        <div class="carte-verre grid gap-3 p-6 lg:p-8" data-reveal style="--i:1">
+          <span class="tuile tuile-pleine"><Icon name="check-circle" size={26} /></span>
+          <h2 class="titre-carte text-white lg:text-[1.75rem]">{t.solution}</h2>
+          <p class="text-lg leading-relaxed text-sur-encre text-pretty">{caseStudy.data.solution}</p>
         </div>
       </div>
-    </section>
-  )}
+    </div>
+  </section>
 
-  <!-- Full Content -->
-  <section class="py-16 bg-white">
-    <div class="container-custom max-w-4xl mx-auto">
-      <article class="prose prose-lg prose-slate max-w-none">
+  <!-- Le récit complet (blanc), puis les services et le partage. -->
+  <section class="section-blanc py-20 lg:py-28">
+    <div class="container-custom">
+      <article class="cas-recit prose prose-lg prose-slate mx-auto max-w-[760px]">
         <Content />
       </article>
 
-      <!-- Share -->
-      <div class="mt-12 pt-8 border-t border-slate-200">
-        <h3 class="text-lg font-bold text-slate-900 mb-4">{t.share}</h3>
-        <div class="flex gap-3">
-          <a
-            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(caseStudy.data.client + ': ' + caseStudy.data.title)}&url=${encodeURIComponent(Astro.url.href)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="w-10 h-10 rounded-full bg-slate-100 hover:bg-blue-500 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
-          >
-            <Icon name="twitter" size={18} />
-          </a>
-          <a
-            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="w-10 h-10 rounded-full bg-slate-100 hover:bg-blue-700 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
-          >
-            <Icon name="linkedin" size={18} />
-          </a>
-          <button
-            onclick={`navigator.clipboard.writeText('${Astro.url.href}')`}
-            class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors"
-            title="Copy link"
-          >
-            <Icon name="link" size={18} />
-          </button>
+      <div class="mx-auto mt-14 grid max-w-[760px] gap-8 border-t border-slate-200 pt-8 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+        <div class="grid gap-3">
+          <p class="text-sm font-semibold text-slate-500">{t.services}</p>
+          <ul class="puces">{caseStudy.data.services.map((s: string) => <li>{s}</li>)}</ul>
+        </div>
+        <div class="grid gap-3">
+          <p class="text-sm font-semibold text-slate-500">{t.partager}</p>
+          <div class="flex gap-2.5">
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(caseStudy.data.client + ': ' + caseStudy.data.title)}&url=${encodeURIComponent(Astro.url.href)}`}
+              target="_blank" rel="noopener noreferrer" aria-label="X"
+              class="grid h-11 w-11 place-items-center rounded-full bg-brume-clair text-slate-600 transition-colors hover:bg-marque hover:text-white"
+            ><Icon name="twitter" size={18} /></a>
+            <a
+              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
+              target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
+              class="grid h-11 w-11 place-items-center rounded-full bg-brume-clair text-slate-600 transition-colors hover:bg-marque hover:text-white"
+            ><Icon name="linkedin" size={18} /></a>
+            <button
+              type="button"
+              data-copier={Astro.url.href}
+              title={t.copier}
+              aria-label={t.copier}
+              class="grid h-11 w-11 place-items-center rounded-full bg-brume-clair text-slate-600 transition-colors hover:bg-marque hover:text-white"
+            ><Icon name="link" size={18} /></button>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Related Case Studies -->
-  {relatedStudies.length > 0 && (
-    <section class="py-16 bg-slate-50">
+  <!-- Le verbatim du client (encre). -->
+  {temoignage && (
+    <TestimonialSpotlight lang={lang} quote={temoignage.quote} author={temoignage.author} role="" company={temoignage.role} />
+  )}
+
+  <!-- Les autres études (blanc) : la photo, le logo en couleur, un chiffre. -->
+  {autres.length > 0 && (
+    <section class="section-blanc py-20 lg:py-28">
       <div class="container-custom">
-        <h2 class="text-2xl font-bold text-slate-900 mb-8">{t.relatedStudies}</h2>
-        <div class="grid md:grid-cols-3 gap-8">
-          {relatedStudies.map((study) => (
-            <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100">
-              <a href={`/${lang}/case-studies/${study.id.replace(/^(en|fr)\//, '')}`} class="block relative aspect-[16/10] overflow-hidden">
-                <img
-                  src={study.data.image}
-                  alt={study.data.client}
-                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
-                <div class="absolute bottom-4 left-4 right-4">
-                  <h3 class="text-lg font-bold text-white">{study.data.client}</h3>
-                </div>
-              </a>
-              <div class="p-6">
-                <p class="text-slate-600 text-sm mb-4 line-clamp-2">{study.data.title}</p>
-                <a
-                  href={`/${lang}/case-studies/${study.id.replace(/^(en|fr)\//, '')}`}
-                  class="inline-flex items-center gap-2 text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
-                >
-                  {t.viewStudy}
-                  <Icon name="arrow-right" size={14} />
+        <h2 class="titre-moyen mb-10 text-encre lg:mb-14">{t.autres}</h2>
+        <ul class="grid grid-cols-1 gap-5 md:grid-cols-3">
+          {autres.map((s, i) => {
+            const k = s.data.kpis[0];
+            return (
+              <li data-reveal style={`--i:${i}`}>
+                <a href={`/${lang}/case-studies/${slugDe(s.id)}`} class="carte group grid h-full overflow-hidden">
+                  <span class="relative block aspect-[16/10] overflow-hidden">
+                    <img src={s.data.image} alt="" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async" />
+                    {s.data.logo && (
+                      <span class="absolute left-4 top-4 grid h-11 place-items-center rounded-xl bg-white px-3">
+                        <img src={s.data.logo} alt="" class="max-h-7 max-w-[110px] w-auto object-contain" loading="lazy" decoding="async" />
+                      </span>
+                    )}
+                  </span>
+                  <span class="grid content-start gap-3 p-6">
+                    <span class="font-semibold text-slate-500">{s.data.client}</span>
+                    <span class="font-display text-5xl font-extrabold leading-none tracking-[-0.045em] text-encre">{fr ? k.value.replace(/(\d)\s?%/, '$1\u00a0%').replace(/(\d)\.(\d)/, '$1,$2') : k.value}</span>
+                    <span class="text-slate-600">{k.label}</span>
+                    <span class="mt-2 inline-flex items-center gap-2 font-semibold text-marque transition-all group-hover:gap-3">{t.lire}<Icon name="arrow-right" size={16} /></span>
+                  </span>
                 </a>
-              </div>
-            </article>
-          ))}
-        </div>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </section>
   )}
@@ -351,128 +270,137 @@ const breadcrumbItems = [
 </PageLayout>
 
 <script>
-  // Animate KPI values on scroll
-  const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.5,
-  };
-
-  // Le compteur garde les décimales et le séparateur de la fiche (« 4,9 Mrd »,
-  // « 3.2x ») pendant toute l'animation, pas seulement à la dernière image.
-  const animateValue = (element: HTMLElement, end: number, decimals: number, sep: string, duration: number, prefix: string, suffix: string, final: string) => {
-    let startTimestamp: number | null = null;
-    const step = (timestamp: number) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-      const current = (end * easeOutQuart).toFixed(decimals).replace('.', sep);
-      element.textContent = prefix + current + suffix;
-      if (progress < 1) {
-        window.requestAnimationFrame(step);
-      } else {
-        element.textContent = final;
-      }
-    };
-    window.requestAnimationFrame(step);
-  };
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const kpiCards = document.querySelectorAll('.kpi-card');
-        kpiCards.forEach((card, index) => {
-          setTimeout(() => {
-            card.classList.add('animate-in');
-            const valueEl = card.querySelector('.kpi-value') as HTMLElement;
-            if (valueEl) {
-              const value = valueEl.getAttribute('data-value') || '';
-              const numericMatch = value.match(/-?\d+(?:([.,])(\d+))?/);
-              const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-              if (numericMatch && !reduit) {
-                const sep = numericMatch[1] || '.';
-                const decimals = numericMatch[2] ? numericMatch[2].length : 0;
-                const numericValue = parseFloat(numericMatch[0].replace(',', '.'));
-                const prefix = value.substring(0, numericMatch.index);
-                const suffix = value.substring((numericMatch.index || 0) + numericMatch[0].length);
-                animateValue(valueEl, numericValue, decimals, sep, 1500, prefix, suffix, value);
-              }
-            }
-          }, index * 100);
-        });
-        observer.disconnect();
-      }
+  // Copier le lien de l'étude, sans script en ligne dans le HTML.
+  function brancher() {
+    document.querySelectorAll<HTMLButtonElement>('[data-copier]').forEach((b) => {
+      if (b.dataset.branche) return;
+      b.dataset.branche = '1';
+      b.addEventListener('click', () => navigator.clipboard?.writeText(b.dataset.copier || location.href));
     });
-  }, observerOptions);
-
-  const kpiSection = document.querySelector('.kpi-card');
-  if (kpiSection) {
-    observer.observe(kpiSection);
   }
+  brancher();
+  document.addEventListener('astro:page-load', brancher);
 </script>
 
 <style>
   @reference "../../../styles/global.css";
 
-  .cas-titre {
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-    text-wrap: balance;
+  /* Le panneau d'encre du haut, le même que celui des pages de services. */
+  .cas-panneau {
+    --plaque-x: 10px;
+    --plaque-y: 12px;
+    margin: 0 var(--plaque-x) var(--plaque-y) 0;
+    padding: 28px 24px;
+    border-radius: var(--rayon-panneau);
+    color: var(--texte-sombre);
+    background:
+      radial-gradient(110% 80% at 92% -10%, rgb(29 113 184 / 0.55) 0%, rgb(29 113 184 / 0.16) 42%, transparent 68%),
+      var(--encre);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.10),
+      var(--plaque-x) var(--plaque-y) 0 0 var(--brume),
+      var(--plaque-x) var(--plaque-y) 0 1px var(--filet),
+      var(--ombre-forte);
   }
-
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .kpi-card {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  .kpi-card.animate-in {
-    animation: slideUp 0.6s ease-out forwards;
-  }
-
-  @keyframes slideUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+  @media (min-width: 1024px) {
+    .cas-panneau {
+      --plaque-x: 16px;
+      --plaque-y: 18px;
+      padding: 40px;
     }
   }
 
-  /* Prose styles */
-  .prose h2 {
-    @apply text-2xl font-bold text-slate-900 mt-10 mb-4;
+  .cas-photo {
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--rayon-scene);
+    aspect-ratio: 4 / 3;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 30px 60px -36px rgb(2 9 16 / 0.9);
+  }
+  .cas-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
-  .prose h3 {
-    @apply text-xl font-bold text-slate-900 mt-8 mb-3;
+  /* Le récit : les titres et les liens du système Encre. */
+  .cas-recit :global(h2) {
+    @apply font-display text-encre mt-14 mb-5;
+    font-size: clamp(1.625rem, 1.3rem + 1vw, 2.125rem);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
   }
-
-  .prose p {
-    @apply text-slate-600 leading-relaxed mb-4;
+  .cas-recit :global(h3) {
+    @apply font-display text-encre mt-10 mb-3;
+    font-size: 1.375rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
-
-  .prose ul, .prose ol {
-    @apply my-4 pl-6;
+  .cas-recit :global(p) {
+    @apply text-slate-600 leading-relaxed mb-5;
   }
-
-  .prose li {
+  .cas-recit :global(ul),
+  .cas-recit :global(ol) {
+    @apply my-5 pl-6;
+  }
+  .cas-recit :global(li) {
     @apply text-slate-600 mb-2;
   }
-
-  .prose a {
-    @apply text-blue-600 hover:text-blue-700 underline;
+  .cas-recit :global(a) {
+    @apply text-marque underline underline-offset-2;
+  }
+  .cas-recit :global(strong) {
+    @apply text-encre font-semibold;
+  }
+  .cas-recit :global(blockquote) {
+    @apply border-l-4 border-marque pl-6 text-slate-700 my-8;
+  }
+  .cas-recit > :global(:first-child) {
+    margin-top: 0;
   }
 
-  .prose strong {
-    @apply text-slate-900 font-semibold;
+  /* Les parties du récit (rehype-parties-cas) : des bandes sur toute la largeur de l'écran,
+     la stratégie sur la brume, les résultats sur l'encre. L'ombre étend le fond de la bande,
+     le découpage l'arrête en haut et en bas ; aucune barre de défilement de côté. */
+  .cas-recit :global(.cas-partie) {
+    position: relative;
+    padding-block: 8px;
   }
-
-  .prose blockquote {
-    @apply border-l-4 border-blue-500 pl-6 italic text-slate-600 my-6;
+  .cas-recit :global(.cas-partie-brume),
+  .cas-recit :global(.cas-partie-encre) {
+    margin-block: 56px;
+    padding-block: 56px 40px;
+    clip-path: inset(0 -100vmax);
+  }
+  .cas-recit :global(.cas-partie-brume) {
+    background: var(--brume);
+    box-shadow: 0 0 0 100vmax var(--brume);
+  }
+  .cas-recit :global(.cas-partie-encre) {
+    background: var(--encre);
+    box-shadow: 0 0 0 100vmax var(--encre);
+  }
+  .cas-recit :global(.cas-partie-brume > h2:first-child),
+  .cas-recit :global(.cas-partie-encre > h2:first-child) {
+    margin-top: 0;
+  }
+  .cas-recit :global(.cas-partie-encre h2),
+  .cas-recit :global(.cas-partie-encre h3),
+  .cas-recit :global(.cas-partie-encre strong) {
+    color: #fff;
+  }
+  .cas-recit :global(.cas-partie-encre p),
+  .cas-recit :global(.cas-partie-encre li) {
+    color: var(--texte-sombre);
+  }
+  .cas-recit :global(.cas-partie-encre a) {
+    color: var(--color-marque-clair);
+  }
+  .cas-recit :global(.cas-partie-encre li::marker) {
+    color: var(--color-marque-clair);
+  }
+  .cas-recit > :global(.cas-partie:last-child) {
+    margin-bottom: 0;
   }
 </style>
