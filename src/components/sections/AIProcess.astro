@@ -18,12 +18,12 @@ const translations = {
       {
         icon: "target",
         title: "Problem-First",
-        description: "We start by understanding the real business problem you're trying to solve. AI is a tool, not a goal - it has to deliver measurable value.",
+        description: "We start by understanding the real business problem you're trying to solve. AI is a tool, not a goal: it has to deliver measurable value.",
       },
       {
         icon: "sliders",
         title: "Model-Agnostic",
-        description: "We use whatever AI model fits best - OpenAI, Anthropic Claude, Google Gemini, or open-source. The choice depends on your needs, not our preferences.",
+        description: "We use whatever AI model fits best: OpenAI, Anthropic Claude, Google Gemini, or open-source. The choice depends on your needs, not our preferences.",
       },
       {
         icon: "shield",
@@ -97,12 +97,12 @@ const translations = {
       {
         icon: "target",
         title: "Le problème d'abord",
-        description: "Nous commençons par comprendre le vrai problème business à résoudre. L'IA est un outil, pas un objectif - elle doit apporter une valeur mesurable.",
+        description: "Nous commençons par comprendre le vrai problème business à résoudre. L'IA est un outil, pas un objectif : elle doit apporter une valeur mesurable.",
       },
       {
         icon: "sliders",
         title: "Agnostique de modèle",
-        description: "Nous utilisons le modèle IA le plus adapté - OpenAI, Anthropic Claude, Google Gemini, ou open-source. Le choix dépend de vos besoins, pas de nos préférences.",
+        description: "Nous utilisons le modèle IA le plus adapté : OpenAI, Anthropic Claude, Google Gemini, ou open-source. Le choix dépend de vos besoins, pas de nos préférences.",
       },
       {
         icon: "shield",
@@ -172,72 +172,50 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-white overflow-hidden">
+<!-- Direction Encre (30/09/2026) : une section d'encre. Les principes et les étapes en
+     listes entre des filets, sans pastilles 01 à 05 ; les durées restent (ce sont les
+     conditions du projet, pas des résultats). -->
+<section class="section-encre section-monte py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <h2 class="font-display text-3xl lg:text-5xl font-bold text-slate-900 mb-4">{t.headline}</h2>
-      <p class="text-xl text-indigo-600 font-medium mb-4">{t.subheadline}</p>
-      <p class="text-lg text-slate-600">{t.description}</p>
-    </div>
+    <header class="mb-12 grid max-w-[900px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen">
+        {t.headline}
+        <span class="block text-marque-clair">{t.subheadline}</span>
+      </h2>
+      <p class="chapo">{t.description}</p>
+    </header>
 
-    <!-- Principles -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
-      {t.principles.map((principle) => (
-        <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 group">
-          <div class="mb-4 text-marque">
-            <Icon name={principle.icon} size={24} />
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 mb-2">{principle.title}</h3>
-          <p class="text-sm text-slate-600">{principle.description}</p>
-        </div>
+    <ul class="grid gap-x-10 md:grid-cols-2 lg:grid-cols-4">
+      {t.principles.map((principle, index) => (
+        <li class="grid content-start gap-2 border-t border-white/10 py-7" data-reveal style={`--i:${index}`}>
+          <Icon name={principle.icon} size={22} class="mb-1 text-marque-clair" />
+          <h3 class="text-lg font-semibold text-white">{principle.title}</h3>
+          <p class="text-sur-encre-2">{principle.description}</p>
+        </li>
       ))}
-    </div>
+    </ul>
 
-    <!-- Process Timeline -->
-    <div class="mb-20">
-      <h3 class="text-2xl font-bold text-slate-900 text-center mb-12">{t.process.title}</h3>
+    <h3 class="mb-8 mt-16 font-display text-2xl font-extrabold tracking-[-0.02em] text-white lg:mt-24 lg:text-3xl">{t.process.title}</h3>
+    <ol class="grid gap-x-8 md:grid-cols-2 lg:grid-cols-5">
+      {t.process.steps.map((step, index) => (
+        <li class="grid content-start gap-2 border-t border-white/10 py-7" data-reveal style={`--i:${index}`}>
+          <h4 class="font-display text-lg font-extrabold tracking-[-0.01em] text-white">{step.title}</h4>
+          <p class="text-sur-encre-2">{step.description}</p>
+          <p class="text-sm font-semibold text-marque-clair">{step.duration}</p>
+        </li>
+      ))}
+    </ol>
 
-      <div class="relative">
-        {/* Timeline line - desktop only */}
-        <div class="hidden lg:block absolute top-16 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-200 via-indigo-400 to-purple-400"></div>
-
-        <div class="grid lg:grid-cols-5 gap-8">
-          {t.process.steps.map((step, index) => (
-            <div class="relative">
-              {/* Step indicator */}
-              <div class="flex lg:flex-col items-start lg:items-center gap-4 lg:gap-0">
-                {/* Circle */}
-                <div class="relative z-10 w-12 h-12 rounded-full text-white flex items-center justify-center font-bold text-sm shadow-lg lg:mb-6 bg-marque">
-                  {step.number}
-                </div>
-
-                {/* Content */}
-                <div class="flex-1 lg:text-center">
-                  <h4 class="font-bold text-slate-900 mb-2">{step.title}</h4>
-                  <p class="text-sm text-slate-600 mb-2">{step.description}</p>
-                  <span class="inline-block px-3 py-1 text-xs font-medium bg-indigo-50 text-indigo-600 rounded-full">
-                    {step.duration}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-
-    <!-- Technologies -->
-    <div class="bg-slate-900 rounded-3xl p-8 lg:p-12">
-      <h3 class="text-xl font-bold text-white text-center mb-8">{t.models.title}</h3>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div class="mt-16 border-t border-white/10 pt-8 lg:mt-20">
+      <h3 class="mb-5 text-lg font-semibold text-white">{t.models.title}</h3>
+      <ul class="flex flex-wrap gap-x-8 gap-y-3">
         {t.models.items.map((model) => (
-          <div class="flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors">
-            <Icon name={model.icon} size={20} class="text-indigo-400" />
-            <span class="text-sm font-medium">{model.name}</span>
-          </div>
+          <li class="flex items-center gap-2.5 text-sur-encre">
+            <Icon name={model.icon} size={18} class="text-marque-clair" />
+            <span>{model.name}</span>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   </div>
 </section>
