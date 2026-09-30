@@ -183,128 +183,119 @@ const content = {
 const t = content[lang];
 ---
 
-<section id="audit-strategy" class="py-24 bg-white overflow-hidden">
+<!-- SEO, phase 1 : l'audit et la stratégie (direction Encre, 30/09/2026). Quatre cartes de
+     tailles différentes, la première en encre ; le détail de chaque audit reste, replié
+     dans sa carte. -->
+<section id="audit-strategy" class="section-blanc py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Section Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <h2 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
-        {t.title}
-      </h2>
-      <p class="text-lg text-slate-600">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Accordion Items -->
-    <div class="max-w-4xl mx-auto space-y-4">
-      {t.items.map((item, index) => (
-        <div
-          class="accordion-item group border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-300"
-          data-index={index}
-        >
-          <!-- Accordion Header -->
-          <button
-            class="accordion-trigger w-full flex items-center gap-4 p-6 text-left transition-all duration-300 hover:bg-slate-50"
-            aria-expanded="false"
-          >
-            <div class={`flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center ${colors.light} ${colors.text} transition-all duration-300 group-hover:scale-110`}>
-              <Icon name={item.icon} size={28} />
-            </div>
-            <div class="flex-1 min-w-0">
-              <h3 class="text-xl font-bold text-slate-900 mb-1">
-                {item.title}
-              </h3>
-              <p class="text-slate-600 text-sm">
-                {item.summary}
-              </p>
-            </div>
-            <div class={`flex-shrink-0 w-10 h-10 rounded-full ${colors.light} flex items-center justify-center transition-all duration-300`}>
-              <svg class="accordion-icon w-5 h-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </button>
-
-          <!-- Accordion Content -->
-          <div class="accordion-content overflow-hidden transition-all duration-300" style="max-height: 0;">
-            <div class="p-6 pt-0">
-              <div class={`pl-[4.5rem] border-l-2 ${colors.border} ml-7`}>
-                <ul class="space-y-3">
-                  {item.details.map((detail) => (
-                    <li class="flex items-start gap-3 text-slate-600">
-                      <svg class={`w-5 h-5 flex-shrink-0 mt-0.5 ${colors.text}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>{detail}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.title}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <ul class="audits">
+      {t.items.map((item, i) => (
+        <li class:list={['audit', i === 0 ? 'carte-encre audit-large' : 'carte', { 'audit-large': i === 3 }]} data-reveal style={`--i:${i % 3}`}>
+          <span class:list={['tuile tuile-grande', { 'tuile-pleine': i === 0 }]}><Icon name={item.icon} size={32} /></span>
+          <h3 class:list={['titre-carte', i === 0 ? 'text-white' : 'text-encre']}>{item.title}</h3>
+          <p class={i === 0 ? 'text-sur-encre-2' : 'text-slate-600'}>{item.summary}</p>
+          <details class="audit-detail" open={i === 0 || i === 3}>
+            <summary>{lang === 'fr' ? `Le détail, ${item.details.length} points` : `The detail, ${item.details.length} points`}<Icon name="chevron-down" size={18} /></summary>
+            <ul>
+              {item.details.map((d) => <li>{d}</li>)}
+            </ul>
+          </details>
+        </li>
       ))}
-    </div>
-
-    <!-- Micro-CTA -->
-    <div class="text-center mt-12">
-      <a
-        href={`/${lang}/contact`}
-        class="inline-flex items-center gap-3 px-8 py-4 rounded-full text-white font-semibold text-lg hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-marque hover:bg-marque-fonce"
-      >
-        <Icon name="search" size={20} />
+    </ul>
+    <div class="mt-12 flex flex-wrap items-center gap-x-5 gap-y-3">
+      <a href={`/${lang}/contact`} class="pilule pilule-pleine">
         {t.cta.text}
+        <Icon name="arrow-right" size={18} class="pilule-fleche" />
       </a>
-      <p class="text-sm text-slate-400 mt-3">{t.cta.subtext}</p>
+      <p class="text-slate-500">{t.cta.subtext}</p>
     </div>
   </div>
 </section>
 
 <style>
-  .accordion-item.active {
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+  .audits {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
   }
-
-  .accordion-item.active .accordion-icon {
+  .audit {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 28px 24px;
+  }
+  .audit-detail {
+    margin-top: 6px;
+  }
+  .audit-detail summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    font-weight: 600;
+    color: var(--color-marque);
+    cursor: pointer;
+    list-style: none;
+  }
+  .audit-detail summary::-webkit-details-marker {
+    display: none;
+  }
+  .audit-detail[open] summary :global(svg) {
     transform: rotate(180deg);
   }
-
-  .accordion-item.active .accordion-trigger {
-    background: linear-gradient(to right, rgba(16, 185, 129, 0.05), transparent);
+  .carte-encre .audit-detail summary {
+    color: var(--marque-clair);
+  }
+  .audit-detail ul {
+    display: grid;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .audit-detail li {
+    position: relative;
+    padding-left: 18px;
+    color: #4b5b6b;
+  }
+  .audit-detail li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 8px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-marque);
+  }
+  .carte-encre .audit-detail li {
+    color: var(--texte-sombre);
+  }
+  .carte-encre .audit-detail li::before {
+    background: var(--marque-clair);
+  }
+  @media (min-width: 768px) {
+    .audits {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .audits {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .audit {
+      padding: 32px;
+    }
+    .audit-large {
+      grid-column: span 2;
+    }
+    .audit-large .audit-detail ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 28px;
+    }
   }
 </style>
-
-<script>
-  document.querySelectorAll('.accordion-trigger').forEach((trigger) => {
-    trigger.addEventListener('click', () => {
-      const item = trigger.closest('.accordion-item');
-      const content = item?.querySelector('.accordion-content') as HTMLElement;
-      const isActive = item?.classList.contains('active');
-
-      // Close all other items
-      document.querySelectorAll('.accordion-item').forEach((otherItem) => {
-        if (otherItem !== item) {
-          otherItem.classList.remove('active');
-          const otherContent = otherItem.querySelector('.accordion-content') as HTMLElement;
-          if (otherContent) {
-            otherContent.style.maxHeight = '0';
-          }
-          otherItem.querySelector('.accordion-trigger')?.setAttribute('aria-expanded', 'false');
-        }
-      });
-
-      // Toggle current item
-      if (item && content) {
-        if (isActive) {
-          item.classList.remove('active');
-          content.style.maxHeight = '0';
-          trigger.setAttribute('aria-expanded', 'false');
-        } else {
-          item.classList.add('active');
-          content.style.maxHeight = content.scrollHeight + 'px';
-          trigger.setAttribute('aria-expanded', 'true');
-        }
-      }
-    });
-  });
-</script>
