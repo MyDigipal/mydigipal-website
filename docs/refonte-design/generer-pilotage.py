@@ -417,7 +417,7 @@ ETATS = {  # page : (libellé, classe) quand une page avance
     "/careers": ("Groupe 4 écrit, à relire", "attente"),
     "/privacy-policy": ("Groupe 4 écrit, à relire", "attente"),
     "/calculator": ("Flottants fusionnés et en ligne (30/09)", "fait"),
-    "/": ("Validé par Paul, en ligne (bc32233)", "fait"),
+    "/": ("Validé ; services avant l'Academy, passe anglaise", "fait"),
     "/services/ai-solutions": ("Écrit, à vérifier", "attente"),
     "/services/ai-content": ("Écrit, à vérifier", "attente"),
 }
@@ -573,6 +573,8 @@ JOURNAL = [
     ("30/09/2026", "Groupe 5, l'accueil, écrit en français (l'anglais suit les mêmes composants). Dans l'Academy, la vidéo de présentation reste ; les écrans de l'application et les films parlants sont repliés sous deux titres (deux <details> natifs, texte dans le HTML servi, ouverture vers le bas sous un titre qui ne bouge pas, rien de chargé ni joué tant qu'un pli est fermé, ouverture mesurée par accueil_pli_ouvert). Sans clic : l'Academy, puis les avis, puis les services. L'Academy et les résultats clients deviennent deux sections sombres qui montent, jamais collées. Logos en couleur partout : bandeau, onglets des avis, fiche des services, résultats (sur plaque blanche). /ai garde la section de l'Academy ouverte, sans pli."),
     ("30/09/2026", "Vérifié par script en local, FR et EN, à 1 440, 1 024, 768, 390 et 360 px et sans JavaScript : 0 débordement, 0 section d'encre collée, sombre 34 à 40 %, 0 erreur JavaScript, 0 tiret long. Plis : aucune vidéo demandée en défilant toute la page plis fermés ; à l'ouverture, titre immobile au pixel près, la boucle part ; refermé, elle s'arrête. check-seo au vert. Pas vu sur Render."),
     ("30/09/2026", "Accord de Paul donné dans la session : la pagination du blog et l'accueil sont en ligne. main avancée de 1fd65ec à bc32233 sans fusion (rien d'autre n'y était arrivé). Build et check-seo verts, contrôles relancés juste avant : 84 articles distincts par langue, recherche et filtres sur tout le blog, plis de l'accueil conformes, 0 débordement, 0 erreur JavaScript. L'ordre de l'accueil est gardé : la question « les services avant l'Academy ? » reste ouverte. Vérification sur Render toujours impossible depuis la session (réseau)."),
+    ("30/09/2026", "Accueil : les services avant l'Academy (Paul). Ordre : hero, logos, services, Academy (repliée), avis, résultats, articles, trois portes. Rythme vérifié : sombre 34 à 40 %, rien de collé, plis intacts."),
+    ("30/09/2026", "Passe anglaise sur toutes les pages refaites : casse de phrase comme en français (noms de produits et d'offres, titres SEO, documents légaux, taxonomie du blog gardés), plus aucun tiret long hors citation client, traits d'union employés comme tirets remplacés, montants à l'anglaise (€150K, €0.20, 47%, €6,500), tournures calquées reprises (« digital activity », « pilots all our digital », « a new era had to be born »…). Le français est identique, vérifié par extraction du texte avant et après. Formulaire de contact non touché. Contrôles : check-seo vert, 20 pages anglaises à cinq largeurs et sans JavaScript sans débordement ni erreur, formulaire testé de bout en bout. À trancher : orthographe britannique ou américaine, et « 339 reviews » sur la page contact (l'API en compte 497)."),
 ]
 
 
