@@ -2,6 +2,8 @@
 import { type Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 import VideoEmbed from '@/components/ui/VideoEmbed.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
+import RailMorphing from '@/components/motion/RailMorphing.astro';
 
 interface Props {
   lang: Language;
@@ -250,48 +252,34 @@ const content = {
 };
 
 const t = content[lang];
+
+// Le tableau à palettes : les trois chiffres de la section, tels qu'ils étaient écrits.
+const tableau = t.metrics.map((m) => ({ chiffre: `${m.prefix}${m.value}`, unite: m.suffix, texte: `${m.label}, ${m.description}` }));
+// Le rail : les quatre temps du process, une forme par temps.
+const formes = ['loupe', 'courbe', 'structure', 'bulle'] as const;
+const stations = t.process.steps.map((s, i) => ({ titre: s.title, texte: s.description, forme: formes[i] ?? 'cible' }));
+
 ---
 
-<section id="ai-content" class="relative py-24 bg-slate-950 overflow-hidden">
-  <!-- Background Effects -->
-  <div class="absolute inset-0 overflow-hidden">
-    <div class={`absolute top-1/4 -left-32 w-96 h-96 bg-gradient-to-br ${colors.gradient} rounded-full opacity-10 blur-3xl animate-pulse`}></div>
-    <div class="absolute bottom-1/4 -right-32 w-96 h-96 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full opacity-10 blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
-    <div class="absolute inset-0" style="background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px;"></div>
-  </div>
+<!-- SEO, phase 4 : le contenu produit avec l'IA (direction Encre, 30/09/2026). Les trois
+     chiffres de l'agence sur le tableau à palettes (gardés tels quels, à sourcer), la vidéo
+     du brief à l'article, ce qui change en cartes, le process sur le rail, les options de
+     livraison et ce que contient chaque article. -->
+<section id="ai-content" class="section-blanc py-20 lg:py-32">
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.title}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
 
-  <div class="container-custom relative z-10">
-    <!-- Section Header -->
-    <div class="text-center max-w-4xl mx-auto mb-20">
-      <h2 class="font-display text-4xl lg:text-5xl font-bold text-white mb-6">
-        {t.title}
-      </h2>
-      <p class="text-xl text-slate-400">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Metrics Grid - 3 big cards -->
-    <div class="grid md:grid-cols-3 gap-8 mb-24 max-w-5xl mx-auto">
-      {t.metrics.map((metric, index) => (
-        <div
-          class="metric-card group relative bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-8 text-center hover:border-slate-700 transition-all duration-300 hover:transform hover:-translate-y-2"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <div class={`text-5xl lg:text-6xl font-bold bg-gradient-to-r ${colors.gradient} bg-clip-text text-transparent mb-3`}>
-            {metric.prefix || ''}{metric.value}{metric.suffix}
-          </div>
-          <div class="text-white font-semibold text-lg mb-2">{metric.label}</div>
-          <div class="text-slate-400">{metric.description}</div>
-        </div>
-      ))}
-    </div>
-
-    <!-- Video: Brief to Article -->
-    <div class="max-w-4xl mx-auto mb-24 animate-on-scroll">
-      <div class="rounded-2xl overflow-hidden border border-slate-700 shadow-lg shadow-emerald-500/5">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-center lg:gap-8">
+      <div class="carte-encre px-6 py-8 lg:px-9 lg:py-10">
+        <TableauPalettes lang={lang} lignes={tableau} tete />
+      </div>
+      <div class="overflow-hidden rounded-[20px] shadow-[var(--ombre-forte)]" data-reveal>
         <VideoEmbed
           src="/videos/seo/SEOBriefToArticle.mp4"
+            poster="/videos/seo/SEOBriefToArticle.jpg"
           title={lang === 'fr' ? "Du brief à l'article : le processus de création IA" : 'From Brief to Article — See the AI content process'}
           description={lang === 'fr' ? 'Voir le processus de création IA' : 'See the AI creation process'}
           schemaName="AI Content Pipeline: From Brief to Article by MyDigipal"
@@ -301,355 +289,53 @@ const t = content[lang];
       </div>
     </div>
 
-    <!-- Features Grid -->
-    <div class="mb-24">
-      <h3 class="text-2xl lg:text-3xl font-bold text-white text-center mb-12">
-        {t.features.title}
-      </h3>
-      <div class="grid md:grid-cols-2 gap-6">
-        {t.features.items.map((feature, index) => (
-          <div
-            class="feature-item group relative bg-gradient-to-br from-slate-900 to-slate-900/50 border border-slate-800 rounded-2xl p-8 hover:border-slate-700 transition-all duration-500"
-            style={`animation-delay: ${index * 100}ms`}
-          >
-            <div class="mb-6 text-primary-300">
-              <Icon name={feature.icon} size={28} />
-            </div>
-            <h4 class="text-xl font-bold text-white mb-3">{feature.title}</h4>
-            <p class="text-slate-400 leading-relaxed">{feature.description}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+    <h3 class="titre-moyen mb-8 mt-20 text-encre lg:mt-28">{t.features.title}</h3>
+    <ul class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-5">
+      {t.features.items.map((f, i) => (
+        <li class:list={['grid grid-cols-[56px_minmax(0,1fr)] gap-x-5 gap-y-2 p-6 lg:p-8', i === 0 ? 'carte-encre' : 'carte']} data-reveal style={`--i:${i % 2}`}>
+          <span class:list={['tuile row-span-2', { 'tuile-pleine': i === 0 }]}><Icon name={f.icon} size={26} /></span>
+          <h4 class:list={['titre-carte', i === 0 ? 'text-white' : 'text-encre']}>{f.title}</h4>
+          <p class={i === 0 ? 'text-sur-encre-2' : 'text-slate-600'}>{f.description}</p>
+        </li>
+      ))}
+    </ul>
 
-    <!-- Process Timeline -->
-    <div class="mb-24 process-container" id="process-container">
-      <h3 class="text-2xl lg:text-3xl font-bold text-white text-center mb-12">
-        {t.process.title}
-      </h3>
-      <div class="relative">
-        <!-- Progress bar (centered through circles) -->
-        <div class="hidden lg:block absolute left-0 right-0 h-1.5 bg-slate-800 rounded-full overflow-visible z-0" style="top: 30px;">
-          <div class={`process-progress-bar h-full bg-gradient-to-r ${colors.gradient} rounded-full`} style="width: 0%; transition: width 0.1s linear;"></div>
-        </div>
+    <h3 class="titre-moyen mb-10 mt-20 text-encre lg:mt-28">{t.process.title}</h3>
+    <RailMorphing lang={lang} stations={stations} />
 
-        <div class="grid lg:grid-cols-4 gap-8 mb-12 relative z-10">
-          {t.process.steps.map((step, index) => (
-            <div class="process-step relative text-center lg:text-left" data-step={index + 1} style={`animation-delay: ${index * 150}ms`}>
-              <div class="relative inline-flex lg:block">
-                <div class={`step-circle w-16 h-16 rounded-full bg-slate-900 border-4 border-slate-700 flex items-center justify-center text-2xl font-bold ${colors.text} mx-auto lg:mx-0 mb-4 transition-all duration-300 relative z-20`}>
-                  {step.number}
-                </div>
-              </div>
-              <h4 class="text-lg font-bold text-white mb-2">{step.title}</h4>
-              <p class="text-slate-400 text-sm">{step.description}</p>
-            </div>
+    <div class="mt-20 grid grid-cols-1 gap-10 lg:mt-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
+      <div>
+        <h3 class="titre-carte mb-2 text-2xl text-encre">{t.deliveryOptions.title}</h3>
+        <p class="mb-6 text-slate-600">{t.deliveryOptions.subtitle}</p>
+        <ul class="grid gap-3">
+          {t.deliveryOptions.options.map((o, i) => (
+            <li class:list={['grid grid-cols-[56px_minmax(0,1fr)] gap-x-4 gap-y-1 p-5', i === 1 ? 'carte-encre' : 'carte']}>
+              <span class:list={['tuile row-span-2', { 'tuile-pleine': i === 1 }]}><Icon name={o.icon} size={24} /></span>
+              <p class:list={['font-semibold', i === 1 ? 'text-white' : 'text-encre']}>{o.title}</p>
+              <p class={i === 1 ? 'text-sur-encre-2' : 'text-slate-600'}>{o.description}</p>
+            </li>
           ))}
-        </div>
-
-        <!-- Delivery Options Branch -->
-        <div class="delivery-section relative mt-16 lg:mt-8" id="delivery-section">
-          <!-- Delivery Options Header Box -->
-          <div class="delivery-header-box flex justify-center mb-10 opacity-0 translate-y-4">
-            <div class={`inline-block px-8 py-6 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-emerald-500/50 shadow-lg shadow-emerald-500/10`}>
-              <div class="flex items-center justify-center gap-3 mb-2">
-                <span class={`w-3 h-3 rounded-full ${colors.bg} animate-pulse`}></span>
-                <span class="text-white text-lg font-bold">{t.deliveryOptions.title}</span>
-              </div>
-              <p class="text-slate-400 text-sm text-center">{t.deliveryOptions.subtitle}</p>
-            </div>
-          </div>
-
-          <!-- 3 Delivery Options with staggered animation -->
-          <div class="grid md:grid-cols-3 gap-6">
-            {t.deliveryOptions.options.map((option, index) => (
-              <div
-                class={`delivery-option group relative bg-slate-900/80 border border-slate-700 rounded-2xl p-6 text-center hover:border-slate-600 transition-all duration-300 hover:-translate-y-2 opacity-0 translate-y-8 ${
-                  option.color === 'blue' ? 'hover:border-blue-500/50' :
-                  option.color === 'green' ? 'hover:border-emerald-500/50' :
-                  'hover:border-purple-500/50'
-                }`}
-                data-delay={index}
-              >
-                <div class={`w-12 h-12 rounded-xl mx-auto mb-4 flex items-center justify-center ${
-                  option.color === 'blue' ? 'bg-blue-500/20 text-blue-400' :
-                  option.color === 'green' ? 'bg-emerald-500/20 text-emerald-400' :
-                  'bg-purple-500/20 text-purple-400'
-                }`}>
-                  <Icon name={option.icon} size={24} />
-                </div>
-                <h5 class="text-lg font-bold text-white mb-2">{option.title}</h5>
-                <p class="text-slate-400 text-sm">{option.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        </ul>
+      </div>
+      <div class="rounded-[20px] bg-brume-clair p-6 lg:p-8">
+        <h3 class="titre-carte mb-2 text-2xl text-encre">{t.deliverables.title}</h3>
+        <p class="mb-6 text-slate-600">{t.deliverables.subtitle}</p>
+        <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {t.deliverables.items.map((d) => (
+            <li class="grid grid-cols-[32px_minmax(0,1fr)] items-start gap-3 rounded-2xl bg-white p-4 shadow-[inset_0_0_0_1px_var(--filet)]">
+              <span class="grid h-8 w-8 place-items-center rounded-lg bg-marque text-white"><Icon name="check" size={16} /></span>
+              <span><b class="block text-encre">{d.label}</b><span class="text-sm text-slate-600">{d.detail}</span></span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
 
-    <!-- What's Included -->
-    <div class="mb-24">
-      <div class="text-center mb-12">
-        <h3 class="text-2xl lg:text-3xl font-bold text-white mb-4">
-          {t.deliverables.title}
-        </h3>
-        <p class="text-slate-400">{t.deliverables.subtitle}</p>
-      </div>
-
-      <!-- Row 1: 3 items -->
-      <div class="grid md:grid-cols-3 gap-5 mb-5">
-        {t.deliverables.items.slice(0, 3).map((item, index) => (
-          <div
-            class="deliverable-item bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center hover:border-slate-700 transition-all duration-300"
-            style={`animation-delay: ${index * 50}ms`}
-          >
-            <div class={`text-lg font-bold ${colors.text} mb-2`}>{item.label}</div>
-            <div class="text-base text-slate-400">{item.detail}</div>
-          </div>
-        ))}
-      </div>
-
-      <!-- Row 2: 3 items -->
-      <div class="grid md:grid-cols-3 gap-5 mb-5">
-        {t.deliverables.items.slice(3, 6).map((item, index) => (
-          <div
-            class="deliverable-item bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center hover:border-slate-700 transition-all duration-300"
-            style={`animation-delay: ${(index + 3) * 50}ms`}
-          >
-            <div class={`text-lg font-bold ${colors.text} mb-2`}>{item.label}</div>
-            <div class="text-base text-slate-400">{item.detail}</div>
-          </div>
-        ))}
-      </div>
-
-      <!-- Row 3: 2 items centered -->
-      <div class="grid md:grid-cols-2 gap-5 max-w-2xl mx-auto">
-        {t.deliverables.items.slice(6, 8).map((item, index) => (
-          <div
-            class="deliverable-item bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center hover:border-slate-700 transition-all duration-300"
-            style={`animation-delay: ${(index + 6) * 50}ms`}
-          >
-            <div class={`text-lg font-bold ${colors.text} mb-2`}>{item.label}</div>
-            <div class="text-base text-slate-400">{item.detail}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <!-- Learn More CTA -->
-    <div class="text-center mt-16">
-      <a
-        href={`/${lang}/services/ai-content`}
-        class="inline-flex items-center gap-2 px-8 py-4 rounded-full text-white font-semibold text-lg hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-marque hover:bg-marque-fonce"
-      >
-        {lang === 'fr' ? 'En savoir plus sur notre création de contenu IA' : 'Learn more about our AI content creation'}
-        <Icon name="arrow-right" size={20} />
+    <div class="mt-14">
+      <a href={`/${lang}/services/ai-content`} class="pilule pilule-pleine">
+        {lang === 'fr' ? 'Notre création de contenu IA' : 'Our AI content service'}
+        <Icon name="arrow-right" size={18} class="pilule-fleche" />
       </a>
     </div>
-
   </div>
 </section>
-
-<style>
-  .metric-card,
-  .feature-item,
-  .process-step,
-  .deliverable-item {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Step circle active state */
-  .step-circle.active {
-    border-color: #10B981 !important;
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-  }
-
-  /* Delivery header box animation */
-  .delivery-header-box.visible {
-    animation: pop-scale 0.5s ease forwards;
-  }
-
-  @keyframes pop-scale {
-    0% {
-      opacity: 0;
-      transform: translateY(20px) scale(0.9);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  /* Delivery options staggered animation */
-  .delivery-option.visible {
-    animation: pop-in 0.4s ease forwards;
-  }
-
-  @keyframes pop-in {
-    0% {
-      opacity: 0;
-      transform: translateY(30px) scale(0.9);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-</style>
-
-<script>
-  // Animated counters - robust implementation
-  function animateValue(el: Element, start: number, end: number, duration: number) {
-    const range = end - start;
-    const startTime = performance.now();
-
-    function update(currentTime: number) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easeProgress = 1 - Math.pow(1 - progress, 3);
-      const current = Math.round(start + range * easeProgress);
-      el.textContent = current.toString();
-
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      }
-    }
-
-    requestAnimationFrame(update);
-  }
-
-  function triggerCounterAnimation(card: HTMLElement) {
-    const valueEl = card.querySelector('.metric-value');
-    const targetValue = parseInt(card.dataset.value || '0');
-
-    if (valueEl && !card.classList.contains('counted')) {
-      card.classList.add('counted');
-      animateValue(valueEl, 0, targetValue, 1500);
-    }
-  }
-
-  function checkMetricsVisibility() {
-    const metricsGrid = document.getElementById('metrics-grid');
-    if (!metricsGrid) return;
-
-    const rect = metricsGrid.getBoundingClientRect();
-    const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-
-    if (isVisible) {
-      document.querySelectorAll('.metric-card').forEach((card) => {
-        triggerCounterAnimation(card as HTMLElement);
-      });
-    }
-  }
-
-  // Check on scroll
-  let metricsChecked = false;
-  window.addEventListener('scroll', () => {
-    if (!metricsChecked) {
-      checkMetricsVisibility();
-      // Check if all are counted
-      const cards = document.querySelectorAll('.metric-card');
-      const countedCards = document.querySelectorAll('.metric-card.counted');
-      if (cards.length === countedCards.length) {
-        metricsChecked = true;
-      }
-    }
-  }, { passive: true });
-
-  // Also check on load and after a short delay
-  window.addEventListener('load', () => {
-    setTimeout(checkMetricsVisibility, 100);
-    setTimeout(checkMetricsVisibility, 500);
-    setTimeout(checkMetricsVisibility, 1000);
-  });
-
-  // Immediate check
-  checkMetricsVisibility();
-
-  // Progress bar scroll animation
-  const processContainer = document.getElementById('process-container');
-  const progressBar = document.querySelector('.process-progress-bar') as HTMLElement;
-  const stepCircles = document.querySelectorAll('.step-circle');
-  const deliveryHeaderBox = document.querySelector('.delivery-header-box');
-  const deliveryOptions = document.querySelectorAll('.delivery-option');
-
-  let deliveryAnimationTriggered = false;
-
-  function updateProgressBar() {
-    if (!processContainer || !progressBar) return;
-
-    const containerRect = processContainer.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-
-    // Calculate how much of the process section is visible
-    const containerTop = containerRect.top;
-
-    // Start filling when container enters viewport, complete when fully visible
-    const startPoint = viewportHeight * 0.7;
-    const endPoint = viewportHeight * 0.3;
-
-    // Calculate progress (0 to 1)
-    let progress = 0;
-    if (containerTop < startPoint) {
-      progress = (startPoint - containerTop) / (startPoint - endPoint);
-      progress = Math.max(0, Math.min(1, progress));
-    }
-
-    // Update progress bar width
-    progressBar.style.width = `${progress * 100}%`;
-
-    // Update step circles based on progress
-    const stepsActivated = Math.floor(progress * 4);
-    stepCircles.forEach((circle, index) => {
-      if (index < stepsActivated) {
-        circle.classList.add('active');
-      } else {
-        circle.classList.remove('active');
-      }
-    });
-
-    // When progress reaches 100% (step 4 complete), show delivery options
-    if (progress >= 1 && !deliveryAnimationTriggered) {
-      deliveryAnimationTriggered = true;
-
-      // Activate step 4
-      stepCircles[3]?.classList.add('active');
-
-      // Show delivery header box immediately
-      setTimeout(() => {
-        deliveryHeaderBox?.classList.add('visible');
-      }, 200);
-
-      // Show delivery options one by one
-      deliveryOptions.forEach((option, index) => {
-        setTimeout(() => {
-          option.classList.add('visible');
-        }, 600 + (index * 200));
-      });
-    }
-  }
-
-  // Listen to scroll events
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        updateProgressBar();
-        ticking = false;
-      });
-      ticking = true;
-    }
-  });
-
-  // Initial check
-  updateProgressBar();
-</script>
