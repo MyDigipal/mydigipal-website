@@ -17,13 +17,13 @@ const translations = {
       {
         icon: "message-circle",
         title: "AI Assistants & Chatbots",
-        description: "Intelligent assistants that handle customer queries, internal requests, bookings, searches, and more - so your team can focus on high-value work.",
+        description: "Intelligent assistants that handle customer queries, internal requests, bookings, searches, and more, so your team can focus on high-value work.",
         examples: ["Customer service chatbots", "Internal HR assistants", "Sales qualification bots", "Booking & scheduling agents"],
       },
       {
         icon: "zap",
         title: "Automated Workflows",
-        description: "Remove repetitive tasks from your team's plate. From report generation to data entry, decision flows to email triage - AI handles the mundane.",
+        description: "Remove repetitive tasks from your team's plate. From report generation to data entry, decision flows to email triage: AI handles the mundane.",
         examples: ["Report generation", "Document processing", "Email triage & routing", "Data entry automation"],
       },
       {
@@ -60,13 +60,13 @@ const translations = {
       {
         icon: "message-circle",
         title: "Assistants IA & Chatbots",
-        description: "Assistants intelligents qui gèrent les requêtes clients, demandes internes, réservations, recherches et plus - pour que votre équipe se concentre sur le travail à forte valeur.",
+        description: "Assistants intelligents qui gèrent les requêtes clients, demandes internes, réservations, recherches et plus, pour que votre équipe se concentre sur le travail à forte valeur.",
         examples: ["Chatbots service client", "Assistants RH internes", "Bots de qualification commerciale", "Agents de réservation"],
       },
       {
         icon: "zap",
         title: "Workflows automatisés",
-        description: "Libérez votre équipe des tâches répétitives. De la génération de rapports à la saisie de données, des flux décisionnels au tri d'emails - l'IA gère le routinier.",
+        description: "Libérez votre équipe des tâches répétitives. De la génération de rapports à la saisie de données, des flux décisionnels au tri d'emails : l'IA gère le routinier.",
         examples: ["Génération de rapports", "Traitement de documents", "Tri & routage d'emails", "Automatisation de saisie"],
       },
       {
@@ -100,56 +100,31 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-slate-50 overflow-hidden">
+<!-- Direction Encre (30/09/2026) : ce que nous construisons, sur une section d'encre,
+     six familles en liste entre des filets (plus de cartes égales, plus de cartes
+     invisibles tant que le script n'a pas tourné). -->
+<section class="section-encre section-monte py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <h2 class="font-display text-3xl lg:text-5xl font-bold text-slate-900 mb-4">{t.headline}</h2>
-      <p class="text-xl text-slate-600">{t.subheadline}</p>
-    </div>
-
-    <!-- Use Cases Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen">{t.headline}</h2>
+      <p class="chapo">{t.subheadline}</p>
+    </header>
+    <div class="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
       {t.useCases.map((useCase, index) => (
-        <div
-          class="use-case-card group bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:border-indigo-200 transition-all duration-500"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          {/* Icon */}
-          <div class="mb-6 text-marque">
-            <Icon name={useCase.icon} size={28} />
-          </div>
-
-          {/* Title & Description */}
-          <h3 class="text-xl font-bold text-slate-900 mb-3">{useCase.title}</h3>
-          <p class="text-slate-600 mb-6">{useCase.description}</p>
-
-          {/* Examples */}
-          <div class="space-y-2">
+        <div class="grid content-start gap-3 border-t border-white/10 py-8" data-reveal style={`--i:${index % 3}`}>
+          <Icon name={useCase.icon} size={24} class="text-marque-clair" />
+          <h3 class="font-display text-xl font-extrabold tracking-[-0.02em] text-white">{useCase.title}</h3>
+          <p class="text-sur-encre-2">{useCase.description}</p>
+          <ul class="mt-1 grid gap-2">
             {useCase.examples.map((example) => (
-              <div class="flex items-center gap-2 text-sm text-slate-500">
-                <div class="w-1.5 h-1.5 rounded-full bg-indigo-400"></div>
+              <li class="flex items-start gap-2.5 text-sur-encre">
+                <Icon name="check" size={16} class="mt-1 flex-none text-marque-clair" />
                 <span>{example}</span>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       ))}
     </div>
   </div>
 </section>
-
-<style>
-  .use-case-card {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease forwards;
-  }
-
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
