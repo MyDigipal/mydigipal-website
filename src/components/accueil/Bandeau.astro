@@ -67,9 +67,10 @@ const logos = BANDEAU.filter((s) => LOGOS[s]).map((s) => ({ slug: s, ...LOGOS[s]
 </section>
 
 <style>
+  /* La marge du bas laisse monter la section de l'Academy (coins de 32 px). */
   .bandeau {
     border-top: 1px solid var(--trait);
-    padding: 1.75rem 0 1.5rem;
+    padding: 1.75rem 0 calc(1.5rem + var(--rayon-scene));
     background: #fff;
   }
   .bandeau-grille {
@@ -79,7 +80,7 @@ const logos = BANDEAU.filter((s) => LOGOS[s]).map((s) => ({ slug: s, ...LOGOS[s]
   }
   @media (min-width: 1024px) {
     .bandeau {
-      padding: 2.25rem 0;
+      padding: 2.25rem 0 calc(2.25rem + var(--rayon-scene));
     }
     .bandeau-grille {
       grid-template-columns: 13rem minmax(0, 1fr);
@@ -167,22 +168,14 @@ const logos = BANDEAU.filter((s) => LOGOS[s]).map((s) => ({ slug: s, ...LOGOS[s]
     align-items: center;
     height: 48px;
   }
+  /* Les logos en couleur (Paul, 30/09/2026 : plus de filtre gris). */
   .defile-liste img {
     display: block;
     width: auto;
     max-width: none;
-    filter: grayscale(1) contrast(1.1);
-    opacity: 0.72;
-    transition:
-      filter 0.4s var(--ease-sortie),
-      opacity 0.4s var(--ease-sortie);
   }
   .defile-liste img.fond-blanc {
     mix-blend-mode: multiply;
-  }
-  .defile-liste img:hover {
-    filter: none;
-    opacity: 1;
   }
 
   @media (prefers-reduced-motion: no-preference) {
