@@ -1,333 +1,151 @@
 ---
 /**
- * CaseStudyCarousel - Displays case studies in a carousel with navigation arrows
- * Can be configured with different case studies for each service page
+ * Les résultats de clients sur une page de service, direction Encre (30/09/2026).
+ *
+ * Ce n'est plus un carrousel : une ligne par étude de cas, le chiffre en très grand,
+ * son libellé, un second chiffre et le lien vers l'étude. Aucun chiffre n'est écrit
+ * ici : tout vient de la collection `case-studies` (`kpis` de la fiche), dans la
+ * langue de la page. L'ancienne version portait des chiffres inventés (« 3.5x ROAS »,
+ * « +200 % d'engagement ») et perdait deux études sur trois, faute de clés
+ * concordantes ; le build s'arrête désormais sur une étude introuvable.
+ *
+ * `caseStudyIds` : le nom de la fiche (`dmd-group`), ou `{ id, kpi, second }` pour
+ * choisir les indicateurs montrés (par défaut le premier et le deuxième).
  */
+import { getCollection } from 'astro:content';
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 
-interface CaseStudy {
-  id: string;
-  title: string;
-  titleFr: string;
-  subtitle: string;
-  subtitleFr: string;
-  description: string;
-  descriptionFr: string;
-  image: string;
-  logo?: string;
-  metrics?: { value: string; label: string; labelFr: string }[];
-  tags: string[];
-  tagsFr: string[];
-}
+type Choix = string | { id: string; kpi?: number; second?: number };
 
 interface Props {
   lang: Language;
-  caseStudyIds: string[];
-  color?: 'seo' | 'ads' | 'social' | 'abm' | 'primary';
+  caseStudyIds: Choix[];
+  /** Accepté pour ne pas toucher aux pages. */
+  color?: string;
 }
 
-const { lang, caseStudyIds, color = 'primary' } = Astro.props;
+const { lang, caseStudyIds, color } = Astro.props;
+void color;
 
-// All available case studies
-const allCaseStudies: Record<string, CaseStudy> = {
-  'symbl': {
-    id: 'symbl',
-    title: 'Symbl.ai: From Code to Digital Campaigns',
-    titleFr: 'Symbl.ai : Du Code aux Campagnes Digitales',
-    subtitle: 'AI Meets Digital Craft',
-    subtitleFr: 'L\'IA Rencontre le Craft Digital',
-    description: 'How we helped Symbl.ai transform their B2B marketing with targeted paid social campaigns, generating qualified leads in the conversational AI space.',
-    descriptionFr: 'Comment nous avons aidé Symbl.ai à transformer leur marketing B2B avec des campagnes paid social ciblées, générant des leads qualifiés dans l\'espace de l\'IA conversationnelle.',
-    image: '/images/Case study thumbnail/Symbl.avif',
-    metrics: [
-      { value: '+156%', label: 'Lead Volume', labelFr: 'Volume de Leads' },
-      { value: '-42%', label: 'Cost per Lead', labelFr: 'Coût par Lead' },
-      { value: '3.5x', label: 'ROAS', labelFr: 'ROAS' },
-    ],
-    tags: ['LinkedIn Ads', 'Content Syndication', 'ABM'],
-    tagsFr: ['LinkedIn Ads', 'Syndication de Contenu', 'ABM'],
-  },
-  'gwi': {
-    id: 'gwi',
-    title: 'GWI: Tailored Campaigns for Targeted Success',
-    titleFr: 'GWI : Campagnes Sur Mesure pour un Succès Ciblé',
-    subtitle: 'Data-Driven Audience Insights',
-    subtitleFr: 'Insights Audience Data-Driven',
-    description: 'Leveraging GWI\'s own audience data platform, we created precision-targeted campaigns that reached decision-makers in the market research industry.',
-    descriptionFr: 'En exploitant la plateforme de données audience de GWI, nous avons créé des campagnes ultra-ciblées qui ont atteint les décideurs dans l\'industrie des études de marché.',
-    image: '/images/Case study thumbnail/GWI.avif',
-    metrics: [
-      { value: '+89%', label: 'Engagement Rate', labelFr: 'Taux d\'Engagement' },
-      { value: '2.8x', label: 'Pipeline Value', labelFr: 'Valeur Pipeline' },
-      { value: '-35%', label: 'CAC', labelFr: 'CAC' },
-    ],
-    tags: ['Meta Ads', 'LinkedIn', 'Remarketing'],
-    tagsFr: ['Meta Ads', 'LinkedIn', 'Remarketing'],
-  },
-  'genesys': {
-    id: 'genesys',
-    title: 'Genesys: Amplifying Dialogue through ABM',
-    titleFr: 'Genesys : Amplifier le Dialogue via l\'ABM',
-    subtitle: 'Streamlining ABM & Boosting Engagement',
-    subtitleFr: 'Optimisation ABM & Boost d\'Engagement',
-    description: 'A comprehensive ABM strategy that helped Genesys reach key accounts in the customer experience space with personalized messaging across multiple channels.',
-    descriptionFr: 'Une stratégie ABM complète qui a aidé Genesys à atteindre des comptes clés dans l\'espace de l\'expérience client avec des messages personnalisés sur plusieurs canaux.',
-    image: '/images/Case study thumbnail/Genesys.avif',
-    metrics: [
-      { value: '+200%', label: 'Account Engagement', labelFr: 'Engagement Comptes' },
-      { value: '45', label: 'Target Accounts Reached', labelFr: 'Comptes Cibles Atteints' },
-      { value: '4.2x', label: 'ROI', labelFr: 'ROI' },
-    ],
-    tags: ['ABM', 'LinkedIn Ads', 'Display'],
-    tagsFr: ['ABM', 'LinkedIn Ads', 'Display'],
-  },
-  'quantum': {
-    id: 'quantum',
-    title: 'Quantum Metrics: ABM Excellence',
-    titleFr: 'Quantum Metrics : Excellence ABM',
-    subtitle: 'Accelerating Deal Velocity',
-    subtitleFr: 'Accélération de la Vélocité des Deals',
-    description: 'MyDigipal\'s ABM programs helped Quantum Metrics identify and focus on the most valuable target accounts, achieving better lead quality and higher conversion rates.',
-    descriptionFr: 'Les programmes ABM de MyDigipal ont aidé Quantum Metrics à identifier et se concentrer sur les comptes cibles les plus précieux, obtenant une meilleure qualité de leads et des taux de conversion plus élevés.',
-    image: '/images/Case study thumbnail/Quantum.avif',
-    metrics: [
-      { value: '+30%', label: 'Deal Velocity', labelFr: 'Vélocité des Deals' },
-      { value: '+85%', label: 'Lead Quality', labelFr: 'Qualité des Leads' },
-      { value: '3.8x', label: 'ROAS', labelFr: 'ROAS' },
-    ],
-    tags: ['ABM', 'LinkedIn', 'Paid Social'],
-    tagsFr: ['ABM', 'LinkedIn', 'Paid Social'],
-  },
-  'dmd': {
-    id: 'dmd',
-    title: 'DMD Group: Search Domination',
-    titleFr: 'DMD Group : Domination Search',
-    subtitle: 'Maximizing Search ROI',
-    subtitleFr: 'Maximisation du ROI Search',
-    description: 'A comprehensive Google Ads strategy that positioned DMD Group at the top of relevant search queries, driving significant traffic and conversions.',
-    descriptionFr: 'Une stratégie Google Ads complète qui a positionné DMD Group en tête des requêtes de recherche pertinentes, générant un trafic et des conversions significatifs.',
-    image: '/images/Case study thumbnail/DMD.avif',
-    metrics: [
-      { value: '+225%', label: 'Traffic Increase', labelFr: 'Augmentation Trafic' },
-      { value: '57%', label: 'Conversion Boost', labelFr: 'Boost Conversions' },
-      { value: '-30%', label: 'Cost per Lead', labelFr: 'Coût par Lead' },
-    ],
-    tags: ['Google Ads', 'Search', 'Performance Max'],
-    tagsFr: ['Google Ads', 'Search', 'Performance Max'],
-  },
-};
+const fiches = await getCollection('case-studies');
+const insecable = (v: string) => (lang === 'fr' ? v.replace(/(\d)\s?%/g, '$1 %') : v);
 
-// Filter to only requested case studies
-const caseStudies = caseStudyIds
-  .map(id => allCaseStudies[id])
-  .filter(Boolean);
+const lignes = caseStudyIds.map((c) => {
+  const { id, kpi = 0, second = 1 } = typeof c === 'string' ? { id: c } : c;
+  const fiche = fiches.find((f) => f.id === `${lang}/${id}`);
+  if (!fiche) throw new Error(`CaseStudyCarousel : étude de cas introuvable : ${lang}/${id}`);
+  const k = fiche.data.kpis[kpi];
+  const s = fiche.data.kpis[second];
+  if (!k) throw new Error(`CaseStudyCarousel : ${id} n'a pas d'indicateur n° ${kpi}`);
+  return {
+    id,
+    client: fiche.data.client,
+    logo: fiche.data.logo,
+    chiffre: insecable(k.value),
+    libelle: k.label,
+    second: s && second !== kpi ? `${insecable(s.value)} ${s.label.toLowerCase()}` : '',
+    lien: `/${lang}/case-studies/${id}`,
+  };
+});
 
-const colorConfig = {
-  seo: { gradient: 'from-emerald-500 to-teal-600', text: 'text-emerald-500', bg: 'bg-emerald-500' },
-  ads: { gradient: 'from-amber-500 to-orange-600', text: 'text-amber-500', bg: 'bg-amber-500' },
-  social: { gradient: 'from-violet-500 to-purple-600', text: 'text-violet-500', bg: 'bg-violet-500' },
-  abm: { gradient: 'from-pink-500 to-rose-600', text: 'text-pink-500', bg: 'bg-pink-500' },
-  primary: { gradient: 'from-blue-500 to-indigo-600', text: 'text-blue-500', bg: 'bg-blue-500' },
-};
-
-const colors = colorConfig[color];
-
-const content = {
-  en: {
-    badge: 'Success Stories',
-    title: 'Real Results from Real Campaigns',
-    subtitle: 'See how we\'ve helped B2B companies achieve their marketing goals',
-    readMore: 'Read Case Study',
-  },
-  fr: {
-    badge: 'Études de cas',
-    title: 'Résultats réels de vraies campagnes',
-    subtitle: 'Découvrez comment nous avons aidé des entreprises B2B à atteindre leurs objectifs marketing',
-    readMore: 'Lire l\'étude de cas',
-  },
-};
-
-const t = content[lang];
+const t = {
+  en: { titre: 'Their numbers, not ours', chapo: 'Client accounts we took over, and what they delivered.', lire: 'Read the case study' },
+  fr: { titre: 'Leurs chiffres, pas les nôtres', chapo: 'Des comptes clients repris en main, et ce qu’ils ont donné.', lire: 'Lire l’étude de cas' },
+}[lang];
 ---
 
-<section class="relative py-24 bg-slate-50 overflow-hidden">
+<section class="preuves section-brume py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <span class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 bg-white ${colors.text} shadow-sm`}>
-        <Icon name="award" size={16} />
-        {t.badge}
-      </span>
-      <h2 class="heading-2 mb-4">{t.title}</h2>
-      <p class="body-large text-slate-600">{t.subtitle}</p>
-    </div>
+    <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.titre}</h2>
+      <p class="chapo">{t.chapo}</p>
+    </header>
 
-    <!-- Carousel Container -->
-    <div class="relative">
-      <!-- Navigation Arrows -->
-      <button
-        class="carousel-prev absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-        aria-label="Previous case study"
-      >
-        <Icon name="chevron-left" size={24} />
-      </button>
-      <button
-        class="carousel-next absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-        aria-label="Next case study"
-      >
-        <Icon name="chevron-right" size={24} />
-      </button>
-
-      <!-- Carousel Track -->
-      <div class="carousel-track overflow-hidden mx-8">
-        <div class="carousel-slides flex transition-transform duration-500 ease-out" style="transform: translateX(0%);">
-          {caseStudies.map((cs, index) => (
-            <div class="carousel-slide flex-shrink-0 w-full px-4" data-index={index}>
-              <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
-                <div class="grid lg:grid-cols-2">
-                  <!-- Image Side -->
-                  <div class="relative h-64 lg:h-auto min-h-[300px]">
-                    <img
-                      src={cs.image}
-                      alt={lang === 'fr' ? cs.titleFr : cs.title}
-                      class="absolute inset-0 w-full h-full object-cover"
-                    />
-                    <div class={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-20`}></div>
-                  </div>
-
-                  <!-- Content Side -->
-                  <div class="p-8 lg:p-12 flex flex-col justify-center">
-                    <!-- Tags -->
-                    <div class="flex flex-wrap gap-2 mb-4">
-                      {(lang === 'fr' ? cs.tagsFr : cs.tags).map((tag) => (
-                        <span class={`px-3 py-1 rounded-full text-xs font-medium ${colors.bg} text-white`}>
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <!-- Title & Subtitle -->
-                    <h3 class="heading-3 mb-2">
-                      {lang === 'fr' ? cs.titleFr : cs.title}
-                    </h3>
-                    <p class={`text-lg font-medium ${colors.text} mb-4`}>
-                      {lang === 'fr' ? cs.subtitleFr : cs.subtitle}
-                    </p>
-
-                    <!-- Description -->
-                    <p class="text-slate-600 mb-6">
-                      {lang === 'fr' ? cs.descriptionFr : cs.description}
-                    </p>
-
-                    <!-- Metrics -->
-                    {cs.metrics && (
-                      <div class="grid grid-cols-3 gap-4 mb-6">
-                        {cs.metrics.map((metric) => (
-                          <div class="text-center">
-                            <div class={`text-2xl font-bold ${colors.text}`}>{metric.value}</div>
-                            <div class="text-xs text-slate-500">{lang === 'fr' ? metric.labelFr : metric.label}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    <!-- CTA Button -->
-                    <a
-                      href={`/${lang}/case-studies/${cs.id}`}
-                      class="inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-medium hover:shadow-lg transition-shadow self-start bg-marque hover:bg-marque-fonce"
-                    >
-                      {t.readMore}
-                      <Icon name="arrow-right" size={18} />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <!-- Dots Indicator -->
-      <div class="flex justify-center gap-2 mt-8">
-        {caseStudies.map((_, index) => (
-          <button
-            class={`carousel-dot w-3 h-3 rounded-full transition-all ${index === 0 ? colors.bg : 'bg-slate-300'}`}
-            data-index={index}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
-    </div>
+    <ul class="preuves-lignes">
+      {lignes.map((l, i) => (
+        <li class="preuve" data-reveal style={`--i:${i}`}>
+          <div class="preuve-client">
+            {l.logo && (
+              <span class="grid h-[52px] w-24 flex-none place-items-center rounded-xl bg-white px-3 py-2 shadow-[inset_0_0_0_1px_rgb(11_27_43/0.08)]">
+                <img src={l.logo} alt="" class="max-h-full w-auto object-contain" loading="lazy" decoding="async" />
+              </span>
+            )}
+            <span class="font-semibold text-encre">{l.client}</span>
+          </div>
+          <p class="preuve-chiffre">{l.chiffre}</p>
+          <div class="grid gap-1">
+            <p class="text-lg leading-snug text-encre lg:text-xl">{l.libelle}</p>
+            {l.second && <p class="text-slate-600">{l.second}</p>}
+          </div>
+          <a href={l.lien} class="preuve-lien">
+            {t.lire}
+            <Icon name="arrow-right" size={18} />
+            <span class="sr-only">, {l.client}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
   </div>
 </section>
 
-<script>
-  function initCarousel() {
-    const track = document.querySelector('.carousel-slides') as HTMLElement;
-    const slides = document.querySelectorAll('.carousel-slide');
-    const prevBtn = document.querySelector('.carousel-prev') as HTMLButtonElement;
-    const nextBtn = document.querySelector('.carousel-next') as HTMLButtonElement;
-    const dots = document.querySelectorAll('.carousel-dot');
-
-    if (!track || slides.length === 0) return;
-
-    let currentIndex = 0;
-    const totalSlides = slides.length;
-
-    function updateCarousel() {
-      // Update track position
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
-
-      // Update dots
-      dots.forEach((dot, index) => {
-        if (index === currentIndex) {
-          dot.classList.remove('bg-slate-300');
-          dot.classList.add('bg-violet-500');
-        } else {
-          dot.classList.remove('bg-violet-500');
-          dot.classList.add('bg-slate-300');
-        }
-      });
-
-      // Update button states
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = currentIndex === totalSlides - 1;
-    }
-
-    prevBtn?.addEventListener('click', () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        updateCarousel();
-      }
-    });
-
-    nextBtn?.addEventListener('click', () => {
-      if (currentIndex < totalSlides - 1) {
-        currentIndex++;
-        updateCarousel();
-      }
-    });
-
-    dots.forEach((dot, index) => {
-      dot.addEventListener('click', () => {
-        currentIndex = index;
-        updateCarousel();
-      });
-    });
-
-    // Initialize
-    updateCarousel();
-  }
-
-  // Run on load and after navigation
-  initCarousel();
-  document.addEventListener('astro:after-swap', initCarousel);
-</script>
-
 <style>
-  .carousel-track {
-    /* Ensure smooth scrolling on touch devices */
-    -webkit-overflow-scrolling: touch;
+  .preuve {
+    display: grid;
+    gap: 14px;
+    padding-block: 28px;
+  }
+  .preuve + .preuve {
+    border-top: 1px solid rgb(11 27 43 / 0.10);
+  }
+  .preuve:first-child {
+    padding-top: 0;
+  }
+  .preuve-client {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .preuve-chiffre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(4rem, 2.6rem + 7vw, 7.25rem);
+    line-height: 0.92;
+    letter-spacing: -0.05em;
+    color: var(--encre);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .preuve-lien {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    font-weight: 600;
+    color: var(--color-marque);
+    white-space: nowrap;
+    justify-self: start;
+  }
+  .preuve-lien:hover {
+    color: var(--color-marque-fonce);
+  }
+  @media (min-width: 1024px) {
+    /* Une seule grille pour toutes les lignes : le chiffre prend sa largeur, et les
+       libellés s'alignent d'une ligne à l'autre. */
+    .preuves-lignes {
+      display: grid;
+      grid-template-columns: minmax(150px, 210px) auto minmax(0, 1fr) auto;
+      column-gap: 40px;
+    }
+    .preuve {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      align-items: center;
+      padding-block: 40px;
+    }
+    .preuve-client {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 </style>
