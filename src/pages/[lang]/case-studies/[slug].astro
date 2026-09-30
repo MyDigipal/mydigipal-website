@@ -95,7 +95,8 @@ const logo = detoure
 // et l'unité « % » ; le quatrième, quand la fiche en a un, est écrit dessous.
 const decouper = (k: { value: string; label: string }) => {
   const [, chiffre = k.value, unite = ''] = k.value.match(/^([+\-−]?[\d.,\s]*\d)\s*(.*)$/) ?? [];
-  const texte = /^[A-Z]{2}/.test(k.label) ? k.label : k.label.charAt(0).toLowerCase() + k.label.slice(1);
+  // Un sigle ou une marque garde sa majuscule (« SEO traffic », « Google Ads conversions »).
+  const texte = /^([A-Z]{2}|Google|Facebook|LinkedIn|Meta|Instagram|YouTube|TikTok|Waze)/.test(k.label) ? k.label : k.label.charAt(0).toLowerCase() + k.label.slice(1);
   return { chiffre: fr ? chiffre.replace('.', ',') : chiffre, unite, texte };
 };
 const kpis = caseStudy.data.kpis as { value: string; label: string }[];
@@ -106,7 +107,7 @@ const quatrieme = kpis[3] ? decouper(kpis[3]) : null;
 const studyUrl = `https://mydigipal.com/${lang}/case-studies/${studySlug}`;
 const breadcrumbItems = [
   { name: fr ? 'Accueil' : 'Home', url: `/${lang}` },
-  { name: fr ? 'Études de cas' : 'Case Studies', url: `/${lang}/case-studies` },
+  { name: fr ? 'Études de cas' : 'Case studies', url: `/${lang}/case-studies` },
   { name: caseStudy.data.client, url: `/${lang}/case-studies/${studySlug}` }
 ];
 const temoignage = caseStudy.data.testimonial;
