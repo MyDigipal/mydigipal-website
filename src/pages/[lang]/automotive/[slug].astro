@@ -82,7 +82,8 @@ const tableauHero = (metrics ?? [])
   .filter((m: { label: string }) => !/impression|plateforme|platform/i.test(m.label))
   .slice(0, 3)
   .map((m: { value: string; label: string }) => {
-    const [, chiffre = m.value, unite = ''] = m.value.match(/^([+\-−]?[\d.,]+)\s*(.*)$/) ?? [];
+    // En anglais, la fiche écrit « €150K » : le symbole monte sur les volets, « K » reste l'unité.
+    const [, chiffre = m.value, unite = ''] = m.value.match(/^([€$£]?[+\-−]?[\d.,]+)\s*(.*)$/) ?? [];
     const local = fr ? chiffre.replace('.', ',').replace(/^(\d{1,3})(\d{3})$/, '$1\u202f$2') : chiffre;
     const texte = fr ? m.label.charAt(0).toLowerCase() + m.label.slice(1) : m.label;
     return { chiffre: local, unite, texte };
