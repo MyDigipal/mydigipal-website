@@ -1,6 +1,6 @@
 ---
 import { type Language } from '@/i18n/config';
-import GrilleMots from '@/components/motion/GrilleMots.astro';
+import GrilleSuisse from '@/components/motion/GrilleSuisse.astro';
 
 interface Props {
   lang: Language;
@@ -46,27 +46,28 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<!-- Direction Encre (30/09/2026) : la méthode CRAFT sur une section d'encre, expliquée
-     par la grille de mots (chaque lettre est un champ du prompt, sa ligne s'écrit à
-     côté). L'ancienne animation laissait les lettres invisibles sans script. -->
-<section class="section-encre section-monte py-20 lg:py-32">
+<!-- Direction Encre (30/09/2026) : la méthode CRAFT sur la brume, posée sur la grille
+     suisse (essai `grille-suisse`, gardé par Paul) : la grille se déploie, chaque rang
+     pose sa lettre, son mot et un exemple. -->
+<section class="section-brume py-20 lg:py-32">
   <div class="container-custom">
     <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
-      <h2 class="titre-moyen">{t.headline}</h2>
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
       <p class="chapo">{t.subtitle}</p>
     </header>
 
-    <GrilleMots
+    <GrilleSuisse
       lang={lang}
       mots={t.craft.map((c) => ({ lettre: c.letter, mot: c.word, description: c.description, exemple: c.exemple }))}
-      titreExemple={t.exempleTitre}
       conclusion={t.conclusion}
     />
 
-    <div class="mt-14 grid max-w-[880px] grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 border-t border-white/10 pt-8 lg:mt-20">
-      <svg class="row-span-2 mt-1 h-6 w-6 text-marque-clair" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4" /></svg>
-      <h3 class="text-lg font-semibold text-white">{t.securityTitle}</h3>
-      <p class="text-sur-encre-2">{t.securityText}</p>
+    <div class="mt-14 grid max-w-[880px] grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-2 rounded-[20px] bg-white p-6 shadow-[inset_0_0_0_1px_var(--filet)] lg:mt-20 lg:p-8">
+      <span class="row-span-2 grid h-14 w-14 place-items-center rounded-2xl bg-marque-doux text-marque" aria-hidden="true">
+        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" /></svg>
+      </span>
+      <h3 class="text-lg font-semibold text-encre">{t.securityTitle}</h3>
+      <p class="text-slate-600">{t.securityText}</p>
     </div>
   </div>
 </section>
