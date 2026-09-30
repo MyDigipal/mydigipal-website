@@ -65,7 +65,7 @@ export const EQUIPE: Array<{ slug: string; nom: string; role: Txt }> = [
   { slug: 'alexandre-echement', nom: 'Alexandre Echement', role: { fr: 'Performance Lead', en: 'Performance Lead' } },
   { slug: 'jordan-langlois', nom: 'Jordan Langlois', role: { fr: 'Digital Strategist', en: 'Digital Strategist' } },
   { slug: 'alizee-varloud', nom: 'Alizée Varloud', role: { fr: 'Project Manager', en: 'Project Manager' } },
-  { slug: 'juliette-joire', nom: 'Juliette Joire', role: { fr: 'Content Specialist', en: 'Content Specialist' } },
+  { slug: 'juliette-joire', nom: 'Juliette Joire', role: { fr: 'Digital Marketing Manager', en: 'Digital Marketing Manager' } },
   { slug: 'sophie-roe', nom: 'Sophie Roe', role: { fr: 'SEO Specialist', en: 'SEO Specialist' } },
   { slug: 'callum-dunbar', nom: 'Callum Dunbar', role: { fr: 'PPC Specialist', en: 'PPC Specialist' } },
   { slug: 'heather-mann', nom: 'Heather Mann', role: { fr: 'Social Media', en: 'Social Media' } },
