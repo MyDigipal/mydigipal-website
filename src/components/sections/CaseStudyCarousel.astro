@@ -53,7 +53,8 @@ const lignes = caseStudyIds.map((c) => {
     logo: fiche.data.logo,
     chiffre: chiffreLocal(k.value, lang),
     libelle: k.label,
-    second: s && second !== kpi ? `${chiffreLocal(s.value, lang)} ${s.label.toLowerCase()}` : '',
+    // Un sigle ou une marque garde sa majuscule (« +125% Facebook conversions »).
+    second: s && second !== kpi ? `${chiffreLocal(s.value, lang)} ${/^([A-Z]{2}|Google|Facebook|LinkedIn|Meta|Instagram|YouTube|TikTok|Waze)/.test(s.label) ? s.label : s.label.toLowerCase()}` : '',
     lien: `/${lang}/case-studies/${id}`,
   };
 });
