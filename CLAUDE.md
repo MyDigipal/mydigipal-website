@@ -218,9 +218,11 @@ Commit `e206566`.
 - Même idée visuelle sur 2 pages services + copy légèrement différente → prop `variant` sur un composant partagé (voir `MarketingStackGrid.astro` avec `variant: 'training' | 'solutions'`)
 - Positioning fondamentalement différent (formation vs delivery) → composants dédiés pour éviter un mega-switch (voir `MCPBuildSection` sur AI Training vs `MCPCustomBuildSection` sur AI Solutions)
 
-### Chiffres MCP Gateway exposés publiquement - à synchroniser
-- `244` tools / `21` plateformes / `18+` clients affichés sur `/services/ai-training` ET `/services/ai-solutions` dans `MarketingStackGrid.astro` (tableau `proofs`)
-- Si le MCP Gateway évolue (ajout module, perte/gain client), resync ces 3 nombres dans ce fichier - c'est le seul endroit où ils sont en dur côté site
+### Chiffres MCP Gateway : retirés du site (30/09/2026)
+- `244` outils / `21` plateformes / `18+` clients ne sont plus affichés nulle part (refonte, groupe 1 :
+  un chiffre sans source affichée sort). `MarketingStackGrid.astro` range les outils par famille, et
+  les sections MCP expliquent le serveur par la carte de verre (`components/motion/donnees-mcp.ts`).
+  Pour les remettre, Paul doit dire d'où on les tire et on affiche la source.
 
 ### CTAs avec query param `?topic=` pour tracking futur
 - Les CTAs MCP vers `/contact` passent un `?topic=` : `mcp`, `mcp-build`, `mcp-package`, `parcours-technique`
@@ -433,8 +435,8 @@ Ce qui a été fait, par ordre de portée :
 - Une section qui porte des halos en `absolute` doit être `relative` : sinon ses halos se
   placent par rapport à la page et débordent sur le hero clair au-dessus (vu sur AI
   Training le 27/09, onze sections corrigées).
-- Reste en l'état : la page `/[lang]/ai` garde ses chiffres « 300 % / 50+ / 100+ » non
-  sourcés (chantier des pages IA plus bas).
+- La page `/[lang]/ai` n'a plus ses chiffres « 300 % / 50+ / 100+ » non sourcés depuis le
+  groupe 1 de la refonte (30/09/2026, branche `refonte-design`).
 
 ## AI Academy : la page de vente de la formation en ligne (25/08/2026)
 
@@ -751,6 +753,21 @@ Dans `src/components/motion/`, sur le socle `src/lib/motion/` ; à voir sur `/{l
   formes de `src/lib/motion/formes.ts` (loupe, structure, curseur, courbe, cible, bulle). Les tracés
   de l'état final sont calculés au build. Sur fond clair.
 - Vérifier une scène : `document.querySelector('[data-carte-verre]').__scene.aller(7.6)`.
+
+### Groupe 1, les pages IA (30/09/2026, branche `refonte-design`)
+
+`/ai`, AI Training, AI Solutions, AI Content, FR et EN. L'ordre des sections est choisi pour que
+l'encre ponctue sans jamais deux sections sombres collées (commentaires dans `[slug].astro`).
+- **Animations** : AI Training, la grille de mots (`components/motion/GrilleMots.astro`, CRAFT :
+  chaque lettre écrit sa ligne dans un prompt d'exemple) et la carte de verre du serveur MCP ;
+  AI Solutions, le rail d'une automatisation (`AIAutomationRail.astro`) et la même carte MCP ;
+  AI Content, le rail en quatre états (`AIContentProcess.astro`) ; `/ai`, un aiguillage vers les
+  quatre offres, sans animation lourde.
+- **Chiffres** : la note et le nombre de retours d'AI Training viennent de l'API de l'Academy
+  (`faitsAcademy`, instantané en secours), dans le hero et au-dessus des avis. Les fiches MDX des
+  trois pages n'ont plus de `metrics`. Les prix, remises, tailles de groupe et durées de projet
+  restent : ce sont les conditions des offres.
+- Sur ces pages, les cartes d'articles perdent leur image sous 640 px.
 
 ### Les éléments flottants partagent une seule mesure : `--bandeau`
 

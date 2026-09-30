@@ -307,7 +307,7 @@ COMPOSANTS = [
     ("Caméra qui tient", "demo-interface", "Une interface, zone par zone : l'Academy, un tableau de bord, une réponse d'IA.",
      "gabarit de l'interface, clés de caméra, repères", "À construire", "afaire"),
     ("Grille de mots", "grille-suisse", "Une méthode nommée en quatre à six mots : CRAFT.",
-     "mots, lettres", "À construire", "afaire"),
+     "mots : lettre, mot, description, ligne d'exemple ; titre et conclusion", "Écrit, components/motion/GrilleMots.astro (groupe 1)", "fait"),
     ("Révélation en particules", "particules-texte", "Faire apparaître un logo, celui d'un client en tête d'étude de cas.",
      "fichier du logo, densité", "À construire, sous la ligne de flottaison", "afaire"),
     ("Collage", "collage", "Présenter des personnes ou des réalisations.",
@@ -381,7 +381,12 @@ PAGES = {
           "3 000 px pour l'Academy, puis 6 210 px clairs."),
 }
 
-ETATS = {}  # page : (libellé, classe) quand une page avance
+ETATS = {  # page : (libellé, classe) quand une page avance
+    "/ai": ("Écrit, à vérifier", "attente"),
+    "/services/ai-training": ("Écrit, à vérifier", "attente"),
+    "/services/ai-solutions": ("Écrit, à vérifier", "attente"),
+    "/services/ai-content": ("Écrit, à vérifier", "attente"),
+}
 
 
 def table_pages() -> str:
@@ -508,6 +513,10 @@ JOURNAL = [
     ("30/09/2026", "Relecture de l'étape 1 par la session « Website » : 15 rubriques en pilule manquées (badge-ads, badge-primary, pilules en gabarit) retirées, césure retirée des grands titres (« résul-tats » à 390 px)."),
     ("30/09/2026", "Étape 2 : CarteVerre et RailMorphing écrits en composants autonomes, textes en propriétés, sur src/lib/motion (formes du morphing en module pur, tracés finaux calculés au build). Sur téléphone, la carte suit la solution de la direction C : dessin réduit aux icônes, collé sous l'en-tête (285 px à 390 px), libellés en listes à 16 px sous chaque temps. Page de validation /fr/test-encre et /en/test-encre, en noindex."),
     ("30/09/2026", "Vérifié par script à 1 440, 390 et 360 px, FR et EN : aucune erreur, chaque scène posée de 0 à sa tenue par pas de 0,05 s, 0 style en ligne restant à la tenue, rien de caché dans l'état final avec ou sans JavaScript, aucun texte sous 16 px sur téléphone, aucun débordement. Six instants vus en planche. Le mouvement lui-même n'a pas été vu jouer."),
+    ("30/09/2026", "Étape 2 validée par la session « Website ». Groupe 1 lancé : les pages IA."),
+    ("30/09/2026", "Groupe 1 écrit : /ai, AI Training, AI Solutions, AI Content, en français et en anglais. Sombre à 1 440 / 390 px : /ai 37 / 42 %, AI Training 40-41 / 42-43 %, AI Solutions 42 / 45 %, AI Content 33-35 / 35 %. Aucune section sombre collée, aucun tiret long, aucune pastille numérotée. Animations : grille de mots (CRAFT) et carte de verre (MCP) sur AI Training, rail (une automatisation) et carte de verre (MCP) sur AI Solutions, rail en quatre états sur AI Content, aiguillage vers les quatre offres sur /ai."),
+    ("30/09/2026", "Chiffres retirés du groupe 1 (sans source affichée) : 300 % / 50+ / 100+, 40 %+, 30-50 % McKinsey/Deloitte, 450-750 € et 5 000 € « du marché », 2500+ formés, 9.44 et 339 (remplacés par la note et le nombre de retours de l'API de l'Academy), 244 outils / 21 plateformes / 18+ clients, 72 %, 40 %, 2-4x, 86 %, 45 %, 2,4x, densités de mots-clés, durées des tâches de l'avant/après, et les métriques des fiches MDX. Gardés : les prix, remises, tailles de groupe et durées de projet, qui sont les conditions des offres."),
+    ("30/09/2026", "Vérifié par script sur les huit pages à 1 440, 390 et 360 px et sans JavaScript : 0 débordement, 0 bouton empilé ni sur deux lignes, un H1, 0 erreur JavaScript, scènes balayées de 0 à la tenue sans style restant, rien de caché sans script. check-seo au vert."),
 ]
 
 
