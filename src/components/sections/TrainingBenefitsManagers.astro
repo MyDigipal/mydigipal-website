@@ -33,7 +33,7 @@ const translations = {
       },
       {
         title: "Tangible Return on Investment",
-        description: "Training ROI becomes visible fast: AI automation can reduce time spent on manual tasks by up to 30-50%, depending on process complexity (e.g., McKinsey and Deloitte data).",
+        description: "Training ROI shows up fast: every manual task handed to an automation gives time back to the team, and that time can be measured.",
         detail: "By reallocating that time, your teams drive faster results, deliver higher-quality work, and unlock business value.",
         position: "bottom-center"
       },
@@ -70,7 +70,7 @@ const translations = {
       },
       {
         title: "Retour sur investissement tangible",
-        description: "Le ROI de la formation devient visible rapidement : l'automatisation IA peut réduire le temps passé sur les tâches manuelles de 30-50% (données McKinsey/Deloitte).",
+        description: "Le retour de la formation se voit vite : chaque tâche manuelle confiée à une automatisation rend du temps à l'équipe, et ce temps se mesure.",
         detail: "En réallouant ce temps, vos équipes obtiennent des résultats plus rapides et débloquent de la valeur business.",
         position: "bottom-center"
       },
@@ -87,97 +87,34 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+<!-- Direction Encre (30/09/2026) : fond blanc, la salle de La Poste à gauche, cinq
+     bénéfices entre des filets à droite (plus de cartes égales). Plus de « 30-50 % » :
+     une source vague, retirée. -->
+<section class="section-blanc py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-16">
-      <h2 class="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900">
-        {t.headline}
-      </h2>
-      <a
-        href={`/${lang}/contact`}
-        class="flex-shrink-0 px-6 py-3 text-white font-semibold rounded-full hover:shadow-lg transition-all duration-300 bg-marque hover:bg-marque-fonce"
-      >
-        {t.cta}
-      </a>
-    </div>
-
-    <!-- Benefits Grid - Bento Layout -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Top Left - Large Card -->
-      <div class="benefit-card lg:row-span-1 bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 border border-white/50">
-        <h3 class="text-xl font-bold text-slate-900 mb-4">{t.benefits[0].title}</h3>
-        <p class="text-slate-600 mb-3">{t.benefits[0].description}</p>
-        <p class="text-slate-500 text-sm">{t.benefits[0].detail}</p>
-      </div>
-
-      <!-- Center - Image Card -->
-      <div class="benefit-card relative overflow-hidden rounded-3xl shadow-lg">
-        <img
-          src="/images/Traning pictures/AI Training La poste 1.jpg"
-          alt="AI Training Session"
-          class="w-full h-full object-cover min-h-[300px]"
-        />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-      </div>
-
-      <!-- Top Right -->
-      <div class="benefit-card bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 border border-white/50">
-        <h3 class="text-xl font-bold text-slate-900 mb-4">{t.benefits[1].title}</h3>
-        <p class="text-slate-600 mb-3">{t.benefits[1].description}</p>
-        <p class="text-slate-500 text-sm">{t.benefits[1].detail}</p>
-
-        <!-- Workflow Icon -->
-        <div class="mt-6 p-4 bg-slate-50 rounded-xl inline-block">
-          <div class="flex items-center gap-2 text-slate-400">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-            </svg>
-            <span class="text-sm font-medium">Workflow Automation</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Row -->
-      <div class="benefit-card bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 border border-white/50">
-        <h3 class="text-xl font-bold text-slate-900 mb-4">{t.benefits[2].title}</h3>
-        <p class="text-slate-600 mb-3">{t.benefits[2].description}</p>
-        <p class="text-slate-500 text-sm">{t.benefits[2].detail}</p>
-      </div>
-
-      <div class="benefit-card bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 border border-white/50">
-        <h3 class="text-xl font-bold text-slate-900 mb-4">{t.benefits[3].title}</h3>
-        <p class="text-slate-600 mb-3">{t.benefits[3].description}</p>
-        <p class="text-slate-500 text-sm">{t.benefits[3].detail}</p>
-      </div>
-
-      <div class="benefit-card bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-500 border border-white/50">
-        <h3 class="text-xl font-bold text-slate-900 mb-4">{t.benefits[4].title}</h3>
-        <p class="text-slate-600 mb-3">{t.benefits[4].description}</p>
-        <p class="text-slate-500 text-sm">{t.benefits[4].detail}</p>
-      </div>
+    <header class="mb-10 flex flex-col items-start gap-6 lg:mb-16 lg:flex-row lg:items-end lg:justify-between">
+      <h2 class="titre-moyen max-w-[20ch] text-encre">{t.headline}</h2>
+      <a href={`/${lang}/contact`} class="pilule pilule-contour flex-none">{t.cta}</a>
+    </header>
+    <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+      <img
+        src="/images/Traning pictures/AI Training La poste 1.jpg"
+        alt={lang === 'fr' ? 'Une session de formation à l’IA chez La Poste' : 'An AI training session at La Poste'}
+        class="aspect-[4/5] w-full rounded-[20px] object-cover lg:sticky lg:top-28"
+        width="800"
+        height="1000"
+        loading="lazy"
+        decoding="async"
+      />
+      <ul class="grid">
+        {t.benefits.map((b, index) => (
+          <li class="grid gap-2 border-t border-slate-200 py-7 first:border-t-0 first:pt-0" data-reveal style={`--i:${index}`}>
+            <h3 class="font-display text-xl font-extrabold tracking-[-0.02em] text-encre">{b.title}</h3>
+            <p class="text-slate-600">{b.description}</p>
+            <p class="text-slate-500">{b.detail}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   </div>
 </section>
-
-<style>
-  .benefit-card {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease forwards;
-  }
-
-  .benefit-card:nth-child(1) { animation-delay: 0ms; }
-  .benefit-card:nth-child(2) { animation-delay: 100ms; }
-  .benefit-card:nth-child(3) { animation-delay: 200ms; }
-  .benefit-card:nth-child(4) { animation-delay: 300ms; }
-  .benefit-card:nth-child(5) { animation-delay: 400ms; }
-  .benefit-card:nth-child(6) { animation-delay: 500ms; }
-
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
