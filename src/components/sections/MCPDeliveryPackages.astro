@@ -13,7 +13,7 @@ const translations = {
     badge: "Delivery packages",
     headline: "Three ways to get your MCP into production.",
     subtitle:
-      "Fixed scope, fixed timeline, fixed price. We ship working MCPs - not slide decks.",
+      "Fixed scope, fixed timeline, fixed price. We ship working MCPs, not slide decks.",
     packages: [
       {
         icon: "zap",
@@ -76,7 +76,7 @@ const translations = {
     badge: "Packages de livraison",
     headline: "Trois façons de mettre votre MCP en production.",
     subtitle:
-      "Scope fixé, timeline fixée, prix fixé. On livre des MCP qui tournent - pas des slides.",
+      "Scope fixé, timeline fixée, prix fixé. On livre des MCP qui tournent, pas des slides.",
     packages: [
       {
         icon: "zap",
@@ -140,105 +140,35 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 md:py-32 bg-white">
+<!-- Direction Encre (30/09/2026) : fond blanc, les trois formules côte à côte entre des
+     filets, la plus choisie sur un panneau brume. Les prix sont ceux de l'offre. Le
+     lien de contact garde son `?topic=`. -->
+<section class="section-blanc py-20 lg:py-32">
   <div class="container-custom">
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 leading-tight mb-6">
-        {t.headline}
-      </h2>
-      <p class="text-lg text-slate-500 leading-relaxed">{t.subtitle}</p>
-    </div>
-
-    <div class="grid md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-      {
-        t.packages.map((pkg, index) => (
-          <div
-            class={`package-card relative flex flex-col p-8 rounded-2xl transition-all duration-300 animate-on-scroll ${
-              pkg.highlighted
-                ? "pkg-highlighted bg-slate-950 text-white border border-white/10 md:-translate-y-4 shadow-2xl shadow-violet-500/20"
-                : "bg-white border border-slate-200 hover:border-violet-300 hover:shadow-lg"
-            }`}
-            style={`animation-delay: ${index * 120}ms`}
-          >
-            {pkg.highlighted && (
-              <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 text-[11px] font-semibold uppercase tracking-wider rounded-full bg-gradient-to-r from-violet-400 to-cyan-400 text-slate-950">
-                {lang === "fr" ? "Le plus choisi" : "Most chosen"}
-              </div>
-            )}
-
-            <div
-              class={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 ${
-                pkg.highlighted
-                  ? "bg-gradient-to-br from-violet-500/30 to-cyan-500/30 text-violet-300 border border-white/10"
-                  : "bg-gradient-to-br from-violet-50 to-cyan-50 text-violet-600 border border-violet-100"
-              }`}
-            >
-              <Icon name={pkg.icon} size={26} />
-            </div>
-
-            <div
-              class={`text-xs font-semibold uppercase tracking-[0.15em] mb-2 ${
-                pkg.highlighted ? "text-violet-300" : "text-slate-500"
-              }`}
-            >
-              {pkg.timeline} - {pkg.positioning}
-            </div>
-
-            <h3 class={`font-display text-2xl font-bold mb-3 ${pkg.highlighted ? "text-white" : "text-slate-900"}`}>
-              {pkg.name}
-            </h3>
-
-            <p class={`text-sm mb-6 leading-relaxed ${pkg.highlighted ? "text-slate-300" : "text-slate-500"}`}>
-              {pkg.description}
-            </p>
-
-            <ul class="space-y-3 mb-6 flex-grow">
-              {pkg.includes.map((item) => (
-                <li class="flex gap-3 text-sm">
-                  <span
-                    class={`shrink-0 mt-1 inline-flex items-center justify-center w-4 h-4 rounded-full ${
-                      pkg.highlighted ? "bg-violet-400/20 text-violet-300" : "bg-violet-100 text-violet-600"
-                    }`}
-                  >
-                    <Icon name="check" size={10} />
-                  </span>
-                  <span class={pkg.highlighted ? "text-slate-200" : "text-slate-600"}>{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div class="mt-auto">
-              <div
-                class={`font-display text-2xl font-bold mb-4 ${
-                  pkg.highlighted
-                    ? "bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent"
-                    : "text-slate-900"
-                }`}
-              >
-                {pkg.price}
-              </div>
-              <a
-                href={t.ctaHref}
-                class={`block text-center px-5 py-3 rounded-xl font-semibold text-sm transition-all ${
-                  pkg.highlighted
-                    ? "bg-white text-slate-950 hover:bg-slate-100"
-                    : "bg-slate-900 text-white hover:bg-slate-800"
-                }`}
-              >
-                {t.cta}
-              </a>
-            </div>
-          </div>
-        ))
-      }
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <div class="grid gap-4 md:grid-cols-3 md:gap-0">
+      {t.packages.map((pkg) => (
+        <div class:list={['flex flex-col gap-4 rounded-[20px] p-7 md:px-8', pkg.highlighted ? 'bg-brume-clair' : 'border-t border-slate-200 md:rounded-none md:border-t-0 md:[&:not(:first-child)]:border-l']}>
+          {pkg.highlighted && <span class="self-start rounded-full bg-white px-3 py-1 text-sm font-semibold text-marque">{lang === 'fr' ? 'Le plus choisi' : 'Most chosen'}</span>}
+          <Icon name={pkg.icon} size={24} class="text-marque" />
+          <p class="text-sm font-semibold text-slate-500">{pkg.timeline}, {pkg.positioning}</p>
+          <h3 class="font-display text-2xl font-extrabold tracking-[-0.02em] text-encre">{pkg.name}</h3>
+          <p class="text-slate-600">{pkg.description}</p>
+          <ul class="grid flex-grow content-start gap-3">
+            {pkg.includes.map((item) => (
+              <li class="flex items-start gap-3 text-slate-700">
+                <Icon name="check" size={16} class="mt-1 flex-none text-marque" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="font-display text-2xl font-extrabold text-encre">{pkg.price}</p>
+          <a href={t.ctaHref} class:list={['pilule self-start', pkg.highlighted ? 'pilule-pleine' : 'pilule-contour']}>{t.cta}</a>
+        </div>
+      ))}
     </div>
   </div>
 </section>
-
-<style>
-  @media (prefers-reduced-motion: reduce) {
-    .pkg-highlighted {
-      transform: none !important;
-    }
-  }
-</style>
