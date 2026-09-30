@@ -124,8 +124,17 @@ const t = fr
 </section>
 
 <style>
+  /* La marge du bas laisse monter la section d'encre des résultats (coins de 32 px). */
   .avis {
     background: #fff;
+  }
+  .avis.bloc {
+    padding-bottom: calc(5rem + var(--rayon-scene));
+  }
+  @media (min-width: 1024px) {
+    .avis.bloc {
+      padding-bottom: calc(8.5rem + var(--rayon-scene));
+    }
   }
   /* minmax(0, 1fr) : sans lui, la colonne unique prend la largeur de la bande de
      logos qui ne se replie pas au téléphone, et la page déborde de 10 px à 360. */
