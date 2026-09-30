@@ -798,8 +798,8 @@ doit seulement se construire). Ensuite, arrêt et compte rendu avant toute autre
 - **« 2 500+ personnes formées »** revient au hero d'AI Training (tableau à palettes, avec la note et
   le nombre de retours de l'API) et sur `/ai`.
 - **Logos clients en couleur partout** (Paul, 30/09/2026) : plus de filtre gris dans
-  `BandeauLogos`. Restent en gris, à traiter avec leur page : l'accueil (`Resultats`, `Offre`,
-  `Avis`, `Bandeau`) et l'automobile (`AutomotiveClients`, `AutomotiveBenchmarks`).
+  `BandeauLogos`. L'automobile a suivi au groupe 3, l'accueil au groupe 5 : plus aucun logo
+  client en gris sur le site (le seul `grayscale` restant est le portrait survolé du hero).
 
 ### Pilotes validés, puis le groupe 2 au même modèle (30/09/2026, branche `refonte-design`)
 
@@ -887,6 +887,25 @@ Groupe 3 validé par Paul ; les chiffres sans source affichée sont GARDÉS part
   filtres portent sur TOUS les articles : au premier usage, le script lit
   `/{lang}/blog/articles.json` (hors sitemap) et remplace la grille ; sans filtre, la grille de
   la page revient. L'article à la une ne vit que sur la page 1.
+
+### Groupe 5 : l'accueil (30/09/2026, `refonte-design`)
+
+Demande de Paul : garder la vidéo de l'Academy, replier ce qui suit, logos en couleur, et que
+le visiteur arrive sans clic aux avis puis aux services. L'ordre des sections n'a pas bougé.
+- **Les plis de l'Academy** (`Academie.astro`, propriété `replie`, l'accueil seul) : les écrans
+  de l'application et les films parlants sont dans deux `<details>` natifs. Leur texte est dans
+  le HTML servi ; le pli s'ouvre vers le bas sous son titre, qui ne bouge pas (mesuré au pixel).
+  ⚠️ Un élément dans un `<details>` fermé peut être compté « à l'écran » par un
+  IntersectionObserver (surface nulle) : les scripts vérifient `pli.open` et écoutent `toggle`.
+  Rien ne se charge ni ne joue pli fermé ; refermer arrête la vidéo. `accueil_pli_ouvert`
+  (dataLayer) mesure l'ouverture. `/ai` n'a pas de pli : même DOM qu'avant (balise dynamique
+  `Pli` = `details` ou `Fragment`).
+- **Rythme** : l'Academy (sa nuit) et `Resultats` (encre) sont deux sections qui montent
+  (`section-monte`), jamais collées ; `Bandeau` et `Offre` ont 32 px de plus en bas pour elles.
+  Sombre 34 à 40 % de 360 à 1 440 px.
+- **Logos en couleur** : bandeau, onglets des avis, fiche des services ; dans `Resultats`, sur
+  une plaque blanche (sur l'encre, un logo sombre disparaîtrait, un fichier sur fond blanc
+  ferait un rectangle).
 
 ### Les éléments flottants partagent une seule mesure : `--bandeau`
 
