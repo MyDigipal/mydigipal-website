@@ -10,13 +10,18 @@
  * - `slugs` : les logos détourés de `src/data/accueil/logos.json`, affichés à
  *   SURFACE égale (`hauteurLogo`), comme sur l'accueil ;
  * - `logos` : des fichiers quelconques `{ name, logo }`, tenus dans une boîte de
- *   28 px de haut (la page AI Training passe ainsi ses clients de formation).
+ *   28 px de haut (la page AI Training passe ainsi ses clients de formation) ; quand
+ *   l'élément porte aussi `largeur` et `hauteur` (lues au build, pages automobile), il
+ *   reçoit la même SURFACE que les autres, comme les logos détourés.
  */
 import { LOGOS, hauteurLogo } from '@/components/accueil/donnees';
 
 interface LogoLibre {
   name: string;
   logo: string;
+  largeur?: number;
+  hauteur?: number;
+  echelle?: number;
 }
 
 interface Props {
@@ -35,7 +40,11 @@ const { titre, slugs = LOGOS_AGENCE, logos } = Astro.props;
 
 const liste =
   logos && logos.length > 0
-    ? logos.map((l) => ({ nom: l.name, src: l.logo, largeur: 120, hauteur: 28, h: undefined as number | undefined }))
+    ? logos.map((l) =>
+        l.largeur && l.hauteur
+          ? { nom: l.name, src: l.logo, largeur: l.largeur, hauteur: l.hauteur, h: Math.round(Math.min(40, Math.max(20, Math.sqrt(2400 / (l.largeur / l.hauteur)) * (l.echelle ?? 1)))) }
+          : { nom: l.name, src: l.logo, largeur: 120, hauteur: 28, h: undefined as number | undefined },
+      )
     : slugs
         .filter((s) => LOGOS[s])
         .map((s) => ({ nom: LOGOS[s].nom, src: LOGOS[s].src, largeur: LOGOS[s].largeur, hauteur: LOGOS[s].hauteur, h: hauteurLogo(s, 2400, 20, 40) }));

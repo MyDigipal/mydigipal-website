@@ -33,7 +33,9 @@ interface Props {
   /** Accepté pour ne pas toucher aux pages : le verbatim vit dans `TestimonialSpotlight`. */
   testimonial?: HeroTestimonial;
   /** Logos propres à la page (AI Training passe ses clients de formation). */
-  heroLogos?: { name: string; logo: string }[];
+  heroLogos?: { name: string; logo: string; largeur?: number; hauteur?: number; echelle?: number }[];
+  /** Le libellé de la bande de logos, quand ceux de la page ne sont pas des clients de formation. */
+  titreLogos?: string;
   /** L'identifiant du calculateur : « Calculer mon budget » ouvre avec ce service coché. */
   serviceCalculateur?: string;
   /** Les chiffres montrés sur le tableau à palettes, à la place des `metrics` (AI Training). */
@@ -51,6 +53,7 @@ const {
   proofPoints = [],
   testimonial,
   heroLogos,
+  titreLogos,
   serviceCalculateur,
   tableau = [],
 } = Astro.props;
@@ -150,7 +153,7 @@ const showPanel = tableau.length > 0 || resultats.length > 0 || points.length > 
   </div>
 
   <div class="border-y border-slate-200 py-10 lg:py-12">
-    <BandeauLogos titre={heroLogos && heroLogos.length > 0 ? lbl.trustedTraining : lbl.trusted} logos={heroLogos} />
+    <BandeauLogos titre={titreLogos ?? (heroLogos && heroLogos.length > 0 ? lbl.trustedTraining : lbl.trusted)} logos={heroLogos} />
   </div>
 </section>
 
