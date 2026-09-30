@@ -10,6 +10,7 @@ import PageHero from '@/components/ui/PageHero.astro';
 import CarteVerre from '@/components/motion/CarteVerre.astro';
 import RailMorphing from '@/components/motion/RailMorphing.astro';
 import { languages, type Language } from '@/i18n/config';
+import { cartePmax, methodeGoogleAds } from '@/components/motion/donnees-pmax';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -34,56 +35,8 @@ const c = fr
       methodeTitre: 'From audit to reporting, in four stages',
     };
 
-const entrees = [
-  { libelle: fr ? 'Titres' : 'Headlines', icone: 'type' },
-  { libelle: 'Descriptions', icone: 'file-text' },
-  { libelle: 'Images', icone: 'image' },
-  { libelle: fr ? 'Vidéos' : 'Videos', icone: 'play' },
-  { libelle: fr ? 'Flux produits' : 'Product feed', icone: 'database' },
-  { libelle: fr ? 'Signaux d’audience' : 'Audience signals', icone: 'users' },
-];
-const sorties = [
-  { libelle: 'Search', icone: 'search' },
-  { libelle: 'YouTube', icone: 'play' },
-  { libelle: 'Display', icone: 'image' },
-  { libelle: 'Discover', icone: 'compass' },
-  { libelle: 'Gmail', icone: 'mail' },
-  { libelle: 'Maps', icone: 'map-pin' },
-];
-const retours = [
-  { libelle: fr ? 'Lead qualifié' : 'Qualified lead', icone: 'user' },
-  { libelle: fr ? 'Vente' : 'Sale', icone: 'check-circle' },
-  { libelle: fr ? 'Essai en concession' : 'Test drive', icone: 'car' },
-];
-const gardes = fr ? ['Exclusions de marque', 'Mots-clés exclus'] : ['Brand exclusions', 'Negative keywords'];
-const temps: [{ titre: string; texte: string }, { titre: string; texte: string }, { titre: string; texte: string }] = fr
-  ? [
-      { titre: 'Ce qu’on lui donne', texte: 'Des titres, des descriptions, des images, des vidéos, votre flux de produits ou de véhicules, et des signaux d’audience. Plus la matière est juste, mieux la machine travaille.' },
-      { titre: 'Ce que Google décide', texte: 'L’assemblage de chaque annonce, l’enchère et l’emplacement. La même campagne se montre sur six réseaux, selon la personne et le moment.' },
-      { titre: 'Ce qu’on lui apprend', texte: 'Quelles conversions comptent vraiment : un lead qualifié, une vente, un essai en concession. Nous les faisons remonter depuis votre CRM, et nous excluons ce qui ne doit pas être acheté.' },
-    ]
-  : [
-      { titre: 'What we feed it', texte: 'Headlines, descriptions, images, videos, your product or vehicle feed, and audience signals. The better the material, the better the machine works.' },
-      { titre: 'What Google decides', texte: 'How each ad is assembled, the bid and the placement. The same campaign shows across six networks, depending on the person and the moment.' },
-      { titre: 'What we teach it', texte: 'Which conversions really matter: a qualified lead, a sale, a test drive. We send them back from your CRM, and we exclude what should not be bought.' },
-    ];
-const conclusion: [string, string] = fr
-  ? ['Google choisit où montrer l’annonce.', 'Nous choisissons ce qu’il apprend.']
-  : ['Google chooses where the ad shows.', 'We choose what it learns.'];
-
-const stations = fr
-  ? [
-      { titre: 'Audit et découverte', texte: 'Nous analysons vos campagnes actuelles et le paysage concurrentiel, et nous repérons les gains rapides.', forme: 'loupe' as const },
-      { titre: 'Stratégie et mise en place', texte: 'Structure des campagnes, rédaction des annonces, suivi des conversions et paramétrage des audiences.', forme: 'structure' as const },
-      { titre: 'Lancement et optimisation', texte: 'Suivi quotidien, tests A/B et ajustement des enchères, sur la base des performances réelles.', forme: 'curseur' as const },
-      { titre: 'Montée en charge et reporting', texte: 'Nous augmentons ce qui fonctionne. Un rapport mensuel avec des indicateurs clairs et des recommandations.', forme: 'courbe' as const },
-    ]
-  : [
-      { titre: 'Audit and discovery', texte: 'We analyse your current campaigns and the competitive landscape, and we identify the quick wins.', forme: 'loupe' as const },
-      { titre: 'Strategy and setup', texte: 'Campaign structure, ad copy, conversion tracking and audience configuration.', forme: 'structure' as const },
-      { titre: 'Launch and optimisation', texte: 'Daily monitoring, A/B testing and bid adjustments, based on real performance data.', forme: 'curseur' as const },
-      { titre: 'Scale and reporting', texte: 'We scale what works. A monthly report with clear KPIs and recommendations.', forme: 'courbe' as const },
-    ];
+const pmax = cartePmax(lang);
+const methode = methodeGoogleAds(lang);
 ---
 
 <PageLayout lang={lang} title={c.titre} description={c.description} noindex={true}>
@@ -95,17 +48,7 @@ const stations = fr
         <h2 id="pmax-titre" class="titre-moyen">{c.pmaxTitre}</h2>
         <p class="chapo">{c.pmaxChapo}</p>
       </header>
-      <CarteVerre
-        lang={lang}
-        titreId="pmax-titre"
-        nom="Performance Max"
-        entrees={entrees}
-        sorties={sorties}
-        retours={retours}
-        gardes={gardes}
-        temps={temps}
-        conclusion={conclusion}
-      />
+      <CarteVerre lang={lang} titreId="pmax-titre" nom={pmax.nom} entrees={pmax.entrees} sorties={pmax.sorties} retours={pmax.retours} gardes={pmax.gardes} temps={pmax.temps} conclusion={pmax.conclusion} />
     </div>
   </section>
 
@@ -114,7 +57,7 @@ const stations = fr
       <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-16">
         <h2 class="titre-moyen text-encre">{c.methodeTitre}</h2>
       </header>
-      <RailMorphing lang={lang} stations={stations} />
+      <RailMorphing lang={lang} stations={methode.stations} />
     </div>
   </section>
 </PageLayout>
