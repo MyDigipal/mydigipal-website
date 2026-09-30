@@ -2,9 +2,14 @@
 import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
-import Button from '@/components/ui/Button.astro';
+import Marque from '@/components/ui/Marque.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import PageHero from '@/components/ui/PageHero.astro';
+import BandeauLogos from '@/components/ui/BandeauLogos.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
+import AutomotiveRail from '@/components/sections/automotive/AutomotiveRail.astro';
+import { railParcours } from '@/components/motion/donnees-automobile';
+import { mesurerLogos } from '@/lib/logos-mesures';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -159,10 +164,10 @@ const content = {
       ]
     },
     stats: [
-      { value: "150K€", label: "Budget Mensuel Géré" },
+      { value: "150K€", label: "Budget mensuel géré" },
       { value: "188K", label: "Clics générés" },
       { value: "10.6K", label: "Leads générés" },
-      { value: "50+", label: "Concessions Accompagnées" }
+      { value: "50+", label: "Concessions accompagnées" }
     ],
     services: [
       {
@@ -179,7 +184,7 @@ const content = {
           "Allocation budget par objectifs"
         ],
         color: "from-blue-500 to-cyan-500",
-        stat: { value: "10%", label: "Taux de conversion (vs 2.5% moyenne)" }
+        stat: { value: "10 %", label: "de taux de conversion, contre 2,5 % en moyenne" }
       },
       {
         icon: "users",
@@ -187,7 +192,7 @@ const content = {
         tagline: "Atteignez les acheteurs où ils scrollent",
         description: "Engagez les acheteurs potentiels sur Facebook, Instagram et TikTok avec des campagnes visuellement percutantes qui génèrent des visites en showroom.",
         href: "/fr/automotive/paid-social",
-        features: ["Facebook Ads", "Instagram Ads", "Campagnes Carousel", "Formulaires Lead Gen"],
+        features: ["Facebook Ads", "Instagram Ads", "Campagnes carrousel", "Formulaires de leads"],
         highlights: [
           "Ciblage lifestyle & intérêts",
           "Vidéos de présentation",
@@ -195,13 +200,13 @@ const content = {
           "Remarketing visiteurs site"
         ],
         color: "from-pink-500 to-rose-500",
-        stat: { value: "3x", label: "Plus d'engagement vs pubs statiques" }
+        stat: { value: "3x", label: "plus d'engagement que les publicités statiques" }
       },
       {
         icon: "refresh-cw",
         name: "Dynamic Ads",
         tagline: "Votre stock, automatiquement",
-        description: "Connectez votre inventaire de véhicules directement à Meta & Google. Montrez la bonne voiture au bon acheteur au bon moment, automatiquement.",
+        description: "Connectez votre stock de véhicules directement à Meta et Google. Montrez la bonne voiture au bon acheteur au bon moment, automatiquement.",
         href: "/fr/automotive/dynamic-ads",
         features: ["Intégration catalogue", "Retargeting dynamique", "Cross-sell", "Mises à jour auto"],
         highlights: [
@@ -211,7 +216,7 @@ const content = {
           "Génération créa automatique"
         ],
         color: "from-indigo-500 to-purple-600",
-        stat: { value: "40%", label: "Coût par lead réduit" }
+        stat: { value: "40 %", label: "de coût par lead en moins" }
       }
     ],
     cta: "En savoir plus",
@@ -262,257 +267,239 @@ const content = {
 };
 
 const c = content[lang] || content.en;
+const fr = lang === 'fr';
+
+// Le tableau à palettes : trois chiffres de l'agence (gardés, à sourcer), le quatrième
+// écrit dessous. « 150K€ » devient « 150 » et l'unité « K€ ».
+const decouper = (s: { value: string; label: string }) => {
+  const [, chiffre = s.value, unite = ''] = s.value.match(/^([\d.,]+)\s*(.*)$/) ?? [];
+  return { chiffre: fr ? chiffre.replace('.', ',') : chiffre, unite, texte: fr ? s.label.charAt(0).toLowerCase() + s.label.slice(1) : s.label.toLowerCase() };
+};
+const tableau = [c.stats[0], c.stats[2], c.stats[3]].map(decouper);
+const quatrieme = decouper(c.stats[1]);
+
+// Les logos, EN COULEUR : la version détourée de l'accueil quand elle existe.
+// Autovillage : la version en longueur, plus lisible dans la bande que le carré.
+const logos = await mesurerLogos(
+  c.clients.logos,
+  { 'Groupe DMD': 'dmd', 'Groupe Theobald': 'theobald', BYmyCAR: 'bymycar', Vulcain: 'vulcain' },
+  { Autovillage: '/images/Automotive/Google Ads/92289030-0554-4210-a051-cef137629e42.webp' },
+);
+
+// Les marques de chaque levier, en couleur.
+const MARQUES: Record<string, string[]> = {
+  'Google Ads': ['Google Ads', 'YouTube'],
+  'Paid Social': ['Facebook', 'Instagram', 'TikTok'],
+  'Dynamic Ads': ['Meta Ads', 'Google Ads'],
+};
+
+const rail = railParcours(lang);
+const t = {
+  pourquoi: fr ? 'Pourquoi l’automobile demande un marketing à part' : 'Why automotive needs its own kind of marketing',
+  rail: fr ? 'Le parcours d’un acheteur, de la recherche à l’essai' : 'A buyer’s journey, from search to test drive',
+  railChapo: fr
+    ? 'Trois leviers pour un seul acheteur. Chacun agit à un moment précis du parcours ; ensemble, ils le mènent jusqu’en concession.'
+    : 'Three levers for one buyer. Each acts at a precise moment of the journey; together, they bring the buyer to the dealership.',
+  leviers: fr ? 'Trois leviers pour les concessions' : 'Three levers for dealerships',
+  leviersChapo: fr ? 'Chacun a sa page : ce qu’il fait, pour qui, et ce qu’il a donné chez nos clients.' : 'Each has its page: what it does, for whom, and what it delivered for our clients.',
+  logos: fr ? 'Ils nous confient leurs campagnes' : 'They trust us with their campaigns',
+};
 ---
 
 <PageLayout lang={lang} title={c.seo.title} description={c.seo.description}>
+  <!-- Direction Encre, modèle AI Training (groupe 3, 30/09/2026). -->
   <PageHero
     eyebrow={c.hero.badge}
     title={c.hero.headline}
     subtitle={c.hero.subheadline}
     description={c.hero.description}
     actions={[
-      { href: `/${lang}/calculator`, label: lang === 'fr' ? 'Calculer mon budget' : 'Calculate my budget' },
-      { href: `/${lang}/contact`, label: lang === 'fr' ? 'Nous contacter' : 'Contact us', style: 'contour' },
+      { href: `/${lang}/calculator?service=google-ads,paid-social`, label: fr ? 'Calculer mon budget' : 'Calculate my budget' },
+      { href: `/${lang}/contact`, label: fr ? 'Nous contacter' : 'Contact us', style: 'contour' },
     ]}
   />
 
-
-  <!-- Stats Section -->
-  <section class="py-14 bg-[#f3f6f9]">
-    <div class="container-custom">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-        {c.stats.map((stat, index) => (
-          <div class="text-center animate-on-scroll" style={`animation-delay: ${index * 100}ms`}>
-            <div class="font-display text-3xl md:text-[2.625rem] font-extrabold tracking-[-0.04em] leading-none text-encre mb-2">{stat.value}</div>
-            <div class="text-slate-600 text-sm">{stat.label}</div>
-          </div>
-        ))}
-      </div>
-    </div>
+  <!-- Les logos des concessions, en couleur (blanc). -->
+  <section class="section-blanc py-10 lg:py-12">
+    <BandeauLogos titre={t.logos} logos={logos} />
   </section>
 
-  <!-- Why Specialized Section -->
-  <section class="py-24 bg-gradient-to-b from-slate-50 to-white">
+  <!-- Pourquoi un marketing à part (encre) : le tableau à palettes et les quatre raisons. -->
+  <section class="section-encre section-monte py-20 lg:py-32">
     <div class="container-custom">
-      <div class="grid lg:grid-cols-2 gap-16 items-center">
-        <!-- Left: Content -->
-        <div class="animate-on-scroll">
-
-          <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            {c.intro.title}
-          </h2>
-
-          <p class="text-xl text-slate-600 leading-relaxed">
-            {c.intro.description}
+      <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+        <h2 class="titre-moyen">{t.pourquoi}</h2>
+        <p class="chapo">{c.intro.description}</p>
+      </header>
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-5">
+        <div class="carte-verre auto-tableau grid content-between gap-8 p-6 lg:p-9" data-reveal>
+          <TableauPalettes lang={lang} lignes={tableau} tete />
+          <p class="border-t border-white/10 pt-5 text-sur-encre-2">
+            <span class="font-display text-2xl font-extrabold tracking-[-0.03em] text-white">{quatrieme.chiffre}{quatrieme.unite}</span>
+            {' '}{quatrieme.texte}
           </p>
         </div>
-
-        <!-- Right: Points Grid -->
-        <div class="grid sm:grid-cols-2 gap-6">
-          {c.intro.points.map((point, index) => (
-            <div
-              class="point-card p-6 bg-white rounded-2xl border border-slate-200 hover:border-cyan-200 hover:shadow-lg transition-all duration-300 animate-on-scroll"
-              style={`animation-delay: ${index * 100}ms`}
-            >
-              <div class="mb-4 text-marque">
-                <Icon name={point.icon} size={24} class="text-marque" />
-              </div>
-              <h3 class="text-lg font-bold text-slate-900 mb-2">{point.title}</h3>
-              <p class="text-slate-600 text-sm leading-relaxed">{point.description}</p>
-            </div>
+        <ul class="grid grid-cols-1 content-start gap-4 sm:grid-cols-2">
+          {c.intro.points.map((p, i) => (
+            <li class="carte-verre grid content-start gap-3 p-6" data-reveal style={`--i:${i}`}>
+              <span class="tuile tuile-pleine"><Icon name={p.icon} size={26} /></span>
+              <h3 class="titre-carte text-white">{p.title}</h3>
+              <p class="text-sur-encre-2">{p.description}</p>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   </section>
 
-  <!-- Services Grid -->
-  <section class="py-24 bg-white">
+  <!-- Le tunnel d'un concessionnaire, sur le rail (blanc). -->
+  <AutomotiveRail lang={lang} titre={t.rail} chapo={t.railChapo} stations={rail} />
+
+  <!-- Notre approche (encre) : quatre temps sur une frise. -->
+  <section class="section-encre section-monte py-20 lg:py-32">
     <div class="container-custom">
-      <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          {lang === 'fr' ? 'Solutions marketing pour concessions' : 'Marketing Solutions for Dealerships'}
-        </h2>
-      </div>
+      <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16">
+        <h2 class="titre-moyen">{c.process.title}</h2>
+      </header>
+      <ol class="frise grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-6">
+        {c.process.steps.map((s, i) => (
+          <li class="frise-temps grid content-start gap-3" data-reveal style={`--i:${i}`}>
+            <span class="frise-numero" aria-hidden="true">{i + 1}</span>
+            <h3 class="titre-carte text-white">{s.title}</h3>
+            <p class="text-sur-encre-2 text-pretty">{s.description}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
 
-      <div class="space-y-8">
-        {c.services.map((service, index) => (
-          <a
-            href={service.href}
-            class="service-card group block p-8 md:p-10 bg-white rounded-3xl border-2 border-slate-200 hover:border-cyan-300 transition-all duration-500 animate-on-scroll overflow-hidden"
-            style={`animation-delay: ${index * 150}ms`}
-          >
-            <div class="grid lg:grid-cols-3 gap-8 items-center">
-              <!-- Left: Content -->
-              <div class="lg:col-span-2">
-                <div class="flex items-center gap-4 mb-4">
-                  <div class="text-marque">
-                    <Icon name={service.icon} size={28} class="text-marque" />
-                  </div>
-                  <div>
-                    <h3 class="text-2xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">{service.name}</h3>
-                    <p class={`text-sm font-medium bg-gradient-to-r ${service.color} bg-clip-text text-transparent`}>{service.tagline}</p>
-                  </div>
-                </div>
-
-                <p class="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
-
-                <!-- Features -->
-                <div class="flex flex-wrap gap-2 mb-6">
-                  {service.features.map(feature => (
-                    <span class="px-3 py-1 text-sm bg-slate-100 text-slate-600 rounded-full">
-                      {feature}
-                    </span>
+  <!-- Les trois leviers (brume) : une ligne chacun, ses marques, son chiffre sur l'encre. -->
+  <section class="section-brume py-20 lg:py-32">
+    <div class="container-custom">
+      <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+        <h2 class="titre-moyen text-encre">{t.leviers}</h2>
+        <p class="chapo">{t.leviersChapo}</p>
+      </header>
+      <ul class="grid gap-4 lg:gap-5">
+        {c.services.map((s, i) => (
+          <li data-reveal style={`--i:${i}`}>
+            <a href={s.href} class="levier carte group grid grid-cols-1 gap-6 p-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-10 lg:p-8">
+              <div class="grid content-start gap-4">
+                <ul class="flex flex-wrap gap-2.5" aria-hidden="true">
+                  {(MARQUES[s.name] ?? []).map((m) => (
+                    <li class="grid h-11 w-11 place-items-center rounded-xl bg-brume-clair"><Marque nom={m} taille={22} /></li>
                   ))}
+                </ul>
+                <div class="grid gap-1">
+                  <h3 class="titre-carte text-encre transition-colors group-hover:text-marque lg:text-[2rem]">{s.name}</h3>
+                  <p class="font-semibold text-slate-500">{s.tagline}</p>
                 </div>
-
-                <!-- CTA -->
-                <div class="flex items-center gap-2 text-cyan-600 font-semibold group-hover:gap-3 transition-all">
-                  <span>{c.cta}</span>
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </div>
+                <p class="max-w-[60ch] text-slate-600 text-pretty">{s.description}</p>
+                <ul class="puces">{s.features.map((f) => <li>{f}</li>)}</ul>
+                <span class="mt-1 inline-flex items-center gap-2 font-semibold text-marque transition-all group-hover:gap-3">
+                  {c.cta}
+                  <Icon name="arrow-right" size={18} />
+                </span>
               </div>
-
-              <!-- Right: Highlights + Stat -->
-              <div class="space-y-6">
-                <!-- Stat Badge -->
-                <div class={`p-4 rounded-2xl bg-gradient-to-br ${service.color} text-white text-center`}>
-                  <div class="text-3xl font-bold">{service.stat.value}</div>
-                  <div class="text-sm opacity-90">{service.stat.label}</div>
-                </div>
-
-                <!-- Highlights -->
-                <div class="bg-slate-50 rounded-2xl p-4">
-                  <ul class="space-y-2">
-                    {service.highlights.slice(0, 3).map(highlight => (
-                      <li class="flex items-start gap-2 text-sm">
-                        <svg class="w-4 h-4 text-cyan-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                        <span class="text-slate-600">{highlight}</span>
+              <div class="carte-encre grid content-between gap-6 p-6 lg:p-8">
+                <p class="levier-chiffre">{s.stat.value}</p>
+                <div class="grid gap-3">
+                  <p class="text-lg text-sur-encre">{s.stat.label}</p>
+                  <ul class="grid gap-1.5 border-t border-white/10 pt-4">
+                    {s.highlights.slice(0, 3).map((h) => (
+                      <li class="flex items-start gap-2 text-sur-encre-2">
+                        <Icon name="check" size={16} class="mt-1 flex-none text-marque-clair" />
+                        <span>{h}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               </div>
-            </div>
-          </a>
+            </a>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   </section>
 
-  <!-- Client Logos -->
-  <section class="py-20 bg-slate-50">
+  <!-- Ce que disent les concessions (encre). -->
+  <section class="section-encre section-monte py-20 lg:py-32">
     <div class="container-custom">
-      <h3 class="text-center text-slate-600 font-semibold text-lg mb-12">{c.clients.title}</h3>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 items-center justify-items-center">
-        {c.clients.logos.map((client) => (
-          <div class="flex items-center justify-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
-            <img src={client.logo} alt={client.name} class="h-16 md:h-20 w-auto max-w-[140px] object-contain" loading="lazy" />
-          </div>
+      <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16">
+        <h2 class="titre-moyen">{c.testimonials.title}</h2>
+      </header>
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
+        {c.testimonials.items.map((q, i) => (
+          <figure class="carte-verre grid content-between gap-8 p-6 lg:p-9" data-reveal style={`--i:${i}`}>
+            <blockquote>
+              <p class="citation">{fr ? `« ${q.quote} »` : `“${q.quote}”`}</p>
+            </blockquote>
+            <figcaption class="flex items-center gap-4">
+              {q.image && <img src={q.image} alt="" width="56" height="56" class="h-14 w-14 flex-none rounded-full object-cover" loading="lazy" decoding="async" />}
+              <span>
+                <span class="block font-semibold text-white">{q.author}</span>
+                <span class="block text-sur-encre-2">{[q.role, q.company].filter(Boolean).join(', ')}</span>
+              </span>
+            </figcaption>
+          </figure>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Process Section -->
-  <section class="py-24 bg-white">
-    <div class="container-custom">
-      <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          {c.process.title}
-        </h2>
-      </div>
-
-      <div class="grid md:grid-cols-4 gap-8">
-        {c.process.steps.map((step, index) => (
-          <div class="text-center animate-on-scroll" style={`animation-delay: ${index * 100}ms`}>
-            <div class="w-16 h-16 rounded-full bg-marque flex items-center justify-center mx-auto mb-4">
-              <span class="text-xl font-bold text-white">{step.number}</span>
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-2">{step.title}</h3>
-            <p class="text-slate-600 text-sm">{step.description}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Testimonials -->
-  <section class="py-24 bg-gradient-to-b from-cyan-50 to-white">
-    <div class="container-custom">
-      <div class="text-center mb-16 animate-on-scroll">
-        <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          {c.testimonials.title}
-        </h2>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-        {c.testimonials.items.map((testimonial, index) => (
-          <div
-            class="p-8 bg-white rounded-2xl shadow-lg border border-slate-100 animate-on-scroll"
-            style={`animation-delay: ${index * 150}ms`}
-          >
-            <div class="flex gap-1 mb-4">
-              {[1,2,3,4,5].map(() => (
-                <svg class="w-5 h-5 text-cyan-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-            </div>
-            <p class="text-lg text-slate-700 mb-6 italic">"{testimonial.quote}"</p>
-            <div class="flex items-center gap-4">
-              {testimonial.image && (
-                <img
-                  src={testimonial.image}
-                  alt={testimonial.author}
-                  class="w-14 h-14 rounded-full object-cover ring-2 ring-cyan-100"
-                  loading="lazy"
-                />
-              )}
-              <div>
-                <p class="font-semibold text-slate-900">{testimonial.author}</p>
-                {testimonial.role && <p class="text-slate-600 text-sm">{testimonial.role}</p>}
-                <p class="text-cyan-600 text-sm font-medium">{testimonial.company}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Final CTA -->
   <FinalCTA lang={lang} color="primary" />
 </PageLayout>
 
 <style>
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
+  .levier {
+    transition: box-shadow 300ms var(--mdp-entree);
   }
-
-  @keyframes fadeIn {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+  .levier:hover {
+    box-shadow: inset 0 0 0 1px rgb(29 113 184 / 0.35), 0 24px 50px -30px rgb(11 27 43 / 0.45);
+  }
+  .levier-chiffre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(3.5rem, 2.2rem + 4vw, 5.5rem);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .citation {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.625rem);
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    color: #fff;
+    text-wrap: pretty;
+  }
+  .frise-numero {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: var(--color-marque);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 800;
+  }
+  @media (min-width: 768px) {
+    .frise-temps {
+      position: relative;
     }
-  }
-
-  .point-card, .service-card {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    /* Le trait de la frise, du numéro au suivant. */
+    .frise-temps:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      top: 22px;
+      left: 56px;
+      right: -12px;
+      height: 2px;
+      background: rgb(255 255 255 / 0.16);
     }
   }
 </style>
