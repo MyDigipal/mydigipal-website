@@ -78,10 +78,13 @@ const seo = {
   <PageHero eyebrow={t.badge} title={t.title} description={t.subtitle} />
 
 
-  <section class="py-16 lg:py-20">
+  <!-- Recrutement, direction Encre (groupe 4, 30/09/2026) : les postes en cartes blanches sur
+       la brume, puis les candidatures spontanées sur l'encre. -->
+  <section class="section-brume py-16 lg:py-24">
     <div class="container-custom max-w-4xl">
       {jobsForLang.length === 0 && otherLangJobs.length === 0 && (
-        <div class="text-center py-16">
+        <div class="carte flex items-center gap-5 p-6 lg:p-8">
+          <span class="tuile"><Icon name="briefcase" size={26} /></span>
           <p class="text-lg text-slate-600">{t.nothingOpen}</p>
         </div>
       )}
@@ -122,33 +125,33 @@ const seo = {
           return (
             <a
               href={`/${lang}/careers/${slug}`}
-              class="block bg-white rounded-2xl p-8 border-2 border-slate-200 hover:border-primary-500 hover:shadow-xl transition-all group"
+              class="carte block p-6 lg:p-8 transition-shadow hover:shadow-xl group"
             >
               <div class="flex justify-between items-start gap-6 flex-wrap">
                 <div class="flex-1 min-w-0">
-                  <h3 class="text-2xl font-bold text-slate-900 mb-2 group-hover:text-primary-600 transition-colors">
+                  <h3 class="titre-carte text-encre mb-2 group-hover:text-marque transition-colors lg:text-[1.75rem]">
                     {job.data.title}
                   </h3>
                   <p class="text-slate-600 mb-4 leading-relaxed">
                     {job.data.pitch}
                   </p>
                   <div class="flex flex-wrap gap-3 text-sm">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brume-clair text-slate-700 text-sm">
                       <Icon name="map-pin" size={14} />
                       {job.data.location}
                     </span>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brume-clair text-slate-700 text-sm">
                       <Icon name="briefcase" size={14} />
                       {job.data.format}
                     </span>
                     {job.data.hours && (
-                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brume-clair text-slate-700 text-sm">
                         <Icon name="clock" size={14} />
                         {job.data.hours}
                       </span>
                     )}
                     {job.data.start_date && (
-                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brume-clair text-slate-700 text-sm">
                         <Icon name="calendar" size={14} />
                         {t.startDate}: {job.data.start_date}
                       </span>
@@ -167,15 +170,17 @@ const seo = {
         })}
       </div>
 
-      <div class="mt-16 bg-slate-50 rounded-2xl p-8 text-center">
-        <h2 class="text-2xl font-bold text-slate-900 mb-3">{t.spontaneous.title}</h2>
-        <p class="text-slate-600 mb-6 max-w-xl mx-auto">{t.spontaneous.body}</p>
-        <a
-          href={`/${lang}/contact`}
-          class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-full font-semibold transition-colors bg-marque hover:bg-marque-fonce"
-        >
+    </div>
+  </section>
+
+  <section class="section-encre section-monte py-20 lg:py-28">
+    <div class="container-custom grid max-w-[880px] justify-items-start gap-5 lg:gap-6">
+      <h2 class="titre-moyen">{t.spontaneous.title}</h2>
+      <p class="chapo">{t.spontaneous.body}</p>
+      <div class="pilules mt-2">
+        <a href={`/${lang}/contact`} class="pilule pilule-blanche">
           {t.spontaneous.cta}
-          <Icon name="arrow-right" size={18} />
+          <Icon name="arrow-right" size={18} class="pilule-fleche" />
         </a>
       </div>
     </div>
