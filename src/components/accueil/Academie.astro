@@ -47,8 +47,10 @@ import { faitsAcademy, serrer, type Lang } from './donnees';
 interface Props {
   lang: Lang;
   academy: Jour30Data;
+  /** La vidéo de présentation. `/ai` la montre déjà dans sa carte de l'Academy. */
+  presentation?: boolean;
 }
-const { lang, academy } = Astro.props;
+const { lang, academy, presentation = true } = Astro.props;
 const fr = lang === 'fr';
 const f = faitsAcademy(academy, lang);
 const c = jour30Copy(lang);
@@ -170,6 +172,7 @@ const faits = [
         page de vente : muette, elle part seule quand elle entre à l'écran,
         s'arrête quand elle en sort, et jamais seule sous
         prefers-reduced-motion. */}
+    {presentation && (
     <figure class="academie-presentation" data-presentation data-reveal style="--i:2">
       <div class="presentation-ecran">
         <video
@@ -191,6 +194,7 @@ const faits = [
         </button>
       </div>
     </figure>
+    )}
 
     <div class="academie-demo" data-demo data-reveal style="--i:2">
       <div class="academie-onglets" role="tablist" aria-label={t.ecrans}>
