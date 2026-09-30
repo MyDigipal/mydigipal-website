@@ -16,7 +16,7 @@ const translations = {
     features: [
       {
         icon: "zap",
-        title: "40%+ Time Savings",
+        title: "Time back on routine work",
         description: "Teams using AI report dramatic productivity gains on routine tasks like content creation, data analysis, and reporting."
       },
       {
@@ -43,7 +43,7 @@ const translations = {
     features: [
       {
         icon: "zap",
-        title: "40%+ de temps économisé",
+        title: "Du temps rendu sur les tâches routinières",
         description: "Les équipes utilisant l'IA rapportent des gains de productivité significatifs sur les tâches routinières."
       },
       {
@@ -68,60 +68,23 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="relative py-24 bg-slate-950 text-white overflow-hidden">
-  <!-- Background Effects -->
-  <div class="absolute inset-0 pointer-events-none">
-    <div class="absolute top-20 left-10 w-72 h-72 bg-cyan-500/20 rounded-full blur-[100px]"></div>
-    <div class="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-[100px]"></div>
-  </div>
-
-  <div class="container-custom relative z-10">
-    <!-- Header -->
-    <div class="text-center mb-16 animate-on-scroll">
-      <h2 class="font-display text-4xl md:text-5xl font-bold mb-6">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-400 max-w-3xl mx-auto">
-        {t.description}
-      </p>
-    </div>
-
-    <!-- Features Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+<!-- Direction Encre (30/09/2026) : une section d'encre qui monte sur le hero, le propos
+     à gauche, quatre raisons entre des filets à droite (plus de cartes égales). Plus de
+     « 40 %+ » : aucune source. Tout est visible sans script. -->
+<section class="section-encre section-monte py-20 lg:py-32">
+  <div class="container-custom grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
+    <header class="grid content-start gap-5 lg:gap-6">
+      <h2 class="titre-moyen">{t.headline}</h2>
+      <p class="chapo">{t.description}</p>
+    </header>
+    <ul class="grid gap-x-10 sm:grid-cols-2">
       {t.features.map((feature, index) => (
-        <div
-          class="feature-card group relative p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-500/50 transition-all duration-500 animate-on-scroll"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <!-- Icon -->
-          <div class="mb-4 text-primary-300">
-            <Icon name={feature.icon} size={24} class="text-primary-300" />
-          </div>
-
-          <!-- Content -->
-          <h3 class="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">{feature.description}</p>
-
-          <!-- Hover glow -->
-          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-        </div>
+        <li class="grid content-start gap-2 border-t border-white/10 py-6" data-reveal style={`--i:${index}`}>
+          <Icon name={feature.icon} size={22} class="mb-1 text-marque-clair" />
+          <h3 class="text-lg font-semibold text-white">{feature.title}</h3>
+          <p class="text-sur-encre-2">{feature.description}</p>
+        </li>
       ))}
-    </div>
-
+    </ul>
   </div>
 </section>
-
-<style>
-  .feature-card {
-    animation: fade-up 0.6s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  @keyframes fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
