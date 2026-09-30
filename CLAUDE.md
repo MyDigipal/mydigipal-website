@@ -699,7 +699,8 @@ des animations qui EXPLIQUENT une notion difficile, jamais qui décorent.
   `docs/refonte-design/generer-pilotage.py` (on modifie les listes du script, on relance, on ne
   retouche pas le HTML à la main). Il porte l'audit, les décisions, les questions ouvertes, le
   catalogue des composants et l'avancement page par page.
-- **Branche `refonte-design`**, rien sur `main` avant le choix de Paul. Ordre de passage : pages
+- **Branche `refonte-design`**, publiée sur `main` à chaque accord de Paul donné dans la session
+  (groupes 1 à 4 : `1fd65ec` ; pagination du blog et accueil : `bc32233`, 30/09). Ordre de passage : pages
   IA, services, automobile, le reste, l'accueil en dernier.
 - **Les maquettes** : `labo/refonte-site/` (hors du build). Trois directions sur la page Google
   Ads, `direction-a.html` (Encre), `-b` (Grille), `-c` (Atelier), comparées dans `index.html`.
@@ -888,10 +889,12 @@ Groupe 3 validé par Paul ; les chiffres sans source affichée sont GARDÉS part
   `/{lang}/blog/articles.json` (hors sitemap) et remplace la grille ; sans filtre, la grille de
   la page revient. L'article à la une ne vit que sur la page 1.
 
-### Groupe 5 : l'accueil (30/09/2026, `refonte-design`)
+### Groupe 5 : l'accueil (30/09/2026, en ligne depuis `bc32233`)
 
 Demande de Paul : garder la vidéo de l'Academy, replier ce qui suit, logos en couleur, et que
-le visiteur arrive sans clic aux avis puis aux services. L'ordre des sections n'a pas bougé.
+le visiteur arrive sans clic aux avis puis aux services. L'ordre des sections n'a pas bougé ;
+Paul a validé la page telle quelle (« L'accueil me va »). La question « les services avant
+l'Academy ? » lui a été posée et reste ouverte : c'est l'ordre des composants dans `index.astro`.
 - **Les plis de l'Academy** (`Academie.astro`, propriété `replie`, l'accueil seul) : les écrans
   de l'application et les films parlants sont dans deux `<details>` natifs. Leur texte est dans
   le HTML servi ; le pli s'ouvre vers le bas sous son titre, qui ne bouge pas (mesuré au pixel).
@@ -909,7 +912,7 @@ le visiteur arrive sans clic aux avis puis aux services. L'ordre des sections n'
 
 ### Les éléments flottants partagent une seule mesure : `--bandeau`
 
-Branche `flottants-sans-recouvrement` (commit `5b0e768`), à déployer après accord de Paul.
+Branche `flottants-sans-recouvrement` (commit `5b0e768`), fusionnée et en ligne depuis le 30/09/2026 (`1fd65ec`).
 `CookieConsent.astro` publie la hauteur du bandeau dans `--bandeau` sur `<html>` quand il
 s'affiche, se retire ou change de vue. `StickyCalculatorCTA` et `academy/AppelFlottant` s'en
 servent dans leur `bottom`. Un nouvel élément flottant fait de même, et ne mesure rien lui-même.
