@@ -38,6 +38,11 @@ const LOGOS_AGENCE = [
 
 const { titre, slugs = LOGOS_AGENCE, logos } = Astro.props;
 
+// Les noms du fichier des logos sont ceux de l'accueil français (« Groupe Théobald ») ;
+// sur une page anglaise, le nom anglais de l'étude de cas (« Theobald Group »).
+const anglais = Astro.url.pathname.startsWith('/en');
+const nomLocal = (nom: string) => (anglais ? nom.replace(/^Groupe (.+)$/, '$1 Group').replace('Théobald', 'Theobald') : nom);
+
 const liste =
   logos && logos.length > 0
     ? logos.map((l) =>
@@ -47,7 +52,7 @@ const liste =
       )
     : slugs
         .filter((s) => LOGOS[s])
-        .map((s) => ({ nom: LOGOS[s].nom, src: LOGOS[s].src, largeur: LOGOS[s].largeur, hauteur: LOGOS[s].hauteur, h: hauteurLogo(s, 2400, 20, 40) }));
+        .map((s) => ({ nom: nomLocal(LOGOS[s].nom), src: LOGOS[s].src, largeur: LOGOS[s].largeur, hauteur: LOGOS[s].hauteur, h: hauteurLogo(s, 2400, 20, 40) }));
 ---
 
 <div class="container-custom bandeau-logos grid items-center gap-7 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-12">
