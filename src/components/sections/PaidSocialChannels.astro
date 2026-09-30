@@ -5,6 +5,7 @@
  */
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
+import Marque from '@/components/ui/Marque.astro';
 
 interface Props {
   lang: Language;
@@ -111,96 +112,70 @@ const platformIcons: Record<string, string> = {
   youtube: `<svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
   twitter: `<svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
 };
+
+// La marque de chaque plateforme (simple-icons ; LinkedIn par son glyphe).
+const marques: Record<string, string> = { linkedin: 'LinkedIn', facebook: 'Meta Ads', youtube: 'YouTube', twitter: 'X' };
+
 ---
 
-<section class="section bg-slate-50 overflow-hidden">
+<!-- Paid Social, les plateformes (direction Encre, 30/09/2026) : quatre cartes avec la vraie
+     marque de chaque plateforme, en couleur. LinkedIn, la plateforme du B2B, en encre et
+     sur deux colonnes. -->
+<section class="section-blanc py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="heading-2 mb-4">{t.title}</h2>
-      <p class="body-large text-slate-600">{t.subtitle}</p>
-    </div>
-
-    <!-- Channels Grid -->
-    <div class="grid md:grid-cols-2 gap-8 stagger-children">
-      {t.channels.map((channel, index) => (
-        <div
-          class="channel-card group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500"
-          style={`--channel-color: ${channel.color};`}
-        >
-          <!-- Color accent bar -->
-          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r" style={`background: ${channel.color};`}></div>
-
-          <div class="p-8">
-            <!-- Header -->
-            <div class="flex items-start justify-between mb-6">
-              <div class="flex items-center gap-4">
-                <div
-                  class="w-16 h-16 rounded-2xl flex items-center justify-center text-white transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
-                  style={`background: ${channel.color};`}
-                >
-                  <Fragment set:html={platformIcons[channel.icon]} />
-                </div>
-                <div>
-                  <h3 class="heading-3 mb-1">{channel.name}</h3>
-                  <div class="flex items-baseline gap-1">
-                    <span class="text-2xl font-bold" style={`color: ${channel.color};`}>{channel.stat}</span>
-                    <span class="text-sm text-slate-500">{channel.statLabel}</span>
-                  </div>
-                </div>
-              </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.title}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <ul class="plateformes">
+      {t.channels.map((c, i) => {
+        const fonce = i === 0;
+        return (
+          <li class:list={['plateforme', fonce ? 'carte-encre plateforme-large' : 'carte', { 'plateforme-large': i === 3 }]} data-reveal style={`--i:${i % 3}`}>
+            <div class="flex items-start justify-between gap-4">
+              <span class="grid h-16 w-16 flex-none place-items-center rounded-2xl bg-white shadow-[inset_0_0_0_1px_var(--filet)]"><Marque nom={marques[c.icon] ?? c.name} taille={32} /></span>
+              <p class="text-right">
+                <span class:list={['block font-display text-3xl font-extrabold tracking-[-0.03em]', fonce ? 'text-white' : 'text-encre']}>{c.stat}</span>
+                <span class={fonce ? 'text-sur-encre-2' : 'text-slate-500'}>{c.statLabel}</span>
+              </p>
             </div>
-
-            <!-- Description -->
-            <p class="text-slate-600 mb-6">{channel.description}</p>
-
-            <!-- Features -->
-            <div class="flex flex-wrap gap-2">
-              {channel.features.map((feature) => (
-                <span
-                  class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
-                  style={`background: ${channel.color}15; color: ${channel.color};`}
-                >
-                  {feature}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <!-- Hover overlay effect -->
-          <div
-            class="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none"
-            style={`background: ${channel.color};`}
-          ></div>
-        </div>
-      ))}
-    </div>
-
-    <!-- Bottom CTA hint -->
-    <div class="text-center mt-12 animate-on-scroll">
-      <p class="text-slate-500 flex items-center justify-center gap-2">
-        <Icon name="info" size={18} />
-        {lang === 'fr'
-          ? 'Nous adaptons la stratégie multicanale à vos objectifs spécifiques'
-          : 'We adapt the multi-channel strategy to your specific goals'
-        }
-      </p>
-    </div>
+            <h3 class:list={['titre-carte text-2xl', fonce ? 'text-white' : 'text-encre']}>{c.name}</h3>
+            <p class={fonce ? 'text-sur-encre-2' : 'text-slate-600'}>{c.description}</p>
+            <ul class="puces">{c.features.map((f) => <li>{f}</li>)}</ul>
+          </li>
+        );
+      })}
+    </ul>
   </div>
 </section>
 
 <style>
-  .channel-card {
-    transform: translateY(0);
+  .plateformes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
   }
-
-  .channel-card:hover {
-    transform: translateY(-8px);
+  .plateforme {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    padding: 28px 24px;
   }
-
-  /* Stagger animation */
-  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-  .stagger-children > *:nth-child(2) { animation-delay: 100ms; }
-  .stagger-children > *:nth-child(3) { animation-delay: 200ms; }
-  .stagger-children > *:nth-child(4) { animation-delay: 300ms; }
+  @media (min-width: 768px) {
+    .plateformes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .plateformes {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .plateforme {
+      padding: 32px;
+    }
+    .plateforme-large {
+      grid-column: span 2;
+    }
+  }
 </style>
