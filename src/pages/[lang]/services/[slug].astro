@@ -13,7 +13,6 @@ import SEOPageSchema from '@/components/seo/SEOPageSchema.astro';
 
 // Components
 import Badge from '@/components/ui/Badge.astro';
-import Button from '@/components/ui/Button.astro';
 import Icon from '@/components/ui/Icon.astro';
 
 // Sections
@@ -144,10 +143,9 @@ const {
   seo
 } = service.data;
 
-// Les chiffres du hero des pages IA (direction Encre, 30/09/2026). Seuls restent ceux qui
-// ont une source : pour AI Training, la note et le nombre de retours des formations, lus
-// dans l'API de l'Academy (instantané en secours). Les fiches d'AI Solutions et d'AI
-// Content n'ont plus de `metrics` : leur panneau montre « ce que vous obtenez ».
+// Les chiffres du hero des pages IA (direction Encre, 30/09/2026). AI Training passe par
+// le tableau à palettes (plus bas). Les fiches d'AI Solutions et d'AI Content n'ont plus
+// de `metrics` : leur panneau montre « ce que vous obtenez ».
 let metricsHero = metrics;
 // Les pages de services dont le hero montre trois résultats d'études de cas, lus dans les
 // fiches (libellé anglais vérifié au build). Les autres gardent les `metrics` de leur fiche.
@@ -157,16 +155,22 @@ const heroCas: Record<string, [string, number, string][]> = {
 if (heroCas[slug]) {
   metricsHero = await Promise.all(heroCas[slug].map(([cas, i, verif]) => kpiDe(lang, cas, i, verif)));
 }
+// AI Training : le tableau à palettes du hero (30/09/2026). « 2 500+ personnes formées »
+// est le chiffre de l'agence (remis à la demande de Paul) ; la note et le nombre de
+// retours viennent de l'API de l'Academy, instantané en secours.
+let tableauHero: { chiffre: string; unite?: string; texte: string }[] = [];
 if (slug === 'ai-training') {
   const faits = faitsAcademy(await lireAcademy(lang), lang);
-  metricsHero = lang === 'fr'
+  tableauHero = lang === 'fr'
     ? [
-        { value: `${faits.note}/10`, label: 'note moyenne des participants' },
-        { value: String(faits.retours), label: 'retours de participants' },
+        { chiffre: '2 500', unite: '+', texte: 'personnes formées à l’IA' },
+        { chiffre: faits.note, unite: '/10', texte: 'note moyenne des participants' },
+        { chiffre: String(faits.retours), texte: 'retours de participants' },
       ]
     : [
-        { value: `${faits.note}/10`, label: 'average rating from participants' },
-        { value: String(faits.retours), label: 'participant reviews' },
+        { chiffre: '2,500', unite: '+', texte: 'people trained on AI' },
+        { chiffre: faits.note, unite: '/10', texte: 'average rating from participants' },
+        { chiffre: String(faits.retours), texte: 'participant reviews' },
       ];
 }
 
@@ -319,6 +323,7 @@ const breadcrumbItems = [
     testimonial={testimonial}
     heroLogos={heroLogos}
     serviceCalculateur={calculatorServiceId}
+    tableau={tableauHero}
   />
 
   <!-- Les chiffres sont dans le panneau du hero : la bande MetricsCounter qui les
@@ -379,18 +384,18 @@ const breadcrumbItems = [
   <!-- AI Training Service: Interactive Sections -->
   {isAITrainingService && (
     <>
-      <!-- Direction Encre (30/09/2026) : l'encre ponctue, jamais deux sections sombres
-           collées, 40 à 45 % de sombre. -->
-      <WhyAITraining lang={lang} />                <!-- encre -->
-      <TrainingBenefitsManagers lang={lang} />     <!-- blanc -->
-      <TrainingUseCases lang={lang} />             <!-- brume -->
-      <TrainingBenefitsEmployees lang={lang} />    <!-- blanc -->
-      <TrainingAgenda lang={lang} />               <!-- encre : CRAFT, grille de mots -->
-      <TrainingProcess lang={lang} />              <!-- blanc -->
-      <AITrainingModules lang={lang} />            <!-- encre : les formats -->
-      <TrainingClients lang={lang} />              <!-- blanc -->
+      <!-- Direction Encre, correction de cap (30/09/2026) : un visuel dominant par section,
+           l'encre ponctue sans jamais deux sections sombres collées. -->
+      <WhyAITraining lang={lang} />                <!-- encre : quatre cartes de verre -->
+      <TrainingBenefitsManagers lang={lang} />     <!-- blanc : la photo de La Poste -->
+      <TrainingUseCases lang={lang} />             <!-- brume : les départements en cartes -->
+      <TrainingBenefitsEmployees lang={lang} />    <!-- encre : l'escalier des acquis -->
+      <TrainingAgenda lang={lang} />               <!-- brume : CRAFT sur la grille suisse -->
+      <TrainingProcess lang={lang} />              <!-- blanc : le rail -->
+      <AITrainingModules lang={lang} />            <!-- encre : les formats en objets -->
+      <TrainingClients lang={lang} />              <!-- blanc : 2 500+ et les logos -->
       <TrainingTestimonials lang={lang} />         <!-- encre -->
-      <MarketingStackGrid lang={lang} />           <!-- blanc -->
+      <MarketingStackGrid lang={lang} />           <!-- blanc : la passerelle, les vrais logos -->
       <MCPBuildSection lang={lang} />              <!-- encre : le serveur MCP, carte de verre -->
       <MCPTrainingTracks lang={lang} />            <!-- brume -->
     </>
@@ -536,10 +541,8 @@ const breadcrumbItems = [
           ))}
         </div>
 
-        <div class="text-center mt-12">
-          <Button href={`/${lang}/blog?category=ai`} variant="outline" size="lg">
-            {blogContent.viewAll}
-          </Button>
+        <div class="mt-12">
+          <a href={`/${lang}/blog?category=ai`} class="pilule pilule-contour">{blogContent.viewAll}</a>
         </div>
       </div>
     </section>
