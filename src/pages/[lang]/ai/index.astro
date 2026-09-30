@@ -9,6 +9,11 @@ import { ENDPOINT, prixDe, type Jour30Data } from '@/components/academy/data';
 import secoursFr from '@/data/academy/jour30-fr.json';
 import secoursEn from '@/data/academy/jour30-en.json';
 import PageHero from '@/components/ui/PageHero.astro';
+import CameraInterface from '@/components/motion/CameraInterface.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
+import CartesDepartements from '@/components/sections/CartesDepartements.astro';
+import { LOGOS_OUTILS } from '@/components/sections/logos-outils';
+import { faitsAcademy } from '@/components/accueil/donnees';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -361,100 +366,267 @@ const content = {
 
 const c = content[lang] || content.en;
 const articles = blogArticles[lang] || blogArticles.en;
+
+// La vitrine (correction de cap de Paul, 30/09/2026) : un visuel dominant par section.
+// Les chiffres de la formation : « 2 500+ » est celui de l'agence, la note et le nombre de
+// retours viennent de l'API de l'Academy (instantané en secours).
+const faits = faitsAcademy(academy, lang);
+const fr = lang === 'fr';
+const capture = {
+  src: fr ? '/academy/captures/fr/tableau-de-bord.jpg' : '/academy/captures/tableau-de-bord.jpg',
+  largeur: 1252,
+  hauteur: 782,
+  alt: fr ? 'Le tableau de bord de l’AI Academy' : 'The AI Academy dashboard',
+};
+const zonesAcademy = fr
+  ? [
+      { x: 0.045, y: 0.12, l: 0.66, h: 0.376, titre: 'Votre parcours, en un coup d’œil', texte: 'Les leçons, le temps de formation et votre progression. « Reprendre » vous ramène à la leçon où vous vous êtes arrêté.' },
+      { x: 0.045, y: 0.545, l: 0.66, h: 0.445, titre: 'Un module par sujet', texte: 'Comprendre l’IA générative, la méthode CRAFT, puis votre outil : Copilot, Gemini, Claude ou ChatGPT. Chaque module annonce ses leçons et sa durée.' },
+      { x: 0.75, y: 0.12, l: 0.236, h: 0.78, titre: 'Les outils à côté de chaque leçon', texte: 'L’assistant, l’atelier CRAFT pour écrire vos prompts, la bibliothèque de prompts, les cas d’usage, les exercices et les quiz.', zoom: 1.45 },
+    ]
+  : [
+      { x: 0.045, y: 0.12, l: 0.66, h: 0.376, titre: 'Your course at a glance', texte: 'The lessons, the training time and your progress. “Resume” takes you back to the lesson where you stopped.' },
+      { x: 0.045, y: 0.545, l: 0.66, h: 0.445, titre: 'One module per topic', texte: 'Understanding generative AI, the CRAFT method, then your tool: Copilot, Gemini, Claude or ChatGPT. Each module shows its lessons and length.' },
+      { x: 0.75, y: 0.12, l: 0.236, h: 0.78, titre: 'The tools next to every lesson', texte: 'The assistant, the CRAFT workshop to write your prompts, the prompt library, use cases, exercises and quizzes.', zoom: 1.45 },
+    ];
+const tableauFormation = fr
+  ? [
+      { chiffre: '2 500', unite: '+', texte: 'personnes formées à l’IA' },
+      { chiffre: faits.note, unite: '/10', texte: 'note moyenne des participants' },
+      { chiffre: String(faits.retours), texte: 'retours de participants' },
+    ]
+  : [
+      { chiffre: '2,500', unite: '+', texte: 'people trained on AI' },
+      { chiffre: faits.note, unite: '/10', texte: 'average rating from participants' },
+      { chiffre: String(faits.retours), texte: 'participant reviews' },
+    ];
+// Les outils que les automatisations branchent, avec leur vraie marque (simple-icons, CC0).
+const outilsSolutions = ['n8n', 'Gmail', 'Google Ads', 'Notion', 'BigQuery', 'Sheets', 'Meta Ads', 'ClickUp']
+  .map((nom) => ({ nom, ...LOGOS_OUTILS[nom] }))
+  .filter((o) => o.trace);
+const [sAcademy, sTraining, sSolutions, sContent] = c.services;
+const v = fr
+  ? {
+      academyTitre: 'L’AI Academy, vue de l’intérieur',
+      academyChapo: `La formation en ligne, telle que vous la trouverez en ouvrant votre compte. ${leconsAcademy} leçons, ${joursAcademy} jours d’accès, dès ${entree}.`,
+      academyBouton: 'Découvrir l’AI Academy',
+      trainingTitre: 'Former une équipe, en salle ou à distance',
+      trainingChapo: 'Des ateliers bâtis sur les tâches des personnes présentes, avec leurs outils et leurs fichiers. Trois formats, d’une heure de découverte à un atelier pratique de 3 h 30.',
+      trainingPhoto: 'Une session de formation à l’IA chez La Poste',
+      trainingBouton: 'Voir la formation IA',
+      construireTitre: 'Faire construire, ou faire produire',
+      construireChapo: 'Quand l’équipe sait s’en servir, l’étape suivante est de confier à l’IA un travail qui revient chaque semaine.',
+      branche: 'Branché sur vos outils',
+      departementsChapo: 'Ce que l’IA change dans une journée de travail, service par service. Un exemple de demande pour chacun.',
+    }
+  : {
+      academyTitre: 'The AI Academy, from the inside',
+      academyChapo: `The online course, as you will find it when you open your account. ${leconsAcademy} lessons, ${joursAcademy} days of access, from ${entree}.`,
+      academyBouton: 'Explore the AI Academy',
+      trainingTitre: 'Train a team, on site or remote',
+      trainingChapo: 'Workshops built on the tasks of the people in the room, with their tools and their files. Three formats, from a one-hour overview to a 3.5-hour hands-on workshop.',
+      trainingPhoto: 'An AI training session at La Poste',
+      trainingBouton: 'See AI Training',
+      construireTitre: 'Have it built, or have it produced',
+      construireChapo: 'Once the team knows how to use it, the next step is to hand AI a job that comes back every week.',
+      branche: 'Plugged into your tools',
+      departementsChapo: 'What AI changes in a working day, team by team. One example request for each.',
+    };
+const departements = fr
+  ? [
+      { icone: 'trending-up', nom: 'Marketing', exemple: 'Tire de ces verbatims clients les cinq objections qui reviennent, et propose une accroche d’annonce pour répondre à chacune.', aussi: ['création de contenu', 'optimisation des campagnes', 'analyse d’audience'] },
+      { icone: 'users', nom: 'Ventes', exemple: 'Prépare mon rendez-vous de demain avec ce prospect : ce que fait l’entreprise, ce qui a changé récemment, trois questions à poser.', aussi: ['qualification des leads', 'personnalisation des e-mails', 'automatisation du CRM'] },
+      { icone: 'message-circle', nom: 'Service client', exemple: 'Classe ces tickets par sujet, repère ceux qui attendent depuis le plus longtemps et rédige une réponse type pour les trois sujets les plus fréquents.', aussi: ['chatbots', 'routage des tickets', 'suggestions de réponse'] },
+      { icone: 'bar-chart', nom: 'Analytics', exemple: 'Compare les conversions de ce mois et du précédent par canal, et dis-moi en deux phrases ce qui explique l’écart.', aussi: ['visualisation des données', 'tendances', 'reporting'] },
+    ]
+  : [
+      { icone: 'trending-up', nom: 'Marketing', exemple: 'From these customer quotes, pull out the five objections that keep coming back, and suggest an ad hook that answers each one.', aussi: ['content creation', 'campaign optimisation', 'audience analysis'] },
+      { icone: 'users', nom: 'Sales', exemple: 'Prepare tomorrow’s meeting with this prospect: what the company does, what changed recently, three questions to ask.', aussi: ['lead scoring', 'email personalisation', 'CRM automation'] },
+      { icone: 'message-circle', nom: 'Customer service', exemple: 'Sort these tickets by topic, flag the ones waiting the longest and draft a template reply for the three most frequent topics.', aussi: ['chatbots', 'ticket routing', 'reply suggestions'] },
+      { icone: 'bar-chart', nom: 'Analytics', exemple: 'Compare this month’s conversions with last month’s by channel, and tell me in two sentences what explains the gap.', aussi: ['data visualisation', 'trends', 'reporting'] },
+    ];
 ---
 
 <PageLayout lang={lang} title={c.seo.title} description={c.seo.description}>
+  <!-- La vitrine de l'IA (correction de cap de Paul, 30/09/2026). Un visuel dominant par
+       section : l'aiguillage en cartes de tailles différentes, la caméra sur le tableau de
+       bord de l'Academy (encre), la photo et le tableau à palettes de la formation, les
+       vraies marques des outils, les départements en cartes (encre), les articles, les avis
+       (encre). Jamais deux sections d'encre collées. Plus de « 300 % / 50+ / 100+ ». -->
   <PageHero
     eyebrow={c.hero.badge}
     title={c.hero.headline}
     subtitle={c.hero.subheadline}
     description={c.hero.description}
     actions={[
-      { href: `/${lang}/academy`, label: lang === 'fr' ? 'Découvrir l’AI Academy' : 'Explore the AI Academy' },
-      { href: `/${lang}/contact`, label: lang === 'fr' ? 'Nous contacter' : 'Contact us', style: 'contour' },
+      { href: `/${lang}/academy`, label: fr ? 'Découvrir l’AI Academy' : 'Explore the AI Academy' },
+      { href: `/${lang}/contact`, label: fr ? 'Nous contacter' : 'Contact us', style: 'contour' },
     ]}
-  />
-
-
-  <!-- Direction Encre (30/09/2026). Le rythme : l'aiguillage sur l'encre, le détail des
-       quatre offres sur le blanc, les départements sur l'encre, les articles sur le blanc,
-       les avis des formations sur l'encre. Plus de « 300 % / 50+ / 100+ » (aucune
-       source), plus d'avis hors sujet (emailing, Google Ads). -->
-  <section class="section-encre section-monte py-20 lg:py-32">
-    <div class="container-custom">
-      <header class="mb-12 grid max-w-[900px] gap-5 lg:mb-16 lg:gap-6">
-        <h2 class="titre-moyen">{c.intro.title}</h2>
-        <p class="chapo">{c.intro.description}</p>
-      </header>
-      <h3 class="font-display text-2xl font-extrabold tracking-[-0.02em] text-white lg:text-3xl">{c.aiguillage.titre}</h3>
-      <p class="mb-6 mt-2 text-sur-encre-2">{c.aiguillage.chapo}</p>
-      <ul>
-        {c.aiguillage.lignes.map((l) => (
-          <li class="border-t border-white/10">
-            <a href={l.href} class="group grid gap-2 py-6 lg:grid-cols-[200px_minmax(0,1fr)_minmax(0,1.2fr)_auto] lg:items-center lg:gap-8">
-              <span class="font-display text-2xl font-extrabold tracking-[-0.02em] text-white">{l.nom}</span>
-              <span class="font-semibold text-sur-encre">{l.pour}</span>
-              <span class="text-sur-encre-2">{l.phrase}</span>
-              <span class="inline-flex items-center gap-2 font-semibold text-marque-clair transition-colors group-hover:text-white">
-                {c.cta}
-                <Icon name="arrow-right" size={18} class="transition-transform group-hover:translate-x-0.5" />
-              </span>
-            </a>
-          </li>
-        ))}
+  >
+    <div slot="apres" class="mt-16 lg:mt-24">
+      <h2 class="titre-moyen text-encre">{c.aiguillage.titre}</h2>
+      <p class="chapo mt-3">{c.aiguillage.chapo}</p>
+      <ul class="offres mt-8 lg:mt-10">
+        <li class="offre offre-academy" data-reveal style="--i:0">
+          <a href={c.aiguillage.lignes[0].href} class="offre-lien">
+            <span class="offre-image offre-image-capture" aria-hidden="true">
+              <img src={capture.src} alt="" width={capture.largeur} height={capture.hauteur} loading="lazy" decoding="async" />
+            </span>
+            <span class="offre-corps">
+              <span class="offre-nom">{c.aiguillage.lignes[0].nom}</span>
+              <span class="offre-pour">{c.aiguillage.lignes[0].pour}</span>
+              <span class="offre-phrase">{c.aiguillage.lignes[0].phrase}</span>
+              <span class="offre-fait">{fr ? `${leconsAcademy} leçons, dès ${entree}` : `${leconsAcademy} lessons, from ${entree}`}</span>
+              <span class="offre-suite">{c.cta}<Icon name="arrow-right" size={18} /></span>
+            </span>
+          </a>
+        </li>
+        <li class="offre offre-training" data-reveal style="--i:1">
+          <a href={c.aiguillage.lignes[1].href} class="offre-lien">
+            <span class="offre-image offre-image-photo" aria-hidden="true">
+              <img src="/images/accueil/formation-la-poste-800.avif" alt="" width="800" height="450" loading="lazy" decoding="async" />
+              <span class="offre-pastille">{fr ? '2 500+ personnes formées' : '2,500+ people trained'}</span>
+            </span>
+            <span class="offre-corps">
+              <span class="offre-nom">{c.aiguillage.lignes[1].nom}</span>
+              <span class="offre-pour">{c.aiguillage.lignes[1].pour}</span>
+              <span class="offre-phrase">{c.aiguillage.lignes[1].phrase}</span>
+              <span class="offre-suite">{c.cta}<Icon name="arrow-right" size={18} /></span>
+            </span>
+          </a>
+        </li>
+        <li class="offre offre-solutions" data-reveal style="--i:2">
+          <a href={c.aiguillage.lignes[2].href} class="offre-lien">
+            <span class="offre-marques" aria-hidden="true">
+              {outilsSolutions.slice(0, 6).map((o) => (
+                <span class="offre-marque"><svg viewBox={o.viewBox} width="24" height="24" fill={o.couleur}><path d={o.trace} /></svg></span>
+              ))}
+            </span>
+            <span class="offre-corps">
+              <span class="offre-nom">{c.aiguillage.lignes[2].nom}</span>
+              <span class="offre-pour">{c.aiguillage.lignes[2].pour}</span>
+              <span class="offre-phrase">{c.aiguillage.lignes[2].phrase}</span>
+              <span class="offre-suite">{c.cta}<Icon name="arrow-right" size={18} /></span>
+            </span>
+          </a>
+        </li>
+        <li class="offre offre-content" data-reveal style="--i:3">
+          <a href={c.aiguillage.lignes[3].href} class="offre-lien">
+            <span class="offre-icone" aria-hidden="true"><Icon name="pen-tool" size={30} /></span>
+            <span class="offre-corps">
+              <span class="offre-nom">{c.aiguillage.lignes[3].nom}</span>
+              <span class="offre-pour">{c.aiguillage.lignes[3].pour}</span>
+              <span class="offre-phrase">{c.aiguillage.lignes[3].phrase}</span>
+              <span class="offre-suite">{c.cta}<Icon name="arrow-right" size={18} /></span>
+            </span>
+          </a>
+        </li>
       </ul>
+    </div>
+  </PageHero>
+
+  <!-- L'AI Academy : la caméra qui tient, sur le vrai tableau de bord. -->
+  <section class="section-encre section-monte py-20 lg:py-32" aria-labelledby="ai-academy-titre">
+    <div class="container-custom">
+      <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-14 lg:gap-6">
+        <h2 id="ai-academy-titre" class="titre-moyen">{v.academyTitre}</h2>
+        <p class="chapo">{v.academyChapo}</p>
+      </header>
+      <CameraInterface lang={lang} image={capture} zones={zonesAcademy} />
+      <div class="mt-12 grid grid-cols-1 gap-8 border-t border-white/10 pt-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <ul class="flex flex-wrap gap-2">
+          {[...sAcademy.features.slice(1).filter((f) => !sAcademy.highlights.some((h) => h.toLowerCase().includes(f.toLowerCase()))), ...sAcademy.highlights.slice(1)].map((f) => (
+            <li class="rounded-full bg-white/[0.07] px-4 py-2 text-sur-encre shadow-[inset_0_0_0_1px_rgb(255_255_255/0.1)]">{f}</li>
+          ))}
+        </ul>
+        <a href={sAcademy.href} class="pilule pilule-blanche justify-self-start">
+          {v.academyBouton}
+          <Icon name="arrow-right" size={18} class="pilule-fleche" />
+        </a>
+      </div>
     </div>
   </section>
 
+  <!-- La formation en équipe : la photo d'une session et le tableau à palettes. -->
   <section class="section-blanc py-20 lg:py-32">
     <div class="container-custom">
-      <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-14">
-        <h2 class="titre-moyen text-encre">{c.servicesSection.title}</h2>
-        <p class="chapo">{c.intro.paragraph}</p>
+      <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-14 lg:gap-6">
+        <h2 class="titre-moyen text-encre">{v.trainingTitre}</h2>
+        <p class="chapo">{v.trainingChapo}</p>
       </header>
-      {c.services.map((service, index) => (
-        <article class="grid gap-8 border-t border-slate-200 py-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16" data-reveal style={`--i:${index % 2}`}>
-          <div class="grid content-start justify-items-start gap-4">
-            <div class="flex items-center gap-3">
-              <Icon name={service.icon} size={26} class="text-marque" />
-              <h3 class="font-display text-2xl font-extrabold tracking-[-0.02em] text-encre">{service.name}</h3>
-            </div>
-            <p class="font-semibold text-marque">{service.tagline}</p>
-            <p class="text-slate-600">{service.description}</p>
-            <p class="text-slate-500">{service.features.join(', ')}</p>
-            <a href={service.href} class="pilule pilule-contour mt-2">
-              {c.cta}
-              <Icon name="arrow-right" size={18} class="pilule-fleche" />
-            </a>
-          </div>
-          <div>
-            <h4 class="mb-4 font-semibold text-encre">{lang === 'fr' ? 'Points clés' : 'Key highlights'}</h4>
-            <ul class="grid gap-3">
-              {service.highlights.map((highlight) => (
-                <li class="flex items-start gap-3 text-slate-700">
-                  <Icon name="check" size={16} class="mt-1 flex-none text-marque" />
-                  <span>{highlight}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </article>
-      ))}
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-8">
+        <figure class="formation-photo">
+          <img src="/images/accueil/formation-la-poste-1440.avif" alt={v.trainingPhoto} width="1440" height="810" loading="lazy" decoding="async" />
+          <figcaption>{v.trainingPhoto}</figcaption>
+        </figure>
+        <div class="formation-tableau">
+          <TableauPalettes lang={lang} lignes={tableauFormation} tete />
+        </div>
+      </div>
+      <div class="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <p class="max-w-[62ch] text-slate-600">{sTraining.description}</p>
+        <a href={sTraining.href} class="pilule pilule-pleine justify-self-start">
+          {v.trainingBouton}
+          <Icon name="arrow-right" size={18} class="pilule-fleche" />
+        </a>
+      </div>
     </div>
   </section>
 
-  <section class="section-encre section-monte py-20 lg:py-28">
+  <!-- Construire et produire : les vraies marques des outils branchés. -->
+  <section class="section-brume py-20 lg:py-32">
     <div class="container-custom">
-      <h2 class="titre-moyen mb-10 lg:mb-14">{c.useCases.title}</h2>
-      <ul class="grid gap-x-10 sm:grid-cols-2 lg:grid-cols-4">
-        {c.useCases.items.map((useCase, index) => (
-          <li class="grid content-start gap-2 border-t border-white/10 py-7" data-reveal style={`--i:${index}`}>
-            <Icon name={useCase.icon} size={24} class="mb-1 text-marque-clair" />
-            <h3 class="text-lg font-semibold text-white">{useCase.name}</h3>
-            <p class="text-sur-encre-2">{useCase.description}</p>
-          </li>
-        ))}
-      </ul>
+      <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-14 lg:gap-6">
+        <h2 class="titre-moyen text-encre">{v.construireTitre}</h2>
+        <p class="chapo">{v.construireChapo}</p>
+      </header>
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-6">
+        <article class="construire construire-solutions">
+          <p class="text-sm font-semibold text-slate-500">{v.branche}</p>
+          <ul class="construire-marques" aria-label={v.branche}>
+            {outilsSolutions.map((o) => (
+              <li>
+                <svg viewBox={o.viewBox} width="30" height="30" fill={o.couleur} aria-hidden="true"><path d={o.trace} /></svg>
+                <span>{o.nom}</span>
+              </li>
+            ))}
+          </ul>
+          <h3 class="construire-nom">{sSolutions.name}</h3>
+          <p class="font-semibold text-marque">{sSolutions.tagline}</p>
+          <p class="text-slate-600">{sSolutions.description}</p>
+          <ul class="flex flex-wrap gap-2">
+            {sSolutions.highlights.map((h) => <li class="rounded-full bg-brume-clair px-4 py-2 text-slate-700">{h}</li>)}
+          </ul>
+          <a href={sSolutions.href} class="pilule pilule-contour mt-2 self-start">
+            {c.cta}
+            <Icon name="arrow-right" size={18} class="pilule-fleche" />
+          </a>
+        </article>
+        <article class="construire construire-content">
+          <span class="construire-icone" aria-hidden="true"><Icon name="pen-tool" size={34} /></span>
+          <h3 class="construire-nom">{sContent.name}</h3>
+          <p class="font-semibold text-marque-clair">{sContent.tagline}</p>
+          <p class="text-sur-encre-2">{sContent.description}</p>
+          <ul class="flex flex-wrap gap-2">
+            {sContent.highlights.map((h) => <li class="rounded-full bg-white/[0.07] px-4 py-2 text-sur-encre shadow-[inset_0_0_0_1px_rgb(255_255_255/0.1)]">{h}</li>)}
+          </ul>
+          <a href={sContent.href} class="pilule pilule-blanche mt-2 self-start">
+            {c.cta}
+            <Icon name="arrow-right" size={18} class="pilule-fleche" />
+          </a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Les départements : une carte, une grande icône, un exemple de demande. -->
+  <section class="section-encre section-monte py-20 lg:py-32">
+    <div class="container-custom">
+      <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-14 lg:gap-6">
+        <h2 class="titre-moyen">{c.useCases.title}</h2>
+        <p class="chapo">{v.departementsChapo}</p>
+      </header>
+      <CartesDepartements lang={lang} departements={departements} fond="encre" />
     </div>
   </section>
 
@@ -498,3 +670,278 @@ const articles = blogArticles[lang] || blogArticles.en;
   <!-- Final CTA -->
   <FinalCTA lang={lang} color="primary" />
 </PageLayout>
+
+<style>
+  /* L'aiguillage : quatre cartes de tailles différentes. L'Academy sur l'encre avec la
+     capture de son tableau de bord, la formation en hauteur avec la photo d'une session. */
+  .offres {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .offre-lien {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border-radius: var(--rayon-panneau);
+    background: var(--brume);
+    box-shadow: inset 0 0 0 1px var(--filet);
+    transition: box-shadow 0.25s, transform 0.25s;
+  }
+  .offre-lien:hover {
+    box-shadow: inset 0 0 0 1px var(--filet), 0 24px 48px -28px rgb(11 27 43 / 0.45);
+    transform: translateY(-2px);
+  }
+  .offre-corps {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    padding: 24px;
+    flex: 1;
+  }
+  .offre-nom {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.625rem;
+    letter-spacing: -0.02em;
+    color: var(--encre);
+  }
+  .offre-pour {
+    font-weight: 600;
+    color: var(--color-marque);
+  }
+  .offre-phrase {
+    color: #4b5b6b;
+  }
+  .offre-fait {
+    font-weight: 600;
+    color: var(--encre);
+  }
+  .offre-suite {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-weight: 600;
+    color: var(--color-marque);
+  }
+  .offre-image {
+    position: relative;
+    display: block;
+    overflow: hidden;
+  }
+  .offre-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .offre-image-capture {
+    aspect-ratio: 16 / 8;
+    margin: 20px 20px 0;
+    border-radius: 12px;
+    box-shadow: 0 24px 48px -24px rgb(2 9 16 / 0.8);
+  }
+  .offre-image-capture img {
+    object-position: 0 0;
+  }
+  .offre-image-photo {
+    aspect-ratio: 16 / 10;
+  }
+  .offre-pastille {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    border-radius: 999px;
+    padding: 6px 14px;
+    background: #fff;
+    color: var(--encre);
+    font-weight: 700;
+    box-shadow: 0 8px 20px -8px rgb(2 9 16 / 0.5);
+  }
+  .offre-academy .offre-lien {
+    background:
+      radial-gradient(90% 90% at 100% 0%, rgb(29 113 184 / 0.5), transparent 65%),
+      var(--encre);
+    box-shadow: var(--ombre-forte);
+  }
+  .offre-academy .offre-nom,
+  .offre-academy .offre-fait {
+    color: #fff;
+  }
+  .offre-academy .offre-pour,
+  .offre-academy .offre-suite {
+    color: var(--marque-clair);
+  }
+  .offre-academy .offre-phrase {
+    color: var(--texte-sombre-2);
+  }
+  .offre-marques {
+    display: grid;
+    grid-template-columns: repeat(3, 52px);
+    gap: 10px;
+    padding: 24px 24px 0;
+  }
+  .offre-marque {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet);
+  }
+  .offre-icone {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin: 24px 24px 0;
+    border-radius: 18px;
+    background: var(--color-marque-doux);
+    color: var(--color-marque);
+  }
+
+  .formation-photo {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--rayon-panneau);
+  }
+  .formation-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 260px;
+    object-fit: cover;
+  }
+  .formation-photo figcaption {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    border-radius: 999px;
+    padding: 6px 14px;
+    background: rgb(11 27 43 / 0.72);
+    color: #fff;
+    font-size: 0.9375rem;
+  }
+  .formation-tableau {
+    display: grid;
+    align-content: center;
+    padding: 32px 26px;
+    border-radius: var(--rayon-panneau);
+    background:
+      radial-gradient(110% 80% at 92% -10%, rgb(29 113 184 / 0.55) 0%, rgb(29 113 184 / 0.16) 42%, transparent 68%),
+      var(--encre);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1), var(--ombre-forte);
+  }
+
+  .construire {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 28px 24px;
+    border-radius: var(--rayon-panneau);
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet), 0 18px 40px -28px rgb(11 27 43 / 0.35);
+  }
+  .construire-nom {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.75rem;
+    letter-spacing: -0.02em;
+    color: var(--encre);
+  }
+  .construire-marques {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    list-style: none;
+    margin: 0 0 12px;
+    padding: 0;
+  }
+  .construire-marques li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--brume);
+    font-weight: 600;
+    color: var(--encre);
+  }
+  .construire-marques svg {
+    flex: none;
+  }
+  .construire-content {
+    background:
+      radial-gradient(110% 70% at 100% 0%, rgb(29 113 184 / 0.45), transparent 65%),
+      var(--encre);
+    box-shadow: var(--ombre-forte);
+  }
+  .construire-content .construire-nom {
+    color: #fff;
+  }
+  .construire-icone {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    margin-bottom: 8px;
+    border-radius: 20px;
+    background: var(--color-marque);
+    color: #fff;
+  }
+
+  @media (min-width: 640px) {
+    .construire-marques {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 768px) {
+    .offres {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .offre-academy {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (min-width: 1024px) {
+    .offres {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .offre-academy {
+      grid-column: 1 / 3;
+    }
+    .offre-academy .offre-lien {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      align-items: center;
+    }
+    .offre-academy .offre-image-capture {
+      margin: 28px 0 28px 28px;
+      aspect-ratio: 4 / 3;
+    }
+    .offre-academy .offre-corps {
+      padding: 32px;
+    }
+    .offre-training {
+      grid-column: 3;
+      grid-row: 1 / 3;
+    }
+    .offre-training .offre-image-photo {
+      aspect-ratio: 4 / 3;
+    }
+    .formation-tableau {
+      padding: 44px 40px;
+    }
+    .construire {
+      padding: 36px;
+    }
+  }
+</style>
