@@ -1,75 +1,156 @@
 ---
+/**
+ * Pourquoi ce levier, pages automobile (direction Encre, modèle AI Training, 30/09/2026).
+ * Une section d'encre qui monte sur le hero, et UN visuel dominant, choisi par la donnée :
+ *
+ * - le créneau par défaut (la carte de verre du compte Google Ads) : il passe sous
+ *   l'en-tête, les raisons suivent en une rangée de cartes de verre ;
+ * - sinon, les raisons dont le titre commence par un chiffre (« 47% taux de conversion »)
+ *   forment le bloc dominant, le chiffre en très grand, avec les marques des plateformes ;
+ * - sinon, l'image passée en `image` tient la colonne de gauche.
+ *
+ * Les chiffres sont ceux de la fiche MDX (chiffres de l'agence, gardés, à sourcer).
+ */
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
+import Marque from '@/components/ui/Marque.astro';
+
+interface Benefit {
+  icon: string;
+  title: string;
+  description: string;
+}
 
 interface Props {
   lang: Language;
   data: {
     title: string;
     description: string;
-    benefits: Array<{
-      icon: string;
-      title: string;
-      description: string;
-    }>;
+    benefits: Benefit[];
   };
-  color?: 'automotive' | 'ads' | 'social' | 'primary';
+  /** L'image dominante, quand la section n'a ni carte ni chiffres. */
+  image?: string;
+  imageAlt?: string;
+  /** Les marques écrites sous les chiffres (noms de `ui/Marque.astro`). */
+  marques?: string[];
+  /** L'identifiant du titre, pour les repères de la carte de verre. */
+  titreId?: string;
+  /** Accepté pour ne pas toucher aux pages. */
+  color?: string;
 }
 
-const { lang, data, color = 'automotive' } = Astro.props;
+const { lang, data, image, imageAlt = '', marques = [], titreId, color } = Astro.props;
+void color;
 
-const colorConfig = {
-  automotive: {
-    gradient: 'from-sky-500 to-blue-600',
-    iconBg: 'bg-sky-100',
-    iconColor: 'text-sky-600',
-    accent: 'text-sky-500',
-  },
-  ads: {
-    gradient: 'from-amber-500 to-orange-600',
-    iconBg: 'bg-amber-100',
-    iconColor: 'text-amber-600',
-    accent: 'text-amber-500',
-  },
-  social: {
-    gradient: 'from-violet-500 to-purple-600',
-    iconBg: 'bg-violet-100',
-    iconColor: 'text-violet-600',
-    accent: 'text-violet-500',
-  },
-  primary: {
-    gradient: 'from-blue-500 to-indigo-600',
-    iconBg: 'bg-blue-100',
-    iconColor: 'text-blue-600',
-    accent: 'text-blue-500',
-  },
+const avecCarte = Astro.slots.has('default');
+// « 47% taux de conversion » : le chiffre d'un côté, ce qu'il compte de l'autre.
+const enChiffre = (b: Benefit) => {
+  const m = b.title.match(/^([+\-−]?[\d.,\s]+\s?(?:%|€|x|K€|K)?)\s+(.+)$/);
+  return m ? { chiffre: m[1].trim().replace(/(\d)\s?%$/, '$1 %').replace(/(\d)€$/, '$1 €'), texte: m[2], description: b.description } : null;
 };
-
-const colors = colorConfig[color];
+const chiffres = avecCarte ? [] : data.benefits.map(enChiffre).filter((c) => c !== null);
+const raisons = avecCarte ? data.benefits : data.benefits.filter((b) => !enChiffre(b));
+const dominant = !avecCarte && (chiffres.length > 0 || !!image);
+const plateformes = lang === 'fr' ? 'Plateformes' : 'Platforms';
 ---
 
-<section class="section bg-white">
+<section class="auto-pourquoi section-encre section-monte py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Section Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
-      <h2 class="heading-2 mb-4">{data.title}</h2>
-      <p class="body-large text-slate-600">{data.description}</p>
-    </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 id={titreId} class="titre-moyen">{data.title}</h2>
+      <p class="chapo">{data.description}</p>
+    </header>
 
-    <!-- Benefits Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-      {data.benefits.map((benefit, index) => (
-        <div
-          class="group p-6 rounded-2xl bg-white border border-slate-100 shadow-soft hover:shadow-lg hover:border-sky-200 transition-all duration-300 animate-on-scroll"
-          style={`animation-delay: ${index * 100}ms`}
-        >
-          <div class={`w-14 h-14 rounded-xl ${colors.iconBg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-            <Icon name={benefit.icon} size={28} class={colors.iconColor} />
+    {avecCarte && (
+      <>
+        <slot />
+        <ul class="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-24 lg:grid-cols-4 lg:gap-5">
+          {raisons.map((b, i) => (
+            <li class="carte-verre grid content-start gap-3 p-6" data-reveal style={`--i:${i}`}>
+              <span class="tuile tuile-pleine"><Icon name={b.icon} size={26} /></span>
+              <h3 class="titre-carte text-white">{b.title}</h3>
+              <p class="text-sur-encre-2">{b.description}</p>
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+
+    {dominant && (
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-5">
+        {chiffres.length > 0 ? (
+          <div class="auto-chiffres carte-verre" data-reveal>
+            {chiffres.map((c) => (
+              <div class="grid gap-2">
+                <p class="auto-chiffre">{c.chiffre}</p>
+                <p class="text-lg font-semibold text-white">{c.texte}</p>
+                <p class="max-w-[46ch] text-sur-encre-2">{c.description}</p>
+              </div>
+            ))}
+            {marques.length > 0 && (
+              <ul class="flex flex-wrap gap-3" aria-label={plateformes}>
+                {marques.map((m) => (
+                  <li class="grid h-12 w-12 place-items-center rounded-2xl bg-white" title={m}><Marque nom={m} taille={24} /></li>
+                ))}
+              </ul>
+            )}
           </div>
-          <h3 class="heading-5 mb-2">{benefit.title}</h3>
-          <p class="text-slate-600 text-sm">{benefit.description}</p>
-        </div>
-      ))}
-    </div>
+        ) : (
+          <figure class="auto-visuel" data-reveal>
+            <img src={image} alt={imageAlt} class="h-full w-full object-contain" loading="lazy" decoding="async" />
+          </figure>
+        )}
+        <ul class:list={['grid grid-cols-1 gap-4 sm:grid-cols-2', raisons.length <= 2 ? 'lg:grid-cols-1' : 'content-start lg:grid-cols-1 xl:grid-cols-2']}>
+          {raisons.map((b, i) => (
+            <li class="carte-verre grid content-start gap-3 p-6" data-reveal style={`--i:${i}`}>
+              <span class="tuile tuile-pleine"><Icon name={b.icon} size={26} /></span>
+              <h3 class="titre-carte text-white">{b.title}</h3>
+              <p class="text-sur-encre-2">{b.description}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
   </div>
 </section>
+
+<style>
+  .auto-chiffres {
+    display: grid;
+    align-content: space-between;
+    gap: 36px;
+    padding: 32px 28px;
+    background:
+      radial-gradient(110% 90% at 0% 0%, rgb(29 113 184 / 0.55), transparent 62%),
+      rgb(255 255 255 / 0.06);
+  }
+  .auto-chiffre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(3.75rem, 2.4rem + 5.5vw, 6.5rem);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .auto-visuel {
+    display: grid;
+    place-items: center;
+    min-height: 320px;
+    margin: 0;
+    padding: 24px;
+    border-radius: var(--rayon-scene);
+    background:
+      radial-gradient(90% 80% at 50% 40%, rgb(29 113 184 / 0.45), transparent 70%),
+      rgb(255 255 255 / 0.04);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  }
+  .auto-visuel img {
+    max-height: 520px;
+  }
+  @media (min-width: 1024px) {
+    .auto-chiffres {
+      padding: 40px;
+    }
+  }
+</style>
