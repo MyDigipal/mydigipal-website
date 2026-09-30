@@ -11,30 +11,39 @@
  *
  * `caseStudyIds` : le nom de la fiche (`dmd-group`), ou `{ id, kpi, second }` pour
  * choisir les indicateurs montrés (par défaut le premier et le deuxième).
+ * `fond` : `brume` (par défaut) ou `encre`, la section « preuve » de la maquette.
+ * `verbatim` : le nom d'une fiche dont le verbatim s'affiche sous les lignes.
  */
 import { getCollection } from 'astro:content';
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
+import { chiffreLocal } from '@/lib/etudes-de-cas';
 
 type Choix = string | { id: string; kpi?: number; second?: number };
 
 interface Props {
   lang: Language;
   caseStudyIds: Choix[];
+  fond?: 'brume' | 'encre';
+  verbatim?: string;
   /** Accepté pour ne pas toucher aux pages. */
   color?: string;
 }
 
-const { lang, caseStudyIds, color } = Astro.props;
+const { lang, caseStudyIds, fond = 'brume', verbatim, color } = Astro.props;
 void color;
+const encre = fond === 'encre';
 
 const fiches = await getCollection('case-studies');
-const insecable = (v: string) => (lang === 'fr' ? v.replace(/(\d)\s?%/g, '$1 %') : v);
+const trouver = (id: string) => {
+  const f = fiches.find((x) => x.id === `${lang}/${id}`);
+  if (!f) throw new Error(`CaseStudyCarousel : étude de cas introuvable : ${lang}/${id}`);
+  return f;
+};
 
 const lignes = caseStudyIds.map((c) => {
   const { id, kpi = 0, second = 1 } = typeof c === 'string' ? { id: c } : c;
-  const fiche = fiches.find((f) => f.id === `${lang}/${id}`);
-  if (!fiche) throw new Error(`CaseStudyCarousel : étude de cas introuvable : ${lang}/${id}`);
+  const fiche = trouver(id);
   const k = fiche.data.kpis[kpi];
   const s = fiche.data.kpis[second];
   if (!k) throw new Error(`CaseStudyCarousel : ${id} n'a pas d'indicateur n° ${kpi}`);
@@ -42,12 +51,15 @@ const lignes = caseStudyIds.map((c) => {
     id,
     client: fiche.data.client,
     logo: fiche.data.logo,
-    chiffre: insecable(k.value),
+    chiffre: chiffreLocal(k.value, lang),
     libelle: k.label,
-    second: s && second !== kpi ? `${insecable(s.value)} ${s.label.toLowerCase()}` : '',
+    second: s && second !== kpi ? `${chiffreLocal(s.value, lang)} ${s.label.toLowerCase()}` : '',
     lien: `/${lang}/case-studies/${id}`,
   };
 });
+
+const cite = verbatim ? trouver(verbatim) : null;
+const citation = cite?.data.testimonial;
 
 const t = {
   en: { titre: 'Their numbers, not ours', chapo: 'Client accounts we took over, and what they delivered.', lire: 'Read the case study' },
@@ -55,14 +67,14 @@ const t = {
 }[lang];
 ---
 
-<section class="preuves section-brume py-20 lg:py-32">
+<section class:list={['preuves py-20 lg:py-32', encre ? 'section-encre section-monte' : 'section-brume']}>
   <div class="container-custom">
     <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
-      <h2 class="titre-moyen text-encre">{t.titre}</h2>
+      <h2 class:list={['titre-moyen', { 'text-encre': !encre }]}>{t.titre}</h2>
       <p class="chapo">{t.chapo}</p>
     </header>
 
-    <ul class="preuves-lignes">
+    <ul class:list={['preuves-lignes', { 'preuves-encre': encre }]}>
       {lignes.map((l, i) => (
         <li class="preuve" data-reveal style={`--i:${i}`}>
           <div class="preuve-client">
@@ -71,12 +83,12 @@ const t = {
                 <img src={l.logo} alt="" class="max-h-full w-auto object-contain" loading="lazy" decoding="async" />
               </span>
             )}
-            <span class="font-semibold text-encre">{l.client}</span>
+            <span class:list={['font-semibold', encre ? 'text-sur-encre' : 'text-encre']}>{l.client}</span>
           </div>
           <p class="preuve-chiffre">{l.chiffre}</p>
           <div class="grid gap-1">
-            <p class="text-lg leading-snug text-encre lg:text-xl">{l.libelle}</p>
-            {l.second && <p class="text-slate-600">{l.second}</p>}
+            <p class:list={['text-lg leading-snug lg:text-xl', encre ? 'text-sur-encre' : 'text-encre']}>{l.libelle}</p>
+            {l.second && <p class={encre ? 'text-sur-encre-2' : 'text-slate-600'}>{l.second}</p>}
           </div>
           <a href={l.lien} class="preuve-lien">
             {t.lire}
@@ -86,6 +98,15 @@ const t = {
         </li>
       ))}
     </ul>
+
+    {citation && (
+      <figure class="preuve-verbatim" data-reveal>
+        <blockquote>
+          <p>{lang === 'fr' ? `« ${citation.quote} »` : `“${citation.quote}”`}</p>
+        </blockquote>
+        <figcaption>{[citation.author, citation.role].filter(Boolean).join(', ')}</figcaption>
+      </figure>
+    )}
   </div>
 </section>
 
@@ -97,6 +118,9 @@ const t = {
   }
   .preuve + .preuve {
     border-top: 1px solid rgb(11 27 43 / 0.10);
+  }
+  .preuves-encre .preuve + .preuve {
+    border-top-color: var(--filet-sombre);
   }
   .preuve:first-child {
     padding-top: 0;
@@ -116,6 +140,9 @@ const t = {
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
   }
+  .preuves-encre .preuve-chiffre {
+    color: #fff;
+  }
   .preuve-lien {
     display: inline-flex;
     align-items: center;
@@ -128,6 +155,35 @@ const t = {
   }
   .preuve-lien:hover {
     color: var(--color-marque-fonce);
+  }
+  .preuves-encre .preuve-lien {
+    color: var(--marque-clair);
+  }
+  .preuves-encre .preuve-lien:hover {
+    color: #fff;
+  }
+  .preuve-verbatim {
+    margin-top: 40px;
+    display: grid;
+    gap: 20px;
+  }
+  .preuve-verbatim blockquote p {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.375rem, 1.1rem + 1.2vw, 2rem);
+    line-height: 1.32;
+    letter-spacing: -0.02em;
+    color: var(--encre);
+    text-wrap: pretty;
+  }
+  .preuve-verbatim figcaption {
+    color: #4b5b6b;
+  }
+  .section-encre .preuve-verbatim blockquote p {
+    color: #fff;
+  }
+  .section-encre .preuve-verbatim figcaption {
+    color: var(--texte-sombre-2);
   }
   @media (min-width: 1024px) {
     /* Une seule grille pour toutes les lignes : le chiffre prend sa largeur, et les
@@ -146,6 +202,16 @@ const t = {
     .preuve-client {
       flex-direction: column;
       align-items: flex-start;
+    }
+    .preuve-verbatim {
+      margin-top: 88px;
+      margin-left: 250px;
+      max-width: 900px;
+    }
+  }
+  @media (min-width: 1024px) and (max-width: 1199px) {
+    .preuve-verbatim {
+      margin-left: 190px;
     }
   }
 </style>
