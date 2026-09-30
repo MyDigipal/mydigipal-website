@@ -218,11 +218,15 @@ Commit `e206566`.
 - Même idée visuelle sur 2 pages services + copy légèrement différente → prop `variant` sur un composant partagé (voir `MarketingStackGrid.astro` avec `variant: 'training' | 'solutions'`)
 - Positioning fondamentalement différent (formation vs delivery) → composants dédiés pour éviter un mega-switch (voir `MCPBuildSection` sur AI Training vs `MCPCustomBuildSection` sur AI Solutions)
 
-### Chiffres MCP Gateway : retirés du site (30/09/2026)
-- `244` outils / `21` plateformes / `18+` clients ne sont plus affichés nulle part (refonte, groupe 1 :
-  un chiffre sans source affichée sort). `MarketingStackGrid.astro` range les outils par famille, et
-  les sections MCP expliquent le serveur par la carte de verre (`components/motion/donnees-mcp.ts`).
-  Pour les remettre, Paul doit dire d'où on les tire et on affiche la source.
+### Chiffres MCP Gateway : de retour (30/09/2026, demande de Paul)
+- `244` outils / `21` plateformes / `18+` clients sont les chiffres de l'agence, remis par Paul après
+  le groupe 1 qui les avait retirés. Ils vivent à trois endroits, à tenir à jour ensemble :
+  `MarketingStackGrid.astro` (panneau « Notre passerelle MCP, en production », compteurs),
+  `MCPBuildSection.astro` et `MCPCustomBuildSection.astro` (textes).
+- Les outils de la grille portent leur vraie marque EN COULEUR : `sections/logos-outils.ts`, fichier
+  GÉNÉRÉ par `scripts/logos-outils-mcp.py` depuis les SVG simple-icons (CC0) gardés dans
+  `scripts/sources-marques/outils/`. LinkedIn (retiré de simple-icons), Ahrefs, Lemlist et Airscale
+  n'ont pas de marque libre : leur nom seul, jamais une fausse marque.
 
 ### CTAs avec query param `?topic=` pour tracking futur
 - Les CTAs MCP vers `/contact` passent un `?topic=` : `mcp`, `mcp-build`, `mcp-package`, `parcours-technique`
@@ -768,6 +772,34 @@ l'encre ponctue sans jamais deux sections sombres collées (commentaires dans `[
   trois pages n'ont plus de `metrics`. Les prix, remises, tailles de groupe et durées de projet
   restent : ce sont les conditions des offres.
 - Sur ces pages, les cartes d'articles perdent leur image sous 640 px.
+
+### Les deux pages pilotes, correction de cap (30/09/2026, branche `refonte-design`)
+
+Paul a jugé le groupe 1 trop fait de listes. Règles : un visuel dominant par section, jamais une
+section de texte et de listes seules ; des cartes seulement si leur contenu est distinct et qu'elles
+ressortent (tailles variées, verre sur l'encre), jamais trois cartes égales par réflexe ; au moins
+deux animations du labo par page. **Pilotes : `/fr/ai` et `/fr/services/ai-training`** (l'anglais
+doit seulement se construire). Ensuite, arrêt et compte rendu avant toute autre page.
+- **Trois nouvelles scènes** dans `components/motion/` :
+  - `TableauPalettes.astro` (essai `tableau-chiffres`) : un à trois chiffres sur des volets qui
+    basculent, l'unité en bleu, la phrase en texte normal. `auChargement` le lance au chargement
+    (hero d'AI Training, via la prop `tableau` de `HeroService`). La taille des volets suit la
+    largeur du tableau (`container-type`), pas celle de l'écran.
+  - `CameraInterface.astro` (essai `demo-interface`) : la caméra glisse sur une VRAIE capture,
+    tient chaque zone avec son libellé, revient au plan large ; zoom 1,5 au plus, voile en
+    opacité seule. Sous 1 024 px, pas de caméra : capture à plat et cartes recadrées en CSS.
+    Sert à l'Academy sur `/ai` (`public/academy/captures/{fr/,}tableau-de-bord.jpg`).
+  - `GrilleSuisse.astro` (essai `grille-suisse`) : CRAFT sur douze colonnes (quatre au
+    téléphone), mot révélé par une barre qui passe. Remplace `GrilleMots` sur AI Training.
+- **Composants** : `sections/CartesDepartements.astro` (une grande icône, UN exemple de demande,
+  la première et la dernière carte sur deux colonnes), `sections/RubanCalculateur.astro` (le
+  service de la page déjà coché, sur toutes les pages services dont le calculateur connaît le
+  service), `PageHero` accepte un créneau `apres`.
+- **« 2 500+ personnes formées »** revient au hero d'AI Training (tableau à palettes, avec la note et
+  le nombre de retours de l'API) et sur `/ai`.
+- **Logos clients en couleur partout** (Paul, 30/09/2026) : plus de filtre gris dans
+  `BandeauLogos`. Restent en gris, à traiter avec leur page : l'accueil (`Resultats`, `Offre`,
+  `Avis`, `Bandeau`) et l'automobile (`AutomotiveClients`, `AutomotiveBenchmarks`).
 
 ### Les éléments flottants partagent une seule mesure : `--bandeau`
 
