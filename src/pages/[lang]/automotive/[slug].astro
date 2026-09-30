@@ -1,28 +1,25 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
-import { t } from '@/i18n/utils';
 import { getCollection } from 'astro:content';
-
-// Components
-import Badge from '@/components/ui/Badge.astro';
-import Button from '@/components/ui/Button.astro';
-import Icon from '@/components/ui/Icon.astro';
 
 // Sections
 import HeroService from '@/components/sections/HeroService.astro';
-import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
+import RubanCalculateur from '@/components/sections/RubanCalculateur.astro';
+import CaseStudyCarousel from '@/components/sections/CaseStudyCarousel.astro';
+import CarteVerre from '@/components/motion/CarteVerre.astro';
+import { carteCompte, railFormulaire } from '@/components/motion/donnees-automobile';
+import { mesurerLogos } from '@/lib/logos-mesures';
 
 // Automotive specific sections
 import AutomotiveBenchmarks from '@/components/sections/automotive/AutomotiveBenchmarks.astro';
 import AutomotiveUseCases from '@/components/sections/automotive/AutomotiveUseCases.astro';
 import AutomotiveTeam from '@/components/sections/automotive/AutomotiveTeam.astro';
-import AutomotiveClients from '@/components/sections/automotive/AutomotiveClients.astro';
 import AutomotiveFAQ from '@/components/sections/automotive/AutomotiveFAQ.astro';
 import AutomotiveWhySection from '@/components/sections/automotive/AutomotiveWhySection.astro';
 import AutomotiveServices from '@/components/sections/automotive/AutomotiveServices.astro';
-import AutomotiveMidCTA from '@/components/sections/automotive/AutomotiveMidCTA.astro';
+import AutomotiveRail from '@/components/sections/automotive/AutomotiveRail.astro';
 
 // Dynamic Ads specific sections (visual components)
 import DynamicAdsFlow from '@/components/sections/automotive/DynamicAdsFlow.astro';
@@ -67,7 +64,6 @@ const {
   team,
   clients,
   faq,
-  testimonial,
   calculatorServiceId,
   seo,
   whySection,
@@ -75,6 +71,100 @@ const {
   isDynamicAds,
 } = page.data;
 
+const fr = lang === 'fr';
+const isGoogleAds = slug === 'google-ads';
+const isPaidSocial = slug === 'paid-social';
+
+// Le tableau à palettes du hero : trois chiffres de la fiche (chiffres de l'agence, gardés,
+// à sourcer), sans les impressions ni le « 3 plateformes ». « 150K€ » devient le chiffre
+// « 150 » et l'unité « K€ » ; « 3125 » s'écrit « 3 125 » en français.
+const tableauHero = (metrics ?? [])
+  .filter((m: { label: string }) => !/impression|plateforme|platform/i.test(m.label))
+  .slice(0, 3)
+  .map((m: { value: string; label: string }) => {
+    const [, chiffre = m.value, unite = ''] = m.value.match(/^([+\-−]?[\d.,]+)\s*(.*)$/) ?? [];
+    const local = fr ? chiffre.replace('.', ',').replace(/^(\d{1,3})(\d{3})$/, '$1\u202f$2') : chiffre;
+    const texte = fr ? m.label.charAt(0).toLowerCase() + m.label.slice(1) : m.label;
+    return { chiffre: local, unite, texte };
+  });
+
+// Les logos de la page, EN COULEUR (Paul, 30/09/2026), dans la bande du hero : la version
+// détourée de l'accueil quand elle existe, le fichier de la fiche sinon. La seconde bande
+// qui les faisait défiler en gris plus bas (AutomotiveClients) n'est plus rendue.
+// Iroise : le fichier de la fiche porte un cadre et beaucoup de blanc, celui des logos
+// clients non. Tous à surface égale (`mesurerLogos`).
+const heroLogos = await mesurerLogos(
+  clients ?? [],
+  { Theobald: 'theobald', Ford: 'ford', 'Motor K': 'motork', Vulcain: 'vulcain', DMD: 'dmd', BYmyCAR: 'bymycar' },
+  { 'Iroise Automobiles': '/images/Client logo/Iroise Auto.png' },
+);
+
+// Le visuel de la première carte des services, et celui du « pourquoi » des Dynamic Ads.
+const VISUELS: Record<string, { services: string; servicesAlt: { fr: string; en: string } }> = {
+  'google-ads': {
+    services: '/images/Automotive/Google Ads/66420b0dde42e6707d36b7fc_SCR-20240513-osho.webp',
+    servicesAlt: { fr: 'La structure d’un compte : la marque, ses modèles, leurs mots-clés', en: 'Account structure: the brand, its models, their keywords' },
+  },
+  'paid-social': {
+    services: '/images/Automotive/Paid Social/19ce258d-cdd1-44c3-8c21-5667c5b867e4.svg',
+    servicesAlt: { fr: 'Le gestionnaire de campagnes : Facebook, LinkedIn, TikTok, Instagram', en: 'Campaign manager: Facebook, LinkedIn, TikTok, Instagram' },
+  },
+  'dynamic-ads': {
+    services: '/images/Automotive/Dynamic Ads/8c304fc5-e979-4531-b664-bf4f97b33953.webp',
+    servicesAlt: { fr: 'Du tableur du stock à l’annonce publiée', en: 'From the stock spreadsheet to the live ad' },
+  },
+};
+const visuel = VISUELS[slug];
+
+// Le titre des cas d'usage, propre à chaque page.
+const CAS: Record<string, { fr: [string, string]; en: [string, string] }> = {
+  'google-ads': {
+    fr: ['Une stratégie par situation', 'Lancer un modèle, écouler l’occasion ou remplir des portes ouvertes : ce n’est pas la même campagne.'],
+    en: ['One strategy per situation', 'Launching a model, moving used stock or filling an open day: it is not the same campaign.'],
+  },
+  'paid-social': {
+    fr: ['Du ciblage à la vente', 'Trouver les bons acheteurs, les accompagner jusqu’au rendez-vous, avec une stratégie écrite avant la première annonce.'],
+    en: ['From targeting to the sale', 'Finding the right buyers and staying with them until the appointment, with a strategy written before the first ad.'],
+  },
+  'dynamic-ads': {
+    fr: ['Ce que les Dynamic Ads changent', 'Des annonces qui suivent le stock et l’acheteur, et une mise en place qui se compte en jours.'],
+    en: ['What Dynamic Ads change', 'Ads that follow the stock and the buyer, and a set-up counted in days.'],
+  },
+};
+const [casTitre, casChapo] = CAS[slug]?.[lang] ?? [undefined, undefined];
+
+// Les résultats des études de cas automobiles, lus dans la collection, un indicateur choisi
+// par page ; le verbatim d'une des trois.
+const PREUVES: Record<string, { ids: { id: string; kpi: number; second: number }[]; verbatim: string }> = {
+  'google-ads': {
+    ids: [
+      { id: 'theobald-group', kpi: 0, second: 2 },
+      { id: 'vulcain-group', kpi: 0, second: 1 },
+      { id: 'dmd-group', kpi: 2, second: 0 },
+    ],
+    verbatim: 'theobald-group',
+  },
+  'paid-social': {
+    ids: [
+      { id: 'theobald-group', kpi: 1, second: 2 },
+      { id: 'vulcain-group', kpi: 1, second: 0 },
+      { id: 'dmd-group', kpi: 1, second: 0 },
+    ],
+    verbatim: 'vulcain-group',
+  },
+  'dynamic-ads': {
+    ids: [
+      { id: 'dmd-group', kpi: 1, second: 0 },
+      { id: 'theobald-group', kpi: 2, second: 1 },
+      { id: 'vulcain-group', kpi: 1, second: 0 },
+    ],
+    verbatim: 'dmd-group',
+  },
+};
+const preuves = PREUVES[slug];
+
+const rail = railFormulaire(lang);
+const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust us with their campaigns' };
 ---
 
 <PageLayout
@@ -82,7 +172,8 @@ const {
   title={seo?.title || title}
   description={seo?.description || description}
 >
-  <!-- Hero Section -->
+  <!-- Direction Encre, modèle AI Training (groupe 3, 30/09/2026). L'encre ponctue sans
+       jamais deux sections sombres collées ; commentaires : le fond de chaque section. -->
   <HeroService
     lang={lang}
     badge={hero?.badge}
@@ -90,87 +181,82 @@ const {
     subheadline={hero?.subheadline}
     description={description}
     color={color}
-    metrics={metrics}
-    proofPoints={(services?.items || []).slice(0, 4).map((i: { title: string }) => i.title)}
+    tableau={tableauHero}
+    heroLogos={heroLogos}
+    titreLogos={titresLogos[lang]}
     serviceCalculateur={calculatorServiceId}
   />
-  <!-- Les chiffres sont dans le panneau du hero depuis le 25/09/2026 (plus de bande
-       MetricsCounter qui les répétait). -->
 
-  <!-- Dynamic Ads Flow Diagram (only for Dynamic Ads page) -->
-  {isDynamicAds && (
-    <DynamicAdsFlow lang={lang} color={color} />
+  <!-- Dynamic Ads : la carte de verre du stock (encre), les plateformes (brume), l'avant et
+       l'après (blanc), puis le pourquoi (encre). -->
+  {isDynamicAds && <DynamicAdsFlow lang={lang} />}
+  {isDynamicAds && <DynamicAdsChannels lang={lang} />}
+  {isDynamicAds && <DynamicAdsROI lang={lang} />}
+
+  <!-- Le pourquoi (encre) : la carte du compte sur Google Ads, les chiffres sur Paid Social,
+       les deux annonces sur téléphone sur Dynamic Ads. -->
+  {whySection && isGoogleAds && (
+    <AutomotiveWhySection lang={lang} data={whySection} titreId="compte-titre">
+      <CarteVerre lang={lang} titreId="compte-titre" {...carteCompte(lang)} />
+    </AutomotiveWhySection>
   )}
-
-  <!-- Dynamic Ads Channels (only for Dynamic Ads page) -->
-  {isDynamicAds && (
-    <DynamicAdsChannels lang={lang} color={color} />
+  {whySection && isPaidSocial && (
+    <AutomotiveWhySection lang={lang} data={whySection} marques={['Facebook', 'Instagram', 'TikTok', 'LinkedIn']} />
   )}
-
-  <!-- Dynamic Ads ROI Comparison (only for Dynamic Ads page) -->
-  {isDynamicAds && (
-    <DynamicAdsROI lang={lang} color={color} />
-  )}
-
-  <!-- Why Section (for all automotive pages) -->
-  {whySection && (
-    <AutomotiveWhySection lang={lang} data={whySection} color={color} />
-  )}
-
-  <!-- Services/Features Section -->
-  {services && (
-    <AutomotiveServices lang={lang} data={services} color={color} />
-  )}
-
-  <!-- Mid-page CTA (after services) -->
-  <AutomotiveMidCTA lang={lang} color={color} />
-
-  <!-- Benchmarks Section -->
-  {benchmarks && benchmarks.length > 0 && (
-    <AutomotiveBenchmarks lang={lang} benchmarks={benchmarks} color={color} />
-  )}
-
-  <!-- Use Cases Section -->
-  {useCases && useCases.length > 0 && (
-    <AutomotiveUseCases lang={lang} useCases={useCases} color={color} />
-  )}
-
-  <!-- Team Section -->
-  {team && team.length > 0 && (
-    <AutomotiveTeam lang={lang} team={team} />
-  )}
-
-  <!-- Client Logos -->
-  {clients && clients.length > 0 && (
-    <AutomotiveClients lang={lang} clients={clients} />
-  )}
-
-  <!-- Testimonial -->
-  {testimonial && (
-    <TestimonialSpotlight
+  {whySection && isDynamicAds && (
+    <AutomotiveWhySection
       lang={lang}
-      quote={testimonial.quote}
-      author={testimonial.author}
-      role={testimonial.role}
-      company={testimonial.company}
-      image={testimonial.image}
-      companyLogo={testimonial.companyLogo}
+      data={whySection}
+      image="/images/Automotive/Dynamic Ads/0b17f767-906a-4aaf-ba8b-7cee306c13f9.webp"
+      imageAlt={fr ? 'Deux annonces de véhicules du stock, sur téléphone' : 'Two ads for vehicles in stock, on a phone'}
     />
   )}
 
-  <!-- Final CTA -->
-  <FinalCTA lang={lang} color={color} />
-
-  <!-- FAQ Section -->
-  {faq && faq.length > 0 && (
-    <AutomotiveFAQ lang={lang} faq={faq} color={color} />
+  <!-- Paid Social : du formulaire Meta au CRM, sur le rail (blanc). -->
+  {isPaidSocial && (
+    <AutomotiveRail
+      lang={lang}
+      titre={fr ? 'Du formulaire Meta à votre CRM' : 'From the Meta form to your CRM'}
+      chapo={fr
+        ? 'Un contact qui attend lundi dans un fichier est un contact refroidi. Le chemin qu’on installe, de l’annonce au rappel du vendeur, puis retour à Meta.'
+        : 'A lead waiting in a file until Monday is a lead gone cold. The path we set up, from the ad to the salesperson’s call, then back to Meta.'}
+      stations={rail}
+    />
   )}
-</PageLayout>
 
-<style>
-  /* Page-specific animations */
-  @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
-  }
-</style>
+  <!-- Ce qu'on fait (brume ; encre sur Paid Social, dont le rail est sur le blanc). -->
+  {services && (
+    <AutomotiveServices lang={lang} data={services} image={visuel?.services} imageAlt={visuel?.servicesAlt[lang]} fond={isPaidSocial ? 'encre' : 'brume'} />
+  )}
+
+  <!-- Les cas d'usage (blanc). -->
+  {useCases && useCases.length > 0 && (
+    <AutomotiveUseCases lang={lang} useCases={useCases} titre={casTitre} chapo={casChapo} />
+  )}
+
+  <!-- Les résultats de trois concessions (encre). -->
+  {benchmarks && benchmarks.length > 0 && (
+    <AutomotiveBenchmarks lang={lang} benchmarks={benchmarks} />
+  )}
+
+  <!-- Le ruban vers le calculateur, le service de la page déjà coché (blanc). Il remplace
+       l'appel en dégradé du milieu de page (AutomotiveMidCTA). -->
+  <RubanCalculateur lang={lang} service={calculatorServiceId} />
+
+  <!-- L'équipe (brume). -->
+  {team && team.length > 0 && (
+    <AutomotiveTeam lang={lang} team={team} fond="brume" />
+  )}
+
+  <!-- Les études de cas automobiles et un verbatim (encre). -->
+  {preuves && (
+    <CaseStudyCarousel lang={lang} caseStudyIds={preuves.ids} verbatim={preuves.verbatim} fond="encre" />
+  )}
+
+  <!-- Les questions, puis l'appel final : l'ordre de la maquette Encre. -->
+  {faq && faq.length > 0 && (
+    <AutomotiveFAQ lang={lang} faq={faq} />
+  )}
+
+  <FinalCTA lang={lang} color={color} />
+</PageLayout>
