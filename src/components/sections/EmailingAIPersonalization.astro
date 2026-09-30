@@ -1,5 +1,7 @@
 ---
 import { type Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import RailMorphing from '@/components/motion/RailMorphing.astro';
 
 interface Props {
   lang: Language;
@@ -145,95 +147,43 @@ const icons = {
   layers: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`,
   chart: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>`
 };
+
+// Cinq temps sur le rail : les sept étapes, les textes réunis quand deux étapes n'en font qu'une.
+const e = t.steps;
+const stations = [
+  { titre: e[0].title, texte: `${e[0].description} ${e[1].title} : ${e[1].description}`, forme: 'loupe' as const },
+  { titre: e[2].title, texte: e[2].description, forme: 'structure' as const },
+  { titre: e[3].title, texte: `${e[3].description} ${e[4].title} : ${e[4].description}`, forme: 'bulle' as const },
+  { titre: e[5].title, texte: e[5].description, forme: 'curseur' as const },
+  { titre: e[6].title, texte: e[6].description, forme: 'courbe' as const },
+];
+
 ---
 
-<section class="py-24 bg-gradient-to-br from-rose-50 via-pink-50 to-slate-50 overflow-hidden">
+<!-- Emailing, la séquence personnalisée (direction Encre, 30/09/2026) : les sept étapes sur le
+     rail, regroupées en cinq temps (le ciblage et la collecte, puis le contenu et sa
+     rédaction, vont ensemble). L'objectif en tête, ce qui change dans une carte d'encre. -->
+<section class="section-brume py-20 lg:py-32">
   <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-12">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Objective Box -->
-    <div class="max-w-2xl mx-auto mb-16">
-      <div class="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-rose-500">
-        <h3 class="text-lg font-bold text-rose-600 mb-2">{t.objective.title}</h3>
-        <p class="text-slate-700">{t.objective.description}</p>
-      </div>
-    </div>
-
-    <!-- Process Steps -->
-    <div class="max-w-4xl mx-auto relative">
-      <!-- Vertical line -->
-      <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-rose-300 via-pink-400 to-rose-300 hidden md:block"></div>
-
-      <div class="space-y-6">
-        {t.steps.map((step, index) => (
-          <div
-            class="process-step group relative flex gap-6"
-            style={`animation-delay: ${index * 100}ms`}
-          >
-            <!-- Step Number -->
-            <div class="relative z-10 flex-shrink-0">
-              <div class="text-marque">
-                <span class="text-xl font-bold">{step.number}</span>
-              </div>
-            </div>
-
-            <!-- Content Card -->
-            <div class="flex-1 bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-rose-200">
-              <div class="flex items-start gap-4">
-                <div class="flex-shrink-0 text-marque">
-                  <Fragment set:html={icons[step.icon as keyof typeof icons]} />
-                </div>
-                <div class="flex-1">
-                  <h4 class="text-lg font-bold text-slate-900 mb-2">{step.title}</h4>
-                  <p class="text-slate-600 text-sm leading-relaxed">{step.description}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <p class="carte mb-12 inline-flex max-w-full flex-wrap items-center gap-x-3 gap-y-1 px-5 py-4 lg:mb-16">
+      <span class="font-semibold text-marque">{t.objective.title}</span>
+      <span class="text-encre">{t.objective.description}</span>
+    </p>
+    <RailMorphing lang={lang} stations={stations} />
+    <div class="carte-encre mt-14 grid grid-cols-1 gap-6 p-6 lg:mt-20 lg:grid-cols-[minmax(0,0.6fr)_minmax(0,1.4fr)] lg:items-center lg:p-10">
+      <h3 class="titre-moyen text-white">{t.differentiator.title}</h3>
+      <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {t.differentiator.points.map((p) => (
+          <li class="grid grid-cols-[40px_minmax(0,1fr)] items-center gap-3 rounded-2xl bg-white/[0.07] p-4 text-sur-encre">
+            <span class="grid h-10 w-10 place-items-center rounded-xl bg-marque text-white"><Icon name="check" size={18} /></span>
+            <span>{p}</span>
+          </li>
         ))}
-      </div>
-    </div>
-
-    <!-- Differentiator Box -->
-    <div class="max-w-2xl mx-auto mt-16">
-      <div class="bg-gradient-to-br from-rose-500 to-pink-600 rounded-3xl p-8 text-white shadow-xl">
-        <h3 class="text-2xl font-bold mb-6">{t.differentiator.title}</h3>
-        <div class="grid sm:grid-cols-2 gap-4">
-          {t.differentiator.points.map((point) => (
-            <div class="flex items-start gap-3">
-              <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-              </div>
-              <span class="text-white/90">{point}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      </ul>
     </div>
   </div>
 </section>
-
-<style>
-  .process-step {
-    opacity: 0;
-    transform: translateX(-20px);
-    animation: slideIn 0.6s ease forwards;
-  }
-
-  @keyframes slideIn {
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-</style>
