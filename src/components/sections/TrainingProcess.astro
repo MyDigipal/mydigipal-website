@@ -22,7 +22,7 @@ const translations = {
       {
         number: "02",
         title: "Use Case Definition",
-        description: "We define specific use cases tailored to your audience - real scenarios from their daily work that AI can improve.",
+        description: "We define specific use cases tailored to your audience: real scenarios from their daily work that AI can improve.",
         icon: "🎯"
       },
       {
@@ -34,7 +34,7 @@ const translations = {
       {
         number: "04",
         title: "Training Delivery",
-        description: "We deliver the training either in-person at your offices or remotely via Zoom/Teams - whatever works best for your team.",
+        description: "We deliver the training either in-person at your offices or remotely via Zoom or Teams, whatever works best for your team.",
         icon: "🎓"
       },
       {
@@ -65,7 +65,7 @@ const translations = {
       {
         number: "02",
         title: "Définition des use cases",
-        description: "Nous définissons des cas d'usage spécifiques adaptés à votre audience - des scénarios réels de leur quotidien que l'IA peut améliorer.",
+        description: "Nous définissons des cas d'usage spécifiques adaptés à votre audience : des scénarios réels de leur quotidien que l'IA peut améliorer.",
         icon: "🎯"
       },
       {
@@ -77,7 +77,7 @@ const translations = {
       {
         number: "04",
         title: "Réalisation du training",
-        description: "Nous dispensons la formation en présentiel dans vos locaux ou à distance via Zoom/Teams - selon vos préférences.",
+        description: "Nous dispensons la formation en présentiel dans vos locaux ou à distance via Zoom ou Teams, selon vos préférences.",
         icon: "🎓"
       },
       {
@@ -99,95 +99,21 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="py-24 bg-gradient-to-b from-white to-slate-50 overflow-hidden">
-  <div class="container-custom">
-    <!-- Header -->
-    <div class="text-center mb-16">
-      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-        {t.headline}
-      </h2>
-      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-        {t.subtitle}
-      </p>
-    </div>
-
-    <!-- Process Steps -->
-    <div class="relative max-w-5xl mx-auto">
-      <!-- Connection line -->
-      <div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-300 via-blue-300 to-cyan-300 hidden md:block"></div>
-
-      <div class="space-y-12 md:space-y-0">
-        {t.steps.map((step, index) => (
-          <div
-            class={`process-step relative flex flex-col md:flex-row items-start gap-6 md:gap-12 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
-            style={`animation-delay: ${index * 100}ms`}
-          >
-            <!-- Content Card -->
-            <div class={`flex-1 ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
-              <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-slate-100">
-                <div class={`flex items-center gap-3 mb-3 ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
-                  <span class="text-3xl">{step.icon}</span>
-                  <h3 class="text-xl font-bold text-slate-900">{step.title}</h3>
-                </div>
-                <p class="text-slate-600 leading-relaxed">{step.description}</p>
-              </div>
-            </div>
-
-            <!-- Number Circle -->
-            <div class="absolute left-0 md:left-1/2 md:-translate-x-1/2 flex-shrink-0">
-              <div class="w-16 h-16 rounded-full bg-marque flex items-center justify-center">
-                <span class="text-white font-bold text-lg">{step.number}</span>
-              </div>
-            </div>
-
-            <!-- Spacer for the other side -->
-            <div class="flex-1 hidden md:block"></div>
-          </div>
-        ))}
-      </div>
-    </div>
+<!-- Direction Encre (30/09/2026) : fond blanc, les six étapes dans l'ordre, entre des
+     filets. Plus de pastilles numérotées, plus d'emoji, plus de frise en zigzag. -->
+<section class="section-blanc py-20 lg:py-32">
+  <div class="container-custom grid gap-10 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-16">
+    <header class="grid content-start gap-5 lg:sticky lg:top-28 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.headline}</h2>
+      <p class="chapo">{t.subtitle}</p>
+    </header>
+    <ol class="grid gap-x-10 sm:grid-cols-2">
+      {t.steps.map((step, index) => (
+        <li class="grid content-start gap-2 border-t border-slate-200 py-7" data-reveal style={`--i:${index % 2}`}>
+          <h3 class="font-display text-xl font-extrabold tracking-[-0.02em] text-encre">{step.title}</h3>
+          <p class="text-slate-600">{step.description}</p>
+        </li>
+      ))}
+    </ol>
   </div>
 </section>
-
-<style>
-  .process-step {
-    opacity: 0;
-    transform: translateY(30px);
-    animation: fadeInUp 0.6s ease forwards;
-  }
-
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Mobile adjustments */
-  @media (max-width: 768px) {
-    .process-step {
-      padding-left: 5rem;
-    }
-  }
-</style>
-
-<script>
-  // Intersection Observer for scroll animations
-  const observerOptions = {
-    threshold: 0.2,
-    rootMargin: '0px 0px -100px 0px'
-  };
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.animationPlayState = 'running';
-      }
-    });
-  }, observerOptions);
-
-  document.querySelectorAll('.process-step').forEach(el => {
-    (el as HTMLElement).style.animationPlayState = 'paused';
-    observer.observe(el);
-  });
-</script>
