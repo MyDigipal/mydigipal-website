@@ -100,7 +100,6 @@ import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
 import CaseStudyCarousel from '@/components/sections/CaseStudyCarousel.astro';
 
 // Social proof
-import TrustedBy from '@/components/sections/TrustedBy.astro';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -438,6 +437,7 @@ const breadcrumbItems = [
   <!-- Testimonial Spotlight (skip for AI Training and B2B ABM which have their own testimonials) -->
   {testimonial && !isAITrainingService && !isB2BABMService && (
     <TestimonialSpotlight
+      lang={lang}
       quote={testimonial.quote}
       author={testimonial.author}
       role={testimonial.role}
@@ -447,19 +447,14 @@ const breadcrumbItems = [
     />
   )}
 
-  <!-- Trusted By - Client Logos (skip for AI Training and B2B ABM which have their own) -->
-  {!isAITrainingService && !isB2BABMService && (
-    <TrustedBy lang={lang} variant="compact" />
-  )}
+  <!-- Les logos sont dans le hero depuis la direction Encre (30/09/2026) : la seconde
+       bande (TrustedBy) qui les répétait plus bas a été retirée. -->
 
   <!-- AI Blog Articles Section (for AI service pages only) -->
   {isAIService && (
     <section class="py-24 bg-white">
       <div class="container-custom">
         <div class="text-center mb-16 animate-on-scroll">
-          <div class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 mb-6">
-            <span>{blogContent.badge}</span>
-          </div>
           <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
             {blogContent.title}
           </h2>
@@ -509,12 +504,8 @@ const breadcrumbItems = [
     </section>
   )}
 
-  <!-- Final CTA (skip for B2B ABM which has its own) -->
-  {!isB2BABMService && (
-    <FinalCTA lang={lang} color={color} />
-  )}
-
-  <!-- FAQ Section -->
+  <!-- Les questions, puis l'appel final, puis le pied de page : l'ordre de la
+       maquette Encre (30/09/2026). -->
   {isSEOService && (
     <ServiceFAQ lang={lang} service="seo" color={color} />
   )}
@@ -539,6 +530,11 @@ const breadcrumbItems = [
   {isAIContentService && (
     <ServiceFAQ lang={lang} service="ai-content" color="content" />
   )}
+  <!-- Final CTA (skip for B2B ABM which has its own) -->
+  {!isB2BABMService && (
+    <FinalCTA lang={lang} color={color} />
+  )}
+
 </PageLayout>
 
 <style>
