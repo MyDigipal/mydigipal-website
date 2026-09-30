@@ -5,6 +5,8 @@ import { getCollection } from 'astro:content';
 import Icon from '@/components/ui/Icon.astro';
 import PageHero from '@/components/ui/PageHero.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
+import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
 
 export async function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -40,7 +42,7 @@ const translations = {
     title: 'Études de cas - Résultats B2B et automobile',
     description: 'Découvrez comment nous aidons les entreprises B2B tech et automobiles à obtenir des résultats exceptionnels grâce à un marketing digital stratégique.',
     hero: {
-      badge: 'Success stories',
+      badge: 'Études de cas',
       headline: 'Nos études de cas',
       subheadline: 'Des résultats réels pour de vraies entreprises. Découvrez comment nos stratégies stimulent la croissance.',
     },
@@ -54,6 +56,26 @@ const translations = {
 };
 
 const t = translations[lang] || translations.en;
+const fr = lang === 'fr';
+const slugDe = (id: string) => id.replace(/^(en|fr)\//, '');
+const chiffre = (v: string) => (fr ? v.replace(/(\d)\s?%/, '$1\u00a0%').replace(/(\d)\.(\d)/, '$1,$2') : v);
+
+// L'étude en vedette : la plus récente des études mises en avant. Ses trois premiers chiffres
+// tombent sur le tableau à palettes. Le verbatim vient d'une autre étude mise en avant.
+const vedettes = caseStudies.filter((s) => s.data.featured);
+const vedette = vedettes[0] ?? caseStudies[0];
+const tableau = (vedette.data.kpis as { value: string; label: string }[]).slice(0, 3).map((k) => {
+  const [, c = k.value, unite = ''] = k.value.match(/^([+\-−]?[\d.,\s]*\d)\s*(.*)$/) ?? [];
+  const texte = /^[A-Z]{2}/.test(k.label) ? k.label : k.label.charAt(0).toLowerCase() + k.label.slice(1);
+  return { chiffre: fr ? c.replace('.', ',') : c, unite, texte };
+});
+const cite = vedettes.find((s) => s !== vedette && s.data.testimonial) ?? caseStudies.find((s) => s !== vedette && s.data.testimonial);
+const lx = {
+  vedette: fr ? 'À la une' : 'Featured',
+  lire: fr ? 'Lire l’étude de cas' : 'Read the case study',
+  toutes: fr ? 'Toutes les études' : 'All case studies',
+  automobile: fr ? 'Automobile' : 'Automotive',
+};
 ---
 
 <PageLayout
@@ -63,176 +85,142 @@ const t = translations[lang] || translations.en;
 >
   <PageHero eyebrow={t.hero.badge} title={t.hero.headline} description={t.hero.subheadline} />
 
-
-  <!-- Filters -->
-  <section class="py-8 bg-white border-b border-slate-200 sticky top-16 z-40">
-    <div class="container-custom">
-      <div class="flex justify-center gap-2">
-        <button
-          class="category-filter px-6 py-3 rounded-xl font-medium transition-all active"
-          data-category="all"
-        >
-          {t.filterAll}
-        </button>
-        <button
-          class="category-filter px-6 py-3 rounded-xl font-medium transition-all"
-          data-category="automotive"
-        >
-          <Icon name="car" size={18} class="inline mr-2" />
-          {t.filterAutomotive}
-        </button>
-        <button
-          class="category-filter px-6 py-3 rounded-xl font-medium transition-all"
-          data-category="b2b-tech"
-        >
-          <Icon name="cpu" size={18} class="inline mr-2" />
-          {t.filterB2BTech}
-        </button>
+  <!-- L'étude à la une (encre) : sa photo, son logo en couleur, ses chiffres sur le tableau
+       à palettes. Direction Encre, groupe 4 (30/09/2026). -->
+  <section class="section-encre section-monte py-20 lg:py-28">
+    <div class="container-custom grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
+      <a href={`/${lang}/case-studies/${slugDe(vedette.id)}`} class="vedette-photo group" data-reveal>
+        <img src={vedette.data.image} alt={vedette.data.client} class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" decoding="async" />
+        {vedette.data.logo && (
+          <span class="absolute left-5 top-5 grid h-14 place-items-center rounded-2xl bg-white px-4">
+            <img src={vedette.data.logo} alt="" class="max-h-9 max-w-[140px] w-auto object-contain" />
+          </span>
+        )}
+      </a>
+      <div class="grid content-start gap-6">
+        <p class="text-base font-semibold text-sur-encre-2">{lx.vedette} · {vedette.data.client}</p>
+        <h2 class="titre-moyen">{vedette.data.title}</h2>
+        <div class="carte-verre p-6 lg:p-8">
+          <TableauPalettes lang={lang} lignes={tableau} tete />
+        </div>
+        <div class="pilules">
+          <a href={`/${lang}/case-studies/${slugDe(vedette.id)}`} class="pilule pilule-blanche">
+            {lx.lire}
+            <Icon name="arrow-right" size={18} class="pilule-fleche" />
+          </a>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Case Studies Grid -->
-  <section class="py-16 bg-slate-50">
+  <!-- Toutes les études (brume), filtrables par secteur. -->
+  <section class="section-brume py-20 lg:py-28">
     <div class="container-custom">
-      <!-- No Results Message -->
-      <div id="no-results" class="hidden text-center py-16">
-        <Icon name="folder" size={48} class="text-slate-300 mx-auto mb-4" />
+      <div class="mb-10 flex flex-wrap items-end justify-between gap-6 lg:mb-14">
+        <h2 class="titre-moyen text-encre">{lx.toutes}</h2>
+        <div class="flex flex-wrap gap-2" role="group" aria-label={fr ? 'Filtrer par secteur' : 'Filter by sector'}>
+          <button type="button" class="category-filter active" data-category="all" aria-pressed="true">{t.filterAll}</button>
+          <button type="button" class="category-filter" data-category="automotive" aria-pressed="false">{t.filterAutomotive}</button>
+          <button type="button" class="category-filter" data-category="b2b-tech" aria-pressed="false">{t.filterB2BTech}</button>
+        </div>
+      </div>
+
+      <div id="no-results" class="hidden py-16 text-center">
         <p class="text-xl text-slate-500">{t.noResults}</p>
       </div>
 
-      <!-- Grid -->
-      <div id="case-studies-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {caseStudies.map((study) => (
-          <article
-            class="case-study-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100"
-            data-category={study.data.category}
-          >
-            <!-- Image with Overlay -->
-            <a href={`/${lang}/case-studies/${study.id.replace(/^(en|fr)\//, '')}`} class="block relative aspect-[16/10] overflow-hidden">
-              <img
-                src={study.data.image}
-                alt={study.data.client}
-                class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                loading="lazy"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
-
-              <!-- Logo Badge -->
-              {study.data.logo && (
-                <div class="absolute top-4 left-4 p-2 bg-white rounded-xl shadow-lg">
-                  <img src={study.data.logo} alt={study.data.client} class="h-8 w-auto object-contain" />
-                </div>
-              )}
-
-              <!-- Category Badge -->
-              <div class="absolute top-4 right-4">
-                <span class={`px-3 py-1 rounded-full text-xs font-bold ${study.data.category === 'automotive' ? 'bg-amber-500 text-white' : 'bg-blue-500 text-white'}`}>
-                  {study.data.category === 'automotive' ? (lang === 'fr' ? 'Automobile' : 'Automotive') : 'B2B Tech'}
+      <ul id="case-studies-grid" class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {caseStudies.map((study, i) => {
+          const k = study.data.kpis[0];
+          const k2 = study.data.kpis[1];
+          return (
+            <li class="case-study-card" data-category={study.data.category} data-reveal style={`--i:${i % 3}`}>
+              <a href={`/${lang}/case-studies/${slugDe(study.id)}`} class="carte group grid h-full overflow-hidden">
+                <span class="relative block aspect-[16/10] overflow-hidden">
+                  <img src={study.data.image} alt="" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async" />
+                  {study.data.logo && (
+                    <span class="absolute left-4 top-4 grid h-11 place-items-center rounded-xl bg-white px-3">
+                      <img src={study.data.logo} alt="" class="max-h-7 max-w-[110px] w-auto object-contain" loading="lazy" decoding="async" />
+                    </span>
+                  )}
                 </span>
-              </div>
-
-              <!-- Bottom Info -->
-              <div class="absolute bottom-4 left-4 right-4">
-                <h3 class="text-xl font-bold text-white mb-1">{study.data.client}</h3>
-                <p class="text-slate-200 text-sm line-clamp-1">{study.data.title}</p>
-              </div>
-            </a>
-
-            <!-- Content -->
-            <div class="p-6">
-              <!-- KPIs Preview -->
-              <div class="flex flex-wrap gap-4 mb-4">
-                {study.data.kpis.slice(0, 2).map((kpi) => (
-                  <div class="flex items-center gap-2">
-                    <span class="text-xl font-bold text-blue-600">{kpi.value}</span>
-                    <span class="text-xs text-slate-500">{kpi.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              <!-- Services -->
-              <div class="flex flex-wrap gap-2 mb-4">
-                {study.data.services.slice(0, 3).map((service) => (
-                  <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-medium">
-                    {service}
+                <span class="grid content-start gap-3 p-6">
+                  <span class="text-sm font-semibold text-slate-500">{study.data.category === 'automotive' ? lx.automobile : 'B2B Tech'} · {study.data.client}</span>
+                  <span class="font-display text-lg font-bold leading-snug text-encre text-pretty">{study.data.title}</span>
+                  <span class="mt-2 flex flex-wrap items-baseline gap-x-5 gap-y-2 border-t border-slate-200 pt-4">
+                    <span><span class="font-display text-4xl font-extrabold tracking-[-0.045em] text-encre">{chiffre(k.value)}</span> <span class="text-sm text-slate-600">{k.label}</span></span>
+                    {k2 && <span><span class="font-display text-2xl font-extrabold tracking-[-0.03em] text-encre">{chiffre(k2.value)}</span> <span class="text-sm text-slate-600">{k2.label}</span></span>}
                   </span>
-                ))}
-              </div>
-
-              <!-- CTA -->
-              <a
-                href={`/${lang}/case-studies/${study.id.replace(/^(en|fr)\//, '')}`}
-                class="inline-flex items-center gap-2 text-blue-600 font-medium hover:text-blue-700 transition-colors group/link"
-              >
-                {t.viewCaseStudy}
-                <Icon name="arrow-right" size={16} class="group-hover/link:translate-x-1 transition-transform" />
+                  <span class="mt-1 inline-flex items-center gap-2 font-semibold text-marque transition-all group-hover:gap-3">{t.viewCaseStudy}<Icon name="arrow-right" size={16} /></span>
+                </span>
               </a>
-            </div>
-          </article>
-        ))}
-      </div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   </section>
+
+  {cite?.data.testimonial && (
+    <TestimonialSpotlight lang={lang} quote={cite.data.testimonial.quote} author={cite.data.testimonial.author} role="" company={cite.data.testimonial.role} />
+  )}
 
   <FinalCTA lang={lang} title={lang === 'fr' ? 'Prêt à écrire votre success story ?' : 'Ready to write your success story?'} subtitle={lang === 'fr' ? 'Calculez votre plan sur mesure en 3 minutes, ou dites-nous où vous en êtes : on vous répond sous 24 h.' : 'Calculate your tailored plan in 3 minutes, or tell us where you stand: we reply within 24 hours.'} />
 </PageLayout>
 
 <script>
-  // Category filter functionality
-  const filterButtons = document.querySelectorAll('.category-filter');
-  const cards = document.querySelectorAll('.case-study-card');
-  const noResults = document.getElementById('no-results');
-  const grid = document.getElementById('case-studies-grid');
-
-  filterButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      // Update active state
-      filterButtons.forEach((btn) => btn.classList.remove('active'));
-      button.classList.add('active');
-
-      const category = button.getAttribute('data-category');
-      let visibleCount = 0;
-
-      cards.forEach((card) => {
-        const cardCategory = card.getAttribute('data-category');
-        if (category === 'all' || cardCategory === category) {
-          (card as HTMLElement).style.display = 'block';
-          visibleCount++;
-        } else {
-          (card as HTMLElement).style.display = 'none';
-        }
+  // Le filtre par secteur : les cartes gardent leur place dans la grille, seules les autres
+  // se masquent.
+  function brancher() {
+    const boutons = Array.from(document.querySelectorAll<HTMLButtonElement>('.category-filter'));
+    const cartes = Array.from(document.querySelectorAll<HTMLElement>('.case-study-card'));
+    const vide = document.getElementById('no-results');
+    const grille = document.getElementById('case-studies-grid');
+    boutons.forEach((b) => {
+      if (b.dataset.branche) return;
+      b.dataset.branche = '1';
+      b.addEventListener('click', () => {
+        boutons.forEach((x) => { x.classList.toggle('active', x === b); x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        const c = b.dataset.category;
+        let n = 0;
+        cartes.forEach((carte) => {
+          const ok = c === 'all' || carte.dataset.category === c;
+          carte.hidden = !ok;
+          if (ok) n++;
+        });
+        vide?.classList.toggle('hidden', n > 0);
+        grille?.classList.toggle('hidden', n === 0);
       });
-
-      // Show/hide no results
-      if (noResults && grid) {
-        if (visibleCount === 0) {
-          noResults.classList.remove('hidden');
-          grid.classList.add('hidden');
-        } else {
-          noResults.classList.add('hidden');
-          grid.classList.remove('hidden');
-        }
-      }
     });
-  });
+  }
+  brancher();
+  document.addEventListener('astro:page-load', brancher);
 </script>
 
 <style>
-  @reference "../../../styles/global.css";
-
-  .category-filter {
-    @apply bg-slate-100 text-slate-600 hover:bg-slate-200;
-  }
-
-  .category-filter.active {
-    @apply bg-blue-600 text-white hover:bg-blue-700;
-  }
-
-  .line-clamp-1 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+  .vedette-photo {
+    position: relative;
+    display: block;
     overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--rayon-scene);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 30px 60px -36px rgb(2 9 16 / 0.9);
+  }
+  .category-filter {
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 600;
+    color: #334155;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet);
+    transition: background-color 200ms, color 200ms;
+  }
+  .category-filter:hover {
+    color: var(--color-marque);
+  }
+  .category-filter.active {
+    color: #fff;
+    background: var(--color-marque);
+    box-shadow: none;
   }
 </style>
