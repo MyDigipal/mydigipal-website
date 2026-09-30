@@ -82,7 +82,7 @@ const translations = {
   fr: {
     backToBlog: 'Retour au blog',
     readMore: 'Lire la suite',
-    relatedArticles: 'Articles Similaires',
+    relatedArticles: 'Articles similaires',
     share: 'Partager cet article',
     writtenBy: 'Écrit par',
     publishedOn: 'Publié le',
@@ -150,10 +150,10 @@ const categoryLabels: Record<string, Record<string, string>> = {
     <FAQSchema faqs={post.data.faqs} />
   )}
 
-  <!-- Le haut de l'article, dans le style de l'accueil depuis le 25/09/2026 : fond
-       blanc, titre serré, catégorie et date en gris, un seul bleu. -->
-  <section class="bg-white pt-10 pb-10 lg:pt-14 lg:pb-12">
-    <div class="container-custom max-w-4xl mx-auto">
+  <!-- Le haut de l'article, direction Encre (groupe 4, 30/09/2026) : la rubrique (catégorie
+       et date), le grand titre et le chapeau aux mesures communes, l'auteur. -->
+  <section class="section-blanc pt-8 pb-10 sm:pt-12 lg:pt-14 lg:pb-12">
+    <div class="container-custom max-w-[880px] mx-auto">
       <a
         href={`/${lang}/blog`}
         class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-encre transition-colors mb-8"
@@ -162,8 +162,8 @@ const categoryLabels: Record<string, Record<string, string>> = {
         {t.backToBlog}
       </a>
 
-      <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold text-slate-500 mb-5">
-        <span class="text-marque">{categoryLabels[lang]?.[post.data.category] || post.data.category}</span>
+      <p class="rubrique mb-5 flex flex-wrap items-center gap-x-3 gap-y-1">
+        <span>{categoryLabels[lang]?.[post.data.category] || post.data.category}</span>
         <span aria-hidden="true">·</span>
         <time datetime={post.data.date.toISOString()}>
           {post.data.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
@@ -174,11 +174,11 @@ const categoryLabels: Record<string, Record<string, string>> = {
         </time>
       </p>
 
-      <h1 class="article-titre font-display text-[2rem] sm:text-4xl lg:text-[3.25rem] font-extrabold text-encre mb-6 break-words">
+      <h1 class="titre-grand text-encre mb-6 break-words">
         {post.data.title}
       </h1>
 
-      <p class="text-lg sm:text-xl text-slate-600 mb-8 text-pretty">
+      <p class="chapo mb-8">
         {post.data.description}
       </p>
 
@@ -284,9 +284,9 @@ const categoryLabels: Record<string, Record<string, string>> = {
   )}
 
   <!-- Article Content -->
-  <section class={`py-16 bg-white ${post.data.image && !post.data.image.includes('/images/blog/') ? '' : 'pt-8'}`}>
-    <div class="container-custom max-w-4xl mx-auto">
-      <article class="prose prose-lg prose-slate max-w-none">
+  <section class={`section-blanc py-16 ${post.data.image && !post.data.image.includes('/images/blog/') ? '' : 'pt-8'}`}>
+    <div class="container-custom max-w-[880px] mx-auto">
+      <article class="article-texte prose prose-lg prose-slate max-w-none">
         <Content />
       </article>
 
@@ -298,7 +298,7 @@ const categoryLabels: Record<string, Record<string, string>> = {
         <div class="mt-12 pt-8 border-t border-slate-200">
           <div class="flex flex-wrap gap-2">
             {post.data.tags.map((tag: string) => (
-              <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm">
+              <span class="rounded-full bg-brume-clair px-3 py-1 text-sm text-slate-600">
                 #{tag}
               </span>
             ))}
@@ -308,13 +308,14 @@ const categoryLabels: Record<string, Record<string, string>> = {
 
       <!-- Share -->
       <div class="mt-8 pt-8 border-t border-slate-200">
-        <h3 class="text-lg font-bold text-slate-900 mb-4">{t.share}</h3>
-        <div class="flex gap-3">
+        <p class="mb-4 text-sm font-semibold text-slate-500">{t.share}</p>
+        <div class="flex gap-2.5">
           <a
             href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(Astro.url.href)}`}
             target="_blank"
             rel="noopener noreferrer"
-            class="w-10 h-10 rounded-full bg-slate-100 hover:bg-blue-500 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
+            aria-label="X"
+            class="grid h-11 w-11 place-items-center rounded-full bg-brume-clair text-slate-600 transition-colors hover:bg-marque hover:text-white"
           >
             <Icon name="twitter" size={18} />
           </a>
@@ -322,14 +323,17 @@ const categoryLabels: Record<string, Record<string, string>> = {
             href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
             target="_blank"
             rel="noopener noreferrer"
-            class="w-10 h-10 rounded-full bg-slate-100 hover:bg-blue-700 hover:text-white text-slate-600 flex items-center justify-center transition-colors"
+            aria-label="LinkedIn"
+            class="grid h-11 w-11 place-items-center rounded-full bg-brume-clair text-slate-600 transition-colors hover:bg-marque hover:text-white"
           >
             <Icon name="linkedin" size={18} />
           </a>
           <button
-            onclick={`navigator.clipboard.writeText('${Astro.url.href}')`}
-            class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors"
-            title="Copy link"
+            type="button"
+            data-copier={Astro.url.href}
+            aria-label={lang === 'fr' ? 'Copier le lien' : 'Copy link'}
+            title={lang === 'fr' ? 'Copier le lien' : 'Copy link'}
+            class="grid h-11 w-11 place-items-center rounded-full bg-brume-clair text-slate-600 transition-colors hover:bg-marque hover:text-white"
           >
             <Icon name="link" size={18} />
           </button>
@@ -340,12 +344,12 @@ const categoryLabels: Record<string, Record<string, string>> = {
 
   <!-- Related Articles -->
   {relatedPosts.length > 0 && (
-    <section class="py-16 bg-slate-50">
+    <section class="section-encre section-monte py-20 lg:py-28">
       <div class="container-custom">
-        <h2 class="text-2xl font-bold text-slate-900 mb-8 font-display">{t.relatedArticles}</h2>
-        <div class="grid md:grid-cols-3 gap-8">
+        <h2 class="titre-moyen mb-10 lg:mb-14">{t.relatedArticles}</h2>
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
           {relatedPosts.map((relatedPost) => (
-            <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100">
+            <article class="carte-verre group overflow-hidden">
               <a href={getRelatedPostUrl(relatedPost)} class="block relative aspect-[16/10] overflow-hidden">
                 {relatedPost.data.image && !relatedPost.data.image.includes('/images/blog/') ? (
                   <img
@@ -359,21 +363,21 @@ const categoryLabels: Record<string, Record<string, string>> = {
                 )}
               </a>
               <div class="p-6">
-                <div class="text-sm text-slate-500 mb-2">
+                <div class="text-sm text-sur-encre-2 mb-2">
                   {relatedPost.data.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric',
                   })}
                 </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <h3 class="font-display text-lg font-bold text-white mb-3 line-clamp-2 group-hover:text-marque-clair transition-colors">
                   <a href={getRelatedPostUrl(relatedPost)}>
                     {relatedPost.data.title}
                   </a>
                 </h3>
                 <a
                   href={getRelatedPostUrl(relatedPost)}
-                  class="inline-flex items-center gap-2 text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
+                  class="inline-flex items-center gap-2 font-semibold text-sm text-marque-clair transition-all hover:gap-3"
                 >
                   {t.readMore}
                   <Icon name="arrow-right" size={14} />
@@ -393,6 +397,19 @@ const categoryLabels: Record<string, Record<string, string>> = {
   <BlogServiceCTA lang={lang} category={post.data.category} variant="full" />
 </PageLayout>
 
+<script>
+  // Copier le lien de l'article, sans script en ligne dans le HTML.
+  function brancherCopie() {
+    document.querySelectorAll<HTMLButtonElement>('[data-copier]').forEach((b) => {
+      if (b.dataset.branche) return;
+      b.dataset.branche = '1';
+      b.addEventListener('click', () => navigator.clipboard?.writeText(b.dataset.copier || location.href));
+    });
+  }
+  brancherCopie();
+  document.addEventListener('astro:page-load', brancherCopie);
+</script>
+
 <style>
   @reference "../../../styles/global.css";
 
@@ -409,36 +426,43 @@ const categoryLabels: Record<string, Record<string, string>> = {
     overflow: hidden;
   }
 
-  /* Prose styles */
-  .prose h2 {
-    @apply text-2xl font-bold text-slate-900 mt-10 mb-4;
+  /* Le texte de l'article (direction Encre) : les titres dans la police des titres, en
+     graisse 800, les liens et les citations dans le bleu du logo. Le texte lui-même n'est pas
+     touché. */
+  .article-texte :global(h2) {
+    @apply font-display text-encre mt-14 mb-5;
+    font-size: clamp(1.625rem, 1.3rem + 1vw, 2.125rem);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
   }
-
-  .prose h3 {
-    @apply text-xl font-bold text-slate-900 mt-8 mb-3;
+  .article-texte :global(h3) {
+    @apply font-display text-encre mt-10 mb-3;
+    font-size: 1.375rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
-
-  .prose p {
-    @apply text-slate-600 leading-relaxed mb-4;
+  .article-texte :global(p) {
+    @apply text-slate-600 leading-relaxed mb-5;
   }
-
-  .prose ul, .prose ol {
-    @apply my-4 pl-6;
+  .article-texte :global(ul),
+  .article-texte :global(ol) {
+    @apply my-5 pl-6;
   }
-
-  .prose li {
+  .article-texte :global(li) {
     @apply text-slate-600 mb-2;
   }
-
-  .prose a {
-    @apply text-blue-600 hover:text-blue-700 underline;
+  .article-texte :global(li::marker) {
+    color: var(--color-marque);
   }
-
-  .prose strong {
-    @apply text-slate-900 font-semibold;
+  .article-texte :global(a) {
+    @apply text-marque underline underline-offset-2;
   }
-
-  .prose blockquote {
-    @apply border-l-4 border-blue-500 pl-6 italic text-slate-600 my-6;
+  .article-texte :global(strong) {
+    @apply text-encre font-semibold;
+  }
+  .article-texte :global(blockquote) {
+    @apply border-l-4 border-marque pl-6 text-slate-700 my-8;
+    font-style: normal;
   }
 </style>
