@@ -34,6 +34,13 @@
  * page de vente (`academy-v2/copy-v2.ts`, `films`), titres et légendes
  * compris. Un film ne part qu'au clic, avec le son ; il fait taire la boucle
  * muette, et la boucle relancée le fait taire.
+ *
+ * Sur l'accueil (groupe 5 de la refonte, 30/09/2026, demande de Paul), les
+ * écrans et les films sont REPLIÉS (`replie`) : sans clic, on passe de la
+ * vidéo de présentation aux avis puis aux services. Deux `<details>` natifs,
+ * leur texte est dans le HTML servi, ils s'ouvrent vers le bas sous leur
+ * titre, qui ne bouge pas. Rien ne se charge ni ne joue tant qu'un pli est
+ * fermé ; le refermer arrête sa vidéo. `/ai` les montre ouverts, sans pli.
  */
 import Icon from '@/components/ui/Icon.astro';
 import type { Jour30Data } from '@/components/academy/data';
@@ -49,8 +56,12 @@ interface Props {
   academy: Jour30Data;
   /** La vidéo de présentation. `/ai` la montre déjà dans sa carte de l'Academy. */
   presentation?: boolean;
+  /** Les écrans et les films repliés sous deux titres (l'accueil). */
+  replie?: boolean;
+  /** Ajoutée à la section (l'accueil y met `section-monte`). */
+  class?: string;
 }
-const { lang, academy, presentation = true } = Astro.props;
+const { lang, academy, presentation = true, replie = false, class: classe } = Astro.props;
 const fr = lang === 'fr';
 const f = faitsAcademy(academy, lang);
 const c = jour30Copy(lang);
@@ -98,6 +109,9 @@ const t = fr
       filmsChapeau: 'Des extraits d’une conférence donnée pour les équipes de SeLoger, avec le son. Les données sont fictives, les réflexes sont ceux de la formation.',
       filmsChoix: 'Choisir un film',
       filmsVoir: 'Voir',
+      pliEcrans: 'L’application, écran par écran',
+      pliEcransCompte: (n: number) => `${n} écrans filmés`,
+      pliFilmsCompte: (n: number) => (n > 1 ? `${n} films, avec le son` : 'Un film, avec le son'),
     }
   : {
       logo: 'MyDigipal AI Academy',
@@ -119,7 +133,25 @@ const t = fr
       filmsChapeau: 'Films with sound: the learner space, a lesson from the inside, and the automations running on a real setup.',
       filmsChoix: 'Pick a film',
       filmsVoir: 'Watch',
+      pliEcrans: 'The app, screen by screen',
+      pliEcransCompte: (n: number) => `${n} screens on film`,
+      pliFilmsCompte: (n: number) => (n > 1 ? `${n} films with sound` : 'One film with sound'),
     };
+
+// Le résumé du pli des écrans : leurs noms, à la suite (« L’atelier CRAFT, la
+// bibliothèque, les cas d’usage… »), lus dans les fiches de la page de vente.
+const minuscule = (s: string) => (/^[A-Z]{2}/.test(s) ? s : s.charAt(0).toLowerCase() + s.slice(1));
+const resumeEcrans = (() => {
+  const noms = ECRANS.map((e) => minuscule(e.spot.kicker)).join(', ');
+  return `${noms.charAt(0).toUpperCase()}${noms.slice(1)}.`;
+})();
+
+// Sur l'accueil, chaque pli est un `<details>` et les deux vont ensemble dans
+// `.academie-plis` ; ailleurs (`/ai`), rien autour : le DOM ne change pas.
+const Pli = replie ? 'details' : Fragment;
+const pli = (id: string) => (replie ? { class: 'academie-pli', 'data-pli': id } : {});
+const Plis = replie ? 'div' : Fragment;
+const plis = replie ? { class: 'academie-plis', 'data-reveal': '', style: '--i:2' } : {};
 
 const faits = [
   { cle: 'lecons', valeur: String(f.lecons), libelle: t.faits.lecons },
@@ -129,7 +161,7 @@ const faits = [
 ];
 ---
 
-<section class="academie" aria-labelledby="academie-titre" data-academie>
+<section class:list={['academie', classe, { 'est-replie': replie }]} aria-labelledby="academie-titre" data-academie>
   <div class="container-custom">
     <div class="academie-tete">
       <div class="academie-intro" data-reveal>
@@ -196,7 +228,19 @@ const faits = [
     </figure>
     )}
 
-    <div class="academie-demo" data-demo data-reveal style="--i:2">
+    <Plis {...plis}>
+    <Pli {...pli('ecrans')}>
+    {replie && (
+      <summary class="pli-tete">
+        <span class="pli-texte">
+          <span class="pli-titre" set:html={serrer(t.pliEcrans)} />
+          <span class="pli-resume">{resumeEcrans}</span>
+        </span>
+        <span class="pli-compte">{t.pliEcransCompte(ECRANS.length)}</span>
+        <span class="pli-signe" aria-hidden="true"></span>
+      </summary>
+    )}
+    <div class="academie-demo" data-demo data-reveal={replie ? undefined : ''} style="--i:2">
       <div class="academie-onglets" role="tablist" aria-label={t.ecrans}>
         {ECRANS.map((e, i) => (
           <button
@@ -244,15 +288,29 @@ const faits = [
         </figcaption>
       </figure>
     </div>
+    </Pli>
 
     {FILMS.length > 0 && (
+      <Pli {...pli('films')}>
+      {replie && (
+        <summary class="pli-tete">
+          <span class="pli-texte">
+            <span class="pli-titre" set:html={serrer(t.filmsTitre)} />
+            <span class="pli-resume">{t.filmsChapeau}</span>
+          </span>
+          <span class="pli-compte">{t.pliFilmsCompte(FILMS.length)}</span>
+          <span class="pli-signe" aria-hidden="true"></span>
+        </summary>
+      )}
       <div class="academie-films" data-films data-lire={t.lire}>
-        <div class="films-tete" data-reveal>
-          <h3 class="films-titre" set:html={serrer(t.filmsTitre)} />
-          <p class="films-chapeau">{t.filmsChapeau}</p>
-        </div>
+        {!replie && (
+          <div class="films-tete" data-reveal>
+            <h3 class="films-titre" set:html={serrer(t.filmsTitre)} />
+            <p class="films-chapeau">{t.filmsChapeau}</p>
+          </div>
+        )}
 
-        <figure class="films-bloc" data-reveal style="--i:1">
+        <figure class="films-bloc" data-reveal={replie ? undefined : ''} style="--i:1">
           <div class="films-ecran">
             <img
               class="films-affiche"
@@ -281,7 +339,7 @@ const faits = [
         </figure>
 
         {FILMS.length > 1 && (
-          <ul class="films-liste" aria-label={t.filmsChoix} data-reveal style="--i:2">
+          <ul class="films-liste" aria-label={t.filmsChoix} data-reveal={replie ? undefined : ''} style="--i:2">
             {FILMS.map((film, i) => (
               <li>
                 <button
@@ -303,7 +361,9 @@ const faits = [
           </ul>
         )}
       </div>
+      </Pli>
     )}
+    </Plis>
 
     {outils.length > 0 && (
       <div class="academie-outils" data-reveal style="--i:3">
@@ -926,7 +986,168 @@ const faits = [
     opacity: 1;
   }
 
+  /* --------------------------------------------- les plis (l'accueil) */
+  /* Deux titres entre deux filets, un signe plus qui tourne en croix. Le pli
+     s'ouvre vers le bas : son titre reste où il est, ce qu'on lisait aussi. */
+  .academie-plis {
+    margin-top: 3rem;
+    border-bottom: 1px solid rgb(255 255 255 / 0.14);
+  }
+  @media (min-width: 1024px) {
+    .academie-plis {
+      margin-top: 4.5rem;
+    }
+  }
+  .academie-pli {
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+  }
+  .pli-tete {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'texte signe'
+      'compte signe';
+    align-items: center;
+    column-gap: 1.25rem;
+    row-gap: 0.75rem;
+    padding: 1.5rem 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .pli-tete::-webkit-details-marker {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .pli-tete {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-template-areas: 'texte texte texte texte texte texte texte texte compte compte compte signe';
+      column-gap: 2rem;
+      padding: 2rem 0;
+    }
+    .pli-signe {
+      justify-self: end;
+    }
+  }
+  .pli-texte {
+    grid-area: texte;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .pli-titre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.375rem, 1.1rem + 1vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    word-spacing: 0.06em;
+    color: #fff;
+    text-wrap: balance;
+  }
+  .pli-resume {
+    max-width: 62ch;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: #a9b6c4;
+    text-wrap: pretty;
+  }
+  .pli-compte {
+    grid-area: compte;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #dfe6ee;
+  }
+  .pli-signe {
+    grid-area: signe;
+    position: relative;
+    flex: none;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    border: 1px solid rgb(255 255 255 / 0.24);
+    color: #fff;
+    transition:
+      background-color 0.3s var(--ease-sortie),
+      border-color 0.3s var(--ease-sortie),
+      color 0.3s var(--ease-sortie),
+      transform 0.45s var(--ease-sortie);
+  }
+  .pli-signe::before,
+  .pli-signe::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 14px;
+    height: 2px;
+    margin: -1px 0 0 -7px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+  .pli-signe::after {
+    transform: rotate(90deg);
+  }
+  .pli-tete:hover .pli-signe {
+    background: #fff;
+    border-color: #fff;
+    color: var(--nuit);
+  }
+  .academie-pli[open] .pli-signe {
+    transform: rotate(45deg);
+  }
+  .pli-tete:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+  /* Le contenu ouvert : sans son propre en-tête, ni son filet. */
+  .est-replie .academie-demo {
+    margin-top: 0.5rem;
+    padding-bottom: 3rem;
+  }
+  .est-replie .academie-films {
+    margin-top: 0.5rem;
+    padding: 0 0 3rem;
+    border-top: 0;
+    grid-template-areas:
+      'ecran'
+      'liste';
+  }
+  @media (min-width: 1024px) {
+    .est-replie .academie-demo {
+      padding-bottom: 4rem;
+    }
+    .est-replie .academie-films {
+      grid-template-rows: auto;
+      grid-template-areas: 'liste liste liste liste ecran ecran ecran ecran ecran ecran ecran ecran';
+      align-items: center;
+      padding-bottom: 4rem;
+    }
+    .est-replie .films-liste {
+      align-self: center;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .academie-pli[open] > :not(summary) {
+      animation: pli-ouvre 0.55s cubic-bezier(0.15, 1, 0.32, 1) both;
+    }
+  }
+  @keyframes pli-ouvre {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   /* ---------------------------------------------------- les pages outils */
+  .est-replie .academie-outils {
+    margin-top: 2.5rem;
+    padding-top: 0;
+    border-top: 0;
+  }
   .academie-outils {
     display: flex;
     flex-wrap: wrap;
@@ -1050,6 +1271,9 @@ const faits = [
     let arretee = reduit;
     let visible = false;
     let chargee = -1;
+    // Sur l'accueil, le lecteur est dans un pli : fermé, il ne charge ni ne joue rien.
+    const pli = demo.closest('details');
+    const ouvert = () => !pli || pli.open;
 
     const barre = (i: number) => onglets[i].querySelector<HTMLElement>('[data-barre]');
 
@@ -1125,12 +1349,24 @@ const faits = [
 
     new IntersectionObserver(
       ([e]) => {
-        visible = e.isIntersecting;
+        visible = e.isIntersecting && ouvert();
         if (visible) lire();
         else video.pause();
       },
       { threshold: 0.3 },
     ).observe(demo);
+
+    // Ouvert, il démarre s'il est à l'écran ; refermé, il s'arrête.
+    pli?.addEventListener('toggle', () => {
+      if (pli.open) {
+        const r = demo.getBoundingClientRect();
+        visible = r.top < innerHeight && r.bottom > 0;
+        if (visible) lire();
+      } else {
+        visible = false;
+        video.pause();
+      }
+    });
 
     bouton.addEventListener('click', () => {
       arretee = !arretee;
@@ -1187,6 +1423,16 @@ const faits = [
   const mn = (s: number) => `${Math.max(1, Math.round(s / 60))} min`;
   const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
 
+  /** L'ouverture d'un pli de l'accueil, mesurée une fois par visite et par pli. */
+  document.querySelectorAll<HTMLDetailsElement>('details[data-pli]').forEach((pli) => {
+    pli.addEventListener('toggle', () => {
+      if (!pli.open || pli.dataset.mesure) return;
+      pli.dataset.mesure = '1';
+      const w = window as unknown as { dataLayer?: Record<string, unknown>[] };
+      w.dataLayer?.push({ event: 'accueil_pli_ouvert', pli: pli.dataset.pli });
+    });
+  });
+
   document.querySelectorAll<HTMLElement>('[data-films]').forEach((bloc) => {
     const ecran = bloc.querySelector<HTMLElement>('.films-ecran');
     const video = bloc.querySelector<HTMLVideoElement>('[data-films-video]');
@@ -1230,15 +1476,27 @@ const faits = [
         v.src = `/academy/videos/${id}.mp4`;
       });
     };
+    // Sur l'accueil, les films sont dans un pli : rien n'est lu avant son ouverture.
+    const pli = bloc.closest('details');
+    let sonde = false;
+    const sonderUneFois = () => {
+      if (sonde) return;
+      sonde = true;
+      sonder();
+    };
     const proche = new IntersectionObserver(
       ([e]) => {
-        if (!e.isIntersecting) return;
+        if (!e.isIntersecting || (pli && !pli.open)) return;
         proche.disconnect();
-        sonder();
+        sonderUneFois();
       },
       { rootMargin: '400px 0px' },
     );
     proche.observe(bloc);
+    pli?.addEventListener('toggle', () => {
+      if (pli.open) sonderUneFois();
+      else video.pause();
+    });
 
     const source = () => {
       video.replaceChildren(
