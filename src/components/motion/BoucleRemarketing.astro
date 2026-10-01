@@ -572,6 +572,22 @@ const t = fr
       align-items: center;
     }
   }
+  /* Sous 1 024 px : l'écran d'abord, puis les quatre temps resserrés (seul le temps en cours garde
+     son texte), pour que l'écran et son temps tiennent ensemble dans la hauteur d'un téléphone. */
+  @media (max-width: 1023px) {
+    .rmk.js .rmk-scene {
+      order: -1;
+    }
+    .rmk.js .rmk-temps {
+      gap: 8px;
+    }
+    .rmk.js .rmk-temps button {
+      padding: 12px 16px 14px;
+    }
+    .rmk.js .rmk-temps li:not(.on) span {
+      display: none;
+    }
+  }
   @media (max-width: 640px) {
     .rmk-scene {
       grid-template-columns: 1fr;
