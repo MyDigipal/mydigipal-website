@@ -1,0 +1,62 @@
+---
+/**
+ * Ce que Vehicle Ads donne en quatre mois (01/10/2026) : le graphique des conversions cumulées
+ * et du coût par conversion (`motion/GraphiqueCumul.astro`). Sur `/automotive`, la chaîne du
+ * stock (`motion/ChaineStock.astro`) le précède et un lien mène à la page Dynamic Ads.
+ * Sur le blanc ou la brume, jamais sur l'encre.
+ */
+import type { Language } from '@/i18n/config';
+import ChaineStock from '@/components/motion/ChaineStock.astro';
+import GraphiqueCumul from '@/components/motion/GraphiqueCumul.astro';
+
+interface Props {
+  lang: Language;
+  fond?: 'blanc' | 'brume';
+  /** Montre la chaîne du stock avant le graphique, et le lien vers la page Dynamic Ads. */
+  chaine?: boolean;
+}
+
+const { lang, fond = 'blanc', chaine = false } = Astro.props;
+const fr = lang === 'fr';
+
+const t = chaine
+  ? {
+      titre: fr ? 'Votre stock devient vos annonces' : 'Your stock becomes your ads',
+      chapo: fr
+        ? 'Chaque voiture en vente devient une annonce sur Google, Facebook et Instagram, avec sa photo, son prix et sa concession. Une voiture vendue sort des annonces toute seule.'
+        : 'Every car for sale becomes an ad on Google, Facebook and Instagram, with its photo, its price and its dealership. A sold car leaves the ads on its own.',
+    }
+  : {
+      titre: fr ? 'Ce que cela donne en quatre mois' : 'What it delivers in four months',
+      chapo: fr
+        ? 'Les conversions s’additionnent pendant que leur coût baisse, mois après mois.'
+        : 'Conversions add up while their cost falls, month after month.',
+    };
+const lien = fr ? 'Voir les Dynamic Ads' : 'See Dynamic Ads';
+---
+
+<section class:list={['py-20 lg:py-32', fond === 'brume' ? 'section-brume' : 'section-blanc']}>
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.titre}</h2>
+      <p class="chapo">{t.chapo}</p>
+    </header>
+
+    {chaine && (
+      <div class="mb-6 lg:mb-8">
+        <ChaineStock lang={lang} fond="clair" />
+      </div>
+    )}
+
+    <GraphiqueCumul lang={lang} />
+
+    {chaine && (
+      <div class="pilules mt-10">
+        <a href={`/${lang}/automotive/dynamic-ads`} class="pilule pilule-pleine">
+          {lien}
+          <svg class="pilule-fleche" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
+        </a>
+      </div>
+    )}
+  </div>
+</section>

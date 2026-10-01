@@ -1,13 +1,13 @@
 ---
 /**
- * Dynamic Ads, la notion de la page (direction Encre, 30/09/2026) : le stock qui devient
- * l'annonce, expliqué par la carte de verre (`CarteVerre.astro`, données `carteStock`).
- * Elle remplace le schéma animé en dégradés (catalogue, flux, plateformes, acheteurs) ;
- * les quatre étapes qu'il portait restent écrites sous la carte.
+ * Dynamic Ads, la notion de la page : le stock qui devient l'annonce. Depuis le 01/10/2026,
+ * c'est la chaîne en isométrie (`motion/ChaineStock.astro`) qui l'explique : les voitures
+ * deviennent un flux, Merchant Center en fait des annonces, un acheteur en choisit une.
+ * Ses cinq étapes s'allument à côté de la scène ; elles remplacent la carte de verre et les
+ * quatre cartes numérotées d'avant.
  */
 import type { Language } from '@/i18n/config';
-import CarteVerre from '@/components/motion/CarteVerre.astro';
-import { carteStock } from '@/components/motion/donnees-automobile';
+import ChaineStock from '@/components/motion/ChaineStock.astro';
 
 interface Props {
   lang: Language;
@@ -21,68 +21,15 @@ void color;
 const translations = {
   en: {
     title: 'Your stock becomes the ad',
-    subtitle: 'Dynamic Ads in one picture: every vehicle in stock becomes an ad, shown to the buyer it interests, on every platform.',
-    steps: [
-      {
-        icon: 'database',
-        title: 'Vehicle catalog',
-        description: 'Your inventory syncs automatically with all advertising platforms'
-      },
-      {
-        icon: 'refresh-cw',
-        title: 'Real-time updates',
-        description: 'Prices, availability, and details update daily or hourly'
-      },
-      {
-        icon: 'target',
-        title: 'Smart targeting',
-        description: 'AI matches vehicles to buyers based on their interests'
-      },
-      {
-        icon: 'globe',
-        title: 'Multi-platform delivery',
-        description: 'Ads appear on Facebook, Instagram & Google simultaneously'
-      }
-    ],
-    catalogLabel: 'Your Vehicle Catalog',
-    feedLabel: 'Automated Feed',
-    platforms: 'Ad Platforms',
-    buyers: 'Right Buyers'
+    subtitle: 'Dynamic Ads in one picture: every vehicle in stock becomes an ad, shown to the buyer it interests, on Google, Facebook and Instagram.',
   },
   fr: {
-    title: 'Votre stock devient l\'annonce',
-    subtitle: 'Les Dynamic Ads, en une image : chaque véhicule du stock devient une annonce, montrée à l\'acheteur qu\'elle intéresse, sur toutes les plateformes.',
-    steps: [
-      {
-        icon: 'database',
-        title: 'Catalogue véhicules',
-        description: 'Votre inventaire se synchronise automatiquement avec toutes les plateformes'
-      },
-      {
-        icon: 'refresh-cw',
-        title: 'Mises à jour temps réel',
-        description: 'Prix, disponibilité et détails mis à jour quotidiennement ou toutes les heures'
-      },
-      {
-        icon: 'target',
-        title: 'Ciblage intelligent',
-        description: 'L\'IA associe les véhicules aux acheteurs selon leurs intérêts'
-      },
-      {
-        icon: 'globe',
-        title: 'Diffusion multiplateforme',
-        description: 'Les annonces apparaissent sur Facebook, Instagram & Google simultanément'
-      }
-    ],
-    catalogLabel: 'Votre catalogue véhicules',
-    feedLabel: 'Flux automatisé',
-    platforms: 'Plateformes Pub',
-    buyers: 'Bons Acheteurs'
-  }
+    title: 'Votre stock devient l’annonce',
+    subtitle: 'Les Dynamic Ads, en une image : chaque véhicule du stock devient une annonce, montrée à l’acheteur qu’elle intéresse, sur Google, Facebook et Instagram.',
+  },
 };
 
 const t = translations[lang] || translations.en;
-const carte = carteStock(lang);
 ---
 
 <section class="section-encre section-monte py-20 lg:py-32">
@@ -92,16 +39,6 @@ const carte = carteStock(lang);
       <p class="chapo">{t.subtitle}</p>
     </header>
 
-    <CarteVerre lang={lang} titreId="flux-titre" {...carte} />
-
-    <ol class="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-24 lg:grid-cols-4 lg:gap-5">
-      {t.steps.map((s, i) => (
-        <li class="carte-verre grid content-start gap-3 p-6" data-reveal style={`--i:${i}`}>
-          <span class="grid h-10 w-10 place-items-center rounded-full bg-marque font-display text-base font-extrabold text-white" aria-hidden="true">{i + 1}</span>
-          <h3 class="titre-carte text-white">{s.title}</h3>
-          <p class="text-sur-encre-2">{s.description}</p>
-        </li>
-      ))}
-    </ol>
+    <ChaineStock lang={lang} fond="encre" />
   </div>
 </section>

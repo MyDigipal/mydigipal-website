@@ -963,3 +963,21 @@ Paul veut vendre l'Academy en priorité, puis « refaire un petit peu » les aut
   dans AI Solutions. Le style de l'Academy (salle de nuit, or, Space Grotesk) n'est pas celui du
   site ; décider avant de refondre si les pages IA adoptent une teinte commune.
 
+
+### La chaîne du stock et le graphique Vehicle Ads (01/10/2026, `main`)
+
+Demande de Paul après l'audit flash Jallu-Berthier (« j'adore l'animation, mets-la sur le site ») :
+- **`motion/ChaineStock.astro`** : le stock qui devient des annonces, en isométrie (voitures, flux,
+  Merchant Center et ses trois logos, annonces, acheteur qui repart). Cinq étapes qui s'allument à
+  côté de la scène. `fond="encre"` ou `"clair"`. Elle remplace la carte de verre `carteStock` et les
+  quatre cartes numérotées dans `DynamicAdsFlow`.
+- **`motion/GraphiqueCumul.astro`** : conversions cumulées en barres, coût par conversion en courbe,
+  quatre mois d'un groupe multi-marques non nommé (chiffres réels). Le cumul est voulu : la série
+  mensuelle fait un pic en mars, que Paul a refusé.
+- Les deux scènes sont dans **`motion/scenes-vehicle-ads.js`** (`creerFlux`, `creerGraphique`), hors
+  du socle `MDP.scene` : elles BOUCLENT tant qu'elles sont à l'écran (choix de Paul sur l'audit), et
+  rendent l'image finale sous mouvement réduit ou `?fige=1`. Pour vérifier un instant :
+  `document.querySelector('[data-chaine-stock]').__render(8.6, true)`.
+- **`sections/automotive/VehicleAdsResultats.astro`** : sur `/automotive` (brume, avec la chaîne et
+  un lien vers Dynamic Ads, après le rail du parcours), sur Dynamic Ads (blanc, graphique seul,
+  après la chaîne). Logos des trois plateformes : `public/images/plateformes/`.

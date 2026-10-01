@@ -1,0 +1,196 @@
+---
+/**
+ * Le stock qui devient des annonces, en isométrie (01/10/2026). Les voitures du stock passent
+ * sous le lecteur et deviennent des blocs de données, Merchant Center en fait une annonce par
+ * voiture, un acheteur en choisit une et repart au volant. Les cinq étapes s'allument à droite
+ * au moment où l'objet arrive à la station.
+ * Scène : `scenes-vehicle-ads.js` (`creerFlux`). Sans script, seules les étapes s'affichent.
+ * `fond` : `encre` dans une `.section-encre`, `clair` sur le blanc ou la brume.
+ */
+import type { Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+  id?: string;
+  fond?: 'encre' | 'clair';
+}
+
+const { lang, id = 'chaine-stock', fond = 'encre' } = Astro.props;
+
+const textes = {
+  fr: {
+    noms: 'VOTRE STOCK|LE FLUX|MERCHANT CENTER|VOS ANNONCES|VENDU',
+    alt: 'Schéma animé : les voitures du stock deviennent un flux de données, Merchant Center en fait des annonces pour Google, Facebook et Instagram, un acheteur en choisit une et repart au volant',
+    etapes: [
+      ['Votre stock', 'Les voitures en vente dans vos concessions, déjà en ligne sur votre site.'],
+      ['Le flux', 'Chaque voiture devient des données : modèle, année, kilométrage, prix, photos, concession. Mis à jour chaque jour.'],
+      ['Merchant Center', 'Google vérifie les données et les relie à la fiche de la concession. Meta fait de même avec son catalogue.'],
+      ['Vos annonces', 'Une annonce par voiture, sur Google, Facebook et Instagram.'],
+      ['Vendu', 'Un acheteur choisit la sienne, appelle et vient l’essayer. La voiture vendue sort des annonces toute seule.'],
+    ],
+  },
+  en: {
+    noms: 'YOUR STOCK|THE FEED|MERCHANT CENTER|YOUR ADS|SOLD',
+    alt: 'Animated diagram: the cars in stock become a data feed, Merchant Center turns them into ads for Google, Facebook and Instagram, a buyer picks one and drives away',
+    etapes: [
+      ['Your stock', 'The cars for sale at your dealerships, already live on your website.'],
+      ['The feed', 'Every car becomes data: model, year, mileage, price, photos, dealership. Updated every day.'],
+      ['Merchant Center', 'Google checks the data and links it to the dealership’s profile. Meta does the same with its catalogue.'],
+      ['Your ads', 'One ad per car, on Google, Facebook and Instagram.'],
+      ['Sold', 'A buyer picks theirs, calls and comes for a test drive. The sold car leaves the ads on its own.'],
+    ],
+  },
+};
+const t = textes[lang] ?? textes.en;
+const plateformes = ['google', 'facebook', 'instagram'];
+---
+
+<div class:list={['flow', fond === 'clair' && 'flow-clair']} id={id} data-chaine-stock data-labels={t.noms}>
+  <div class="flow-stage">
+    <div class="flow-canvas">
+      <svg class="flow-svg" viewBox="450 270 1180 640" role="img" aria-label={t.alt}></svg>
+      <div class="flow-logos" aria-hidden="true">
+        {plateformes.map((p) => (
+          <span><img src={`/images/plateformes/${p}.svg`} alt="" width="24" height="24" loading="lazy" decoding="async" /></span>
+        ))}
+      </div>
+    </div>
+  </div>
+  <ol class="flow-steps">
+    {t.etapes.map(([titre, texte]) => (
+      <li><b>{titre}</b>{texte}</li>
+    ))}
+  </ol>
+</div>
+
+<script>
+  import { creerFlux } from './scenes-vehicle-ads.js';
+  document.querySelectorAll('[data-chaine-stock]').forEach((el) => creerFlux(el));
+</script>
+
+<style>
+  .flow-stage {
+    display: none;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #0a1626;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.08);
+  }
+  .flow.js .flow-stage {
+    display: flex;
+    align-items: center;
+  }
+  .flow-canvas {
+    position: relative;
+    width: 100%;
+  }
+  .flow-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .flow-logos span {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.6%;
+    aspect-ratio: 1 / 1;
+    margin: -2.8% 0 0 -2.8%;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0;
+    box-shadow: 0 6px 16px rgb(2 8 23 / 0.5);
+  }
+  .flow-logos img {
+    display: block;
+    width: 58%;
+    height: 58%;
+  }
+  .flow-steps {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .flow-steps li {
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    background: rgb(255 255 255 / 0.04);
+    color: var(--texte-sombre-2);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    transition:
+      opacity 300ms ease,
+      border-color 300ms ease,
+      background-color 300ms ease;
+  }
+  .flow-steps li b {
+    display: block;
+    margin-bottom: 3px;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .flow-clair .flow-steps li {
+    border-color: #e2e8f0;
+    background: #fff;
+    color: #4b5b6b;
+  }
+  .flow-clair .flow-steps li b {
+    color: var(--encre);
+  }
+  /* Avec le script : la scène à gauche, les étapes à droite, allumées une à une. */
+  .flow.js {
+    display: grid;
+    grid-template-columns: minmax(0, 2.1fr) minmax(230px, 1fr);
+    gap: 14px;
+    align-items: stretch;
+  }
+  .flow.js .flow-steps {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .flow.js .flow-steps li {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 16px;
+  }
+  .flow.js:not(.done) .flow-steps li {
+    opacity: 0.42;
+  }
+  .flow.js:not(.done) .flow-steps li.on {
+    opacity: 1;
+    border-color: #7fc4dd;
+    background: rgb(127 196 221 / 0.1);
+  }
+  .flow-clair.js:not(.done) .flow-steps li.on {
+    background: #f0fbff;
+  }
+  @media (max-width: 1023px) {
+    .flow.js {
+      grid-template-columns: 1fr;
+    }
+    .flow.js .flow-steps,
+    .flow-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 620px) {
+    .flow.js .flow-steps,
+    .flow-steps {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media print {
+    .flow-stage {
+      display: none !important;
+    }
+  }
+</style>

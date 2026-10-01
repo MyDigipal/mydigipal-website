@@ -25,6 +25,7 @@ import AutomotiveRail from '@/components/sections/automotive/AutomotiveRail.astr
 import DynamicAdsFlow from '@/components/sections/automotive/DynamicAdsFlow.astro';
 import DynamicAdsChannels from '@/components/sections/automotive/DynamicAdsChannels.astro';
 import DynamicAdsROI from '@/components/sections/automotive/DynamicAdsROI.astro';
+import VehicleAdsResultats from '@/components/sections/automotive/VehicleAdsResultats.astro';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -188,9 +189,10 @@ const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust u
     serviceCalculateur={calculatorServiceId}
   />
 
-  <!-- Dynamic Ads : la carte de verre du stock (encre), les plateformes (brume), l'avant et
-       l'après (blanc), puis le pourquoi (encre). -->
+  <!-- Dynamic Ads : la chaîne du stock en isométrie (encre), ce qu'elle donne en quatre mois
+       (blanc), les plateformes (brume), l'avant et l'après (blanc), puis le pourquoi (encre). -->
   {isDynamicAds && <DynamicAdsFlow lang={lang} />}
+  {isDynamicAds && <VehicleAdsResultats lang={lang} fond="blanc" />}
   {isDynamicAds && <DynamicAdsChannels lang={lang} />}
   {isDynamicAds && <DynamicAdsROI lang={lang} />}
 

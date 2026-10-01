@@ -1,0 +1,305 @@
+---
+/**
+ * Vehicle Ads chez un groupe automobile, les quatre premiers mois (01/10/2026) : les
+ * conversions cumulées montent en barres pendant que le coût par conversion baisse en courbe.
+ * Chiffres réels d'un groupe multi-marques accompagné par l'agence, de décembre 2025 à mars
+ * 2026, non nommé. Le cumul est affiché parce que la série mensuelle fait un pic en mars.
+ * Scène : `scenes-vehicle-ads.js` (`creerGraphique`). Sans script, le tableau reste.
+ * Sur le blanc ou la brume.
+ */
+import type { Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+  id?: string;
+}
+
+const { lang, id = 'graphique-vehicle-ads' } = Astro.props;
+
+const textes = {
+  fr: {
+    titre: 'Vehicle Ads, les quatre premiers mois',
+    source: 'Un groupe multi-marques qu’on accompagne, de décembre 2025 à mars 2026',
+    legende: ['Conversions cumulées', 'Coût par conversion, mois par mois'],
+    alt: 'Graphique : les conversions cumulées passent de 819 fin décembre à 6 675 fin mars, pendant que le coût par conversion baisse chaque mois',
+    colonnes: ['Mois', 'Conversions cumulées', 'Coût par conversion'],
+    mois: ['Décembre', 'Janvier', 'Février', 'Mars'],
+    lignes: [['Décembre 2025', '819', '1,2 €'], ['Janvier 2026', '1 638', '0,97 €'], ['Février 2026', '2 683', '0,93 €'], ['Mars 2026', '6 675', '0,80 €']],
+    sep: '\u00a0',
+    tuiles: [
+      { nom: 'Budget publicitaire', valeur: '5 979 €', compte: 5979, prefixe: '', suffixe: ' €', note: 'sur quatre mois' },
+      { nom: 'Clics vers les fiches', valeur: '29 491', compte: 29491, prefixe: '', suffixe: '', note: 'cumul à ce mois' },
+      { nom: 'Coût par clic', valeur: '0,20 €', note: 'en moyenne' },
+    ],
+    quoi: 'Ce qu’on appelle une conversion, sur ces quatre mois',
+    conversions: [['1 859', 'visites en concession, mesurées par Google'], ['916', 'appels à la concession'], ['203', 'formulaires, chats et demandes de contact'], ['3 697', 'autres actions suivies sur le site']],
+    note: 'Ces chiffres sont ceux d’un groupe, sur son marché. Ils donnent un ordre de grandeur, pas une promesse.',
+  },
+  en: {
+    titre: 'Vehicle Ads, the first four months',
+    source: 'A multi-brand dealer group we work with, December 2025 to March 2026',
+    legende: ['Cumulative conversions', 'Cost per conversion, month by month'],
+    alt: 'Chart: cumulative conversions go from 819 at the end of December to 6,675 at the end of March, while the cost per conversion falls every month',
+    colonnes: ['Month', 'Cumulative conversions', 'Cost per conversion'],
+    mois: ['December', 'January', 'February', 'March'],
+    lignes: [['December 2025', '819', '€1.2'], ['January 2026', '1,638', '€0.97'], ['February 2026', '2,683', '€0.93'], ['March 2026', '6,675', '€0.80']],
+    sep: ',',
+    tuiles: [
+      { nom: 'Ad budget', valeur: '€5,979', compte: 5979, prefixe: '€', suffixe: '', note: 'over four months' },
+      { nom: 'Clicks to listings', valeur: '29,491', compte: 29491, prefixe: '', suffixe: '', note: 'running total' },
+      { nom: 'Cost per click', valeur: '€0.20', note: 'on average' },
+    ],
+    quoi: 'What we call a conversion, over these four months',
+    conversions: [['1,859', 'dealership visits, measured by Google'], ['916', 'calls to the dealership'], ['203', 'forms, chats and contact requests'], ['3,697', 'other tracked actions on the site']],
+    note: 'These figures belong to one group, in its market. They give an order of magnitude, not a promise.',
+  },
+};
+const t = textes[lang] ?? textes.en;
+---
+
+<div class="viz" id={id} data-graphique-cumul data-mois={t.mois.join('|')} data-couts={t.lignes.map((l) => l[2]).join('|')} data-sep={t.sep}>
+  <div class="viz-head">
+    <div>
+      <b>{t.titre}</b>
+      <span>{t.source}</span>
+    </div>
+    <div class="viz-leg">
+      <span><i></i>{t.legende[0]}</span>
+      <span><i class="l"></i>{t.legende[1]}</span>
+    </div>
+  </div>
+  <div class="viz-grid">
+    <div>
+      <svg class="viz-svg" viewBox="0 0 760 360" role="img" aria-label={t.alt}></svg>
+      <div class="viz-table">
+        <table>
+          <thead>
+            <tr>{t.colonnes.map((c, i) => <th class:list={[i > 0 && 'num']}>{c}</th>)}</tr>
+          </thead>
+          <tbody>
+            {t.lignes.map((l) => (
+              <tr>{l.map((c, i) => <td class:list={[i > 0 && 'num']}>{c}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="viz-tiles">
+      {t.tuiles.map((u) => (
+        <div class="viz-tile">
+          <span>{u.nom}</span>
+          {u.compte
+            ? <b data-compte={u.compte} data-prefixe={u.prefixe} data-suffixe={u.suffixe}>{u.valeur}</b>
+            : <b>{u.valeur}</b>}
+          <em>{u.note}</em>
+        </div>
+      ))}
+    </div>
+  </div>
+  <p class="viz-quoi">{t.quoi}</p>
+  <div class="viz-conv">
+    {t.conversions.map(([valeur, texte]) => (
+      <div><b>{valeur}</b><span>{texte}</span></div>
+    ))}
+  </div>
+  <p class="viz-note">{t.note}</p>
+</div>
+
+<script>
+  import { creerGraphique } from './scenes-vehicle-ads.js';
+  document.querySelectorAll('[data-graphique-cumul]').forEach((el) => creerGraphique(el));
+</script>
+
+<style>
+  .viz {
+    padding: 22px 24px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 14px 40px rgb(11 27 43 / 0.07);
+  }
+  .viz-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+  .viz-head b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--encre);
+  }
+  .viz-head span {
+    font-size: 0.8125rem;
+    color: #64748b;
+  }
+  .viz-leg {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+  }
+  .viz-leg span {
+    font-size: 0.8125rem;
+    color: #475569;
+  }
+  .viz-leg i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+    border-radius: 3px;
+    background: #6366f1;
+    vertical-align: -1px;
+  }
+  .viz-leg i.l {
+    width: 14px;
+    height: 3px;
+    border-radius: 2px;
+    background: #ea580c;
+    vertical-align: 3px;
+  }
+  .viz-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 200px;
+    gap: 18px;
+    align-items: stretch;
+  }
+  .viz-svg {
+    display: none;
+    width: 100%;
+    height: auto;
+  }
+  .viz.js .viz-svg {
+    display: block;
+  }
+  .viz.js .viz-table {
+    display: none;
+  }
+  .viz-table {
+    overflow-x: auto;
+  }
+  .viz-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+  .viz-table th,
+  .viz-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+  }
+  .viz-table .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .viz-tiles {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+  }
+  .viz-tile {
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+  }
+  .viz-tile span {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+  .viz-tile b {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 800;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    color: var(--encre);
+  }
+  .viz-tile em {
+    display: block;
+    font-size: 0.75rem;
+    font-style: normal;
+    color: #64748b;
+  }
+  .viz-quoi {
+    margin: 18px 0 8px;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+  .viz-conv {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .viz-conv div {
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    text-align: center;
+  }
+  .viz-conv b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 800;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-marque, #1d71b8);
+  }
+  .viz-conv span {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: #64748b;
+  }
+  .viz-note {
+    margin: 12px 0 0;
+    font-size: 0.8125rem;
+    color: #64748b;
+  }
+  @media (max-width: 1023px) {
+    .viz-grid {
+      grid-template-columns: 1fr;
+    }
+    .viz-tiles {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .viz-conv {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 620px) {
+    .viz {
+      padding: 18px 16px;
+    }
+    .viz-tiles {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media print {
+    .viz-svg {
+      display: none !important;
+    }
+    .viz .viz-table {
+      display: block !important;
+    }
+  }
+</style>
