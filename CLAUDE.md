@@ -689,6 +689,31 @@ Copilot et de Gemini portent un dégradé, et le système n'a qu'une couleur d'a
 sans aucun dégradé. Usage nominatif seulement, jamais à côté du logo MyDigipal
 d'une manière qui suggérerait un partenariat.
 
+### Le menu du site est revenu sur la page de vente (01/10/2026)
+
+Demande de Paul : « on n'a pas vraiment besoin d'avoir les différentes sections de la page »,
+« on pourrait remettre le menu habituel du site ». Ce qui annule la décision du 27/08.
+
+- `academy.astro` pose `Header` (`ctaHref="#tarifs"`, libellé « Commencer » / « Get started »).
+  `Barre.tsx` n'est plus rendue par `AcademyV2` ; elle ne sert plus qu'à `/academy-v1`. La ligne
+  de progression et « Jour n / 30 » sont partis avec elle.
+- Le bouton de l'en-tête est un lien d'ancre en Astro, hors de l'îlot : `AcademyV2` reprend son
+  clic (`#header a[href="#tarifs"]`) pour passer par `allerA`, et referme le menu du téléphone.
+- `Hero` prend `sousEntete` : l'en-tête du site réserve déjà 72 px dans le flux, donc la marge
+  haute passe de `pt-32 lg:pt-40` à `pt-14 lg:pt-24`. Sans l'option (v1), rien ne change.
+- **La barre d'outils flottante** (`Question.tsx`) : une capsule debout en bas à droite qui porte
+  les trois devises et le visage du chat. Le menu du site n'a pas de sélecteur de devise, c'est
+  donc le seul endroit où elle se change. Sous lg, seule la devise choisie se montre, un toucher
+  déplie les deux autres. ⚠️ Debout aussi sur téléphone : couchée, elle faisait 119 px de large
+  et couvrait la colonne des durées du programme.
+- **Le visage du chat est là dès l'arrivée** (Paul : « je veux qu'il apparaisse directement,
+  comme sur les autres pages »). Le seuil d'avant (grille de tarifs à l'écran, ou une minute) ne
+  commande plus que l'ouverture automatique du panneau et la barre du téléphone (`mur`). La
+  bulle d'accroche vient à dix secondes, comme la question de l'assistant du reste du site.
+  C'est toujours le panneau de l'Academy (sa FAQ, son assistant), pas l'assistant du site.
+- « Client Login » est retiré de `Header.astro`, ordinateur et téléphone, sur tout le site.
+- Non traité : les pages outils (`/academy/{outil}`) gardent `BarreOutil.astro`.
+
 ## Chantier en cours : la refonte du design, avec un mouvement qui explique (29/09/2026)
 
 Demande de Paul : le passage du 25/09 (section 7 bis) a rendu le site blanc sur blanc, les

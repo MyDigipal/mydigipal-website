@@ -19,7 +19,7 @@ import { captureAdClickIds, useLienApp } from '../academy/track';
 // clients, le sélecteur de langue et le vrai logo vivent là-dedans, et une
 // version « simplifiée » écrite à côté les perd tous (erreur du 06/09/2026).
 // Cette page ne fait que CHANGER L'ORDRE et ajouter deux sections.
-import Barre from '../academy/Barre';
+import { allerA } from '../academy/ancre';
 import Hero from '../academy/Hero';
 import Visite from '../academy/Visite';
 import Mention from '../academy/Mention';
@@ -122,6 +122,29 @@ export default function AcademyV2({
   }, []);
   const maison = jour30Copy(locale).maison;
 
+  // Le bouton de l'en-tête du site mène aux tarifs (01/10/2026, retour du menu
+  // habituel sur cette page). L'en-tête est en Astro, hors de cet îlot : son lien
+  // d'ancre natif arriverait trop court (voir `ancre.ts`), donc le clic est repris
+  // ici. Le menu du téléphone se referme, sinon il couvrirait la section demandée.
+  useEffect(() => {
+    const surClic = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const lien = (e.target as Element | null)?.closest?.('#header a[href="#tarifs"]');
+      if (!lien || !document.getElementById('tarifs')) return;
+      e.preventDefault();
+      const menu = document.getElementById('mobile-menu');
+      if (menu && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+        document.getElementById('menu-icon')?.classList.remove('hidden');
+        document.getElementById('close-icon')?.classList.add('hidden');
+      }
+      allerA('tarifs');
+      if (window.location.hash !== '#tarifs') window.history.replaceState(null, '', '#tarifs');
+    };
+    document.addEventListener('click', surClic);
+    return () => document.removeEventListener('click', surClic);
+  }, []);
+
   useEffect(() => {
     captureAdClickIds();
     const ctrl = new AbortController();
@@ -165,20 +188,9 @@ export default function AcademyV2({
 
   return (
     <div data-theme="nuit" data-anime={anime ? '' : undefined} className="vente-v2 j30 overflow-x-clip bg-salle text-corps-nuit">
-      <Barre
-        locale={locale}
-        chemin="academy"
-        ancreCta="tarifs"
-        devise={devise}
-        surDevise={setDevise}
-        reperes={[
-          { id: 'programme', libelle: c.barre.programme },
-          { id: 'visite', libelle: c.barre.academie },
-          { id: 'compte', libelle: c.barre.trajet },
-          { id: 'tarifs', libelle: c.barre.tarifs },
-        ]}
-      />
-
+      {/* La barre propre à la page a laissé la place au menu du site le 01/10/2026
+          (posé par `academy.astro`). La devise se change dans la barre d'outils
+          flottante de `Question`, à côté du chat. */}
       {/* ⚠️ Le bouton du hero pointait sur #pricing, ancre absente de cette
           page : il ne menait nulle part. Même défaut que le retournement et
           l'appel flottant (relevé le 07/09). */}
@@ -186,6 +198,7 @@ export default function AcademyV2({
         locale={locale}
         data={data}
         ancreTarifs="tarifs"
+        sousEntete
         cta2VersTarifs
         cta2={c.tarifs.gratuitCourt(leconsGratuit(data), data.essai_heures ?? 48)}
         prixAffiche={`${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, devise), locale)} ${SYMBOLE[devise]}`}
@@ -345,10 +358,11 @@ export default function AcademyV2({
         garantie={{ heures: data.garantie?.heures ?? 48, seuilPct: data.garantie?.seuil_pct ?? 5 }}
       />
 
-      {/* « Une question ? », Paul répond (direction A du labo, 15/09/2026). Il
-          apparaît avec la grille de tarifs ; sous lg il se pose au-dessus de
+      {/* « Une question ? », Paul répond (direction A du labo, 15/09/2026). Le
+          visage est là dès l'arrivée depuis le 01/10/2026, avec le sélecteur de
+          devise dans la même barre d'outils ; sous lg elle se pose au-dessus de
           « Commencer », qui garde le coin du pouce. */}
-      <Question locale={locale} devise={devise} data={data} modulesAuto={nbAuto} ancreTarifs="tarifs" />
+      <Question locale={locale} devise={devise} surDevise={setDevise} data={data} modulesAuto={nbAuto} ancreTarifs="tarifs" />
 
       <AppelFlottant locale={locale} ancreTarifs="tarifs" />
     </div>

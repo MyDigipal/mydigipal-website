@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import type { Devise, Jour30Data, Locale } from '../academy/data';
+import { SYMBOLE, type Devise, type Jour30Data, type Locale } from '../academy/data';
+import { jour30Copy } from '../academy/copy';
 import { paramGarde, provenance, trackQuestion } from '../academy/track';
 import { garderConversation, lireConversation, oublierConversation } from './conversation-cookie';
 import { rendreLeTitre, signalerReponse } from './notif-visiteur';
@@ -15,8 +16,10 @@ import { categoriesVente, faqVente, questionCopy } from './question-copy';
  * visiteurs de la page repartaient sans ouvrir le tunnel, sans rien laisser.
  *
  * Trois règles, et elles tiennent le composant :
- *   - il n'apparaît qu'une fois la grille de tarifs à l'écran, ou au bout d'une
- *     minute sur la page ;
+ *   - le visage est là DÈS L'ARRIVÉE depuis le 01/10/2026 (Paul : « je veux qu'il
+ *     apparaisse directement, comme sur les autres pages du site »). Avant, il
+ *     attendait la grille de tarifs ou une minute : ce seuil ne commande plus que
+ *     l'ouverture automatique du panneau et la barre du téléphone ;
  *   - la FAQ est écrite, aucun modèle ne répond : ce qui part est une vraie
  *     question, et elle part à Paul ;
  *   - aucun chiffre n'est écrit à la main (voir `question-copy.ts`).
@@ -55,6 +58,15 @@ import { categoriesVente, faqVente, questionCopy } from './question-copy';
  * est gardée dans le cookie `mdp_conversation` du domaine `.mydigipal.com`, lu
  * aussi par le tunnel (academy.mydigipal.com) et par la petite bulle de reprise
  * des autres pages du site (BaseLayout). Le lien `#une-question` rouvre le panneau.
+ *
+ * LA BARRE D'OUTILS (01/10/2026) : le menu du site est revenu sur la page, et il
+ * n'a pas de sélecteur de devise. Paul : « une espèce de barre d'outils qui
+ * apparaît sur la droite, avec le sélecteur de devise et le chat ». Une seule
+ * capsule debout porte donc les trois devises et le visage. Sur téléphone, les
+ * devises se replient sur celle qui est choisie (un toucher les déplie).
+ * ⚠️ Debout aussi sur téléphone : couchée, elle faisait 119 px de large et
+ * couvrait la colonne des durées du programme ; debout, elle ne prend que la
+ * marge, comme le visage seul avant elle.
  *
  * ⚠️ Sous `lg`, le coin bas droit est déjà pris par « Commencer »
  * (`AppelFlottant`, `bottom-4`, 48 px). La pastille se pose au-dessus, jamais
@@ -101,12 +113,15 @@ const adresseDans = (texte: string) => texte.match(/[^\s@,;]+@[^\s@,;]+\.[^\s@,;
 export default function Question({
   locale,
   devise,
+  surDevise,
   data,
   modulesAuto,
   ancreTarifs = 'tarifs',
 }: {
   locale: Locale;
   devise: Devise;
+  /** De quoi changer la devise depuis la barre d'outils. Sans elle, le visage seul. */
+  surDevise?: (d: Devise) => void;
   data: Jour30Data;
   modulesAuto: number;
   ancreTarifs?: string;
@@ -119,6 +134,10 @@ export default function Question({
   const nb = (s: string) => (locale === 'fr' ? s.replace(/ ([?!:;%])/g, ' $1') : s);
 
   const [visible, setVisible] = useState(false);
+  /** La grille de tarifs a été vue, ou une minute est passée : le panneau peut s'ouvrir seul. */
+  const [mur, setMur] = useState(false);
+  /** Sur téléphone, les trois devises dépliées ; repliées, seule la devise choisie se montre. */
+  const [devises, setDevises] = useState(false);
   const [bulle, setBulle] = useState(false);
   /** La barre « Une question ? » du téléphone, à la place de l'ouverture automatique. */
   const [barre, setBarre] = useState(false);
@@ -153,18 +172,20 @@ export default function Question({
   /** La hauteur du bandeau cookies tant qu'il est à l'écran, zéro ensuite. */
   const [bandeau, setBandeau] = useState(0);
 
-  // L'apparition : la grille de tarifs à l'écran, ou une minute sur la page.
-  // Un fil déjà ouvert dans cette visite fait revenir la pastille tout de suite,
-  // puisqu'une réponse de Paul peut l'attendre.
+  // Le visage est là dès le montage (01/10/2026). Ce qui attend encore la grille
+  // de tarifs à l'écran, ou une minute sur la page, c'est l'ouverture automatique
+  // du panneau et la barre du téléphone : `mur`. Un fil déjà ouvert dans cette
+  // visite le lève tout de suite, puisqu'une réponse de Paul peut l'attendre.
   // ⚠️ `setTimeout` et non `requestAnimationFrame` : un onglet en arrière-plan
-  // ne joue pas rAF, et la pastille ne viendrait jamais.
+  // ne joue pas rAF, et le seuil ne serait jamais franchi.
   useEffect(() => {
     arrivee.current = Date.now();
+    setVisible(true);
     let fait = false;
     const montrer = () => {
       if (fait) return;
       fait = true;
-      setVisible(true);
+      setMur(true);
     };
     // La conversation gardée pour le domaine d'abord (elle a pu commencer hier,
     // ou au tunnel), puis celle de cet onglet.
@@ -204,7 +225,9 @@ export default function Question({
   }, [ancreTarifs]);
 
   // La bulle d'accroche, une fois par visite sur ordinateur, et elle se retire
-  // d'elle-même. Sur téléphone, c'est la barre qui joue ce rôle.
+  // d'elle-même. Sur téléphone, c'est la barre qui joue ce rôle. Elle vient au
+  // bout de dix secondes, comme la question de l'assistant sur le reste du site :
+  // le visage étant là dès l'arrivée, une bulle immédiate tomberait sur le hero.
   useEffect(() => {
     if (!visible) return;
     let deja = false;
@@ -215,8 +238,8 @@ export default function Question({
       /* stockage indisponible : la bulle se montre, c'est sans gravité */
     }
     if (deja) return;
-    const a = window.setTimeout(() => setBulle(true), 800);
-    const b = window.setTimeout(() => setBulle(false), 15_000);
+    const a = window.setTimeout(() => setBulle(true), 10_000);
+    const b = window.setTimeout(() => setBulle(false), 25_000);
     return () => {
       window.clearTimeout(a);
       window.clearTimeout(b);
@@ -227,7 +250,7 @@ export default function Question({
   // visite. ⚠️ `hover: hover` et jamais la largeur d'écran : une fenêtre étroite
   // sur un ordinateur garde sa souris, et c'est le pouce qu'on protège ici.
   useEffect(() => {
-    if (!visible || ouvert) return;
+    if (!mur || ouvert) return;
     // Arrivé par la bulle de reprise d'une autre page : le panneau s'ouvre tout
     // de suite, sur téléphone aussi, puisque c'est ce que la personne a demandé.
     if (reprise.current) {
@@ -251,7 +274,7 @@ export default function Question({
       else setBarre(true);
     }, 3000);
     return () => window.clearTimeout(minuterie);
-  }, [visible, ouvert]);
+  }, [mur, ouvert]);
 
   useEffect(() => {
     ouvertRef.current = ouvert;
@@ -589,6 +612,7 @@ export default function Question({
     />
   );
   const texteBulle = bulleReponse ? c.paulARepondu : c.bulle;
+  const libelleDevise = jour30Copy(locale).barre.menuDevise;
 
   // L'état de l'assistant, tel que l'application le renvoie. Avant le premier
   // message, on annonce l'assistant : c'est lui qui répondra.
@@ -737,21 +761,57 @@ export default function Question({
             </div>
           )}
 
-          <button
-            ref={pastille}
-            type="button"
-            onClick={() => ouvrir(nouveau ? 'reponse' : 'pastille')}
-            aria-label={nouveau ? c.paulARepondu : c.pastilleAria}
-            className="relative h-14 w-14 rounded-full border-2 border-or bg-salle-2 shadow-[0_10px_30px_-8px_rgba(4,8,18,.75)] transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-or motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-          >
-            <img src={PHOTO} alt="" width={56} height={56} className="h-full w-full rounded-full object-cover" />
-            {nouveau && (
-              <span
-                aria-hidden="true"
-                className="absolute -right-0.5 -top-0.5 h-4 w-4 rounded-full border-2 border-salle bg-or"
-              />
+          {/* La barre d'outils : les devises et le visage dans une seule capsule.
+              Sous lg, seule la devise choisie se montre tant qu'on ne l'a pas
+              touchée. */}
+          <div className="flex flex-col items-center gap-1 rounded-full border border-filet-nuit bg-salle-2 p-1 shadow-[0_10px_30px_-8px_rgba(4,8,18,.75)]">
+            {surDevise && (
+              <>
+                <div role="group" aria-label={libelleDevise} className="flex flex-col items-center gap-0.5">
+                  {(['EUR', 'GBP', 'USD'] as Devise[]).map((d) => {
+                    const choisie = d === devise;
+                    return (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => {
+                          if (choisie) return setDevises((v) => !v);
+                          surDevise(d);
+                          setDevises(false);
+                        }}
+                        aria-pressed={choisie}
+                        aria-label={d}
+                        title={d}
+                        className={`h-11 w-11 flex-none cursor-pointer place-items-center rounded-full border-0 font-ac-mono text-[14px] font-bold transition duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-or lg:grid ${
+                          choisie
+                            ? 'grid bg-or text-salle'
+                            : `bg-transparent text-corps-nuit hover:bg-salle-3 hover:text-ivoire ${devises ? 'grid' : 'hidden'}`
+                        }`}
+                      >
+                        {SYMBOLE[d]}
+                      </button>
+                    );
+                  })}
+                </div>
+                <span aria-hidden="true" className="h-px w-6 flex-none bg-filet-nuit" />
+              </>
             )}
-          </button>
+            <button
+              ref={pastille}
+              type="button"
+              onClick={() => ouvrir(nouveau ? 'reponse' : 'pastille')}
+              aria-label={nouveau ? c.paulARepondu : c.pastilleAria}
+              className="relative h-14 w-14 flex-none cursor-pointer rounded-full border-2 border-or bg-salle-2 transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-or motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+            >
+              <img src={PHOTO} alt="" width={56} height={56} className="h-full w-full rounded-full object-cover" />
+              {nouveau && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -right-0.5 -top-0.5 h-4 w-4 rounded-full border-2 border-salle bg-or"
+                />
+              )}
+            </button>
+          </div>
         </div>
       )}
 

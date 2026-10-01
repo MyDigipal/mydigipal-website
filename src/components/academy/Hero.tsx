@@ -28,6 +28,7 @@ export default function Hero({
   prixAffiche,
   film,
   urlCadre,
+  sousEntete,
 }: {
   locale: Locale;
   data: Jour30Data;
@@ -57,6 +58,12 @@ export default function Hero({
   film?: ReactNode;
   /** Le texte de la barre d'adresse du cadre, quand le film ne montre pas l'app. */
   urlCadre?: string;
+  /**
+   * La page porte l'en-tête du site, qui réserve déjà ses 72 px dans le flux
+   * (01/10/2026). Sans cette option, la section passe SOUS une barre fixe et
+   * garde la marge qui la dégage.
+   */
+  sousEntete?: boolean;
 }) {
   const c = jour30Copy(locale).hero;
   const programme = data.offres.find((o) => o.id === 'programme');
@@ -76,7 +83,10 @@ export default function Hero({
   const gratuit = useLienApp(`https://academy.mydigipal.com${locale === 'fr' ? '/fr' : ''}/start`);
 
   return (
-    <section id="academy-hero" className="relative overflow-hidden px-4 pb-16 pt-32 sm:px-6 lg:pb-24 lg:pt-40">
+    <section
+      id="academy-hero"
+      className={`relative overflow-hidden px-4 pb-16 sm:px-6 lg:pb-24 ${sousEntete ? 'pt-14 lg:pt-24' : 'pt-32 lg:pt-40'}`}
+    >
       {/* Le site a son header fixe (72 px) et son logo : la section passe
           dessous avec son dégradé, sans bande vide ni second logo. */}
       <div
