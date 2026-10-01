@@ -7,7 +7,7 @@
  */
 interface Props {
   teinte?: 'bleu' | 'ivoire' | 'corail';
-  format?: 'paysage' | 'carre';
+  format?: 'paysage' | 'carre' | 'portrait';
   class?: string;
 }
 
@@ -18,10 +18,13 @@ const TEINTES = {
   corail: { caisse: '#e9a078', bas: '#cd865f', toit: '#f1b392' },
 };
 const c = TEINTES[teinte];
-const haut = format === 'carre' ? 320 : 200;
-const carre = format === 'carre';
-const sol = carre ? 228 : 146;
-const pose = carre ? 'translate(18 118) scale(1.42)' : 'translate(42 50) scale(1.18)';
+// La hauteur du cadre, la ligne du sol et la pose de la voiture, par format.
+const CADRES = {
+  paysage: { haut: 200, sol: 146, pose: 'translate(42 50) scale(1.18)' },
+  carre: { haut: 320, sol: 228, pose: 'translate(18 118) scale(1.42)' },
+  portrait: { haut: 512, sol: 338, pose: 'translate(46 248) scale(1.12)' },
+};
+const { haut, sol, pose } = CADRES[format];
 const id = `vm-${teinte}-${format}`;
 ---
 

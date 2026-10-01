@@ -1,0 +1,278 @@
+---
+/**
+ * Google Ads automobile, une campagne par situation (01/10/2026). Repris de l'audit flash
+ * Jallu-Berthier, où Paul a validé les cartes de campagne : pour qui, où l'on arrive, les
+ * mots-clés, et l'annonce telle que Google l'affiche. Trois situations : lancer un modèle,
+ * écouler l'occasion, remplir des portes ouvertes. Elles remplacent les six cartes de services
+ * et les trois cas d'usage de la fiche, qui disaient la même chose sans rien montrer.
+ * Les annonces sont des exemples : le build S'ARRÊTE si un titre sort de 22 à 30 caractères ou
+ * une description de 80 à 90 (règle de Paul sur les annonces Google).
+ * Sur le blanc.
+ */
+import type { Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const fr = lang === 'fr';
+
+interface Campagne {
+  nom: string;
+  pourQui: string;
+  arrive: string;
+  mots: string[];
+  url: string;
+  titres: [string, string];
+  description: string;
+  liens: string[];
+}
+
+const t = fr
+  ? {
+      titre: 'Une campagne par situation',
+      chapo: 'Lancer un modèle, écouler l’occasion ou remplir des portes ouvertes : ce n’est pas la même campagne. Les voici, avec leurs mots-clés et l’annonce qui s’affiche.',
+      pourQui: 'Pour qui',
+      arrive: 'Arrive sur',
+      mots: 'Mots-clés',
+      sponsorise: 'Sponsorisé',
+      note: 'Exemples. Chez vous, les mots-clés partent de votre stock, de vos marques et de vos villes.',
+    }
+  : {
+      titre: 'One campaign per situation',
+      chapo: 'Launching a model, moving used stock or filling an open day: it is not the same campaign. Here they are, with their keywords and the ad that shows.',
+      pourQui: 'For whom',
+      arrive: 'Lands on',
+      mots: 'Keywords',
+      sponsorise: 'Sponsored',
+      note: 'Examples. For you, the keywords start from your stock, your brands and your towns.',
+    };
+
+const campagnes: Campagne[] = fr
+  ? [
+      {
+        nom: 'Lancer un modèle',
+        pourQui: 'Ceux qui cherchent déjà ce modèle, ou un modèle proche, en neuf.',
+        arrive: 'La page du modèle, avec l’offre du moment.',
+        mots: ['suv hybride neuf', 'essai suv hybride tours', 'loa suv hybride', 'prix nouveau suv hybride'],
+        url: 'votre-concession.fr/neuf/suv-hybride',
+        titres: ['Nouveau SUV Hybride à Tours', 'Réservez Votre Essai en Ligne'],
+        description: 'Découvrez le nouveau SUV hybride dans votre concession de Tours. Offre de lancement.',
+        liens: ['Offre du mois', 'Financement', 'Reprise', 'Essai'],
+      },
+      {
+        nom: 'Écouler l’occasion',
+        pourQui: 'Ceux qui cherchent une occasion près de chez eux, avec ou sans modèle en tête.',
+        arrive: 'Le stock d’occasion, filtré sur la recherche.',
+        mots: ['voiture occasion tours', 'suv occasion indre-et-loire', 'citadine occasion petit prix', 'break diesel occasion'],
+        url: 'votre-concession.fr/occasion/tours',
+        titres: ['Voitures d’Occasion à Tours', 'Garanties et Reprise Incluse'],
+        description: 'Des occasions toutes marques, révisées et garanties à Tours. Reprise de votre véhicule.',
+        liens: ['Stock du jour', 'Financement', 'Reprise', 'Essai'],
+      },
+      {
+        nom: 'Remplir des portes ouvertes',
+        pourQui: 'Les habitants de votre zone, la semaine de l’événement.',
+        arrive: 'La page de l’événement, avec l’inscription.',
+        mots: ['portes ouvertes concession tours', 'essai voiture ce week-end', 'offre voiture neuve mars', 'concession ouverte dimanche'],
+        url: 'votre-concession.fr/portes-ouvertes',
+        titres: ['Portes Ouvertes ce Week-end', 'Essais et Offres sur Place'],
+        description: 'Venez essayer la gamme ce week-end dans votre concession de Tours. Offres réservées.',
+        liens: ['Programme', 'Réserver un essai', 'Offres', 'Itinéraire'],
+      },
+    ]
+  : [
+      {
+        nom: 'Launching a model',
+        pourQui: 'People already searching for this model, or one close to it, new.',
+        arrive: 'The model page, with the current offer.',
+        mots: ['new hybrid suv', 'hybrid suv test drive leeds', 'hybrid suv pcp deals', 'new hybrid suv price'],
+        url: 'your-dealership.com/new/hybrid-suv',
+        titres: ['New Hybrid SUV in Leeds', 'Book Your Test Drive Online'],
+        description: 'Discover the new hybrid SUV at your Leeds dealership. Launch offer available this month.',
+        liens: ['This month’s offer', 'Finance', 'Part exchange', 'Test drive'],
+      },
+      {
+        nom: 'Moving used stock',
+        pourQui: 'People looking for a used car near them, with or without a model in mind.',
+        arrive: 'The used stock, filtered on the search.',
+        mots: ['used cars leeds', 'used suv west yorkshire', 'cheap used city car', 'used diesel estate'],
+        url: 'your-dealership.com/used/leeds',
+        titres: ['Quality Used Cars in Leeds', 'Warranty and Part Exchange'],
+        description: 'Used cars of every make, serviced and guaranteed in Leeds. Part exchange on your vehicle.',
+        liens: ['Today’s stock', 'Finance', 'Part exchange', 'Test drive'],
+      },
+      {
+        nom: 'Filling an open day',
+        pourQui: 'People living in your area, the week of the event.',
+        arrive: 'The event page, with the sign-up.',
+        mots: ['car dealership open day leeds', 'test drive this weekend', 'new car offers march', 'dealership open sunday'],
+        url: 'your-dealership.com/open-weekend',
+        titres: ['Open Weekend at Our Showroom', 'Test Drives and Event Offers'],
+        description: 'Come and test drive the range this weekend at your Leeds dealership. Event-only offers.',
+        liens: ['Programme', 'Book a test drive', 'Offers', 'Directions'],
+      },
+    ];
+
+// Les limites des annonces Google : un titre de 22 à 30 caractères, une description de 80 à 90.
+for (const c of campagnes) {
+  for (const titre of c.titres) {
+    if (titre.length < 22 || titre.length > 30) {
+      throw new Error(`CampagnesSearch (${lang}) : titre de ${titre.length} caractères, hors de 22 à 30 : « ${titre} »`);
+    }
+  }
+  if (c.description.length < 80 || c.description.length > 90) {
+    throw new Error(`CampagnesSearch (${lang}) : description de ${c.description.length} caractères, hors de 80 à 90 : « ${c.description} »`);
+  }
+}
+---
+
+<section class="section-blanc py-20 lg:py-32">
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.titre}</h2>
+      <p class="chapo">{t.chapo}</p>
+    </header>
+
+    <ul class="grid gap-4 lg:gap-5">
+      {campagnes.map((c, i) => (
+        <li class="carte camp" data-reveal style={`--i:${i}`}>
+          <div class="camp-texte">
+            <h3 class="titre-carte text-encre">{c.nom}</h3>
+            <dl>
+              <div><dt>{t.pourQui}</dt><dd>{c.pourQui}</dd></div>
+              <div><dt>{t.arrive}</dt><dd>{c.arrive}</dd></div>
+            </dl>
+            <p class="camp-k">{t.mots}</p>
+            <ul class="camp-mots">{c.mots.map((m) => <li>{m}</li>)}</ul>
+          </div>
+          <div class="camp-ecran" aria-hidden="true">
+            <div class="serp">
+              <span class="serp-sp">{t.sponsorise}</span>
+              <span class="serp-url">{c.url}</span>
+              <span class="serp-h">{c.titres.join(' | ')}</span>
+              <p class="serp-d">{c.description}</p>
+              <div class="serp-liens">{c.liens.map((l) => <span>{l}</span>)}</div>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+    <p class="mt-6 text-sm text-slate-500">{t.note}</p>
+  </div>
+</section>
+
+<style>
+  .camp {
+    display: grid;
+    overflow: hidden;
+  }
+  .camp-texte {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    padding: 24px;
+  }
+  .camp dl {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+  }
+  .camp dt,
+  .camp-k {
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+  .camp dd {
+    margin: 2px 0 0;
+    color: #334155;
+    text-wrap: pretty;
+  }
+  .camp-k {
+    margin: 4px 0 0;
+  }
+  .camp-mots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .camp-mots li {
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: var(--brume);
+    box-shadow: inset 0 0 0 1px var(--filet);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.78rem;
+    color: #334155;
+  }
+  .camp-ecran {
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: #e9eef5;
+    border-top: 1px solid var(--filet);
+  }
+  .serp {
+    width: 100%;
+    max-width: 560px;
+    padding: 16px 20px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 18px 40px -22px rgb(11 27 43 / 0.45);
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .serp-sp {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #202124;
+  }
+  .serp-url {
+    display: block;
+    font-size: 0.78rem;
+    color: #4d5156;
+  }
+  .serp-h {
+    display: block;
+    margin: 2px 0 4px;
+    font-size: 1.125rem;
+    line-height: 1.3;
+    color: #1a0dab;
+  }
+  .serp-d {
+    margin: 0 0 8px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #4d5156;
+  }
+  .serp-liens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+  .serp-liens span {
+    font-size: 0.84rem;
+    color: #1a0dab;
+  }
+  @media (min-width: 1024px) {
+    .camp {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    }
+    .camp-texte {
+      padding: 32px;
+    }
+    .camp-ecran {
+      border-top: 0;
+      border-left: 1px solid var(--filet);
+    }
+  }
+</style>

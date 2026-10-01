@@ -1007,3 +1007,19 @@ image, les six étapes de `services`, les trois cas d'usage, les trois résultat
 Les voitures des maquettes sont dessinées (`ui/VoitureMaquette.astro`, trois teintes, celles de
 la chaîne) : le site n'a pas de photo de voiture libre, et une photo de stock d'un client n'a
 rien à faire sur une page publique. Le dessin est une berline, les textes disent « berline ».
+
+### Google Ads et Paid Social automobile, sur le même principe (01/10/2026 au soir, `main`)
+
+Paul a validé la page Dynamic Ads (« vraiment, vraiment bien ») et demandé la suite.
+- **Google Ads** : le pourquoi et la carte du compte (encre), puis
+  `sections/automotive/CampagnesSearch.astro` (blanc), **une campagne par situation** (lancer un
+  modèle, écouler l'occasion, remplir des portes ouvertes) avec pour qui, où l'on arrive, les
+  mots-clés et l'annonce telle que Google l'affiche. ⚠️ Le build s'arrête si un titre sort de
+  22 à 30 caractères ou une description de 80 à 90. Puis `AnnoncesMaquettes variante="google"`
+  (brume) : remarketing Display, YouTube, Google Vehicle Ads, chacun avec sa maquette.
+- **Paid Social** : le pourquoi (encre), `AnnoncesMaquettes variante="social"` (brume) : vidéo
+  verticale, offre du mois, formulaire intégré ; puis le rail du formulaire au CRM (blanc).
+- **Les six cartes de `services` et les trois `useCases` ne sont plus rendus sur aucune des trois
+  pages** (`AutomotiveServices` et `AutomotiveUseCases` ne sont plus importés ; les données restent
+  dans les fiches). Les résultats de `benchmarks` restent sur Google Ads et Paid Social.
+- `ui/VoitureMaquette.astro` a trois formats : `paysage`, `carre`, `portrait` (vidéo verticale).

@@ -15,11 +15,11 @@ import { mesurerLogos } from '@/lib/logos-mesures';
 
 // Automotive specific sections
 import AutomotiveBenchmarks from '@/components/sections/automotive/AutomotiveBenchmarks.astro';
-import AutomotiveUseCases from '@/components/sections/automotive/AutomotiveUseCases.astro';
 import AutomotiveTeam from '@/components/sections/automotive/AutomotiveTeam.astro';
 import AutomotiveFAQ from '@/components/sections/automotive/AutomotiveFAQ.astro';
 import AutomotiveWhySection from '@/components/sections/automotive/AutomotiveWhySection.astro';
-import AutomotiveServices from '@/components/sections/automotive/AutomotiveServices.astro';
+import CampagnesSearch from '@/components/sections/automotive/CampagnesSearch.astro';
+import AnnoncesMaquettes from '@/components/sections/automotive/AnnoncesMaquettes.astro';
 import AutomotiveRail from '@/components/sections/automotive/AutomotiveRail.astro';
 
 // Dynamic Ads specific sections (visual components)
@@ -62,14 +62,12 @@ const {
   hero,
   metrics,
   benchmarks,
-  useCases,
   team,
   clients,
   faq,
   calculatorServiceId,
   seo,
   whySection,
-  services,
   isDynamicAds,
 } = page.data;
 
@@ -101,40 +99,6 @@ const heroLogos = await mesurerLogos(
   { Theobald: 'theobald', Ford: 'ford', 'Motor K': 'motork', Vulcain: 'vulcain', DMD: 'dmd', BYmyCAR: 'bymycar' },
   { 'Iroise Automobiles': '/images/Client logo/Iroise Auto.png' },
 );
-
-// Le visuel de la première carte des services, et celui du « pourquoi » des Dynamic Ads.
-const VISUELS: Record<string, { services: string; servicesAlt: { fr: string; en: string } }> = {
-  'google-ads': {
-    services: '/images/Automotive/Google Ads/66420b0dde42e6707d36b7fc_SCR-20240513-osho.webp',
-    servicesAlt: { fr: 'La structure d’un compte : la marque, ses modèles, leurs mots-clés', en: 'Account structure: the brand, its models, their keywords' },
-  },
-  'paid-social': {
-    services: '/images/Automotive/Paid Social/19ce258d-cdd1-44c3-8c21-5667c5b867e4.svg',
-    servicesAlt: { fr: 'Le gestionnaire de campagnes : Facebook, LinkedIn, TikTok, Instagram', en: 'Campaign manager: Facebook, LinkedIn, TikTok, Instagram' },
-  },
-  'dynamic-ads': {
-    services: '/images/Automotive/Dynamic Ads/8c304fc5-e979-4531-b664-bf4f97b33953.webp',
-    servicesAlt: { fr: 'Du tableur du stock à l’annonce publiée', en: 'From the stock spreadsheet to the live ad' },
-  },
-};
-const visuel = VISUELS[slug];
-
-// Le titre des cas d'usage, propre à chaque page.
-const CAS: Record<string, { fr: [string, string]; en: [string, string] }> = {
-  'google-ads': {
-    fr: ['Une stratégie par situation', 'Lancer un modèle, écouler l’occasion ou remplir des portes ouvertes : ce n’est pas la même campagne.'],
-    en: ['One strategy per situation', 'Launching a model, moving used stock or filling an open day: it is not the same campaign.'],
-  },
-  'paid-social': {
-    fr: ['Du ciblage à la vente', 'Trouver les bons acheteurs, les accompagner jusqu’au rendez-vous, avec une stratégie écrite avant la première annonce.'],
-    en: ['From targeting to the sale', 'Finding the right buyers and staying with them until the appointment, with a strategy written before the first ad.'],
-  },
-  'dynamic-ads': {
-    fr: ['Ce que les Dynamic Ads changent', 'Des annonces qui suivent le stock et l’acheteur, et une mise en place qui se compte en jours.'],
-    en: ['What Dynamic Ads change', 'Ads that follow the stock and the buyer, and a set-up counted in days.'],
-  },
-};
-const [casTitre, casChapo] = CAS[slug]?.[lang] ?? [undefined, undefined];
 
 // Les résultats des études de cas automobiles, lus dans la collection, un indicateur choisi
 // par page ; le verbatim d'une des trois.
@@ -229,7 +193,15 @@ const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust u
   {whySection && isPaidSocial && (
     <AutomotiveWhySection lang={lang} data={whySection} marques={['Facebook', 'Instagram', 'TikTok', 'LinkedIn']} />
   )}
-  <!-- Paid Social : du formulaire Meta au CRM, sur le rail (blanc). -->
+  <!-- Google Ads (refonte du 01/10/2026, mêmes principes que Dynamic Ads) : une campagne par
+       situation, avec ses mots-clés et son annonce (blanc), puis les trois formats qui complètent
+       le Search, chacun avec sa maquette (brume). -->
+  {isGoogleAds && <CampagnesSearch lang={lang} />}
+  {isGoogleAds && <AnnoncesMaquettes lang={lang} variante="google" />}
+
+  <!-- Paid Social : trois annonces et leur maquette (brume), puis du formulaire Meta au CRM,
+       sur le rail (blanc). -->
+  {isPaidSocial && <AnnoncesMaquettes lang={lang} variante="social" />}
   {isPaidSocial && (
     <AutomotiveRail
       lang={lang}
@@ -241,15 +213,8 @@ const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust u
     />
   )}
 
-  <!-- Ce qu'on fait (brume ; encre sur Paid Social, dont le rail est sur le blanc). -->
-  {services && !isDynamicAds && (
-    <AutomotiveServices lang={lang} data={services} image={visuel?.services} imageAlt={visuel?.servicesAlt[lang]} fond={isPaidSocial ? 'encre' : 'brume'} />
-  )}
-
-  <!-- Les cas d'usage (blanc). -->
-  {useCases && useCases.length > 0 && !isDynamicAds && (
-    <AutomotiveUseCases lang={lang} useCases={useCases} titre={casTitre} chapo={casChapo} />
-  )}
+  <!-- Les six cartes de services et les trois cas d'usage de la fiche ne sont plus rendus sur
+       ces trois pages : les maquettes et les scènes montrent ce qu'ils décrivaient. -->
 
   <!-- Les résultats de trois concessions (encre). -->
   {benchmarks && benchmarks.length > 0 && !isDynamicAds && (

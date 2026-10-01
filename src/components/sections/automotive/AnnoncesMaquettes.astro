@@ -1,0 +1,807 @@
+---
+/**
+ * Trois formats, chacun avec son annonce visible dessous (01/10/2026). Même principe que les
+ * trois vitrines de la page Dynamic Ads, validé par Paul : la marque en couleur, une phrase,
+ * puis la maquette. Deux variantes :
+ * - `social` (page Paid Social) : la vidéo verticale, l'offre du mois, le formulaire intégré ;
+ * - `google` (page Google Ads) : le remarketing Display, la vidéo YouTube, Google Vehicle Ads.
+ * Maquettes dessinées par nos soins (`ui/VoitureMaquette.astro`). Sur la brume.
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import Marque from '@/components/ui/Marque.astro';
+import VoitureMaquette from '@/components/ui/VoitureMaquette.astro';
+
+interface Props {
+  lang: Language;
+  variante: 'social' | 'google';
+}
+
+const { lang, variante } = Astro.props;
+const fr = lang === 'fr';
+const social = variante === 'social';
+
+const commun = fr
+  ? { concession: 'Votre concession', compte: 'votre.concession', sponsorise: 'Sponsorisé', annonce: 'Annonce', site: 'VOTRE-CONCESSION.FR', nom: 'Berline hybride', prix: '21 900 €', essai: 'Demander un essai' }
+  : { concession: 'Your dealership', compte: 'your.dealership', sponsorise: 'Sponsored', annonce: 'Ad', site: 'YOUR-DEALERSHIP.COM', nom: 'Hybrid saloon', prix: '€21,900', essai: 'Book a test drive' };
+
+const t = social
+  ? fr
+    ? {
+        titre: 'Trois annonces, trois moments',
+        chapo: 'Faire connaître un arrivage, pousser l’offre du mois, récupérer une demande d’essai : chaque moment a son format.',
+        cartes: [
+          ['Vidéo verticale', 'Reels et TikTok : l’arrivage ou le lancement en plein écran, montré aux habitants de votre zone.'],
+          ['Offre du mois', 'Le loyer ou la remise du moment, dans le fil des acheteurs de votre zone, avec un lien vers la page de l’offre.'],
+          ['Formulaire intégré', 'La demande d’essai se remplit dans l’application, déjà complétée, et arrive chez votre vendeur.'],
+        ],
+        legende: 'Nouvel arrivage : elle est en concession dès samedi.',
+        offre: 'Offre du mois',
+        texteOffre: 'Jusqu’à la fin du mois, la berline hybride est à 249 € par mois, entretien compris.',
+        lienOffre: 'Berline hybride · 249 €/mois',
+        voir: 'Voir l’offre',
+        form: 'Portes ouvertes ce week-end',
+        champs: [['Prénom et nom', 'Camille Martin'], ['Téléphone', '06 12 •• •• 48'], ['Concession la plus proche', 'Tours Nord']],
+        envoyer: 'Réserver un essai',
+        rempli: 'Rempli sans quitter l’application',
+        note: 'Maquettes. LinkedIn complète l’ensemble pour les flottes et les utilitaires, auprès des entreprises de votre zone.',
+      }
+    : {
+        titre: 'Three ads, three moments',
+        chapo: 'Announcing new arrivals, pushing this month’s offer, collecting a test drive request: each moment has its format.',
+        cartes: [
+          ['Vertical video', 'Reels and TikTok: the new arrival or the launch in full screen, shown to people in your area.'],
+          ['Offer of the month', 'The monthly payment or discount of the moment, in the feed of buyers in your area, with a link to the offer page.'],
+          ['Instant form', 'The test drive request is filled in inside the app, already completed, and reaches your salesperson.'],
+        ],
+        legende: 'Just arrived: in the showroom from Saturday.',
+        offre: 'Offer of the month',
+        texteOffre: 'Until the end of the month, the hybrid saloon is €249 a month, servicing included.',
+        lienOffre: 'Hybrid saloon · €249/month',
+        voir: 'See offer',
+        form: 'Open weekend',
+        champs: [['Full name', 'Camille Martin'], ['Phone', '07 12 •• •• 48'], ['Nearest dealership', 'Leeds North']],
+        envoyer: 'Book a test drive',
+        rempli: 'Filled in without leaving the app',
+        note: 'Mock-ups. LinkedIn completes the set for fleets and vans, with the businesses in your area.',
+      }
+  : fr
+    ? {
+        titre: 'Au-delà de la recherche',
+        chapo: 'Être vu avant la recherche, et relancer après la visite. Trois formats qui complètent les campagnes Search.',
+        cartes: [
+          ['Remarketing Display', 'La voiture qu’il a regardée chez vous, remontrée les jours suivants sur les sites qu’il lit.'],
+          ['YouTube', 'Quinze secondes autour d’un lancement ou de portes ouvertes, montrées dans votre zone.'],
+          ['Google Vehicle Ads', 'Vos voitures en vignettes au-dessus des résultats : photo, prix, kilométrage, concession.'],
+        ],
+        journal: 'actualites-locales.fr',
+        voirVoiture: 'Voir la voiture',
+        ignorer: 'Ignorer',
+        video: 'Portes ouvertes ce week-end',
+        reserver: 'Réserver un essai',
+        requete: 'berline hybride occasion',
+        proximite: 'Véhicules à proximité',
+        voitures: [['Berline hybride', '21 900 €', '2023 · 38 000 km'], ['Citadine essence', '13 500 €', '2022 · 24 000 km'], ['Break diesel', '18 200 €', '2021 · 61 000 km']],
+        lien: 'Voir les Dynamic Ads',
+        note: 'Maquettes. Les trois formats se branchent sur le même compte Google Ads et partagent ses audiences.',
+      }
+    : {
+        titre: 'Beyond search',
+        chapo: 'Being seen before the search, and following up after the visit. Three formats that complete the Search campaigns.',
+        cartes: [
+          ['Display remarketing', 'The car they viewed on your site, shown again over the following days on the websites they read.'],
+          ['YouTube', 'Fifteen seconds around a launch or an open day, shown in your area.'],
+          ['Google Vehicle Ads', 'Your cars as cards above the results: photo, price, mileage, dealership.'],
+        ],
+        journal: 'local-news.co.uk',
+        voirVoiture: 'View the car',
+        ignorer: 'Skip',
+        video: 'Open weekend',
+        reserver: 'Book a test drive',
+        requete: 'used hybrid saloon',
+        proximite: 'Vehicles nearby',
+        voitures: [['Hybrid saloon', '€21,900', '2023 · 38,000 km'], ['Petrol city car', '€13,500', '2022 · 24,000 km'], ['Diesel estate', '€18,200', '2021 · 61,000 km']],
+        lien: 'See Dynamic Ads',
+        note: 'Mock-ups. The three formats plug into the same Google Ads account and share its audiences.',
+      };
+const teintes = ['bleu', 'ivoire', 'corail'] as const;
+const logo = (nom: string) => `/images/plateformes/${nom}.svg`;
+---
+
+<section class="section-brume py-20 lg:py-32">
+  <div class="container-custom">
+    <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+      <h2 class="titre-moyen text-encre">{t.titre}</h2>
+      <p class="chapo">{t.chapo}</p>
+    </header>
+
+    <ul class="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
+      {social ? (
+        <Fragment>
+          <li class="carte vit" data-reveal style="--i:0">
+            <div class="vit-tete">
+              <span class="vit-logo"><img src={logo('instagram')} alt="Instagram" width="24" height="24" loading="lazy" decoding="async" /></span>
+              <span class="vit-logo"><Marque nom="TikTok" taille={22} /></span>
+              <h3 class="titre-carte text-encre">{t.cartes[0][0]}</h3>
+            </div>
+            <p class="vit-texte">{t.cartes[0][1]}</p>
+            <div class="vit-ecran" aria-hidden="true">
+              <div class="mq mq-reel">
+                <VoitureMaquette teinte="corail" format="portrait" class="reel-img" />
+                <div class="reel-haut"><span class="reel-av"><Icon name="car" size={14} /></span><b>{commun.compte}</b><em>{commun.sponsorise}</em></div>
+                <div class="reel-cote"><Icon name="heart" size={22} /><Icon name="message-circle" size={22} /><Icon name="send" size={22} /></div>
+                <div class="reel-bas"><p>{t.legende}</p><span>{commun.essai}<Icon name="chevron-right" size={15} /></span></div>
+              </div>
+            </div>
+          </li>
+          <li class="carte vit" data-reveal style="--i:1">
+            <div class="vit-tete">
+              <span class="vit-logo"><img src={logo('facebook')} alt="Facebook" width="24" height="24" loading="lazy" decoding="async" /></span>
+              <h3 class="titre-carte text-encre">{t.cartes[1][0]}</h3>
+            </div>
+            <p class="vit-texte">{t.cartes[1][1]}</p>
+            <div class="vit-ecran" aria-hidden="true">
+              <div class="mq mq-fb">
+                <div class="f-hd"><span class="f-av"><Icon name="car" size={18} /></span><div><b>{commun.concession}</b><span>{commun.sponsorise}</span></div></div>
+                <p class="f-tx">{t.texteOffre}</p>
+                <div class="f-visuel"><VoitureMaquette teinte="ivoire" format="paysage" class="f-im" /><span>{t.offre}</span></div>
+                <div class="f-lk"><div><span>{commun.site}</span><b>{t.lienOffre}</b></div><i>{t.voir}</i></div>
+                <div class="f-suite"><i></i><span></span><span></span></div>
+              </div>
+            </div>
+          </li>
+          <li class="carte vit" data-reveal style="--i:2">
+            <div class="vit-tete">
+              <span class="vit-logo"><img src={logo('facebook')} alt="Facebook" width="24" height="24" loading="lazy" decoding="async" /></span>
+              <span class="vit-logo"><img src={logo('instagram')} alt="Instagram" width="24" height="24" loading="lazy" decoding="async" /></span>
+              <h3 class="titre-carte text-encre">{t.cartes[2][0]}</h3>
+            </div>
+            <p class="vit-texte">{t.cartes[2][1]}</p>
+            <div class="vit-ecran" aria-hidden="true">
+              <div class="mq mq-form">
+                <div class="form-tete"><span class="f-av"><Icon name="car" size={18} /></span><div><b>{commun.concession}</b><span>{t.form}</span></div></div>
+                {t.champs.map(([k, v]) => <p class="champ"><span>{k}</span><b>{v}</b></p>)}
+                <p class="form-btn">{t.envoyer}</p>
+                <p class="form-fin"><Icon name="check-circle" size={15} />{t.rempli}</p>
+              </div>
+            </div>
+          </li>
+        </Fragment>
+      ) : (
+        <Fragment>
+          <li class="carte vit" data-reveal style="--i:0">
+            <div class="vit-tete">
+              <span class="vit-logo"><img src={logo('google')} alt="Google" width="24" height="24" loading="lazy" decoding="async" /></span>
+              <h3 class="titre-carte text-encre">{t.cartes[0][0]}</h3>
+            </div>
+            <p class="vit-texte">{t.cartes[0][1]}</p>
+            <div class="vit-ecran" aria-hidden="true">
+              <div class="mq mq-site">
+                <div class="site-barre"><i></i><i></i><i></i><span>{t.journal}</span></div>
+                <div class="site-art">
+                  <span class="l t"></span><span class="l"></span><span class="l s"></span>
+                  <div class="ban">
+                    <VoitureMaquette teinte="bleu" format="carre" class="ban-img" />
+                    <div><em>{commun.annonce}</em><b>{commun.nom}</b><span>{commun.prix} · {commun.concession}</span><i>{t.voirVoiture}</i></div>
+                  </div>
+                  <span class="l"></span><span class="l"></span><span class="l s"></span><span class="l"></span>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="carte vit" data-reveal style="--i:1">
+            <div class="vit-tete">
+              <span class="vit-logo"><Marque nom="YouTube" taille={24} /></span>
+              <h3 class="titre-carte text-encre">{t.cartes[1][0]}</h3>
+            </div>
+            <p class="vit-texte">{t.cartes[1][1]}</p>
+            <div class="vit-ecran" aria-hidden="true">
+              <div class="mq mq-yt">
+                <div class="yt-video">
+                  <VoitureMaquette teinte="corail" format="paysage" class="yt-img" />
+                  <span class="yt-play"><Icon name="play" size={20} /></span>
+                  <span class="yt-badge">{commun.annonce} · 0:15</span>
+                  <span class="yt-skip">{t.ignorer}</span>
+                </div>
+                <div class="yt-bas"><b>{t.video}</b><i>{t.reserver}</i></div>
+                <div class="yt-suite"><span class="l t"></span><span class="l s"></span><span class="l"></span><span class="l s"></span></div>
+              </div>
+            </div>
+          </li>
+          <li class="carte vit" data-reveal style="--i:2">
+            <div class="vit-tete">
+              <span class="vit-logo"><img src={logo('google')} alt="Google" width="24" height="24" loading="lazy" decoding="async" /></span>
+              <h3 class="titre-carte text-encre">{t.cartes[2][0]}</h3>
+            </div>
+            <p class="vit-texte">{t.cartes[2][1]} <a href={`/${lang}/automotive/dynamic-ads`} class="vit-lien">{t.lien}</a></p>
+            <div class="vit-ecran" aria-hidden="true">
+              <div class="mq mq-google">
+                <div class="g-bar"><img src={logo('google')} alt="" width="16" height="16" loading="lazy" decoding="async" /><span>{t.requete}</span><Icon name="search" size={15} /></div>
+                <p class="g-sp"><b>{commun.sponsorise}</b> · {t.proximite}</p>
+                <div class="g-row">
+                  {t.voitures.map(([nom, prix, meta], i) => (
+                    <div class="g-card">
+                      <VoitureMaquette teinte={teintes[i]} format="carre" class="g-img" />
+                      <p class="g-p">{prix}</p>
+                      <p class="g-t">{nom}</p>
+                      <p class="g-m">{meta}</p>
+                      <p class="g-d">{commun.concession}</p>
+                    </div>
+                  ))}
+                </div>
+                <div class="g-res"><span></span><span></span><span></span><span></span><span></span></div>
+              </div>
+            </div>
+          </li>
+        </Fragment>
+      )}
+    </ul>
+    <p class="mt-6 text-sm text-slate-500">{t.note}</p>
+  </div>
+</section>
+
+<style>
+  .vit {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 24px 24px 0;
+    overflow: hidden;
+  }
+  .vit-tete {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .vit-tete h3 {
+    margin-left: 2px;
+  }
+  .vit-logo {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    background: var(--brume);
+  }
+  .vit-texte {
+    color: #4b5b6b;
+    text-wrap: pretty;
+  }
+  .vit-lien {
+    font-weight: 600;
+    color: var(--color-marque, #1d71b8);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+  .vit-ecran {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    margin: 6px -24px 0;
+    padding: 22px 22px 0;
+    background: #e9eef5;
+    border-top: 1px solid var(--filet);
+  }
+  .mq {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+    min-height: 380px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    background: #fff;
+    color: #0f172a;
+    box-shadow: 0 18px 40px -18px rgb(11 27 43 / 0.45);
+  }
+  .mq p {
+    margin: 0;
+  }
+  .l {
+    display: block;
+    height: 8px;
+    border-radius: 4px;
+    background: #e8ecf1;
+  }
+  .l.t {
+    width: 70%;
+    height: 12px;
+    background: #cfd6df;
+  }
+  .l.s {
+    width: 56%;
+  }
+
+  /* La vidéo verticale : l'image plein cadre, le compte en haut, les icônes à droite, l'appel en bas. */
+  .mq-reel {
+    max-width: 250px;
+    min-height: 400px;
+    background: #0b1b2b;
+    color: #fff;
+    font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+  }
+  .mq-reel :global(.reel-img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .reel-haut {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: linear-gradient(rgb(11 27 43 / 0.55), transparent);
+    font-size: 0.8rem;
+  }
+  .reel-av {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    color: #0b1b2b;
+  }
+  .reel-haut em {
+    font-size: 0.7rem;
+    font-style: normal;
+    opacity: 0.85;
+  }
+  .reel-cote {
+    position: absolute;
+    right: 10px;
+    bottom: 120px;
+    display: grid;
+    gap: 16px;
+    filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.5));
+  }
+  .reel-bas {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    gap: 10px;
+    padding: 30px 12px 16px;
+    background: linear-gradient(transparent, rgb(11 27 43 / 0.82));
+    font-size: 0.84rem;
+    line-height: 1.35;
+  }
+  .reel-bas span {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    border-radius: 8px;
+    background: #fff;
+    font-weight: 700;
+    color: #0b1b2b;
+  }
+
+  /* Facebook : une publication du fil, avec la bande de l'offre sur le visuel. */
+  .mq-fb,
+  .mq-form {
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #050505;
+  }
+  .f-hd,
+  .form-tete {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 12px 8px;
+  }
+  .f-av {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--encre);
+    color: #fff;
+  }
+  .f-hd b,
+  .form-tete b {
+    display: block;
+    font-size: 0.84rem;
+    line-height: 1.2;
+  }
+  .f-hd div span,
+  .form-tete div span {
+    font-size: 0.72rem;
+    color: #65676b;
+  }
+  .f-tx {
+    padding: 0 12px 10px;
+    font-size: 0.84rem;
+    line-height: 1.4;
+  }
+  .f-visuel {
+    position: relative;
+  }
+  .f-visuel :global(.f-im) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1.91 / 1;
+  }
+  .f-visuel span {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 5px 11px;
+    border-radius: 8px;
+    background: var(--encre);
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .f-lk {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: #f0f2f5;
+  }
+  .f-lk div {
+    flex: 1;
+    min-width: 0;
+  }
+  .f-lk span {
+    display: block;
+    font-size: 0.66rem;
+    color: #65676b;
+  }
+  .f-lk b {
+    display: block;
+    overflow: hidden;
+    font-size: 0.84rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .f-lk i {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #e4e6eb;
+    font-size: 0.8rem;
+    font-style: normal;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .f-suite {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 6px 9px;
+    padding: 14px 12px 20px;
+    border-top: 8px solid #f0f2f5;
+  }
+  .f-suite i {
+    grid-row: span 2;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e4e6eb;
+  }
+  .f-suite span {
+    height: 9px;
+    border-radius: 5px;
+    background: #e4e6eb;
+  }
+  .f-suite span:first-of-type {
+    width: 46%;
+    margin-top: 5px;
+  }
+  .f-suite span:last-of-type {
+    width: 28%;
+  }
+
+  /* Le formulaire intégré. */
+  .mq-form {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 0 14px 18px;
+  }
+  .form-tete {
+    margin: 0 -14px;
+    padding-bottom: 4px;
+  }
+  .champ {
+    display: grid;
+    gap: 2px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    box-shadow: inset 0 0 0 1px #e2e8f0;
+  }
+  .champ span {
+    font-size: 0.6875rem;
+    color: #64748b;
+  }
+  .champ b {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--encre);
+  }
+  .form-btn {
+    padding: 11px;
+    border-radius: 999px;
+    background: #1877f2;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-align: center;
+    color: #fff;
+  }
+  .form-fin {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.78rem;
+    color: #15803d;
+  }
+
+  /* Le site d'actualité et sa bannière. */
+  .mq-site {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .site-barre {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    background: #eef1f5;
+  }
+  .site-barre i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #c7ced8;
+  }
+  .site-barre span {
+    margin-left: 6px;
+    padding: 3px 12px;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 0.7rem;
+    color: #64748b;
+  }
+  .site-art {
+    display: grid;
+    gap: 9px;
+    padding: 16px 16px 20px;
+  }
+  .ban {
+    display: flex;
+    margin: 6px 0;
+    overflow: hidden;
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+  }
+  .ban :global(.ban-img) {
+    flex: none;
+    width: 44%;
+    aspect-ratio: 1 / 1;
+  }
+  .ban div {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding: 9px 11px;
+  }
+  .ban em {
+    align-self: flex-start;
+    padding: 0 4px;
+    border: 1px solid #dadce0;
+    border-radius: 3px;
+    font-size: 0.6rem;
+    font-style: normal;
+    color: #5f6368;
+  }
+  .ban b {
+    font-size: 0.82rem;
+    line-height: 1.2;
+    color: #202124;
+  }
+  .ban span {
+    font-size: 0.72rem;
+    line-height: 1.3;
+    color: #4d5156;
+  }
+  .ban i {
+    align-self: flex-start;
+    margin-top: auto;
+    padding: 6px 9px;
+    border-radius: 6px;
+    background: #1a73e8;
+    font-size: 0.72rem;
+    font-style: normal;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  /* La vidéo YouTube : le lecteur, la bande d'appel, puis la vidéo qu'il venait voir. */
+  .mq-yt {
+    font-family: Roboto, Arial, sans-serif;
+  }
+  .yt-video {
+    position: relative;
+    background: #000;
+  }
+  .yt-video :global(.yt-img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+  .yt-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 38px;
+    margin: -19px 0 0 -27px;
+    border-radius: 11px;
+    background: #f00;
+    color: #fff;
+  }
+  .yt-badge {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    padding: 3px 7px;
+    border-radius: 4px;
+    background: rgb(0 0 0 / 0.65);
+    font-size: 0.68rem;
+    color: #fff;
+  }
+  .yt-skip {
+    position: absolute;
+    right: 0;
+    bottom: 10px;
+    padding: 7px 12px;
+    border-radius: 4px 0 0 4px;
+    background: rgb(0 0 0 / 0.72);
+    font-size: 0.74rem;
+    color: #fff;
+  }
+  .yt-bas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 11px 12px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .yt-bas b {
+    overflow: hidden;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #0f0f0f;
+  }
+  .yt-bas i {
+    padding: 7px 12px;
+    border-radius: 16px;
+    background: #065fd4;
+    font-size: 0.74rem;
+    font-style: normal;
+    font-weight: 700;
+    white-space: nowrap;
+    color: #fff;
+  }
+  .yt-suite {
+    display: grid;
+    gap: 9px;
+    padding: 16px 12px;
+  }
+
+  /* Google Vehicle Ads : la barre de recherche, puis le carrousel de vignettes. */
+  .mq-google {
+    padding: 14px 0 18px 14px;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .g-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 14px;
+    padding: 9px 14px;
+    border: 1px solid #dfe1e5;
+    border-radius: 24px;
+    box-shadow: 0 1px 4px rgb(32 33 36 / 0.12);
+    color: #4285f4;
+  }
+  .g-bar span {
+    flex: 1;
+    overflow: hidden;
+    font-size: 0.875rem;
+    color: #202124;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .mq .g-sp {
+    margin: 14px 0 8px;
+    font-size: 0.75rem;
+    color: #4d5156;
+  }
+  .g-sp b {
+    color: #202124;
+  }
+  .g-row {
+    display: flex;
+    gap: 8px;
+    overflow: hidden;
+  }
+  .g-card {
+    flex: 0 0 136px;
+    overflow: hidden;
+    padding-bottom: 9px;
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+  }
+  .g-card :global(.g-img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+  .g-card p {
+    overflow: hidden;
+    padding: 0 9px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .mq .g-p {
+    margin-top: 7px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #202124;
+  }
+  .g-t {
+    font-size: 0.78rem;
+    color: #1a0dab;
+  }
+  .g-m {
+    font-size: 0.72rem;
+    color: #4d5156;
+  }
+  .mq .g-d {
+    margin-top: 2px;
+    font-size: 0.72rem;
+    color: #188038;
+  }
+  .g-res {
+    display: grid;
+    gap: 9px;
+    margin: 20px 14px 0 0;
+  }
+  .g-res span {
+    height: 9px;
+    border-radius: 5px;
+    background: #eef0f3;
+  }
+  .g-res span:nth-child(1),
+  .g-res span:nth-child(4) {
+    width: 46%;
+    background: #d8dcf3;
+  }
+  .g-res span:nth-child(3) {
+    width: 78%;
+  }
+  @media (min-width: 1024px) {
+    .vit-texte {
+      min-height: 6.4em;
+    }
+  }
+</style>
