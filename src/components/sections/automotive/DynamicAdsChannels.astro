@@ -1,12 +1,16 @@
 ---
 /**
- * Dynamic Ads, un catalogue et trois plateformes (direction Encre, 30/09/2026) : sur la
- * brume, une carte blanche par plateforme avec sa marque EN COULEUR, ses formats et son
- * audience. Les audiences (2,9 Mrd, 2 Mrd, 90 %) sont des chiffres de marché sans source
- * affichée, gardés en attendant la décision de Paul.
+ * Dynamic Ads, un catalogue et trois vitrines (01/10/2026). Demande de Paul : « c'est pas
+ * Google, c'est Google Vehicle Ads », le vrai logo de Google, et l'annonce visible
+ * directement sous chaque plateforme (« on voit à quoi ça ressemblerait »).
+ * Une carte par plateforme : sa marque en couleur, une phrase, puis la maquette de l'annonce
+ * telle que cette plateforme la montre. Les puces de formats et les audiences de marché
+ * (2,9 Mrd, 2 Mrd, 90 %) sont retirées : la maquette dit ce que les puces listaient.
+ * Maquettes dessinées par nos soins, avec les trois voitures de la chaîne du stock.
  */
 import type { Language } from '@/i18n/config';
-import Marque from '@/components/ui/Marque.astro';
+import Icon from '@/components/ui/Icon.astro';
+import VoitureMaquette from '@/components/ui/VoitureMaquette.astro';
 
 interface Props {
   lang: Language;
@@ -16,110 +20,485 @@ interface Props {
 
 const { lang, color } = Astro.props;
 void color;
+const fr = lang === 'fr';
 
-const translations = {
-  en: {
-    title: 'One catalog, all platforms',
-    subtitle: 'Your vehicle inventory automatically displays across the most powerful advertising networks',
-    channels: [
-      {
-        name: 'Facebook',
-        icon: 'facebook',
-        color: 'from-blue-600 to-blue-700',
-        shadow: 'shadow-blue-500/30',
-        description: 'Reach billions of users with personalized vehicle ads in their news feed and marketplace',
-        features: ['News feed ads', 'Marketplace integration', 'Carousel formats', 'Lead generation forms'],
-        reach: '2.9B',
-        reachLabel: 'Monthly users'
-      },
-      {
-        name: 'Instagram',
-        icon: 'instagram',
-        color: 'from-pink-500 via-purple-500 to-orange-400',
-        shadow: 'shadow-pink-500/30',
-        description: 'Showcase your vehicles with stunning visuals to an engaged, younger audience',
-        features: ['Stories & Reels', 'Feed posts', 'Shop integration', 'Visual discovery'],
-        reach: '2B',
-        reachLabel: 'Monthly users'
-      },
-      {
-        name: 'Google Display',
-        icon: 'globe',
-        color: 'from-emerald-500 to-teal-600',
-        shadow: 'shadow-emerald-500/30',
-        description: 'Appear across millions of websites and apps when users research vehicles',
-        features: ['Display Network', 'Discovery ads', 'YouTube Placements', 'Gmail ads'],
-        reach: '90%',
-        reachLabel: 'Internet reach'
-      }
-    ],
-    learnMore: 'Learn more'
-  },
-  fr: {
-    title: 'Un catalogue, toutes les plateformes',
-    subtitle: 'Un seul catalogue, une seule configuration : vos véhicules s\'affichent sur les trois grands réseaux publicitaires, qui travaillent ensemble.',
-    channels: [
-      {
-        name: 'Facebook',
-        icon: 'facebook',
-        color: 'from-blue-600 to-blue-700',
-        shadow: 'shadow-blue-500/30',
-        description: 'Touchez des milliards d\'utilisateurs avec des annonces personnalisées dans leur fil d\'actualité et sur Marketplace.',
-        features: ['Publicités dans le fil d\'actualité', 'Intégration Marketplace', 'Formats carrousel', 'Formulaires de leads'],
-        reach: '2,9 Mrd',
-        reachLabel: 'utilisateurs par mois'
-      },
-      {
-        name: 'Instagram',
-        icon: 'instagram',
-        color: 'from-pink-500 via-purple-500 to-orange-400',
-        shadow: 'shadow-pink-500/30',
-        description: 'Présentez vos véhicules en images, à une audience plus jeune et très engagée.',
-        features: ['Stories et Reels', 'Publications dans le fil', 'Intégration Shop', 'Découverte visuelle'],
-        reach: '2 Mrd',
-        reachLabel: 'utilisateurs par mois'
-      },
-      {
-        name: 'Google Display',
-        icon: 'globe',
-        color: 'from-emerald-500 to-teal-600',
-        shadow: 'shadow-emerald-500/30',
-        description: 'Apparaissez sur des millions de sites et d\'applications quand les utilisateurs cherchent un véhicule.',
-        features: ['Réseau Display', 'Discovery Ads', 'Placements YouTube', 'Annonces Gmail'],
-        reach: '90 %',
-        reachLabel: 'des internautes touchés'
-      }
-    ],
-    learnMore: 'En savoir plus'
-  }
-};
-
-const t = translations[lang] || translations.en;
-const marque: Record<string, string> = { Facebook: 'Facebook', Instagram: 'Instagram', 'Google Display': 'Google Ads' };
+const t = fr
+  ? {
+      titre: 'Un catalogue, trois vitrines',
+      chapo: 'La même voiture, montrée comme chaque plateforme la montre. Un seul flux les alimente toutes les trois.',
+      google: 'Vos voitures en vignettes au-dessus des résultats, quand quelqu’un cherche un modèle : photo, prix, kilométrage, concession.',
+      facebook: 'La voiture regardée sur votre site revient dans le fil, comme une publication, avec un bouton vers sa fiche.',
+      instagram: 'La même voiture en grand format carré, avec une demande d’essai sans quitter l’application.',
+      requete: 'berline hybride occasion',
+      sponsorise: 'Sponsorisé',
+      proximite: 'Véhicules à proximité',
+      concession: 'Votre concession',
+      compte: 'votre.concession',
+      site: 'VOTRE-CONCESSION.FR',
+      texteFb: 'Toujours intéressé par cette berline ? Elle est disponible à l’essai cette semaine.',
+      voir: 'Voir l’offre',
+      essai: 'Demander un essai',
+      actions: ['J’aime', 'Commenter', 'Partager'],
+      legende: 'Berline hybride, 21 900 €. Faites défiler pour voir les voitures proches de celle-ci.',
+      note: 'Maquettes : vos annonces reprennent les photos, les prix et les kilométrages de votre stock.',
+      voitures: [
+        { nom: 'Berline hybride', prix: '21 900 €', meta: '2023 · 38 000 km' },
+        { nom: 'Citadine essence', prix: '13 500 €', meta: '2022 · 24 000 km' },
+        { nom: 'Break diesel', prix: '18 200 €', meta: '2021 · 61 000 km' },
+      ],
+    }
+  : {
+      titre: 'One catalog, three shop windows',
+      chapo: 'The same car, shown the way each platform shows it. One feed supplies all three.',
+      google: 'Your cars as cards above the search results when someone looks for a model: photo, price, mileage, dealership.',
+      facebook: 'The car viewed on your website comes back in the feed, as a post, with a button to its listing.',
+      instagram: 'The same car in a large square format, with a test drive request without leaving the app.',
+      requete: 'used hybrid saloon',
+      sponsorise: 'Sponsored',
+      proximite: 'Vehicles nearby',
+      concession: 'Your dealership',
+      compte: 'your.dealership',
+      site: 'YOUR-DEALERSHIP.COM',
+      texteFb: 'Still interested in this saloon? It is available for a test drive this week.',
+      voir: 'See offer',
+      essai: 'Book a test drive',
+      actions: ['Like', 'Comment', 'Share'],
+      legende: 'Hybrid saloon, €21,900. Swipe to see the cars close to this one.',
+      note: 'Mock-ups: your ads use the photos, prices and mileage of your own stock.',
+      voitures: [
+        { nom: 'Hybrid saloon', prix: '€21,900', meta: '2023 · 38,000 km' },
+        { nom: 'Petrol city car', prix: '€13,500', meta: '2022 · 24,000 km' },
+        { nom: 'Diesel estate', prix: '€18,200', meta: '2021 · 61,000 km' },
+      ],
+    };
+const teintes = ['bleu', 'ivoire', 'corail'] as const;
+const v0 = t.voitures[0];
 ---
 
 <section class="section-brume py-20 lg:py-32">
   <div class="container-custom">
     <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
-      <h2 class="titre-moyen text-encre">{t.title}</h2>
-      <p class="chapo">{t.subtitle}</p>
+      <h2 class="titre-moyen text-encre">{t.titre}</h2>
+      <p class="chapo">{t.chapo}</p>
     </header>
 
-    <ul class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:gap-5">
-      {t.channels.map((c, i) => (
-        <li class="carte flex flex-col gap-5 p-6 lg:p-8" data-reveal style={`--i:${i}`}>
-          <span class="grid h-16 w-16 flex-none place-items-center rounded-[18px] bg-brume-clair"><Marque nom={marque[c.name] ?? c.name} taille={34} /></span>
-          <div class="grid gap-2">
-            <h3 class="titre-carte text-encre">{c.name}</h3>
-            <p class="text-slate-600 text-pretty">{c.description}</p>
+    <ul class="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
+      <li class="carte vit" data-reveal style="--i:0">
+        <div class="vit-tete">
+          <span class="vit-logo"><img src="/images/plateformes/google.svg" alt="" width="26" height="26" loading="lazy" decoding="async" /></span>
+          <h3 class="titre-carte text-encre">Google Vehicle Ads</h3>
+        </div>
+        <p class="vit-texte">{t.google}</p>
+        <div class="vit-ecran" aria-hidden="true">
+          <div class="mq mq-google">
+            <div class="g-bar">
+              <img src="/images/plateformes/google.svg" alt="" width="16" height="16" loading="lazy" decoding="async" />
+              <span>{t.requete}</span>
+              <Icon name="search" size={15} />
+            </div>
+            <p class="g-sp"><b>{t.sponsorise}</b> · {t.proximite}</p>
+            <div class="g-row">
+              {t.voitures.map((v, i) => (
+                <div class="g-card">
+                  <VoitureMaquette teinte={teintes[i]} format="carre" class="g-img" />
+                  <p class="g-p">{v.prix}</p>
+                  <p class="g-t">{v.nom}</p>
+                  <p class="g-m">{v.meta}</p>
+                  <p class="g-d">{t.concession}</p>
+                </div>
+              ))}
+            </div>
+            <div class="g-res"><span></span><span></span><span></span><span></span><span></span></div>
           </div>
-          <ul class="puces">{c.features.map((f) => <li>{f}</li>)}</ul>
-          <p class="mt-auto flex items-baseline gap-2 border-t border-slate-200 pt-5">
-            <span class="font-display text-4xl font-extrabold tracking-[-0.04em] text-encre">{c.reach}</span>
-            <span class="text-slate-600">{c.reachLabel}</span>
-          </p>
-        </li>
-      ))}
+        </div>
+      </li>
+
+      <li class="carte vit" data-reveal style="--i:1">
+        <div class="vit-tete">
+          <span class="vit-logo"><img src="/images/plateformes/facebook.svg" alt="" width="26" height="26" loading="lazy" decoding="async" /></span>
+          <h3 class="titre-carte text-encre">Facebook</h3>
+        </div>
+        <p class="vit-texte">{t.facebook}</p>
+        <div class="vit-ecran" aria-hidden="true">
+          <div class="mq mq-fb">
+            <div class="f-hd">
+              <span class="f-av"><Icon name="car" size={18} /></span>
+              <div><b>{t.concession}</b><span>{t.sponsorise}</span></div>
+            </div>
+            <p class="f-tx">{t.texteFb}</p>
+            <VoitureMaquette teinte="bleu" format="paysage" class="f-im" />
+            <div class="f-lk">
+              <div><span>{t.site}</span><b>{v0.nom} · {v0.prix}</b><em>{v0.meta}</em></div>
+              <i>{t.voir}</i>
+            </div>
+            <div class="f-ac">{t.actions.map((a) => <span>{a}</span>)}</div>
+            <div class="f-suite"><i></i><span></span><span></span></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="carte vit" data-reveal style="--i:2">
+        <div class="vit-tete">
+          <span class="vit-logo"><img src="/images/plateformes/instagram.svg" alt="" width="26" height="26" loading="lazy" decoding="async" /></span>
+          <h3 class="titre-carte text-encre">Instagram</h3>
+        </div>
+        <p class="vit-texte">{t.instagram}</p>
+        <div class="vit-ecran" aria-hidden="true">
+          <div class="mq mq-ig">
+            <div class="i-hd">
+              <span class="i-av"><span><Icon name="car" size={15} /></span></span>
+              <div><b>{t.compte}</b><span>{t.sponsorise}</span></div>
+            </div>
+            <div class="i-im"><VoitureMaquette teinte="bleu" format="carre" class="i-img" /><span>1/4</span></div>
+            <div class="i-cta">{t.essai}<Icon name="chevron-right" size={16} /></div>
+            <div class="i-ic"><Icon name="heart" size={20} /><Icon name="message-circle" size={20} /><Icon name="send" size={20} /></div>
+            <p class="i-cap"><b>{t.compte}</b> {t.legende}</p>
+          </div>
+        </div>
+      </li>
     </ul>
+    <p class="mt-6 text-sm text-slate-500">{t.note}</p>
   </div>
 </section>
+
+<style>
+  .vit {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 24px 24px 0;
+    overflow: hidden;
+  }
+  .vit-tete {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .vit-logo {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--brume);
+  }
+  .vit-texte {
+    color: #4b5b6b;
+    text-wrap: pretty;
+  }
+  /* L'écran : la maquette posée sur un fond gris, coupée en bas comme un téléphone qu'on tient. */
+  .vit-ecran {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    margin: 6px -24px 0;
+    padding: 22px 22px 0;
+    background: #e9eef5;
+    border-top: 1px solid var(--filet);
+  }
+  .mq {
+    width: 100%;
+    max-width: 340px;
+    min-height: 380px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    background: #fff;
+    color: #0f172a;
+    box-shadow: 0 18px 40px -18px rgb(11 27 43 / 0.45);
+  }
+  .mq p {
+    margin: 0;
+  }
+
+  /* Google : la barre de recherche, puis le carrousel de vignettes. */
+  .mq-google {
+    padding: 14px 0 18px 14px;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .g-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 14px;
+    padding: 9px 14px;
+    border: 1px solid #dfe1e5;
+    border-radius: 24px;
+    box-shadow: 0 1px 4px rgb(32 33 36 / 0.12);
+    color: #4285f4;
+  }
+  .g-bar span {
+    flex: 1;
+    overflow: hidden;
+    font-size: 0.875rem;
+    color: #202124;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .mq .g-sp {
+    margin: 14px 0 8px;
+    font-size: 0.75rem;
+    color: #4d5156;
+  }
+  .g-sp b {
+    color: #202124;
+  }
+  .g-row {
+    display: flex;
+    gap: 8px;
+    overflow: hidden;
+  }
+  .g-card {
+    flex: 0 0 136px;
+    overflow: hidden;
+    padding-bottom: 9px;
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+  }
+  .g-card :global(.g-img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+  .g-card p {
+    overflow: hidden;
+    padding: 0 9px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .mq .g-p {
+    margin-top: 7px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #202124;
+  }
+  .g-t {
+    font-size: 0.78rem;
+    color: #1a0dab;
+  }
+  .g-m {
+    font-size: 0.72rem;
+    color: #4d5156;
+  }
+  .mq .g-d {
+    margin-top: 2px;
+    font-size: 0.72rem;
+    color: #188038;
+  }
+
+  /* Sous le carrousel, les résultats naturels, en lignes grises. */
+  .g-res {
+    display: grid;
+    gap: 9px;
+    margin: 20px 14px 0 0;
+  }
+  .g-res span {
+    height: 9px;
+    border-radius: 5px;
+    background: #eef0f3;
+  }
+  .g-res span:nth-child(1),
+  .g-res span:nth-child(4) {
+    width: 46%;
+    background: #d8dcf3;
+  }
+  .g-res span:nth-child(3) {
+    width: 78%;
+  }
+
+  /* Facebook : une publication du fil. */
+  .mq-fb {
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #050505;
+  }
+  .f-hd,
+  .i-hd {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 12px 8px;
+  }
+  .f-av {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--encre);
+    color: #fff;
+  }
+  .f-hd b,
+  .i-hd b {
+    display: block;
+    font-size: 0.84rem;
+    line-height: 1.2;
+  }
+  .f-hd div span,
+  .i-hd div span {
+    font-size: 0.72rem;
+    color: #65676b;
+  }
+  .f-tx {
+    padding: 0 12px 10px;
+    font-size: 0.84rem;
+    line-height: 1.4;
+  }
+  .mq-fb :global(.f-im) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1.91 / 1;
+  }
+  .f-lk {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: #f0f2f5;
+  }
+  .f-lk div {
+    flex: 1;
+    min-width: 0;
+  }
+  .f-lk span {
+    display: block;
+    font-size: 0.66rem;
+    color: #65676b;
+  }
+  .f-lk b {
+    display: block;
+    overflow: hidden;
+    font-size: 0.84rem;
+    line-height: 1.25;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .f-lk em {
+    display: block;
+    font-size: 0.74rem;
+    font-style: normal;
+    color: #65676b;
+  }
+  .f-lk i {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #e4e6eb;
+    font-size: 0.8rem;
+    font-style: normal;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .f-ac {
+    display: flex;
+    justify-content: space-around;
+    margin: 0 12px;
+    padding: 9px 6px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #65676b;
+  }
+
+  /* L'amorce de la publication suivante : le fil continue. */
+  .f-suite {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 6px 9px;
+    padding: 14px 12px 20px;
+    border-top: 8px solid #f0f2f5;
+  }
+  .f-suite i {
+    grid-row: span 2;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e4e6eb;
+  }
+  .f-suite span {
+    height: 9px;
+    border-radius: 5px;
+    background: #e4e6eb;
+  }
+  .f-suite span:first-of-type {
+    width: 46%;
+    margin-top: 5px;
+  }
+  .f-suite span:last-of-type {
+    width: 28%;
+  }
+
+  /* Instagram : le visuel carré, la bande d'appel à l'action, les icônes. */
+  .mq-ig {
+    font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+    color: #000;
+  }
+  .i-av {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    padding: 2px;
+    border-radius: 50%;
+    background: conic-gradient(from 210deg, #f9ce34, #ee2a7b, #6228d7, #f9ce34);
+  }
+  .i-av span {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #fff;
+    color: #262626;
+  }
+  .i-hd div span {
+    color: #262626;
+  }
+  .i-im {
+    position: relative;
+  }
+  .i-im :global(.i-img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+  .i-im span {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background: rgb(0 0 0 / 0.6);
+    font-size: 0.68rem;
+    color: #fff;
+  }
+  .i-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: #0095f6;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .i-ic {
+    display: flex;
+    gap: 14px;
+    padding: 10px 12px 4px;
+    color: #262626;
+  }
+  .i-cap {
+    padding: 2px 12px 14px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: #262626;
+  }
+  .i-cap b {
+    font-weight: 600;
+  }
+  @media (min-width: 1024px) {
+    .vit-texte {
+      min-height: 6.4em;
+    }
+  }
+</style>

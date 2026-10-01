@@ -1,0 +1,53 @@
+---
+/**
+ * La voiture des maquettes d'annonces (01/10/2026) : un dessin, pas une photo, dans les trois
+ * teintes des voitures de la chaîne du stock (`motion/ChaineStock.astro`). La même voiture
+ * passe ainsi de la chaîne à l'annonce, puis au fil de l'acheteur. Décorative : le texte de
+ * l'annonce porte le sens.
+ */
+interface Props {
+  teinte?: 'bleu' | 'ivoire' | 'corail';
+  format?: 'paysage' | 'carre';
+  class?: string;
+}
+
+const { teinte = 'bleu', format = 'paysage', class: classe } = Astro.props;
+const TEINTES = {
+  bleu: { caisse: '#7fc4dd', bas: '#5aa7c4', toit: '#96d0e6' },
+  ivoire: { caisse: '#f4f1ea', bas: '#d6d1c4', toit: '#ffffff' },
+  corail: { caisse: '#e9a078', bas: '#cd865f', toit: '#f1b392' },
+};
+const c = TEINTES[teinte];
+const haut = format === 'carre' ? 320 : 200;
+const carre = format === 'carre';
+const sol = carre ? 228 : 146;
+const pose = carre ? 'translate(18 118) scale(1.42)' : 'translate(42 50) scale(1.18)';
+const id = `vm-${teinte}-${format}`;
+---
+
+<svg class={classe} viewBox={`0 0 320 ${haut}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eef2f8" />
+      <stop offset="1" stop-color="#dfe6f0" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height={haut} fill={`url(#${id})`} />
+  <rect y={sol} width="320" height={haut - sol} fill="#cfd8e5" />
+  <rect y={sol} width="320" height="3" fill="#c2ccdb" />
+  <g transform={pose}>
+    <ellipse cx="102" cy="82" rx="92" ry="5" fill="#0b1b2b" opacity="0.16" />
+    <path d="M14 62 Q14 48 30 46 L58 43 Q72 26 96 25 L128 25 Q146 26 160 43 L178 47 Q190 50 190 62 L190 66 Q190 70 186 70 L18 70 Q14 70 14 66 Z" fill={c.caisse} />
+    <path d="M14 60 L190 60 L190 66 Q190 70 186 70 L18 70 Q14 70 14 66 Z" fill={c.bas} />
+    <path d="M62 43 Q74 30 96 29 L128 29 Q143 30 155 43 Z" fill={c.toit} />
+    <path d="M68 43 Q78 33 96 32 L104 32 L104 43 Z" fill="#0b1b2b" opacity="0.72" />
+    <path d="M110 32 L127 32 Q140 33 149 43 L110 43 Z" fill="#0b1b2b" opacity="0.72" />
+    <rect x="182" y="51" width="8" height="5" rx="2" fill="#f3d27a" />
+    <rect x="14" y="51" width="6" height="5" rx="2" fill="#e2574c" />
+    <rect x="96" y="48" width="12" height="2.4" rx="1.2" fill="#0b1b2b" opacity="0.3" />
+    <circle cx="54" cy="70" r="14" fill="#0b1b2b" />
+    <circle cx="54" cy="70" r="6.5" fill="#c9d3e0" />
+    <circle cx="154" cy="70" r="14" fill="#0b1b2b" />
+    <circle cx="154" cy="70" r="6.5" fill="#c9d3e0" />
+  </g>
+</svg>

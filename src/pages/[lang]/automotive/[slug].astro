@@ -9,6 +9,7 @@ import FinalCTA from '@/components/sections/FinalCTA.astro';
 import RubanCalculateur from '@/components/sections/RubanCalculateur.astro';
 import CaseStudyCarousel from '@/components/sections/CaseStudyCarousel.astro';
 import CarteVerre from '@/components/motion/CarteVerre.astro';
+import BoucleRemarketing from '@/components/motion/BoucleRemarketing.astro';
 import { carteCompte, railFormulaire } from '@/components/motion/donnees-automobile';
 import { mesurerLogos } from '@/lib/logos-mesures';
 
@@ -189,12 +190,34 @@ const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust u
     serviceCalculateur={calculatorServiceId}
   />
 
-  <!-- Dynamic Ads : la chaîne du stock en isométrie (encre), ce qu'elle donne en quatre mois
-       (blanc), les plateformes (brume), l'avant et l'après (blanc), puis le pourquoi (encre). -->
+  <!-- Dynamic Ads (refonte du 01/10/2026, « trop d'informations, ça se mélange ») : cinq temps.
+       Comment ça marche (encre, la chaîne du stock), à quoi ça ressemble (brume, trois vitrines
+       avec leur annonce), pourquoi ça ramène des acheteurs (encre, le remarketing en quatre
+       temps), ce que ça donne (brume, le graphique puis l'avant et l'après). Le « pourquoi »,
+       les six étapes, les cas d'usage et les trois résultats de la fiche ne sont plus rendus
+       sur cette page : les scènes disent la même chose une seule fois. -->
   {isDynamicAds && <DynamicAdsFlow lang={lang} />}
-  {isDynamicAds && <VehicleAdsResultats lang={lang} fond="blanc" />}
   {isDynamicAds && <DynamicAdsChannels lang={lang} />}
-  {isDynamicAds && <DynamicAdsROI lang={lang} />}
+  {isDynamicAds && (
+    <section class="section-encre section-monte py-20 lg:py-32">
+      <div class="container-custom">
+        <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+          <h2 class="titre-moyen">{fr ? 'Il a regardé une voiture, elle le retrouve' : 'They looked at a car, the car finds them again'}</h2>
+          <p class="chapo">
+            {fr
+              ? 'La plupart des visiteurs repartent sans appeler. Les Dynamic Ads leur remontrent la voiture qu’ils ont vue, jusqu’à la demande d’essai.'
+              : 'Most visitors leave without calling. Dynamic Ads show them the car they viewed again, until they ask for a test drive.'}
+          </p>
+        </header>
+        <BoucleRemarketing lang={lang} />
+      </div>
+    </section>
+  )}
+  {isDynamicAds && (
+    <VehicleAdsResultats lang={lang} fond="brume">
+      <DynamicAdsROI lang={lang} />
+    </VehicleAdsResultats>
+  )}
 
   <!-- Le pourquoi (encre) : la carte du compte sur Google Ads, les chiffres sur Paid Social,
        les deux annonces sur téléphone sur Dynamic Ads. -->
@@ -206,15 +229,6 @@ const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust u
   {whySection && isPaidSocial && (
     <AutomotiveWhySection lang={lang} data={whySection} marques={['Facebook', 'Instagram', 'TikTok', 'LinkedIn']} />
   )}
-  {whySection && isDynamicAds && (
-    <AutomotiveWhySection
-      lang={lang}
-      data={whySection}
-      image="/images/Automotive/Dynamic Ads/0b17f767-906a-4aaf-ba8b-7cee306c13f9.webp"
-      imageAlt={fr ? 'Deux annonces de véhicules du stock, sur téléphone' : 'Two ads for vehicles in stock, on a phone'}
-    />
-  )}
-
   <!-- Paid Social : du formulaire Meta au CRM, sur le rail (blanc). -->
   {isPaidSocial && (
     <AutomotiveRail
@@ -228,17 +242,17 @@ const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust u
   )}
 
   <!-- Ce qu'on fait (brume ; encre sur Paid Social, dont le rail est sur le blanc). -->
-  {services && (
+  {services && !isDynamicAds && (
     <AutomotiveServices lang={lang} data={services} image={visuel?.services} imageAlt={visuel?.servicesAlt[lang]} fond={isPaidSocial ? 'encre' : 'brume'} />
   )}
 
   <!-- Les cas d'usage (blanc). -->
-  {useCases && useCases.length > 0 && (
+  {useCases && useCases.length > 0 && !isDynamicAds && (
     <AutomotiveUseCases lang={lang} useCases={useCases} titre={casTitre} chapo={casChapo} />
   )}
 
   <!-- Les résultats de trois concessions (encre). -->
-  {benchmarks && benchmarks.length > 0 && (
+  {benchmarks && benchmarks.length > 0 && !isDynamicAds && (
     <AutomotiveBenchmarks lang={lang} benchmarks={benchmarks} />
   )}
 

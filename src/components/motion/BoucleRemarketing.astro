@@ -1,0 +1,584 @@
+---
+/**
+ * Le remarketing des Dynamic Ads, en quatre temps (01/10/2026). Demande de Paul : montrer
+ * « le fait qu'une fois que les gens regardent les véhicules, on les retarget derrière ».
+ * Un acheteur regarde une voiture sur le site, repart sans appeler, retrouve la même voiture
+ * dans son fil, demande un essai. Le texte de chaque temps est à gauche, l'écran correspondant
+ * à droite ; la scène avance toute seule tant qu'elle est à l'écran, un clic sur un temps y va.
+ * Sans script, sous mouvement réduit ou avec `?fige=1` : les quatre écrans côte à côte.
+ * À poser dans une `.section-encre`. Maquettes dessinées par nos soins.
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import VoitureMaquette from '@/components/ui/VoitureMaquette.astro';
+
+interface Props {
+  lang: Language;
+  id?: string;
+}
+
+const { lang, id = 'boucle-remarketing' } = Astro.props;
+const fr = lang === 'fr';
+
+const t = fr
+  ? {
+      temps: [
+        ['Il regarde une voiture', 'Sur votre site, il ouvre la fiche d’une berline. Le catalogue retient laquelle.'],
+        ['Il repart sans appeler', 'Comme la plupart des visiteurs. Aucun formulaire, aucune coordonnée.'],
+        ['La voiture le retrouve', 'Le lendemain, la même voiture apparaît dans son fil Facebook, sur Instagram et sur Google, avec son prix à jour.'],
+        ['Il demande un essai', 'Le formulaire est déjà rempli. Le contact arrive chez votre vendeur, avec la voiture qui l’intéresse.'],
+      ],
+      url: 'votre-concession.fr/occasion/berline-hybride',
+      nom: 'Berline hybride',
+      prix: '21 900 €',
+      meta: '2023 · 38 000 km · Hybride',
+      essai: 'Demander un essai',
+      financement: 'Financement',
+      parti: 'Onglet fermé',
+      retenu: [['Fiche vue', 'Berline hybride'], ['Coordonnées laissées', 'Aucune'], ['Prochaine étape', 'Lui remontrer cette voiture']],
+      concession: 'Votre concession',
+      sponsorise: 'Sponsorisé',
+      texteFb: 'Toujours intéressé par cette berline ? Elle est disponible à l’essai cette semaine.',
+      site: 'VOTRE-CONCESSION.FR',
+      voir: 'Voir l’offre',
+      aussi: 'Aussi sur',
+      form: 'Demander un essai',
+      champs: [['Prénom et nom', 'Camille Martin'], ['Téléphone', '06 12 •• •• 48'], ['Voiture', 'Berline hybride']],
+      envoyer: 'Envoyer',
+      vendeur: 'Reçu par votre vendeur, avec la voiture qui l’intéresse',
+    }
+  : {
+      temps: [
+        ['They look at a car', 'On your website, they open the listing of a saloon. The catalog remembers which one.'],
+        ['They leave without calling', 'Like most visitors. No form, no contact details.'],
+        ['The car finds them again', 'The next day, the same car appears in their Facebook feed, on Instagram and on Google, with its current price.'],
+        ['They ask for a test drive', 'The form is already filled in. The lead reaches your salesperson, with the car they want.'],
+      ],
+      url: 'your-dealership.com/used/hybrid-saloon',
+      nom: 'Hybrid saloon',
+      prix: '€21,900',
+      meta: '2023 · 38,000 km · Hybrid',
+      essai: 'Book a test drive',
+      financement: 'Finance',
+      parti: 'Tab closed',
+      retenu: [['Listing viewed', 'Hybrid saloon'], ['Contact details left', 'None'], ['Next step', 'Show them this car again']],
+      concession: 'Your dealership',
+      sponsorise: 'Sponsored',
+      texteFb: 'Still interested in this saloon? It is available for a test drive this week.',
+      site: 'YOUR-DEALERSHIP.COM',
+      voir: 'See offer',
+      aussi: 'Also on',
+      form: 'Book a test drive',
+      champs: [['Full name', 'Camille Martin'], ['Phone', '07 12 •• •• 48'], ['Car', 'Hybrid saloon']],
+      envoyer: 'Send',
+      vendeur: 'Received by your salesperson, with the car they want',
+    };
+---
+
+<div class="rmk" id={id} data-boucle-remarketing data-acte="0">
+  <ol class="rmk-temps">
+    {t.temps.map(([titre, texte], i) => (
+      <li class:list={[i === 0 && 'on']}>
+        <button type="button" data-aller={i} aria-pressed={i === 0 ? 'true' : 'false'}>
+          <b>{titre}</b>
+          <span>{texte}</span>
+        </button>
+      </li>
+    ))}
+  </ol>
+
+  <div class="rmk-scene" aria-hidden="true">
+    <!-- 1. la fiche du véhicule sur le site de la concession -->
+    <div class="rmk-face on">
+      <div class="nav">
+        <div class="nav-barre"><i></i><i></i><i></i><span>{t.url}</span></div>
+        <VoitureMaquette teinte="bleu" format="paysage" class="nav-img" />
+        <div class="nav-corps">
+          <p class="nav-nom">{t.nom}</p>
+          <p class="nav-prix">{t.prix}</p>
+          <p class="nav-meta">{t.meta}</p>
+          <div class="nav-btns"><span class="plein">{t.essai}</span><span>{t.financement}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. il est parti : ce que le catalogue a retenu -->
+    <div class="rmk-face">
+      <div class="nav parti">
+        <div class="nav-barre"><i></i><i></i><i></i><span>{t.parti}</span></div>
+        <ul class="retenu">
+          {t.retenu.map(([k, v]) => <li><span>{k}</span><b>{v}</b></li>)}
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3. la voiture revient dans son fil -->
+    <div class="rmk-face">
+      <div class="fil">
+        <div class="f-hd">
+          <span class="f-av"><Icon name="car" size={18} /></span>
+          <div><b>{t.concession}</b><span>{t.sponsorise}</span></div>
+          <img src="/images/plateformes/facebook.svg" alt="" width="20" height="20" loading="lazy" decoding="async" />
+        </div>
+        <p class="f-tx">{t.texteFb}</p>
+        <VoitureMaquette teinte="bleu" format="paysage" class="f-im" />
+        <div class="f-lk">
+          <div><span>{t.site}</span><b>{t.nom} · {t.prix}</b></div>
+          <i>{t.voir}</i>
+        </div>
+        <p class="aussi">{t.aussi}
+          <img src="/images/plateformes/instagram.svg" alt="Instagram" width="18" height="18" loading="lazy" decoding="async" />
+          <img src="/images/plateformes/google.svg" alt="Google" width="18" height="18" loading="lazy" decoding="async" />
+        </p>
+      </div>
+    </div>
+
+    <!-- 4. la demande d'essai, déjà remplie -->
+    <div class="rmk-face">
+      <div class="form">
+        <p class="form-titre">{t.form}</p>
+        {t.champs.map(([k, v]) => <p class="champ"><span>{k}</span><b>{v}</b></p>)}
+        <p class="form-btn">{t.envoyer}</p>
+        <p class="form-fin"><Icon name="check-circle" size={16} />{t.vendeur}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // La scène avance d'un temps à l'autre tant qu'elle est à l'écran ; un clic sur un temps y va.
+  const FIGE =
+    /[?&]fige=1/.test(window.location.search) || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const TENIR = 4400;
+  document.querySelectorAll<HTMLElement>('[data-boucle-remarketing]').forEach((root) => {
+    if (FIGE) return;
+    const temps = Array.from(root.querySelectorAll<HTMLElement>('.rmk-temps li'));
+    const faces = Array.from(root.querySelectorAll<HTMLElement>('.rmk-face'));
+    let n = 0;
+    let minuterie = 0;
+    let actif = false;
+    const aller = (k: number) => {
+      n = ((k % faces.length) + faces.length) % faces.length;
+      root.setAttribute('data-acte', String(n));
+      temps.forEach((li, i) => {
+        li.classList.toggle('on', i === n);
+        li.querySelector('button')?.setAttribute('aria-pressed', String(i === n));
+      });
+      faces.forEach((f, i) => f.classList.toggle('on', i === n));
+    };
+    const programmer = () => {
+      window.clearTimeout(minuterie);
+      if (actif) {
+        minuterie = window.setTimeout(() => {
+          aller(n + 1);
+          programmer();
+        }, TENIR);
+      }
+    };
+    root.classList.add('js');
+    root.style.setProperty('--tenir', `${TENIR}ms`);
+    aller(0);
+    temps.forEach((li, i) =>
+      li.querySelector('button')?.addEventListener('click', () => {
+        aller(i);
+        programmer();
+      }),
+    );
+    new IntersectionObserver(
+      (entrees) => {
+        entrees.forEach((e) => {
+          actif = e.isIntersecting;
+          programmer();
+        });
+      },
+      { threshold: 0.25 },
+    ).observe(root);
+    // Pour vérifier un temps : el.__aller(2)
+    (root as HTMLElement & { __aller?: (k: number) => void }).__aller = (k: number) => {
+      actif = false;
+      window.clearTimeout(minuterie);
+      aller(k);
+    };
+  });
+</script>
+
+<style>
+  .rmk {
+    display: grid;
+    gap: 28px;
+  }
+  .rmk-temps {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: temps;
+  }
+  .rmk-temps button {
+    position: relative;
+    display: grid;
+    gap: 4px;
+    width: 100%;
+    padding: 16px 18px 18px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: rgb(255 255 255 / 0.05);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+    text-align: left;
+    cursor: default;
+  }
+  .rmk-temps b {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .rmk-temps span {
+    color: var(--texte-sombre-2);
+    text-wrap: pretty;
+  }
+  /* Sans script : les quatre écrans côte à côte, tous lisibles. */
+  .rmk-scene {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+  }
+  .rmk-face {
+    display: flex;
+    justify-content: center;
+  }
+  .nav,
+  .fil,
+  .form {
+    width: 100%;
+    max-width: 380px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #fff;
+    color: #0f172a;
+    box-shadow: 0 30px 60px -30px rgb(2 9 16 / 0.9);
+  }
+  .rmk-scene p {
+    margin: 0;
+  }
+
+  /* 1. le site de la concession */
+  .nav-barre {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    background: #eef1f5;
+  }
+  .nav-barre i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #c7ced8;
+  }
+  .nav-barre span {
+    flex: 1;
+    min-width: 0;
+    margin-left: 6px;
+    padding: 4px 12px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 0.72rem;
+    color: #64748b;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .nav :global(.nav-img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1.75 / 1;
+  }
+  .nav-corps {
+    display: grid;
+    gap: 2px;
+    padding: 14px 16px 18px;
+  }
+  .nav-nom {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--encre);
+  }
+  .nav-prix {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--encre);
+  }
+  .nav-meta {
+    font-size: 0.8125rem;
+    color: #64748b;
+  }
+  .nav-btns {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .nav-btns span {
+    padding: 9px 14px;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px #cbd5e1;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--encre);
+  }
+  .nav-btns .plein {
+    background: var(--color-marque, #1d71b8);
+    box-shadow: none;
+    color: #fff;
+  }
+
+  /* 2. parti : ce que le catalogue a retenu */
+  .parti .nav-barre span {
+    color: #94a3b8;
+  }
+  .retenu {
+    display: grid;
+    margin: 0;
+    padding: 8px 16px 14px;
+    list-style: none;
+  }
+  .retenu li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 13px 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .retenu li:last-child {
+    border-bottom: 0;
+  }
+  .retenu span {
+    font-size: 0.8125rem;
+    color: #64748b;
+  }
+  .retenu b {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-align: right;
+    color: var(--encre);
+  }
+
+  /* 3. la publication dans le fil */
+  .fil {
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #050505;
+  }
+  .f-hd {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 12px 8px;
+  }
+  .f-hd div {
+    flex: 1;
+    min-width: 0;
+  }
+  .f-av {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--encre);
+    color: #fff;
+  }
+  .f-hd b {
+    display: block;
+    font-size: 0.84rem;
+    line-height: 1.2;
+  }
+  .f-hd span span,
+  .f-hd div span {
+    font-size: 0.72rem;
+    color: #65676b;
+  }
+  .f-tx {
+    padding: 0 12px 10px;
+    font-size: 0.84rem;
+    line-height: 1.4;
+  }
+  .fil :global(.f-im) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1.91 / 1;
+  }
+  .f-lk {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: #f0f2f5;
+  }
+  .f-lk div {
+    flex: 1;
+    min-width: 0;
+  }
+  .f-lk span {
+    display: block;
+    font-size: 0.66rem;
+    color: #65676b;
+  }
+  .f-lk b {
+    display: block;
+    overflow: hidden;
+    font-size: 0.84rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .f-lk i {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #e4e6eb;
+    font-size: 0.8rem;
+    font-style: normal;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .aussi {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px 12px;
+    font-size: 0.75rem;
+    color: #65676b;
+  }
+
+  /* 4. la demande d'essai */
+  .form {
+    display: grid;
+    gap: 10px;
+    padding: 18px 18px 16px;
+  }
+  .form-titre {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--encre);
+  }
+  .champ {
+    display: grid;
+    gap: 2px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    box-shadow: inset 0 0 0 1px #e2e8f0;
+  }
+  .champ span {
+    font-size: 0.6875rem;
+    color: #64748b;
+  }
+  .champ b {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--encre);
+  }
+  .form-btn {
+    padding: 11px;
+    border-radius: 999px;
+    background: #1877f2;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-align: center;
+    color: #fff;
+  }
+  .form-fin {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.78rem;
+    color: #15803d;
+  }
+
+  /* Avec le script : un temps à la fois, sa barre de progression, l'écran qui lui répond. */
+  .rmk.js .rmk-temps button {
+    cursor: pointer;
+    transition:
+      background-color 300ms ease,
+      box-shadow 300ms ease;
+  }
+  .rmk.js .rmk-temps li:not(.on) b {
+    color: var(--texte-sombre-2);
+  }
+  .rmk.js .rmk-temps li:not(.on) span {
+    opacity: 0.55;
+  }
+  .rmk.js .rmk-temps li.on button {
+    background: rgb(125 184 238 / 0.12);
+    box-shadow: inset 0 0 0 1px rgb(125 184 238 / 0.55);
+  }
+  .rmk.js .rmk-temps button::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--marque-clair);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .rmk.js .rmk-temps li.on button::after {
+    animation: rmk-avance var(--tenir, 4400ms) linear forwards;
+  }
+  @keyframes rmk-avance {
+    to {
+      transform: scaleX(1);
+    }
+  }
+  .rmk.js .rmk-scene {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    place-items: center;
+    min-height: 400px;
+    padding: 28px 20px;
+    border-radius: 24px;
+    background: rgb(255 255 255 / 0.04);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  }
+  .rmk.js .rmk-face {
+    grid-area: 1 / 1;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+    pointer-events: none;
+    transition:
+      opacity 400ms cubic-bezier(0.333, 0, 0.667, 0),
+      transform 400ms cubic-bezier(0.333, 0, 0.667, 0);
+  }
+  .rmk.js .rmk-face.on {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 550ms cubic-bezier(0.15, 1, 0.32, 1) 120ms,
+      transform 550ms cubic-bezier(0.15, 1, 0.32, 1) 120ms;
+  }
+  @media (min-width: 1024px) {
+    .rmk {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+      gap: 48px;
+      align-items: center;
+    }
+  }
+  @media (max-width: 640px) {
+    .rmk-scene {
+      grid-template-columns: 1fr;
+    }
+    .rmk.js .rmk-scene {
+      min-height: 370px;
+      padding: 20px 14px;
+    }
+  }
+</style>

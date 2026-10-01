@@ -981,3 +981,29 @@ Demande de Paul après l'audit flash Jallu-Berthier (« j'adore l'animation, met
 - **`sections/automotive/VehicleAdsResultats.astro`** : sur `/automotive` (brume, avec la chaîne et
   un lien vers Dynamic Ads, après le rail du parcours), sur Dynamic Ads (blanc, graphique seul,
   après la chaîne). Logos des trois plateformes : `public/images/plateformes/`.
+
+### La page Dynamic Ads en cinq temps (01/10/2026 au soir, `main`)
+
+Retour de Paul sur la page : « trop d'informations, ça se mélange », la section des plateformes
+sans visuel, le ROI « juste des chiffres », et rien qui montre le remarketing. Elle se lit
+maintenant en cinq temps, chacun dit une chose une seule fois :
+1. **Comment ça marche** (encre) : la chaîne du stock, `DynamicAdsFlow`.
+2. **À quoi ça ressemble** (brume) : `DynamicAdsChannels` réécrit, « Un catalogue, trois vitrines ».
+   Google s'appelle **Google Vehicle Ads** et porte le vrai logo de Google ; sous chaque
+   plateforme, la maquette de l'annonce telle qu'elle la montre (vignettes au-dessus des résultats,
+   publication du fil, carré Instagram). Les puces de formats et les audiences de marché
+   (2,9 Mrd, 2 Mrd, 90 %) sont retirées.
+3. **Pourquoi ça ramène des acheteurs** (encre) : `motion/BoucleRemarketing.astro`, quatre temps
+   (il regarde une voiture, il repart, la voiture le retrouve, il demande un essai), le texte à
+   gauche, l'écran à droite, avance automatique à l'écran, clic sur un temps pour y aller.
+   Sans script ou avec `?fige=1` : les quatre écrans côte à côte. Pour vérifier un temps :
+   `document.querySelector('[data-boucle-remarketing]').__aller(2)`.
+4. **Ce que ça donne** (brume) : le graphique, puis l'avant et l'après de `DynamicAdsROI`, qui
+   n'est plus une section (créneau de `VehicleAdsResultats`). La rangée 85 %, 7x, 10 h, 3x est retirée.
+5. Équipe, études de cas, questions, appel final.
+
+Ne sont plus rendus sur cette page (les données restent dans la fiche) : le « pourquoi » et son
+image, les six étapes de `services`, les trois cas d'usage, les trois résultats de `benchmarks`.
+Les voitures des maquettes sont dessinées (`ui/VoitureMaquette.astro`, trois teintes, celles de
+la chaîne) : le site n'a pas de photo de voiture libre, et une photo de stock d'un client n'a
+rien à faire sur une page publique. Le dessin est une berline, les textes disent « berline ».
