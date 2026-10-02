@@ -164,7 +164,8 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   s'affiche au-dessus du visage, elle aussi tirée de la page (« Vous voulez un prix pour Google
   Ads ? », « Faire comme GWI chez vous ? ») ; un clic ouvre le panneau. La bulle avec la photo de Paul,
   sans modèle, reliée à Google Chat (espace « Website Chat ») par l'application Academy.
-  Sur tout le site depuis le 22/09/2026, sauf `/academy*` et `/admin` (script de
+  Sur tout le site depuis le 22/09/2026, pages de l'Academy comprises depuis le 02/10/2026
+  (mode Academy, voir « Un seul chat sur tout le site »), sauf `/admin` (script de
   `BaseLayout.astro` ; `?assistant=0` l'éteint pour la visite). Règle de Paul : **deux appels à
   l'action flottants, pas un de plus**, « Calculer mon budget » (`StickyCalculatorCTA`, décalé à
   gauche de la bulle par `html[data-assistant='on']`) et son visage. Mémoire : `site_chat_sept2026.md`.
@@ -701,7 +702,7 @@ Demande de Paul : « on n'a pas vraiment besoin d'avoir les différentes section
   clic (`#header a[href="#tarifs"]`) pour passer par `allerA`, et referme le menu du téléphone.
 - `Hero` prend `sousEntete` : l'en-tête du site réserve déjà 72 px dans le flux, donc la marge
   haute passe de `pt-32 lg:pt-40` à `pt-14 lg:pt-24`. Sans l'option (v1), rien ne change.
-- **La barre d'outils flottante** (`Question.tsx`) : une capsule debout en bas à droite qui porte
+- **La barre d'outils flottante** (dans `site-assistant/Assistant.tsx` depuis le 02/10) : une capsule debout en bas à droite qui porte
   les trois devises et le visage du chat. Le menu du site n'a pas de sélecteur de devise, c'est
   donc le seul endroit où elle se change. Sous lg, seule la devise choisie se montre, un toucher
   déplie les deux autres. ⚠️ Debout aussi sur téléphone : couchée, elle faisait 119 px de large
@@ -710,9 +711,49 @@ Demande de Paul : « on n'a pas vraiment besoin d'avoir les différentes section
   comme sur les autres pages »). Le seuil d'avant (grille de tarifs à l'écran, ou une minute) ne
   commande plus que l'ouverture automatique du panneau et la barre du téléphone (`mur`). La
   bulle d'accroche vient à dix secondes, comme la question de l'assistant du reste du site.
-  C'est toujours le panneau de l'Academy (sa FAQ, son assistant), pas l'assistant du site.
+  Depuis le 02/10/2026 c'est le chat du site, en mode Academy (section suivante).
 - « Client Login » est retiré de `Header.astro`, ordinateur et téléphone, sur tout le site.
 - Non traité : les pages outils (`/academy/{outil}`) gardent `BarreOutil.astro`.
+
+### Un seul chat sur tout le site, avec un mode Academy (02/10/2026)
+
+Paul : « il y a un chat sur le site internet, mais il s'adapte en fonction de la page. Pour
+l'académie, il a la connaissance de l'académie ». `academy-v2/Question.tsx` est supprimé.
+`site-assistant/Assistant.tsx` est le seul panneau, chargé par `BaseLayout.astro` partout sauf
+`/admin` et `/academy-v1`. Sur `/{lang}/academy` et ses pages outils (`estPageAcademy`, même
+règle que l'application), il passe en mode Academy :
+
+- **Couleurs** : `NUIT` (salle de nuit, `data-theme="nuit"` posé sur sa racine) au lieu de `JOUR`.
+  Toute couleur du panneau passe par ces deux tables, jamais par une classe écrite dans le JSX.
+- **Menu** : les familles de la FAQ de la formation (`question-copy.ts`), puis la question libre.
+  Les faits viennent de `window.__mdpAcademy`, publié par `AcademyV2` (les mêmes que la page) ;
+  une page outil ne publie rien, le panneau lit alors l'application lui-même.
+- **Serveur** : `surface: 'page'` au lieu de `'site'` (`api.ts`). C'est elle qui range la
+  conversation dans l'espace Google Chat et le CRM de l'Academy et fait répondre l'IA avec les
+  faits de la formation. Aucun changement dans l'application : `contexteIa` savait déjà suivre
+  la page. Un fil ouvert sans rien d'écrit ne change pas d'espace avec le visiteur, on en ouvre
+  un neuf (`assurerFil`, champ `fs`) ; dès qu'un message est parti, la conversation reste une.
+- **Devise** : `AcademyV2` publie `html[data-devise]` et l'événement `mdp-devise` ; la capsule du
+  visage envoie `mdp-devise:choisir`. Sur une page outil, le panneau lit le bouton pressé de
+  `BarreOutil`, et la capsule ne porte que le visage.
+- **Ouverture** : seule sur ordinateur, une fois par visite, trois secondes après l'arrivée de
+  `#tarifs` à l'écran ou au bout d'une minute ; sur téléphone, la phrase d'invitation.
+  `#une-question` ouvre tout de suite.
+- **Position sur téléphone** : au-dessus de « Commencer », sauf tant que le hero est à l'écran,
+  où « Commencer » n'est pas affiché et où la capsule descend à sa place.
+- Le son et le titre d'onglet à la réponse de Paul (`notif-visiteur.ts`) valent maintenant
+  pour tout le site.
+
+⚠️ **LA MESURE NE CHANGE PAS, ET C'EST VOULU.** Le conteneur GTM publié (version 98) écoute par
+nom exact. Sur les pages de l'Academy, `pousser` traduit vers les événements de l'ancien
+panneau avec leurs paramètres : `academy_question_open` (`question_source`),
+`academy_question_faq` (`faq_id`), `academy_question_sent` (`faq_lues`, `ia_mode`). Ailleurs :
+`site_assistant_open` (`assistant_mode`, `assistant_page`), `site_assistant_message`
+(`assistant_page`), `site_assistant_proposal`. Vérifié le 02/10/2026 en rejouant les deux
+parcours avec le réseau simulé. Changer un nom ou un paramètre casse une conversion sans erreur.
+
+Reste hors de ce chat : le panneau du tunnel de paiement (`checkout/QuestionPaul.tsx`, dans
+l'application), qui partage la conversation par le cookie `mdp_conversation`.
 
 ## Chantier en cours : la refonte du design, avec un mouvement qui explique (29/09/2026)
 
@@ -969,7 +1010,7 @@ Branche `flottants-sans-recouvrement` (commit `5b0e768`), fusionnée et en ligne
 s'affiche, se retire ou change de vue. `StickyCalculatorCTA` et `academy/AppelFlottant` s'en
 servent dans leur `bottom`. Un nouvel élément flottant fait de même, et ne mesure rien lui-même.
 ⚠️ Le bandeau entre en glissant pendant 300 ms : une mesure de sa POSITION prise pendant ce
-glissement donne une hauteur partielle. `Assistant.tsx`, `Question.tsx` et la bulle de reprise de
+glissement donne une hauteur partielle. `Assistant.tsx` et la bulle de reprise de
 `BaseLayout.astro` lisent donc sa classe `translate-y-0` et sa hauteur.
 
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)

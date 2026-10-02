@@ -7,10 +7,16 @@
 // « site ») : c'est ce qui permet à Paul de répondre depuis Google Chat avec
 // @MyDigipal, sans rien construire de nouveau pour le retour.
 //
-//   POST /fil { action: 'ouvrir', surface: 'site', ia: true, ... }   ouvre le fil, sans prévenir Paul
+//   POST /fil { action: 'ouvrir', surface, ia: true, ... }   ouvre le fil, sans prévenir Paul
+//   POST /fil { action: 'faq', question, reponse }         une question de la FAQ Academy lue dans le panneau
 //   POST /fil { action: 'reponse', ... }                   une réponse à l'assistant ; la première prévient Paul
 //   POST /question { question, fil_id, jeton, ia: true, ... }   un message écrit ; l'assistant IA y répond
 //   GET  /fil?id=&jeton=                                   les messages, dont ceux de Paul, et l'état de l'IA
+//
+// ⚠️ LA SURFACE (02/10/2026, un seul chat sur tout le site) : `site` partout, `page`
+// sur les pages de l'Academy. C'est elle qui range la conversation dans l'espace
+// Google Chat et le CRM de l'Academy, et qui fait répondre l'IA avec les faits de
+// la formation. Le panneau, lui, est le même.
 //
 // ⚠️ `ia: true` (29/09/2026) : ce panneau sait afficher les réponses de l'assistant
 // IA. L'application ne fait répondre le modèle qu'aux panneaux qui l'annoncent,
@@ -43,6 +49,8 @@ export interface EtatIa {
 }
 
 export interface Contexte {
+  /** `page` sur les pages de l'Academy, `site` partout ailleurs. */
+  surface: 'site' | 'page';
   language: Lang;
   page: string;
   devise: string;
@@ -66,7 +74,7 @@ async function poster(chemin: string, corps: Record<string, unknown>): Promise<R
 }
 
 export async function ouvrirFil(ctx: Contexte): Promise<Fil | null> {
-  const res = await poster('/fil', { action: 'ouvrir', surface: 'site', ia: true, ...ctx.provenance, ...ctx, provenance: undefined });
+  const res = await poster('/fil', { action: 'ouvrir', ia: true, ...ctx.provenance, ...ctx, provenance: undefined });
   if (!res?.ok) return null;
   const j = (await res.json().catch(() => null)) as Partial<Fil> | null;
   return j?.id && j.jeton ? { id: j.id, jeton: j.jeton } : null;
@@ -77,6 +85,12 @@ export async function envoyerReponse(
   etape: { question: string; reponse: string; estimation?: string; secondes?: number }
 ): Promise<boolean> {
   const res = await poster('/fil', { action: 'reponse', id: fil.id, jeton: fil.jeton, ...etape });
+  return !!res?.ok;
+}
+
+/** Une question de la FAQ Academy lue dans le panneau : Paul voit ce que la personne a lu. */
+export async function noterFaq(fil: Fil, question: string, reponse: string): Promise<boolean> {
+  const res = await poster('/fil', { action: 'faq', id: fil.id, jeton: fil.jeton, question, reponse });
   return !!res?.ok;
 }
 
@@ -93,15 +107,16 @@ export interface RetourMessage {
 export async function envoyerMessage(
   fil: Fil,
   ctx: Contexte,
-  m: { question: string; email?: string; devis?: string; website: string }
+  m: { question: string; email?: string; devis?: string; website: string; faq?: string[] }
 ): Promise<RetourMessage> {
   const res = await poster('', {
     ...ctx.provenance,
     question: m.question,
     email: m.email,
     language: ctx.language,
-    surface: 'site',
+    surface: ctx.surface,
     page: ctx.page,
+    faq: m.faq?.length ? m.faq : undefined,
     devise: ctx.devise,
     panier: m.devis,
     secondes: ctx.secondes,

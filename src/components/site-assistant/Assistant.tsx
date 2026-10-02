@@ -16,6 +16,21 @@
 //
 // ⚠️ Le site recharge chaque page : la conversation est gardée dans
 // sessionStorage et reprend telle quelle sur la page suivante.
+//
+// UN SEUL CHAT SUR TOUT LE SITE (Paul, 02/10/2026) : « il y a un chat sur le site
+// internet, mais il s'adapte en fonction de la page. Pour l'académie, il a la
+// connaissance de l'académie ». Le panneau « Une question ? » de la page de vente
+// (`academy-v2/Question.tsx`) est supprimé : sur `/{lang}/academy` et ses pages
+// outils, c'est ce panneau-ci, en MODE ACADEMY :
+//   - les couleurs de la salle de nuit (`NUIT`), le reste du site garde `JOUR` ;
+//   - le menu propose les familles de la FAQ de la formation, dont les réponses
+//     viennent de l'application (`question-copy.ts`, aucun chiffre écrit ici) ;
+//   - la conversation s'ouvre avec `surface: 'page'` : espace Google Chat, CRM et
+//     faits de l'IA de l'Academy, exactement comme l'ancien panneau ;
+//   - la mesure garde les événements `academy_question_*` (les conversions des
+//     campagnes de l'Academy en dépendent), pas ceux du site ;
+//   - sur la page de vente, le visage partage sa capsule avec le sélecteur de
+//     devise, et le panneau s'ouvre seul une fois la grille de tarifs à l'écran.
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import {
@@ -25,15 +40,18 @@ import {
 import { info } from '../calculator-v6/content';
 import { guidedQuestions } from '../calculator/guided-data';
 import type { Currency, ServiceDomain } from '../calculator/types';
-import { provenance } from '../academy/track';
+import { ENDPOINT, SYMBOLE, type Devise, type Jour30Data } from '../academy/data';
+import { provenance, trackQuestion } from '../academy/track';
 import {
-  MAX_CARACTERES, envoyerMessage, envoyerReponse, lireFil, ouvrirFil, type Contexte, type EtatIa, type Fil, type MessageFil,
+  MAX_CARACTERES, envoyerMessage, envoyerReponse, lireFil, noterFaq, ouvrirFil, type Contexte, type EtatIa, type Fil, type MessageFil,
 } from './api';
 import { garderConversation, lireConversation } from '../academy-v2/conversation-cookie';
+import { rendreLeTitre, signalerReponse } from '../academy-v2/notif-visiteur';
+import { categoriesVente, faqVente, questionCopy, type QuestionFaq } from '../academy-v2/question-copy';
 import { ficheDe, type Fiche } from './pages';
 import { PHOTO, QUESTIONS, cheminCalculateur, cheminContact, copie, type Champ } from './copy';
 
-type Etape = 'accueil' | 'menu' | 'service' | Champ | 'fin' | 'libre';
+type Etape = 'accueil' | 'menu' | 'service' | Champ | 'fin' | 'libre' | 'faq';
 /** Un choix proposé dans le panneau : soit une action, soit un lien vers une page. */
 type Choix = { id: string; label: string; href?: string };
 type Item =
@@ -86,6 +104,12 @@ interface Sauve {
   srv?: number;
   /** L'état de l'assistant IA, tel que l'application le renvoie. */
   etat?: EtatIa;
+  /** Mode Academy : la famille de questions ouverte (étape « faq »). */
+  cat?: string;
+  /** Mode Academy : les questions de la FAQ déjà lues, pour ne pas les reproposer. */
+  lues?: string[];
+  /** La surface avec laquelle le fil a été ouvert (`site` pour les conversations d'avant le 02/10/2026). */
+  fs?: 'site' | 'page';
 }
 
 // v2 le 29/09/2026 : les conversations gardées avant l'assistant IA ne comptaient pas
@@ -93,6 +117,12 @@ interface Sauve {
 const CLE = 'mdp_assistant_v2';
 const CLE_INVITE = 'mdp_assistant_invite';
 const CLE_DEVIS = 'mdp_assistant_devis_vu';
+/** L'ouverture automatique sur la page de vente de l'Academy, une fois par visite. */
+const CLE_AUTO = 'mdp_assistant_auto';
+/** Le lien qui rouvre le panneau, depuis la bulle de reprise et les courriels. */
+const ANCRE_REPRISE = '#une-question';
+/** Les pages de la vente de l'Academy, même règle que l'application (`estPageAcademy`). */
+const estPageAcademy = (chemin: string) => /^\/(?:fr|en)\/academy(?:\/|$)/.test(chemin);
 const EMAIL = /[^\s@<>()]+@[^\s@<>()]+\.[a-z]{2,}/i;
 const ORDRE: Champ[] = ['industry', 'goals', 'monthlyBudget'];
 /** Les budgets publicitaires proposés dans le panneau : la moitié des paliers du calculateur suffit. */
@@ -120,13 +150,93 @@ const ecrire = (cle: string, v: unknown) => {
     /* stockage indisponible : la conversation ne survivra pas à la page, rien de plus */
   }
 };
+/**
+ * Sur les pages de l'Academy, la mesure garde les événements de l'ancien panneau, avec
+ * leurs paramètres : les conversions des campagnes de l'Academy en dépendent.
+ * Relevé dans le conteneur GTM publié (version 98, 02/10/2026), qui écoute par nom exact :
+ *   academy_question_open (question_source), academy_question_faq (faq_id),
+ *   academy_question_sent (faq_lues ; question_source reste celui de l'ouverture),
+ *   site_assistant_open (assistant_mode, assistant_page), site_assistant_message
+ *   (assistant_page), site_assistant_proposal.
+ * Les autres événements de l'assistant ne partent pas sur ces pages, comme avant la
+ * fusion, où l'assistant du site n'y était pas affiché.
+ * ⚠️ Changer un nom ou un paramètre ici, c'est casser une conversion sans aucune erreur.
+ */
+let mesureAcademy = false;
+const VERS_ACADEMY: Record<string, 'open' | 'sent' | 'email'> = {
+  site_assistant_open: 'open',
+  site_assistant_message: 'sent',
+  site_assistant_email: 'email',
+};
 const pousser = (event: string, params: Record<string, unknown> = {}) => {
+  if (mesureAcademy) {
+    const action = VERS_ACADEMY[event];
+    if (action === 'open') trackQuestion('open', { question_source: params.question_source ?? 'pastille' });
+    else if (action === 'sent') trackQuestion('sent', { faq_lues: params.faq_lues ?? 0, ia_mode: params.ia_mode ?? 'paul' });
+    else if (action === 'email') trackQuestion('email', { question_source: 'page' });
+    return;
+  }
   const w = window as unknown as { dataLayer?: Record<string, unknown>[] };
   w.dataLayer = w.dataLayer || [];
-  w.dataLayer.push({ event, ...params });
+  // Hors de l'Academy, les événements du site partent tels qu'avant la fusion : les deux
+  // paramètres propres à la mesure de l'Academy n'y sont pas écrits.
+  const { question_source: _source, faq_lues: _lues, ...reste } = params;
+  w.dataLayer.push({ event, ...reste });
 };
 
 const VIDE: Sauve = { items: [], etape: 'accueil', g: {}, prevenu: false, paulVus: 0, messages: 0, faits: [] };
+
+/** Les couleurs du panneau : celles du site, et la salle de nuit sur les pages de l'Academy. */
+const JOUR = {
+  panneau: 'bg-white sm:border sm:border-slate-200',
+  filet: 'border-slate-100',
+  titre: 'font-display text-slate-900',
+  discret: 'text-slate-500',
+  rond: 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900',
+  evt: 'bg-slate-100 text-slate-500',
+  moi: 'rounded-br-md bg-marque text-white',
+  paul: 'rounded-bl-md bg-slate-900 text-white',
+  bot: 'rounded-bl-md bg-slate-100 text-slate-900',
+  puce: 'rounded-full border border-slate-300 bg-white px-3.5 py-2 text-left text-[14px] font-medium text-slate-900 transition-colors hover:border-marque hover:bg-marque-doux',
+  puceForte: 'rounded-full border border-marque bg-marque px-3.5 py-2 text-left text-[14px] font-semibold text-white transition-colors hover:bg-marque-fonce',
+  lien: 'text-marque',
+  lienDiscret: 'text-slate-600',
+  etiquette: 'text-slate-400',
+  champ: 'border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-marque focus:ring-marque',
+  envoyer: 'bg-marque text-white hover:bg-marque-fonce',
+  aide: 'text-slate-400',
+  erreur: 'text-red-700',
+  defile: '',
+};
+const NUIT: typeof JOUR = {
+  panneau: 'border border-filet-nuit bg-salle-2 text-corps-nuit',
+  filet: 'border-filet-nuit',
+  titre: 'text-ivoire',
+  discret: 'text-brume-nuit',
+  rond: 'bg-salle-3 text-corps-nuit hover:text-ivoire',
+  evt: 'bg-salle-3 text-brume-nuit',
+  moi: 'rounded-br-md bg-or text-salle',
+  paul: 'rounded-bl-md bg-filet-nuit text-ivoire',
+  bot: 'rounded-bl-md bg-salle-3 text-ivoire',
+  puce: 'w-full rounded-[10px] border border-filet-nuit px-3.5 py-2.5 text-left text-[14.5px] leading-snug text-ivoire transition-colors hover:border-or hover:bg-salle-3',
+  puceForte: 'w-full rounded-[10px] border border-or bg-or px-3.5 py-2.5 text-left text-[14.5px] font-semibold leading-snug text-salle transition-colors hover:bg-or-vif',
+  lien: 'text-or',
+  lienDiscret: 'text-corps-nuit',
+  etiquette: 'text-brume-nuit',
+  champ: 'border-filet-nuit bg-salle text-ivoire placeholder:text-brume-nuit focus:border-or focus:ring-or',
+  envoyer: 'bg-or text-salle hover:bg-or-vif',
+  aide: 'text-brume-nuit',
+  erreur: 'text-[#f0a39a]',
+  // Sans cela, l'ascenseur du navigateur pose une bande blanche dans le panneau sombre.
+  defile: '[scrollbar-color:#26324e_transparent] [scrollbar-width:thin]',
+};
+const DEVISES: Devise[] = ['EUR', 'GBP', 'USD'];
+/** La devise que la page affiche : publiée par la page de vente, ou lue sur le sélecteur d'une page outil. */
+const deviseDeLaPage = (): Devise | null => {
+  const d = document.documentElement.dataset.devise
+    || document.querySelector<HTMLElement>('[data-devise][aria-pressed="true"]')?.dataset.devise;
+  return DEVISES.includes(d as Devise) ? (d as Devise) : null;
+};
 
 export interface AssistantProps {
   lang: Lang;
@@ -142,6 +252,85 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   const chemin = typeof window !== 'undefined' ? window.location.pathname : '/';
   const service = useMemo(() => serviceDeLaPage(chemin), [chemin]);
   const surCalculateur = /^\/(?:fr|en)\/calculator\/?$/.test(chemin);
+
+  // --- le mode Academy (02/10/2026) -------------------------------------------------------
+  const academy = estPageAcademy(chemin);
+  mesureAcademy = academy;
+  const th = academy ? NUIT : JOUR;
+  const qc = questionCopy(lang);
+  // L'espace avant ? ! : ; est insécable en français : sans lui, le signe passe seul à la
+  // ligne dans une bulle étroite.
+  const nb = (x: string) => (lang === 'fr' ? x.replace(/ ([?!:;%])/g, '\u00a0$1') : x);
+  /** La page de vente : « Commencer » tient le coin du pouce sous lg, le visage se pose au-dessus. */
+  const surVente = useMemo(() => academy && typeof document !== 'undefined' && !!document.getElementById('tarifs'), [academy]);
+  // Tant que le hero est à l'écran, « Commencer » n'est pas affiché (`AppelFlottant` s'y
+  // efface) : la capsule prend sa place, tout en bas. Posée plus haut, elle couvrait le second
+  // bouton du hero sur un téléphone, surtout avec le bandeau cookies (vu le 02/10/2026).
+  const [dansHero, setDansHero] = useState(true);
+  useEffect(() => {
+    if (!surVente || typeof IntersectionObserver === 'undefined') return;
+    const hero = document.getElementById('academy-hero');
+    if (!hero) return;
+    // Même marge que `AppelFlottant`, pour que les deux bougent ensemble.
+    const io = new IntersectionObserver((e) => setDansHero(e[e.length - 1].isIntersecting), { rootMargin: '0px 0px -25% 0px' });
+    io.observe(hero);
+    return () => io.disconnect();
+  }, [surVente]);
+  const [devisePage, setDevisePage] = useState<Devise | null>(null);
+  /** La page publie sa devise et sait en changer : le sélecteur se pose dans la capsule du visage. */
+  const [capsule, setCapsule] = useState(false);
+  /** Sous lg, les trois devises dépliées ; repliées, seule la devise choisie se montre. */
+  const [devises, setDevises] = useState(false);
+  const deviseAcademy: Devise = devisePage ?? (lang === 'en' ? 'USD' : 'EUR');
+  useEffect(() => {
+    if (!academy) return;
+    const relire = () => {
+      setDevisePage(deviseDeLaPage());
+      setCapsule(!!document.documentElement.dataset.devise);
+    };
+    relire();
+    // Les pages outils changent de devise dans leur propre barre, sans rien publier.
+    const surClic = () => window.setTimeout(relire, 0);
+    window.addEventListener('mdp-devise', relire);
+    document.addEventListener('click', surClic);
+    return () => {
+      window.removeEventListener('mdp-devise', relire);
+      document.removeEventListener('click', surClic);
+    };
+  }, [academy]);
+  // Les faits de la formation, pour la FAQ : jamais écrits ici. La page de vente les a déjà
+  // (instantané du build, puis relecture dans l'application) et les publie dans
+  // `window.__mdpAcademy` : le panneau s'en sert tel quel, donc la FAQ dit les mêmes prix
+  // que la page et tient même si l'application ne répond pas. Une page outil ne publie
+  // rien : le panneau lit alors l'application lui-même. Sans faits, il garde le champ libre
+  // et l'assistant IA.
+  const [faits, setFaits] = useState<{ d: Jour30Data; auto: number } | null>(null);
+  useEffect(() => {
+    if (!academy) return;
+    let vivant = true;
+    const w = window as unknown as { __mdpAcademy?: { d: Jour30Data; auto: number } };
+    const prendre = () => {
+      if (vivant && w.__mdpAcademy?.d?.lang === lang) setFaits(w.__mdpAcademy);
+    };
+    prendre();
+    window.addEventListener('mdp-academy', prendre);
+    if (!w.__mdpAcademy) {
+      void Promise.all([
+        fetch(`${ENDPOINT}?lang=${lang}`).then((r) => (r.ok ? (r.json() as Promise<Jour30Data>) : null)).catch(() => null),
+        import('../academy-v2/modules').then((x) => x.MODULES.filter((y) => y.palier === 'pro').length).catch(() => 0),
+      ]).then(([d, auto]) => {
+        if (vivant && !w.__mdpAcademy && d && d.lang === lang && Array.isArray(d.offres)) setFaits({ d, auto });
+      });
+    }
+    return () => {
+      vivant = false;
+      window.removeEventListener('mdp-academy', prendre);
+    };
+  }, [academy, lang]);
+  const categories = useMemo(
+    () => (faits ? categoriesVente(lang, faqVente(lang, faits.d, deviseAcademy, faits.auto)) : []),
+    [faits, lang, deviseAcademy]
+  );
 
   // Ce que l'assistant sait de la page ouverte (carte générée au build, `/assistant-pages.json`).
   const [fiche, setFiche] = useState<Fiche | null>(null);
@@ -207,17 +396,25 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   const champRef = useRef<HTMLTextAreaElement>(null);
 
   const ctx = (): Contexte => ({
+    surface: academy ? 'page' : 'site',
     language: lang,
     page: chemin,
-    devise: currency,
+    devise: academy ? deviseAcademy : currency,
     secondes: Math.round((Date.now() - debut.current) / 1000),
     provenance: provenance(),
   });
 
   const assurerFil = async (): Promise<Fil | null> => {
-    if (sRef.current.fil) return sRef.current.fil;
+    const x = sRef.current;
+    const surface = academy ? 'page' : 'site';
+    // Un fil ouvert sans que rien n'ait été dit à Paul (une question de FAQ lue sur l'Academy,
+    // par exemple) ne suit pas le visiteur dans l'autre espace : on en ouvre un neuf, rangé
+    // au bon endroit. Dès qu'un message ou une réponse est parti, la conversation est une,
+    // et elle reste dans l'espace où elle est née ; seuls les faits de l'IA suivent la page.
+    const aGarder = x.fil && ((x.fs ?? 'site') === surface || x.prevenu || x.messages > 0);
+    if (x.fil && aGarder) return x.fil;
     const fil = await ouvrirFil(ctx());
-    if (fil) maj((x) => ({ ...x, fil }));
+    if (fil) maj((y) => ({ ...y, fil, fs: surface }));
     return fil;
   };
 
@@ -248,6 +445,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   // Ce que l'assistant dit en s'ouvrant, selon la page (Paul, 22/09 : « le choix de base sur la
   // page d'accueil est quand même assez basique »).
   const accueilTexte = () => {
+    if (academy) return nb(qc.accueil);
     const f = ficheRef.current;
     if (!f) return service ? c.accueilService(domainName(service, lang)) : c.accueil;
     if (f.k === 'case') return c.accueilCas(f.cl || f.t, f.r);
@@ -260,6 +458,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
 
   /** La question d'une ligne posée au-dessus du visage, selon la page (Paul, 23/09/2026). */
   const inviteTexte = () => {
+    if (academy) return nb(qc.bulle);
     const f = ficheRef.current;
     const d = domaineRef.current;
     if (surCalculateur) return c.inviteCalcul;
@@ -273,12 +472,14 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   };
 
   // --- ouverture --------------------------------------------------------------------------
-  const ouvrir = useCallback((mode: 'normal' | 'guide' | 'devis' = 'normal') => {
+  // `source` : d'où vient l'ouverture, lu par la mesure de l'Academy (`question_source`).
+  const ouvrir = useCallback((mode: 'normal' | 'guide' | 'devis' = 'normal', source: 'pastille' | 'bulle' | 'reponse' | 'auto' | 'reprise' = 'pastille') => {
     setInvite(false);
     setGrand(false);
     setNonLu(false);
     setOuvert(true);
-    pousser('site_assistant_open', { assistant_mode: mode, assistant_page: window.location.pathname });
+    rendreLeTitre(); // la personne a vu, l'onglet reprend son nom
+    pousser('site_assistant_open', { assistant_mode: mode, assistant_page: window.location.pathname, question_source: source });
     maj((x) => {
       const items = [...x.items];
       if (mode === 'guide') {
@@ -301,6 +502,51 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [c, lang, maj, service]);
+
+  const ouvrirRef = useRef(ouvrir);
+  ouvrirRef.current = ouvrir;
+
+  // Page de vente de l'Academy : le panneau s'ouvre seul sur ordinateur, une fois par visite,
+  // trois secondes après l'arrivée de la grille de tarifs à l'écran ou au bout d'une minute
+  // (Paul, 16/09/2026). Sur téléphone, « j'ai peur que ça prenne trop de place » : c'est la
+  // phrase d'invitation qui s'affiche, et le panneau ne s'ouvre qu'au toucher.
+  // ⚠️ `hover: hover` et jamais la largeur d'écran : c'est le pouce qu'on protège.
+  // ⚠️ `setTimeout` et non `requestAnimationFrame` : un onglet en arrière-plan ne joue pas rAF.
+  useEffect(() => {
+    if (!academy) return;
+    // Arrivé par la bulle de reprise d'une autre page ou par un courriel : on ouvre tout de suite.
+    if (window.location.hash === ANCRE_REPRISE) {
+      ouvrirRef.current('normal', 'reprise');
+      return;
+    }
+    const cible = document.getElementById('tarifs');
+    if (!cible || lire(CLE_AUTO, false)) return;
+    let fait = false;
+    let apres = 0;
+    const declencher = () => {
+      if (fait) return;
+      fait = true;
+      apres = window.setTimeout(() => {
+        if (ouvertRef.current || lire(CLE_AUTO, false)) return;
+        ecrire(CLE_AUTO, true);
+        if (typeof window.matchMedia === 'function' && window.matchMedia('(hover: hover)').matches) ouvrirRef.current('normal', 'auto');
+        else if (!lire(CLE_INVITE, false)) setInvite(true);
+      }, 3000);
+    };
+    const minute = window.setTimeout(declencher, 60_000);
+    let io: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== 'undefined') {
+      io = new IntersectionObserver((entrees) => {
+        if (entrees.some((e) => e.isIntersecting)) declencher();
+      }, { rootMargin: '0px 0px -30% 0px' });
+      io.observe(cible);
+    }
+    return () => {
+      window.clearTimeout(minute);
+      window.clearTimeout(apres);
+      io?.disconnect();
+    };
+  }, [academy]);
 
   // Le calculateur : « Aidez-moi à choisir » ouvre l'assistant, la page de résultat lui passe le devis.
   useEffect(() => {
@@ -330,7 +576,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   // champ de saisie du panneau sur téléphone tant que le visiteur n'avait pas choisi (vu le
   // 29/09/2026). Le visage, l'invitation et le panneau se posent donc au-dessus de lui, et
   // reviennent à leur place dès qu'il se retire. Même mesure que le panneau de l'Academy
-  // (`academy-v2/Question.tsx`) : il se retire par une classe, d'où l'observation de l'attribut.
+  // (supprimé le 02/10/2026) : il se retire par une classe, d'où l'observation de l'attribut.
   useEffect(() => {
     const b = document.getElementById('cookie-consent-banner');
     if (!b) return;
@@ -417,7 +663,13 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
         const lu = await lireFil(sRef.current.fil as Fil, ouvertRef.current);
         // Pendant un envoi, la réponse de l'envoi fait foi : pas de double lecture.
         if (lu && !envoiRef.current && lu.messages.length > (sRef.current.srv ?? 0)) {
-          if (fusionner(lu.messages, lu.etat) > 0 && !ouvertRef.current) setNonLu(true);
+          const arrivees = fusionner(lu.messages, lu.etat);
+          if (arrivees > 0) {
+            // Le son et le titre de l'onglet préviennent même quand la personne regarde
+            // ailleurs (règle du 18/09/2026 sur le panneau de l'Academy, étendue à tout le site).
+            signalerReponse(ouvertRef.current ? 0 : arrivees, lang);
+            if (!ouvertRef.current) setNonLu(true);
+          }
         } else if (lu?.etat) maj((x) => ({ ...x, etat: lu.etat }));
       }
       minuteur = window.setTimeout(tour, ouvertRef.current ? 5000 : 20000);
@@ -642,7 +894,9 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     const fil = await assurerFil();
     const plan = [...sRef.current.items].reverse().find((i) => i.k === 'plan') as Extract<Item, { k: 'plan' }> | undefined;
     const st = plan ? decodePlan(plan.plan) : null;
-    const r = fil ? await envoyerMessage(fil, ctx(), { question, email, devis: devisCourant ?? (st ? resumeDevis(st) : undefined), website: piege }) : null;
+    // Mode Academy : les questions de la FAQ déjà lues partent avec le message, Paul les lit dans la bulle.
+    const lues = academy ? categories.flatMap((k) => k.questions).filter((q) => (sRef.current.lues ?? []).includes(q.id)).map((q) => q.q) : undefined;
+    const r = fil ? await envoyerMessage(fil, ctx(), { question, email, devis: devisCourant ?? (st ? resumeDevis(st) : undefined), website: piege, faq: lues }) : null;
     setEnvoi(false);
     if (!r?.ok) {
       // Le message n'est pas parti : il revient dans le champ, et l'état de l'IA (conversation
@@ -654,7 +908,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     }
     if (fil) garderConversation(fil);
     // La conversation suit le visiteur : autres pages, page de l'Academy, retour le lendemain.
-    if (premier) pousser('site_assistant_message', { assistant_page: window.location.pathname, ia_mode: r.ia_mode || 'paul' });
+    if (premier) pousser('site_assistant_message', { assistant_page: window.location.pathname, ia_mode: r.ia_mode || 'paul', faq_lues: (sRef.current.lues ?? []).length });
     if (r.etat?.a_adresse && !avaitAdresse) pousser('site_assistant_email', { assistant_page: window.location.pathname });
     if (r.messages) fusionner(r.messages, r.etat);
     maj((x) => ({
@@ -713,6 +967,8 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
 
   /** Les choix proposés, selon ce que la page raconte. */
   const menu = (): Choix[] => {
+    // Mode Academy : les familles de la FAQ de la formation, puis la question libre.
+    if (academy) return [...categories.map((k) => ({ id: `cat:${k.id}`, label: nb(k.titre) })), { id: 'paul', label: qc.poser }];
     const f = ficheRef.current;
     const d = domaine;
     const liste: Choix[] = [];
@@ -738,6 +994,8 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
 
   /** Les pages à proposer en plus : l'étude de cas du service, le service de l'article, le calculateur. */
   const recommandations = (): Choix[] => {
+    // Sur les pages de l'Academy, ni calculateur ni étude de cas : on y vend la formation.
+    if (academy) return [];
     const f = ficheRef.current;
     const d = domaineRef.current;
     const liens: Choix[] = [];
@@ -756,6 +1014,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   const agir = async (x: Choix) => {
     maj((y) => ({ ...y, items: [...y.items, { k: 'moi', texte: x.label }], faits: [...(y.faits ?? []), x.id] }));
     if (x.id === 'paul') { versLibre(); return; }
+    if (x.id.startsWith('cat:')) { maj((y) => ({ ...y, etape: 'faq', cat: x.id.slice(4) })); return; }
     if (x.id === 'plan') {
       const d = domaineRef.current;
       if (!d) { demarrer({}); return; }
@@ -774,30 +1033,50 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     if (x.id === 'cas') { await direCas(); return; }
   };
 
-  const puce = 'rounded-full border border-slate-300 bg-white px-3.5 py-2 text-left text-[14px] font-medium text-slate-900 transition-colors hover:border-marque hover:bg-marque-doux';
-  const puceForte = 'rounded-full border border-marque bg-marque px-3.5 py-2 text-left text-[14px] font-semibold text-white transition-colors hover:bg-marque-fonce';
+  /** Mode Academy : une question de la FAQ lue. La question et la réponse affichée partent au fil. */
+  const lireFaq = async (q: QuestionFaq) => {
+    trackQuestion('faq', { faq_id: q.id });
+    maj((x) => ({ ...x, lues: [...(x.lues ?? []), q.id], items: [...x.items, { k: 'moi', texte: nb(q.q) }, { k: 'bot', texte: nb(q.a) }] }));
+    const fil = await assurerFil();
+    if (fil) void noterFaq(fil, q.q, q.a);
+  };
+
+  const lienTexte = 'font-semibold underline underline-offset-2';
   const choix = () => {
     const e = s.etape;
-    if (e === 'menu' || e === 'accueil' || e === 'fin') {
+    if (e === 'faq' && academy) {
+      const famille = categories.find((k) => k.id === s.cat);
+      const reste = (famille?.questions ?? []).filter((q) => !(s.lues ?? []).includes(q.id));
+      return (
+        <div className="flex flex-col gap-2">
+          {reste.map((q) => <button key={q.id} type="button" className={th.puce} onClick={() => void lireFaq(q)}>{nb(q.q)}</button>)}
+          <div className="flex flex-wrap gap-x-4 gap-y-2 pt-1 text-[13.5px]">
+            <button type="button" onClick={() => maj((x) => ({ ...x, etape: 'menu' }))} className={`${lienTexte} ${th.lien}`}>{qc.retourCategories}</button>
+            <button type="button" onClick={() => versLibre()} className={`${lienTexte} ${th.lienDiscret}`}>{qc.differente}</button>
+          </div>
+        </div>
+      );
+    }
+    if (e === 'menu' || e === 'accueil' || e === 'fin' || e === 'faq') {
       const liste = e === 'fin' ? [] : menu();
       const liens = recommandations();
       return (
         <div className="flex flex-col gap-3">
           {liste.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {liste.map((x, i) => <button key={x.id} type="button" className={i === 0 ? puceForte : puce} onClick={() => void agir(x)}>{x.label}</button>)}
+              {liste.map((x, i) => <button key={x.id} type="button" className={i === 0 && !academy ? th.puceForte : th.puce} onClick={() => void agir(x)}>{x.label}</button>)}
             </div>
           )}
           {e === 'fin' && (
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-[13.5px]">
-              <a href={cheminContact(lang)} className="font-semibold text-marque underline underline-offset-2">{c.contacter}</a>
-              <button type="button" onClick={recommencer} className="font-semibold text-slate-600 underline underline-offset-2">{c.recommencer}</button>
+              <a href={cheminContact(lang)} className={`${lienTexte} ${th.lien}`}>{c.contacter}</a>
+              <button type="button" onClick={recommencer} className={`${lienTexte} ${th.lienDiscret}`}>{c.recommencer}</button>
             </div>
           )}
           {liens.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[12.5px] font-semibold uppercase tracking-wide text-slate-400">{c.voirAussi}</span>
-              {liens.map((x) => <a key={x.id} href={x.href} className={puce} onClick={() => pousser('site_assistant_lien', { assistant_lien: x.href })}>{x.label}</a>)}
+              <span className={`text-[12.5px] font-semibold uppercase tracking-wide ${th.etiquette}`}>{c.voirAussi}</span>
+              {liens.map((x) => <a key={x.id} href={x.href} className={th.puce} onClick={() => pousser('site_assistant_lien', { assistant_lien: x.href })}>{x.label}</a>)}
             </div>
           )}
         </div>
@@ -807,7 +1086,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
       const q = QUESTION_INDEX[s.sq];
       return (
         <div className="flex flex-wrap gap-2">
-          {optionsService(q).map((x) => <button key={x.id} type="button" className={puce} onClick={() => void repondreService(q, x)}>{x.label}</button>)}
+          {optionsService(q).map((x) => <button key={x.id} type="button" className={th.puce} onClick={() => void repondreService(q, x)}>{x.label}</button>)}
         </div>
       );
     }
@@ -815,15 +1094,15 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
       const ids = e === 'monthlyBudget' ? ['budget-1500', 'budget-3500', 'budget-7500', 'budget-15000'] : (guidedQuestions.find((q) => q.id === e)?.options ?? []).map((o) => o.id);
       return (
         <div className="flex flex-wrap gap-2">
-          {ids.map((id) => <button key={id} type="button" className={puce} onClick={() => repondre(e, id)}>{libelle(e, id, lang)}</button>)}
+          {ids.map((id) => <button key={id} type="button" className={th.puce} onClick={() => repondre(e, id)}>{libelle(e, id, lang)}</button>)}
         </div>
       );
     }
     if (e === 'libre' && devisCourant && s.messages === 0) {
       return (
         <div className="flex flex-wrap gap-2">
-          {c.suggestions.map((x) => <button key={x} type="button" className={puce} onClick={() => envoyer(x)}>{x}</button>)}
-          <a href={cheminContact(lang)} className={puce}>{c.contacter}</a>
+          {c.suggestions.map((x) => <button key={x} type="button" className={th.puce} onClick={() => envoyer(x)}>{x}</button>)}
+          <a href={cheminContact(lang)} className={th.puce}>{c.contacter}</a>
         </div>
       );
     }
@@ -840,14 +1119,76 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
         ? c.restants(s.etat.messages_restants)
         : c.aideIa;
 
+  /** Le visage de Paul. Sur les pages de l'Academy, dans une capsule de nuit qu'il partage avec le sélecteur de devise. */
+  const visage = () => {
+    const clic = () => ouvrir(devisCourant && !s.items.length ? 'devis' : 'normal', nonLu ? 'reponse' : 'pastille');
+    if (!academy) {
+      return (
+        <button type="button" aria-label={c.ouvrir} onClick={clic}
+          className="relative grid h-14 w-14 shrink-0 place-items-center rounded-full bg-white p-0.5 shadow-[0_8px_24px_rgba(15,27,41,0.22)] ring-2 ring-white transition-transform hover:scale-105 max-sm:h-[52px] max-sm:w-[52px]">
+          {photo(52)}
+          {nonLu && <span className="absolute right-0 top-0 h-3.5 w-3.5 rounded-full bg-marque ring-2 ring-white" />}
+        </button>
+      );
+    }
+    return (
+      // La barre d'outils de la page de vente (Paul, 01/10/2026) : les devises et le visage dans
+      // une seule capsule debout. Sous lg, seule la devise choisie se montre tant qu'on ne l'a
+      // pas touchée. ⚠️ Debout aussi sur téléphone : couchée, elle couvrait la colonne des durées
+      // du programme. Sur une page outil, la devise se change dans la barre de la page : le
+      // visage est seul dans la capsule.
+      <div className="flex flex-col items-center gap-1 rounded-full border border-filet-nuit bg-salle-2 p-1 shadow-[0_10px_30px_-8px_rgba(4,8,18,.75)]">
+        {capsule && devisePage && (
+          <>
+            <div role="group" aria-label={lang === 'fr' ? 'Devise' : 'Currency'} className="flex flex-col items-center gap-0.5">
+              {DEVISES.map((d) => {
+                const choisie = d === devisePage;
+                return (
+                  <button key={d} type="button" aria-pressed={choisie} aria-label={d} title={d}
+                    onClick={() => {
+                      if (choisie) return setDevises((v) => !v);
+                      window.dispatchEvent(new CustomEvent('mdp-devise:choisir', { detail: d }));
+                      setDevises(false);
+                    }}
+                    className={`h-11 w-11 flex-none cursor-pointer place-items-center rounded-full border-0 font-ac-mono text-[14px] font-bold transition duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-or lg:grid ${
+                      choisie ? 'grid bg-or text-salle' : `bg-transparent text-corps-nuit hover:bg-salle-3 hover:text-ivoire ${devises ? 'grid' : 'hidden'}`
+                    }`}>
+                    {SYMBOLE[d]}
+                  </button>
+                );
+              })}
+            </div>
+            <span aria-hidden="true" className="h-px w-6 flex-none bg-filet-nuit" />
+          </>
+        )}
+        <button type="button" aria-label={nonLu ? c.paulARepondu : qc.pastilleAria} onClick={clic}
+          className="relative h-14 w-14 flex-none cursor-pointer rounded-full border-2 border-or bg-salle-2 transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-or motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+          <img src={PHOTO} alt="" width={56} height={56} className="h-full w-full rounded-full object-cover" />
+          {nonLu && <span aria-hidden="true" className="absolute -right-0.5 -top-0.5 h-4 w-4 rounded-full border-2 border-salle bg-or" />}
+        </button>
+      </div>
+    );
+  };
+
   return (
     // `--bandeau` : la place du bandeau cookies, que les positions ci-dessous ajoutent.
-    <div className="contents" style={{ '--bandeau': `${bandeau}px` } as CSSProperties}>
+    // `data-theme="nuit"` : les jetons de la salle de nuit, sur les pages de l'Academy.
+    <div className="contents" data-theme={academy ? 'nuit' : undefined}
+      style={{ '--bandeau': `${bandeau}px`, ...(academy ? { fontFamily: 'var(--font-ac-grotesk)' } : {}) } as CSSProperties}>
       {/* Fermé : le visage de Paul, et selon la page une phrase discrète ou l'invitation en grand. */}
       {!ouvert && (
         // En colonne : la phrase ou l'invitation AU-DESSUS du visage, pour ne jamais couvrir le
         // bouton « Calculer mon budget » posé à sa gauche (les deux appels à l'action du site).
-        <div className={`fixed right-4 z-[45] flex flex-col items-end gap-2 sm:right-6 ${bas}`} style={bandeau ? { bottom: Math.max(bandeau + 16, surelever ? 136 : 0) } : undefined}>
+        // Sur la page de vente de l'Academy, le visage se pose au-dessus de « Commencer » sous lg.
+        <div
+          className={`fixed right-4 z-[45] flex flex-col items-end gap-2 ${
+            surVente
+              ? `transition-[bottom] duration-300 motion-reduce:transition-none lg:bottom-[calc(1.5rem+var(--bandeau,0px))] lg:right-6 ${
+                  dansHero ? 'bottom-[calc(1rem+var(--bandeau,0px))]' : 'bottom-[calc(5.5rem+var(--bandeau,0px))]'
+                }`
+              : `sm:right-6 ${bas}`
+          }`}
+          style={!surVente && bandeau ? { bottom: Math.max(bandeau + 16, surelever ? 136 : 0) } : undefined}>
           {grand && devisCourant ? (
             <div className="w-[min(340px,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white p-4 shadow-xl max-sm:fixed max-sm:inset-x-4 max-sm:bottom-[calc(1rem+var(--bandeau,0px))] max-sm:w-auto">
               <div className="flex items-start gap-3">
@@ -866,8 +1207,10 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
               </div>
             </div>
           ) : (invite || nonLu) ? (
+            // La phrase reste claire sur les pages sombres de l'Academy : c'est la même bulle
+            // partout, et elle se détache mieux de la salle de nuit.
             <div className="flex items-center gap-1 rounded-2xl rounded-br-md border border-slate-200 bg-white py-2 pl-3.5 pr-1.5 shadow-lg">
-              <button type="button" onClick={() => ouvrir(devisCourant ? 'devis' : 'normal')} className="max-w-[calc(100vw-7.5rem)] text-left text-[14px] font-semibold leading-snug text-slate-900 sm:max-w-[17rem]">{nonLu ? c.paulARepondu : reprise ? c.reprendre : inviteTexte()}</button>
+              <button type="button" onClick={() => ouvrir(devisCourant ? 'devis' : 'normal', nonLu ? 'reponse' : 'bulle')} className="max-w-[calc(100vw-7.5rem)] text-left text-[14px] font-semibold leading-snug text-slate-900 sm:max-w-[17rem]">{nonLu ? c.paulARepondu : reprise ? c.reprendre : inviteTexte()}</button>
               {!nonLu && (
                 <button type="button" aria-label={c.fermer} onClick={() => { setInvite(false); setReprise(false); ecrire(CLE_INVITE, true); }} className="grid h-7 w-7 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700">
                   <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
@@ -875,13 +1218,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
               )}
             </div>
           ) : null}
-          {!(grand && devisCourant) && (
-            <button type="button" aria-label={c.ouvrir} onClick={() => ouvrir(devisCourant && !s.items.length ? 'devis' : 'normal')}
-              className="relative grid h-14 w-14 shrink-0 place-items-center rounded-full bg-white p-0.5 shadow-[0_8px_24px_rgba(15,27,41,0.22)] ring-2 ring-white transition-transform hover:scale-105 max-sm:h-[52px] max-sm:w-[52px]">
-              {photo(52)}
-              {nonLu && <span className="absolute right-0 top-0 h-3.5 w-3.5 rounded-full bg-marque ring-2 ring-white" />}
-            </button>
-          )}
+          {!(grand && devisCourant) && visage()}
         </div>
       )}
 
@@ -890,64 +1227,64 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
         <>
           <div className="fixed inset-0 z-[45] bg-slate-900/30 sm:hidden" onClick={() => setOuvert(false)} aria-hidden="true" />
           <section role="dialog" aria-label={c.nom}
-            className="fixed inset-x-0 bottom-[var(--bandeau,0px)] z-[46] flex h-[min(85dvh,calc(100dvh-var(--bandeau,0px)-5.5rem))] flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:inset-x-auto sm:bottom-[calc(1.5rem+var(--bandeau,0px))] sm:right-6 sm:h-[min(600px,calc(100dvh-3rem-var(--bandeau,0px)))] sm:w-[380px] sm:rounded-3xl sm:border sm:border-slate-200">
-            <header className="flex shrink-0 items-center gap-3 border-b border-slate-100 px-4 py-3">
+            className={`fixed inset-x-0 bottom-[var(--bandeau,0px)] z-[46] flex h-[min(85dvh,calc(100dvh-var(--bandeau,0px)-5.5rem))] flex-col overflow-hidden rounded-t-3xl shadow-2xl sm:inset-x-auto sm:bottom-[calc(1.5rem+var(--bandeau,0px))] sm:right-6 sm:h-[min(600px,calc(100dvh-3rem-var(--bandeau,0px)))] sm:w-[380px] sm:rounded-3xl ${th.panneau}`}>
+            <header className={`flex shrink-0 items-center gap-3 border-b px-4 py-3 ${th.filet}`}>
               {photo(38)}
               <div className="min-w-0 flex-1">
-                <p className="font-display text-[15px] font-bold leading-tight text-slate-900">{c.nom}</p>
-                <p className="flex items-center gap-1.5 text-[12.5px] text-slate-500"><span className="h-1.5 w-1.5 rounded-full bg-green-600" />{s.etat?.relais || (s.paulVus > 0 && !s.etat) ? c.sousTitreRelais : c.sousTitreIa}</p>
+                <p className={`text-[15px] font-bold leading-tight ${th.titre}`}>{c.nom}</p>
+                <p className={`flex items-center gap-1.5 text-[12.5px] ${th.discret}`}><span className="h-1.5 w-1.5 rounded-full bg-green-600" />{s.etat?.relais || (s.paulVus > 0 && !s.etat) ? c.sousTitreRelais : c.sousTitreIa}</p>
               </div>
               {/* La langue suit la page ; ce lien ouvre la même page dans l'autre langue. Le
                   code de la langue plutôt qu'un drapeau, comme l'en-tête du site (25/09/2026). */}
               <a href={`/${lang === 'fr' ? 'en' : 'fr'}${chemin.replace(/^\/(fr|en)/, '')}`} aria-label={c.changerLangue} title={c.changerLangue}
-                className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-[12px] font-semibold tracking-wide text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                className={`grid h-9 w-9 place-items-center rounded-full text-[12px] font-semibold tracking-wide ${th.rond}`}
                 onClick={() => pousser('site_assistant_langue', { assistant_langue: lang === 'fr' ? 'en' : 'fr' })}>
                 {lang === 'fr' ? 'EN' : 'FR'}
               </a>
-              <button type="button" aria-label={c.fermer} onClick={() => setOuvert(false)} className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">
+              <button type="button" aria-label={c.fermer} onClick={() => setOuvert(false)} className={`grid h-9 w-9 place-items-center rounded-full ${th.rond}`}>
                 <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
               </button>
             </header>
 
-            <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4">
+            <div className={`flex-1 overflow-y-auto overscroll-contain px-4 py-4 ${th.defile}`}>
               <div className="flex flex-col gap-2.5">
                 {s.items.map((it, n) => {
                   const avant = s.items[n - 1];
-                  if (it.k === 'evt') return <p key={n} className="self-center rounded-full bg-slate-100 px-3 py-1 text-[12px] text-slate-500">{it.texte}</p>;
+                  if (it.k === 'evt') return <p key={n} className={`self-center rounded-full px-3 py-1 text-[12px] ${th.evt}`}>{it.texte}</p>;
                   if (it.k === 'plan') return <div key={n}>{carte(it.plan, it.budget)}</div>;
                   const nouveauLocuteur = !avant || avant.k !== it.k;
                   const nom = it.k === 'moi' ? c.vous : it.k === 'paul' ? c.paul : it.k === 'ia' ? c.assistantIa : c.assistant;
                   const texteAffiche = it.k === 'moi' ? it.texte : avecLiens(it.texte, (href) => pousser('site_assistant_lien', { assistant_lien: href, assistant_source: it.k }));
                   return (
                     <div key={n} className={`flex flex-col ${it.k === 'moi' ? 'items-end' : 'items-start'}`}>
-                      {nouveauLocuteur && <p className="mb-1 px-1 text-[11.5px] font-semibold text-slate-500">{nom}</p>}
+                      {nouveauLocuteur && <p className={`mb-1 px-1 text-[11.5px] font-semibold ${th.discret}`}>{nom}</p>}
                       <p className={`max-w-[88%] whitespace-pre-line rounded-2xl px-3.5 py-2.5 text-[14.5px] leading-snug ${
-                        it.k === 'moi' ? 'rounded-br-md bg-marque text-white' : it.k === 'paul' ? 'rounded-bl-md bg-slate-900 text-white' : 'rounded-bl-md bg-slate-100 text-slate-900'
+                        it.k === 'moi' ? th.moi : it.k === 'paul' ? th.paul : th.bot
                       }`}>{texteAffiche}</p>
                     </div>
                   );
                 })}
-                {envoi && <p className="self-start rounded-2xl rounded-bl-md bg-slate-100 px-3.5 py-2.5 text-[13.5px] text-slate-500" role="status">{c.ecrit}</p>}
-                {s.etat?.relais && <p className="self-center text-center text-[12.5px] text-slate-500">{c.relais}</p>}
+                {envoi && <p className={`self-start rounded-2xl rounded-bl-md px-3.5 py-2.5 text-[13.5px] ${th.evt}`} role="status">{c.ecrit}</p>}
+                {s.etat?.relais && <p className={`self-center text-center text-[12.5px] ${th.discret}`}>{c.relais}</p>}
                 <div className="mt-1">{choix()}</div>
                 <div ref={fondRef} />
               </div>
             </div>
 
-            <form className="shrink-0 border-t border-slate-100 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3" onSubmit={(e) => { e.preventDefault(); void envoyer(texte); }}>
-              {erreur && <p className="mb-2 px-1 text-[13px] text-red-700" role="alert">{typeof erreur === 'string' ? erreur : c.erreur}</p>}
+            <form className={`shrink-0 border-t px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 ${th.filet}`} onSubmit={(e) => { e.preventDefault(); void envoyer(texte); }}>
+              {erreur && <p className={`mb-2 px-1 text-[13px] ${th.erreur}`} role="alert">{typeof erreur === 'string' ? erreur : c.erreur}</p>}
               <input type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" value={piege} onChange={(e) => setPiege(e.target.value)} name="website_url" />
               <div className="flex items-end gap-2">
                 <textarea ref={champRef} rows={1} value={texte} onChange={(e) => setTexte(e.target.value)} placeholder={close ? c.finHors : c.placeholder} aria-label={c.placeholder} disabled={close}
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void envoyer(texte); } }}
-                  className="max-h-28 min-h-[44px] flex-1 resize-none rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-[15px] text-slate-900 placeholder:text-slate-400 focus:border-marque focus:outline-none focus:ring-1 focus:ring-marque" />
+                  className={`max-h-28 min-h-[44px] flex-1 resize-none rounded-xl border px-3.5 py-2.5 text-[15px] focus:outline-none focus:ring-1 ${th.champ}`} />
                 <button type="submit" aria-label={c.envoyer} disabled={!texte.trim() || envoi || close || texte.length > MAX_CARACTERES}
-                  className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-marque text-white transition-colors hover:bg-marque-fonce disabled:opacity-40">
+                  className={`grid h-11 w-11 shrink-0 place-items-center rounded-full transition-colors disabled:opacity-40 ${th.envoyer}`}>
                   <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </button>
               </div>
               {/* Qui répond, et combien de messages il reste avant que Paul prenne la suite. */}
-              <p className={`mt-1.5 px-1 text-[12px] ${texte.length > MAX_CARACTERES ? 'text-red-700' : 'text-slate-400'}`}>
+              <p className={`mt-1.5 px-1 text-[12px] ${texte.length > MAX_CARACTERES ? th.erreur : th.aide}`}>
                 {texte.length > MAX_CARACTERES ? c.trop(MAX_CARACTERES) : aide}
               </p>
             </form>

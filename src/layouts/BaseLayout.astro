@@ -374,8 +374,9 @@ const canonical = canonicalURL || Astro.url.href;
     </script>
 
     <!-- L'assistant du site : la bulle avec le visage de Paul, sur tout le site depuis le
-         22/09/2026 (décision de Paul). Jamais sur les pages Academy, qui ont leur propre
-         panneau, ni dans /admin. ?assistant=0 l'éteint pour la visite, ?assistant=1 le rallume.
+         22/09/2026 (décision de Paul), pages de l'Academy comprises depuis le 02/10/2026,
+         où il passe en mode Academy (un seul chat sur le site). Jamais dans /admin ni sur
+         l'ancienne page de vente gardée pour comparaison. ?assistant=0 l'éteint pour la visite, ?assistant=1 le rallume.
          Paul, 22/09/2026 : sur tout le site, deux appels à l'action et pas un de plus,
          « Calculer mon budget » et son visage. Là où la bulle s'affiche, `data-assistant="on"`
          sur <html> décale le bouton collant du calculateur (StickyCalculatorCTA) juste à gauche
@@ -417,13 +418,14 @@ const canonical = canonicalURL || Astro.url.href;
       // une réponse attend, sinon « Reprendre la conversation », et ramène au panneau.
       // En bas à GAUCHE : le coin droit est celui de l'assistant du site.
       // ⚠️ UN SEUL PANNEAU PAR PAGE (29/09/2026) : là où l'assistant du site s'affiche, c'est
-      // lui qui reprend la conversation (même cookie), et cette bulle ne se pose pas. Elle ne
-      // reste que sur les pages outils de l'Academy (/fr/academy/claude…), qui n'ont ni l'un
-      // ni l'autre panneau. Même condition que le chargement de l'assistant, plus bas.
+      // lui qui reprend la conversation (même cookie), et cette bulle ne se pose pas. Depuis
+      // le 02/10/2026 l'assistant est aussi sur les pages de l'Academy : la bulle ne reste
+      // que là où il est éteint (`?assistant=0`) ou absent (l'ancienne page de vente). Même
+      // condition que le chargement de l'assistant, plus bas.
       (() => {
         const chemin = location.pathname;
-        if (/^\/(fr|en)\/academy\/?$/.test(chemin) || chemin.startsWith('/admin')) return;
-        let assistantIci = !/^\/(fr|en)\/academy/.test(chemin);
+        if (chemin.startsWith('/admin')) return;
+        let assistantIci = !/^\/(fr|en)\/academy-v/.test(chemin);
         try {
           const q = new URLSearchParams(location.search).get('assistant');
           if (q === '0' || (q !== '1' && sessionStorage.getItem('mdp_assistant_off') === '1')) assistantIci = false;
@@ -513,7 +515,7 @@ const canonical = canonicalURL || Astro.url.href;
 
     <script>
       const cheminPage = location.pathname;
-      const exclue = /^\/(fr|en)\/academy/.test(cheminPage) || cheminPage.startsWith('/admin');
+      const exclue = /^\/(fr|en)\/academy-v/.test(cheminPage) || cheminPage.startsWith('/admin');
       const calculateur = /^\/(fr|en)\/calculator\/?$/.test(cheminPage);
       let actif = true;
       try {

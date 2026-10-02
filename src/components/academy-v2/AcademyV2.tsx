@@ -35,7 +35,6 @@ import Profil from './Profil';
 import Questionnaire from './Questionnaire';
 import Programme from './Programme';
 import Tarifs from './Tarifs';
-import Question from './Question';
 import OutilsCartes, { type CarteOutil } from './OutilsCartes';
 import Preuves, { type LogoPreuve } from './Preuves';
 import { FilmSeul, FilmsSalle } from './SectionsFilms';
@@ -93,6 +92,24 @@ export default function AcademyV2({
   useEffect(() => {
     const d = new URLSearchParams(window.location.search).get('devise')?.toUpperCase();
     if (d === 'EUR' || d === 'GBP' || d === 'USD') setDevise(d);
+  }, []);
+  // La devise est publiée pour le chat du site, qui porte le sélecteur dans la capsule de
+  // son visage et s'en sert pour les prix de sa FAQ (02/10/2026, un seul chat sur le site).
+  // Il vit hors de cet îlot : la page lui dit sa devise, et il lui dit quand on en change.
+  useEffect(() => {
+    document.documentElement.dataset.devise = devise;
+    window.dispatchEvent(new Event('mdp-devise'));
+  }, [devise]);
+  useEffect(() => {
+    const choisir = (e: Event) => {
+      const d = (e as CustomEvent<Devise>).detail;
+      if (d === 'EUR' || d === 'GBP' || d === 'USD') setDevise(d);
+    };
+    window.addEventListener('mdp-devise:choisir', choisir);
+    return () => {
+      window.removeEventListener('mdp-devise:choisir', choisir);
+      delete document.documentElement.dataset.devise;
+    };
   }, []);
   const c = copyV2(locale);
   // L'essai gratuit se choisit dans le tunnel depuis le 27/09/2026 (Paul : « je
@@ -179,6 +196,11 @@ export default function AcademyV2({
   // Les domaines de l'attestation : une colonne par étape, et les modules
   // nommés. Les quatre modules outils comptent pour une seule ligne, puisque
   // l'apprenant n'en suit qu'un.
+  // Les faits de la formation, pour la FAQ du chat du site : il vit hors de cet îlot.
+  useEffect(() => {
+    (window as unknown as { __mdpAcademy?: { d: Jour30Data; auto: number } }).__mdpAcademy = { d: data, auto: nbAuto };
+    window.dispatchEvent(new Event('mdp-academy'));
+  }, [data, nbAuto]);
   const domaines = ETAPES.map((e) => ({
     titre: e.titre[locale],
     modules: modulesDe(e.id)
@@ -189,8 +211,8 @@ export default function AcademyV2({
   return (
     <div data-theme="nuit" data-anime={anime ? '' : undefined} className="vente-v2 j30 overflow-x-clip bg-salle text-corps-nuit">
       {/* La barre propre à la page a laissé la place au menu du site le 01/10/2026
-          (posé par `academy.astro`). La devise se change dans la barre d'outils
-          flottante de `Question`, à côté du chat. */}
+          (posé par `academy.astro`). La devise se change dans la capsule du chat
+          du site (`site-assistant/Assistant.tsx`), en bas à droite. */}
       {/* ⚠️ Le bouton du hero pointait sur #pricing, ancre absente de cette
           page : il ne menait nulle part. Même défaut que le retournement et
           l'appel flottant (relevé le 07/09). */}
@@ -358,12 +380,9 @@ export default function AcademyV2({
         garantie={{ heures: data.garantie?.heures ?? 48, seuilPct: data.garantie?.seuil_pct ?? 5 }}
       />
 
-      {/* « Une question ? », Paul répond (direction A du labo, 15/09/2026). Le
-          visage est là dès l'arrivée depuis le 01/10/2026, avec le sélecteur de
-          devise dans la même barre d'outils ; sous lg elle se pose au-dessus de
-          « Commencer », qui garde le coin du pouce. */}
-      <Question locale={locale} devise={devise} surDevise={setDevise} data={data} modulesAuto={nbAuto} ancreTarifs="tarifs" />
-
+      {/* Le panneau « Une question ? » propre à cette page a été supprimé le
+          02/10/2026 : c'est le chat du site qui s'affiche ici, en mode Academy
+          (chargé par `BaseLayout.astro`). */}
       <AppelFlottant locale={locale} ancreTarifs="tarifs" />
     </div>
   );
