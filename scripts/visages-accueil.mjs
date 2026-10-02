@@ -33,7 +33,7 @@ export const REPERES = {
   'alexandre-echement': { fichier: 'Team_Alexandre_Echement.avif', haut: 0.22, menton: 0.62, x: 0.48 },
   'jordan-langlois': { fichier: 'Team_Jordan_Langlois.avif', haut: 0.12, menton: 0.44, x: 0.52 },
   'alizee-varloud': { fichier: 'Team_Alizee_Varloud.avif', haut: 0.09, menton: 0.4, x: 0.5 },
-  'juliette-joire': { fichier: 'Team_Juliette_Joire.avif', haut: 0.1, menton: 0.52, x: 0.53 },
+  'juliette-joire': { fichier: 'Team_Juliette_Joire.avif', haut: 0.09, menton: 0.73, x: 0.5 },
   'sophie-roe': { fichier: 'Team_Sophie_Roe.avif', haut: 0.14, menton: 0.5, x: 0.48 },
   'callum-dunbar': { fichier: 'Team_Callum_Dunbar.avif', haut: 0.13, menton: 0.35, x: 0.48 },
   'heather-mann': { fichier: 'Team_Heather_Mann.avif', haut: 0.19, menton: 0.52, x: 0.5 },
