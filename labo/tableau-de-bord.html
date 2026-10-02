@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labo - les cartes de parcours du tableau de bord</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --encre:#0f1a2e; --or:#c8a951; --or-vif:#dcbc66; --or-texte:#775e1c; --or-soft:#f4ead0;
+  --or-grave:#8a6d24; --craie:#f7f5f0; --papier:#ffffff; --mine:#2a3441; --brume:#646c7a;
+  --lin:#e6e1d6; --sauge:#2e7d5b; --sauge-soft:#e9f3ee;
+  --mono:'JetBrains Mono',Consolas,monospace; --titre:'Fraunces',Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--craie);color:var(--mine);line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+
+/* --- l'enveloppe du labo, pas le produit --- */
+.labo-tete{background:var(--encre);color:#fff;padding:26px 0 22px}
+.labo-tete .in{max-width:1280px;margin:0 auto;padding:0 24px}
+.labo-tete .k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--or);margin-bottom:8px}
+.labo-tete h1{font-family:var(--titre);font-size:25px;font-weight:600;line-height:1.2}
+.labo-tete p{color:#c8d2e4;font-size:13.5px;margin-top:8px;max-width:80ch}
+.labo-tete b{color:#fff}
+.page{max-width:1280px;margin:0 auto;padding:0 24px 90px}
+.bloc{margin-top:44px}
+.bloc>h2{font-family:var(--titre);font-size:20px;font-weight:600;color:var(--encre);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.bloc>h2 .n{font-family:var(--mono);font-size:12px;color:var(--or-texte);font-weight:700}
+.bloc>.pitch{font-size:14px;color:var(--brume);margin-top:8px;max-width:78ch}
+.bloc>.pitch b{color:var(--mine)}
+.mesure{font-family:var(--mono);font-size:11.5px;color:var(--brume);margin-top:10px}
+
+/* --- la vraie scène : 908 px de colonne, comme dans l'app --- */
+.scene{margin-top:18px;display:grid;grid-template-columns:908px 300px;gap:24px;align-items:start}
+@media (max-width:1300px){.scene{grid-template-columns:1fr;max-width:908px}.rail-fantome{display:none}}
+.rail-fantome{background:var(--papier);border:1px solid var(--lin);border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(15,26,46,.05)}
+.rail-fantome .t{font-family:var(--titre);font-size:16px;color:var(--encre);font-weight:600}
+.rail-fantome .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--or-texte);margin-top:12px}
+.rail-fantome .s{font-size:13.5px;color:var(--mine);margin-top:3px}
+.rail-fantome .btn{margin-top:14px;background:var(--or);color:var(--encre);border-radius:10px;padding:12px 14px;text-align:center;font-weight:600;font-size:14px;line-height:1.2}
+.rail-note{font-family:var(--mono);font-size:10.5px;color:var(--brume);text-align:center;margin-top:8px}
+
+/* --- pièces communes du produit --- */
+.rub{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--or-texte)}
+.rub.d{color:var(--brume)}
+.ttl{font-family:var(--titre);font-size:21px;font-weight:600;color:var(--encre);margin-top:8px;letter-spacing:-.01em}
+.sub{font-size:14px;color:var(--brume);margin-top:6px}
+.carte{background:var(--papier);border:1px solid var(--lin);border-radius:14px;padding:28px;box-shadow:0 1px 2px rgba(15,26,46,.05)}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;background:var(--encre);color:#fff;font-weight:600;font-size:14px;text-decoration:none;transition:transform .15s,background .15s}
+.btn:hover{background:#1b2c4a;transform:translateY(-1px)}
+.btn.or{background:var(--or);color:var(--encre)}
+.btn.or:hover{background:var(--or-vif)}
+.btn.fant{background:transparent;color:var(--encre);border:1px solid var(--lin)}
+.btn.fant:hover{background:var(--craie);border-color:var(--or)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ============ ACTUEL ============ */
+.a-barre{display:flex;align-items:center;gap:12px;margin-top:20px}
+.a-piste{height:6px;flex:1;background:var(--lin);border-radius:999px;overflow:hidden}
+.a-fill{height:100%;background:var(--or);border-radius:999px}
+.a-pct{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--mine)}
+.a-detail{font-family:var(--mono);font-size:12.5px;color:var(--brume);margin-top:10px}
+
+/* ============ A - LA FRISE DES MODULES ============ */
+.frise{display:flex;gap:3px;margin-top:22px}
+.seg{height:34px;flex:1;border-radius:3px;background:var(--lin);position:relative;transition:transform .15s}
+.seg.fait{background:var(--or)}
+.seg.encours{background:var(--or-soft);box-shadow:inset 0 0 0 2px var(--or)}
+.seg:hover{transform:scaleY(1.22)}
+.frise-leg{display:flex;justify-content:space-between;margin-top:9px;font-family:var(--mono);font-size:11.5px;color:var(--brume)}
+.suite{margin-top:20px;padding-top:18px;border-top:1px solid var(--lin);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.suite .quoi{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brume)}
+.suite .nom{font-family:var(--titre);font-size:17px;color:var(--encre);margin-top:3px;font-weight:500}
+.suite .duree{font-family:var(--mono);font-size:12.5px;color:var(--brume);margin-top:3px}
+
+/* ============ B - LA VIGNETTE ET LE CHIFFRE ============ */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tuile{background:var(--papier);border:1px solid var(--lin);border-radius:14px;padding:22px;display:flex;flex-direction:column;transition:border-color .15s,transform .15s}
+.tuile:hover{border-color:var(--or);transform:translateY(-2px)}
+.tuile-haut{display:flex;align-items:flex-start;gap:14px}
+.glyphe{width:46px;height:46px;border-radius:10px;background:var(--or-soft);display:grid;place-items:center;flex:none}
+.glyphe svg{width:23px;height:23px;stroke:var(--or-grave);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tuile .ttl{margin-top:0;font-size:18px}
+.anneau{margin-left:auto;flex:none}
+.anneau text{font-family:var(--mono);font-size:11px;font-weight:700;fill:var(--encre)}
+.tuile-bas{margin-top:auto;padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.chiffres{font-family:var(--mono);font-size:12.5px;color:var(--brume)}
+.chiffres b{color:var(--encre);font-size:15px;font-weight:700}
+
+/* ============ C - UN SEUL EN AVANT ============ */
+.avant{background:var(--papier);border:1px solid var(--lin);border-left:3px solid var(--or);border-radius:14px;padding:28px}
+.avant-grille{display:grid;grid-template-columns:1fr 190px;gap:28px;margin-top:20px;align-items:center}
+.jalons{display:flex;flex-direction:column;gap:0}
+.jalon{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--lin)}
+.jalon:last-child{border-bottom:0}
+.pt{width:9px;height:9px;border-radius:999px;background:var(--lin);flex:none}
+.pt.fait{background:var(--or)}
+.pt.ici{background:var(--papier);box-shadow:0 0 0 2px var(--or)}
+.jalon .nm{font-size:14px;color:var(--mine)}
+.jalon.a-venir .nm{color:var(--brume)}
+.jalon .mn{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--brume)}
+.cadran{display:grid;place-items:center}
+.cadran .gros{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--encre);line-height:1}
+.cadran .pet{font-family:var(--mono);font-size:11px;color:var(--brume);margin-top:5px;text-align:center}
+.rangee{margin-top:16px;background:var(--papier);border:1px solid var(--lin);border-radius:14px;overflow:hidden}
+.rg{display:flex;align-items:center;gap:14px;padding:15px 22px;border-bottom:1px solid var(--lin);text-decoration:none;color:inherit;transition:background .15s}
+.rg:last-child{border-bottom:0}
+.rg:hover{background:var(--craie)}
+.rg .nm{font-weight:500;color:var(--encre);font-size:15px}
+.rg .mini{width:76px;height:5px;background:var(--lin);border-radius:999px;overflow:hidden;flex:none}
+.rg .mini i{display:block;height:100%;background:var(--or);border-radius:999px}
+.rg .mt{font-family:var(--mono);font-size:12px;color:var(--brume);margin-left:auto;white-space:nowrap}
+.rg .fl{color:var(--brume);font-size:17px;line-height:1}
+
+.verdict{margin-top:14px;background:var(--papier);border:1px solid var(--lin);border-radius:12px;padding:14px 18px;font-size:13.5px;color:var(--mine)}
+.verdict b{color:var(--encre)}
+.verdict .plus{color:var(--sauge);font-weight:600}
+.verdict .moins{color:#a33;font-weight:600}
+footer{margin-top:56px;border-top:1px solid var(--lin);padding-top:18px;font-size:13px;color:var(--brume)}
+</style>
+</head>
+<body>
+
+<div class="labo-tete">
+  <div class="in">
+    <div class="k">MyDigipal AI Academy - labo</div>
+    <h1>Les cartes de parcours du tableau de bord</h1>
+    <p>Trois directions, aux dimensions réelles de la page : <b>colonne de contenu de 908 px</b>
+    (1280 de conteneur, moins 48 de marge, moins le rail de 300 et sa gouttière de 24). Le rail est
+    dessiné à droite pour que rien ne soit promis qui ne tienne dans la vraie place. Jetons, polices
+    et rayons repris du produit. <b>Rien n'est appliqué.</b></p>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ============================ ACTUEL ============================ -->
+<div class="bloc">
+  <h2><span class="n">AUJOURD'HUI</span> Ce qui est en ligne</h2>
+  <p class="pitch">Trois blocs blancs identiques, chacun avec une barre pleine largeur.
+  <b>À 2 %, la barre mesure 17 pixels sur 852</b> : elle ne dit pas où on en est, elle rappelle
+  qu'on n'a rien fait. Et les trois cartes se ressemblent tellement qu'on ne sait pas laquelle
+  reprendre.</p>
+  <div class="scene">
+    <div>
+      <div class="carte">
+        <div class="rub">Votre formation</div>
+        <div class="ttl">La méthode</div>
+        <div class="sub">CRAFT, le parcours de votre outil, et les cas de votre métier.</div>
+        <div class="a-barre">
+          <div class="a-piste"><div class="a-fill" style="width:2%"></div></div>
+          <span class="a-pct">2 %</span>
+        </div>
+        <div class="a-detail">3 leçons sur 128 terminées, 11 h de formation</div>
+        <div style="margin-top:20px"><a class="btn" href="#">Reprendre</a></div>
+      </div>
+      <div class="carte" style="margin-top:16px">
+        <div class="rub">Votre formation</div>
+        <div class="ttl">Les automatisations</div>
+        <div class="sub">Comprendre Claude en profondeur, poser la base MCP où vos outils se branchent.</div>
+        <div class="a-barre">
+          <div class="a-piste"><div class="a-fill" style="width:3%"></div></div>
+          <span class="a-pct">3 %</span>
+        </div>
+        <div class="a-detail">1 leçon sur 55 terminée, 4 h de formation</div>
+        <div style="margin-top:20px"><a class="btn" href="#">Reprendre</a></div>
+      </div>
+    </div>
+    <div>
+      <div class="rail-fantome">
+        <div class="t">Reprendre votre formation</div>
+        <div class="l">La méthode</div>
+        <div class="s">IA ou pas IA ?</div>
+        <div class="btn">Continuer la leçon</div>
+      </div>
+      <div class="rail-note">le rail, à sa vraie largeur</div>
+    </div>
+  </div>
+  <div class="verdict"><b>Le diagnostic.</b> Le système du produit dit « dépensez votre audace à un
+  seul endroit », et cet endroit est le rail, en or, à droite. Les cartes n'ont donc pas à devenir
+  tape-à-l'œil : elles doivent <b>porter de l'information</b> au lieu d'un pourcentage. Les trois
+  directions ci-dessous ne cherchent pas à briller, elles cherchent à dire quelque chose.</div>
+</div>
+
+<!-- ============================ A ============================ -->
+<div class="bloc">
+  <h2><span class="n">DIRECTION A</span> La frise des modules</h2>
+  <p class="pitch">La barre unique devient <b>un segment par module</b>. On voit la forme du
+  parcours, ce qui est fait, où l'on est, et combien il reste. Même encombrement, information
+  entièrement différente. Dessous, la prochaine leçon est nommée : le bouton a enfin un objet.</p>
+  <div class="mesure">16 segments de 50 px pour La méthode, 5 de 168 px pour Les automatisations. Survolez un segment.</div>
+  <div class="scene">
+    <div>
+      <div class="carte">
+        <div class="rub">Votre formation</div>
+        <div class="ttl">La méthode</div>
+        <div class="sub">CRAFT, le parcours de votre outil, et les cas de votre métier.</div>
+        <div class="frise" id="friseA"></div>
+        <div class="frise-leg"><span>16 modules</span><span>3 leçons sur 128 &middot; 11 h</span></div>
+        <div class="suite">
+          <div>
+            <div class="quoi">La prochaine</div>
+            <div class="nom">IA ou pas IA ?</div>
+            <div class="duree">Module 1 &middot; 5 min restantes</div>
+          </div>
+          <a class="btn" href="#">Reprendre</a>
+        </div>
+      </div>
+      <div class="carte" style="margin-top:16px">
+        <div class="rub">Votre formation</div>
+        <div class="ttl">Les automatisations</div>
+        <div class="sub">Claude en profondeur, la base MCP, puis vingt-trois cas réels.</div>
+        <div class="frise" id="friseB"></div>
+        <div class="frise-leg"><span>5 modules</span><span>1 leçon sur 55 &middot; 4 h</span></div>
+        <div class="suite">
+          <div>
+            <div class="quoi">La prochaine</div>
+            <div class="nom">Les connecteurs, pas à pas</div>
+            <div class="duree">Claude &middot; 8 min</div>
+          </div>
+          <a class="btn" href="#">Reprendre</a>
+        </div>
+      </div>
+    </div>
+    <div><div class="rail-fantome"><div class="t">Reprendre votre formation</div><div class="l">La méthode</div><div class="s">IA ou pas IA ?</div><div class="btn">Continuer la leçon</div></div></div>
+  </div>
+  <div class="verdict"><span class="plus">Pour</span> La frise reste lisible à 1 % comme à 90 %, elle
+  ne s'effondre jamais en trait. Elle réutilise le motif du calendrier d'activité du profil, donc le
+  produit se répond à lui-même. <span class="moins">Contre</span> Il faut descendre le découpage par
+  module jusqu'à cette page, ce que la requête actuelle ne fait pas.</div>
+</div>
+
+<!-- ============================ B ============================ -->
+<div class="bloc">
+  <h2><span class="n">DIRECTION B</span> Deux colonnes, la vignette et l'anneau</h2>
+  <p class="pitch">Plus de bloc blanc pleine largeur : les parcours se posent <b>côte à côte</b>,
+  chacun avec le glyphe de son module courant (les dix-sept pictogrammes existent déjà dans le
+  produit) et un anneau de progression, qui reste lisible là où une barre disparaît.</p>
+  <div class="mesure">Deux tuiles de 446 px. Sous 1024 px, elles s'empilent.</div>
+  <div class="scene">
+    <div>
+      <div class="duo">
+        <div class="tuile">
+          <div class="tuile-haut">
+            <div class="glyphe"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h10M4 19h7"/></svg></div>
+            <div><div class="rub">Votre formation</div><div class="ttl">La méthode</div></div>
+            <svg class="anneau" width="52" height="52" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="21" fill="none" stroke="#e6e1d6" stroke-width="4"/>
+              <circle cx="26" cy="26" r="21" fill="none" stroke="#c8a951" stroke-width="4"
+                stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="129"
+                transform="rotate(-90 26 26)"/>
+              <text x="26" y="30" text-anchor="middle">2 %</text>
+            </svg>
+          </div>
+          <div class="sub" style="margin-top:12px">Prochaine : <b style="color:var(--encre)">IA ou pas IA ?</b>, 5 min</div>
+          <div class="tuile-bas">
+            <div class="chiffres"><b>3</b> / 128 leçons</div>
+            <a class="btn" href="#">Reprendre</a>
+          </div>
+        </div>
+        <div class="tuile">
+          <div class="tuile-haut">
+            <div class="glyphe"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M7.6 7.6 11 15.7M16.4 7.6 13 15.7M8.4 6h7.2"/></svg></div>
+            <div><div class="rub">Votre formation</div><div class="ttl">Les automatisations</div></div>
+            <svg class="anneau" width="52" height="52" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="21" fill="none" stroke="#e6e1d6" stroke-width="4"/>
+              <circle cx="26" cy="26" r="21" fill="none" stroke="#c8a951" stroke-width="4"
+                stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="128"
+                transform="rotate(-90 26 26)"/>
+              <text x="26" y="30" text-anchor="middle">3 %</text>
+            </svg>
+          </div>
+          <div class="sub" style="margin-top:12px">Prochaine : <b style="color:var(--encre)">Les connecteurs</b>, 8 min</div>
+          <div class="tuile-bas">
+            <div class="chiffres"><b>1</b> / 55 leçons</div>
+            <a class="btn" href="#">Reprendre</a>
+          </div>
+        </div>
+      </div>
+      <div class="duo" style="margin-top:16px">
+        <div class="tuile">
+          <div class="tuile-haut">
+            <div class="glyphe"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 8-8"/><path d="M15 7h5v5"/></svg></div>
+            <div><div class="rub">Votre formation</div><div class="ttl">Marketing digital</div></div>
+            <svg class="anneau" width="52" height="52" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="21" fill="none" stroke="#e6e1d6" stroke-width="4"/>
+              <text x="26" y="30" text-anchor="middle">0 %</text>
+            </svg>
+          </div>
+          <div class="sub" style="margin-top:12px">Pas encore ouvert</div>
+          <div class="tuile-bas">
+            <div class="chiffres">41 leçons</div>
+            <a class="btn fant" href="#">Commencer</a>
+          </div>
+        </div>
+        <div class="tuile" style="background:var(--craie);border-style:dashed">
+          <div class="tuile-haut">
+            <div class="glyphe" style="background:#eeeae1"><svg viewBox="0 0 24 24" style="stroke:var(--brume)"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div><div class="rub d">À découvrir</div><div class="ttl" style="color:var(--brume)">Onboarding interne</div></div>
+          </div>
+          <div class="sub" style="margin-top:12px">Accès administrateur</div>
+          <div class="tuile-bas">
+            <div class="chiffres">18 leçons</div>
+            <a class="btn fant" href="#">Ouvrir</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div><div class="rail-fantome"><div class="t">Reprendre votre formation</div><div class="l">La méthode</div><div class="s">IA ou pas IA ?</div><div class="btn">Continuer la leçon</div></div></div>
+  </div>
+  <div class="verdict"><span class="plus">Pour</span> Quatre parcours tiennent dans la hauteur qu'un
+  seul occupait, l'anneau reste lisible à 1 %, et les glyphes donnent enfin un visage à des blocs
+  qui étaient interchangeables. <span class="moins">Contre</span> Deux colonnes de 446 px serrent le
+  titre des parcours longs, et il faut décider quel glyphe porte quel parcours.</div>
+</div>
+
+<!-- ============================ C ============================ -->
+<div class="bloc">
+  <h2><span class="n">DIRECTION C</span> Un seul en avant, les autres en rangs</h2>
+  <p class="pitch">Le parcours qu'on suit vraiment prend toute la place et se remplit de matière :
+  les jalons du chemin, ce qu'il reste. <b>Les autres deviennent des lignes</b>, comme le composant
+  qui sert déjà aux autres parcours. Un seul bloc blanc au lieu de trois, et il est plein.</p>
+  <div class="scene">
+    <div>
+      <div class="avant">
+        <div class="rub">Là où vous en êtes</div>
+        <div class="ttl">La méthode</div>
+        <div class="avant-grille">
+          <div class="jalons">
+            <div class="jalon"><span class="pt fait"></span><span class="nm">Bienvenue et diagnostic</span><span class="mn">terminé</span></div>
+            <div class="jalon"><span class="pt ici"></span><span class="nm">Comprendre l'IA sans jargon</span><span class="mn">1 / 9</span></div>
+            <div class="jalon a-venir"><span class="pt"></span><span class="nm">La méthode CRAFT</span><span class="mn">7 leçons</span></div>
+            <div class="jalon a-venir"><span class="pt"></span><span class="nm">Le parcours de votre outil</span><span class="mn">11 leçons</span></div>
+          </div>
+          <div class="cadran">
+            <div class="gros">125</div>
+            <div class="pet">leçons devant vous<br>11 h au total</div>
+          </div>
+        </div>
+        <div class="suite">
+          <div>
+            <div class="quoi">La prochaine</div>
+            <div class="nom">IA ou pas IA ?</div>
+            <div class="duree">5 min restantes</div>
+          </div>
+          <a class="btn or" href="#">Reprendre la leçon</a>
+        </div>
+      </div>
+      <div class="rangee">
+        <a class="rg" href="#"><span class="nm">Les automatisations</span><span class="mini"><i style="width:3%"></i></span><span class="mt">1 / 55 &middot; 4 h</span><span class="fl">&rsaquo;</span></a>
+        <a class="rg" href="#"><span class="nm">Marketing digital</span><span class="mini"><i style="width:0"></i></span><span class="mt">0 / 41 &middot; 3 h</span><span class="fl">&rsaquo;</span></a>
+        <a class="rg" href="#"><span class="nm">Onboarding interne</span><span class="mini"><i style="width:0"></i></span><span class="mt">0 / 18 &middot; 2 h</span><span class="fl">&rsaquo;</span></a>
+      </div>
+    </div>
+    <div><div class="rail-fantome"><div class="t">Reprendre votre formation</div><div class="l">La méthode</div><div class="s">IA ou pas IA ?</div><div class="btn">Continuer la leçon</div></div></div>
+  </div>
+  <div class="verdict"><span class="plus">Pour</span> C'est la seule qui applique vraiment « une
+  seule chose brille » à la colonne principale, et le cadran donne un chiffre qui parle mieux que
+  2 % : ce qu'il reste. <span class="moins">Contre</span> Elle suppose qu'il y a un parcours
+  principal évident. Pour qui a payé les deux programmes et les suit en parallèle, le choix du
+  « premier » devient arbitraire, et le second se retrouve rétrogradé en ligne.</div>
+</div>
+
+<!-- ============================ LA PHRASE ============================ -->
+<div class="bloc">
+  <h2><span class="n">EN PRIME</span> La phrase du bas</h2>
+  <p class="pitch">« Les leçons vidéo se publient module par module : le support écrit de chaque
+  leçon est déjà en ligne, et vous recevrez un email à chaque nouvelle vidéo publiée. »</p>
+  <div class="verdict">Tu as raison, elle ne sert plus. Elle a été écrite quand la vidéo était
+  promise <b>par leçon</b> ; depuis le 24/08 il y a <b>une vidéo par module</b>, et depuis le 01/09
+  l'encart vidéo a été retiré des leçons. Elle s'excuse donc d'un manque que le produit n'annonce
+  plus nulle part. <b>Proposition : la supprimer</b>, sans rien mettre à la place. La dernière chose
+  qu'on lit avant de partir ne doit pas être une réserve.</div>
+</div>
+
+<footer>Maquette autonome, hors du build. Aucun composant du produit n'a été modifié.
+Ouvrir à 1280 px pour juger, la scène est calée sur cette largeur.</footer>
+
+</div>
+
+<script>
+// La frise : un segment par module. Rien d'animé au chargement, le survol suffit.
+function frise(el, total, faits, encours) {
+  el.innerHTML = '';
+  for (let i = 0; i < total; i += 1) {
+    const s = document.createElement('span');
+    s.className = 'seg' + (i < faits ? ' fait' : i === encours ? ' encours' : '');
+    s.title = 'Module ' + (i + 1);
+    el.appendChild(s);
+  }
+}
+frise(document.getElementById('friseA'), 16, 1, 1);
+frise(document.getElementById('friseB'), 5, 0, 0);
+</script>
+</body>
+</html>

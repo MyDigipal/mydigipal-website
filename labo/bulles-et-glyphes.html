@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labo - les bulles sur le tableau de bord, et la nouvelle famille de glyphes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --encre:#0f1a2e; --or:#c8a951; --or-vif:#dcbc66; --or-texte:#775e1c; --or-soft:#f4ead0;
+  --or-grave:#8a6d24; --craie:#f7f5f0; --papier:#fff; --mine:#2a3441; --brume:#646c7a;
+  --lin:#e6e1d6; --sauge:#2e7d5b; --sauge-soft:#e9f3ee;
+  --mono:'JetBrains Mono',Consolas,monospace; --titre:'Fraunces',Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--craie);color:var(--mine);line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+.tete{background:var(--encre);color:#fff;padding:26px 0 22px}
+.tete .in,.page{max-width:1280px;margin:0 auto;padding:0 24px}
+.tete .k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--or);margin-bottom:8px}
+.tete h1{font-family:var(--titre);font-size:25px;font-weight:600;line-height:1.2}
+.tete p{color:#c8d2e4;font-size:13.5px;margin-top:8px;max-width:82ch}
+.tete b{color:#fff}
+.page{padding-bottom:90px}
+.bloc{margin-top:44px}
+.bloc>h2{font-family:var(--titre);font-size:20px;font-weight:600;color:var(--encre);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.bloc>h2 .n{font-family:var(--mono);font-size:12px;color:var(--or-texte);font-weight:700}
+.pitch{font-size:14px;color:var(--brume);margin-top:8px;max-width:80ch}
+.pitch b{color:var(--mine)}
+.mesure{font-family:var(--mono);font-size:11.5px;color:var(--brume);margin-top:10px}
+.scene{margin-top:18px;display:grid;grid-template-columns:908px 300px;gap:24px;align-items:start}
+@media (max-width:1300px){.scene{grid-template-columns:1fr;max-width:908px}.rail-f{display:none}}
+.rail-f{background:var(--papier);border:1px solid var(--lin);border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(15,26,46,.05)}
+.rail-f .t{font-family:var(--titre);font-size:16px;color:var(--encre);font-weight:600}
+.rail-f .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--or-texte);margin-top:12px}
+.rail-f .s{font-size:13.5px;color:var(--mine);margin-top:3px}
+.rail-f .b{margin-top:14px;background:var(--or);color:var(--encre);border-radius:10px;padding:12px 14px;text-align:center;font-weight:600;font-size:14px;line-height:1.2}
+.rub{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--or-texte)}
+.ttl{font-family:var(--titre);font-size:21px;font-weight:600;color:var(--encre);letter-spacing:-.01em}
+.sub{font-size:14px;color:var(--brume);margin-top:6px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;border-radius:10px;background:var(--encre);color:#fff;font-weight:600;font-size:14px;text-decoration:none;transition:transform .15s,background .15s}
+.btn:hover{background:#1b2c4a;transform:translateY(-1px)}
+
+/* --- le bandeau de parcours, repris de la page programme --- */
+.bandeau{background:var(--encre);border-radius:18px;padding:26px 28px;display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap}
+.bandeau .rub{color:var(--or)}
+.bandeau .ttl{color:#fff;margin-top:6px}
+.bandeau .sub{color:#c8d2e4;margin-top:8px;max-width:52ch}
+.bandeau .droite{display:flex;align-items:center;gap:14px;min-width:280px;justify-content:flex-end;flex:1}
+.bandeau .piste{height:4px;flex:1;max-width:230px;background:rgba(255,255,255,.16);border-radius:999px;overflow:hidden}
+.bandeau .piste i{display:block;height:100%;background:var(--or);border-radius:999px}
+.bandeau .pct{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--or)}
+.bandeau .btn{background:var(--or);color:var(--encre)}
+.bandeau .btn:hover{background:var(--or-vif)}
+
+/* --- LES BULLES --- */
+.bulles{display:grid;gap:12px;margin-top:16px}
+.bulles.c5{grid-template-columns:repeat(5,1fr)}
+.bulles.c4{grid-template-columns:repeat(4,1fr)}
+.bulle{background:var(--papier);border:1px solid var(--lin);border-radius:14px;padding:16px;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s,box-shadow .15s}
+.bulle:hover{border-color:var(--or);transform:translateY(-2px);box-shadow:0 6px 18px rgba(15,26,46,.07)}
+.bulle-haut{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.pastille{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none}
+.pastille svg{width:19px;height:19px}
+.etat{width:30px;height:30px;flex:none}
+.etat text{font-family:var(--mono);font-size:11px;font-weight:700;fill:var(--encre)}
+.bulle .nom{font-family:var(--titre);font-size:15.5px;font-weight:600;color:var(--encre);margin-top:12px;line-height:1.25;letter-spacing:-.01em}
+.bulle .meta{font-family:var(--mono);font-size:11.5px;color:var(--brume);margin-top:auto;padding-top:12px}
+.bulle .fil{height:3px;background:var(--lin);border-radius:999px;margin-top:8px;overflow:hidden}
+.bulle .fil i{display:block;height:100%;background:var(--or);border-radius:999px}
+
+/* --- la comparaison de glyphes --- */
+.jeu{margin-top:18px;background:var(--papier);border:1px solid var(--lin);border-radius:14px;overflow:hidden}
+.jeu-tete{display:grid;grid-template-columns:190px 1fr 1fr;gap:0;background:#eeeae1;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--brume)}
+.jeu-tete div{padding:10px 16px}
+.gl{display:grid;grid-template-columns:190px 1fr 1fr;align-items:center;border-top:1px solid var(--lin)}
+.gl .nm{padding:10px 16px;font-family:var(--mono);font-size:12px;color:var(--mine)}
+.gl .nm em{display:block;font-family:'Inter',sans-serif;font-style:normal;font-size:12px;color:var(--brume);margin-top:2px}
+.gl .cel{padding:10px 16px;display:flex;align-items:center;gap:20px}
+.gl .cel.old{background:#fbfaf7}
+.pv{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;flex:none}
+.pv svg{width:21px;height:21px}
+.pv.pt{width:26px;height:26px;border-radius:7px}
+.pv.pt svg{width:15px;height:15px}
+.pv.gr{width:58px;height:58px;border-radius:12px}
+.pv.gr svg{width:32px;height:32px}
+.verdict{margin-top:14px;background:var(--papier);border:1px solid var(--lin);border-radius:12px;padding:14px 18px;font-size:13.5px}
+.verdict b{color:var(--encre)}
+.verdict .p{color:var(--sauge);font-weight:600}
+.verdict .m{color:#a33;font-weight:600}
+footer{margin-top:56px;border-top:1px solid var(--lin);padding-top:18px;font-size:13px;color:var(--brume)}
+</style>
+</head>
+<body>
+
+<div class="tete">
+  <div class="in">
+    <div class="k">MyDigipal AI Academy - labo</div>
+    <h1>Les bulles sur le tableau de bord, et la famille de glyphes refaite</h1>
+    <p>Deux choses dans cette page. D'abord <b>les bulles du programme portées sur la page centrale</b>,
+    comme demandé, aux dimensions réelles (colonne de 908 px, rail de 300 à droite). Ensuite
+    <b>les vingt-cinq pictogrammes redessinés</b>, comparés aux actuels à trois tailles.
+    <b>Rien n'est appliqué.</b></p>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ================= 1. LES BULLES SUR LE TABLEAU DE BORD ================= -->
+<div class="bloc">
+  <h2><span class="n">PROPOSITION</span> Le tableau de bord en bulles</h2>
+  <p class="pitch">Chaque parcours garde son bandeau sombre, puis <b>ses modules en bulles</b>,
+  exactement comme à l'intérieur du programme. Plus de grand bloc blanc avec une barre : on voit
+  la forme du parcours, l'état de chaque module, et on entre directement au bon endroit.
+  Le tableau de bord et la page de parcours parlent enfin la même langue.</p>
+  <div class="mesure">Cinq bulles de 165 px pour Les automatisations, quatre de 212 px quand il y en a moins. Survolez.</div>
+
+  <div class="scene">
+    <div>
+      <!-- parcours 1 -->
+      <div class="bandeau">
+        <div>
+          <div class="rub">Votre formation</div>
+          <div class="ttl">La méthode</div>
+          <div class="sub">128 leçons, 11 h au total. Trente jours d'accès, mises à jour incluses.</div>
+        </div>
+        <div class="droite">
+          <div class="piste"><i style="width:2%"></i></div>
+          <span class="pct">2 %</span>
+          <a class="btn" href="#">Reprendre</a>
+        </div>
+      </div>
+      <div class="bulles c5" id="bA"></div>
+
+      <!-- parcours 2 -->
+      <div class="bandeau" style="margin-top:32px">
+        <div>
+          <div class="rub">Votre formation</div>
+          <div class="ttl">Les automatisations</div>
+          <div class="sub">57 leçons, 5 h 13 min au total. Trente jours d'accès, mises à jour incluses.</div>
+        </div>
+        <div class="droite">
+          <div class="piste"><i style="width:2%"></i></div>
+          <span class="pct">2 %</span>
+          <a class="btn" href="#">Reprendre</a>
+        </div>
+      </div>
+      <div class="bulles c5" id="bB"></div>
+
+      <p class="mesure" style="margin-top:30px">Et le cas qui pique : les quatre modules outils, aujourd'hui</p>
+      <div class="bulles c4" id="bC"></div>
+      <p class="mesure" style="margin-top:14px">Les mêmes, avec un pictogramme chacun</p>
+      <div class="bulles c4" id="bD"></div>
+    </div>
+    <div>
+      <div class="rail-f">
+        <div class="t">Reprendre votre formation</div>
+        <div class="l">La méthode</div>
+        <div class="s">IA ou pas IA ?</div>
+        <div class="b">Continuer la leçon</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="verdict"><span class="p">Ce que ça règle</span> Les trois blocs blancs identiques
+  disparaissent. La barre à 2 %, qui ne disait rien, est reléguée dans le bandeau où elle est
+  petite et secondaire ; l'information passe dans les bulles, qui montrent où l'on en est module
+  par module. <b>Un parcours de cinq modules tient sur une rangée</b>, un de seize sur quatre
+  rangées, sans jamais devenir un mur de texte.</div>
+</div>
+
+<!-- ================= 2. LES GLYPHES ================= -->
+<div class="bloc">
+  <h2><span class="n">LA FAMILLE</span> Les pictogrammes, avant et après</h2>
+  <p class="pitch">Le défaut des actuels : <b>ils sont entièrement en trait fin</b>, donc à 19 px
+  dans une pastille ils n'ont pas de silhouette et se ressemblent tous. Les nouveaux gardent la
+  même grammaire (grille de 24, trait de 1,6, angles arrondis, la teinte du module) mais chacun
+  reçoit <b>un aplat de sa propre couleur à 16 % d'opacité</b>. C'est ce qui donne une masse
+  reconnaissable de loin, sans changer de famille ni importer une bibliothèque tierce.</p>
+  <div class="mesure">Trois tailles montrées : 15 px (la bulle sur mobile), 21 px (la bulle), 32 px (l'en-tête de module).</div>
+
+  <div class="jeu">
+    <div class="jeu-tete">
+      <div>Le module</div>
+      <div>Aujourd'hui</div>
+      <div>Proposé</div>
+    </div>
+    <div id="tableGl"></div>
+  </div>
+
+  <div class="verdict"><span class="p">Pour</span> La silhouette se lit à 15 px, ce qui n'est le
+  cas d'aucun des actuels. L'aplat porte la teinte du module, donc les couleurs déjà en place
+  travaillent enfin. <span class="m">Contre</span> Vingt-cinq dessins à remplacer d'un coup, et
+  un aplat pardonne moins une forme mal équilibrée qu'un trait. Ceux qui me plaisent le moins :
+  <b>chart</b> et <b>network</b>, à revoir si tu retiens la direction.</div>
+</div>
+
+<footer>Maquette autonome, hors du build. Aucun composant du produit n'a été modifié.
+Les glyphes « aujourd'hui » sont extraits tels quels de <code>ModuleGlyph.tsx</code>.</footer>
+
+</div>
+
+<script>
+const PALETTE = ['#8a6d24','#2e7d5b','#2f5d8a','#8a3a5e','#7a4f9a','#8a5a24','#3a6d7a','#5e5a8a'];
+const ACTUELS_D = {"door": "<path d=\"M15 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h9\"/><path d=\"M11 12h9m0 0-3-3m3 3-3 3\"/>", "brain": "<path d=\"M9 4.5A3.5 3.5 0 0 0 5.5 8v.5A3 3 0 0 0 4 11a3 3 0 0 0 1.5 2.6V15a3.5 3.5 0 0 0 3.5 3.5H10V4.5H9Z\"/><path d=\"M15 4.5A3.5 3.5 0 0 1 18.5 8v.5A3 3 0 0 1 20 11a3 3 0 0 1-1.5 2.6V15A3.5 3.5 0 0 1 15 18.5H14V4.5h1Z\"/><path d=\"M12 4v16\"/>", "craft": "<path d=\"M4 6h16M4 10h12M4 14h16M4 18h9\"/>", "layers": "<path d=\"m12 3 8 4.5-8 4.5-8-4.5L12 3Z\"/><path d=\"m4 12 8 4.5 8-4.5\"/><path d=\"m4 16.5 8 4.5 8-4.5\"/>", "tool": "<path d=\"M14.5 5.5a3.5 3.5 0 0 0 4.6 4.6L21 12l-9 9-3-3 9-9-1.9-1.9a3.5 3.5 0 0 0-1.7-.7Z\"/><path d=\"m6 15 3 3\"/><path d=\"M3 21l2-2\"/>", "image": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"/><circle cx=\"8.5\" cy=\"9.5\" r=\"1.5\"/><path d=\"m4 17 5-5 4 4 3-2.5 4 3.5\"/>", "briefcase": "<rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"2\"/><path d=\"M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2\"/><path d=\"M3 12h18\"/>", "robot": "<rect x=\"4\" y=\"8\" width=\"16\" height=\"11\" rx=\"2.5\"/><path d=\"M12 4v4\"/><circle cx=\"9\" cy=\"13\" r=\"1\"/><circle cx=\"15\" cy=\"13\" r=\"1\"/><path d=\"M10 16.5h4\"/>", "flag": "<path d=\"M5 21V4\"/><path d=\"M5 4h9l-1.5 3.5L14 11H5\"/>", "scale": "<path d=\"M12 4v16M8 20h8\"/><path d=\"M5 8h14\"/><path d=\"M5 8 3 13h4L5 8Z\"/><path d=\"M19 8l-2 5h4l-2-5Z\"/>", "shield": "<path d=\"M12 3l7 3v5.5c0 4.2-2.9 7.9-7 9.5-4.1-1.6-7-5.3-7-9.5V6l7-3Z\"/><path d=\"m9 12 2 2 4-4\"/>", "report": "<path d=\"M6.5 3h6.5l5 5v12a1 1 0 0 1-1 1h-10.5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z\"/><path d=\"M13 3v5h5\"/><path d=\"M8.5 13h7M8.5 16.5h4.5\"/>", "search": "<circle cx=\"10.5\" cy=\"10.5\" r=\"6\"/><path d=\"m15 15 5 5\"/>", "audience": "<circle cx=\"9\" cy=\"8\" r=\"3.2\"/><path d=\"M3.5 19.5a5.5 5.5 0 0 1 11 0\"/><path d=\"M16 5.6a3.2 3.2 0 0 1 0 4.8\"/><path d=\"M20.5 19.5a5.5 5.5 0 0 0-3-4.9\"/>", "network": "<path d=\"M4 21V6.8a1 1 0 0 1 .7-.95l6-1.9a1 1 0 0 1 1.3.95V21\"/><path d=\"M12 10.5h6.3a1 1 0 0 1 1 1V21\"/><path d=\"M2.5 21h19\"/><path d=\"M7 9.5h2M7 13.5h2M15 14.5h1.5\"/>", "chart": "<path d=\"M4 20h16\"/><path d=\"m4 15.5 4.5-4.5 3.5 3.5L20 7\"/><path d=\"M15.5 7H20v4.5\"/>", "compass": "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"m15.6 8.4-2.1 5.1-5.1 2.1 2.1-5.1z\"/>", "pen": "<path d=\"m4 20 3.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z\"/><path d=\"m13 7.5 3 3\"/><path d=\"M13 20h7\"/>", "radar": "<path d=\"M12 12 18.5 5.5\"/><circle cx=\"12\" cy=\"12\" r=\"1.2\"/><path d=\"M6.3 6.3a8 8 0 1 0 11.4 0\"/><path d=\"M9.2 9.2a4 4 0 1 0 5.6 0\"/>", "team": "<circle cx=\"9\" cy=\"8\" r=\"3\"/><path d=\"M3.5 19.5a5.5 5.5 0 0 1 11 0\"/><circle cx=\"16.5\" cy=\"9.5\" r=\"2.4\"/><path d=\"M16 15.2a4.6 4.6 0 0 1 4.5 4.3\"/>", "podium": "<path d=\"M6 21v-9a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v9\"/><path d=\"M4 11h16\"/><circle cx=\"12\" cy=\"5\" r=\"2\"/><path d=\"M9.5 21v-4h5v4\"/>", "plug": "<path d=\"M9 3v5M15 3v5\"/><path d=\"M6 8h12v3a6 6 0 0 1-12 0V8Z\"/><path d=\"M12 17v4\"/>", "chain": "<path d=\"M10 13a4 4 0 0 0 5.7.3l2.6-2.6a4 4 0 1 0-5.7-5.7L11.2 6.4\"/><path d=\"M14 11a4 4 0 0 0-5.7-.3l-2.6 2.6a4 4 0 1 0 5.7 5.7l1.4-1.4\"/>", "foundation": "<path d=\"M3 20h18\"/><path d=\"M5 20v-4h14v4\"/><path d=\"M7 16v-4h10v4\"/><path d=\"M9.5 12V8.5h5V12\"/>", "grid": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 9h18M3 14.5h18M9 4v16M15 4v16\"/>"};
+const NOUVEAUX_D = {"_note": "Nouvelle famille. Même grille de 24 et même trait de 1,6, mais chaque glyphe porte UN aplat de sa teinte (opacité 0.16) qui lui donne une silhouette lisible à 20 px. Le trait reste seul maître du contour.", "door": "<path d='M5.4 3.6h7.2v16.8H5.4z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M12.6 3.6H5.4v16.8h7.2'/><path d='M12.6 2.8v18.4'/><circle cx='10.4' cy='12' r='.9' fill='CUR' stroke='none'/><path d='M15.4 12h5.2m0 0-2.6-2.6m2.6 2.6-2.6 2.6'/>", "brain": "<path d='M11.2 4.4c-2.6 0-4.6 1.6-4.6 3.7 0 .5.1 1 .3 1.4-.9.6-1.5 1.5-1.5 2.6 0 1 .5 1.9 1.3 2.5-.1.3-.2.7-.2 1 0 1.9 1.8 3.4 4.1 3.4h.6z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M11.2 4.4c-2.6 0-4.6 1.6-4.6 3.7 0 .5.1 1 .3 1.4-.9.6-1.5 1.5-1.5 2.6 0 1 .5 1.9 1.3 2.5-.1.3-.2.7-.2 1 0 1.9 1.8 3.4 4.1 3.4h.6'/><path d='M12.8 4.4c2.6 0 4.6 1.6 4.6 3.7 0 .5-.1 1-.3 1.4.9.6 1.5 1.5 1.5 2.6 0 1-.5 1.9-1.3 2.5.1.3.2.7.2 1 0 1.9-1.8 3.4-4.1 3.4h-.6'/><path d='M12 4.4v15.2'/><path d='M9.4 9.2c.9.5 1.6 1.4 1.6 2.6M14.6 13.4c-.9-.5-1.6-1.4-1.6-2.6'/>", "craft": "<rect x='4' y='4' width='16' height='4.4' rx='1.2' fill='CUR' fill-opacity='.16' stroke='none'/><rect x='4' y='4' width='16' height='4.4' rx='1.2'/><rect x='4' y='9.8' width='16' height='4.4' rx='1.2'/><rect x='4' y='15.6' width='11' height='4.4' rx='1.2'/><path d='M7.2 6.2h1.6M7.2 12h1.6M7.2 17.8h1.6'/>", "layers": "<path d='m12 3.4 8.4 4.3-8.4 4.3-8.4-4.3z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='m12 3.4 8.4 4.3-8.4 4.3-8.4-4.3z'/><path d='m4.6 12 7.4 3.8 7.4-3.8'/><path d='m4.6 16.3 7.4 3.8 7.4-3.8'/>", "tool": "<rect x='3.4' y='5.4' width='17.2' height='11.4' rx='2' fill='CUR' fill-opacity='.16' stroke='none'/><rect x='3.4' y='5.4' width='17.2' height='11.4' rx='2'/><path d='m7.6 9.4 2.6 1.7-2.6 1.7'/><path d='M12.6 13.2h4'/><path d='M9 20.2h6'/>", "image": "<rect x='3.4' y='4.8' width='17.2' height='14.4' rx='2' fill='CUR' fill-opacity='.16' stroke='none'/><rect x='3.4' y='4.8' width='17.2' height='14.4' rx='2'/><circle cx='8.4' cy='9.6' r='1.5'/><path d='m3.8 16.6 4.6-4.2 3.4 3 3-2.6 5.4 4.6'/>", "briefcase": "<rect x='3.2' y='7.6' width='17.6' height='11.6' rx='2' fill='CUR' fill-opacity='.16' stroke='none'/><rect x='3.2' y='7.6' width='17.6' height='11.6' rx='2'/><path d='M9 7.6V6a1.6 1.6 0 0 1 1.6-1.6h2.8A1.6 1.6 0 0 1 15 6v1.6'/><path d='M3.2 12.6h17.6'/><path d='M10.6 12.6h2.8'/>", "robot": "<rect x='4.2' y='8.2' width='15.6' height='10.6' rx='3' fill='CUR' fill-opacity='.16' stroke='none'/><rect x='4.2' y='8.2' width='15.6' height='10.6' rx='3'/><path d='M12 3.6v4.6'/><circle cx='12' cy='3.2' r='1.1'/><circle cx='9' cy='12.6' r='1.2' fill='CUR' stroke='none'/><circle cx='15' cy='12.6' r='1.2' fill='CUR' stroke='none'/><path d='M9.6 16h4.8'/><path d='M2.6 12v3M21.4 12v3'/>", "flag": "<path d='M6 4.6h11.8l-2.6 3.6 2.6 3.6H6z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M6 4.6h11.8l-2.6 3.6 2.6 3.6H6'/><path d='M6 3.4v17.2'/>", "scale": "<path d='M12 5.4v13.2M7 18.6h10' stroke-width='1.6'/><path d='m4 11 2.8-5.2L9.6 11z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='m4 11 2.8-5.2L9.6 11a2.8 2.8 0 0 1-5.6 0Z'/><path d='m14.4 11 2.8-5.2L20 11z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='m14.4 11 2.8-5.2L20 11a2.8 2.8 0 0 1-5.6 0Z'/><path d='M6.8 5.8h10.4'/>", "shield": "<path d='M12 3.4l7 2.6v5.4c0 4-2.9 7.4-7 8.8-4.1-1.4-7-4.8-7-8.8V6z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M12 3.4l7 2.6v5.4c0 4-2.9 7.4-7 8.8-4.1-1.4-7-4.8-7-8.8V6z'/><path d='m8.8 11.8 2.2 2.2 4.2-4.4'/>", "report": "<rect x='4.4' y='3.6' width='15.2' height='16.8' rx='2' fill='CUR' fill-opacity='.16' stroke='none'/><rect x='4.4' y='3.6' width='15.2' height='16.8' rx='2'/><path d='M8 8.2h8M8 12h8M8 15.8h4.6'/>", "search": "<circle cx='10.6' cy='10.6' r='6.4' fill='CUR' fill-opacity='.16' stroke='none'/><circle cx='10.6' cy='10.6' r='6.4'/><path d='m15.4 15.4 4.8 4.8' stroke-width='2'/>", "audience": "<circle cx='9' cy='8.4' r='3.4' fill='CUR' fill-opacity='.16' stroke='none'/><circle cx='9' cy='8.4' r='3.4'/><path d='M3.2 19.6c0-3.2 2.6-5.4 5.8-5.4s5.8 2.2 5.8 5.4'/><circle cx='17' cy='9.6' r='2.4'/><path d='M16 14.4c2.6.2 4.6 2.2 4.6 5.2'/>", "network": "<rect x='3.4' y='9.6' width='7.2' height='10.8' rx='1.4' fill='CUR' fill-opacity='.16' stroke='none'/><rect x='3.4' y='9.6' width='7.2' height='10.8' rx='1.4'/><rect x='13.4' y='3.6' width='7.2' height='16.8' rx='1.4'/><path d='M6 12.8h2M6 16.2h2M16 6.8h2M16 10.2h2M16 13.6h2'/>", "chart": "<path d='M4.4 20V13h4v7zM10 20V8.4h4V20zM15.6 20v-4.4h4V20z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M4.4 20V13h4v7zM10 20V8.4h4V20zM15.6 20v-4.4h4V20z'/><path d='M3 20.4h18'/><path d='m6.4 9.6 5.6-5 6 3.4'/>", "compass": "<circle cx='12' cy='12' r='8.4' fill='CUR' fill-opacity='.16' stroke='none'/><circle cx='12' cy='12' r='8.4'/><path d='m15.4 8.6-2 5.4-5.4 2 2-5.4z'/><circle cx='12' cy='12' r='1' fill='CUR' stroke='none'/>", "pen": "<path d='M4 20l1.4-4.4L16.2 4.8a2 2 0 0 1 2.8 2.8L8.4 18.6z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M4 20l1.4-4.4L16.2 4.8a2 2 0 0 1 2.8 2.8L8.4 18.6z'/><path d='m14.6 6.4 3 3'/><path d='M4 20h6'/>", "radar": "<circle cx='12' cy='12' r='8.4' fill='CUR' fill-opacity='.16' stroke='none'/><circle cx='12' cy='12' r='8.4'/><circle cx='12' cy='12' r='4.6'/><path d='M12 12 18 6.6'/><circle cx='12' cy='12' r='1.1' fill='CUR' stroke='none'/><circle cx='16.6' cy='8.4' r='1.4' fill='CUR' stroke='none'/>", "team": "<circle cx='8.4' cy='7.6' r='3.2' fill='CUR' fill-opacity='.16' stroke='none'/><circle cx='8.4' cy='7.6' r='3.2'/><path d='M2.8 19.4c0-3.2 2.4-5.4 5.6-5.4s5.6 2.2 5.6 5.4'/><circle cx='17' cy='10' r='2.6'/><path d='M15.4 15c2.8 0 5.2 1.9 5.2 4.4'/>", "podium": "<path d='M8.4 20v-6.4h7.2V20z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M8.4 20v-6.4h7.2V20z'/><path d='M3 20h18'/><circle cx='12' cy='6.4' r='2.6'/><path d='M9.6 13.6c0-2 1.1-3.2 2.4-3.2s2.4 1.2 2.4 3.2'/><path d='M5.6 20v-3.4h2.8M18.4 20v-3.4h-2.8'/>", "plug": "<path d='M6.4 8.6h11.2v2.8a5.6 5.6 0 1 1-11.2 0z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M6.4 8.6h11.2v2.8a5.6 5.6 0 1 1-11.2 0z'/><path d='M9.2 3.4v5.2M14.8 3.4v5.2'/><path d='M12 17v3.6'/>", "chain": "<rect x='2.4' y='8.2' width='10.4' height='7.6' rx='3.8' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M10 8.2H6.2a3.8 3.8 0 0 0 0 7.6H10'/><path d='M14 8.2h3.8a3.8 3.8 0 0 1 0 7.6H14'/><path d='M8.6 12h6.8' stroke-width='2'/>", "foundation": "<path d='M4.4 20v-4h15.2v4z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M3 20.4h18'/><path d='M4.4 20v-4h15.2v4'/><path d='M6.8 16v-3.6h10.4V16'/><path d='M9.4 12.4V8.8h5.2v3.6'/><path d='M12 8.8V5.2'/>", "grid": "<rect x='3.6' y='3.6' width='7.2' height='7.2' rx='1.4' fill='CUR' fill-opacity='.16' stroke='none'/><rect x='3.6' y='3.6' width='7.2' height='7.2' rx='1.4'/><rect x='13.2' y='3.6' width='7.2' height='7.2' rx='1.4'/><rect x='3.6' y='13.2' width='7.2' height='7.2' rx='1.4'/><rect x='13.2' y='13.2' width='7.2' height='7.2' rx='1.4'/><path d='M6.4 7.2h1.6M16 7.2h1.6M6.4 16.8h1.6M16 16.8h1.6'/>", "tool_office": "<rect x='3.4' y='4.4' width='17.2' height='15.2' rx='2' fill='CUR' fill-opacity='.16' stroke='none'/><rect x='3.4' y='4.4' width='17.2' height='15.2' rx='2'/><path d='M3.4 9.2h17.2M9.4 9.2v10.4'/><path d='m13 13 4.4 1.6-1.8.8-.8 1.8z' fill='CUR' stroke='none'/>", "tool_suite": "<rect x='2.6' y='6.4' width='13.4' height='9.6' rx='1.8' fill='CUR' fill-opacity='.16' stroke='none'/><rect x='2.6' y='6.4' width='13.4' height='9.6' rx='1.8'/><path d='m2.6 7.6 6.7 4.4 6.7-4.4'/><path d='M13.6 11.6h5.8a1.6 1.6 0 0 1 1.6 1.6v6.6a1.6 1.6 0 0 1-1.6 1.6h-5.4'/><path d='M15.8 15.4h3.2M15.8 18h2'/>", "tool_doc": "<path d='M5 3.6h9.4L19 8.2v12.2H5z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M5 3.6h9.4L19 8.2v12.2H5z'/><path d='M14.2 3.8v4.4H18.8'/><path d='M7.6 12.4h8.8M7.6 15.4h8.8M7.6 18h5.4'/>", "tool_chat": "<path d='M3.4 5.6h12.2v8.2H8.2l-4.8 3.6z' fill='CUR' fill-opacity='.16' stroke='none'/><path d='M3.4 5.6h12.2v8.2H8.2l-4.8 3.6z'/><path d='M18 9.4h2.6v8.2h-3.4l-3.6 2.8v-2.8h-1.4'/><path d='M6.4 9.8h6.2'/>"};
+let ACTUELS = ACTUELS_D, NOUVEAUX = NOUVEAUX_D;
+
+const MODULES = [
+  { g:'tool',       nom:'Claude',                    lec:'11 leçons, 75 min', pct:9,  etat:'arc', n:1 },
+  { g:'robot',      nom:'Agents et automatisations', lec:'8 leçons, 49 min',  pct:0,  etat:'vide' },
+  { g:'plug',       nom:'Monter sa base MCP',        lec:'7 leçons, 41 min',  pct:0,  etat:'zero' },
+  { g:'chain',      nom:'Cas d\'usage avancés',      lec:'19 leçons, 84 min', pct:0,  etat:'vide' },
+  { g:'foundation', nom:'Le socle : faire durer',    lec:'12 leçons, 64 min', pct:0,  etat:'vide' },
+];
+const MODULES_A = [
+  { g:'door',   nom:'Bienvenue et diagnostic',   lec:'8 leçons, 38 min',  pct:100, etat:'fait' },
+  { g:'brain',  nom:'Comprendre l\'IA',          lec:'9 leçons, 52 min',  pct:11,  etat:'arc', n:1 },
+  { g:'craft',  nom:'La méthode CRAFT',          lec:'7 leçons, 44 min',  pct:0,   etat:'vide' },
+  { g:'tool',   nom:'Le parcours de votre outil',lec:'11 leçons, 75 min', pct:0,   etat:'vide' },
+  { g:'pen',    nom:'Écrire, traduire, résumer', lec:'7 leçons, 40 min',  pct:0,   etat:'vide' },
+];
+
+function svg(frag, couleur, taille) {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="' + couleur + '" stroke-width="1.6" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    frag.replaceAll('CUR', couleur) + '</svg>';
+}
+function etatSvg(type, n) {
+  if (type === 'fait') return '<svg class="etat" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="#e9f3ee" stroke="#2e7d5b" stroke-width="1.6"/><path d="m10 15 3.4 3.4L20 11.8" fill="none" stroke="#2e7d5b" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  if (type === 'arc') return '<svg class="etat" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="none" stroke="#e6e1d6" stroke-width="2.4"/><circle cx="15" cy="15" r="12" fill="none" stroke="#c8a951" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="75.4" stroke-dashoffset="67" transform="rotate(-90 15 15)"/><text x="15" y="19" text-anchor="middle">' + (n || 1) + '</text></svg>';
+  if (type === 'zero') return '<svg class="etat" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="none" stroke="#e6e1d6" stroke-width="2.4"/><text x="15" y="19" text-anchor="middle">0</text></svg>';
+  return '<svg class="etat" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="none" stroke="#e6e1d6" stroke-width="2.4"/></svg>';
+}
+function bulle(m, i, jeu) {
+  const c = PALETTE[i % PALETTE.length];
+  return '<a class="bulle" href="#">' +
+    '<div class="bulle-haut">' +
+      '<span class="pastille" style="background:' + c + '1f">' + svg(jeu[m.g] || '', c) + '</span>' +
+      etatSvg(m.etat, m.n) +
+    '</div>' +
+    '<div class="nom">' + m.nom + '</div>' +
+    '<div class="meta">' + m.lec + '</div>' +
+    '<div class="fil"><i style="width:' + m.pct + '%"></i></div>' +
+  '</a>';
+}
+
+(function(){
+  document.getElementById('bA').innerHTML = MODULES_A.map((m, i) => bulle(m, i, NOUVEAUX)).join('');
+  document.getElementById('bB').innerHTML = MODULES.map((m, i) => bulle(m, i, NOUVEAUX)).join('');
+
+  const OUTILS = [
+    { g:'tool_office', nom:'Microsoft Copilot', lec:'7 leçons, 49 min', pct:0, etat:'vide' },
+    { g:'tool_suite',  nom:'Google Gemini',     lec:'8 leçons, 45 min', pct:0, etat:'vide' },
+    { g:'tool_doc',    nom:'Claude',            lec:'11 leçons, 75 min',pct:0, etat:'vide' },
+    { g:'tool_chat',   nom:'ChatGPT',           lec:'7 leçons, 40 min', pct:0, etat:'vide' },
+  ];
+  // Aujourd'hui : les quatre partagent le glyphe 'tool'.
+  document.getElementById('bC').innerHTML = OUTILS
+    .map((m, i) => bulle({ ...m, g: 'tool' }, i + 2, ACTUELS)).join('');
+  document.getElementById('bD').innerHTML = OUTILS
+    .map((m, i) => bulle(m, i + 2, NOUVEAUX)).join('');
+
+  const LEG = {
+    door:'entrer dans le parcours', brain:'comprendre le modèle', craft:'la méthode CRAFT',
+    layers:'techniques superposées', tool:'le parcours de votre outil', image:'image, vidéo, audio',
+    briefcase:'les cas de votre métier', robot:'agents et automatisations', flag:'passer à l\'action',
+    scale:'juger une réponse', shield:'données et cadre', report:'réunions et comptes rendus',
+    search:'la publicité sur la recherche', audience:'la publicité sur l\'audience',
+    network:'la publicité aux entreprises', chart:'chiffres et tableurs', compass:'trouver ses repères',
+    pen:'écrire, traduire, résumer', radar:'chercher et veiller', team:'manager une équipe',
+    podium:'présenter et convaincre', plug:'monter sa base MCP', chain:'les cas branchés',
+    foundation:'le socle qui fait durer', grid:'repli par défaut',
+  };
+  const ordre = Object.keys(NOUVEAUX).filter(k => k !== '_note');
+  document.getElementById('tableGl').innerHTML = ordre.map((k, i) => {
+    const c = PALETTE[i % PALETTE.length];
+    const box = (frag, cls) => '<span class="pv ' + cls + '" style="background:' + c + '1f">' + svg(frag, c) + '</span>';
+    return '<div class="gl">' +
+      '<div class="nm">' + k + '<em>' + (LEG[k] || '') + '</em></div>' +
+      '<div class="cel old">' + box(ACTUELS[k] || '', 'pt') + box(ACTUELS[k] || '', '') + box(ACTUELS[k] || '', 'gr') + '</div>' +
+      '<div class="cel">' + box(NOUVEAUX[k], 'pt') + box(NOUVEAUX[k], '') + box(NOUVEAUX[k], 'gr') + '</div>' +
+    '</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

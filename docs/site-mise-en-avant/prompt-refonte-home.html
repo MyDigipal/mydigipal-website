@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt de refonte - page d'accueil MyDigipal</title>
+<style>
+  :root { --encre:#0f1b29; --texte:#394859; --doux:#5f7084; --trait:#dfe5ee; --fond:#f4f6fa; --accent:#4f46e5; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fond); color:var(--texte); font:16px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Arial, sans-serif; }
+  .page { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
+  h1 { font-size: 28px; line-height:1.2; color:var(--encre); margin:0 0 8px; letter-spacing:-0.02em; }
+  p.chapeau { font-size:16.5px; margin:0 0 18px; max-width:72ch; }
+  .barre { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+  button.copier {
+    border:0; background:var(--encre); color:#fff; border-radius:10px; padding:12px 20px;
+    font-size:15px; font-weight:700; cursor:pointer;
+  }
+  button.copier:active { transform: translateY(1px); }
+  .etat { font-size:14px; color:var(--vert, #0f7b5f); font-weight:600; opacity:0; transition:opacity .2s; }
+  .etat.vu { opacity:1; }
+  textarea {
+    width:100%; height:70vh; padding:18px 20px; border:1px solid var(--trait); border-radius:14px;
+    background:#fff; color:var(--encre); font:13.5px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    resize:vertical;
+  }
+  .aide { font-size:14px; color:var(--doux); margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Prompt de refonte de la page d'accueil</h1>
+  <p class="chapeau">À coller dans Fable. Tout le contexte est dedans : ce qu'on vend, les chiffres réels des trente derniers jours, ce qui ne va pas dans la page actuelle, et les interdits de style. Le texte est modifiable avant la copie.</p>
+
+  <div class="barre">
+    <button class="copier" id="copier">Copier le prompt</button>
+    <span class="etat" id="etat">Copié</span>
+  </div>
+
+  <textarea id="prompt" spellcheck="false">Tu vas refaire la page d'accueil de MyDigipal, de fond en comble. Je te donne le contexte réel, les chiffres réels et les contraintes. Je ne veux pas une retouche : je veux qu'on tente quelque chose.
+
+## Qui est MyDigipal
+
+Agence de marketing digital, française et britannique, spécialisée B2B et automobile. La promesse tenue depuis le début : une équipe qui prolonge celle du client, pas un prestataire de plus. Quatorze personnes, des visages, pas un logo anonyme.
+
+Trois choses se vendent sur ce site, et elles ne s'adressent pas aux mêmes gens :
+
+1. **L'agence, en prestation mensuelle.** SEO, Google Ads, publicité sociale, emailing, B2B et ABM, tracking et reporting. Engagement de 4 à 12 mois, remise selon la durée. Le client type est un directeur marketing de PME ou d'ETI, ou un groupe de concessions automobiles.
+2. **L'IA appliquée.** Formation en salle ou à distance (AI Training), automatisations sur mesure (AI Solutions), création de contenu (AI Content).
+3. **Deux produits en libre-service, et c'est le coeur du sujet :**
+   - **AI Academy** : la formation en ligne. 21 modules, 20 heures, à son rythme, avec l'outil de son choix (Claude, ChatGPT, Copilot, Gemini). À partir de 290 EUR par personne, 440 EUR pour les deux parcours. C'est le programme qu'on donne en salle chez Kering, La Poste ou Pierre Fabre, mis en ligne. 497 retours de participants récoltés, 24 verbatims publiables.
+   - **Le calculateur de budget** : le visiteur compose son plan (services, niveaux, budget média, durée), obtient un prix chiffré sur nos vraies grilles, et reçoit son devis par mail en deux minutes. Gratuit, sans rendez-vous.
+
+## Ce que disent les chiffres (trente derniers jours, mesuré)
+
+- 3 028 sessions sur tout le site.
+- **1 911 vues sur les pages Academy** : c'est la publicité qui les amène, directement, sans passer par la page d'accueil.
+- **358 vues sur la page d'accueil**, les deux langues réunies.
+- **74 vues sur le calculateur.**
+- 473 vues d'articles de blog, 198 sessions de recherche naturelle.
+- Taux d'engagement 38 %, rebond 61 %, durée moyenne 2 minutes 54.
+
+Traduction : la page d'accueil n'est pas le point d'entrée du site, c'est le point de passage de ceux qui nous cherchent par notre nom ou qui viennent voir qui nous sommes avant de signer. Elle doit donc convaincre, pas expliquer le métier.
+
+Et comme son trafic est faible, **le risque de tenter quelque chose est faible**. C'est le bon moment pour oser.
+
+## Ce qu'il y a aujourd'hui, et ce qui ne va pas
+
+Treize sections, dans cet ordre : hero, logos clients, équipe et valeurs, chiffres, quatre personas, grille des huit services, « en 30 jours avec MyDigipal », B2B et automobile, bandeau « création de contenu par l'IA », bandeau du calculateur, témoignages, derniers articles, appel final.
+
+Les vrais défauts :
+
+- **Le hero ne dit rien.** « Marketing multi-canal, co-piloté par l'IA » au-dessus d'une illustration décorative. C'est ce que dirait n'importe quelle agence en 2026. On ne sait pas pour qui c'est, ni ce qui nous distingue.
+- **L'AI Academy n'apparaît dans AUCUNE des treize sections.** Le produit qui reçoit les deux tiers du trafic du site n'existe pas sur la page d'accueil, sauf dans un menu déroulant et le pied de page.
+- **Le calculateur y est trois fois, sous trois noms différents** : « Calculer mon budget » dans le hero, « Essayer le Calculateur » dans un bandeau, « Devis Interactif » dans l'appel final. Et « Devis Gratuit » dans le pied de page. Personne ne peut deviner que c'est la même page.
+- **Le bandeau du calculateur est un dégradé indigo vers violet pleine largeur**, avec un badge « Devis instantané gratuit ». C'est le style par défaut de toutes les pages générées par IA, et ça jure avec le reste.
+- **Des chiffres non sourcés** traînent sur les pages voisines (« 300 % », « 50+ », « 100+ ») sans dire de quoi.
+- La section « à qui on parle » propose un persona « Former mon équipe à l'IA » qui mène à la page de formation en salle, pas à l'Academy.
+
+## Ce que la nouvelle page doit faire
+
+Dans cet ordre de priorité :
+
+1. **En cinq secondes** : ce qu'on fait, pour qui, et ce qui change avec nous. Un vrai angle, pas une promesse d'agence interchangeable.
+2. **Trois portes, distinctes et lisibles** : chiffrer un budget (le calculateur), se former (l'Academy), nous parler (contact ou rendez-vous). Une porte par intention, jamais le même bouton répété à trois endroits.
+3. **Prouver.** Les logos, les résultats chiffrés des études de cas, les visages de l'équipe, les verbatims réels de formation. Rien d'inventé.
+4. **Donner envie de descendre.** Aujourd'hui la moitié des visiteurs partent avant la deuxième section.
+
+## La matière disponible, réelle
+
+- **Clients de la formation** : Kering, La Poste, Pierre Fabre, YSL, Balenciaga, Gucci, E.Leclerc, GL Events, CBTW, Datawords. Logos fournis.
+- **Études de cas publiées** : DMD Group, Genesys, GWI, Quantum Metrics, Symbl.ai, Théobald, Vulcain Group. Chacune avec ses résultats chiffrés.
+- **497 retours de formation**, dont 24 verbatims choisis, avec le nom et la société.
+- **Quatorze portraits** de l'équipe.
+- Les prix réels de l'Academy et les grilles du calculateur.
+
+## Contraintes techniques
+
+- Le site est en **Astro 6 + Tailwind 4**, contenu statique, îlots React seulement là où c'est nécessaire. Les animations passent par CSS et un petit module de scroll partagé.
+- **Bilingue français et anglais**, mêmes composants, textes séparés. Les deux versions doivent tenir : les titres anglais sont plus courts, les titres français plus longs.
+- **390 px d'abord.** La page se relit sur un téléphone, en anglais. Mais l'ordinateur à 1440 px doit être soigné, ce n'est pas une version étirée du téléphone.
+- Performance : pas de bibliothèque lourde, pas de vidéo en lecture automatique qui bloque le premier rendu, images en AVIF ou WebP.
+- Accessibilité : contrastes AA, focus visible, pas de texte dans une image.
+
+## Interdits, sans exception
+
+- **Aucune émoticône**, nulle part.
+- **Aucun dégradé violet ou indigo**, ni fond en dégradé « IA ». C'est précisément ce dont on sort.
+- **Pas de liseré coloré** sur le côté ou en haut d'un encadré.
+- **Pas de trois cartes égales** alignées pour faire une section.
+- **Aucun chiffre inventé**, aucun témoignage inventé, aucun logo qu'on n'a pas le droit d'afficher.
+- **Pas de tiret cadratin** dans les textes français, et tous les accents corrects.
+- Pas de « Founding access », « Trusted by 10,000+ teams », ni aucune formule de page de lancement générique.
+- Les icônes viennent d'une seule famille, en SVG. Jamais un caractère centré à l'oeil dans un rond.
+
+## Ce que je veux recevoir
+
+**Deux ou trois directions complètes**, vraiment différentes les unes des autres, pas trois variantes de la même. Pour chacune :
+
+1. La page entière, de haut en bas, avec **le vrai contenu** (pas de faux texte), en français, et le hero aussi en anglais.
+2. Le rendu à **390 px** et à **1440 px**.
+3. L'angle en une phrase : ce que cette direction parie, et sur qui.
+4. Ce qu'elle garde de l'existant et ce qu'elle jette.
+
+Dis-moi aussi, pour chaque direction, ce qui te semble risqué. Je préfère une proposition tranchée avec un risque nommé qu'une page consensuelle.</textarea>
+
+  <p class="aide">Le prompt fait environ 5 500 caractères. Tu peux l'ajuster avant de copier, la copie prend le texte affiché.</p>
+</div>
+
+<script>
+  const zone = document.getElementById('prompt');
+  const etat = document.getElementById('etat');
+  document.getElementById('copier').addEventListener('click', async () => {
+    const texte = zone.value;
+    try {
+      await navigator.clipboard.writeText(texte);
+    } catch {
+      zone.select();
+      document.execCommand('copy');
+      window.getSelection()?.removeAllRanges();
+    }
+    etat.classList.add('vu');
+    setTimeout(() => etat.classList.remove('vu'), 1800);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Labo - les apartés d'une leçon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --encre:#0f1a2e; --mine:#2a3441; --brume:#646c7a; --craie:#f7f5f0; --papier:#fff;
+    --lin:#e6e1d6; --or:#c8a951; --or-texte:#775e1c; --or-soft:#f4ead0;
+    --sauge:#2e7d5b; --sauge-soft:#e9f3ee;
+    --sans:'Inter',system-ui,sans-serif; --display:'Fraunces',Georgia,serif; --mono:'JetBrains Mono',Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--craie);color:var(--mine);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  .page{max-width:1180px;margin:0 auto;padding:34px 20px 90px}
+  h1{font-family:var(--display);font-weight:600;font-size:clamp(24px,3vw,32px);letter-spacing:-.02em;color:var(--encre);margin:0 0 6px}
+  .sous{margin:0 0 26px;max-width:78ch;font-size:14.5px;line-height:1.65;color:var(--brume)}
+  .kick{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--brume);margin:0 0 8px}
+
+  .grille{display:grid;gap:26px}
+  @media(min-width:1000px){.grille{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+  .carte{background:var(--papier);border:1px solid var(--lin);border-radius:14px;padding:26px 28px 30px}
+  .carte > h2{font-family:var(--display);font-weight:600;font-size:19px;color:var(--encre);margin:0 0 3px}
+  .carte > .quoi{margin:0 0 20px;font-size:13.5px;line-height:1.6;color:var(--brume)}
+  .corps p{font-size:16px;line-height:1.75;color:var(--mine);margin:0 0 16px;max-width:62ch}
+  .corps p strong{color:var(--encre)}
+  .verdict{margin:22px 0 0;border-top:1px solid var(--lin);padding-top:12px;font-size:13px;line-height:1.6;color:var(--brume)}
+  .verdict b{color:var(--encre);font-weight:600}
+
+  /* ══════════ AUJOURD'HUI : le liseré ══════════ */
+  .liseret-or{margin:24px 0;border-left:2px solid var(--or);padding:4px 0 4px 20px;font-size:16px;line-height:1.75;color:var(--encre)}
+  .liseret-sauge{margin:24px 0;border-left:2px solid var(--sauge);padding:4px 0 4px 20px;font-size:15px;line-height:1.7;color:var(--mine)}
+
+  /* ══════════ A. La rubrique nue ══════════ */
+  .a{margin:26px 0}
+  .a .r{font-family:var(--mono);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:var(--or-texte);margin:0 0 7px}
+  .a .r.s{color:var(--sauge)}
+  .a p{margin:0;font-size:16.5px;line-height:1.7;color:var(--encre);max-width:60ch}
+  .a.voix p{font-family:var(--display);font-size:17px;line-height:1.65;color:var(--mine)}
+
+  /* ══════════ B. Le filet horizontal ══════════ */
+  .b{margin:28px 0;border-top:1px solid var(--lin);padding-top:16px;position:relative}
+  .b::before{content:"";position:absolute;top:-1px;left:0;width:44px;height:1px;background:var(--or-texte)}
+  .b.s::before{background:var(--sauge)}
+  .b .r{font-family:var(--mono);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:var(--brume);margin:0 0 8px}
+  .b p{margin:0;font-size:16px;line-height:1.75;color:var(--encre);max-width:62ch}
+  .b.s p{font-size:15.5px;color:var(--mine)}
+
+  /* ══════════ C. Le retrait sur fond ══════════ */
+  .c{margin:26px 0;background:var(--craie);border-radius:10px;padding:20px 24px}
+  .c.s{background:var(--sauge-soft)}
+  .c .r{font-family:var(--mono);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:var(--or-texte);margin:0 0 8px}
+  .c.s .r{color:var(--sauge)}
+  .c p{margin:0;font-size:15.5px;line-height:1.7;color:var(--mine);max-width:62ch}
+
+  .zoom{display:block;margin:40px 0 10px;font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--brume)}
+
+  /* ══════════ Les numéros de section ══════════ */
+  .sec{border-top:1px solid var(--lin);padding:18px 0}
+  .sec:first-child{border-top:0}
+  .sec h3{margin:0;font-family:var(--display);font-weight:600;font-size:20px;line-height:1.3;color:var(--encre)}
+  .sec .n{font-family:var(--mono);font-size:11px;font-weight:700}
+
+  .now .sec{display:flex;align-items:center;gap:16px}
+  .now .n{display:flex;width:28px;height:28px;flex:none;align-items:center;justify-content:center;border-radius:50%;background:var(--or);color:var(--encre)}
+  .now .sec.off .n{background:var(--craie);color:var(--brume)}
+
+  .v1 .sec{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:baseline;gap:0}
+  .v1 .n{color:var(--brume);letter-spacing:.06em;padding-top:5px}
+
+  .v2 .sec h3{display:flex;align-items:baseline;gap:12px}
+  .v2 .n{color:var(--or-texte);letter-spacing:.1em;position:relative;top:-1px}
+  .v2 .sec.off h3{color:var(--mine)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <p class="kick">Labo · 1er septembre 2026</p>
+  <h1>Le liseré des apartés, et trois façons de s'en passer</h1>
+  <p class="sous">
+    Deux natures d'aparté vivent dans le corps des leçons : <b>L'essentiel</b>, qui résume, et
+    <b>Ce que je vois en formation</b>, qui est la voix du formateur. Les deux portent aujourd'hui un
+    filet vertical à gauche. C'est ce filet que tu as repéré. Le texte ci-dessous est celui de la vraie
+    leçon, à l'identique, dans chacun des quatre traitements.
+  </p>
+
+  <div class="grille">
+
+    <!-- ══════════════ AUJOURD'HUI ══════════════ -->
+    <div class="carte">
+      <h2>Aujourd'hui</h2>
+      <p class="quoi">Filet vertical de 2 px, doré pour la synthèse, vert pour la voix du formateur.</p>
+      <div class="corps">
+        <p><strong>Elle a un comportement par défaut si personne ne répond.</strong> C'est la question que je ne
+          vois jamais posée, et c'est la plus importante. Deux réponses acceptables : soit rien ne part et le
+          sujet ressort à la prochaine occurrence, soit ça part après un délai.</p>
+        <blockquote class="liseret-sauge">
+          <p style="margin:0"><strong style="color:var(--encre)">Ce que je vois en formation.</strong> Quand je demande comment la validation va se
+          passer, la réponse est presque toujours « je vérifierai tout ». Cela dure une semaine. Une validation
+          utile n'est pas une relecture intégrale : c'est un oui ou un non sur un objet déjà prêt.</p>
+        </blockquote>
+        <blockquote class="liseret-or">
+          <p style="margin:0"><strong>L'essentiel.</strong> Un point d'arrêt se décide avant de brancher la chaîne, jamais après le
+          premier incident.</p>
+        </blockquote>
+      </div>
+      <p class="verdict"><b>Le défaut.</b> Le filet à gauche plus le fond teinté est la signature qu'on
+        reconnaît partout ailleurs. Il transforme un paragraphe en composant.</p>
+    </div>
+
+    <!-- ══════════════ A ══════════════ -->
+    <div class="carte">
+      <h2>A · La rubrique nue</h2>
+      <p class="quoi">Aucun trait, aucun fond. Une rubrique en capitales espacées, et le texte reprend sa
+        place dans la colonne. La voix du formateur passe en Fraunces : c'est une personne qui parle.</p>
+      <div class="corps">
+        <p><strong>Elle a un comportement par défaut si personne ne répond.</strong> C'est la question que je ne
+          vois jamais posée, et c'est la plus importante. Deux réponses acceptables : soit rien ne part et le
+          sujet ressort à la prochaine occurrence, soit ça part après un délai.</p>
+        <div class="a voix">
+          <p class="r s">Ce que je vois en formation</p>
+          <p>Quand je demande comment la validation va se passer, la réponse est presque toujours « je
+            vérifierai tout ». Cela dure une semaine. Une validation utile n'est pas une relecture intégrale :
+            c'est un oui ou un non sur un objet déjà prêt.</p>
+        </div>
+        <div class="a">
+          <p class="r">L'essentiel</p>
+          <p>Un point d'arrêt se décide avant de brancher la chaîne, jamais après le premier incident.</p>
+        </div>
+      </div>
+      <p class="verdict"><b>Ce que ça donne.</b> Le plus sobre des trois, et le plus lisible sur téléphone
+        (rien ne mange de largeur). En contrepartie l'aparté se distingue moins vite quand on survole la
+        page à la recherche des synthèses.</p>
+    </div>
+
+    <!-- ══════════════ B ══════════════ -->
+    <div class="carte">
+      <h2>B · Le filet horizontal</h2>
+      <p class="quoi">Le trait passe au-dessus, sur toute la largeur, avec une amorce de couleur de 44 px.
+        C'est le langage des sections de la page de vente, ramené dans la leçon.</p>
+      <div class="corps">
+        <p><strong>Elle a un comportement par défaut si personne ne répond.</strong> C'est la question que je ne
+          vois jamais posée, et c'est la plus importante. Deux réponses acceptables : soit rien ne part et le
+          sujet ressort à la prochaine occurrence, soit ça part après un délai.</p>
+        <div class="b s">
+          <p class="r">Ce que je vois en formation</p>
+          <p>Quand je demande comment la validation va se passer, la réponse est presque toujours « je
+            vérifierai tout ». Cela dure une semaine. Une validation utile n'est pas une relecture intégrale :
+            c'est un oui ou un non sur un objet déjà prêt.</p>
+        </div>
+        <div class="b">
+          <p class="r">L'essentiel</p>
+          <p>Un point d'arrêt se décide avant de brancher la chaîne, jamais après le premier incident.</p>
+        </div>
+      </div>
+      <p class="verdict"><b>Ce que ça donne.</b> On repère les apartés en survolant, et la page prend un
+        rythme de journal. Le risque : sur une leçon qui en porte quatre, quatre traits horizontaux
+        ressemblent à quatre séparateurs de section.</p>
+    </div>
+
+    <!-- ══════════════ C ══════════════ -->
+    <div class="carte">
+      <h2>C · Le retrait sur fond</h2>
+      <p class="quoi">Pas de trait du tout : un fond très léger et un vrai rembourrage, comme un encadré de
+        manuel. La couleur ne sert qu'au fond, jamais à une bordure.</p>
+      <div class="corps">
+        <p><strong>Elle a un comportement par défaut si personne ne répond.</strong> C'est la question que je ne
+          vois jamais posée, et c'est la plus importante. Deux réponses acceptables : soit rien ne part et le
+          sujet ressort à la prochaine occurrence, soit ça part après un délai.</p>
+        <div class="c s">
+          <p class="r">Ce que je vois en formation</p>
+          <p>Quand je demande comment la validation va se passer, la réponse est presque toujours « je
+            vérifierai tout ». Cela dure une semaine. Une validation utile n'est pas une relecture intégrale :
+            c'est un oui ou un non sur un objet déjà prêt.</p>
+        </div>
+        <div class="c">
+          <p class="r">L'essentiel</p>
+          <p>Un point d'arrêt se décide avant de brancher la chaîne, jamais après le premier incident.</p>
+        </div>
+      </div>
+      <p class="verdict"><b>Ce que ça donne.</b> Le plus repérable, et il imprime bien. C'est aussi celui qui
+        reste le plus proche du « composant » : à l'écran, deux blocs colorés dans une même leçon
+        pèsent lourd.</p>
+    </div>
+
+  </div>
+
+  <span class="zoom">Mon avis, si tu le veux</span>
+  <div class="carte" style="max-width:900px">
+    <p style="margin:0 0 12px;font-size:15.5px;line-height:1.7">
+      <strong style="color:var(--encre)">A pour la voix du formateur, B pour la synthèse.</strong>
+      Ce sont deux choses de nature différente et elles n'ont pas à se ressembler : une voix se lit
+      comme du texte, une synthèse est un repère qu'on cherche du regard. Le mélange donne une page
+      où on trouve les synthèses en survolant, sans qu'aucun bloc ne ressemble à un composant.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.65;color:var(--brume)">
+      Le même traitement s'appliquerait ensuite aux six autres endroits qui portent le même liseré :
+      l'atelier CRAFT, la page Exercices, le formulaire de dépôt, la correction du quiz, la fiche mémo
+      et le back-office.
+    </p>
+  </div>
+
+  <span class="zoom" id="pastilles" style="scroll-margin-top:16px">Le même diagnostic, deux lignes plus haut : les pastilles rondes numérotées</span>
+  <p class="sous" style="margin:0 0 22px">
+    Elles sont sur chaque section de chaque leçon. Le skill de design les nomme au même titre que le
+    liseré : la pastille ronde <b>01 / 02 / 03</b> est une des signatures qui font reconnaître une
+    interface générée. Le numéro, lui, sert vraiment, parce qu'il dit où on en est dans la leçon.
+    C'est donc son habillage qui est en cause, pas sa présence.
+  </p>
+
+  <div class="grille">
+    <div class="carte now">
+      <h2>Aujourd'hui</h2>
+      <p class="quoi">Pastille ronde de 28 px, dorée quand la section est ouverte, craie sinon.</p>
+      <div class="sec"><span class="n">01</span><h3>Ce qu'est une automatisation</h3></div>
+      <div class="sec off"><span class="n">02</span><h3>Les trois segments d'une tâche</h3></div>
+      <div class="sec off"><span class="n">03</span><h3>Où placer le point d'arrêt</h3></div>
+      <p class="verdict"><b>Le défaut.</b> Un rond coloré avec un numéro dedans, répété huit fois dans
+        la page : c'est le motif exact qu'on retire des pages de vente depuis le 24 août.</p>
+    </div>
+
+    <div class="carte v1">
+      <h2>1 &middot; Le numéro dans la marge</h2>
+      <p class="quoi">Le numéro sort du titre et se pose dans une colonne de 34 px, en mono discret.
+        Les huit titres s'alignent alors sur une même verticale, ce que la pastille empêchait.</p>
+      <div class="sec"><span class="n">01</span><h3>Ce qu'est une automatisation</h3></div>
+      <div class="sec off"><span class="n">02</span><h3>Les trois segments d'une tâche</h3></div>
+      <div class="sec off"><span class="n">03</span><h3>Où placer le point d'arrêt</h3></div>
+      <p class="verdict"><b>Ce que ça donne.</b> Le plus proche d'un sommaire de livre. Sur téléphone,
+        la marge se retire et le numéro passe au-dessus du titre.</p>
+    </div>
+
+    <div class="carte v2">
+      <h2>2 &middot; Le numéro devant le titre</h2>
+      <p class="quoi">Le numéro reste dans la ligne du titre, en mono doré, sans rond. L'ouverture se
+        marque par la couleur du titre, plus par un fond.</p>
+      <div class="sec"><span class="n">01</span><h3>Ce qu'est une automatisation</h3></div>
+      <div class="sec off"><span class="n">02</span><h3>Les trois segments d'une tâche</h3></div>
+      <div class="sec off"><span class="n">03</span><h3>Où placer le point d'arrêt</h3></div>
+      <p class="verdict"><b>Ce que ça donne.</b> Le moins de changement pour un lecteur habitué, et ça
+        tient sur une ligne même avec un titre long. Le numéro se repère un peu moins vite.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
