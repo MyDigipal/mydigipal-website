@@ -6,11 +6,14 @@
  * - `social` (page Paid Social) : la vidéo verticale, l'offre du mois, le formulaire intégré ;
  * - `google` (page Google Ads) : le remarketing Display, la vidéo YouTube, Google Vehicle Ads.
  * Maquettes dessinées par nos soins (`ui/VoitureMaquette.astro`). Sur la brume.
+ * Depuis le 02/10/2026, la variante `social` pose ses trois maquettes sur la carte animée des
+ * audits (`motion/CarteVitrines.astro`) : à qui l'annonce est montrée, puis l'annonce.
  */
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 import Marque from '@/components/ui/Marque.astro';
 import VoitureMaquette from '@/components/ui/VoitureMaquette.astro';
+import CarteVitrines from '@/components/motion/CarteVitrines.astro';
 
 interface Props {
   lang: Language;
@@ -105,6 +108,30 @@ const t = social
         note: 'Mock-ups. The three formats plug into the same Google Ads account and share its audiences.',
       };
 const teintes = ['bleu', 'ivoire', 'corail'] as const;
+// La carte animée de la page Paid Social : à qui chaque annonce est montrée, puis l'annonce.
+const montre = fr ? 'À qui nous la montrons' : 'Who we show it to';
+const suivant = fr ? 'Annonce suivante' : 'Next ad';
+const audiences = fr
+  ? [
+      ['Habite dans votre zone', 'Regarde des vidéos de voitures', 'Suit des comptes automobiles'],
+      ['Cherche une voiture en ce moment', 'A visité votre site ce mois-ci', 'Habite à moins de 30 km'],
+      ['A regardé l’offre du mois', 'A vu la vidéo jusqu’au bout', 'Ressemble à vos acheteurs'],
+    ]
+  : [
+      ['Lives in your area', 'Watches car videos', 'Follows car accounts'],
+      ['Is looking for a car right now', 'Visited your site this month', 'Lives within 20 miles'],
+      ['Looked at this month’s offer', 'Watched the video to the end', 'Looks like your buyers'],
+    ];
+const logosSocial = [['instagram', 'tiktok'], ['facebook'], ['facebook', 'instagram']] as const;
+const vitrines = (social ? t.cartes : []).map(([titre, texte], i) => ({
+  repere: titre,
+  logos: logosSocial[i],
+  titre,
+  texte,
+  signal: montre,
+  puces: audiences[i],
+  genre: 'audience' as const,
+}));
 const logo = (nom: string) => `/images/plateformes/${nom}.svg`;
 ---
 
@@ -115,60 +142,31 @@ const logo = (nom: string) => `/images/plateformes/${nom}.svg`;
       <p class="chapo">{t.chapo}</p>
     </header>
 
-    <ul class="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
-      {social ? (
-        <Fragment>
-          <li class="carte vit" data-reveal style="--i:0">
-            <div class="vit-tete">
-              <span class="vit-logo"><img src={logo('instagram')} alt="Instagram" width="24" height="24" loading="lazy" decoding="async" /></span>
-              <span class="vit-logo"><Marque nom="TikTok" taille={22} /></span>
-              <h3 class="titre-carte text-encre">{t.cartes[0][0]}</h3>
-            </div>
-            <p class="vit-texte">{t.cartes[0][1]}</p>
-            <div class="vit-ecran" aria-hidden="true">
-              <div class="mq mq-reel">
-                <VoitureMaquette teinte="corail" format="portrait" class="reel-img" />
-                <div class="reel-haut"><span class="reel-av"><Icon name="car" size={14} /></span><b>{commun.compte}</b><em>{commun.sponsorise}</em></div>
-                <div class="reel-cote"><Icon name="heart" size={22} /><Icon name="message-circle" size={22} /><Icon name="send" size={22} /></div>
-                <div class="reel-bas"><p>{t.legende}</p><span>{commun.essai}<Icon name="chevron-right" size={15} /></span></div>
-              </div>
-            </div>
-          </li>
-          <li class="carte vit" data-reveal style="--i:1">
-            <div class="vit-tete">
-              <span class="vit-logo"><img src={logo('facebook')} alt="Facebook" width="24" height="24" loading="lazy" decoding="async" /></span>
-              <h3 class="titre-carte text-encre">{t.cartes[1][0]}</h3>
-            </div>
-            <p class="vit-texte">{t.cartes[1][1]}</p>
-            <div class="vit-ecran" aria-hidden="true">
-              <div class="mq mq-fb">
-                <div class="f-hd"><span class="f-av"><Icon name="car" size={18} /></span><div><b>{commun.concession}</b><span>{commun.sponsorise}</span></div></div>
-                <p class="f-tx">{t.texteOffre}</p>
-                <div class="f-visuel"><VoitureMaquette teinte="ivoire" format="paysage" class="f-im" /><span>{t.offre}</span></div>
-                <div class="f-lk"><div><span>{commun.site}</span><b>{t.lienOffre}</b></div><i>{t.voir}</i></div>
-                <div class="f-suite"><i></i><span></span><span></span></div>
-              </div>
-            </div>
-          </li>
-          <li class="carte vit" data-reveal style="--i:2">
-            <div class="vit-tete">
-              <span class="vit-logo"><img src={logo('facebook')} alt="Facebook" width="24" height="24" loading="lazy" decoding="async" /></span>
-              <span class="vit-logo"><img src={logo('instagram')} alt="Instagram" width="24" height="24" loading="lazy" decoding="async" /></span>
-              <h3 class="titre-carte text-encre">{t.cartes[2][0]}</h3>
-            </div>
-            <p class="vit-texte">{t.cartes[2][1]}</p>
-            <div class="vit-ecran" aria-hidden="true">
-              <div class="mq mq-form">
-                <div class="form-tete"><span class="f-av"><Icon name="car" size={18} /></span><div><b>{commun.concession}</b><span>{t.form}</span></div></div>
-                {t.champs.map(([k, v]) => <p class="champ"><span>{k}</span><b>{v}</b></p>)}
-                <p class="form-btn">{t.envoyer}</p>
-                <p class="form-fin"><Icon name="check-circle" size={15} />{t.rempli}</p>
-              </div>
-            </div>
-          </li>
-        </Fragment>
-      ) : (
-        <Fragment>
+    {social ? (
+      <CarteVitrines lang={lang} vitrines={vitrines} suivant={suivant} note={t.note}>
+        <div slot="face0" class="mq mq-reel">
+          <VoitureMaquette teinte="corail" format="portrait" class="reel-img" />
+          <div class="reel-haut"><span class="reel-av"><Icon name="car" size={14} /></span><b>{commun.compte}</b><em>{commun.sponsorise}</em></div>
+          <div class="reel-cote"><Icon name="heart" size={22} /><Icon name="message-circle" size={22} /><Icon name="send" size={22} /></div>
+          <div class="reel-bas"><p>{t.legende}</p><span>{commun.essai}<Icon name="chevron-right" size={15} /></span></div>
+        </div>
+        <div slot="face1" class="mq mq-fb">
+          <div class="f-hd"><span class="f-av"><Icon name="car" size={18} /></span><div><b>{commun.concession}</b><span>{commun.sponsorise}</span></div></div>
+          <p class="f-tx">{t.texteOffre}</p>
+          <div class="f-visuel"><VoitureMaquette teinte="ivoire" format="paysage" class="f-im" /><span>{t.offre}</span></div>
+          <div class="f-lk"><div><span>{commun.site}</span><b>{t.lienOffre}</b></div><i>{t.voir}</i></div>
+          <div class="f-suite"><i></i><span></span><span></span></div>
+        </div>
+        <div slot="face2" class="mq mq-form">
+          <div class="form-tete"><span class="f-av"><Icon name="car" size={18} /></span><div><b>{commun.concession}</b><span>{t.form}</span></div></div>
+          {t.champs.map(([k, v]) => <p class="champ"><span>{k}</span><b>{v}</b></p>)}
+          <p class="form-btn">{t.envoyer}</p>
+          <p class="form-fin"><Icon name="check-circle" size={15} />{t.rempli}</p>
+        </div>
+      </CarteVitrines>
+    ) : (
+      <Fragment>
+        <ul class="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
           <li class="carte vit" data-reveal style="--i:0">
             <div class="vit-tete">
               <span class="vit-logo"><img src={logo('google')} alt="Google" width="24" height="24" loading="lazy" decoding="async" /></span>
@@ -233,10 +231,10 @@ const logo = (nom: string) => `/images/plateformes/${nom}.svg`;
               </div>
             </div>
           </li>
-        </Fragment>
-      )}
-    </ul>
-    <p class="mt-6 text-sm text-slate-500">{t.note}</p>
+        </ul>
+        <p class="mt-6 text-sm text-slate-500">{t.note}</p>
+      </Fragment>
+    )}
   </div>
 </section>
 

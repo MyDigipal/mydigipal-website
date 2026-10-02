@@ -1089,3 +1089,19 @@ Paul a validé la page Dynamic Ads (« vraiment, vraiment bien ») et demandé l
   pages** (`AutomotiveServices` et `AutomotiveUseCases` ne sont plus importés ; les données restent
   dans les fiches). Les résultats de `benchmarks` restent sur Google Ads et Paid Social.
 - `ui/VoitureMaquette.astro` a trois formats : `paysage`, `carre`, `portrait` (vidéo verticale).
+
+### La carte à trois vitrines sur Dynamic Ads et Paid Social (02/10/2026, `main`)
+
+Demande de Paul en préparant l'audit Hess : la section « À quoi cela ressemble » des audits
+automobiles manquait sur le site, « que ce soit pour paid social, mais aussi pour les dynamic ads ».
+- **`motion/CarteVitrines.astro`** : le plateau animé des audits (trois repères, le texte, les puces
+  de ce que l'acheteur tape ou de l'audience visée, une flèche, puis l'annonce sur une carte qui
+  pivote). Elle avance toute seule tant qu'elle est à l'écran, un clic sur un repère y va. Les
+  maquettes arrivent par les créneaux `face0`, `face1`, `face2` (noms statiques, Astro refuse un
+  `slot name` calculé). Sans script, sous mouvement réduit ou avec `?fige=1` : les trois à la suite.
+  Pour vérifier une vitrine : `document.querySelector('[data-carte-vitrines]').__aller(2)`.
+- `DynamicAdsChannels` (Google Vehicle Ads, Facebook, Instagram) et `AnnoncesMaquettes
+  variante="social"` (vidéo verticale, offre du mois, formulaire intégré) posent leurs maquettes
+  existantes sur cette carte : la grille de trois cartes blanches n'est plus rendue sur ces deux
+  pages. La variante `google` d'`AnnoncesMaquettes` (page Google Ads) garde sa grille.
+- Sous 1024 px : une colonne, la carte à plat, les puces en ligne. Vérifié à 390 px.

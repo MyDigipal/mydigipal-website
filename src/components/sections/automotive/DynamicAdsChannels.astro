@@ -7,10 +7,13 @@
  * telle que cette plateforme la montre. Les puces de formats et les audiences de marché
  * (2,9 Mrd, 2 Mrd, 90 %) sont retirées : la maquette dit ce que les puces listaient.
  * Maquettes dessinées par nos soins, avec les trois voitures de la chaîne du stock.
+ * Depuis le 02/10/2026, les trois maquettes sont les faces de la carte animée des audits
+ * (`motion/CarteVitrines.astro`) : ce que l'acheteur tape ou qui il est, puis l'annonce.
  */
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 import VoitureMaquette from '@/components/ui/VoitureMaquette.astro';
+import CarteVitrines from '@/components/motion/CarteVitrines.astro';
 
 interface Props {
   lang: Language;
@@ -29,6 +32,15 @@ const t = fr
       google: 'Vos voitures en vignettes au-dessus des résultats, quand quelqu’un cherche un modèle : photo, prix, kilométrage, concession.',
       facebook: 'La voiture regardée sur votre site revient dans le fil, comme une publication, avec un bouton vers sa fiche.',
       instagram: 'La même voiture en grand format carré, avec une demande d’essai sans quitter l’application.',
+      suivant: 'Vitrine suivante',
+      sur: ['Sur Google', 'Sur Facebook', 'Sur Instagram'],
+      tape: 'Ce qu’il tape',
+      montre: 'À qui nous la montrons',
+      puces: [
+        ['berline hybride occasion', 'voiture occasion près de moi', 'berline occasion boîte automatique'],
+        ['A vu cette berline sur votre site', 'Habite à moins de 30 km', 'Cherche une voiture en ce moment'],
+        ['Ressemble à vos acheteurs', 'Suit des comptes automobiles', 'A consulté votre stock ce mois-ci'],
+      ],
       requete: 'berline hybride occasion',
       sponsorise: 'Sponsorisé',
       proximite: 'Véhicules à proximité',
@@ -53,6 +65,15 @@ const t = fr
       google: 'Your cars as cards above the search results when someone looks for a model: photo, price, mileage, dealership.',
       facebook: 'The car viewed on your website comes back in the feed, as a post, with a button to its listing.',
       instagram: 'The same car in a large square format, with a test drive request without leaving the app.',
+      suivant: 'Next shop window',
+      sur: ['On Google', 'On Facebook', 'On Instagram'],
+      tape: 'What they type',
+      montre: 'Who we show it to',
+      puces: [
+        ['used hybrid saloon', 'used cars near me', 'used automatic saloon'],
+        ['Viewed this saloon on your site', 'Lives within 20 miles', 'Is looking for a car right now'],
+        ['Looks like your buyers', 'Follows car accounts', 'Browsed your stock this month'],
+      ],
       requete: 'used hybrid saloon',
       sponsorise: 'Sponsored',
       proximite: 'Vehicles nearby',
@@ -73,6 +94,11 @@ const t = fr
     };
 const teintes = ['bleu', 'ivoire', 'corail'] as const;
 const v0 = t.voitures[0];
+const vitrines = [
+  { repere: 'Google Vehicle Ads', logos: ['google'], titre: t.sur[0], texte: t.google, signal: t.tape, puces: t.puces[0], genre: 'recherche' },
+  { repere: 'Facebook', logos: ['facebook'], titre: t.sur[1], texte: t.facebook, signal: t.montre, puces: t.puces[1], genre: 'audience' },
+  { repere: 'Instagram', logos: ['instagram'], titre: t.sur[2], texte: t.instagram, signal: t.montre, puces: t.puces[2], genre: 'audience' },
+] as const;
 ---
 
 <section class="section-brume py-20 lg:py-32">
@@ -82,122 +108,56 @@ const v0 = t.voitures[0];
       <p class="chapo">{t.chapo}</p>
     </header>
 
-    <ul class="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
-      <li class="carte vit" data-reveal style="--i:0">
-        <div class="vit-tete">
-          <span class="vit-logo"><img src="/images/plateformes/google.svg" alt="" width="26" height="26" loading="lazy" decoding="async" /></span>
-          <h3 class="titre-carte text-encre">Google Vehicle Ads</h3>
+    <CarteVitrines lang={lang} vitrines={vitrines} suivant={t.suivant} note={t.note}>
+      <div slot="face0" class="mq mq-google">
+        <div class="g-bar">
+          <img src="/images/plateformes/google.svg" alt="" width="16" height="16" loading="lazy" decoding="async" />
+          <span>{t.requete}</span>
+          <Icon name="search" size={15} />
         </div>
-        <p class="vit-texte">{t.google}</p>
-        <div class="vit-ecran" aria-hidden="true">
-          <div class="mq mq-google">
-            <div class="g-bar">
-              <img src="/images/plateformes/google.svg" alt="" width="16" height="16" loading="lazy" decoding="async" />
-              <span>{t.requete}</span>
-              <Icon name="search" size={15} />
+        <p class="g-sp"><b>{t.sponsorise}</b> · {t.proximite}</p>
+        <div class="g-row">
+          {t.voitures.map((v, i) => (
+            <div class="g-card">
+              <VoitureMaquette teinte={teintes[i]} format="carre" class="g-img" />
+              <p class="g-p">{v.prix}</p>
+              <p class="g-t">{v.nom}</p>
+              <p class="g-m">{v.meta}</p>
+              <p class="g-d">{t.concession}</p>
             </div>
-            <p class="g-sp"><b>{t.sponsorise}</b> · {t.proximite}</p>
-            <div class="g-row">
-              {t.voitures.map((v, i) => (
-                <div class="g-card">
-                  <VoitureMaquette teinte={teintes[i]} format="carre" class="g-img" />
-                  <p class="g-p">{v.prix}</p>
-                  <p class="g-t">{v.nom}</p>
-                  <p class="g-m">{v.meta}</p>
-                  <p class="g-d">{t.concession}</p>
-                </div>
-              ))}
-            </div>
-            <div class="g-res"><span></span><span></span><span></span><span></span><span></span></div>
-          </div>
+          ))}
         </div>
-      </li>
-
-      <li class="carte vit" data-reveal style="--i:1">
-        <div class="vit-tete">
-          <span class="vit-logo"><img src="/images/plateformes/facebook.svg" alt="" width="26" height="26" loading="lazy" decoding="async" /></span>
-          <h3 class="titre-carte text-encre">Facebook</h3>
+        <div class="g-res"><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div slot="face1" class="mq mq-fb">
+        <div class="f-hd">
+          <span class="f-av"><Icon name="car" size={18} /></span>
+          <div><b>{t.concession}</b><span>{t.sponsorise}</span></div>
         </div>
-        <p class="vit-texte">{t.facebook}</p>
-        <div class="vit-ecran" aria-hidden="true">
-          <div class="mq mq-fb">
-            <div class="f-hd">
-              <span class="f-av"><Icon name="car" size={18} /></span>
-              <div><b>{t.concession}</b><span>{t.sponsorise}</span></div>
-            </div>
-            <p class="f-tx">{t.texteFb}</p>
-            <VoitureMaquette teinte="bleu" format="paysage" class="f-im" />
-            <div class="f-lk">
-              <div><span>{t.site}</span><b>{v0.nom} · {v0.prix}</b><em>{v0.meta}</em></div>
-              <i>{t.voir}</i>
-            </div>
-            <div class="f-ac">{t.actions.map((a) => <span>{a}</span>)}</div>
-            <div class="f-suite"><i></i><span></span><span></span></div>
-          </div>
+        <p class="f-tx">{t.texteFb}</p>
+        <VoitureMaquette teinte="bleu" format="paysage" class="f-im" />
+        <div class="f-lk">
+          <div><span>{t.site}</span><b>{v0.nom} · {v0.prix}</b><em>{v0.meta}</em></div>
+          <i>{t.voir}</i>
         </div>
-      </li>
-
-      <li class="carte vit" data-reveal style="--i:2">
-        <div class="vit-tete">
-          <span class="vit-logo"><img src="/images/plateformes/instagram.svg" alt="" width="26" height="26" loading="lazy" decoding="async" /></span>
-          <h3 class="titre-carte text-encre">Instagram</h3>
+        <div class="f-ac">{t.actions.map((a) => <span>{a}</span>)}</div>
+        <div class="f-suite"><i></i><span></span><span></span></div>
+      </div>
+      <div slot="face2" class="mq mq-ig">
+        <div class="i-hd">
+          <span class="i-av"><span><Icon name="car" size={15} /></span></span>
+          <div><b>{t.compte}</b><span>{t.sponsorise}</span></div>
         </div>
-        <p class="vit-texte">{t.instagram}</p>
-        <div class="vit-ecran" aria-hidden="true">
-          <div class="mq mq-ig">
-            <div class="i-hd">
-              <span class="i-av"><span><Icon name="car" size={15} /></span></span>
-              <div><b>{t.compte}</b><span>{t.sponsorise}</span></div>
-            </div>
-            <div class="i-im"><VoitureMaquette teinte="bleu" format="carre" class="i-img" /><span>1/4</span></div>
-            <div class="i-cta">{t.essai}<Icon name="chevron-right" size={16} /></div>
-            <div class="i-ic"><Icon name="heart" size={20} /><Icon name="message-circle" size={20} /><Icon name="send" size={20} /></div>
-            <p class="i-cap"><b>{t.compte}</b> {t.legende}</p>
-          </div>
-        </div>
-      </li>
-    </ul>
-    <p class="mt-6 text-sm text-slate-500">{t.note}</p>
+        <div class="i-im"><VoitureMaquette teinte="bleu" format="carre" class="i-img" /><span>1/4</span></div>
+        <div class="i-cta">{t.essai}<Icon name="chevron-right" size={16} /></div>
+        <div class="i-ic"><Icon name="heart" size={20} /><Icon name="message-circle" size={20} /><Icon name="send" size={20} /></div>
+        <p class="i-cap"><b>{t.compte}</b> {t.legende}</p>
+      </div>
+    </CarteVitrines>
   </div>
 </section>
 
 <style>
-  .vit {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    padding: 24px 24px 0;
-    overflow: hidden;
-  }
-  .vit-tete {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .vit-logo {
-    display: grid;
-    flex: none;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    background: var(--brume);
-  }
-  .vit-texte {
-    color: #4b5b6b;
-    text-wrap: pretty;
-  }
-  /* L'écran : la maquette posée sur un fond gris, coupée en bas comme un téléphone qu'on tient. */
-  .vit-ecran {
-    flex: 1;
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-    margin: 6px -24px 0;
-    padding: 22px 22px 0;
-    background: #e9eef5;
-    border-top: 1px solid var(--filet);
-  }
   .mq {
     width: 100%;
     max-width: 340px;
@@ -495,10 +455,5 @@ const v0 = t.voitures[0];
   }
   .i-cap b {
     font-weight: 600;
-  }
-  @media (min-width: 1024px) {
-    .vit-texte {
-      min-height: 6.4em;
-    }
   }
 </style>

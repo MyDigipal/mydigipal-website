@@ -1,0 +1,506 @@
+---
+/**
+ * La carte à trois vitrines (02/10/2026), portée depuis les audits automobiles où Paul l'a
+ * validée : « on peut montrer à quoi vont ressembler les annonces, directement ».
+ * Trois repères en haut, puis trois colonnes : ce que la plateforme fait (texte), ce qui
+ * déclenche l'annonce (mots tapés ou audiences, en puces qui arrivent une à une, puis une
+ * flèche), et la maquette de l'annonce sur une carte qui pivote. Elle passe toute seule à la
+ * vitrine suivante tant qu'elle est à l'écran ; un clic sur un repère y va et repart de là.
+ * Les maquettes viennent des pages, par les créneaux `face0`, `face1`, `face2` : la carte ne
+ * dessine que le plateau. Sans script ou sous mouvement réduit : les trois vitrines à la suite.
+ */
+import type { Language } from '@/i18n/config';
+import Marque from '@/components/ui/Marque.astro';
+
+type Logo = 'google' | 'facebook' | 'instagram' | 'tiktok';
+interface Vitrine {
+  /** Le nom sur le repère. */
+  repere: string;
+  logos: Logo[];
+  titre: string;
+  texte: string;
+  /** L'intitulé au-dessus des puces, et les puces. */
+  signal: string;
+  puces: string[];
+  /** `recherche` pour des mots tapés, `audience` pour des personnes. */
+  genre: 'recherche' | 'audience';
+}
+interface Props {
+  lang: Language;
+  vitrines: [Vitrine, Vitrine, Vitrine];
+  /** Le libellé du bouton d'avance. */
+  suivant: string;
+  note?: string;
+}
+
+const { lang, vitrines, suivant, note } = Astro.props;
+const groupe = lang === 'fr' ? 'Les trois vitrines' : 'The three shop windows';
+---
+
+<div class="cv" data-carte-vitrines data-acte="0">
+  <div class="cv-reperes" role="group" aria-label={groupe}>
+    {vitrines.map((v, i) => (
+      <button type="button" class="cv-repere" data-aller={i} aria-pressed={i === 0 ? 'true' : 'false'}>
+        {v.logos.map((l) => (
+          <span class="lg">
+            {l === 'tiktok'
+              ? <Marque nom="TikTok" taille={13} />
+              : <img src={`/images/plateformes/${l}.svg`} alt="" width="14" height="14" loading="lazy" decoding="async" />}
+          </span>
+        ))}
+        {v.repere}
+      </button>
+    ))}
+    <button type="button" class="cv-suivant">
+      {suivant}
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg>
+    </button>
+  </div>
+
+  <div class="cv-plateau">
+    <div class="cv-textes">
+      {vitrines.map((v, i) => (
+        <div class:list={['cv-temps', { on: i === 0 }]}>
+          <h3>{v.titre}</h3>
+          <p>{v.texte}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="cv-signaux">
+      {vitrines.map((v, i) => (
+        <div class:list={['cv-sig', { on: i === 0 }]}>
+          <span class="cv-sk" style="--i:0">{v.signal}</span>
+          {v.puces.map((p, k) => (
+            <span class="cv-ch" style={`--i:${k + 1}`}>
+              {v.genre === 'recherche'
+                ? <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.6-3.6"></path></svg>
+                : <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"></path><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4"></path><path d="M18.5 14.8c1.7.8 2.7 2.4 3 5.2"></path></svg>}
+              {p}
+            </span>
+          ))}
+          <svg class="cv-fl" viewBox="0 0 200 22" aria-hidden="true"><path d="M2 11h192"></path><path d="M184 3l10 8-10 8"></path></svg>
+        </div>
+      ))}
+    </div>
+
+    <div class="cv-scene" aria-hidden="true">
+      <div class="cv-carte">
+        <div class="cv-face on"><slot name="face0" /></div>
+        <div class="cv-face"><slot name="face1" /></div>
+        <div class="cv-face"><slot name="face2" /></div>
+      </div>
+    </div>
+  </div>
+  {note && <p class="cv-note">{note}</p>}
+</div>
+
+<style>
+  .cv {
+    padding: 24px 28px 30px;
+    border-radius: 24px;
+    background: linear-gradient(160deg, #0b1b2b, #12263c 60%, #164e63 170%);
+    color: #cbd5e1;
+    box-shadow: 0 30px 60px -34px rgb(11 27 43 / 0.6);
+  }
+  .cv-reperes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+  .cv-repere {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border: 1px solid rgb(255 255 255 / 0.22);
+    border-radius: 22px;
+    background: transparent;
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      color 0.2s,
+      border-color 0.2s;
+  }
+  .cv-repere:hover {
+    border-color: rgb(255 255 255 / 0.5);
+  }
+  .cv-repere[aria-pressed='true'] {
+    border-color: #fff;
+    background: #fff;
+    color: #0b1b2b;
+  }
+  .cv-repere .lg {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    color: #0b1b2b;
+  }
+  .cv-repere .lg + .lg {
+    margin-left: -4px;
+  }
+  .cv-repere .lg img {
+    display: block;
+    width: 14px;
+    height: 14px;
+  }
+  .cv-suivant {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    padding: 10px 17px;
+    border: 0;
+    border-radius: 22px;
+    background: #67e8f9;
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #0b1b2b;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .cv-suivant:hover {
+    transform: translateX(2px);
+  }
+  .cv-suivant svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Le plateau : le texte, les puces, la carte. */
+  .cv-plateau {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px minmax(0, 340px);
+    gap: 30px;
+    align-items: center;
+  }
+  .cv-plateau > * {
+    min-width: 0;
+  }
+  .cv-temps {
+    margin-bottom: 18px;
+  }
+  .cv-temps h3 {
+    margin: 0 0 10px;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+  .cv-temps p {
+    max-width: 46ch;
+    margin: 0;
+    color: #b6c2d6;
+    text-wrap: pretty;
+  }
+  .cv-sig {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .cv-sk {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #67e8f9;
+  }
+  .cv-ch {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 12px;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    border-radius: 10px;
+    background: rgb(255 255 255 / 0.07);
+    font-size: 0.82rem;
+    line-height: 1.3;
+    color: #e2e8f0;
+  }
+  .cv-ch svg {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: #67e8f9;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .cv-fl {
+    width: 100%;
+    height: 22px;
+    margin-top: 6px;
+    fill: none;
+    stroke: #67e8f9;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .cv-scene {
+    perspective: 1100px;
+  }
+  .cv-carte {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: drop-shadow(0 26px 30px rgb(2 8 23 / 0.5));
+  }
+  .cv-face {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  /* La maquette des pages, posée entière sur la carte : arrondie en bas aussi, sans son ombre
+     (la carte porte la sienne). Sa largeur et sa hauteur restent celles de la page. */
+  .cv-face :global(.mq) {
+    border-radius: 16px;
+    box-shadow: none;
+  }
+  .cv-note {
+    margin: 20px 0 0;
+    font-size: 0.8rem;
+    color: #8ea0b8;
+  }
+
+  /* Avec le script : une vitrine à la fois. */
+  .cv.js .cv-textes {
+    position: relative;
+    min-height: 170px;
+  }
+  .cv.js .cv-temps {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    transform: translateY(14px);
+    pointer-events: none;
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+  }
+  .cv.js .cv-temps.on {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    transition:
+      opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.12s,
+      transform 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
+  }
+  .cv.js[data-acte='0'] .cv-carte {
+    transform: rotateY(-11deg) rotateX(3deg);
+  }
+  .cv.js[data-acte='1'] .cv-carte {
+    transform: rotateY(11deg) rotateX(3deg);
+  }
+  .cv.js[data-acte='2'] .cv-carte {
+    transform: rotateY(-7deg) rotateX(-2deg);
+  }
+  .cv.js .cv-face {
+    position: absolute;
+    inset: 0 0 auto 0;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  /* L'annonce n'apparaît qu'après les puces et la flèche. */
+  .cv.js .cv-face.on {
+    position: relative;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.5s ease 1.4s;
+  }
+  .cv.js .cv-signaux {
+    position: relative;
+    min-height: 236px;
+  }
+  .cv.js .cv-sig {
+    position: absolute;
+    inset: 0;
+    justify-content: center;
+    margin: 0;
+    pointer-events: none;
+  }
+  .cv.js .cv-sig > span {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  .cv.js .cv-sig.on > span {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(0.12s + var(--i, 0) * 0.2s);
+  }
+  .cv.js .cv-fl path {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+  }
+  .cv.js .cv-sig.on .cv-fl path {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.45s ease 1s;
+  }
+  .cv.js .cv-sig.on .cv-fl path + path {
+    transition-delay: 1.35s;
+  }
+
+  /* Sous 1024 px : une colonne, la carte à plat, les puces en ligne sous le texte. */
+  @media (max-width: 1023px) {
+    .cv {
+      padding: 20px 16px 24px;
+      border-radius: 20px;
+    }
+    .cv-plateau {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+    }
+    .cv-scene {
+      width: 100%;
+      max-width: 360px;
+    }
+    .cv .cv-carte {
+      transform: none !important;
+    }
+    .cv-temps p {
+      max-width: none;
+    }
+    .cv.js .cv-textes {
+      min-height: 0;
+    }
+    .cv.js .cv-temps {
+      position: static;
+      display: none;
+    }
+    .cv.js .cv-temps.on {
+      display: block;
+    }
+    .cv.js .cv-signaux {
+      min-height: 0;
+    }
+    .cv.js .cv-sig {
+      position: static;
+      display: none;
+    }
+    .cv.js .cv-sig.on {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+    .cv-sk {
+      flex-basis: 100%;
+    }
+    .cv-fl {
+      display: none;
+    }
+    .cv-suivant {
+      margin-left: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cv-carte,
+    .cv-temps,
+    .cv-face,
+    .cv-sig > span,
+    .cv-fl path {
+      transition: none !important;
+    }
+  }
+</style>
+
+<script>
+  const REDUIT = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const TENIR = 6600;
+
+  function creerCarte(root: HTMLElement) {
+    const reperes = root.querySelectorAll<HTMLButtonElement>('.cv-repere');
+    const temps = root.querySelectorAll('.cv-temps');
+    const faces = root.querySelectorAll('.cv-face');
+    const signaux = root.querySelectorAll('.cv-sig');
+    const suivant = root.querySelector('.cv-suivant');
+    let minuterie = 0;
+    let actif = false;
+    let n = 0;
+
+    function aller(k: number) {
+      n = ((k % 3) + 3) % 3;
+      root.setAttribute('data-acte', String(n));
+      for (let i = 0; i < 3; i++) {
+        temps[i]?.classList.toggle('on', i === n);
+        faces[i]?.classList.toggle('on', i === n);
+        signaux[i]?.classList.toggle('on', i === n);
+        reperes[i]?.setAttribute('aria-pressed', String(i === n));
+      }
+    }
+    // La carte avance toute seule tant qu'elle est à l'écran ; un clic repart de là.
+    function programmer() {
+      clearTimeout(minuterie);
+      if (actif && !REDUIT) {
+        minuterie = window.setTimeout(() => {
+          aller(n + 1);
+          programmer();
+        }, TENIR);
+      }
+    }
+
+    root.classList.add('js');
+    aller(0);
+    reperes.forEach((b) =>
+      b.addEventListener('click', () => {
+        aller(Number(b.dataset.aller));
+        programmer();
+      }),
+    );
+    suivant?.addEventListener('click', () => {
+      aller(n + 1);
+      programmer();
+    });
+    // Pour vérifier une vitrine : document.querySelector('[data-carte-vitrines]').__aller(2)
+    (root as HTMLElement & { __aller?: (k: number) => void }).__aller = (k) => {
+      aller(k);
+      programmer();
+    };
+
+    if (!('IntersectionObserver' in window)) {
+      actif = true;
+      programmer();
+      return;
+    }
+    new IntersectionObserver(
+      (es) => {
+        es.forEach((e) => {
+          actif = e.isIntersecting;
+          programmer();
+        });
+      },
+      { threshold: 0, rootMargin: '0px 0px -20% 0px' },
+    ).observe(root);
+  }
+
+  // Sous mouvement réduit ou avec `?fige=1`, les trois vitrines restent à la suite, sans script.
+  if (!REDUIT && !new URLSearchParams(location.search).has('fige')) {
+    document.querySelectorAll<HTMLElement>('[data-carte-vitrines]').forEach(creerCarte);
+  }
+</script>
