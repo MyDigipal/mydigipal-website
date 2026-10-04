@@ -38,6 +38,16 @@ pas relancer, vérifier avec `render_list_deploys` (il porte `trigger: "api"`).
 - Frontmatter `image:` toujours en path local : `image: '/images/Blog Thumbnails/<slug>.jpg'`
 - **Jamais d'URLs absolues `raw.githubusercontent.com`** (passe à côté des optim + latence)
 - Default extension : `.jpg` (quality 85, ratio 1200×630). PNG seulement pour logos avec vraie alpha.
+- **Le fichier d'origine n'est plus servi à l'écran** (04/10/2026, LCP mobile des articles à
+  2,8 s dans la Search Console) : `scripts/vignettes-blog.mjs` sort chaque image citée par un
+  article (`image:`, `videoPoster:`) en AVIF et WebP de 480, 800 et 1 200 px dans
+  `public/images/blog-opt/`, avec le manifeste `src/data/blog/vignettes.json`. Il tourne en tête
+  de `build` et `build:tina` et ne réencode que les images nouvelles ou changées. On affiche
+  par `ui/VignetteBlog.astro` (ou `vignette()` / `vignetteFixe()` de `lib/vignettes-blog.ts`),
+  jamais par un `<img src={post.data.image}>`. L'og:image et le JSON-LD gardent l'original.
+- Le balisage `VideoObject` (`ui/VideoEmbed.astro`) exige une vignette : le build s'arrête
+  sans `poster` ni `schemaThumbnail`, et les URL partent en absolu (alerte Search Console
+  « Missing field thumbnailUrl », 04/10/2026).
 
 ### Convention CSS coexistence Tailwind
 - Les sélecteurs CSS globaux (`[data-*]`, `.classes`) ne doivent PAS définir `display` sur des éléments qui utilisent une utility responsive Tailwind (ex: `hidden lg:flex`)
