@@ -32,6 +32,14 @@ const aspectMap: Record<string, string> = {
 };
 
 const aspectClass = aspectMap[aspectRatio] || 'aspect-video';
+
+// Google exige une vignette en URL absolue : sans elle, la vidéo sort des résultats
+// (alerte Search Console « Missing field thumbnailUrl »). Pas de vignette, pas de balisage.
+const vignette = schemaThumbnail || poster;
+if (schemaName && !vignette) {
+  throw new Error(`VideoEmbed : « ${schemaName} » a un balisage VideoObject sans vignette (poster ou schemaThumbnail).`);
+}
+const absolue = (chemin: string) => new URL(chemin, 'https://mydigipal.com').href;
 ---
 
 <div class={`video-embed-wrapper group relative rounded-2xl overflow-hidden ${aspectClass} ${className}`}>
@@ -71,8 +79,8 @@ const aspectClass = aspectMap[aspectRatio] || 'aspect-video';
     "name": schemaName,
     "description": schemaDescription || schemaName,
     "uploadDate": schemaUploadDate,
-    "thumbnailUrl": schemaThumbnail || poster || '',
-    "contentUrl": `https://mydigipal.com${src}`,
+    "thumbnailUrl": absolue(vignette!),
+    "contentUrl": absolue(src),
     "encodingFormat": "video/mp4",
     "publisher": {
       "@type": "Organization",
