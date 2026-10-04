@@ -9,6 +9,7 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language } from '@/i18n/config';
 import { ARTICLES_PAR_PAGE, articlesPublies, adressePage } from '@/lib/blog-pages';
 import Icon from '@/components/ui/Icon.astro';
+import VignetteBlog from '@/components/ui/VignetteBlog.astro';
 import PageHero from '@/components/ui/PageHero.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 
@@ -140,7 +141,7 @@ const lx = fr
         <a href={getBlogUrl(une)} class="carte-verre group grid overflow-hidden" data-reveal>
           {avecImage(une) && (
             <span class="block aspect-[1200/630] overflow-hidden">
-              <img src={une.data.image} alt="" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" decoding="async" />
+              <VignetteBlog image={une.data.image!} class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" fetchpriority="high" sizes="(min-width: 1024px) 60vw, calc(100vw - 32px)" />
             </span>
           )}
           <span class="grid gap-3 p-6 lg:p-8">
@@ -218,12 +219,10 @@ const lx = fr
           >
             <a href={getBlogUrl(post)} class="relative block aspect-[16/10] overflow-hidden" tabindex="-1" aria-hidden="true">
               {avecImage(post) ? (
-                <img
-                  src={post.data.image}
-                  alt=""
+                <VignetteBlog
+                  image={post.data.image!}
                   class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                  decoding="async"
+                  sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                 />
               ) : (
                 <span class="absolute inset-0 bg-marque-doux"></span>

@@ -6,6 +6,7 @@
  */
 import { getCollection } from 'astro:content';
 import Icon from '@/components/ui/Icon.astro';
+import { vignette } from '@/lib/vignettes-blog';
 import { serrer, type Lang } from './donnees';
 
 interface Props {
@@ -49,14 +50,17 @@ const t = fr
           <li class:list={['article', { 'article-grand': i === 0 }]} data-reveal style={`--i:${i}`}>
             <a href={a.lien} class="article-lien">
               <span class="article-image">
-                <img
-                  src={a.image}
-                  alt=""
-                  width="1200"
-                  height="630"
-                  loading="lazy"
-                  decoding="async"
-                />
+                <picture>
+                  {vignette(a.image).avif && <source type="image/avif" srcset={vignette(a.image).avif} sizes="(min-width: 1024px) 40vw, 100vw" />}
+                  <img
+                    src={vignette(a.image).src}
+                    alt=""
+                    width="1200"
+                    height="630"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
               </span>
               <span class="article-texte">
                 <span class="article-titre">{a.titre}</span>

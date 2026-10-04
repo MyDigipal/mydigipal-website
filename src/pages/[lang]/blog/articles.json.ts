@@ -5,6 +5,7 @@
 import type { APIRoute } from 'astro';
 import { languages } from '@/i18n/config';
 import { articlesPublies } from '@/lib/blog-pages';
+import { vignetteFixe } from '@/lib/vignettes-blog';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -24,7 +25,7 @@ export const GET: APIRoute = async ({ params }) => {
     c: p.data.category,
     i: p.data.industry ?? '',
     u: `/${lang}/blog/${p.id.replace(/^(en|fr)\//, '')}`,
-    img: p.data.image && !p.data.image.includes('/images/blog/') ? p.data.image : '',
+    img: p.data.image && !p.data.image.includes('/images/blog/') ? vignetteFixe(p.data.image, 800) : '',
     cat: CATEGORIES[lang]?.[p.data.category] ?? p.data.category,
     date: p.data.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
     iso: p.data.date.toISOString(),

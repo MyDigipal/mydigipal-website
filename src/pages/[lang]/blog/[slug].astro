@@ -3,6 +3,8 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
 import { getCollection, render } from 'astro:content';
 import Icon from '@/components/ui/Icon.astro';
+import VignetteBlog from '@/components/ui/VignetteBlog.astro';
+import { vignetteFixe } from '@/lib/vignettes-blog';
 import ArticleSchema from '@/components/seo/ArticleSchema.astro';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
 import FAQSchema from '@/components/seo/FAQSchema.astro';
@@ -205,7 +207,7 @@ const categoryLabels: Record<string, Record<string, string>> = {
           <video
             class="w-full h-auto"
             src={post.data.video}
-            poster={post.data.videoPoster || post.data.image}
+            poster={(post.data.videoPoster || post.data.image) && vignetteFixe(post.data.videoPoster || post.data.image!, 800)}
             autoplay
             muted
             loop
@@ -268,15 +270,13 @@ const categoryLabels: Record<string, Record<string, string>> = {
     <section class="relative pb-8 bg-white">
       <div class="container-custom max-w-5xl mx-auto">
         <div class="relative rounded-2xl overflow-hidden shadow-2xl">
-          <img
-            src={post.data.image}
+          <VignetteBlog
+            image={post.data.image}
             alt={post.data.title}
-            class="w-full h-auto object-cover"
+            class="block w-full h-auto object-cover"
             loading="eager"
             fetchpriority="high"
-            decoding="async"
-            width="1200"
-            height="630"
+            sizes="(min-width: 1024px) 960px, calc(100vw - 32px)"
           />
         </div>
       </div>
@@ -352,11 +352,11 @@ const categoryLabels: Record<string, Record<string, string>> = {
             <article class="carte-verre group overflow-hidden">
               <a href={getRelatedPostUrl(relatedPost)} class="block relative aspect-[16/10] overflow-hidden">
                 {relatedPost.data.image && !relatedPost.data.image.includes('/images/blog/') ? (
-                  <img
-                    src={relatedPost.data.image}
+                  <VignetteBlog
+                    image={relatedPost.data.image}
                     alt={relatedPost.data.title}
                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
+                    sizes="(min-width: 768px) 33vw, 100vw"
                   />
                 ) : (
                   <div class="absolute inset-0 bg-marque-doux"></div>
