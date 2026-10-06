@@ -22,11 +22,9 @@ import { captureAdClickIds, useLienApp } from '../academy/track';
 import { allerA } from '../academy/ancre';
 import Hero from '../academy/Hero';
 import Visite from '../academy/Visite';
-import Mention from '../academy/Mention';
 import LeCompte from '../academy/LeCompte';
 import Mcp from '../academy/Mcp';
 import Diplome from '../academy/Diplome';
-import Retournement from '../academy/Retournement';
 import Maison from '../academy/Maison';
 import AppelFlottant from '../academy/AppelFlottant';
 import { copyV2 } from './copy-v2';
@@ -39,6 +37,8 @@ import OutilsCartes, { type CarteOutil } from './OutilsCartes';
 import Preuves, { type LogoPreuve } from './Preuves';
 import { FilmSeul, FilmsSalle } from './SectionsFilms';
 import Presentation from './Presentation';
+import OffreCourte from './OffreCourte';
+import RecitCourt from './RecitCourt';
 import { jour30Copy } from '../academy/copy';
 import './vente.css';
 
@@ -248,6 +248,24 @@ export default function AcademyV2({
         durees={data.modulesDurees}
       />
 
+      {/* L'offre, juste après le programme (06/10/2026) : les prix arrivaient au
+          22e écran du téléphone, pour 28 s d'attention moyenne. */}
+      <OffreCourte
+        locale={locale}
+        devise={devise}
+        prixProgrammeMinor={programme ? prixDe(programme, devise) : 0}
+        prixAutoMinor={construire ? prixDe(construire, devise) : 0}
+        prixLotMinor={prixLot}
+        pleinLotMinor={pleinLot}
+        accesJours={data.acces_jours ?? 60}
+        leconsProgramme={leconsProgramme(data)}
+        leconsComplement={leconsComplement(data)}
+        leconsGratuit={leconsGratuit(data)}
+        essaiHeures={data.essai_heures ?? 48}
+        lienGratuit={gratuit}
+        garantie={{ heures: data.garantie?.heures ?? 48, seuilPct: data.garantie?.seuil_pct ?? 5 }}
+      />
+
       {/* Les quatre outils, juste après le programme. Le programme vient de
           dire « vous choisissez un outil, et le parcours ne garde que celui-là » :
           la question « lequel ? » se pose exactement ici, et chaque carte ouvre
@@ -291,31 +309,60 @@ export default function AcademyV2({
           que le schéma qu'elle prouve. L'écran passe à gauche. */}
       {c.films.mcp ? <FilmSeul film={c.films.mcp} lire={c.films.lire} voir={c.films.voir} fond="feuille" inverse /> : null}
 
-      {/* Le ruban sans sa grande photo : elle descend à la frontière de la
-          quinzaine 2, pour qu'il y ait une image par quinzaine. */}
-      <Mention locale={locale} sansPhoto titre={c.trajet.ruban} />
-
-      <LeCompte
-        locale={locale}
-        avis={avis}
-        etats={data.etats}
-        faits={{
-          lessons: data.faits.lessons,
-          prompts: data.faits.prompts,
-          trophees: data.faits.trophees,
-          secrets: data.faits.secrets,
-          relectures: data.faits.relectures,
-        }}
-        jeu={data.jeu}
-        frise
-        photoQuinzaine2="/academy/visuels/apprenante-cartes_paysage.webp"
-        titreQuinzaine2={c.trajet.quinzaine2}
+      {/* ⚠️ LE RÉCIT DE CLARA TIENT EN UN ÉCRAN depuis le 06/10/2026 (Paul : « le
+          récit de Clara, il est beaucoup trop long »). Le ruban, les quinze jours
+          et « Fin de la démonstration » (2 830 px sur bureau, 4 469 sur
+          téléphone) deviennent trois moments, la carte de son compte et l'appel.
+          La frise complète (`LeCompte`) ne se monte qu'au clic. */}
+      <RecitCourt
+        kicker={jour30Copy(locale).mention.kicker}
+        titre={c.trajet.titre}
+        chapeau={c.recit.chapeau}
+        moments={[
+          { jour: c.trajet.jour(2), etape: ETAPES[0].titre[locale], phrase: jour30Copy(locale).compte.j2.phrase },
+          { jour: c.trajet.jour(11), etape: ETAPES[1].titre[locale], phrase: jour30Copy(locale).compte.j11.phrase },
+          { jour: c.trajet.jour(21), etape: ETAPES[2].titre[locale], phrase: jour30Copy(locale).compte.j21.phrase },
+        ]}
+        profil={
+          data.parcours && fin ? (
+            <Profil
+              locale={locale}
+              parcours={data.parcours}
+              fin={fin}
+              jeu={data.jeu}
+              copy={c.preuves.profil}
+              totalTrophees={data.faits.trophees}
+            />
+          ) : null
+        }
+        appel={jour30Copy(locale).retournement.titre}
+        ouvrir={jour30Copy(locale).retournement.ouvrir}
+        gratuit={c.tarifs.gratuitCourt(leconsGratuit(data), data.essai_heures ?? 48)}
+        lienGratuit={gratuit}
+        voirTout={c.recit.voirTout}
+        replier={c.recit.replier}
+        frise={
+        <LeCompte
+          locale={locale}
+          avis={avis}
+          etats={data.etats}
+          faits={{
+            lessons: data.faits.lessons,
+            prompts: data.faits.prompts,
+            trophees: data.faits.trophees,
+            secrets: data.faits.secrets,
+            relectures: data.faits.relectures,
+          }}
+          jeu={data.jeu}
+          frise
+          photoQuinzaine2="/academy/visuels/apprenante-cartes_paysage.webp"
+          titreQuinzaine2={c.trajet.quinzaine2}
+        />
+        }
       />
 
-      {/* L'attestation à gauche, le compte de Clara à droite (Paul, 07/09).
-          La carte n'apparaît que si l'app a servi `parcours` : sur un
-          instantané de secours antérieur, l'attestation reprend sa forme
-          d'origine plutôt que de montrer une colonne vide. */}
+      {/* L'attestation en petit, avec son texte à côté (06/10/2026). La carte de
+          profil qui l'accompagnait est passée dans le récit, juste au-dessus. */}
       <Diplome
         locale={locale}
         lessons={data.faits.lessons}
@@ -326,29 +373,11 @@ export default function AcademyV2({
         mention={data.jeu.mention}
         domaines={domaines}
         domainesTitre={c.preuves.domainesTitre}
-        aside={
-          data.parcours && fin ? (
-            <Profil
-              locale={locale}
-              parcours={data.parcours}
-              fin={fin}
-              jeu={data.jeu}
-              copy={c.preuves.profil}
-              totalTrophees={data.faits.trophees}
-            />
-          ) : undefined
-        }
-      />
-
-      <Retournement
-        locale={locale}
-        fin={fin}
-        rang={data.jeu.rangs[fin.rank]}
-        trophees={data.faits.trophees}
-        leconsGratuites={leconsGratuit(data)}
-        ancreTarifs="tarifs"
-        gratuitVersTarifs
-        libelleGratuit={c.tarifs.gratuitCourt(leconsGratuit(data), data.essai_heures ?? 48)}
+        compact={{
+          titre: c.attestation.titre,
+          texte: c.attestation.texte,
+          points: c.attestation.points(ETAPES.map((e) => e.titre[locale].toLowerCase()).join(', ')),
+        }}
       />
 
       {/* Page française : la méthode devant une salle, juste avant « Une

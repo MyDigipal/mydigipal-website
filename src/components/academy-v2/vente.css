@@ -250,3 +250,21 @@
   border: 0;
   box-shadow: none;
 }
+
+/* ------------------------------------------------- l'attestation en petit */
+/* 06/10/2026 : la feuille est mise en page à 720 px, puis réduite d'un bloc.
+   `zoom` réduit aussi la place qu'elle prend dans le flux, contrairement à
+   `transform: scale`, qui laisserait un trou de la taille d'origine. Les trois
+   paliers tiennent dans la colonne : 288 px dès 320 px d'écran, 504 px sur
+   tablette, 446 px dans la colonne gauche du bureau. */
+.vente-v2 .diplome-mini {
+  width: 720px;
+  flex: none;
+  zoom: 0.4;
+}
+@media (min-width: 640px) {
+  .vente-v2 .diplome-mini { zoom: 0.7; }
+}
+@media (min-width: 1024px) {
+  .vente-v2 .diplome-mini { zoom: 0.62; }
+}

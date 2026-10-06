@@ -221,6 +221,40 @@ const FR = {
     legendeMethode: 'La méthode',
     legendeAuto: 'Les automatisations',
   },
+  /**
+   * La page courte (06/10/2026, direction A du labo `page-vente-courte.html`,
+   * validée par Paul : « j'adore toutes les recommandations »). La page faisait
+   * 26 écrans sur téléphone pour 28 s d'attention, et les tarifs n'arrivaient
+   * qu'au 22e. Trois blocs : l'offre juste après le programme, le récit de Clara
+   * en un écran, l'attestation en petit avec son texte.
+   */
+  offre: {
+    titre: 'Choisissez votre formule',
+    chapeau: (jours: number) =>
+      `L’assistant IA est compris dans les trois, et l’accès dure ${jours} jours quelle que soit la formule.`,
+    lecons: (n: number) => `${n} leçons`,
+    leconsLot: (n: number) => `${n} leçons en tout, aucun module fermé`,
+    gratuit: (lecons: number, heures: number) => `Ou ${lecons} leçons offertes, ${heures} h, sans carte bancaire`,
+    garantie: (g: { heures: number; seuilPct: number }) =>
+      `Remboursement intégral sous ${g.heures} h, tant que moins de ${g.seuilPct}\u00a0% du parcours a été consulté.`,
+    detail: 'Voir le détail des tarifs',
+    code: (code: string) => `Votre code ${code} s’applique au moment de payer.`,
+  },
+  recit: {
+    chapeau:
+      'Clara Martin est une apprenante composée. Son compte se remplit selon le barème réel du produit.',
+    voirTout: 'Voir les trente jours, jour par jour', // chiffre-libre : les trente jours du récit, pas la durée d'accès
+    replier: 'Replier les trente jours', // chiffre-libre : les trente jours du récit, pas la durée d'accès
+  },
+  attestation: {
+    titre: 'Une attestation à la fin du parcours',
+    texte: 'Elle porte votre nom, les modules suivis et ce que vous avez construit. Elle vaut ce qu’on sait faire avec.',
+    points: (etapes: string) => [
+      `Les domaines couverts, étape par étape : ${etapes}`,
+      'Les exercices que vous avez rendus',
+      'La mention, quand toutes les leçons sont terminées',
+    ],
+  },
   tarifs: {
     kicker: 'Ce que ça coûte',
     /**
@@ -554,6 +588,32 @@ const EN: typeof FR = {
     paliers: { free: 'free', essentials: 'method', pro: 'automations' },
     legendeMethode: 'The method',
     legendeAuto: 'The automations',
+  },
+  offre: {
+    titre: 'Choose your plan',
+    chapeau: (jours) =>
+      `The AI assistant is included in all three, and access lasts ${jours} days whichever plan you choose.`,
+    lecons: (n) => `${n} lessons`,
+    leconsLot: (n) => `${n} lessons in total, no locked module`,
+    gratuit: (lecons, heures) => `Or ${lecons} free lessons, ${heures} hours, no card needed`,
+    garantie: (g) =>
+      `Full refund within ${g.heures} hours, as long as less than ${g.seuilPct}% of the course has been opened.`,
+    detail: 'See full pricing',
+    code: (code) => `Your code ${code} applies at checkout.`,
+  },
+  recit: {
+    chapeau: 'Clara Martin is a composite learner. Her account fills up on the product’s real scale.',
+    voirTout: 'See the thirty days, day by day', // chiffre-libre : les trente jours du récit, pas la durée d'accès
+    replier: 'Hide the thirty days', // chiffre-libre : les trente jours du récit, pas la durée d'accès
+  },
+  attestation: {
+    titre: 'A certificate at the end of the course',
+    texte: 'It carries your name, the modules you followed and what you built. It is worth what you can do with it.',
+    points: (etapes) => [
+      `The areas covered, stage by stage: ${etapes}`,
+      'The exercises you submitted',
+      'The distinction, once every lesson is completed',
+    ],
   },
   tarifs: {
     kicker: 'What it costs',
