@@ -19,12 +19,14 @@ interface Props {
 }
 const { lang, scene, fond, id, chargement = 'lazy' } = Astro.props;
 const fr = lang === 'fr';
+/* Les scènes ont une version anglaise dans `public/motion/en/` (labo : `build_en.py`). */
+const urlScene = scene.labo ? `/motion/${fr ? '' : 'en/'}${scene.labo}.html` : '';
 ---
 {scene.labo ? (
   <figure class="scene-etude" data-scene-etude>
     <div class="scene-cadre">
       <iframe
-        src={`/motion/${scene.labo}.html`}
+        src={urlScene}
         title={scene.titre}
         loading={chargement}
         data-repos={scene.repos ?? 0}
@@ -32,7 +34,7 @@ const fr = lang === 'fr';
     </div>
     <figcaption class="scene-pied">
       {scene.legende && <span>{scene.legende}</span>}
-      <a href={`/motion/${scene.labo}.html`} target="_blank" rel="noopener" class="scene-grand">{fr ? 'Voir en grand' : 'View full screen'}</a>
+      <a href={urlScene} target="_blank" rel="noopener" class="scene-grand">{fr ? 'Voir en grand' : 'View full screen'}</a>
     </figcaption>
   </figure>
 ) : (

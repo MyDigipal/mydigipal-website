@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>From first glance to car sold</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+/* Le parcours complet d'un acheteur, de l'impression à la vente, vu en isométrie.
+   Une foule de points passe devant l'annonce ; quelques-uns cliquent et s'élèvent ; sur le site,
+   chacun tourne le temps de sa visite ; certains deviennent un contact (formulaire ou appel) ;
+   les contacts gravissent le CRM, opportunité, projet, vente ; la vente devient or, et un fil
+   d'or remonte tout le chemin jusqu'à l'annonce : le résultat revient dans la campagne.
+   Système « Encre » du site : encre, bleu du logo, or pour l'argent. Une seule famille. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#fond{position:absolute;inset:0;background:
+  radial-gradient(900px 600px at 70% 62%,rgba(29,113,184,.20),transparent 70%),
+  radial-gradient(700px 500px at 18% 20%,rgba(125,184,238,.07),transparent 70%)}
+#scene{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block}
+#titre{position:absolute;left:120px;top:96px;font-size:54px;font-weight:800;line-height:1.06;letter-spacing:-.03em}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(125%)}
+.ln.b{color:#7db8ee}
+.ln.o{color:#e8bd62}
+.lab{position:absolute;left:0;top:0;white-space:nowrap;opacity:0}
+.lab .nom{display:block;font-size:19px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#7db8ee;line-height:1}
+.lab .val{display:block;margin-top:10px;font-size:36px;font-weight:800;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.lab .det{font-size:21px;font-weight:600;letter-spacing:0;color:#a9b8c8;margin-left:12px}
+.lab.droite{text-align:left}
+.lab.or .nom{color:#e8bd62}
+.bloc-crm .rang{display:flex;align-items:baseline;gap:12px;margin-top:12px;clip-path:inset(-6px 100% -6px 0)}
+.bloc-crm .rang b{font-size:36px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;min-width:62px;text-align:right}
+.bloc-crm .rang i{font-style:normal;font-size:22px;font-weight:600;color:#a9b8c8}
+.bloc-crm .rang.or b,.bloc-crm .rang.or i{color:#e8bd62}
+#lab5 .val{color:#e8bd62}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="fond"></div>
+  <svg id="scene" viewBox="0 0 1920 1080" width="1920" height="1080"></svg>
+  <div id="titre">
+    <div class="mask"><span class="ln" id="t1">From the first glance</span></div>
+    <div class="mask"><span class="ln b" id="t2">to the car sold.</span></div>
+  </div>
+  <div class="lab" id="lab0"><span class="nom">Impressions</span><span class="val"><span data-n>0</span></span></div>
+  <div class="lab" id="lab1"><span class="nom">Clicks</span><span class="val"><span data-n>0</span><span class="det">click-through rate 1.7%</span></span></div>
+  <div class="lab" id="lab2"><span class="nom">On the website</span><span class="val"><span data-n>0</span><span class="det">on average</span></span></div>
+  <div class="lab" id="lab3"><span class="nom">Leads</span><span class="val"><span data-n>0</span><span class="det">141 forms · 71 calls</span></span></div>
+  <div class="lab bloc-crm" id="lab4"><span class="nom">In the CRM</span>
+    <span class="rang" data-r="0"><b data-n>0</b><i>opportunities</i></span>
+    <span class="rang" data-r="1"><b data-n>0</b><i>car projects</i></span>
+    <span class="rang or" data-r="2"><b data-n>0</b><i>sales</i></span></div>
+  <div class="lab or" id="lab5"><span class="nom">The result flows back to the ad</span><span class="val">€343<span class="det">of media per car sold</span></span></div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 24;
+window.DUR = window.DUREE;
+window.PRET = Promise.all([
+  document.fonts.load("800 58px 'Plus Jakarta Sans'"),
+  document.fonts.load("700 19px 'Plus Jakarta Sans'"),
+  document.fonts.load("600 21px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+
+(function () {
+'use strict';
+var D = window.DUREE, TAU = Math.PI * 2;
+/* Projection isométrique vraie : x vers la droite et le bas, y vers la gauche et le bas, z vers le haut. */
+var U = 82, OX = 1080, OY = 641, C = Math.cos(Math.PI / 6), S = 0.5;
+
+/* ---------- courbes, toutes pures ---------- */
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outQuart(p) { return 1 - Math.pow(1 - p, 4); }
+function inQuad(p) { return p * p; }
+function inCubic(p) { return p * p * p; }
+function inOutCubic(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+function inOutSine(p) { return -(Math.cos(Math.PI * p) - 1) / 2; }
+function outBack(s) { return function (p) { return 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2); }; }
+function inBack(s) { return function (p) { return (s + 1) * p * p * p - s * p * p; }; }
+function bosse(p) { return p <= 0 || p >= 1 ? 0 : Math.sin(Math.PI * p); }
+/* Hasard figé : la même valeur pour le même point à chaque image. */
+function h(i, k) { var v = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); }
+
+/* ---------- couleurs et lumière ---------- */
+var PLAQUE = [19, 42, 68], BLOC = [42, 90, 148], PISTE = [11, 26, 44], RAIL = [34, 66, 108], VERRE = [24, 58, 98],
+    BLEU = [125, 184, 238], MARQUE = [29, 113, 184], OR = [232, 189, 98], IVOIRE = [244, 247, 250], ENCRE = [8, 19, 31];
+function rgb(c, k) { k = k == null ? 1 : k; return 'rgb(' + Math.round(c[0] * k) + ',' + Math.round(c[1] * k) + ',' + Math.round(c[2] * k) + ')'; }
+function rgba(c, a) { return 'rgba(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ',' + a.toFixed(3) + ')'; }
+function melC(a, b, p) { return [mix(a[0], b[0], p), mix(a[1], b[1], p), mix(a[2], b[2], p)]; }
+var L = (function () { var v = [-0.6, 0.2, 0.75], n = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); return [v[0] / n, v[1] / n, v[2] / n]; })();
+function lum(n) { var d = n[0] * L[0] + n[1] * L[1] + n[2] * L[2]; return 0.46 + 0.54 * Math.pow(clamp((d + 0.2) / 0.965, 0, 1), 0.8); }
+
+/* ---------- projection et primitives SVG ---------- */
+var DEFS = '';
+function proj(p) { return [OX + (p[0] - p[1]) * C * U, OY + (p[0] + p[1]) * S * U - p[2] * U]; }
+function fx(v) { return v.toFixed(1); }
+function ptsList(P) { var s = ''; for (var i = 0; i < P.length; i++) { var q = proj(P[i]); s += (i ? ' ' : '') + fx(q[0]) + ',' + fx(q[1]); } return s; }
+function quad(P, attrs) { return '<polygon points="' + ptsList(P) + '"' + (attrs ? ' ' + attrs : '') + '/>'; }
+function ligne(a, b) { var A = proj(a), B = proj(b); return '<line x1="' + fx(A[0]) + '" y1="' + fx(A[1]) + '" x2="' + fx(B[0]) + '" y2="' + fx(B[1]) + '"/>'; }
+var FACES = [[1, 3, 7, 5], [0, 4, 6, 2], [2, 6, 7, 3], [0, 1, 5, 4], [4, 5, 7, 6], [0, 2, 3, 1]];
+var NORM = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+function solide(c, d) {
+  var V = [];
+  for (var i = 0; i < 8; i++) V.push([c[0] + (i & 1 ? d[0] : -d[0]) / 2, c[1] + (i & 2 ? d[1] : -d[1]) / 2, c[2] + (i & 4 ? d[2] : -d[2]) / 2]);
+  return { V: V, c: c, d: d };
+}
+function visible(n) { return n[0] + n[1] + n[2] > 1e-6; }
+function facePts(sol, f) { return [sol.V[FACES[f][0]], sol.V[FACES[f][1]], sol.V[FACES[f][2]], sol.V[FACES[f][3]]]; }
+function faces(sol, base, attrs, haut) {
+  var s = '';
+  for (var f = 0; f < 6; f++) { if (!visible(NORM[f])) continue; s += quad(facePts(sol, f), 'fill="' + rgb(f === 4 && haut ? haut : base, lum(NORM[f])) + '"' + (attrs ? ' ' + attrs : '')); }
+  return s;
+}
+/* Un bloc dont l'arête du dessus porte un liseré de lumière : la lecture des volumes reste nette sur l'encre. */
+function bloc(c, d, base, haut) {
+  var sol = solide(c, d), s = faces(sol, base, '', haut);
+  var T = facePts(sol, 4);
+  s += '<polyline points="' + ptsList([T[3], T[0], T[1]]) + '" fill="none" stroke="rgba(125,184,238,.35)" stroke-width="1.2"/>';
+  return s;
+}
+function coque(P) {
+  P = P.slice().sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
+  var cr = function (o, a, b) { return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); };
+  var bas = [], haut = [], i;
+  for (i = 0; i < P.length; i++) { while (bas.length >= 2 && cr(bas[bas.length - 2], bas[bas.length - 1], P[i]) <= 0) bas.pop(); bas.push(P[i]); }
+  for (i = P.length - 1; i >= 0; i--) { while (haut.length >= 2 && cr(haut[haut.length - 2], haut[haut.length - 1], P[i]) <= 0) haut.pop(); haut.push(P[i]); }
+  bas.pop(); haut.pop();
+  return bas.concat(haut);
+}
+function ombre(V, val) {
+  var P = [], i, v, hh;
+  for (i = 0; i < V.length; i++) { v = V[i]; hh = v[2] - val; if (hh < -1e-6) continue; P.push(proj([v[0] - L[0] / L[2] * hh, v[1] - L[1] / L[2] * hh, val])); }
+  if (P.length < 3) return '';
+  var H = coque(P), s = '';
+  for (i = 0; i < H.length; i++) s += (i ? ' ' : '') + fx(H[i][0]) + ',' + fx(H[i][1]);
+  return '<polygon points="' + s + '"/>';
+}
+/* Un motif dessiné à plat sur une face verticale x = cste, en coordonnées locales (u le long de -y, v vers le haut). */
+function surFaceX(x, y0, z0, pts) { return pts.map(function (p) { return [x, y0 - p[0], z0 + p[1]]; }); }
+/* Un motif sur une face verticale y = cste (u le long de +x). */
+function surFaceY(y, x0, z0, pts) { return pts.map(function (p) { return [x0 + p[0], y, z0 + p[1]]; }); }
+function rect(u0, v0, u1, v1) { return [[u0, v0], [u1, v0], [u1, v1], [u0, v1]]; }
+/* La silhouette d'une berline, en unités locales, posée sur v = 0. */
+var VOITURE = [[0, 0.08], [0.02, 0.2], [0.18, 0.26], [0.34, 0.42], [0.66, 0.44], [0.84, 0.28], [0.98, 0.24], [1, 0.08]];
+
+/* ---------- la partition ---------- */
+var HT = 0.18;                                   /* hauteur de la piste */
+var X_ANN = -5.4, X_CLIC = -3.4, X_SITE = -0.95, X_CONV = 1.25, X_CRM = 3.85;
+var V_FOULE = 2.0;                              /* vitesse de la foule, unités par seconde */
+var N_FOULE = 220;
+var X_DEPART = -8.2;                            /* la foule entre par le bout du plateau */
+/* Les points de la foule. Un sur neuf clique : visuellement exagéré pour se voir, les vrais taux
+   sont écrits dans les libellés. Chacun a son destin, figé par le hasard. */
+var FOULE = [];
+(function () {
+  var cliqueurs = 0;
+  for (var i = 0; i < N_FOULE; i++) {
+    var b = 2.1 + i * (4.4 / N_FOULE) + 0.02 * h(i, 1);
+    var clique = (i % 9 === 4) && b < 6.2;
+    var p = { i: i, b: b, voie: (h(i, 2) - 0.5) * 1.1, clique: clique };
+    if (clique) {
+      var k = cliqueurs++;
+      p.k = k;
+      p.rebond = (k % 3 === 1);                                  /* un tiers repart vite */
+      p.sejour = p.rebond ? 0.45 : 1.0 + 1.3 * h(i, 3);          /* le temps de la visite */
+      p.ang0 = TAU * h(i, 4);
+      p.r = 0.55 + 0.35 * h(i, 5);
+      p.conv = !p.rebond && (k % 5 !== 3);                       /* la plupart des visiteurs restés convertissent ici */
+      p.appel = p.conv && (k % 3 === 2);
+    }
+    FOULE.push(p);
+  }
+})();
+/* Les contacts qui gravissent le CRM : combien de marches chacun monte. */
+var MARCHES = { 0: 3, 1: 1, 2: 2, 3: 1, 4: 3, 5: 2, 6: 1, 7: 2, 8: 1, 9: 1, 10: 2, 11: 1 };
+
+/* Où est un point de la foule à l'instant t, et sous quelle forme. */
+function etatFoule(p, t) {
+  var dt = t - p.b;
+  if (dt < 0) return null;
+  var x = X_DEPART + V_FOULE * dt, y = p.voie, z = HT + 0.06, a = Math.min(1, dt / 0.4), forme = 'point', teinte = 0;
+  if (!p.clique) {
+    /* Ceux qui ne cliquent pas passent sous le portique, puis glissent hors de la piste et tombent. */
+    if (x > X_CLIC + 0.6) {
+      var q = (x - (X_CLIC + 0.6)) / 1.6;
+      y = p.voie + 1.6 * inQuad(clamp(q, 0, 1));
+      z = HT + 0.06 - 2.2 * inQuad(clamp(q - 0.55, 0, 1));
+      a *= 1 - clamp((q - 0.55) / 0.6, 0, 1);
+      if (q > 1.2) return null;
+    }
+    return { x: x, y: y, z: z, a: a, forme: forme, teinte: 0 };
+  }
+  /* Les cliqueurs : s'élèvent au portique, gagnent le site. */
+  var tClic = p.b + (X_CLIC - X_DEPART) / V_FOULE;
+  if (t < tClic) return { x: x, y: y, z: z, a: a, forme: forme, teinte: 0 };
+  var montee = outExpo(seg(t, tClic, tClic + 0.5));
+  var tSite = tClic + 1.0;
+  if (t < tSite) {
+    var u = inOutSine(seg(t, tClic, tSite));
+    return { x: mix(X_CLIC, X_SITE - 0.6, u), y: mix(p.voie, 0, u), z: mix(HT + 0.06, HT + 0.55 + 0.25, montee) + 0.25 * bosse(u), a: 1, forme: 'point', teinte: montee, halo: 1 - montee * 0.4 };
+  }
+  /* Sur le site : il tourne le temps de sa visite. */
+  var ZS = HT + 0.5 + 0.06;
+  var tFin = tSite + p.sejour;
+  if (t < tFin) {
+    var e = outQuart(seg(t, tSite, tSite + 0.35));
+    var ang = p.ang0 + (t - tSite) * 2.4;
+    return { x: mix(X_SITE - 0.6, X_SITE + p.r * Math.cos(ang), e), y: mix(0, p.r * Math.sin(ang) * 0.9, e), z: ZS, a: 1, forme: 'point', teinte: 1, visite: seg(t, tSite, tFin) };
+  }
+  var angF = p.ang0 + p.sejour * 2.4, xF = X_SITE + p.r * Math.cos(angF), yF = p.r * Math.sin(angF) * 0.9;
+  if (!p.conv) {
+    /* Il repart : il glisse vers l'arrière du plateau et s'efface. */
+    var r = seg(t, tFin, tFin + 0.8);
+    if (r >= 1) return null;
+    return { x: xF - 0.4 * r, y: yF - 1.8 * outQuart(r), z: ZS - 0.6 * inQuad(r), a: 1 - r, forme: 'point', teinte: 1 - r };
+  }
+  /* Il convertit : il file vers le formulaire ou le téléphone, et en ressort contact. */
+  var kiosque = p.appel ? [X_CONV, 0.7] : [X_CONV, -0.7];
+  var tK = tFin + 0.55;
+  if (t < tK) {
+    var w = inOutCubic(seg(t, tFin, tK));
+    return { x: mix(xF, kiosque[0] - 0.55, w), y: mix(yF, kiosque[1], w), z: ZS + 0.3 * bosse(w) - 0.2 * w, a: 1, forme: 'point', teinte: 1 };
+  }
+  var tSortie = tK + 0.35;
+  if (t < tSortie) return { x: kiosque[0] - 0.55, y: kiosque[1], z: HT + 0.3, a: 1 - seg(t, tK, tK + 0.12), forme: 'point', teinte: 1 };
+  return contact(p, t, tSortie, kiosque);
+}
+/* Un contact : un cube qui sort du kiosque, gagne le pied du CRM, puis gravit ses marches. */
+var GRADINS = [ { x: X_CRM, d: [2.6, 2.8, 0.55] }, { x: X_CRM + 0.25, d: [1.9, 2.0, 0.55] }, { x: X_CRM + 0.5, d: [1.2, 1.2, 0.55] } ];
+var ZG = [0.55, 1.1, 1.65];
+function contact(p, t, t0, kiosque) {
+  var c = p.k;
+  var arrivee = t0 + 0.9;
+  var base = [X_CRM - 1.8, (c % 4 - 1.5) * 0.42, HT];
+  var forme = 'cube', or = 0;
+  if (t < arrivee) {
+    var u = inOutCubic(seg(t, t0, arrivee));
+    var pop = outBack(2.2)(seg(t, t0, t0 + 0.3));
+    return { x: mix(kiosque[0] + 0.55, base[0], u), y: mix(kiosque[1], base[1], u), z: HT + 0.25 * bosse(u), a: 1, forme: forme, taille: pop, or: 0 };
+  }
+  /* Les marches, une à une, avec un temps de pause entre chacune. */
+  var n = MARCHES[c] || 1, pos = base.slice(), tt = arrivee + 0.35;
+  var places = [
+    [X_CRM - 0.95, (c % 4 - 1.5) * 0.5, ZG[0]],
+    [X_CRM - 0.25, (c % 3 - 1) * 0.5, ZG[1]],
+    [X_CRM + 0.4, (c % 2 - 0.5) * 0.45, ZG[2]]
+  ];
+  for (var m = 0; m < n; m++) {
+    var dep = pos, arr = places[m], dh = 0.55;
+    if (t < tt) return { x: dep[0], y: dep[1], z: dep[2], a: 1, forme: forme, taille: 1, or: or, gris: 0 };
+    if (t < tt + dh) {
+      var v = seg(t, tt, tt + dh), ve = inOutSine(v);
+      return { x: mix(dep[0], arr[0], ve), y: mix(dep[1], arr[1], ve), z: mix(dep[2], arr[2], ve) + 0.55 * bosse(v), a: 1, forme: forme, taille: 1, or: m === 2 ? v : 0 };
+    }
+    pos = arr; tt += dh + 0.75 + 0.15 * (c % 3);
+    if (m === 2) or = 1;
+  }
+  /* Arrivé à sa dernière marche : il y reste ; ceux qui ne sont pas allés au bout pâlissent. */
+  var pali = n < 3 ? seg(t, tt, tt + 0.8) * 0.55 : 0;
+  return { x: pos[0], y: pos[1], z: pos[2], a: 1, forme: forme, taille: 1, or: n === 3 ? 1 : 0, gris: pali };
+}
+
+function dessinerPoint(e) {
+  var P = proj([e.x, e.y, e.z]), coul = melC(BLEU, IVOIRE, e.teinte || 0), s = '';
+  var r = 3.4 + 1.6 * (e.teinte || 0);
+  if (e.teinte > 0.05) s += '<circle cx="' + fx(P[0]) + '" cy="' + fx(P[1]) + '" r="' + fx(r * 3) + '" fill="' + rgba(BLEU, 0.16 * e.teinte * e.a) + '"/>';
+  if (e.visite != null && e.visite > 0) {
+    /* l'anneau de la visite : il se remplit pendant que le visiteur reste */
+    var ang = e.visite * TAU, R = r + 5, x1 = P[0], y1 = P[1] - R, x2 = P[0] + R * Math.sin(ang), y2 = P[1] - R * Math.cos(ang);
+    s += '<path d="M' + fx(x1) + ' ' + fx(y1) + ' A' + R + ' ' + R + ' 0 ' + (ang > Math.PI ? 1 : 0) + ' 1 ' + fx(x2) + ' ' + fx(y2) + '" fill="none" stroke="' + rgba(IVOIRE, 0.75) + '" stroke-width="1.6" stroke-linecap="round"/>';
+  }
+  s += '<circle cx="' + fx(P[0]) + '" cy="' + fx(P[1]) + '" r="' + fx(r) + '" fill="' + rgba(coul, e.a) + '"/>';
+  return s;
+}
+function dessinerCube(e) {
+  var k = 0.3 * (e.taille == null ? 1 : e.taille);
+  if (k < 0.01) return '';
+  var base = melC(MARQUE, OR, e.or || 0);
+  base = melC(base, [70, 88, 110], e.gris || 0);
+  var sol = solide([e.x, e.y, e.z + k / 2], [k, k, k]), s = '';
+  s += faces(sol, melC(base, IVOIRE, 0.15));
+  if (e.or > 0.5) { var P = proj([e.x, e.y, e.z + k]); s = '<circle cx="' + fx(P[0]) + '" cy="' + fx(P[1]) + '" r="22" fill="' + rgba(OR, 0.18 * (e.or - 0.5) * 2) + '"/>' + s; }
+  return s;
+}
+
+var $ = function (id) { return document.getElementById(id); };
+var scene = $('scene'), T1 = $('t1'), T2 = $('t2');
+var labs = [0, 1, 2, 3, 4, 5].map(function (i) { return $('lab' + i); });
+var nums = labs.map(function (l) { return l.querySelector('[data-n]'); });
+var rangs = [].slice.call(labs[4].querySelectorAll('.rang'));
+function fr(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+/* Les étapes : où la ligne part, quand elle part, ce que le compteur atteint. */
+var ETAPES = [
+  { a: function () { return [X_ANN, 1.25, HT]; }, t: 2.9, ly: 560, val: function (p) { return fr(184000 * p); } },
+  { a: function () { return [X_CLIC, 1.25, HT]; }, t: 4.6, ly: 650, val: function (p) { return fr(3120 * p); } },
+  { a: function () { return [X_SITE + 0.25, 1.2, HT + 0.5]; }, t: 6.4, ly: 740, val: function (p) { var s = Math.round(108 * p); return Math.floor(s / 60) + ' min ' + String(s % 60).padStart(2, '0'); } },
+  { a: function () { return [X_CONV + 0.2, 1.25, HT]; }, t: 8.6, ly: 830, val: function (p) { return fr(212 * p); } },
+  { a: function () { return [X_CRM + 0.5, -0.1, ZG[2]]; }, t: 11.2, ly: 330, droite: true, val: null },
+  { a: function () { return [X_ANN, -1.45, 2.0]; }, t: 17.6, ly: 150, haut: true, val: null }
+];
+/* Les trois rangs du CRM : chacun s'écrit quand le premier contact atteint sa marche. */
+var RANGS = [{ t: 11.2, n: 96 }, { t: 12.6, n: 41 }, { t: 14.2, n: 14 }];
+var LX = 120, RX = 1530, HX = 860;
+var T_RETOUR = 15.6, T_RETOUR_FIN = 17.6;
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  DEFS = '';
+  var opa = Math.min(seg(t, 0, 0.3), 1 - seg(t, 23.3, 24.0));
+  var zp = -2.2 * (1 - outExpo(seg(t, 0, 0.9)));
+  var kP = outBack(1.3)(seg(t, 0.55, 1.0)), kA = outBack(1.4)(seg(t, 0.8, 1.25)), kC = outBack(1.4)(seg(t, 1.0, 1.45)),
+      kS = outBack(1.3)(seg(t, 1.2, 1.7)), kK = outBack(1.4)(seg(t, 1.45, 1.9)), kR = [outBack(1.3)(seg(t, 1.6, 2.05)), outBack(1.3)(seg(t, 1.75, 2.2)), outBack(1.3)(seg(t, 1.9, 2.35))];
+  var retour = seg(t, T_RETOUR, T_RETOUR_FIN), orAnn = outQuart(seg(t, T_RETOUR_FIN - 0.15, T_RETOUR_FIN + 0.5));
+  var s = '', i;
+
+  /* le plateau et sa grille */
+  var plaque = solide([-1.0, 0, zp - 0.12], [13.2, 4.8, 0.24]);
+  s += faces(plaque, PLAQUE);
+  var gop = 0.09 * seg(t, 0.2, 0.8);
+  if (gop > 0.001) {
+    s += '<g stroke="' + rgba(BLEU, gop) + '" stroke-width="1" fill="none">';
+    for (i = -7; i <= 5; i++) s += ligne([i, -2.4, zp], [i, 2.4, zp]);
+    for (i = -2; i <= 2; i++) s += ligne([-7.6, i, zp], [5.6, i, zp]);
+    s += '</g>';
+  }
+
+  /* la lumière posée sous l'étape qui travaille */
+  var FLAQUES = [[X_ANN + 0.4, 0, 2.2, 6.6, BLEU], [X_CLIC, 0, 3.9, 8.2, BLEU], [X_SITE, 0, 5.4, 11.2, BLEU], [X_CONV, 0, 6.4, 12.0, BLEU], [X_CRM + 0.2, -0.1, 8.6, 15.6, BLEU], [X_CRM + 0.4, -0.1, 13.8, 22.8, OR]];
+  for (i = 0; i < FLAQUES.length; i++) {
+    var F = FLAQUES[i], k = Math.min(seg(t, F[2], F[2] + 0.8), 1 - seg(t, F[3], F[3] + 1.2));
+    if (k <= 0.01) continue;
+    var Pc = proj([F[0], F[1], zp + 0.01]), rx = 2.3 * U * C;
+    s += '<ellipse cx="' + fx(Pc[0]) + '" cy="' + fx(Pc[1]) + '" rx="' + fx(rx) + '" ry="' + fx(rx * 0.577) + '" fill="' + rgba(F[4], 0.22 * k) + '" style="filter:blur(26px)"/>';
+  }
+  /* les volumes fixes */
+  var hP = HT * kP;
+  var piste = solide([-2.9, 0, hP / 2], [9.4, 2.0, hP]);
+  var annonce = solide([X_ANN, -1.45, 1.0 * kA], [1.9, 0.18, 2.0 * kA]);
+  var site = solide([X_SITE, 0, HT + 0.25 * kS], [2.5, 2.4, 0.5 * kS]);
+  var ecran = solide([X_SITE - 0.15, -1.32, HT + 0.5 + 0.8 * kS], [2.1, 0.12, 1.6 * kS]);
+  var formK = solide([X_CONV, -0.7, HT + 0.4 * kK], [0.62, 0.62, 0.8 * kK]);
+  var telK = solide([X_CONV, 0.7, HT + 0.4 * kK], [0.62, 0.62, 0.8 * kK]);
+  var grad = GRADINS.map(function (g, j) { var k = kR[j]; return solide([g.x, -0.1, ZG[j] - 0.275 + (1 - k) * -0.5], [g.d[0], g.d[1], 0.55 * Math.max(k, 0.01) + (j ? ZG[j] - 0.55 : 0) * 0]); });
+
+  /* ombres au sol */
+  var om = '';
+  if (hP > 0.01) om += ombre(piste.V, zp);
+  if (kA > 0.01) om += ombre(annonce.V, zp);
+  if (kS > 0.01) om += ombre(ecran.V, zp);
+  if (kR[0] > 0.01) om += ombre(solide([X_CRM, -0.1, ZG[0] / 2], [2.6, 2.8, ZG[0]]).V, zp) + ombre(solide([X_CRM + 0.25, -0.1, ZG[1] / 2], [1.9, 2.0, ZG[1]]).V, zp) + ombre(solide([X_CRM + 0.5, -0.1, ZG[2] / 2], [1.2, 1.2, ZG[2]]).V, zp);
+  if (om) { DEFS += '<clipPath id="sol"><polygon points="' + ptsList(facePts(plaque, 4)) + '"/></clipPath>'; s += '<g clip-path="url(#sol)" fill="#020a14" opacity=".55">' + om + '</g>'; }
+
+  /* le panneau de l'annonce, au fond : sa face avant porte une vraie petite annonce */
+  if (kA > 0.01) {
+    var aCoul = melC(VERRE, [70, 58, 30], orAnn);
+    s += faces(annonce, aCoul);
+    if (kA > 0.9) {
+      var yF = -1.45 + 0.091, z0 = 0.18;
+      var fond = melC([210, 228, 246], [250, 232, 190], orAnn);
+      s += quad(surFaceY(yF, X_ANN - 0.82, z0, rect(0, 0, 1.64, 1.66)), 'fill="' + rgb(fond) + '"');
+      s += quad(surFaceY(yF, X_ANN - 0.82, z0, rect(0.1, 1.4, 0.3, 1.58)), 'fill="' + rgb(MARQUE) + '"');
+      s += quad(surFaceY(yF, X_ANN - 0.82, z0, rect(0.36, 1.46, 1.1, 1.52)), 'fill="rgba(8,19,31,.45)"');
+      s += quad(surFaceY(yF, X_ANN - 0.82, z0, rect(0.1, 0.42, 1.54, 1.32)), 'fill="' + rgb(melC([160, 196, 232], OR, orAnn)) + '"');
+      s += quad(surFaceY(yF, X_ANN - 0.82, z0, VOITURE.map(function (q) { return [0.32 + q[0] * 1.0, 0.5 + q[1] * 1.1]; })), 'fill="' + rgb(ENCRE) + '"');
+      s += quad(surFaceY(yF, X_ANN - 0.82, z0, rect(0.1, 0.1, 1.54, 0.3)), 'fill="' + rgb(melC(MARQUE, OR, orAnn)) + '"');
+      if (orAnn > 0.01) s += quad(surFaceY(yF + 0.001, X_ANN - 0.9, z0 - 0.08, rect(0, 0, 1.8, 1.82)), 'fill="none" stroke="' + rgba(OR, orAnn) + '" stroke-width="3" style="filter:drop-shadow(0 0 ' + fx(14 * orAnn) + 'px rgba(232,189,98,.9))"');
+    }
+  }
+  /* l'écran du site, au fond du plateau du site : une page avec sa structure */
+  if (kS > 0.01) {
+    s += faces(ecran, VERRE);
+    if (kS > 0.9) {
+      var yE = -1.32 + 0.061, zE = HT + 0.62;
+      s += quad(surFaceY(yE, X_SITE - 1.0, zE, rect(0, 0, 2.0, 1.4)), 'fill="#e9f1f9"');
+      s += quad(surFaceY(yE, X_SITE - 1.0, zE, rect(0, 1.24, 2.0, 1.4)), 'fill="' + rgb(ENCRE) + '"');
+      s += quad(surFaceY(yE, X_SITE - 1.0, zE, rect(0.12, 0.62, 1.05, 1.1)), 'fill="#b9d3ec"');
+      s += quad(surFaceY(yE, X_SITE - 1.0, zE, rect(1.18, 0.98, 1.88, 1.08)), 'fill="rgba(8,19,31,.5)"');
+      s += quad(surFaceY(yE, X_SITE - 1.0, zE, rect(1.18, 0.84, 1.7, 0.9)), 'fill="rgba(8,19,31,.3)"');
+      s += quad(surFaceY(yE, X_SITE - 1.0, zE, rect(1.18, 0.62, 1.56, 0.74)), 'fill="' + rgb(MARQUE) + '"');
+      s += quad(surFaceY(yE, X_SITE - 1.0, zE, VOITURE.map(function (q) { return [0.22 + q[0] * 0.74, 0.66 + q[1] * 0.7]; })), 'fill="' + rgb(ENCRE) + '"');
+      for (i = 0; i < 3; i++) s += quad(surFaceY(yE, X_SITE - 1.0, zE, rect(0.12 + i * 0.64, 0.12, 0.66 + i * 0.64, 0.5)), 'fill="#d3e2f1"');
+    }
+  }
+
+  /* la piste, avec sa trame qui défile sous la foule */
+  if (hP > 0.01) {
+    s += faces(piste, PISTE);
+    var ph = (t * V_FOULE) % 0.5, b = '<g fill="' + rgba(BLEU, 0.13) + '">';
+    for (var xb = -7.5; xb < 1.7; xb += 0.5) { var xa = xb + ph; if (xa > 1.72 || xa < -7.55) continue; b += quad([[xa, -0.9, hP + 0.002], [xa + 0.08, -0.9, hP + 0.002], [xa + 0.08, 0.9, hP + 0.002], [xa, 0.9, hP + 0.002]]); }
+    s += b + '</g>';
+  }
+  /* le portique du clic : poteau arrière avant la foule */
+  var hG = 1.6 * kC;
+  if (kC > 0.01) s += faces(solide([X_CLIC, -1.05, hG / 2], [0.26, 0.26, hG]), RAIL);
+  /* le socle du site */
+  if (kS > 0.01) s += bloc(site.c, site.d, BLOC, melC(BLOC, [60, 110, 170], 0.5));
+  /* les kiosques : le formulaire au fond */
+  if (kK > 0.01) {
+    s += bloc(formK.c, formK.d, BLOC);
+    if (kK > 0.9) {
+      var zf = HT + 0.18, xf = X_CONV - 0.25;
+      s += quad(surFaceY(-0.7 + 0.311, xf, zf, rect(0, 0, 0.5, 0.48)), 'fill="#e9f1f9"');
+      for (i = 0; i < 3; i++) s += quad(surFaceY(-0.7 + 0.312, xf, zf, rect(0.07, 0.34 - i * 0.1, 0.43, 0.38 - i * 0.1)), 'fill="rgba(8,19,31,.4)"');
+      s += quad(surFaceY(-0.7 + 0.312, xf, zf, rect(0.07, 0.04, 0.3, 0.1)), 'fill="' + rgb(MARQUE) + '"');
+    }
+  }
+  /* les gradins du CRM */
+  for (i = 0; i < 3; i++) {
+    if (kR[i] < 0.01) continue;
+    var g = GRADINS[i], hz = ZG[i], base0 = i ? ZG[i - 1] : 0;
+    var hReal = (hz - base0) * kR[i];
+    var teinte = i === 2 ? melC(BLOC, [168, 128, 50], outQuart(seg(t, 13.6, 14.6))) : BLOC;
+    s += bloc([g.x, -0.1, base0 + hReal / 2], [g.d[0], g.d[1], hReal], teinte);
+  }
+
+  /* la foule, les visiteurs, les contacts : du plus loin au plus proche */
+  var elems = [];
+  for (i = 0; i < FOULE.length; i++) {
+    var e = etatFoule(FOULE[i], t);
+    if (!e) continue;
+    elems.push(e);
+  }
+  elems.sort(function (a, b) { return (a.x + a.y + a.z * 0.2) - (b.x + b.y + b.z * 0.2); });
+  for (i = 0; i < elems.length; i++) s += elems[i].forme === 'cube' ? dessinerCube(elems[i]) : dessinerPoint(elems[i]);
+
+  /* devant la foule : le téléphone, le portique avant et son pont */
+  if (kK > 0.01) {
+    s += bloc(telK.c, telK.d, BLOC);
+    if (kK > 0.9) {
+      /* le combiné, dessiné sur la face +x */
+      var xt = X_CONV + 0.311;
+      s += quad(surFaceX(xt, 0.7 + 0.24, HT + 0.2, rect(0, 0, 0.48, 0.46)), 'fill="#e9f1f9"');
+      s += quad(surFaceX(xt + 0.001, 0.7 + 0.24, HT + 0.2, [[0.1, 0.32], [0.2, 0.36], [0.24, 0.28], [0.18, 0.22], [0.26, 0.12], [0.32, 0.18], [0.4, 0.14], [0.38, 0.06], [0.28, 0.04], [0.1, 0.22]]), 'fill="' + rgb(MARQUE) + '"');
+    }
+  }
+  if (kC > 0.01) {
+    s += faces(solide([X_CLIC, 1.05, hG / 2], [0.26, 0.26, hG]), RAIL);
+    s += bloc([X_CLIC, 0, hG - 0.14], [0.42, 2.4, 0.28], BLOC);
+    if (kC > 0.9) {
+      /* le curseur, sur la face avant du pont, qui clique quand un visiteur passe */
+      var pulse = 0;
+      for (i = 0; i < FOULE.length; i++) { var p = FOULE[i]; if (!p.clique) continue; var tc = p.b + (X_CLIC - X_DEPART) / V_FOULE; pulse = Math.max(pulse, bosse(seg(t, tc - 0.05, tc + 0.3))); }
+      var sc = 1 - 0.18 * pulse;
+      var curs = [[0, 0], [0, 0.36], [0.09, 0.27], [0.15, 0.4], [0.2, 0.38], [0.14, 0.25], [0.26, 0.25]].map(function (q) { return [0.92 + q[0] * sc, hG - 0.13 + (q[1] - 0.36) * sc * 0.55]; });
+      s += quad(curs.map(function (q) { return [X_CLIC + 0.211, -q[0] + 1.18, q[1]]; }), 'fill="' + rgb(IVOIRE) + '" style="filter:drop-shadow(0 0 ' + fx(10 * pulse) + 'px rgba(125,184,238,.95))"');
+    }
+  }
+
+  /* le fil d'or : de la vente à l'annonce, au-dessus de tout le chemin */
+  if (retour > 0) {
+    var nPts = 64, pts = [], fin = Math.max(2, Math.round(nPts * inOutCubic(retour)));
+    for (i = 0; i <= nPts; i++) {
+      var u = i / nPts, xx = mix(X_CRM + 0.4, X_ANN + 0.1, u), zz = mix(ZG[2] + 0.4, 2.2, u) + 1.6 * Math.sin(Math.PI * u), yy = mix(-0.4, -1.2, u);
+      pts.push(proj([xx, yy, zz]));
+    }
+    var d = '';
+    for (i = 0; i < fin; i++) d += (i ? 'L' : 'M') + fx(pts[i][0]) + ' ' + fx(pts[i][1]);
+    var fade = 1 - seg(t, 21.5, 23.0) * 0.6;
+    s += '<path d="' + d + '" fill="none" stroke="' + rgba(OR, 0.25 * fade) + '" stroke-width="10" stroke-linecap="round" style="filter:blur(4px)"/>';
+    s += '<path d="' + d + '" fill="none" stroke="' + rgba(OR, 0.95 * fade) + '" stroke-width="3" stroke-linecap="round"/>';
+    var tete = pts[fin - 1];
+    if (retour < 1) s += '<circle cx="' + fx(tete[0]) + '" cy="' + fx(tete[1]) + '" r="7" fill="' + rgb(OR) + '" style="filter:drop-shadow(0 0 12px rgba(232,189,98,1))"/>';
+  }
+
+  scene.innerHTML = '<defs>' + DEFS + '</defs><g opacity="' + opa.toFixed(3) + '">' + s + '</g>';
+
+  /* les libellés hors de la scène, reliés par un trait qui part de l'étape quand elle a lieu */
+  var traits = '', sortie = seg(t, 22.6, 23.2), courante = -1;
+  for (i = 0; i < ETAPES.length; i++) if (t >= ETAPES[i].t) courante = i;
+  for (i = 0; i < ETAPES.length; i++) {
+    var E = ETAPES[i], lab = labs[i], A = proj(E.a()), pd = outExpo(seg(t, E.t, E.t + 0.6)), pl = outQuart(seg(t, E.t + 0.35, E.t + 0.9));
+    var Bx, By, Cx, Cy;
+    if (E.haut) { Bx = A[0]; By = E.ly; Cx = HX - 18; Cy = By; }
+    else if (!E.droite) { By = E.ly; Bx = A[0] - (By - A[1]); Cy = By; Cx = LX + Math.max(lab.offsetWidth, 200) + 28; if (Bx < Cx + 30) Bx = Cx + 30; }
+    else { Bx = A[0]; By = E.ly; Cx = RX - 22; Cy = By; }
+    var actif = i === courante && t < T_RETOUR;
+    var coul = E.haut ? OR : (actif ? IVOIRE : BLEU);
+    if (pd > 0.001) {
+      var L1 = Math.hypot(Bx - A[0], By - A[1]), L2 = Math.hypot(Cx - Bx, Cy - By), lg = pd * (L1 + L2), pts2;
+      if (lg <= L1) { var uu = lg / (L1 || 1); pts2 = [A, [mix(A[0], Bx, uu), mix(A[1], By, uu)]]; }
+      else { var ww = (lg - L1) / (L2 || 1); pts2 = [A, [Bx, By], [mix(Bx, Cx, ww), mix(By, Cy, ww)]]; }
+      var dp = '';
+      for (var k = 0; k < pts2.length; k++) dp += (k ? ' L' : 'M') + fx(pts2[k][0]) + ' ' + fx(pts2[k][1]);
+      traits += '<path d="' + dp + '" fill="none" stroke="' + rgba(coul, actif || E.haut ? 0.95 : 0.6) + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+      traits += '<circle cx="' + fx(A[0]) + '" cy="' + fx(A[1]) + '" r="' + (6 * outBack(2)(seg(t, E.t, E.t + 0.3))).toFixed(2) + '" fill="' + rgb(coul) + '"/>';
+    }
+    if (E.haut) { lab.style.left = HX + 'px'; lab.style.top = (Cy - 18) + 'px'; }
+    else if (!E.droite) { lab.style.left = LX + 'px'; lab.style.top = (Cy - 18) + 'px'; }
+    else { lab.style.left = RX + 'px'; lab.style.top = (Cy - 18) + 'px'; }
+    lab.style.clipPath = 'inset(-10px ' + (100 * (1 - pl)).toFixed(2) + '% -200px 0)';
+    lab.style.opacity = (pl > 0 ? (1 - sortie) * opa : 0).toFixed(3);
+    if (!E.haut) lab.querySelector('.nom').style.color = actif ? '#f4f7fa' : '#7db8ee';
+    if (E.val) nums[i].textContent = E.val(outQuart(seg(t, E.t + 0.3, E.t + 1.6)));
+    if (E.droite) for (var j = 0; j < 3; j++) {
+      var R = RANGS[j], pr = outQuart(seg(t, R.t + 0.2, R.t + 0.7));
+      rangs[j].style.clipPath = 'inset(-6px ' + (100 * (1 - pr)).toFixed(2) + '% -6px 0)';
+      rangs[j].querySelector('b').textContent = fr(R.n * outQuart(seg(t, R.t + 0.3, R.t + 1.4)));
+    }
+  }
+  if (traits) scene.insertAdjacentHTML('beforeend', '<g opacity="' + ((1 - sortie) * opa).toFixed(3) + '">' + traits + '</g>');
+
+  /* le titre : chaque ligne arrive au moment où le récit l'atteint */
+  var e1 = outBack(1.3)(seg(t, 0.4, 1.2)), x1 = inBack(1.2)(seg(t, 22.4, 22.9));
+  T1.style.transform = 'translateY(' + (x1 > 0 ? mix(0, 135, x1) : mix(125, 0, e1)).toFixed(2) + '%)';
+  var e2 = outBack(1.3)(seg(t, 14.4, 15.2)), x2 = inBack(1.2)(seg(t, 22.5, 23.0));
+  T2.style.transform = 'translateY(' + (x2 > 0 ? mix(0, 135, x2) : mix(125, 0, e2)).toFixed(2) + '%)';
+};
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

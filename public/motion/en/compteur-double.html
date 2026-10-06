@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One lead, two signals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
+<style>
+/* Le doublon de tracking, avec un vrai moteur physique (matter.js) précalculé au chargement,
+   donc la même chute à chaque lecture. Chaque envoi de formulaire lâche deux billes : celle du
+   pixel du navigateur et celle de l'API du serveur. Elles tombent toutes les deux dans le bocal
+   de Meta, qui compte deux contacts pour un. Le bocal se vide ; avec un identifiant commun, les
+   deux billes se rejoignent au-dessus du bocal et n'en font plus qu'une. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#toile{position:absolute;inset:0;width:1920px;height:1080px}
+.leg{position:absolute;left:110px;width:520px}
+.leg .mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.leg .ln{display:block;font-size:46px;font-weight:800;line-height:1.08;letter-spacing:-.03em;transform:translateY(125%)}
+.leg .ln.b{color:#7db8ee}
+.leg .ln.o{color:#e8bd62}
+#form{position:absolute;left:110px;top:560px;width:380px;border-radius:20px;background:#fff;color:#0b1b2b;padding:20px 22px;box-sizing:border-box;box-shadow:0 30px 60px -24px rgba(0,0,0,.7);opacity:0}
+#form .k{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#1d71b8}
+#form h4{margin:6px 0 12px;font-size:21px;font-weight:800;letter-spacing:-.02em}
+#form .c{height:34px;border-radius:9px;background:#f1f4f8;margin-bottom:8px}
+#form .btn{display:block;text-align:center;background:#1d71b8;color:#fff;border-radius:10px;padding:12px;font-size:16px;font-weight:800;margin-top:12px}
+.cpt{position:absolute;opacity:0}
+.cpt span{display:block;font-size:16px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#7db8ee}
+.cpt b{display:block;font-size:76px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;margin-top:6px}
+#cReel{left:110px;top:870px}
+#cMeta{left:1500px;top:640px}
+.tuyau{position:absolute;font-size:17px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;opacity:0}
+#fait{position:absolute;left:1500px;top:850px;width:360px;font-size:19px;font-weight:600;line-height:1.4;color:#a9b8c8;opacity:0}
+#fait b{color:#f4f7fa}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="toile" width="1920" height="1080"></canvas>
+  <div class="leg" id="leg0" style="top:110px"><div class="mask"><span class="ln">One lead,</span></div><div class="mask"><span class="ln b">two signals.</span></div></div>
+  <div class="leg" id="leg1" style="top:300px"><div class="mask"><span class="ln">With a shared identifier,</span></div><div class="mask"><span class="ln o">only one is counted.</span></div></div>
+  <div id="form"><span class="k">Website form</span><h4>Book a test drive</h4><div class="c"></div><div class="c"></div><div class="c" style="width:70%"></div><span class="btn" id="btn">Submit</span></div>
+  <div class="cpt" id="cReel"><span>Real leads</span><b>0</b></div>
+  <div class="cpt" id="cMeta"><span>What Meta counts</span><b>0</b></div>
+  <div class="tuyau" id="tP" style="color:#7db8ee">Browser pixel</div>
+  <div class="tuyau" id="tA" style="color:#f4f7fa">Server API</div>
+  <div id="fait">At GGP, before the fix: <b>146 leads</b> reported for <b>101 real ones</b>, 45%&nbsp;too&nbsp;many.</div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 22;
+window.DUR = window.DUREE;
+
+(function () {
+'use strict';
+var D = window.DUREE, FPS = 60;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outQuart(p) { return 1 - Math.pow(1 - p, 4); }
+function inOutCubic(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+function outBack(s) { return function (p) { return 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2); }; }
+function inBack(s) { return function (p) { return (s + 1) * p * p * p - s * p * p; }; }
+var $ = function (id) { return document.getElementById(id); };
+
+/* La géométrie : deux tuyaux en haut, le bocal de Meta au centre. */
+var TP = [820, 250], TA = [1120, 250];            /* bouches des tuyaux */
+var BOCAL = { x: 970, y: 900, l: 300, h: 330 };   /* centre bas, largeur, hauteur */
+var FUSION = [970, 470];                          /* là où les deux billes se rejoignent */
+var R = 24;
+var ENVOIS_A = [1.6, 2.5, 3.2, 3.8, 4.35, 4.9];
+var ENVOIS_B = [10.0, 10.8, 11.5, 12.15, 12.75, 13.35];
+var T_VIDE = 7.6;                                 /* le fond du bocal s'ouvre */
+var VOL_B = 0.85;                                 /* durée du vol des deux billes jusqu'à la fusion */
+
+/* ---------- la simulation, calculée une fois ---------- */
+var M = Matter, moteur = M.Engine.create({ gravity: { x: 0, y: 1.1 } });
+var murs = [
+  M.Bodies.rectangle(BOCAL.x - BOCAL.l / 2 - 10, BOCAL.y - BOCAL.h / 2, 20, BOCAL.h, { isStatic: true }),
+  M.Bodies.rectangle(BOCAL.x + BOCAL.l / 2 + 10, BOCAL.y - BOCAL.h / 2, 20, BOCAL.h, { isStatic: true })
+];
+var fond = M.Bodies.rectangle(BOCAL.x, BOCAL.y + 10, BOCAL.l + 40, 20, { isStatic: true });
+/* deux déflecteurs en entonnoir au-dessus du bocal */
+var entonnoir = [
+  M.Bodies.rectangle(BOCAL.x - 175, BOCAL.y - BOCAL.h - 40, 140, 14, { isStatic: true, angle: 0.55 }),
+  M.Bodies.rectangle(BOCAL.x + 175, BOCAL.y - BOCAL.h - 40, 140, 14, { isStatic: true, angle: -0.55 })
+];
+M.Composite.add(moteur.world, murs.concat([fond], entonnoir));
+var BILLES = [];                                  /* {t0, x, y, vx, sorte, phase} */
+ENVOIS_A.forEach(function (te, i) {
+  BILLES.push({ t0: te + 0.15, x: TP[0], y: TP[1] + 30, vx: 2.2 + 0.4 * (i % 2), sorte: 'pixel', phase: 'A' });
+  BILLES.push({ t0: te + 0.32, x: TA[0], y: TA[1] + 30, vx: -2.2 - 0.3 * (i % 3), sorte: 'api', phase: 'A' });
+});
+ENVOIS_B.forEach(function (te, i) {
+  BILLES.push({ t0: te + 0.15 + VOL_B, x: FUSION[0] + (i % 2 ? 6 : -6), y: FUSION[1], vx: (i % 2 ? -0.6 : 0.6), sorte: 'fusion', phase: 'B', id: ['4F2', 'A91', '7C0', 'B3E', '2D8', 'E65'][i] });
+});
+var NF = Math.ceil(D * FPS) + 1, IMAGES = [];
+(function cuire() {
+  var corps = BILLES.map(function () { return null; }), fondLa = true;
+  for (var f = 0; f < NF; f++) {
+    var t = f / FPS;
+    BILLES.forEach(function (b, i) {
+      if (!corps[i] && t >= b.t0) {
+        corps[i] = M.Bodies.circle(b.x, b.y, R, { restitution: 0.42, friction: 0.04, frictionAir: 0.004, density: 0.002 });
+        M.Body.setVelocity(corps[i], { x: b.vx, y: 1.5 });
+        M.Composite.add(moteur.world, corps[i]);
+      }
+    });
+    if (t >= T_VIDE && t < 9.2 && fondLa) { M.Composite.remove(moteur.world, fond); fondLa = false; }
+    /* le fond revient avant la deuxième phase */
+    if (t >= 9.2 && !fondLa) { M.Composite.add(moteur.world, fond); fondLa = true; }
+    IMAGES.push(corps.map(function (c) { return c ? [c.position.x, c.position.y, c.angle] : null; }));
+    /* les billes de la première phase tombées hors du bocal sont retirées */
+    corps.forEach(function (c, i) { if (c && !c.parti && c.position.y > 1250) { M.Composite.remove(moteur.world, c); corps[i] = 'parti'; } });
+    corps = corps.map(function (c) { return c === 'parti' ? { position: { x: 0, y: 9999 }, angle: 0, parti: true } : c; });
+    M.Engine.update(moteur, 1000 / FPS);
+  }
+})();
+window.STAGE = { w: 1920, h: 1080 };
+window.PRET = Promise.all([
+  document.fonts.load("800 46px 'Plus Jakarta Sans'"),
+  document.fonts.load("800 76px 'Plus Jakarta Sans'"),
+  document.fonts.load("700 13px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+
+var ctx = $('toile').getContext('2d');
+function bille(x, y, a, sorte, alpha, idTxt) {
+  ctx.save(); ctx.globalAlpha = alpha; ctx.translate(x, y); ctx.rotate(a);
+  var g = ctx.createRadialGradient(-8, -10, 4, 0, 0, R);
+  if (sorte === 'pixel') { g.addColorStop(0, '#cfe6ff'); g.addColorStop(1, '#2f7fcb'); }
+  else if (sorte === 'api') { g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#a9b8c8'); }
+  else { g.addColorStop(0, '#fff3d6'); g.addColorStop(1, '#d9a84a'); }
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, R, 0, 7); ctx.fill();
+  if (idTxt) { ctx.rotate(-a); ctx.fillStyle = '#0b1b2b'; ctx.font = "800 13px 'Plus Jakarta Sans'"; ctx.textAlign = 'center'; ctx.fillText(idTxt, 0, 5); }
+  ctx.restore();
+}
+function tuyau(x, y, coul, alpha) {
+  ctx.save(); ctx.globalAlpha = alpha;
+  ctx.fillStyle = '#132a42'; ctx.fillRect(x - 34, 0, 68, y);
+  ctx.fillStyle = coul; ctx.fillRect(x - 40, y - 14, 80, 16);
+  ctx.restore();
+}
+function bocal(alpha, ouvert) {
+  var x0 = BOCAL.x - BOCAL.l / 2, x1 = BOCAL.x + BOCAL.l / 2, y0 = BOCAL.y - BOCAL.h, y1 = BOCAL.y;
+  ctx.save(); ctx.globalAlpha = alpha;
+  ctx.fillStyle = 'rgba(125,184,238,.06)'; ctx.fillRect(x0, y0, BOCAL.l, BOCAL.h);
+  ctx.strokeStyle = 'rgba(125,184,238,.75)'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0, y1); if (!ouvert) ctx.lineTo(x1, y1); else ctx.moveTo(x1, y1); ctx.lineTo(x1, y0); ctx.stroke();
+  /* l'entonnoir */
+  [-1, 1].forEach(function (s) {
+    var cx = BOCAL.x + s * 175, cy = y0 - 40, ang = -s * 0.55;
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang); ctx.fillStyle = 'rgba(125,184,238,.55)'; ctx.fillRect(-70, -7, 140, 14); ctx.restore();
+  });
+  ctx.fillStyle = '#7db8ee'; ctx.font = "800 15px 'Plus Jakarta Sans'"; ctx.textAlign = 'center';
+  ctx.fillText('META', BOCAL.x, y1 + 40);
+  ctx.restore();
+}
+
+var legs = [$('leg0'), $('leg1')];
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  var sortie = seg(t, D - 0.8, D), fin = 1 - sortie, ent = outExpo(seg(t, 0.2, 1.0));
+  var f = Math.min(NF - 1, Math.round(t * FPS));
+  ctx.clearRect(0, 0, 1920, 1080);
+  var gl = ctx.createRadialGradient(BOCAL.x, 640, 40, BOCAL.x, 640, 760);
+  gl.addColorStop(0, 'rgba(29,113,184,' + (0.22 * fin).toFixed(3) + ')'); gl.addColorStop(1, 'rgba(8,19,31,0)');
+  ctx.fillStyle = gl; ctx.fillRect(0, 0, 1920, 1080);
+
+  tuyau(TP[0], TP[1], '#2f7fcb', ent * fin);
+  tuyau(TA[0], TA[1], '#a9b8c8', ent * fin);
+  bocal(ent * fin, t >= T_VIDE && t < 9.2);
+
+  /* phase B : les deux billes volent l'une vers l'autre et fusionnent au-dessus du bocal */
+  ENVOIS_B.forEach(function (te, i) {
+    var p = seg(t, te + 0.15, te + 0.15 + VOL_B);
+    if (p <= 0 || p >= 1) return;
+    var e = inOutCubic(p), id = ['4F2', 'A91', '7C0', 'B3E', '2D8', 'E65'][i];
+    var xa = mix(TP[0], FUSION[0], e), ya = mix(TP[1] + 30, FUSION[1], e) - 60 * Math.sin(Math.PI * e);
+    var xb = mix(TA[0], FUSION[0], e), yb = mix(TA[1] + 30, FUSION[1], e) - 60 * Math.sin(Math.PI * e);
+    bille(xa, ya, 0, 'pixel', fin, id);
+    bille(xb, yb, 0, 'api', fin, id);
+    if (p > 0.85) { ctx.save(); ctx.globalAlpha = (1 - p) / 0.15 * fin; ctx.fillStyle = '#ffe2a8'; ctx.beginPath(); ctx.arc(FUSION[0], FUSION[1], R * 2.2, 0, 7); ctx.fill(); ctx.restore(); }
+  });
+  /* les billes de la simulation */
+  var dansBocal = 0;
+  IMAGES[f].forEach(function (q, i) {
+    if (!q || q[1] > 1200) return;
+    var b = BILLES[i], alpha = fin;
+    if (b.phase === 'A' && t >= T_VIDE) alpha *= 1 - seg(q[1], 920, 1100);
+    bille(q[0], q[1], q[2], b.sorte, alpha, b.id);
+    if (q[1] > BOCAL.y - BOCAL.h - 10 && q[1] < BOCAL.y + 5 && Math.abs(q[0] - BOCAL.x) < BOCAL.l / 2 + 5) dansBocal++;
+  });
+
+  /* le formulaire et son bouton, enfoncé à chaque envoi */
+  var form = $('form'), btn = $('btn');
+  form.style.opacity = (ent * fin).toFixed(3);
+  var presse = 0;
+  ENVOIS_A.concat(ENVOIS_B).forEach(function (te) { presse = Math.max(presse, Math.sin(Math.PI * seg(t, te - 0.05, te + 0.2))); });
+  btn.style.transform = 'scale(' + (1 - 0.06 * presse).toFixed(3) + ')';
+  btn.style.background = presse > 0.2 ? '#155a93' : '#1d71b8';
+  var envoyes = ENVOIS_A.filter(function (te) { return t >= te; }).length;
+  var envoyesB = ENVOIS_B.filter(function (te) { return t >= te; }).length;
+  var reels = t < 9.2 ? envoyes : envoyesB;
+  $('cReel').querySelector('b').textContent = reels;
+  $('cReel').style.opacity = (outQuart(seg(t, 1.2, 1.6)) * fin).toFixed(3);
+  var cm = $('cMeta');
+  cm.querySelector('b').textContent = dansBocal;
+  cm.style.opacity = (outQuart(seg(t, 1.4, 1.8)) * fin).toFixed(3);
+  var doublon = t < 9.2 && dansBocal > reels;
+  cm.querySelector('b').style.color = doublon ? '#e8bd62' : (t > 14.5 ? '#7db8ee' : '#f4f7fa');
+  /* les noms des deux tuyaux, à côté de leur bouche */
+  var tp = $('tP'), ta = $('tA'), vt = outQuart(seg(t, 1.0, 1.5)) * fin;
+  tp.style.left = (TP[0] - 230) + 'px'; tp.style.top = (TP[1] - 40) + 'px'; tp.style.opacity = vt.toFixed(3);
+  ta.style.left = (TA[0] + 60) + 'px'; ta.style.top = (TA[1] - 40) + 'px'; ta.style.opacity = vt.toFixed(3);
+
+  /* les deux phrases */
+  var LT = [1.2, 9.4];
+  legs.forEach(function (l, i) {
+    var lns = l.querySelectorAll('.ln');
+    for (var j = 0; j < lns.length; j++) {
+      var p = outBack(1.3)(seg(t, LT[i] + j * 0.12, LT[i] + 0.8 + j * 0.12)), x = inBack(1.2)(seg(t, D - 1.0 + j * 0.06, D - 0.5 + j * 0.06));
+      lns[j].style.transform = 'translateY(' + (x > 0 ? mix(0, 135, x) : mix(125, 0, p)).toFixed(2) + '%)';
+    }
+    l.style.opacity = (i === 0 ? 1 - 0.62 * outQuart(seg(t, LT[1], LT[1] + 0.6)) : 1).toFixed(3);
+  });
+  $('fait').style.opacity = (outQuart(seg(t, 15.2, 15.9)) * fin).toFixed(3);
+};
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

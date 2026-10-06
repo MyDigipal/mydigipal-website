@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ten seconds versus thirty</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+/* La même annonce, deux parcours. À gauche, le formulaire intégré : les coordonnées sont déjà
+   remplies, trois touches et c'est envoyé. À droite, la page du site : elle charge, il faut
+   chercher le formulaire, taper au pouce, et un appel entrant suffit à tout perdre. Chaque geste
+   s'écrit à côté de son téléphone, au moment où il a lieu, relié par un trait. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#fond{position:absolute;inset:0;background:radial-gradient(700px 620px at 37% 50%,rgba(29,113,184,.22),transparent 70%),radial-gradient(700px 620px at 63% 50%,rgba(125,184,238,.08),transparent 70%)}
+#traits{position:absolute;inset:0;width:1920px;height:1080px}
+.tel{position:absolute;top:150px;width:372px;height:760px;border-radius:56px;background:linear-gradient(145deg,#2a3443,#0d131c 55%,#1b2330);padding:12px;box-shadow:0 50px 90px -30px rgba(0,0,0,.8),inset 0 0 0 1.5px rgba(255,255,255,.12)}
+#telA{left:588px}#telB{left:1040px}
+.ecran{position:relative;width:100%;height:100%;border-radius:45px;overflow:hidden;background:#fff;color:#0b1b2b}
+.encoche{position:absolute;left:50%;top:10px;width:110px;height:30px;margin-left:-55px;border-radius:20px;background:#05080c;z-index:20}
+.etat{position:absolute;left:0;right:0;top:0;height:50px;display:flex;justify-content:space-between;align-items:center;padding:6px 30px 0 34px;font-size:15px;font-weight:700;z-index:19}
+.etat i{display:inline-block;width:24px;height:11px;border:2px solid currentColor;border-radius:4px;position:relative}
+.etat i::after{content:"";position:absolute;left:2px;top:2px;bottom:2px;width:14px;background:currentColor;border-radius:1px}
+.vue{position:absolute;inset:0}
+/* le fil d'actualité */
+.fil-tete{position:absolute;left:0;right:0;top:50px;height:50px;display:flex;align-items:center;padding:0 18px;font-size:22px;font-weight:800;color:#1d71b8;letter-spacing:-.02em;border-bottom:1px solid #edf1f5;background:#fff;z-index:2}
+.fil{position:absolute;left:0;right:0;top:100px}
+.post{background:#fff;border-bottom:8px solid #eef1f5;padding:12px 0 10px}
+.post .haut{display:flex;align-items:center;gap:10px;padding:0 14px}
+.av{width:38px;height:38px;border-radius:50%;background:#1d71b8;flex:none}
+.av.g{background:#c9d4df}
+.post .qui b{display:block;font-size:14px}
+.post .qui span{display:block;font-size:12px;color:#7a8ea2;font-weight:600}
+.post p{margin:10px 14px;font-size:14px;line-height:1.35;font-weight:500}
+.ph{height:180px;background:linear-gradient(160deg,#dfe8f2,#c4d4e6)}
+.ph.v{height:200px;display:grid;place-items:center;background:linear-gradient(160deg,#d6e6f6,#a9c8e8)}
+.ph.v svg{width:86%}
+.cta{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f3f6fa}
+.cta span{font-size:12px;color:#5d7186;font-weight:600}
+.cta span b{display:block;font-size:14px;color:#0b1b2b}
+.bouton{font-size:14px;font-weight:700;background:#e4ebf3;color:#0b1b2b;border-radius:8px;padding:9px 14px}
+.lignes-txt{padding:0 14px}.lignes-txt i{display:block;height:9px;border-radius:5px;background:#e3e9f0;margin:8px 0}
+/* le formulaire intégré */
+.voile{position:absolute;inset:0;background:rgba(5,10,16,.45);opacity:0;z-index:5}
+.feuille{position:absolute;left:0;right:0;bottom:0;height:640px;background:#fff;border-radius:22px 22px 0 0;transform:translateY(102%);z-index:6;overflow:hidden}
+.feuille .bandeau{height:120px;background:linear-gradient(160deg,#d6e6f6,#a9c8e8);display:grid;place-items:center}
+.feuille .bandeau svg{width:54%}
+.feuille .corps{padding:16px 20px}
+.feuille h4{margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em}
+.feuille .note{font-size:12.5px;color:#1d71b8;font-weight:700;margin:4px 0 12px}
+.champ{border-radius:10px;background:#f1f4f8;padding:8px 12px;margin-bottom:9px}
+.champ span{display:block;font-size:11px;color:#7a8ea2;font-weight:700}
+.champ b{display:block;font-size:15px;font-weight:600;min-height:20px}
+.choix{display:flex;gap:8px;margin:12px 0 16px;align-items:center;font-size:13px;font-weight:700;color:#5d7186}
+.choix span{border:1.5px solid #d6dee8;border-radius:999px;padding:7px 14px;color:#0b1b2b}
+.choix span.pris{background:#0b1b2b;color:#fff;border-color:#0b1b2b}
+.envoyer{display:block;text-align:center;background:#1d71b8;color:#fff;border-radius:10px;padding:13px;font-size:15px;font-weight:800}
+.merci{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;text-align:center;gap:12px;padding:30px;background:#fff;opacity:0;z-index:7}
+.merci .rond{width:84px;height:84px;border-radius:50%;background:#e3f4ea;display:grid;place-items:center}
+.merci h4{margin:0;font-size:22px;font-weight:800}
+.merci p{margin:0;font-size:15px;color:#5d7186;font-weight:600;line-height:1.4}
+/* le navigateur du site */
+.nav{position:absolute;left:0;right:0;top:0;bottom:0;background:#fff;transform:translateX(102%);z-index:6}
+.nav .url{position:absolute;left:0;right:0;top:50px;height:52px;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid #edf1f5;background:#f8fafc;z-index:3}
+.nav .url b{flex:1;font-size:13px;font-weight:600;color:#3d5268;background:#eaeff5;border-radius:9px;padding:7px 10px}
+.nav .charge{position:absolute;left:0;top:101px;height:3px;background:#1d71b8;z-index:4}
+.cadre-page{position:absolute;left:0;right:0;top:102px;bottom:0;overflow:hidden;z-index:1}
+.page{position:absolute;left:0;right:0;top:0}
+.nav::before{content:"";position:absolute;left:0;right:0;top:0;height:50px;background:#fff;z-index:3}
+.page .heros{height:230px;background:linear-gradient(160deg,#dfe8f2,#c4d4e6);display:grid;place-items:center}
+.page .heros svg{width:70%}
+.page h5{margin:16px 18px 8px;font-size:21px;font-weight:800;letter-spacing:-.02em}
+.page .bloc{height:110px;margin:12px 18px;border-radius:12px;background:#eef3f8}
+.page .formulaire{margin:14px 18px;padding:16px;border:1.5px solid #dbe3ec;border-radius:14px}
+.page .formulaire h6{margin:0 0 10px;font-size:16px;font-weight:800}
+.saisie{border:1.5px solid #d3dce7;border-radius:9px;padding:9px 11px;margin-bottom:9px;font-size:15px;font-weight:600;min-height:22px}
+.saisie.actif{border-color:#1d71b8;box-shadow:0 0 0 3px rgba(29,113,184,.15)}
+.saisie i{font-style:normal;color:#9aabbd}
+.squelette{position:absolute;left:0;right:0;top:102px;bottom:0;background:#fff;z-index:2;padding:18px}
+.squelette i{display:block;border-radius:10px;background:#eef2f6;margin-bottom:14px}
+.clavier{position:absolute;left:0;right:0;bottom:0;height:260px;background:#d5dae1;transform:translateY(102%);z-index:8;padding:10px 4px 0}
+.rangee{display:flex;justify-content:center;gap:5px;margin-bottom:9px}
+.rangee b{width:30px;height:42px;border-radius:6px;background:#fff;display:grid;place-items:center;font-size:17px;font-weight:600;box-shadow:0 1px 0 rgba(0,0,0,.25);color:#0b1b2b}
+.rangee b.on{background:#1d71b8;color:#fff;transform:translateY(-3px) scale(1.12)}
+.rangee b.large{width:150px;font-size:13px}
+.appel{position:absolute;inset:0;background:linear-gradient(180deg,#1b2633,#0b121b);color:#fff;z-index:9;transform:translateY(-102%);display:grid;grid-template-rows:1fr auto;padding:110px 30px 70px;text-align:center}
+.appel span{font-size:15px;color:#a9b8c8;font-weight:600}
+.appel h4{margin:8px 0 0;font-size:34px;font-weight:700}
+.appel .boutons{display:flex;justify-content:space-around}
+.appel .boutons i{width:70px;height:70px;border-radius:50%;background:#e0483b;display:block}
+.appel .boutons i.v{background:#34b45a}
+/* le doigt */
+.doigt{position:absolute;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:rgba(11,27,43,.28);border:2.5px solid #fff;box-shadow:0 6px 20px rgba(11,27,43,.45);opacity:0;z-index:30}
+/* autour des téléphones */
+.nomtel{position:absolute;top:96px;width:372px;text-align:center;font-size:17px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#7db8ee}
+#nomA{left:588px}#nomB{left:1040px}
+.chrono{position:absolute;top:938px;width:372px;text-align:center}
+#chA{left:588px}#chB{left:1040px}
+.chrono b{display:block;font-size:54px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.chrono span{display:block;margin-top:8px;font-size:17px;font-weight:600;color:#a9b8c8}
+.chrono em{position:absolute;right:58px;top:-4px;font-style:normal;font-size:13px;font-weight:800;letter-spacing:.12em;color:#08131f;background:#7db8ee;border-radius:999px;padding:4px 9px}
+.pas{position:absolute;transition:none;font-size:21px;font-weight:700;line-height:1.25;white-space:nowrap;opacity:0}
+.pas small{display:block;font-size:16px;font-weight:600;color:#a9b8c8;margin-top:3px}
+.pas.g{text-align:right}
+.pas.ko{color:#e8bd62}
+#conclusion{position:absolute;left:0;right:0;top:0;text-align:center}
+#conclusion .mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+#conclusion .ln{display:block;transform:translateY(125%)}
+#c1{font-size:50px;font-weight:800;letter-spacing:-.03em;margin-top:22px}
+#c2{font-size:22px;font-weight:600;color:#a9b8c8}
+#c2 b{color:#7db8ee}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="fond"></div>
+  <svg id="traits" viewBox="0 0 1920 1080"></svg>
+  <div class="nomtel" id="nomA">Instant form</div>
+  <div class="nomtel" id="nomB">Website page</div>
+
+  <div class="tel" id="telA"><div class="ecran" id="ecA">
+    <div class="encoche"></div><div class="etat"><span>9:41</span><i></i></div>
+    <div class="vue"><div class="fil-tete">news feed</div><div class="fil" id="filA"></div></div>
+    <div class="voile" id="voileA"></div>
+    <div class="feuille" id="feuilleA">
+      <div class="bandeau">__VOITURE__</div>
+      <div class="corps">
+        <h4>Book a test drive</h4>
+        <div class="note">Prefilled with your profile information</div>
+        <div class="champ"><span>Full name</span><b>Julie Martin</b></div>
+        <div class="champ"><span>Email</span><b>julie.martin@gmail.com</b></div>
+        <div class="champ"><span>Phone number</span><b>07700 900 437</b></div>
+        <div class="choix">When? <span>Saturday</span><span id="dimA">Sunday</span></div>
+        <span class="envoyer" id="envA">Submit</span>
+      </div>
+    </div>
+    <div class="merci" id="merciA"><span class="rond"><svg width="40" height="40" viewBox="0 0 40 40"><path d="M10 21 L17 28 L31 13" fill="none" stroke="#1e8449" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h4>Sent</h4><p>The dealership will call you<br>today to book your test drive.</p></div>
+    <div class="doigt" id="dA"></div>
+  </div></div>
+
+  <div class="tel" id="telB"><div class="ecran" id="ecB">
+    <div class="encoche"></div><div class="etat"><span>9:41</span><i></i></div>
+    <div class="vue"><div class="fil-tete">news feed</div><div class="fil" id="filB"></div></div>
+    <div class="nav" id="navB">
+      <div class="url"><b>parkmotors.co.uk/test-drive</b></div>
+      <div class="charge" id="chargeB"></div>
+      <div class="cadre-page"><div class="page" id="pageB">
+        <div class="heros">__VOITURE__</div>
+        <h5>The new SUV, ready to test drive this weekend</h5>
+        <div class="lignes-txt"><i style="width:92%"></i><i style="width:84%"></i><i style="width:60%"></i></div>
+        <div class="bloc"></div><div class="bloc"></div>
+        <div class="formulaire"><h6>Book a test drive</h6>
+          <div class="saisie" id="s0"><i>First name</i></div><div class="saisie" id="s1"><i>Last name</i></div><div class="saisie" id="s2"><i>Email</i></div><div class="saisie" id="s3"><i>Phone</i></div><div class="saisie" id="s4"><i>Postcode</i></div>
+        </div>
+      </div></div>
+      <div class="squelette" id="squB"><i style="height:200px"></i><i style="height:24px;width:80%"></i><i style="height:14px;width:90%"></i><i style="height:14px;width:70%"></i><i style="height:100px"></i></div>
+    </div>
+    <div class="clavier" id="clavB"></div>
+    <div class="appel" id="appelB"><div><span>Incoming call</span><h4>Office</h4></div><div class="boutons"><i></i><i class="v"></i></div></div>
+    <div class="doigt" id="dB"></div>
+  </div></div>
+
+  <div class="chrono" id="chA"><b>0:00</b><span>0 taps</span></div>
+  <div class="chrono" id="chB"><em id="accel">SPED UP ×3</em><b>0:00</b><span>0 taps</span></div>
+  <div id="pasA"></div><div id="pasB"></div>
+  <div id="conclusion">
+    <div class="mask"><span class="ln" id="c1">10 seconds versus 30.</span></div>
+    <div class="mask"><span class="ln" id="c2">At DMD: <b>7,646 leads</b> from instant forms since January 2025.</span></div>
+  </div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 18;
+window.DUR = window.DUREE;
+window.PRET = Promise.all([
+  document.fonts.load("800 50px 'Plus Jakarta Sans'"),
+  document.fonts.load("700 21px 'Plus Jakarta Sans'"),
+  document.fonts.load("600 15px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+
+(function () {
+'use strict';
+var D = window.DUREE;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outQuart(p) { return 1 - Math.pow(1 - p, 4); }
+function inCubic(p) { return p * p * p; }
+function inOutCubic(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+function outBack(s) { return function (p) { return 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2); }; }
+function inBack(s) { return function (p) { return (s + 1) * p * p * p - s * p * p; }; }
+function bosse(p) { return p <= 0 || p >= 1 ? 0 : Math.sin(Math.PI * p); }
+var $ = function (id) { return document.getElementById(id); };
+
+/* Une berline dessinée, la même partout (jamais la photo d'un client). */
+var VOITURE = '<svg viewBox="0 0 300 110"><ellipse cx="150" cy="98" rx="132" ry="7" fill="rgba(11,27,43,.18)"/>' +
+  '<path d="M22 78 C22 66 30 58 48 55 L92 50 L124 28 C132 23 142 21 152 21 L196 21 C210 21 220 26 228 34 L250 52 L268 56 C280 59 286 66 286 76 L286 84 L22 84 Z" fill="#1d71b8"/>' +
+  '<path d="M104 50 L130 31 C136 27 142 26 150 26 L168 26 L168 50 Z" fill="#cfe3f6"/><path d="M174 26 L196 26 C206 26 214 30 220 36 L234 50 L174 50 Z" fill="#cfe3f6"/>' +
+  '<path d="M22 70 L286 70" stroke="rgba(255,255,255,.35)" stroke-width="2"/>' +
+  '<circle cx="78" cy="84" r="20" fill="#0b1b2b"/><circle cx="78" cy="84" r="9" fill="#a9b8c8"/><circle cx="234" cy="84" r="20" fill="#0b1b2b"/><circle cx="234" cy="84" r="9" fill="#a9b8c8"/></svg>';
+document.querySelectorAll('.bandeau, .heros').forEach(function (n) { n.innerHTML = VOITURE; });
+
+/* Le fil : deux publications ordinaires, l'annonce, une autre publication. */
+function fil(cta) {
+  return '<div class="post"><div class="haut"><span class="av g"></span><span class="qui"><b>Emma Hughes</b><span>2h</span></span></div><div class="lignes-txt"><i style="width:90%"></i><i style="width:64%"></i></div><div class="ph"></div></div>' +
+    '<div class="post"><div class="haut"><span class="av"></span><span class="qui"><b>Park Motors</b><span>Sponsored</span></span></div><p>The new hybrid SUV is here. Come and try it this weekend.</p><div class="ph v">' + VOITURE + '</div>' +
+    '<div class="cta"><span>parkmotors.co.uk<b>Free test drive this weekend</b></span><span class="bouton" data-cta>' + cta + '</span></div></div>' +
+    '<div class="post"><div class="haut"><span class="av g"></span><span class="qui"><b>Tom Bennett</b><span>5h</span></span></div><div class="lignes-txt"><i style="width:80%"></i><i style="width:70%"></i></div><div class="ph"></div></div>';
+}
+$('filA').innerHTML = fil('Sign up');
+$('filB').innerHTML = fil('Learn more');
+/* Le clavier AZERTY. */
+var RANGEES = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm@.'];
+$('clavB').innerHTML = RANGEES.map(function (r) { return '<div class="rangee">' + r.split('').map(function (c) { return '<b data-k="' + c + '">' + c + '</b>'; }).join('') + '</div>'; }).join('') + '<div class="rangee"><b class="large">space</b></div>';
+var touches = {};
+[].forEach.call(document.querySelectorAll('#clavB [data-k]'), function (b) { touches[b.dataset.k] = b; });
+
+/* La partition. Le chronomètre affiche le temps réel du geste ; l'animation le joue trois fois plus vite. */
+var VA = 1, VB = 3;
+var T0 = 1.6;                                   /* les deux pouces partent en même temps */
+/* Parcours A : formulaire intégré */
+var A_TAP1 = T0 + 2.0, A_FEUILLE = A_TAP1 + 0.25, A_TAP2 = A_FEUILLE + 5.5, A_TAP3 = A_TAP2 + 2.0, A_FIN = A_TAP3 + 0.25;
+/* elle relit ses coordonnées déjà remplies, une à une */
+var A_RELIT = [A_FEUILLE + 1.2, A_FEUILLE + 2.6, A_FEUILLE + 4.0];
+/* Parcours B : la page du site */
+var B_TAP1 = T0 + 1.0, B_NAV = B_TAP1 + 0.25, B_CHARGE = B_NAV + 1.4, B_DEFILE = B_CHARGE + 0.3, B_FORM = B_DEFILE + 1.4;
+var SAISIES = [['Julie', 's0'], ['Martin', 's1'], ['julie.martin@gm', 's2']];
+var PAR_LETTRE = 0.11, ENTRE = 0.45;
+var debutSaisie = [], t = B_FORM + 0.3;
+SAISIES.forEach(function (sz) { debutSaisie.push(t); t += 0.3 + sz[0].length * PAR_LETTRE + ENTRE; });
+var B_APPEL = t - ENTRE + 0.2, B_FIN = B_APPEL + 0.5;
+var CONCLU = B_FIN + 2.6;
+var SEC_A = Math.round((A_FIN - T0) * VA), SEC_B = Math.round((B_FIN - T0) * VB);
+$('c1').textContent = SEC_A + ' seconds versus ' + SEC_B + '.';
+
+/* Le récit de chaque geste, à côté de son téléphone ; y : hauteur de ce qu'il nomme. */
+var PAS_A = [
+  { t: A_TAP1, y: 0, nom: 'Taps “Sign up”', det: 'the form opens right there', cible: 'cta' },
+  { t: A_FEUILLE + 0.35, y: 0, nom: 'Name, email, phone', det: 'already filled in from her profile', cible: 'champs' },
+  { t: A_TAP2, y: 0, nom: 'Picks Sunday', det: '', cible: 'dim' },
+  { t: A_TAP3, y: 0, nom: 'Submits', det: 'the dealership has the lead', cible: 'env' }
+];
+var PAS_B = [
+  { t: B_TAP1, nom: 'Taps “Learn more”', det: 'leaves the feed', cible: 'cta' },
+  { t: B_NAV + 0.3, nom: 'The page loads', det: 'four seconds', cible: 'charge' },
+  { t: B_DEFILE + 0.2, nom: 'Looks for the form', det: 'by scrolling', cible: 'page' },
+  { t: debutSaisie[0], nom: 'Types her name with one thumb', det: '', cible: 's0' },
+  { t: debutSaisie[2], nom: 'Types her email', det: '', cible: 's2' },
+  { t: B_APPEL + 0.1, nom: 'Incoming call', det: 'the form is left half filled in', cible: 'appel', ko: true }
+];
+function creerPas(liste, id, cote) {
+  var h = '';
+  liste.forEach(function (p, i) { h += '<div class="pas ' + cote + (p.ko ? ' ko' : '') + '" id="' + id + i + '">' + p.nom + (p.det ? '<small>' + p.det + '</small>' : '') + '</div>'; });
+  $(id).innerHTML = h;
+}
+creerPas(PAS_A, 'pasA', 'g');
+creerPas(PAS_B, 'pasB', 'd');
+
+/* Position, à l'écran du stage, d'un élément d'un téléphone. */
+function centre(el) {
+  var r = el.getBoundingClientRect(), st = $('stage').getBoundingClientRect(), k = st.width / 1920;
+  return [(r.left - st.left + r.width / 2) / k, (r.top - st.top + r.height / 2) / k, r.width / k, r.height / k];
+}
+function cibleA(c) { return c === 'cta' ? $('filA').querySelector('[data-cta]') : c === 'champs' ? document.querySelectorAll('#feuilleA .champ')[1] : c === 'dim' ? $('dimA') : $('envA'); }
+function cibleB(c) { return c === 'cta' ? $('filB').querySelector('[data-cta]') : c === 'charge' ? $('navB').querySelector('.url') : c === 'page' ? $('pageB').querySelector('h5') : c === 'appel' ? $('appelB').querySelector('h4') : $(c); }
+
+function doigt(d, el, ecran, vis, presse) {
+  if (!el || vis <= 0) { d.style.opacity = 0; return; }
+  var r = el.getBoundingClientRect(), e = ecran.getBoundingClientRect(), k = $('stage').getBoundingClientRect().width / 1920;
+  d.style.left = ((r.left - e.left + r.width * 0.55) / k).toFixed(1) + 'px';
+  d.style.top = ((r.top - e.top + r.height * 0.55) / k).toFixed(1) + 'px';
+  d.style.opacity = vis.toFixed(3);
+  d.style.transform = 'scale(' + (1 - 0.25 * presse).toFixed(3) + ')';
+}
+function mmss(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  var sortie = seg(t, D - 0.8, D);
+  var entree = outExpo(seg(t, 0.1, 1.2));
+  /* Les téléphones entrent d'en bas et pivotent légèrement l'un vers l'autre. */
+  ['telA', 'telB'].forEach(function (id, i) {
+    var sgn = i ? -1 : 1, el = $(id);
+    el.style.transform = 'perspective(1600px) translateY(' + (90 * (1 - entree) + 40 * inCubic(sortie)).toFixed(1) + 'px) rotateY(' + (sgn * 7 * entree).toFixed(2) + 'deg)';
+    el.style.opacity = Math.min(seg(t, 0.1, 0.5), 1 - sortie).toFixed(3);
+  });
+  ['nomA', 'nomB', 'chA', 'chB'].forEach(function (id) { $(id).style.opacity = (outQuart(seg(t, 0.8, 1.4)) * (1 - sortie)).toFixed(3); });
+
+  /* ---------- A : le formulaire intégré ---------- */
+  var defA = 140 * inOutCubic(seg(t, T0, T0 + 0.8));                 /* le fil défile jusqu'à l'annonce */
+  $('filA').style.transform = 'translateY(' + (-defA).toFixed(1) + 'px)';
+  var fA = outExpo(seg(t, A_FEUILLE, A_FEUILLE + 0.6));
+  $('feuilleA').style.transform = 'translateY(' + (102 * (1 - fA)).toFixed(2) + '%)';
+  $('voileA').style.opacity = fA.toFixed(3);
+  $('dimA').className = t >= A_TAP2 + 0.08 ? 'pris' : '';
+  var champsA = document.querySelectorAll('#feuilleA .champ');
+  for (var ca = 0; ca < champsA.length; ca++) {
+    var lu = Math.max(0, Math.sin(Math.PI * seg(t, A_RELIT[ca], A_RELIT[ca] + 1.1)));
+    champsA[ca].style.boxShadow = lu > 0 ? '0 0 0 ' + (2.5 * lu).toFixed(2) + 'px rgba(29,113,184,.85)' : 'none';
+    champsA[ca].style.background = lu > 0 ? 'rgba(234,243,251,' + (0.6 + 0.4 * lu).toFixed(2) + ')' : '';
+  }
+  var mA = outQuart(seg(t, A_FIN, A_FIN + 0.5));
+  $('merciA').style.opacity = mA.toFixed(3);
+  $('merciA').querySelector('.rond').style.transform = 'scale(' + outBack(2)(seg(t, A_FIN + 0.1, A_FIN + 0.6)).toFixed(3) + ')';
+  var ctA = $('filA').querySelector('[data-cta]');
+  ctA.style.background = t > A_TAP1 && t < A_FEUILLE + 0.3 ? '#1d71b8' : '';
+  ctA.style.color = t > A_TAP1 && t < A_FEUILLE + 0.3 ? '#fff' : '';
+  /* le doigt A */
+  var dA = $('dA'), cibleDA = null, presseA = 0, visA = 0;
+  var tapsA = [[A_TAP1, ctA], [A_TAP2, $('dimA')], [A_TAP3, $('envA')]];
+  for (var i = 0; i < tapsA.length; i++) { var tt = tapsA[i][0]; if (t > tt - 0.45 && t < tt + 0.35) { cibleDA = tapsA[i][1]; visA = Math.min(seg(t, tt - 0.45, tt - 0.25), 1 - seg(t, tt + 0.15, tt + 0.35)); presseA = bosse(seg(t, tt - 0.05, tt + 0.2)); } }
+  doigt(dA, cibleDA, $('ecA'), visA, presseA);
+  var nTapA = tapsA.filter(function (x) { return t >= x[0]; }).length;
+  var secA = t < T0 ? 0 : Math.min((t - T0) * VA, SEC_A);
+  $('chA').querySelector('b').textContent = mmss(secA);
+  $('chA').querySelector('b').style.color = t >= A_FIN ? '#7db8ee' : '#f4f7fa';
+  $('chA').querySelector('span').textContent = nTapA + (nTapA === 1 ? ' tap' : ' taps') + (t >= A_FIN ? ' · lead received' : '');
+
+  /* ---------- B : la page du site ---------- */
+  var defB = 140 * inOutCubic(seg(t, T0, T0 + 0.8));
+  $('filB').style.transform = 'translateY(' + (-defB).toFixed(1) + 'px)';
+  var nv = outExpo(seg(t, B_NAV, B_NAV + 0.5));
+  $('navB').style.transform = 'translateX(' + (102 * (1 - nv)).toFixed(2) + '%)';
+  /* la barre de chargement avance par à-coups, comme une vraie */
+  var pc = seg(t, B_NAV + 0.1, B_CHARGE), ch = pc < 1 ? (0.15 + 0.55 * outQuart(Math.min(1, pc * 1.6)) + 0.3 * inCubic(pc)) : 1;
+  $('chargeB').style.width = (100 * ch).toFixed(1) + '%';
+  $('chargeB').style.opacity = (1 - seg(t, B_CHARGE, B_CHARGE + 0.3)).toFixed(3);
+  $('squB').style.opacity = (1 - seg(t, B_CHARGE - 0.1, B_CHARGE + 0.2)).toFixed(3);
+  var defP = 470 * inOutCubic(seg(t, B_DEFILE, B_FORM)), clav = outExpo(seg(t, debutSaisie[0] - 0.15, debutSaisie[0] + 0.35));
+  $('pageB').style.transform = 'translateY(' + (-defP - 150 * clav).toFixed(1) + 'px)';
+  $('clavB').style.transform = 'translateY(' + (102 * (1 - clav) + 102 * outExpo(seg(t, B_APPEL, B_APPEL + 0.4))).toFixed(2) + '%)';
+  var ctB = $('filB').querySelector('[data-cta]');
+  ctB.style.background = t > B_TAP1 && t < B_NAV + 0.3 ? '#1d71b8' : '';
+  ctB.style.color = t > B_TAP1 && t < B_NAV + 0.3 ? '#fff' : '';
+  /* la saisie, lettre à lettre, et la touche du clavier qui s'enfonce */
+  var lettreActive = null, nLettres = 0;
+  SAISIES.forEach(function (sz, j) {
+    var el = $(sz[1]), t0 = debutSaisie[j] + 0.3, n = clamp(Math.floor((t - t0) / PAR_LETTRE) + 1, 0, sz[0].length);
+    if (t < t0) n = 0;
+    el.innerHTML = n > 0 ? sz[0].slice(0, n) + (t < debutSaisie[j] + 0.3 + sz[0].length * PAR_LETTRE + 0.2 && t < B_APPEL ? '<span style="color:#1d71b8">|</span>' : '') : '<i>' + ['First name', 'Last name', 'Email'][j] + '</i>';
+    el.className = 'saisie' + (t >= debutSaisie[j] && t < (j < 2 ? debutSaisie[j + 1] : B_APPEL) ? ' actif' : '');
+    nLettres += n;
+    if (n > 0 && n <= sz[0].length && t < t0 + sz[0].length * PAR_LETTRE && t < B_APPEL) { var since = (t - t0) - (n - 1) * PAR_LETTRE; if (since < 0.08) lettreActive = sz[0][n - 1].toLowerCase(); }
+  });
+  Object.keys(touches).forEach(function (k) { touches[k].className = k === lettreActive ? 'on' : ''; });
+  var ap = outExpo(seg(t, B_APPEL, B_APPEL + 0.45));
+  $('appelB').style.transform = 'translateY(' + (-102 * (1 - ap)).toFixed(2) + '%)';
+  /* le doigt B : tape le bouton, défile, puis tape chaque champ */
+  var dB = $('dB'), cibleDB = null, presseB = 0, visB = 0;
+  var tapsB = [[B_TAP1, ctB]].concat(SAISIES.map(function (sz, j) { return [debutSaisie[j], $(sz[1])]; }));
+  for (i = 0; i < tapsB.length; i++) { var tb = tapsB[i][0]; if (t > tb - 0.45 && t < tb + 0.35) { cibleDB = tapsB[i][1]; visB = Math.min(seg(t, tb - 0.45, tb - 0.25), 1 - seg(t, tb + 0.15, tb + 0.35)); presseB = bosse(seg(t, tb - 0.05, tb + 0.2)); } }
+  if (!cibleDB && t > B_DEFILE - 0.2 && t < B_FORM + 0.1) { cibleDB = $('pageB').querySelector('h5'); visB = Math.min(seg(t, B_DEFILE - 0.2, B_DEFILE), 1 - seg(t, B_FORM - 0.1, B_FORM + 0.1)); }
+  doigt(dB, cibleDB, $('ecB'), visB, presseB);
+  var nTapB = tapsB.filter(function (x) { return t >= x[0]; }).length + Math.ceil(nLettres);
+  var secB = t < T0 ? 0 : Math.min((t - T0) * VB, SEC_B);
+  $('chB').querySelector('b').textContent = mmss(secB);
+  $('accel').style.opacity = (t > T0 && t < B_FIN ? 1 : 0.35).toFixed(2);
+  $('chB').querySelector('b').style.color = t >= B_FIN ? '#e8bd62' : '#f4f7fa';
+  $('chB').querySelector('span').textContent = nTapB + (nTapB === 1 ? ' tap' : ' taps') + (t >= B_FIN ? ' · lead lost' : '');
+
+  /* ---------- le récit des gestes, relié à chaque téléphone ---------- */
+  var traits = '', fade = (1 - seg(t, CONCLU - 0.6, CONCLU)) * (1 - sortie);
+  function poser(liste, prefix, cote, cible) {
+    liste.forEach(function (p, i) {
+      var el = $(prefix + i), pl = outQuart(seg(t, p.t + 0.15, p.t + 0.6)), pd = outExpo(seg(t, p.t, p.t + 0.4));
+      if (t < p.t) { el.style.opacity = 0; return; }
+      var suivant = i + 1 < liste.length ? liste[i + 1].t : CONCLU - 0.6;
+      var vivant = Math.min(pd, 1 - seg(t, suivant, suivant + 0.35));
+      var y = cote === 'g' ? 330 + i * 92 : 270 + i * 92;
+      var xTexte = cote === 'g' ? 520 : 1452, bx = cote === 'g' ? 572 : 1428;
+      var coul = p.ko ? '232,189,98' : '125,184,238';
+      if (vivant > 0.01) {
+        var c = centre(cible(p.cible)), ax = c[0], ay = c[1];
+        var L1 = Math.abs(bx - ax), L2 = Math.hypot(xTexte - bx, y - ay), lg = pd * (L1 + L2), d;
+        if (lg <= L1) d = 'M' + ax.toFixed(1) + ' ' + ay.toFixed(1) + ' L' + mix(ax, bx, lg / (L1 || 1)).toFixed(1) + ' ' + ay.toFixed(1);
+        else { var w = (lg - L1) / (L2 || 1); d = 'M' + ax.toFixed(1) + ' ' + ay.toFixed(1) + ' L' + bx + ' ' + ay.toFixed(1) + ' L' + mix(bx, xTexte, w).toFixed(1) + ' ' + mix(ay, y, w).toFixed(1); }
+        traits += '<circle cx="' + ax.toFixed(1) + '" cy="' + ay.toFixed(1) + '" r="6" fill="rgba(' + coul + ',' + (vivant * fade).toFixed(3) + ')"/>';
+        traits += '<path d="' + d + '" fill="none" stroke="rgba(' + coul + ',' + (0.85 * vivant * fade).toFixed(3) + ')" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+      }
+      el.style.top = (y - 14) + 'px';
+      if (cote === 'g') { el.style.right = (1920 - xTexte + 14) + 'px'; el.style.left = 'auto'; el.style.clipPath = 'inset(-6px 0 -30px ' + (100 * (1 - pl)).toFixed(1) + '%)'; }
+      else { el.style.left = (xTexte + 14) + 'px'; el.style.clipPath = 'inset(-6px ' + (100 * (1 - pl)).toFixed(1) + '% -30px 0)'; }
+      /* le geste en cours en clair, les gestes passés en retrait */
+      el.style.opacity = (pl > 0 ? fade * (0.5 + 0.5 * Math.max(vivant, p.ko ? 1 : 0)) : 0).toFixed(3);
+    });
+  }
+  poser(PAS_A, 'pasA', 'g', cibleA);
+  poser(PAS_B, 'pasB', 'd', cibleB);
+  $('traits').innerHTML = traits;
+
+  /* ---------- la conclusion, en haut, quand les deux parcours sont finis ---------- */
+  var k1 = outBack(1.3)(seg(t, CONCLU, CONCLU + 0.8)), k2 = outBack(1.3)(seg(t, CONCLU + 0.5, CONCLU + 1.3)), x = inBack(1.2)(seg(t, D - 0.9, D - 0.4));
+  $('c1').style.transform = 'translateY(' + (x > 0 ? mix(0, 135, x) : mix(125, 0, k1)).toFixed(2) + '%)';
+  $('c2').style.transform = 'translateY(' + (x > 0 ? mix(0, 135, x) : mix(125, 0, k2)).toFixed(2) + '%)';
+  var hautNoms = outQuart(seg(t, CONCLU - 0.4, CONCLU));
+  ['nomA', 'nomB'].forEach(function (id) { $(id).style.opacity = ((1 - hautNoms) * outQuart(seg(t, 0.8, 1.4))).toFixed(3); });
+};
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

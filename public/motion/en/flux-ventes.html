@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>From lead to sale, matched</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+/* Guyane Automobile : les contacts du site depuis janvier, rapprochés un à un du CRM. Un fleuve
+   de particules entre à gauche ; à chaque porte, ceux qui vont plus loin restent en haut, les
+   autres se détachent vers le bas et s'éteignent. Au bout, les ventes prennent l'or et se
+   rassemblent ; chacune sait de quel canal, de quelle campagne et de quel mot-clé elle vient.
+   Canvas 2D, chaque particule a une trajectoire calculée à l'instant t. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#toile{position:absolute;inset:0;width:1920px;height:1080px}
+#titre{position:absolute;left:110px;top:84px}
+#titre .mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+#titre .ln{display:block;font-size:50px;font-weight:800;letter-spacing:-.03em;line-height:1.06;transform:translateY(125%)}
+#titre .ln.b{color:#7db8ee}
+#titre .ln.o{color:#e8bd62}
+.porte{position:absolute;top:0;width:250px;opacity:0}
+.porte b{display:block;font-size:58px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.porte span{display:block;margin-top:6px;font-size:17px;font-weight:600;color:#a9b8c8;line-height:1.35}
+.porte.or b{color:#e8bd62}
+#carte{position:absolute;left:1290px;top:770px;width:520px;border-radius:20px;background:rgba(246,248,251,.98);color:#0b1b2b;padding:20px 24px;box-sizing:border-box;box-shadow:0 30px 70px -24px rgba(0,0,0,.75);opacity:0}
+#carte .k{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#b8862c}
+#carte .rg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+#carte .rg div{border-radius:12px;background:#f1f4f8;padding:10px 12px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#6b7f93;clip-path:inset(0 100% 0 0)}
+#carte .rg div i{display:block;margin-top:8px;height:9px;border-radius:5px;background:#cfdceb}
+#carte .rg div i.c{width:70%}
+#carte p{margin:12px 0 0;font-size:16px;font-weight:600;color:#3d5268;line-height:1.4}
+#source{position:absolute;left:110px;bottom:38px;font-size:15px;font-weight:600;color:#6b7f93}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="toile" width="1920" height="1080"></canvas>
+  <div id="titre">
+    <div class="mask"><span class="ln">798 website leads,</span></div>
+    <div class="mask"><span class="ln o">29 sales traced.</span></div>
+  </div>
+  <div class="porte" id="p0"><b>0</b><span>website leads since January</span></div>
+  <div class="porte" id="p1"><b>0</b><span>matched to their campaign and keyword</span></div>
+  <div class="porte" id="p2"><b>0</b><span>became CRM opportunities</span></div>
+  <div class="porte or" id="p3"><b>0</b><span>sales signed</span></div>
+  <div id="carte"><span class="k">Every sale knows where it came from</span>
+    <div class="rg"><div>Channel<i></i><i class="c"></i></div><div>Campaign<i></i><i class="c"></i></div><div>Keyword<i></i><i class="c"></i></div></div>
+    <p>The budget goes to what sells, not to what gets clicks.</p></div>
+  <div id="source">Guyane Automobile · MotorK CRM matched with website visits, 1 January to 6 October 2026 · visitors who accepted cookies</div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 20;
+window.DUR = window.DUREE;
+window.PRET = Promise.all([
+  document.fonts.load("800 58px 'Plus Jakarta Sans'"),
+  document.fonts.load("800 50px 'Plus Jakarta Sans'"),
+  document.fonts.load("600 17px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+
+(function () {
+'use strict';
+var D = window.DUREE;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outQuart(p) { return 1 - Math.pow(1 - p, 4); }
+function inOutCubic(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+function lisse(p) { return p * p * (3 - 2 * p); }
+function outBack(s) { return function (p) { return 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2); }; }
+function inBack(s) { return function (p) { return (s + 1) * p * p * p - s * p * p; }; }
+function h(i, k) { var v = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); }
+var $ = function (id) { return document.getElementById(id); };
+
+/* Les chiffres réels (dossier Guyane Automobile, 6 octobre 2026). */
+var NB = [798, 426, 117, 29];
+var XS = [330, 770, 1210, 1650];                 /* les quatre portes */
+var YT = 400, H0 = 380;                           /* haut du fleuve, hauteur pour 798 */
+var HS = NB.map(function (n) { return H0 * n / NB[0]; });
+var X0 = 120, VIT = 300;                          /* entrée, vitesse en px/s */
+/* Les particules : leur couloir u (0 en haut) décide jusqu'où elles vont. Les ventes, en haut,
+   sont un peu plus nombreuses à l'écran que leur part réelle, pour rester visibles. */
+var NP = 5200, P = [];
+for (var i = 0; i < NP; i++) {
+  var u = h(i, 1);
+  var fin = u < NB[3] / NB[0] * 1.6 ? 3 : (u < NB[2] / NB[0] ? 2 : (u < NB[1] / NB[0] ? 1 : 0));
+  P.push({ u: u, fin: fin, t0: 0.9 + (i / NP) * 17.5 + 0.04 * h(i, 2), j: h(i, 3) - 0.5 });
+}
+var ctx = $('toile').getContext('2d');
+/* hauteur du fleuve à l'abscisse x : il se resserre en douceur entre deux portes */
+function hauteur(x) {
+  if (x <= XS[0]) return HS[0];
+  for (var k = 0; k < 3; k++) if (x <= XS[k + 1]) return mix(HS[k], HS[k + 1], lisse(seg(x, XS[k] + 60, XS[k + 1] - 40)));
+  return HS[3];
+}
+/* position d'une particule ; null si éteinte */
+function position(p, t) {
+  var x = X0 + (t - p.t0) * VIT;
+  if (t < p.t0) return null;
+  var y = YT + p.u * H0 + p.j * 3;
+  if (p.fin < 3) {
+    var xd = XS[p.fin] + 50;                      /* elle se détache juste après sa dernière porte */
+    if (x > xd) {
+      var d = (x - xd) / 260;
+      if (d > 1) return null;
+      return { x: x - 120 * d * d, y: y + 260 * d * d + 40 * d, a: 1 - d, c: 0 };
+    }
+    return { x: x, y: y, a: 1, c: 0 };
+  }
+  /* les ventes : au-delà de la dernière porte, elles se rassemblent en un essaim d'or */
+  if (x > XS[3]) {
+    var g = clamp((x - XS[3]) / 120, 0, 1), ang = p.u * 997 + t * 0.6, rr = 34 + 26 * h(p.u * 1000, 4);
+    var cx = XS[3] + 120, cy = YT + 70;
+    return { x: mix(x, cx + Math.cos(ang) * rr, lisse(g)), y: mix(y, cy + Math.sin(ang) * rr * 0.75, lisse(g)), a: 1, c: 1, essaim: g >= 1 };
+  }
+  return { x: x, y: y, a: 1, c: x > XS[2] ? seg(x, XS[2], XS[3]) : 0 };
+}
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  var sortie = seg(t, D - 0.8, D), fe = 1 - sortie;
+  ctx.clearRect(0, 0, 1920, 1080);
+  /* le lit du fleuve, en dégradé doux */
+  var ouvre = outExpo(seg(t, 0.3, 1.4)) * fe;
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(X0, YT);
+  for (var x = X0; x <= XS[3] + 40; x += 10) ctx.lineTo(x, YT);
+  for (x = XS[3] + 40; x >= X0; x -= 10) ctx.lineTo(x, YT + hauteur(x));
+  ctx.closePath();
+  var gb = ctx.createLinearGradient(X0, 0, XS[3], 0);
+  gb.addColorStop(0, 'rgba(29,113,184,.18)'); gb.addColorStop(0.75, 'rgba(29,113,184,.14)'); gb.addColorStop(1, 'rgba(232,189,98,.22)');
+  ctx.globalAlpha = ouvre; ctx.fillStyle = gb; ctx.fill();
+  ctx.restore();
+  /* les portes : un trait vertical et son chiffre au-dessus */
+  for (var k = 0; k < 4; k++) {
+    var tk = 0.9 + (XS[k] - X0) / VIT, pk = outQuart(seg(t, tk, tk + 0.6));
+    ctx.strokeStyle = (k === 3 ? 'rgba(232,189,98,' : 'rgba(125,184,238,') + (0.55 * pk * fe).toFixed(3) + ')'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(XS[k], YT - 22); ctx.lineTo(XS[k], YT + HS[k] + 22); ctx.stroke();
+    var el = $('p' + k);
+    el.style.left = (XS[k] - 2) + 'px'; el.style.top = (YT - 150) + 'px';
+    el.style.opacity = (pk * fe).toFixed(3);
+    el.style.transform = 'translateY(' + (16 * (1 - pk)).toFixed(1) + 'px)';
+    el.querySelector('b').textContent = Math.round(NB[k] * outQuart(seg(t, tk + 0.2, tk + 1.6)));
+  }
+  /* les particules */
+  for (var i = 0; i < NP; i++) {
+    var q = position(P[i], t);
+    if (!q || q.x > 1900) continue;
+    var al = q.a * fe * Math.min(1, (q.x - X0) / 60);
+    if (al <= 0.01) continue;
+    if (q.c > 0.5) { ctx.fillStyle = 'rgba(232,189,98,' + (0.25 * al).toFixed(3) + ')'; ctx.beginPath(); ctx.arc(q.x, q.y, 6, 0, 7); ctx.fill(); }
+    ctx.fillStyle = q.c > 0 ? 'rgba(' + Math.round(mix(125, 232, q.c)) + ',' + Math.round(mix(184, 189, q.c)) + ',' + Math.round(mix(238, 98, q.c)) + ',' + al.toFixed(3) + ')' : (P[i].fin === 0 && q.x > XS[0] + 50 ? 'rgba(125,145,170,' + (0.6 * al).toFixed(3) + ')' : 'rgba(125,184,238,' + (0.85 * al).toFixed(3) + ')');
+    ctx.beginPath(); ctx.arc(q.x, q.y, q.c > 0.5 ? 2.6 : 1.9, 0, 7); ctx.fill();
+  }
+  /* la carte : canal, campagne, mot-clé, qui se remplissent l'un après l'autre */
+  var tc = 13.2, pc = outBack(1.3)(seg(t, tc, tc + 0.6));
+  var carte = $('carte');
+  carte.style.opacity = (clamp(pc, 0, 1) * fe).toFixed(3);
+  carte.style.transform = 'translateY(' + (24 * (1 - pc)).toFixed(1) + 'px)';
+  [].forEach.call(carte.querySelectorAll('.rg div'), function (d, j) { d.style.clipPath = 'inset(0 ' + (100 * (1 - outQuart(seg(t, tc + 0.5 + j * 0.3, tc + 0.9 + j * 0.3)))).toFixed(1) + '% 0 0)'; });
+  /* le titre */
+  var lns = document.querySelectorAll('#titre .ln'), TT = [0.5, 0.9 + (XS[3] - X0) / VIT + 0.8];
+  for (var j = 0; j < lns.length; j++) {
+    var p = outBack(1.3)(seg(t, TT[j], TT[j] + 0.8)), xx = inBack(1.2)(seg(t, D - 1.0 + j * 0.06, D - 0.5 + j * 0.06));
+    lns[j].style.transform = 'translateY(' + (xx > 0 ? mix(0, 135, xx) : mix(125, 0, p)).toFixed(2) + '%)';
+  }
+  $('source').style.opacity = (outQuart(seg(t, 1.0, 1.6)) * fe).toFixed(3);
+};
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

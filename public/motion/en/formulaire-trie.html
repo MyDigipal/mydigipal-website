@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The form that sorts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+/* Un jeu de cartes sur une table. Le formulaire pose ses trois questions sur une carte qui se
+   retourne ; puis les fiches contacts sont distribuées une à une : chacune se lève, se retourne
+   pour montrer ses réponses, et rejoint la pile « à rappeler aujourd'hui » ou « à suivre ».
+   Aucune isométrie, aucun tapis : de la 3D CSS, des cartes en volume, des ombres sur la table. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#fond{position:absolute;inset:0;background:radial-gradient(900px 520px at 64% 66%,rgba(29,113,184,.24),transparent 70%),radial-gradient(500px 400px at 64% 20%,rgba(125,184,238,.08),transparent 70%)}
+.leg{position:absolute;left:110px;width:500px}
+.leg .mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.leg .ln{display:block;font-size:44px;font-weight:800;line-height:1.08;letter-spacing:-.03em;transform:translateY(125%)}
+.leg .ln.b{color:#7db8ee}
+.leg .ln.o{color:#e8bd62}
+#vue{position:absolute;left:640px;top:0;width:1280px;height:1080px;perspective:2000px;perspective-origin:50% 22%}
+#table{position:absolute;left:640px;top:650px;width:0;height:0;transform-style:preserve-3d;transform:rotateX(54deg)}
+#cartes,#ombres{position:absolute;left:0;top:0;transform-style:preserve-3d}
+#nappe{position:absolute;left:-520px;top:-400px;width:1040px;height:800px;border-radius:40px;background:radial-gradient(closest-side,rgba(29,113,184,.16),rgba(29,113,184,.04));box-shadow:inset 0 0 0 1.5px rgba(125,184,238,.16)}
+.carte{position:absolute;left:-115px;top:-165px;width:230px;height:330px;transform-style:preserve-3d}
+.carte > div{position:absolute;inset:0;border-radius:16px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.dos{background:linear-gradient(150deg,#1d71b8,#124d80);box-shadow:inset 0 0 0 6px rgba(255,255,255,.08);transform:rotateY(180deg)}
+.dos::after{content:"";position:absolute;inset:18px;border-radius:10px;border:1.5px solid rgba(255,255,255,.22);background:repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 6px,transparent 6px 14px)}
+.face{background:#fff;color:#0b1b2b;padding:20px 18px 16px;box-sizing:border-box;overflow:hidden}
+.face .score{position:absolute;right:16px;top:20px;display:flex;gap:5px}
+.face .score i{width:11px;height:11px;border-radius:50%;background:#e3e9f0}
+.face .score i.on{background:#e0ab45}
+.face .reflet{position:absolute;inset:-40%;background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.75) 50%,transparent 58%);pointer-events:none}
+.face .qui{display:flex;align-items:center;gap:10px}
+.face .ini{width:46px;height:46px;border-radius:50%;background:#eaf3fb;color:#1d71b8;display:grid;place-items:center;font-weight:800;font-size:15px}
+.face .qui b{display:block;font-size:17px;font-weight:800;line-height:1.1}
+.face .qui span{display:block;font-size:13.5px;font-weight:600;color:#6b7f93}
+.face .rep{margin-top:16px;display:grid;gap:9px}
+.face .rep div{font-size:12px;font-weight:700;color:#6b7f93;text-transform:uppercase;letter-spacing:.06em}
+.face .rep div b{display:block;margin-top:3px;font-size:16px;font-weight:700;color:#0b1b2b;text-transform:none;letter-spacing:0;border-radius:7px;padding:4px 8px;background:#f1f4f8}
+.face .rep div b.cle{background:#fff1d6;color:#8a6420}
+.face .rep div b.froid{background:#eef2f6;color:#7a8ea2}
+.ombre{position:absolute;left:-115px;top:-165px;width:230px;height:330px;border-radius:16px;background:rgba(1,6,12,.75)}
+#question{position:absolute;left:1010px;top:56px;width:560px;border-radius:22px;background:#fff;color:#0b1b2b;padding:22px 28px 10px;box-sizing:border-box;box-shadow:0 30px 70px -24px rgba(0,0,0,.7);transform-origin:100% 0}
+#question .tete{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+#question .tete b{font-size:22px;font-weight:800;letter-spacing:-.02em}
+#question .tete span{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#1d71b8}
+.qb{border-top:1px solid #edf1f5;padding:14px 0 14px;overflow:hidden}
+.qb h4{margin:0 0 10px;font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.2}
+.qb .chips{display:flex;flex-wrap:wrap;gap:8px}
+.qb .chips span{font-size:15px;font-weight:700;border:2px solid #d6dee8;border-radius:999px;padding:6px 14px}
+.qb .chips span.cle{transition:none}
+#qtitre{position:absolute;left:1010px;top:20px;font-size:15px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#7db8ee}
+.pile-lab{position:absolute;top:900px;text-align:center;width:360px}
+.pile-lab span{display:block;font-size:17px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#7db8ee}
+.pile-lab b{display:block;font-size:56px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.05}
+#labG span,#labG b{color:#e8bd62}
+#labD b{color:#a9b8c8}
+#vendeur{position:absolute;left:1330px;top:60px;width:500px;border-radius:24px;background:rgba(246,248,251,.98);color:#0b1b2b;padding:22px 24px 18px;box-sizing:border-box;box-shadow:0 40px 90px -30px rgba(0,0,0,.8);opacity:0}
+#vendeur .haut{display:flex;align-items:center;gap:16px}
+#vendeur .haut svg{width:78px;height:78px;flex:none}
+#vendeur .haut b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em}
+#vendeur .haut span{display:block;font-size:15px;font-weight:600;color:#6b7f93}
+#vendeur .ligne-v{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:12px;padding:9px 0;border-top:1px solid #e8edf3}
+#vendeur .ligne-v i{width:34px;height:34px;border-radius:50%;background:#eaf3fb;color:#1d71b8;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px}
+#vendeur .ligne-v b{display:block;font-size:15.5px;font-weight:800;line-height:1.1}
+#vendeur .ligne-v small{display:block;font-size:12.5px;font-weight:600;color:#6b7f93}
+#vendeur .st{font-size:13px;font-weight:800;border-radius:999px;padding:5px 11px;white-space:nowrap}
+#vendeur .st.attente{color:#9aabbd;background:#f1f4f8}
+#vendeur .st.appel{color:#fff;background:#1d71b8}
+#vendeur .st.ok{color:#1e8449;background:#e3f4ea}
+#vendeur .st.vente{color:#7a5410;background:#ffe3a6}
+#parking{display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid #e8edf3;align-items:flex-end}
+#parking .place{position:relative;flex:1;height:64px;border:2px dashed #d3dce6;border-radius:12px;overflow:hidden}
+#parking .place svg{position:absolute;left:8%;bottom:6px;width:84%}
+#parking .titre{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#6b7f93;margin:10px 0 2px}
+#bilan{font-size:15px;font-weight:700;color:#3d5268;margin-top:10px}
+#bilan b{color:#b8862c}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="fond"></div>
+  <div class="leg" id="leg0" style="top:250px"><div class="mask"><span class="ln">Three questions</span></div><div class="mask"><span class="ln b">in the form.</span></div></div>
+  <div class="leg" id="leg1" style="top:450px"><div class="mask"><span class="ln">Each answer</span></div><div class="mask"><span class="ln b">ranks the lead.</span></div></div>
+  <div class="leg" id="leg2" style="top:650px"><div class="mask"><span class="ln">The salesperson calls</span></div><div class="mask"><span class="ln o">the ready ones first.</span></div></div>
+  <div id="vue"><div id="table"><div id="nappe"></div><div id="ombres"></div><div id="cartes"></div></div></div>
+  <div id="qtitre">In the instant form</div>
+  <div id="question"><div class="tete"><b>Book a test drive</b><span>3 questions</span></div><div id="qcarte"></div></div>
+  <div class="pile-lab" id="labG"><span>Call back today</span><b>0</b></div>
+  <div class="pile-lab" id="labD"><span>Follow up later</span><b>0</b></div>
+  <div id="vendeur">
+    <div class="haut"><svg viewBox="0 0 80 80" id="perso"><circle cx="40" cy="40" r="39" fill="#eaf3fb"/><circle cx="40" cy="31" r="13" fill="#1d71b8"/><path d="M15 70 C17 54 28 48 40 48 C52 48 63 54 65 70 Z" fill="#1d71b8"/><path d="M25 31 C25 18 55 18 55 31" fill="none" stroke="#0b1b2b" stroke-width="3.5" stroke-linecap="round"/><rect x="21" y="28" width="7" height="11" rx="3" fill="#0b1b2b"/><path d="M24 39 C24 45 30 47 35 47" fill="none" stroke="#0b1b2b" stroke-width="2.5" stroke-linecap="round"/><g id="ondes" fill="none" stroke="#e0ab45" stroke-width="2.5" stroke-linecap="round"><path d="M62 20 C67 24 67 32 62 36"/><path d="M68 15 C76 22 76 34 68 41"/></g></svg>
+      <div><b>The salesperson calls back</b><span id="enappel">top of the pile first</span></div></div>
+    <div id="liste"></div>
+    <div class="titre">Sales made</div>
+    <div id="parking"><div class="place"></div><div class="place"></div><div class="place"></div></div>
+    <div id="bilan"></div>
+  </div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 25;
+window.DUR = window.DUREE;
+window.PRET = Promise.all([
+  document.fonts.load("800 44px 'Plus Jakarta Sans'"),
+  document.fonts.load("700 14px 'Plus Jakarta Sans'"),
+  document.fonts.load("600 12px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+
+(function () {
+'use strict';
+var D = window.DUREE;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outQuart(p) { return 1 - Math.pow(1 - p, 4); }
+function inCubic(p) { return p * p * p; }
+function inOutCubic(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+function inOutSine(p) { return -(Math.cos(Math.PI * p) - 1) / 2; }
+function outBack(s) { return function (p) { return 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2); }; }
+function inBack(s) { return function (p) { return (s + 1) * p * p * p - s * p * p; }; }
+function bosse(p) { return p <= 0 || p >= 1 ? 0 : Math.sin(Math.PI * p); }
+function h(i, k) { var v = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); }
+var $ = function (id) { return document.getElementById(id); };
+
+/* Les trois questions du formulaire, la réponse qui compte en or. */
+var QUESTIONS = [
+  { h: 'When are you planning to change your car?', c: ['This month', 'Within 3 months', 'Just looking'], cle: [0, 1] },
+  { h: 'Do you have a car to part-exchange?', c: ['Yes', 'No'], cle: [0] },
+  { h: 'How do you plan to pay?', c: ['Cash', 'Finance', 'Lease', 'Not sure'], cle: [0, 1, 2] }
+];
+/* Les fiches. Modèles des campagnes réelles de DMD ; personnes inventées. */
+var FICHES = [
+  ['JM', 'Julie M.', 'MG4', 'This month', 'Yes', 'Lease', 1],
+  ['KB', 'Karim B.', 'Ford Puma', 'Just looking', 'No', 'Not sure', 0],
+  ['SL', 'Sophie L.', 'Opel Frontera', 'Within 3 months', 'Yes', 'Finance', 1],
+  ['TD', 'Thomas D.', 'Jaecoo 7', 'Just looking', 'Yes', 'Not sure', 0],
+  ['AN', 'Amina N.', 'MG ZS', 'This month', 'No', 'Cash', 1],
+  ['LR', 'Lucas R.', 'Ford Kuga', 'Just looking', 'No', 'Finance', 0],
+  ['CP', 'Claire P.', 'Geely EX5', 'Within 3 months', 'Yes', 'Lease', 1],
+  ['MV', 'Marc V.', 'Opel Corsa', 'Just looking', 'No', 'Not sure', 0],
+  ['NF', 'Nadia F.', 'MG4', 'Within 3 months', 'No', 'Lease', 0],
+  ['PG', 'Pierre G.', 'Ford Ranger', 'This month', 'Yes', 'Finance', 1],
+  ['EB', 'Emma B.', 'Omoda 5', 'Just looking', 'No', 'Cash', 0],
+  ['YK', 'Yanis K.', 'MG HS', 'This month', 'Yes', 'Finance', 1],
+  ['LD', 'Lena D.', 'Opel Grandland', 'Just looking', 'Yes', 'Not sure', 0],
+  ['HC', 'Hugo C.', 'Ford Puma', 'Within 3 months', 'Yes', 'Cash', 1]
+];
+var N = FICHES.length;
+function cle(i, v) { var Q = QUESTIONS[i]; return Q.cle.indexOf(Q.c.indexOf(v)) >= 0; }
+FICHES.forEach(function (f) { f.score = (cle(0, f[3]) ? 1 : 0) + (cle(1, f[4]) ? 1 : 0) + (cle(2, f[5]) ? 1 : 0); f[6] = f.score >= 2 ? 1 : 0; });
+
+/* Le formulaire : les trois questions, écrites l'une sous l'autre. */
+var qc = $('qcarte');
+QUESTIONS.forEach(function (Q, i) {
+  var d = document.createElement('div'); d.className = 'qb'; d.id = 'q' + i;
+  d.innerHTML = '<h4>' + Q.h + '</h4><div class="chips">' + Q.c.map(function (c, j) { return '<span data-cle="' + (Q.cle.indexOf(j) >= 0 ? 1 : 0) + '">' + c + '</span>'; }).join('') + '</div>';
+  qc.appendChild(d);
+});
+var cartes = $('cartes'), ombres = $('ombres');
+FICHES.forEach(function (f, i) {
+  var c = document.createElement('div'); c.className = 'carte'; c.id = 'c' + i;
+  var rep = [['Timing', f[3], 0], ['Part-exchange', f[4], 1], ['Payment', f[5], 2]].map(function (r) {
+    var k = cle(r[2], r[1]); return '<div>' + r[0] + '<b class="' + (k ? 'cle' : 'froid') + '">' + r[1] + '</b></div>';
+  }).join('');
+  var dots = '<span class="score">' + [0, 1, 2].map(function (k) { return '<i class="' + (k < f.score ? 'on' : '') + '"></i>'; }).join('') + '</span>';
+  c.innerHTML = '<div class="face">' + dots + '<div class="qui"><span class="ini">' + f[0] + '</span><span><b>' + f[1] + '</b><span>' + f[2] + '</span></span></div><div class="rep">' + rep + '</div><span class="reflet"></span></div><div class="dos"></div>';
+  cartes.appendChild(c);
+  var o = document.createElement('div'); o.className = 'ombre'; o.id = 'o' + i; ombres.appendChild(o);
+});
+
+/* La partition de la distribution : les trois premières lentement, puis le geste s'accélère. */
+var T_DIST = 5.4, DUREES = [], t0 = T_DIST;
+for (var i = 0; i < N; i++) { var d = i < 3 ? 1.35 : (i < 6 ? 0.8 : 0.5); DUREES.push([t0, d]); t0 += d * 0.62; }
+var T_FIN_DIST = t0 + 0.6;
+var DECK = [0, -270], LECTURE = [0, 150], PILES = [[-300, 200], [300, 200]];
+/* Les cartes d'une pile : chacune un peu décalée et tournée, comme posée à la main. */
+var rangPile = [], compte = [0, 0];
+FICHES.forEach(function (f, i) { rangPile.push(compte[f[6] ? 0 : 1]++); });
+
+function poseCarte(i, t) {
+  var f = FICHES[i], dep = DUREES[i][0], du = DUREES[i][1], cote = f[6] ? 0 : 1;
+  var aDeck = { x: DECK[0], y: DECK[1], z: 2 + (N - i) * 2.2, rx: 0, ry: 180, rz: (h(i, 1) - 0.5) * 4 };
+  if (t < dep) return aDeck;
+  var p1 = seg(t, dep, dep + du * 0.38), p2 = seg(t, dep + du * 0.38, dep + du * 0.62), p3 = seg(t, dep + du * 0.62, dep + du);
+  var P = PILES[cote], r = rangPile[i];
+  var arrivee = { x: P[0] + (h(i, 2) - 0.5) * 22, y: P[1] + (h(i, 3) - 0.5) * 16, z: 2 + r * 2.2, rz: (h(i, 4) - 0.5) * 14 };
+  if (p1 < 1) {
+    /* elle se lève du paquet, se redresse face à nous et se retourne en montant */
+    var e = inOutCubic(p1);
+    return { x: mix(aDeck.x, LECTURE[0], e), y: mix(aDeck.y, LECTURE[1], e), z: mix(aDeck.z, 360, e) + 80 * bosse(p1), rx: mix(0, -54, e), ry: mix(180, 0, outQuart(seg(p1, 0.25, 1))), rz: mix(aDeck.rz, 0, e) };
+  }
+  if (p3 <= 0) return { x: LECTURE[0], y: LECTURE[1], z: 360 + 6 * Math.sin(p2 * Math.PI), rx: -54, ry: 0, rz: 0, lue: p2 };
+  /* puis elle file vers sa pile et se couche */
+  var g = inOutCubic(p3);
+  return { x: mix(LECTURE[0], arrivee.x, g), y: mix(LECTURE[1], arrivee.y, g), z: mix(360, arrivee.z, g) + 50 * bosse(p3), rx: mix(-54, 0, g), ry: 0, rz: mix(0, arrivee.rz, g), pose: p3 >= 1 };
+}
+
+var legs = [0, 1, 2].map(function (i) { return $('leg' + i); });
+var T_V0 = T_FIN_DIST + 1.3, PAS_V = 0.72;
+var PRETS = []; FICHES.forEach(function (f, i) { if (f[6]) PRETS.push(i); });
+PRETS.sort(function (a, b) { return rangPile[b] - rangPile[a]; });          /* le haut de la pile d'abord */
+var VENTES = [PRETS[0], PRETS[2], PRETS[5]];
+var VOITURE = '<svg viewBox="0 0 300 110"><path d="M22 78 C22 66 30 58 48 55 L92 50 L124 28 C132 23 142 21 152 21 L196 21 C210 21 220 26 228 34 L250 52 L268 56 C280 59 286 66 286 76 L286 84 L22 84 Z" fill="#1d71b8"/><path d="M104 50 L130 31 C136 27 142 26 150 26 L168 26 L168 50 Z" fill="#cfe3f6"/><path d="M174 26 L196 26 C206 26 214 30 220 36 L234 50 L174 50 Z" fill="#cfe3f6"/><circle cx="78" cy="84" r="20" fill="#0b1b2b"/><circle cx="78" cy="84" r="9" fill="#a9b8c8"/><circle cx="234" cy="84" r="20" fill="#0b1b2b"/><circle cx="234" cy="84" r="9" fill="#a9b8c8"/></svg>';
+$('liste').innerHTML = PRETS.map(function (i) { var f = FICHES[i]; return '<div class="ligne-v" id="v' + i + '"><i>' + f[0] + '</i><span><b>' + f[1] + '</b><small>' + f[2] + '</small></span><span class="st attente">to call</span></div>'; }).join('');
+[].forEach.call(document.querySelectorAll('#parking .place'), function (pl) { pl.innerHTML = VOITURE; });
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  var sortie = seg(t, D - 0.8, D);
+  var entree = outExpo(seg(t, 0.2, 1.4));
+  $('table').style.transform = 'translateY(' + (60 * (1 - entree) + 50 * inCubic(sortie)).toFixed(1) + 'px) rotateX(' + mix(70, 54, entree).toFixed(2) + 'deg)';
+  $('vue').style.opacity = Math.min(seg(t, 0.2, 0.7), 1 - sortie).toFixed(3);
+
+  /* les phrases, chacune à sa place, la phrase en cours claire */
+  var LT = [0.6, T_DIST + 0.1, T_FIN_DIST + 0.2];
+  legs.forEach(function (l, i) {
+    var lns = l.querySelectorAll('.ln');
+    for (var j = 0; j < lns.length; j++) {
+      var p = outBack(1.3)(seg(t, LT[i] + j * 0.12, LT[i] + 0.8 + j * 0.12)), x = inBack(1.2)(seg(t, D - 1.0 + j * 0.06, D - 0.5 + j * 0.06));
+      lns[j].style.transform = 'translateY(' + (x > 0 ? mix(0, 135, x) : mix(125, 0, p)).toFixed(2) + '%)';
+    }
+    var suivante = i < 2 ? LT[i + 1] : 99;
+    l.style.opacity = (1 - 0.62 * outQuart(seg(t, suivante, suivante + 0.6))).toFixed(3);
+  });
+
+  /* le formulaire : il se pose, chaque question s'écrit sous la précédente, puis les réponses
+     qui comptent prennent l'or ; quand la distribution commence, il se range en petit */
+  var QT = [1.3, 2.3, 3.3], qIn = outExpo(seg(t, 0.9, 1.5)), qOut = inOutCubic(seg(t, T_DIST - 0.4, T_DIST + 0.2)), qFin = seg(t, T_V0 - 0.8, T_V0 - 0.2);
+  var Qel = $('question');
+  Qel.style.transform = 'translateY(' + (30 * (1 - qIn)).toFixed(1) + 'px) scale(' + mix(1, 0.6, qOut).toFixed(3) + ')';
+  Qel.style.opacity = Math.min(qIn, 1 - 0.45 * qOut, 1 - qFin, 1 - sortie).toFixed(3);
+  $('qtitre').style.opacity = (outQuart(seg(t, 0.9, 1.3)) * (1 - qOut) * (1 - sortie)).toFixed(3);
+  var orCle = outQuart(seg(t, 4.3, 4.9));
+  for (var q = 0; q < 3; q++) {
+    var b = $('q' + q), pq = outExpo(seg(t, QT[q], QT[q] + 0.6));
+    b.style.maxHeight = (110 * pq).toFixed(1) + 'px';
+    b.style.opacity = pq.toFixed(3);
+    b.style.paddingTop = (14 * pq).toFixed(1) + 'px'; b.style.paddingBottom = (14 * pq).toFixed(1) + 'px';
+    b.querySelector('h4').style.transform = 'translateY(' + (18 * (1 - pq)).toFixed(1) + 'px)';
+    var ch = b.querySelectorAll('.chips span');
+    for (var c2 = 0; c2 < ch.length; c2++) {
+      var pc = outBack(1.6)(seg(t, QT[q] + 0.25 + c2 * 0.08, QT[q] + 0.55 + c2 * 0.08));
+      ch[c2].style.display = 'inline-block';
+      ch[c2].style.transform = 'scale(' + mix(0.7, 1, pc).toFixed(3) + ')';
+      ch[c2].style.opacity = clamp(pc, 0, 1).toFixed(3);
+      var estCle = ch[c2].dataset.cle === '1';
+      ch[c2].style.borderColor = estCle && orCle > 0 ? 'rgb(' + Math.round(mix(214, 224, orCle)) + ',' + Math.round(mix(222, 171, orCle)) + ',' + Math.round(mix(232, 69, orCle)) + ')' : '#d6dee8';
+      ch[c2].style.background = estCle ? 'rgba(255,246,226,' + orCle.toFixed(3) + ')' : '';
+      ch[c2].style.color = estCle && orCle > 0.5 ? '#8a6420' : '#0b1b2b';
+    }
+  }
+
+  /* les fiches */
+  var nG = 0, nD = 0;
+  for (var i = 0; i < N; i++) {
+    var c = $('c' + i), o = $('o' + i), a = poseCarte(i, t);
+    c.style.transform = 'translate3d(' + a.x.toFixed(1) + 'px,' + a.y.toFixed(1) + 'px,' + a.z.toFixed(1) + 'px) rotateZ(' + a.rz.toFixed(2) + 'deg) rotateX(' + a.rx.toFixed(2) + 'deg) rotateY(' + a.ry.toFixed(2) + 'deg)';
+    c.style.opacity = seg(t, 0.5 + i * 0.03, 0.9 + i * 0.03).toFixed(3);
+    /* l'ombre reste sur la table, plus floue et plus pâle quand la carte monte */
+    var zz = Math.max(0, a.z), k = clamp(zz / 260, 0, 1);
+    o.style.transform = 'translate3d(' + (a.x + zz * 0.18).toFixed(1) + 'px,' + (a.y + zz * 0.32).toFixed(1) + 'px,0.5px) rotateZ(' + a.rz.toFixed(2) + 'deg) scale(' + (1 + 0.15 * k).toFixed(3) + ')';
+    o.style.filter = 'blur(' + (3 + 20 * k).toFixed(1) + 'px)';
+    o.style.opacity = ((0.55 - 0.35 * k) * seg(t, 0.5, 0.9)).toFixed(3);
+    var rf = c.querySelector('.reflet'), pr = t >= DUREES[i][0] ? seg(t, DUREES[i][0] + DUREES[i][1] * 0.2, DUREES[i][0] + DUREES[i][1] * 0.55) : 0;
+    rf.style.transform = 'translateX(' + mix(-60, 60, pr).toFixed(1) + '%)';
+    rf.style.opacity = (pr > 0 && pr < 1 ? 1 : 0);
+    /* la réponse qui décide s'allume pendant la lecture */
+    var cles = c.querySelectorAll('b.cle');
+    for (var j = 0; j < cles.length; j++) cles[j].style.boxShadow = a.lue != null ? '0 0 0 ' + (2 * bosse(a.lue)).toFixed(2) + 'px #e0ab45' : 'none';
+    /* l'ordre d'affichage : la carte en vol passe devant les piles */
+    c.style.zIndex = a.pose ? String(10 + rangPile[i]) : (t >= DUREES[i][0] ? '100' : String(50 - i));
+    if (a.pose) { if (FICHES[i][6]) nG++; else nD++; }
+  }
+  $('labG').querySelector('b').textContent = nG;
+  $('labD').querySelector('b').textContent = nD;
+  var labs = outQuart(seg(t, T_DIST + 0.6, T_DIST + 1.2)) * (1 - sortie);
+  $('labG').style.opacity = labs.toFixed(3);
+  $('labD').style.opacity = (labs * 0.9).toFixed(3);
+  /* le vendeur : il appelle les contacts prêts un à un ; trois deviennent des ventes, et une voiture se gare */
+  var pv = outExpo(seg(t, T_V0 - 0.7, T_V0 - 0.1));
+  var V = $('vendeur');
+  V.style.opacity = Math.min(pv, 1 - sortie).toFixed(3);
+  V.style.transform = 'translateX(' + (60 * (1 - pv)).toFixed(1) + 'px)';
+  var enCours = -1, nRap = 0, nVen = 0;
+  PRETS.forEach(function (i, k) {
+    var t0 = T_V0 + k * PAS_V, el = $('v' + i), st = el.querySelector('.st'), vend = VENTES.indexOf(i) >= 0;
+    if (t < t0) { st.className = 'st attente'; st.textContent = 'to call'; }
+    else if (t < t0 + 0.45) { st.className = 'st appel'; st.textContent = 'calling…'; enCours = k; }
+    else if (vend && t >= t0 + 0.55) { st.className = 'st vente'; st.textContent = 'sold'; nRap++; nVen++; }
+    else { st.className = 'st ok'; st.textContent = 'called ✓'; nRap++; }
+    el.style.background = t >= t0 && t < t0 + 0.45 ? 'rgba(29,113,184,.07)' : '';
+    /* la fiche correspondante, sur la pile, s'éclaire pendant l'appel */
+    var face = $('c' + i).querySelector('.face');
+    face.style.boxShadow = t >= t0 && t < t0 + 0.6 ? '0 0 0 4px #1d71b8' : (vend && t >= t0 + 0.55 ? '0 0 0 4px #e0ab45' : 'none');
+  });
+  $('enappel').textContent = enCours >= 0 ? 'on the phone with ' + FICHES[PRETS[enCours]][1] : (nRap ? nRap + ' of ' + PRETS.length + ' called back' : 'top of the pile first');
+  $('ondes').style.opacity = enCours >= 0 ? (0.5 + 0.5 * Math.sin(t * 18)).toFixed(3) : '0';
+  [].forEach.call(document.querySelectorAll('#parking .place'), function (pl, j) {
+    var k = PRETS.indexOf(VENTES[j]), ta = T_V0 + k * PAS_V + 0.55, pa = outBack(1.2)(seg(t, ta, ta + 0.7));
+    var car = pl.querySelector('svg');
+    car.style.transform = 'translateX(' + (130 * (1 - pa)).toFixed(1) + '%)';
+    car.style.opacity = (pa > 0 ? 1 : 0);
+    pl.style.borderColor = pa >= 1 ? '#e0ab45' : '#d3dce6';
+    pl.style.background = pa >= 1 ? 'rgba(255,227,166,.25)' : '';
+  });
+  $('bilan').innerHTML = nRap ? nRap + ' called back, <b>' + nVen + (nVen === 1 ? ' sale' : ' sales') + '</b>' : '';
+  /* la pile « à suivre » s'efface pendant cette scène */
+  var efface = outQuart(seg(t, T_V0 - 0.8, T_V0 - 0.2));
+  for (var j2 = 0; j2 < N; j2++) if (!FICHES[j2][6]) $('c' + j2).style.opacity = (1 - 0.8 * efface).toFixed(3);
+  $('labD').style.opacity = ((1 - efface) * labs * 0.9).toFixed(3);
+
+  /* à la fin, la pile des contacts prêts monte d'un cran et s'éclaire */
+  var fin = outQuart(seg(t, T_FIN_DIST, T_FIN_DIST + 0.8));
+  $('labG').style.transform = 'scale(' + (1 + 0.08 * fin).toFixed(3) + ')';
+};
+
+/* Place les deux libellés sous les piles, à partir de la position réelle des piles à l'écran. */
+function placerLabels() {
+  var st = $('stage').getBoundingClientRect(), k = st.width / 1920;
+  [[0, 'labG'], [1, 'labD']].forEach(function (x) {
+    var tmp = document.createElement('div'); tmp.style.cssText = 'position:absolute;left:0;top:0;width:1px;height:1px;transform:translate3d(' + PILES[x[0]][0] + 'px,' + (PILES[x[0]][1] + 190) + 'px,0)';
+    $('table').appendChild(tmp);
+    var r = tmp.getBoundingClientRect();
+    $(x[1]).style.left = ((r.left - st.left) / k - 180).toFixed(0) + 'px';
+    $(x[1]).style.top = ((r.top - st.top) / k + 6).toFixed(0) + 'px';
+    tmp.remove();
+  });
+}
+var rendreBase = window.render;
+window.render = function (t) { rendreBase(t); if (!window.__places) { placerLabels(); window.__places = true; } };
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>
