@@ -40,6 +40,14 @@ export function trackQuestion(action: 'open' | 'faq' | 'sent' | 'email', params:
   push({ event: `academy_question_${action}`, ...params });
 }
 
+/**
+ * Une étape du programme dépliée sur la page de vente (06/10/2026). De la
+ * mesure seulement, jamais une conversion : elle dit quelle étape intéresse.
+ */
+export function trackProgrammeEtape(etape: string): void {
+  push({ event: 'academy_programme_etape', etape });
+}
+
 export function trackSelectItem(item: { tier: string; tierName: string; value: number; currency: string }): void {
   push({ ecommerce: null });
   push({

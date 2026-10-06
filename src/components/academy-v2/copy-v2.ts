@@ -70,6 +70,10 @@ const FR = {
     videTactile: 'Touchez un module pour voir ce qu’il contient.',
     deLecons: 'de leçons',
     voirEcran: 'Voir l’écran',
+    // Les étapes repliées (Paul, 06/10/2026 : « on voit juste les trois
+    // sections, et quand les gens cliquent dessus, ça s’expand »).
+    voirModules: 'Voir les modules',
+    replier: 'Replier',
     fermer: 'Fermer',
     paliers: {
       free: 'Offert',
@@ -424,6 +428,8 @@ const EN: typeof FR = {
     videTactile: 'Touch a module to see what it holds.',
     deLecons: 'of lessons',
     voirEcran: 'See the screen',
+    voirModules: 'See the modules',
+    replier: 'Hide',
     fermer: 'Close',
     paliers: { free: 'Free', essentials: 'Included', pro: 'Automations' },
     paliersLong: {

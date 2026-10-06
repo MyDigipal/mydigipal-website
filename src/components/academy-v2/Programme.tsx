@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { pointeurGrossier } from '../academy/motion';
+import { trackProgrammeEtape } from '../academy/track';
 import Glyphe from './Glyphe';
-import { ETAPES, MODULES, minutesDe, minutesDu, modulesDe, nombreSuivi, type Durees, type Module } from './modules';
+import { ETAPES, MODULES, type EtapeId, minutesDe, minutesDu, modulesDe, nombreSuivi, type Durees, type Module } from './modules';
 import { copyV2, type Locale } from './copy-v2';
 import { Boucle, estDemo, Visionneuse, type Demo } from './Video';
 
@@ -68,6 +69,13 @@ export default function Programme({
   const [tactile, setTactile] = useState(false);
   useEffect(() => setTactile(pointeurGrossier()), []);
   const nbAuto = MODULES.filter((m) => m.palier === 'pro').length;
+  // Les étapes ouvertes. Toutes fermées au chargement ; plusieurs peuvent
+  // être ouvertes à la fois, pour comparer deux étapes sans perdre la première.
+  const [ouvertes, setOuvertes] = useState<EtapeId[]>([]);
+  const basculer = (id: EtapeId) => {
+    setOuvertes((o) => (o.includes(id) ? o.filter((x) => x !== id) : [...o, id]));
+    if (!ouvertes.includes(id)) trackProgrammeEtape(id);
+  };
 
   const montre = (m: Module) => {
     if (!fige) setActif(m);
@@ -99,92 +107,159 @@ export default function Programme({
         <p className="mt-4 max-w-[64ch] text-[17.5px] leading-[1.65] text-brume">
           {c.chapeau(modules, heures)}
         </p>
-        {/* La consigne, au doigt seulement : sur grand écran le panneau de
-            droite la porte déjà, et il est visible au repos. Sur téléphone il
-            n'existe qu'une fois ouvert, donc rien ne dirait que les lignes se
-            touchent. */}
-        <p className="mt-3 font-ac-mono text-[12px] leading-[1.5] text-or-grave lg:hidden">
-          {c.videTactile}
-        </p>
-
         <div className="mt-10 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10">
-          <div>
+          {/* ⚠️ LES ÉTAPES SONT REPLIÉES depuis le 06/10/2026 (Paul : « on voit
+              juste les trois sections, et quand les gens cliquent dessus, ça
+              s'expand »). Les vingt-deux modules ouverts d'emblée (direction B
+              du 13/09) faisaient 2 100 px sur bureau et 2 400 sur téléphone,
+              et les tarifs n'arrivaient qu'au 22e écran du téléphone, pour
+              26 s d'attention moyenne par visiteur.
+              Fermée, une étape montre quand même ce qu'elle contient : la
+              rangée des pictogrammes de ses modules. Les modules restent dans
+              le HTML (Google lit le programme, le niveau de qualité de la page
+              en dépend), seulement rendus inertes tant que l'étape est fermée. */}
+          <div className="grid gap-3">
             {ETAPES.map((e) => {
               const mods = modulesDe(e.id);
+              const ouverte = ouvertes.includes(e.id);
+              const idListe = `programme-${e.id}`;
+              const inerte = { inert: ouverte ? undefined : '' } as Record<string, string | undefined>;
               return (
-                <div key={e.id} className="mb-9 last:mb-0">
-                  {/* ⚠️ Le titre d'étape était en monospace, en capitales, à
-                      13 px (Paul, 13/09 : « ça fait très écrit tout petit avec
-                      une police chelou en plus ; on avait dit qu'on avait moins
-                      de police d'écriture »). Il est rendu dans la police de la
-                      page, à sa taille de sous-titre. Le monospace ne sert plus
-                      QUE aux durées et aux comptes, dans toute la section. */}
-                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <h3 className="m-0 text-[19px] font-semibold leading-[1.2] tracking-[-0.01em] text-encre">
-                      {e.titre[locale]}
-                    </h3>
-                    <span className="text-[13.5px] text-brume">{e.jours[locale]}</span>
-                    <span className="ml-auto font-ac-mono text-[12px] text-brume">
-                      {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id, durees), locale)}
-                    </span>
-                  </div>
-                  <p className="mb-1 mt-1.5 max-w-[62ch] text-[15.5px] leading-[1.6] text-brume">
-                    {e.chapeau[locale]}
-                  </p>
-                  {/* La liste qui se lit (direction B, choisie par Paul le
-                      13/09). Plus rien n'est caché derrière un « Voir les
-                      modules » : les vingt-trois modules sont nommés d'emblée,
-                      une ligne chacun, et le clic ouvre la fiche du module.
-                      Ce que ça remplace : une grille de tuiles de 136 px de
-                      haut, qui demandait de déplier l'étape avant de savoir ce
-                      qu'elle contenait. */}
-                  <ul className="m-0 mt-2.5 list-none p-0">
-                    {mods.map((m) => {
-                      const on = fige === m.id || actif?.id === m.id;
-                      return (
-                        <li key={m.id} className="border-b border-lin last:border-b-0">
-                          <button
-                            type="button"
-                            onMouseEnter={() => montre(m)}
-                            onFocus={() => montre(m)}
-                            onClick={() => cliquer(m)}
-                            aria-pressed={fige === m.id}
-                            className={`-mx-2 flex w-full cursor-pointer items-center gap-3 rounded-[10px] border-0 px-2 py-2.5 text-left transition duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                              on ? 'bg-papier shadow-[0_6px_16px_rgba(15,26,46,.09)]' : 'bg-transparent hover:bg-papier'
-                            }`}
+                <div
+                  key={e.id}
+                  className={`rounded-[16px] border transition-colors duration-200 ${
+                    ouverte ? 'border-lin bg-papier shadow-[0_10px_30px_rgba(15,26,46,.07)]' : 'border-lin bg-papier/60 hover:border-brume/50 hover:bg-papier'
+                  }`}
+                >
+                  <h3 className="m-0 text-[length:inherit] font-normal">
+                  <button
+                    type="button"
+                    onClick={() => basculer(e.id)}
+                    aria-expanded={ouverte}
+                    aria-controls={idListe}
+                    className="group flex w-full cursor-pointer items-start gap-4 rounded-[16px] border-0 bg-transparent px-4 py-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:px-5 sm:py-5"
+                  >
+                    <span className="min-w-0 flex-1">
+                      {/* ⚠️ Le titre d'étape était en monospace, en capitales,
+                          à 13 px (Paul, 13/09 : « ça fait très écrit tout petit
+                          avec une police chelou en plus »). Il est rendu dans la
+                          police de la page, à sa taille de sous-titre. Le
+                          monospace ne sert plus QUE aux durées et aux comptes. */}
+                      <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                        <span className="text-[20px] font-semibold leading-[1.2] tracking-[-0.01em] text-encre">
+                          {e.titre[locale]}
+                        </span>
+                        <span className="text-[13.5px] text-brume">{e.jours[locale]}</span>
+                        <span className="font-ac-mono text-[12px] text-brume sm:ml-auto">
+                          {nombreSuivi(e.id)} modules · {duree(minutesDe(e.id, durees), locale)}
+                        </span>
+                      </span>
+                      <span className="mt-1.5 block max-w-[62ch] text-[15.5px] leading-[1.6] text-brume">
+                        {e.chapeau[locale]}
+                      </span>
+                      {/* L'aperçu de l'étape fermée : ses modules en
+                          pictogrammes, dans leur teinte. Il s'efface quand la
+                          liste s'ouvre, puisqu'elle les nomme. */}
+                      <span
+                        aria-hidden="true"
+                        className={`flex flex-wrap items-center gap-1.5 overflow-hidden transition-all duration-300 ${
+                          ouverte ? 'mt-0 max-h-0 opacity-0' : 'mt-3.5 max-h-24 opacity-100'
+                        }`}
+                      >
+                        {mods.map((m) => (
+                          <span
+                            key={m.id}
+                            className="grid h-[26px] w-[26px] place-items-center rounded-[8px]"
+                            style={{ color: m.teinte, background: `color-mix(in srgb, ${m.teinte} 12%, transparent)` }}
                           >
-                            <span
-                              className="grid h-[30px] w-[30px] flex-none place-items-center rounded-[9px]"
-                              style={{
-                                color: m.teinte,
-                                background: `color-mix(in srgb, ${m.teinte} 12%, transparent)`,
-                              }}
-                            >
-                              <Glyphe nom={m.glyphe} taille={17} />
-                            </span>
-                            <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                              <span className="text-[15px] leading-[1.3] text-encre">
-                                {m.titre[locale]}
-                              </span>
-                              {m.auChoix && (
-                                <span className="text-[12.5px] text-brume">{c.auChoix}</span>
-                              )}
-                              {m.palier !== 'essentials' && (
-                                <span
-                                  className={`inline-block rounded-full px-2 py-[2px] font-ac-mono text-[10px] uppercase tracking-[.08em] ${teintePalier[m.palier]}`}
+                            <Glyphe nom={m.glyphe} taille={15} />
+                          </span>
+                        ))}
+                        <span className="ml-1.5 text-[13.5px] font-medium text-encre underline decoration-lin underline-offset-4 group-hover:decoration-encre">
+                          {c.voirModules}
+                        </span>
+                      </span>
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className={`mt-0.5 grid h-9 w-9 flex-none place-items-center rounded-full border transition duration-300 ${
+                        ouverte ? 'rotate-180 border-encre bg-encre text-papier' : 'border-lin text-encre group-hover:border-encre'
+                      }`}
+                      style={{ transitionTimingFunction: 'var(--ease-sortie)' }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </span>
+                  </button>
+                  </h3>
+
+                  {/* La hauteur s'anime de 0fr à 1fr : aucune hauteur écrite à
+                      la main, la liste garde la sienne quelle que soit la
+                      langue ou la largeur. */}
+                  <div
+                    id={idListe}
+                    className="grid transition-[grid-template-rows] duration-500 motion-reduce:transition-none"
+                    style={{ gridTemplateRows: ouverte ? '1fr' : '0fr', transitionTimingFunction: 'var(--ease-sortie)' }}
+                    {...inerte}
+                  >
+                    <div className="min-h-0 overflow-hidden">
+                      <div className="px-4 pb-3 sm:px-5">
+                        {/* La consigne, au doigt seulement : sur grand écran le
+                            panneau de droite la porte déjà. */}
+                        <p className="m-0 mb-1 font-ac-mono text-[12px] leading-[1.5] text-or-grave lg:hidden">
+                          {c.videTactile}
+                        </p>
+                        <ul className="m-0 list-none border-t border-lin p-0 pt-1">
+                          {mods.map((m) => {
+                            const on = fige === m.id || actif?.id === m.id;
+                            return (
+                              <li key={m.id} className="border-b border-lin last:border-b-0">
+                                <button
+                                  type="button"
+                                  onMouseEnter={() => montre(m)}
+                                  onFocus={() => montre(m)}
+                                  onClick={() => cliquer(m)}
+                                  aria-pressed={fige === m.id}
+                                  className={`-mx-2 flex w-[calc(100%+1rem)] cursor-pointer items-center gap-3 rounded-[10px] border-0 px-2 py-2.5 text-left transition duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                                    on ? 'bg-craie' : 'bg-transparent hover:bg-craie'
+                                  }`}
                                 >
-                                  {c.paliers[m.palier]}
-                                </span>
-                              )}
-                            </span>
-                            <span className="flex-none font-ac-mono text-[12px] text-brume">
-                              {duree(minutesDu(m, durees), locale)}
-                            </span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                                  <span
+                                    className="grid h-[30px] w-[30px] flex-none place-items-center rounded-[9px]"
+                                    style={{
+                                      color: m.teinte,
+                                      background: `color-mix(in srgb, ${m.teinte} 12%, transparent)`,
+                                    }}
+                                  >
+                                    <Glyphe nom={m.glyphe} taille={17} />
+                                  </span>
+                                  <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                                    <span className="text-[15px] leading-[1.3] text-encre">
+                                      {m.titre[locale]}
+                                    </span>
+                                    {m.auChoix && (
+                                      <span className="text-[12.5px] text-brume">{c.auChoix}</span>
+                                    )}
+                                    {m.palier !== 'essentials' && (
+                                      <span
+                                        className={`inline-block rounded-full px-2 py-[2px] font-ac-mono text-[10px] uppercase tracking-[.08em] ${teintePalier[m.palier]}`}
+                                      >
+                                        {c.paliers[m.palier]}
+                                      </span>
+                                    )}
+                                  </span>
+                                  <span className="flex-none font-ac-mono text-[12px] text-brume">
+                                    {duree(minutesDu(m, durees), locale)}
+                                  </span>
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               );
             })}
