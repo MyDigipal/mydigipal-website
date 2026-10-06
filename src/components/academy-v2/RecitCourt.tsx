@@ -23,6 +23,7 @@ export default function RecitCourt({
   titre,
   chapeau,
   moments,
+  anime,
   profil,
   appel,
   ouvrir,
@@ -36,6 +37,12 @@ export default function RecitCourt({
   titre: string;
   chapeau: string;
   moments: Array<{ jour: string; etape: string; phrase: string }>;
+  /**
+   * L'animation « La carte raconte » (06/10/2026, direction B) : la leçon, la
+   * consigne, le journal de l'agent. Quand elle est là, elle prend la place des
+   * trois moments, qui disaient la même progression en texte.
+   */
+  anime?: ReactNode;
   /** La carte du compte de Clara au jour 30, déjà rendue. */
   profil: ReactNode;
   appel: string;
@@ -58,6 +65,7 @@ export default function RecitCourt({
         <p className="m-0 mt-3 max-w-[60ch] text-[16.5px] leading-[1.6] text-brume-nuit">{chapeau}</p>
 
         <div className="mt-9 grid grid-cols-[minmax(0,1fr)] items-start gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-8">
+          {anime ?? (
           <ol className="m-0 grid list-none gap-3 p-0">
             {moments.map((m) => (
               <li
@@ -72,6 +80,7 @@ export default function RecitCourt({
               </li>
             ))}
           </ol>
+          )}
           {profil}
         </div>
 

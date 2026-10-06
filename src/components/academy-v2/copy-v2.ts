@@ -228,6 +228,18 @@ const FR = {
    * qu'au 22e. Trois blocs : l'offre juste après le programme, le récit de Clara
    * en un écran, l'attestation en petit avec son texte.
    */
+  /** Les animations du labo motion et la galerie des films (06/10/2026). */
+  animations: {
+    visiteTexte:
+      'Le parcours, une leçon, l’atelier, la bibliothèque de prompts et l’assistant : l’espace que vous ouvrez après l’achat.',
+    visiteAlt: 'Animation : l’espace apprenant, du parcours à une leçon, l’atelier, la bibliothèque de prompts et l’assistant.',
+    agentsAlt:
+      'Animation : une demande arrive par e-mail, un agent la lit et chiffre le devis, le devis devient une facture, la facture part, le chiffre d’affaires monte.',
+    recitAlt:
+      'Animation : une carte de verre montre une leçon sur les agents, puis la consigne écrite mot à mot, puis le journal de l’agent qui a trié la boîte du matin.',
+    galerieTitre: 'Paul, dans l’Academy',
+    galerieChapeau: 'Des films courts tournés sur le vrai produit. Cliquez sur l’un d’eux pour le voir avec le son.',
+  },
   offre: {
     titre: 'Choisissez votre formule',
     chapeau: (jours: number) =>
@@ -588,6 +600,16 @@ const EN: typeof FR = {
     paliers: { free: 'free', essentials: 'method', pro: 'automations' },
     legendeMethode: 'The method',
     legendeAuto: 'The automations',
+  },
+  animations: {
+    visiteTexte: 'The course, a lesson, the workshop, the prompt library and the assistant: the space you open after buying.',
+    visiteAlt: 'Animation: the learner space, from the course to a lesson, the workshop, the prompt library and the assistant.',
+    agentsAlt:
+      'Animation: a request arrives by e-mail, an agent reads it and prices the quote, the quote becomes an invoice, the invoice goes out, revenue goes up.',
+    recitAlt:
+      'Animation: a glass card shows a lesson on agents, then the instruction written word for word, then the log of the agent that sorted the morning inbox.',
+    galerieTitre: 'Paul, inside the Academy',
+    galerieChapeau: 'Short films recorded on the real product. Click one to watch it with sound.',
   },
   offre: {
     titre: 'Choose your plan',

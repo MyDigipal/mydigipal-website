@@ -21,9 +21,7 @@ import { captureAdClickIds, useLienApp } from '../academy/track';
 // Cette page ne fait que CHANGER L'ORDRE et ajouter deux sections.
 import { allerA } from '../academy/ancre';
 import Hero from '../academy/Hero';
-import Visite from '../academy/Visite';
 import LeCompte from '../academy/LeCompte';
-import Mcp from '../academy/Mcp';
 import Diplome from '../academy/Diplome';
 import Maison from '../academy/Maison';
 import AppelFlottant from '../academy/AppelFlottant';
@@ -35,8 +33,10 @@ import Programme from './Programme';
 import Tarifs from './Tarifs';
 import OutilsCartes, { type CarteOutil } from './OutilsCartes';
 import Preuves, { type LogoPreuve } from './Preuves';
-import { FilmSeul, FilmsSalle } from './SectionsFilms';
+import { FilmsSalle } from './SectionsFilms';
 import Presentation from './Presentation';
+import Anime from './Anime';
+import { AgentsAnimes, FilmsGalerie, VisiteAnimee } from './SectionsAnimees';
 import OffreCourte from './OffreCourte';
 import RecitCourt from './RecitCourt';
 import { jour30Copy } from '../academy/copy';
@@ -294,20 +294,28 @@ export default function AcademyV2({
           pour parler des différents outils »). Le composant reste dans
           `academy/` : la première page de vente s'en sert toujours, et les
           quatre parcours sont de toute façon nommés dans Le programme. */}
-      <Visite locale={locale} data={data} titre={c.preuves.visiteTitre} />
+      {/* ⚠️ LA VISITE ET LES AGENTS SONT ANIMÉS depuis le 06/10/2026 (direction B
+          du labo, Paul : « fais un maximum de mise à jour »). La visite survolée
+          (`Visite`) et le schéma des prises (`Mcp`) restent dans le dépôt pour la
+          page academy-v1, ils ne sont plus montés ici. Voir `SectionsAnimees`. */}
+      <VisiteAnimee
+        locale={locale}
+        titre={c.preuves.visiteTitre}
+        texte={c.animations.visiteTexte}
+        alt={c.animations.visiteAlt}
+      />
 
-      {/* Page anglaise : la visite de l'espace par Paul, qui était dans le hero
-          jusqu'au 27/09, puis Paul qui ouvre une leçon. */}
-      {c.films.tour ? <FilmSeul film={c.films.tour} lire={c.films.lire} voir={c.films.voir} fond="nuit" /> : null}
+      <AgentsAnimes locale={locale} titre={c.mcp.titre} texte={c.mcp.texte} alt={c.animations.agentsAlt} />
 
-      {c.films.produit ? <FilmSeul film={c.films.produit} lire={c.films.lire} voir={c.films.voir} fond="nuit" /> : null}
-
-      {/* Le câblage MCP animé, tel quel. */}
-      <Mcp locale={locale} titre={c.mcp.titre} texte={c.mcp.texte} />
-
-      {/* Page anglaise : la vraie installation, sur la même feuille claire
-          que le schéma qu'elle prouve. L'écran passe à gauche. */}
-      {c.films.mcp ? <FilmSeul film={c.films.mcp} lire={c.films.lire} voir={c.films.voir} fond="feuille" inverse /> : null}
+      {/* Page anglaise : les films de Paul en galerie, au lieu de trois grands
+          blocs l'un sous l'autre (Paul, 06/10/2026). */}
+      <FilmsGalerie
+        titre={c.animations.galerieTitre}
+        chapeau={c.animations.galerieChapeau}
+        films={[c.films.tour, c.films.produit, c.films.mcp].filter((f): f is NonNullable<typeof f> => !!f)}
+        lire={c.films.lire}
+        voir={c.films.voir}
+      />
 
       {/* ⚠️ LE RÉCIT DE CLARA TIENT EN UN ÉCRAN depuis le 06/10/2026 (Paul : « le
           récit de Clara, il est beaucoup trop long »). Le ruban, les quinze jours
@@ -318,6 +326,7 @@ export default function AcademyV2({
         kicker={jour30Copy(locale).mention.kicker}
         titre={c.trajet.titre}
         chapeau={c.recit.chapeau}
+        anime={<Anime nom="recit" locale={locale} alt={c.animations.recitAlt} />}
         moments={[
           { jour: c.trajet.jour(2), etape: ETAPES[0].titre[locale], phrase: jour30Copy(locale).compte.j2.phrase },
           { jour: c.trajet.jour(11), etape: ETAPES[1].titre[locale], phrase: jour30Copy(locale).compte.j11.phrase },
