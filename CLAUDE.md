@@ -56,8 +56,8 @@ pas relancer, vérifier avec `render_list_deploys` (il porte `trigger: "api"`).
 ## 2. SEO - Règles obligatoires
 
 ### Balises title
-- La balise `<title>` est construite automatiquement : `{titre frontmatter} | MyDigipal` (13 caractères pour le suffixe)
-- Le titre total doit faire entre **50 et 60 caractères** (donc `seo.title` entre 37 et 47 caractères)
+- La balise `<title>` est construite automatiquement : `{titre frontmatter} | MyDigipal` (12 caractères pour le suffixe « | MyDigipal », vérifié le 06/10/2026)
+- Le titre total doit faire entre **50 et 60 caractères** (donc `seo.title` entre 38 et 48 caractères)
 - Ne JAMAIS inclure "| MyDigipal" dans le titre frontmatter (ajouté par BaseLayout.astro)
 - Si le titre d'affichage doit être plus long, utiliser le champ `seo.title` pour le titre court SEO
 
@@ -77,6 +77,33 @@ seo:
 - Toujours pointer vers l'URL finale, jamais vers une URL qui redirige
 - Pas de trailing slash (config Astro : `trailingSlash: 'never'`)
 - Image blog : 1200x630px
+
+### La série automobile d'octobre 2026 (gabarit en plans, direction C)
+Quatorze études en ligne depuis le 06/10/2026, en français et en anglais : six **portraits**
+(`guyane-automobile`, `groupe-theobald`, `ggp-auto`, `groupe-vulcain`, `groupe-lancien`, `autodif`)
+et huit **dossiers** (`facebook-lead-ads`, `open-days`, `vehicle-catalogue-ads`,
+`dealership-tracking`, `lead-to-sale`, `dealer-dashboard`, `google-ads-car-dealers`,
+`dealership-calls`). Les sept études d'origine restent en ligne (décision de Paul).
+- Une fiche qui porte `format: portrait | dossier` est rendue par
+  `components/etudes/EtudeC.astro` ; les autres gardent l'ancien gabarit de `[slug].astro`.
+  Tout est donnée dans le frontmatter (`chiffres`, `plans`, `citation`, `retenir`, `reglages`,
+  `faq`, `liees`) ; le texte accepte seulement `**gras**` et `[lien](/adresse)`
+  (`lib/texte-etude.ts`).
+- Un plan = un fond (`blanc`, `brume`, `encre`), un titre, et une scène, un **récit collé**
+  (texte à gauche, scène collée à droite qui change par chapitre, emprunté à la direction A),
+  des cartes ou des chiffres. Jamais deux encres collées : la citation passe sur la brume si le
+  dernier plan est d'encre.
+- Les scènes viennent du labo motion (`_shared/motion-lib/labo/essais/`), copiées dans
+  `public/motion/` avec `noindex` et `/motion/lecteur.js` ; `SceneEtude.astro` les charge en
+  iframe à l'approche, les joue à l'écran et les pose sur leur image de repos (`repos`) sinon.
+  Une scène modifiée au labo se recopie à la main dans `public/motion/`. Au téléphone, lien
+  « Voir en grand » ; les versions 4:5 restent à faire.
+- Vignettes : `public/images/Case study thumbnail/<slug>.webp`, tirées des scènes.
+- Les citations sont écrites par nous (`validee: false`), affichées tout de suite, à faire
+  valider par chaque client ; la liste est dans le pilotage du chantier
+  (https://claude.ai/artifact/DUTLEBuVoapkFAqx7MDwrg).
+- ⚠️ Le suffixe du titre « | MyDigipal » fait **12** caractères (et non 13) : `seo.title`
+  entre 38 et 48. Et `&` compte pour cinq caractères (`&amp;`) dans le contrôle SEO.
 
 ### Case studies : le client est déjà préfixé
 Le template `[slug].astro` construit le title avec `client - titre`. Ne PAS répéter
