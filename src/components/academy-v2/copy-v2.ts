@@ -205,7 +205,7 @@ const FR = {
     votreProfil: 'Votre profil',
     parLa: 'Vous commencez par',
     formule: 'La formule qui vous va',
-    duree: (jours = 60) => `pour ${jours} jours`,
+    duree: (jours = 90) => `pour ${jours} jours`,
     avecCode: (c: string) => `avec le code ${c}`,
     offreMethode: 'La méthode',
     offreAvancee: 'La méthode avancée',
@@ -287,7 +287,7 @@ const FR = {
     // page, alors qu'elle répond à la dernière hésitation avant la carte.
     chapeau: (jours: number, garantie: { heures: number; seuilPct: number }) =>
       `L’assistant IA est compris dans les trois, et l’accès dure ${jours} jours quelle que soit la formule. Vous avez ${garantie.heures} heures pour demander un remboursement intégral, tant que moins de ${garantie.seuilPct}\u00a0% du parcours a été consulté.`,
-    duree: (jours = 60) => `pour ${jours} jours`,
+    duree: (jours = 90) => `pour ${jours} jours`,
     methode: 'La méthode',
     /**
      * ⚠️ Les deux sous-titres se lisent EN MIROIR, et c'est leur seul travail :
@@ -585,7 +585,7 @@ const EN: typeof FR = {
     votreProfil: 'Your profile',
     parLa: 'You start with',
     formule: 'The plan that fits',
-    duree: (jours = 60) => `for ${jours} days`,
+    duree: (jours = 90) => `for ${jours} days`,
     avecCode: (c) => `with code ${c}`,
     offreMethode: 'The method',
     offreAvancee: 'The advanced method',
@@ -642,7 +642,7 @@ const EN: typeof FR = {
     titre: 'Pricing',
     chapeau: (jours, garantie) =>
       `The AI assistant is included in all three, and access runs for ${jours} days whichever you take. You have ${garantie.heures} hours to ask for a full refund, as long as less than ${garantie.seuilPct}% of the course has been opened.`,
-    duree: (jours = 60) => `for ${jours} days`,
+    duree: (jours = 90) => `for ${jours} days`,
     methode: 'The method',
     methodeSous: 'The method and your tool',
     auto: 'Automations',

@@ -257,7 +257,7 @@ export default function AcademyV2({
         prixAutoMinor={construire ? prixDe(construire, devise) : 0}
         prixLotMinor={prixLot}
         pleinLotMinor={pleinLot}
-        accesJours={data.acces_jours ?? 60}
+        accesJours={data.acces_jours ?? 90}
         leconsProgramme={leconsProgramme(data)}
         leconsComplement={leconsComplement(data)}
         leconsGratuit={leconsGratuit(data)}
@@ -282,7 +282,7 @@ export default function AcademyV2({
         devise={devise}
         prixMethodeMinor={programme ? prixDe(programme, devise) : 0}
         prixAvanceeMinor={prixLot}
-        accesJours={data.acces_jours ?? 60}
+        accesJours={data.acces_jours ?? 90}
         durees={data.modulesDurees}
       />
 
@@ -403,7 +403,7 @@ export default function AcademyV2({
         prixAutoMinor={construire ? prixDe(construire, devise) : 0}
         prixLotMinor={prixLot}
         pleinLotMinor={pleinLot}
-        accesJours={data.acces_jours ?? 60}
+        accesJours={data.acces_jours ?? 90}
         paliersEquipe={data.equipe?.paliers ?? []}
         leconsProgramme={leconsProgramme(data)}
         heuresProgramme={data.faits.heuresProgramme ?? data.faits.heures}
