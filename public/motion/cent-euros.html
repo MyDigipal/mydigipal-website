@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pour 100 € de publicité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+/* Guyane Automobile, sept trimestres de publicité Meta. À chaque trimestre, un billet de 100 €
+   se découpe en lanières qui deviennent des contacts : 8 au début de 2025, 23 au troisième
+   trimestre 2026. Le coût par contact n'est jamais montré comme une courbe abstraite : on voit
+   ce que rapporte le même billet. Canvas 2D, découpe et vol calculés à l'instant t. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#toile{position:absolute;inset:0;width:1920px;height:1080px}
+#titre{position:absolute;left:110px;top:84px}
+#titre .mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+#titre .ln{display:block;font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.06;transform:translateY(125%)}
+#titre .ln.b{color:#7db8ee}
+#titre .ln.o{color:#e8bd62}
+.trim{position:absolute;left:110px;width:260px;font-size:19px;font-weight:700;color:#a9b8c8;white-space:nowrap;opacity:0}
+.trim b{display:block;font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#7db8ee;margin-bottom:2px}
+.compte{position:absolute;left:1690px;width:180px;text-align:left;font-size:44px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;opacity:0;line-height:1}
+.compte small{display:block;font-size:15px;font-weight:600;letter-spacing:0;color:#a9b8c8;margin-top:4px}
+#source{position:absolute;left:110px;bottom:38px;font-size:15px;font-weight:600;color:#6b7f93}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="toile" width="1920" height="1080"></canvas>
+  <div id="titre">
+    <div class="mask"><span class="ln">Pour 100 € de publicité,</span></div>
+    <div class="mask"><span class="ln b">8 contacts début 2025.</span></div>
+    <div class="mask"><span class="ln o">23 aujourd'hui.</span></div>
+  </div>
+  <div id="lignes"></div>
+  <div id="source">Guyane Automobile · publicité Meta, toutes dépenses comprises · contacts par formulaire intégré</div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 20;
+window.DUR = window.DUREE;
+window.PRET = Promise.all([
+  document.fonts.load("800 52px 'Plus Jakarta Sans'"),
+  document.fonts.load("800 30px 'Plus Jakarta Sans'"),
+  document.fonts.load("700 19px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+
+(function () {
+'use strict';
+var D = window.DUREE;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outQuart(p) { return 1 - Math.pow(1 - p, 4); }
+function inOutCubic(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+function outBack(s) { return function (p) { return 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2); }; }
+function inBack(s) { return function (p) { return (s + 1) * p * p * p - s * p * p; }; }
+function h(i, k) { var v = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); }
+var $ = function (id) { return document.getElementById(id); };
+
+/* Coût par contact Meta de Guyane Automobile, toute la dépense Meta divisée par les contacts des
+   formulaires intégrés (BigQuery, 6 octobre 2026). Contacts pour 100 € = 100 / coût. */
+var TRIM = [
+  { nom: '1er trimestre 2025', cout: 12.4 }, { nom: '2e trimestre 2025', cout: 13.6 }, { nom: '3e trimestre 2025', cout: 5.1 },
+  { nom: '4e trimestre 2025', cout: 5.1 }, { nom: '1er trimestre 2026', cout: 4.4 }, { nom: '2e trimestre 2026', cout: 4.5 },
+  { nom: '3e trimestre 2026', cout: 4.3 }
+];
+TRIM.forEach(function (q) { q.n = Math.round(100 / q.cout); });
+var N = TRIM.length;
+var Y0 = 330, PAS = 96;                         /* hauteur de la première ligne, pas entre lignes */
+var XB = 470, WB = 190, HB = 86;                /* le billet */
+var XP = 760, PASP = 39;                        /* la rangée de contacts */
+/* les lignes arrivent de plus en plus vite ; la dernière prend son temps */
+var T = [1.6, 3.3, 4.8, 6.1, 7.3, 8.4, 9.9], DUR_L = [1.5, 1.4, 1.2, 1.1, 1.0, 1.0, 1.6];
+function fmt(c) { return String(c).replace('.', ','); }
+
+var html = '';
+TRIM.forEach(function (q, i) {
+  html += '<div class="trim" id="tr' + i + '" style="top:' + (Y0 + i * PAS - 24) + 'px"><b>' + q.nom + '</b>' + fmt(q.cout) + ' € le contact</div>';
+  html += '<div class="compte" id="co' + i + '" style="top:' + (Y0 + i * PAS - 26) + 'px">0<small>contacts</small></div>';
+});
+$('lignes').innerHTML = html;
+var ctx = $('toile').getContext('2d');
+
+function billet(x, y, w, hh, alpha, or) {
+  ctx.save(); ctx.globalAlpha = alpha;
+  var g = ctx.createLinearGradient(x, y, x + w, y + hh);
+  g.addColorStop(0, or ? '#f3d58f' : '#cfe3f6'); g.addColorStop(1, or ? '#d9a84a' : '#8fb9e2');
+  ctx.fillStyle = g; rond(x, y, w, hh, 8); ctx.fill();
+  ctx.strokeStyle = 'rgba(8,19,31,.35)'; ctx.lineWidth = 2; rond(x + 7, y + 7, w - 14, hh - 14, 5); ctx.stroke();
+  ctx.fillStyle = '#0b1b2b'; ctx.font = "800 30px 'Plus Jakarta Sans'"; ctx.fillText('100 €', x + 18, y + hh / 2 + 11);
+  ctx.beginPath(); ctx.arc(x + w - 38, y + hh / 2, 18, 0, 7); ctx.strokeStyle = 'rgba(8,19,31,.35)'; ctx.stroke();
+  ctx.restore();
+}
+function rond(x, y, w, hh, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + hh, r); ctx.arcTo(x + w, y + hh, x, y + hh, r); ctx.arcTo(x, y + hh, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+/* un contact : une silhouette simple, tête et épaules */
+function personne(x, y, s, coul, alpha) {
+  ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = coul;
+  ctx.beginPath(); ctx.arc(x, y - 9 * s, 6.5 * s, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x - 11 * s, y + 13 * s); ctx.quadraticCurveTo(x - 11 * s, y + 0.5 * s, x, y + 0.5 * s); ctx.quadraticCurveTo(x + 11 * s, y + 0.5 * s, x + 11 * s, y + 13 * s); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  var sortie = seg(t, D - 0.8, D), fin = 1 - sortie;
+  ctx.clearRect(0, 0, 1920, 1080);
+  /* lueur de fond, plus chaude en bas quand les dernières lignes arrivent */
+  var gl = ctx.createRadialGradient(1150, 640, 40, 1150, 640, 900);
+  gl.addColorStop(0, 'rgba(29,113,184,' + (0.22 * fin).toFixed(3) + ')'); gl.addColorStop(1, 'rgba(8,19,31,0)');
+  ctx.fillStyle = gl; ctx.fillRect(0, 0, 1920, 1080);
+
+  for (var i = 0; i < N; i++) {
+    var q = TRIM[i], y = Y0 + i * PAS, t0 = T[i], du = DUR_L[i], dern = i === N - 1;
+    var apparait = outExpo(seg(t, t0 - 0.4, t0));
+    if (apparait <= 0) { $('tr' + i).style.opacity = 0; $('co' + i).style.opacity = 0; continue; }
+    /* le filet de la ligne */
+    ctx.strokeStyle = 'rgba(125,184,238,' + (0.12 * apparait * fin).toFixed(3) + ')'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(XB, y + HB / 2 + 6); ctx.lineTo(1660, y + HB / 2 + 6); ctx.stroke();
+    /* le billet se pose, puis se découpe en lanières verticales qui s'envolent */
+    var coupe = seg(t, t0 + 0.15, t0 + du);
+    var bx = XB, by = y - HB / 2 + 4 + 20 * (1 - apparait);
+    if (coupe <= 0) billet(bx, by, WB, HB, apparait * fin, dern);
+    else {
+      var n = q.n, lw = WB / n, partis = 0;
+      for (var k = 0; k < n; k++) if (coupe > (n - 1 - k) / n * 0.55) partis++;
+      /* ce qui reste du billet : sa partie gauche, qui se consume de droite à gauche */
+      var reste = n - partis;
+      if (reste > 0) { ctx.save(); ctx.beginPath(); ctx.rect(bx - 2, by - 4, reste * lw + 2, HB + 8); ctx.clip(); billet(bx, by, WB, HB, fin, dern); ctx.restore(); }
+      for (var k = 0; k < n; k++) {
+        /* chaque morceau devient un jeton qui vole en arc, puis un contact */
+        var dep = (n - 1 - k) / n * 0.55, pk = clamp((coupe - dep) / 0.45, 0, 1);
+        if (pk <= 0) continue;
+        var e = inOutCubic(pk), cible = XP + k * PASP;
+        var x0 = bx + (k + 0.5) * lw, y0 = by + HB / 2, x1 = cible + 6, y1 = y + 4;
+        var cx = mix(x0, x1, e), cy = mix(y0, y1, e) - 70 * Math.sin(Math.PI * e) * (0.6 + 0.4 * h(k, i));
+        if (pk < 0.75) {
+          var w = mix(lw, 16, outQuart(seg(pk, 0, 0.4))), hh = mix(HB, 16, outQuart(seg(pk, 0, 0.4)));
+          ctx.save(); ctx.globalAlpha = fin * (1 - seg(pk, 0.6, 0.75));
+          ctx.translate(cx, cy); ctx.rotate((h(k, i + 3) - 0.5) * 2.4 * Math.sin(Math.PI * e));
+          var g = ctx.createLinearGradient(-w / 2, -hh / 2, w / 2, hh / 2);
+          g.addColorStop(0, dern ? '#f3d58f' : '#cfe3f6'); g.addColorStop(1, dern ? '#d9a84a' : '#8fb9e2');
+          ctx.fillStyle = g; rond(-w / 2, -hh / 2, w, hh, Math.min(w, hh) / 2 * outQuart(seg(pk, 0.1, 0.5)) + 1); ctx.fill();
+          ctx.restore();
+        }
+        if (pk > 0.6) {
+          var pp = outBack(2)(seg(pk, 0.6, 1));
+          personne(x1, y1 + 2, 1.15 * pp, dern ? '#e8bd62' : '#7db8ee', fin * clamp(pp, 0, 1));
+        }
+      }
+    }
+    var cnt = Math.round(q.n * clamp((coupe - 0.25) / 0.75, 0, 1));
+    var tr = $('tr' + i), co = $('co' + i);
+    tr.style.opacity = (apparait * fin * (dern ? 1 : 0.92)).toFixed(3);
+    tr.style.color = dern ? '#e8bd62' : '';
+    co.style.opacity = (outQuart(seg(t, t0 + 0.2, t0 + 0.5)) * fin).toFixed(3);
+    co.firstChild.textContent = cnt;
+    co.style.color = dern ? '#e8bd62' : '#f4f7fa';
+    co.querySelector('small').textContent = cnt > 1 ? 'contacts' : 'contact';
+  }
+  /* la comparaison finale : la première et la dernière ligne s'éclairent ensemble */
+  var cmp = outQuart(seg(t, 12.2, 13.0)) * fin;
+  if (cmp > 0) {
+    [0, N - 1].forEach(function (i) {
+      var y = Y0 + i * PAS;
+      ctx.strokeStyle = (i ? 'rgba(232,189,98,' : 'rgba(125,184,238,') + (0.8 * cmp).toFixed(3) + ')'; ctx.lineWidth = 2;
+      rond(XB - 20, y - HB / 2 - 10, 1880 - XB, HB + 26, 16); ctx.stroke();
+    });
+  }
+  /* le titre : la première ligne d'abord, puis chaque chiffre au moment où sa ligne est jouée */
+  var lns = document.querySelectorAll('#titre .ln'), TT = [0.4, T[0] + 0.9, T[N - 1] + 1.4];
+  for (var j = 0; j < lns.length; j++) {
+    var p = outBack(1.3)(seg(t, TT[j], TT[j] + 0.8)), x = inBack(1.2)(seg(t, D - 1.0 + j * 0.06, D - 0.5 + j * 0.06));
+    lns[j].style.transform = 'translateY(' + (x > 0 ? mix(0, 135, x) : mix(125, 0, p)).toFixed(2) + '%)';
+  }
+  $('source').style.opacity = (outQuart(seg(t, 1.0, 1.6)) * fin).toFixed(3);
+};
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

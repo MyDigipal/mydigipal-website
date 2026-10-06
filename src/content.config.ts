@@ -57,6 +57,35 @@ const servicesCollection = defineCollection({
   }),
 });
 
+/* Une scène animée d'étude de cas : une scène du labo motion servie depuis `public/motion/`
+   (`labo`, avec l'instant de son image de repos), ou un composant animé du site (`composant`). */
+const sceneEtude = z.object({
+  labo: z.string().optional(),
+  composant: z.enum(['chaine-stock', 'boucle-remarketing', 'graphique-cumul']).optional(),
+  titre: z.string(),
+  legende: z.string().optional(),
+  repos: z.number().optional(),
+});
+/* Un plan de la direction C : un fond, un titre, du texte, et au choix une scène, un récit
+   collé (texte à gauche, scène à droite, emprunté à la direction A), des cartes ou des chiffres. */
+const planEtude = z.object({
+  fond: z.enum(['blanc', 'brume', 'encre']),
+  rubrique: z.string(),
+  titre: z.string(),
+  grand: z.string().optional(),
+  chapo: z.string().optional(),
+  paragraphes: z.array(z.string()).optional(),
+  scene: sceneEtude.optional(),
+  recit: z.array(z.object({
+    rubrique: z.string(),
+    titre: z.string(),
+    paragraphes: z.array(z.string()),
+    scene: sceneEtude,
+  })).optional(),
+  cartes: z.array(z.object({ titre: z.string(), texte: z.string() })).optional(),
+  chiffres: z.array(z.object({ valeur: z.string(), texte: z.string(), or: z.boolean().optional() })).optional(),
+});
+
 const caseStudiesCollection = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/case-studies' }),
   schema: z.object({
@@ -92,6 +121,40 @@ const caseStudiesCollection = defineCollection({
       description: z.string().optional(),
       image: z.string().optional(),
     }).optional(),
+
+    /* La série automobile d'octobre 2026 (gabarit en direction C). Une fiche qui porte
+       `format` est rendue par `components/etudes/EtudeC.astro` ; les autres gardent le
+       gabarit d'origine. Tous les champs sont des données : la mise en page vient du gabarit. */
+    format: z.enum(['portrait', 'dossier']).optional(),
+    rubrique: z.string().optional(),
+    ligneClient: z.string().optional(),
+    chiffres: z.array(z.object({ valeur: z.string(), texte: z.string(), or: z.boolean().optional() })).optional(),
+    plans: z.array(planEtude).optional(),
+    citation: z.object({
+      texte: z.string(),
+      auteur: z.string(),
+      fonction: z.string(),
+      /* false tant que le client n'a pas relu : la citation s'affiche quand même (décision
+         de Paul, 06/10/2026), la liste de relecture est dans le pilotage du chantier. */
+      validee: z.boolean().default(false),
+    }).optional(),
+    retenir: z.object({
+      rubrique: z.string(),
+      titre: z.string(),
+      items: z.array(z.object({ titre: z.string(), texte: z.string() })),
+    }).optional(),
+    reglages: z.object({
+      rubrique: z.string(),
+      titre: z.string(),
+      chapo: z.string().optional(),
+      items: z.array(z.object({ titre: z.string(), texte: z.string() })),
+    }).optional(),
+    faq: z.object({
+      rubrique: z.string(),
+      titre: z.string(),
+      items: z.array(z.object({ q: z.string(), r: z.string() })),
+    }).optional(),
+    liees: z.array(z.string()).optional(),
   }),
 });
 

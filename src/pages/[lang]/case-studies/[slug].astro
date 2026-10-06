@@ -10,6 +10,7 @@ import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.ast
 import TableauPalettes from '@/components/motion/TableauPalettes.astro';
 import RevelationLogo from '@/components/motion/RevelationLogo.astro';
 import { LOGOS } from '@/components/accueil/donnees';
+import EtudeC from '@/components/etudes/EtudeC.astro';
 
 export async function getStaticPaths() {
   const caseStudies = await getCollection('case-studies');
@@ -111,6 +112,17 @@ const breadcrumbItems = [
   { name: caseStudy.data.client, url: `/${lang}/case-studies/${studySlug}` }
 ];
 const temoignage = caseStudy.data.testimonial;
+
+// La série automobile d'octobre 2026 : gabarit en plans (direction C). Ses études liées
+// d'abord, puis la même catégorie, deux ou trois au plus.
+const enPlans = Boolean(caseStudy.data.format);
+const liees = (caseStudy.data.liees ?? []) as string[];
+const autresPlans = enPlans
+  ? [
+      ...liees.map((sl) => allCaseStudies.find((s) => s.id === `${lang}/${sl}`)).filter(Boolean),
+      ...autres.filter((s) => !liees.includes(slugDe(s.id))),
+    ].slice(0, 3)
+  : [];
 ---
 
 <PageLayout
@@ -130,6 +142,9 @@ const temoignage = caseStudy.data.testimonial;
     testimonial={caseStudy.data.testimonial}
   />
   <BreadcrumbSchema items={breadcrumbItems} />
+
+  {enPlans && <EtudeC lang={lang} etude={caseStudy} autres={autresPlans} />}
+  {!enPlans && (<Fragment>
 
   <!-- Le haut de l'étude, direction Encre (groupe 4, 30/09/2026) : le logo du client se forme
        en particules de ses propres couleurs, puis le vrai logo monte ; ses chiffres tombent sur
@@ -268,6 +283,7 @@ const temoignage = caseStudy.data.testimonial;
   )}
 
   <FinalCTA lang={lang} title={t.ctaTitle} subtitle={t.ctaText} />
+  </Fragment>)}
 </PageLayout>
 
 <script>

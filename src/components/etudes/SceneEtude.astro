@@ -1,0 +1,67 @@
+---
+/**
+ * Une scène animée dans une étude de cas. Soit une scène du labo motion, servie telle quelle
+ * depuis `public/motion/` dans un cadre 16:9 (chargée à l'approche, jouée à l'écran, posée sur
+ * son image de repos sinon), soit un composant animé du site.
+ * Au téléphone, une scène 16:9 devient petite : un lien l'ouvre en grand.
+ */
+import type { Language } from '@/i18n/config';
+import ChaineStock from '@/components/motion/ChaineStock.astro';
+import BoucleRemarketing from '@/components/motion/BoucleRemarketing.astro';
+import GraphiqueCumul from '@/components/motion/GraphiqueCumul.astro';
+
+interface Props {
+  lang: Language;
+  scene: { labo?: string; composant?: 'chaine-stock' | 'boucle-remarketing' | 'graphique-cumul'; titre: string; legende?: string; repos?: number };
+  fond: 'blanc' | 'brume' | 'encre';
+  id: string;
+  chargement?: 'lazy' | 'eager';
+}
+const { lang, scene, fond, id, chargement = 'lazy' } = Astro.props;
+const fr = lang === 'fr';
+---
+{scene.labo ? (
+  <figure class="scene-etude" data-scene-etude>
+    <div class="scene-cadre">
+      <iframe
+        src={`/motion/${scene.labo}.html`}
+        title={scene.titre}
+        loading={chargement}
+        data-repos={scene.repos ?? 0}
+      ></iframe>
+    </div>
+    <figcaption class="scene-pied">
+      {scene.legende && <span>{scene.legende}</span>}
+      <a href={`/motion/${scene.labo}.html`} target="_blank" rel="noopener" class="scene-grand">{fr ? 'Voir en grand' : 'View full screen'}</a>
+    </figcaption>
+  </figure>
+) : (
+  <figure class="scene-etude scene-composant">
+    {scene.composant === 'chaine-stock' && <ChaineStock lang={lang} id={`${id}-chaine`} fond={fond === 'encre' ? 'encre' : 'clair'} />}
+    {scene.composant === 'boucle-remarketing' && <BoucleRemarketing lang={lang} id={`${id}-boucle`} />}
+    {scene.composant === 'graphique-cumul' && <GraphiqueCumul lang={lang} id={`${id}-graphique`} />}
+    {scene.legende && <figcaption class="scene-pied"><span>{scene.legende}</span></figcaption>}
+  </figure>
+)}
+
+<style>
+  .scene-etude { margin: 0; }
+  .scene-cadre {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--rayon-scene, 24px);
+    overflow: hidden;
+    background: #08131f;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08), 0 40px 90px -40px rgb(11 27 43 / 0.55);
+  }
+  .scene-cadre iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+  .scene-pied {
+    display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; justify-content: space-between;
+    margin-top: 12px; font-size: 0.9rem; line-height: 1.45; color: var(--color-slate-500, #64748b);
+  }
+  :global(.section-encre) .scene-pied { color: var(--texte-sombre-2, #a9b8c8); }
+  .scene-grand { font-weight: 600; color: var(--color-marque, #1d71b8); white-space: nowrap; }
+  :global(.section-encre) .scene-grand { color: var(--color-marque-clair, #7db8ee); }
+  @media (min-width: 1024px) { .scene-grand { display: none; } }
+</style>

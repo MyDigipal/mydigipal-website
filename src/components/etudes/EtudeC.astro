@@ -1,0 +1,302 @@
+---
+/**
+ * Le gabarit des études de cas automobile (série d'octobre 2026), direction C « le film en
+ * plans » validée par Paul le 06/10/2026 : des plans pleine largeur, blanc, brume et encre en
+ * alternance, chacun porte une idée, une scène et ses chiffres. Le récit collé de la
+ * direction A (texte à gauche, scène à droite qui change à chaque chapitre) est un type de plan.
+ * Maquettes : https://claude.ai/artifact/SSsEFrzbF1UiUwGaHiAUfs
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+import SceneEtude from './SceneEtude.astro';
+import { enrichir } from '@/lib/texte-etude';
+
+interface Props {
+  lang: Language;
+  etude: any;
+  autres: any[];
+}
+const { lang, etude, autres } = Astro.props;
+const d = etude.data;
+const fr = lang === 'fr';
+const slugDe = (id: string) => id.replace(/^(en|fr)\//, '');
+const t = {
+  fr: { retour: 'Toutes les études de cas', lire: 'Lire l’étude', autres: 'Autres études de cas', portrait: 'Portrait', dossier: 'Dossier',
+    ctaTitle: 'Et chez vous, qu’est-ce que ça donnerait ?', ctaText: 'Le calculateur chiffre vos campagnes en deux minutes. Ou écrivez-nous : réponse sous 24 h.' },
+  en: { retour: 'All case studies', lire: 'Read the case study', autres: 'Other case studies', portrait: 'Portrait', dossier: 'Deep dive',
+    ctaTitle: 'What would it look like for your dealerships?', ctaText: 'The calculator prices your campaigns in two minutes. Or write to us: we reply within 24 hours.' },
+}[lang];
+/* Un plan d'encre qui suit un plan clair monte dessus (coins arrondis) ; jamais deux encres collées. */
+const plans = (d.plans ?? []) as any[];
+const fondApres = (i: number) => (i === 0 ? 'encre' : plans[i - 1].fond);
+---
+
+<!-- L'en-tête : le logo du client, la rubrique, le titre, ce qu'on va lire. -->
+<section class="section-blanc etude-hero">
+  <div class="container-custom grid gap-6 pt-8 pb-14 sm:pt-12 lg:pt-14 lg:pb-20">
+    <a href={`/${lang}/case-studies`} class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-encre">
+      <Icon name="arrow-left" size={16} />{t.retour}
+    </a>
+    <p class="rubrique">{d.rubrique}</p>
+    <h1 class="titre-grand text-encre break-words max-w-[22ch]">{d.title}</h1>
+    <p class="chapo max-w-[62ch]">{d.description}</p>
+    <div class="flex flex-wrap items-center gap-4">
+      {d.logo && <img src={d.logo} alt={d.client} class="etude-logo" loading="eager" decoding="async" />}
+      {d.ligneClient && <p class="text-[0.95rem] text-slate-500 max-w-[70ch]">{d.ligneClient}</p>}
+    </div>
+  </div>
+</section>
+
+<!-- Les trois chiffres, sur l'encre. -->
+{d.chiffres && (
+  <section class="section-encre etude-chiffres">
+    <div class="container-custom py-10 lg:py-14">
+      <div class="chiffres-etude">
+        {d.chiffres.map((c: any) => (
+          <div><b class={c.or ? 'or' : ''}>{c.valeur}</b><span>{c.texte}</span></div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<!-- Les plans. -->
+{plans.map((p, i) => (
+  <section class={`section-${p.fond} ${p.fond === 'encre' && fondApres(i) !== 'encre' ? 'section-monte' : ''} etude-plan`}>
+    <div class="container-custom py-20 lg:py-28">
+      <div class={p.scene || p.cartes ? 'tete-plan' : 'grid gap-5 max-w-[68ch]'}>
+        <div class="grid gap-4">
+          <p class="rubrique">{p.rubrique}</p>
+          <h2 class={`titre-moyen ${p.fond === 'encre' ? 'text-white' : 'text-encre'}`}>{p.titre}</h2>
+        </div>
+        {p.chapo && <p class="chapo" set:html={enrichir(p.chapo)} />}
+      </div>
+      {p.grand && <p class="grand-texte" set:html={enrichir(p.grand)} />}
+      {p.paragraphes && (
+        <div class="corps-texte">
+          {p.paragraphes.map((x: string) => <p set:html={enrichir(x)} />)}
+        </div>
+      )}
+      {p.scene && (
+        <div class="mt-10 lg:mt-12"><SceneEtude lang={lang} scene={p.scene} fond={p.fond} id={`plan-${i}`} /></div>
+      )}
+      {p.recit && (
+        <div class="recit-colle" data-recit>
+          <div class="recit-chapitres">
+            {p.recit.map((c: any, j: number) => (
+              <article class="recit-chapitre" data-chapitre={j}>
+                <div class="recit-mobile"><SceneEtude lang={lang} scene={c.scene} fond={p.fond} id={`recit-${i}-${j}-m`} /></div>
+                <p class="rubrique">{c.rubrique}</p>
+                <h3 class={`recit-titre ${p.fond === 'encre' ? 'text-white' : 'text-encre'}`}>{c.titre}</h3>
+                {c.paragraphes.map((x: string) => <p set:html={enrichir(x)} />)}
+              </article>
+            ))}
+          </div>
+          <aside class="recit-scene" aria-hidden="true">
+            <div class="recit-pile">
+              {p.recit.map((c: any, j: number) => (
+                <div class={`recit-calque ${j === 0 ? 'actif' : ''}`} data-calque={j}>
+                  <SceneEtude lang={lang} scene={c.scene} fond={p.fond} id={`recit-${i}-${j}`} chargement="eager" />
+                </div>
+              ))}
+            </div>
+          </aside>
+        </div>
+      )}
+      {p.cartes && (
+        <div class="cartes-etude">
+          {p.cartes.map((c: any) => (<div><b>{c.titre}</b><p set:html={enrichir(c.texte)} /></div>))}
+        </div>
+      )}
+      {p.chiffres && (
+        <div class="chiffres-etude mt-10">
+          {p.chiffres.map((c: any) => (<div><b class={c.or ? 'or' : ''}>{c.valeur}</b><span>{c.texte}</span></div>))}
+        </div>
+      )}
+    </div>
+  </section>
+))}
+
+<!-- La parole du client, puis ce qu'on peut reprendre chez soi. -->
+{(d.citation || d.retenir) && (
+  <section class={`section-encre ${plans.length && plans[plans.length - 1].fond !== 'encre' ? 'section-monte' : ''}`}>
+    <div class="container-custom grid gap-14 py-20 lg:py-28">
+      {d.citation && (
+        <figure class="citation-etude">
+          <blockquote>« {d.citation.texte} »</blockquote>
+          <figcaption><b>{d.citation.auteur}</b>, {d.citation.fonction}</figcaption>
+        </figure>
+      )}
+      {d.retenir && (
+        <div class="grid gap-6">
+          <div class="grid gap-3"><p class="rubrique">{d.retenir.rubrique}</p><h2 class="titre-moyen text-white">{d.retenir.titre}</h2></div>
+          <div class="cartes-etude cartes-encre">
+            {d.retenir.items.map((c: any) => (<div><b>{c.titre}</b><p set:html={enrichir(c.texte)} /></div>))}
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+)}
+
+{d.reglages && (
+  <section class="section-blanc">
+    <div class="container-custom grid gap-10 py-20 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:py-28">
+      <div class="grid content-start gap-4">
+        <p class="rubrique">{d.reglages.rubrique}</p>
+        <h2 class="titre-moyen text-encre">{d.reglages.titre}</h2>
+        {d.reglages.chapo && <p class="chapo">{d.reglages.chapo}</p>}
+      </div>
+      <ol class="reglages-etude">
+        {d.reglages.items.map((r: any) => (<li><div><b>{r.titre}</b><p set:html={enrichir(r.texte)} /></div></li>))}
+      </ol>
+    </div>
+  </section>
+)}
+
+{d.faq && (
+  <section class="section-brume">
+    <div class="container-custom grid gap-10 py-20 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:py-28">
+      <div class="grid content-start gap-4"><p class="rubrique">{d.faq.rubrique}</p><h2 class="titre-moyen text-encre">{d.faq.titre}</h2></div>
+      <div class="faq-etude">
+        {d.faq.items.map((f: any, k: number) => (
+          <details open={k === 0}><summary>{f.q}</summary><p set:html={enrichir(f.r)} /></details>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<!-- Deux autres études. -->
+{autres.length > 0 && (
+  <section class="section-blanc">
+    <div class="container-custom py-20 lg:py-24">
+      <h2 class="titre-moyen mb-10 text-encre">{t.autres}</h2>
+      <ul class="grid grid-cols-1 gap-5 md:grid-cols-3">
+        {autres.map((s) => (
+          <li>
+            <a href={`/${lang}/case-studies/${slugDe(s.id)}`} class="carte group grid h-full overflow-hidden">
+              <span class="relative block aspect-[16/10] overflow-hidden">
+                <img src={s.data.image} alt="" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async" />
+              </span>
+              <span class="grid content-start gap-2 p-6">
+                <span class="text-sm font-semibold text-slate-500">{s.data.format === 'dossier' ? t.dossier : s.data.format === 'portrait' ? t.portrait : ''}{s.data.format ? ' · ' : ''}{s.data.client}</span>
+                <span class="font-display text-xl font-extrabold leading-snug tracking-[-0.02em] text-encre">{s.data.title}</span>
+                <span class="mt-2 inline-flex items-center gap-2 font-semibold text-marque transition-all group-hover:gap-3">{t.lire}<Icon name="arrow-right" size={16} /></span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<FinalCTA lang={lang} title={t.ctaTitle} subtitle={t.ctaText} />
+
+<script>
+  /* Chaque scène ne joue que lorsqu'elle est à l'écran ; sinon elle reste sur son image de repos.
+     Dans un récit collé, la scène de droite suit le chapitre lu. */
+  function envoyer(f: HTMLIFrameElement | null, m: object) { f?.contentWindow?.postMessage(m, '*'); }
+  function repos(f: HTMLIFrameElement) { envoyer(f, { cmd: 'pause' }); envoyer(f, { cmd: 'seek', t: Number(f.dataset.repos || 0) }); }
+  function jouer(f: HTMLIFrameElement) { envoyer(f, { cmd: 'seek', t: 0 }); envoyer(f, { cmd: 'play' }); }
+  function brancher() {
+    if (!('IntersectionObserver' in window)) return;
+    const libres = Array.from(document.querySelectorAll<HTMLIFrameElement>('.etude-plan [data-scene-etude] iframe')).filter((f) => !f.closest('.recit-scene'));
+    const io = new IntersectionObserver((es) => es.forEach((e) => { const f = e.target as HTMLIFrameElement; e.isIntersecting ? jouer(f) : repos(f); }), { threshold: 0.4 });
+    libres.forEach((f) => { if (f.dataset.branche) return; f.dataset.branche = '1'; f.addEventListener('load', () => { repos(f); io.observe(f); }); });
+    document.querySelectorAll<HTMLElement>('[data-recit]').forEach((r) => {
+      if (r.dataset.branche) return; r.dataset.branche = '1';
+      const calques = Array.from(r.querySelectorAll<HTMLElement>('.recit-calque'));
+      const cadres = calques.map((c) => c.querySelector('iframe'));
+      let actif = 0;
+      cadres.forEach((f, i) => f?.addEventListener('load', () => { if (i !== actif) repos(f); }));
+      const activer = (i: number) => {
+        if (i === actif) return;
+        calques[actif].classList.remove('actif'); if (cadres[actif]) repos(cadres[actif]!);
+        actif = i; calques[i].classList.add('actif'); if (cadres[i]) jouer(cadres[i]!);
+      };
+      const ioR = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) activer(Number((e.target as HTMLElement).dataset.chapitre)); }), { rootMargin: '-45% 0px -45% 0px' });
+      r.querySelectorAll('[data-chapitre]').forEach((c) => ioR.observe(c));
+    });
+  }
+  brancher();
+  document.addEventListener('astro:page-load', brancher);
+</script>
+
+<style>
+  @reference "../../styles/global.css";
+  .etude-logo { height: 44px; width: auto; max-width: 180px; object-fit: contain; }
+  .tete-plan { display: grid; gap: 20px; }
+  @media (min-width: 1024px) { .tete-plan { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: end; } }
+  .grand-texte {
+    margin-top: 28px; max-width: 30ch;
+    font-family: var(--font-display); font-weight: 700; letter-spacing: -0.025em;
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.6rem); line-height: 1.28; color: var(--encre);
+  }
+  :global(.section-encre) .grand-texte { color: #fff; }
+  .grand-texte :global(strong) { color: var(--color-marque); font-weight: 700; }
+  :global(.section-encre) .grand-texte :global(strong) { color: var(--color-marque-clair); }
+  .corps-texte { display: grid; gap: 16px; margin-top: 24px; max-width: 68ch; font-size: 1.0625rem; line-height: 1.7; color: var(--color-slate-600); }
+  :global(.section-encre) .corps-texte { color: var(--texte-sombre); }
+  .corps-texte :global(strong) { color: var(--encre); font-weight: 600; }
+  :global(.section-encre) .corps-texte :global(strong) { color: #fff; }
+
+  .chiffres-etude { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: rgb(125 184 238 / 0.18); border-radius: 22px; overflow: hidden; }
+  .chiffres-etude > div { background: var(--encre-2); padding: 26px 26px 28px; display: grid; gap: 8px; align-content: start; }
+  .chiffres-etude b { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.2rem, 1.6rem + 2.2vw, 3.6rem); line-height: 1; letter-spacing: -0.03em; color: #fff; font-variant-numeric: tabular-nums; }
+  .chiffres-etude b.or { color: #e8bd62; }
+  .chiffres-etude span { font-size: 0.97rem; line-height: 1.45; color: var(--texte-sombre-2); }
+  @media (max-width: 860px) { .chiffres-etude { grid-template-columns: minmax(0, 1fr); } }
+
+  .cartes-etude { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 48px; border-top: 1px solid var(--filet); }
+  .cartes-etude > div { padding: 24px 24px 26px 0; border-bottom: 1px solid var(--filet); display: grid; gap: 8px; align-content: start; }
+  .cartes-etude > div:not(:nth-child(3n)) { border-right: 1px solid var(--filet); padding-right: 24px; }
+  .cartes-etude > div:not(:nth-child(3n+1)) { padding-left: 24px; }
+  .cartes-etude b { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; line-height: 1.3; letter-spacing: -0.01em; color: var(--encre); }
+  .cartes-etude p { font-size: 0.98rem; line-height: 1.55; color: var(--color-slate-600); }
+  :global(.section-encre) .cartes-etude, :global(.section-encre) .cartes-etude > div { border-color: rgb(125 184 238 / 0.2); }
+  :global(.section-encre) .cartes-etude b { color: #fff; }
+  :global(.section-encre) .cartes-etude p { color: var(--texte-sombre-2); }
+  @media (max-width: 900px) {
+    .cartes-etude { grid-template-columns: minmax(0, 1fr); }
+    .cartes-etude > div { border-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; }
+  }
+
+  /* Le récit collé (direction A) : le texte défile, la scène reste. */
+  .recit-colle { display: grid; gap: 48px; margin-top: 24px; }
+  .recit-chapitre { display: grid; gap: 16px; align-content: center; padding-block: 40px; }
+  .recit-chapitre p { font-size: 1.0625rem; line-height: 1.7; color: var(--color-slate-600); max-width: 60ch; }
+  :global(.section-encre) .recit-chapitre p { color: var(--texte-sombre); }
+  .recit-chapitre :global(strong) { color: var(--encre); font-weight: 600; }
+  :global(.section-encre) .recit-chapitre :global(strong) { color: #fff; }
+  .recit-titre { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem); line-height: 1.08; }
+  .recit-scene { display: none; }
+  @media (min-width: 1024px) {
+    .recit-colle { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 64px; align-items: start; }
+    .recit-chapitre { min-height: 82vh; padding-block: 8vh; }
+    .recit-mobile { display: none; }
+    .recit-scene { display: grid; position: sticky; top: 96px; height: calc(100vh - 140px); align-content: center; }
+    .recit-pile { position: relative; }
+    .recit-calque { position: absolute; inset: 0 0 auto 0; opacity: 0; transition: opacity 0.45s cubic-bezier(0.15, 1, 0.32, 1); pointer-events: none; }
+    .recit-calque:first-child { position: relative; }
+    .recit-calque.actif { opacity: 1; pointer-events: auto; }
+  }
+
+  .citation-etude { margin: 0; display: grid; gap: 18px; max-width: 46ch; }
+  .citation-etude blockquote { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem); line-height: 1.35; letter-spacing: -0.02em; color: #fff; }
+  .citation-etude figcaption { color: var(--texte-sombre-2); }
+  .citation-etude figcaption b { color: #fff; font-weight: 600; }
+
+  .reglages-etude { counter-reset: r; list-style: none; margin: 0; padding: 0; }
+  .reglages-etude li { counter-increment: r; display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 16px; padding: 20px 0; border-top: 1px solid var(--filet); }
+  .reglages-etude li::before { content: counter(r); font-family: var(--font-display); font-weight: 800; font-size: 1.75rem; line-height: 1; color: var(--color-marque); }
+  .reglages-etude b { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; letter-spacing: -0.01em; margin-bottom: 4px; color: var(--encre); }
+  .reglages-etude p { color: var(--color-slate-600); }
+
+  .faq-etude details { border-top: 1px solid var(--filet); padding: 18px 0; }
+  .faq-etude summary { cursor: pointer; list-style: none; font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; line-height: 1.35; letter-spacing: -0.01em; color: var(--encre); }
+  .faq-etude summary::-webkit-details-marker { display: none; }
+  .faq-etude p { margin-top: 10px; color: var(--color-slate-600); }
+</style>
