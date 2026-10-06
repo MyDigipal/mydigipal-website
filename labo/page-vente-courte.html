@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Page de vente courte</title>
+<!--
+  Labo du 06/10/2026. Trois directions pour raccourcir la page de vente de l'Academy,
+  demandées par Paul après le repli des étapes du programme (site 8534b68).
+
+  Mesures réelles (page française en ligne, Claude-in-Chrome, iframe à la largeur voulue) :
+  bureau 1440 x 900, téléphone 390 x 844. Les hauteurs des directions A et B sont des
+  ESTIMATIONS, signalées comme telles à l'écran. Les prix sont ceux affichés sur la page
+  le 06/10 (pricing-currencies.ts côté application) ; ils ne sont écrits ici que parce que
+  c'est une maquette, jamais à reprendre tels quels dans le code de la page.
+
+  Les animations viennent du labo motion (projects/_shared/motion-lib/labo/essais), chargées
+  par chemin relatif : la page doit rester dans MyDigipal Website/labo/.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --salle:#0d1424;--salle-2:#141d33;--salle-3:#1c2742;--filet:#26324e;
+  --fort:#f2eee4;--mute:#8d96a9;--or:#c8a951;--or-vif:#dcbc66;--or-nuit:#a8862f;
+  --craie:#f7f5f0;--encre:#0f1a2e;--lin:#e6e1d6;--brume:#646c7a;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --g:"Space Grotesk",system-ui,sans-serif;--m:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--salle);color:var(--fort);font:16px/1.6 var(--g);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.page{max-width:1240px;margin:0 auto;padding:56px 24px 120px}
+@media (max-width:640px){.page{padding:36px 16px 96px}}
+h1{font-size:clamp(34px,4.6vw,58px);line-height:1.03;letter-spacing:-.035em;font-weight:600;margin:0;max-width:18ch;text-wrap:balance}
+h2{font-size:clamp(26px,3vw,38px);line-height:1.08;letter-spacing:-.03em;font-weight:600;margin:0 0 12px;text-wrap:balance}
+h3{font-size:20px;line-height:1.25;letter-spacing:-.01em;font-weight:600;margin:0}
+p{margin:0}
+.chapeau{color:var(--mute);font-size:18px;max-width:62ch;margin-top:16px}
+.mono{font-family:var(--m);font-size:12px;letter-spacing:.04em}
+section.bloc{margin-top:96px}
+@media (max-width:640px){section.bloc{margin-top:72px}}
+.sous{color:var(--mute);max-width:66ch;margin-bottom:28px}
+
+/* Le constat */
+.chiffres{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--filet);border:1px solid var(--filet);border-radius:16px;overflow:hidden;margin-top:40px}
+.chiffres div{background:var(--salle-2);padding:22px 22px 20px}
+.chiffres b{display:block;font-size:clamp(34px,4vw,48px);font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--fort)}
+.chiffres span{display:block;color:var(--mute);font-size:14.5px;margin-top:10px;line-height:1.45}
+@media (max-width:860px){.chiffres{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Sélecteur bureau / téléphone */
+.bascule{display:inline-flex;background:var(--salle-2);border:1px solid var(--filet);border-radius:999px;padding:4px;gap:4px}
+.bascule button{font:500 14px var(--g);color:var(--mute);background:transparent;border:0;border-radius:999px;padding:9px 18px;cursor:pointer;min-height:40px;transition:background .2s,color .2s}
+.bascule button[aria-pressed=true]{background:var(--fort);color:var(--salle)}
+
+/* Le plan à l'échelle */
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:24px;align-items:start}
+@media (max-width:760px){.plans{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}}
+.plan h3{font-size:16px;margin-bottom:4px}
+.plan .verdict{font-size:14px;color:var(--mute);margin-bottom:14px;min-height:44px}
+.plan .verdict b{color:var(--or-vif);font-weight:600}
+.pile{position:relative;border-radius:10px;overflow:hidden;background:var(--salle-2)}
+.sec{position:relative;display:flex;align-items:center;padding:0 10px;font-size:12px;color:var(--fort);border-bottom:1px solid var(--salle);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:height .5s var(--ease)}
+.sec[data-t=change]{background:#24314f}
+.sec[data-t=neuf]{background:#2c3a2e;color:#cfe6d2}
+.sec[data-t=motion]{background:#3a2f4f;color:#e5dcf5}
+.sec[data-t=tarifs]{background:var(--or);color:var(--salle);font-weight:600}
+.sec[data-t=offre]{background:var(--or-nuit);color:var(--salle);font-weight:600}
+.sec[data-t=normal]{background:var(--salle-3);color:var(--mute)}
+.ecran-ligne{position:absolute;left:0;right:0;border-top:1px dashed rgba(242,238,228,.18);pointer-events:none}
+.ecran-ligne span{position:absolute;right:4px;top:-9px;font:10px var(--m);color:rgba(242,238,228,.35)}
+@media (max-width:760px){.sec{font-size:10px;padding:0 5px}.plan .verdict{font-size:12.5px;min-height:60px}}
+.legende{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:18px;color:var(--mute);font-size:13.5px}
+.legende i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+
+/* Les directions */
+.direction{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-bottom:28px}
+.lettre{font:600 15px var(--m);color:var(--salle);background:var(--or);border-radius:8px;width:36px;height:36px;display:grid;place-items:center}
+.direction-tete{display:flex;gap:14px;align-items:center}
+.ce-qui{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px;margin:22px 0 8px;color:var(--mute);font-size:15px;max-width:980px}
+.ce-qui div b{color:var(--fort);font-weight:600;display:block;margin-bottom:4px}
+@media (max-width:760px){.ce-qui{grid-template-columns:minmax(0,1fr)}}
+
+/* Cadres bureau et téléphone */
+.duo{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:24px;align-items:start;margin-top:22px}
+@media (max-width:1100px){.duo{grid-template-columns:minmax(0,1fr)}}
+.cadre{border:1px solid var(--filet);border-radius:16px;overflow:hidden;background:var(--salle)}
+.cadre-tete{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--filet);background:var(--salle-2)}
+.cadre-tete .mono{color:var(--mute)}
+.cadre.tel{max-width:390px;width:100%;justify-self:center}
+.scene{container-type:inline-size}
+
+/* Avant / après */
+.avant{margin-top:22px;border:1px solid var(--filet);border-radius:16px;overflow:hidden;background:var(--salle-2)}
+.avant summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;font-weight:500;min-height:48px}
+.avant summary::-webkit-details-marker{display:none}
+.avant summary svg{transition:transform .3s var(--ease);flex:none}
+.avant[open] summary svg{transform:rotate(180deg)}
+.avant .rouleau{max-height:620px;overflow:auto;border-top:1px solid var(--filet)}
+.avant img{display:block;width:100%;height:auto}
+
+/* ===== Les blocs proposés, rendus comme sur la page ===== */
+.b{padding:44px 32px;color:var(--fort);background:var(--salle)}
+@container (max-width:520px){.b{padding:36px 16px}}
+.b h4{font-size:clamp(26px,4.2cqi,40px);line-height:1.05;letter-spacing:-.03em;font-weight:600;margin:0;text-wrap:balance}
+.b .lead{color:var(--mute);font-size:16px;line-height:1.6;margin-top:10px;max-width:58ch}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 22px;border-radius:12px;background:var(--or);color:var(--salle);font:600 15px var(--g);text-decoration:none;border:0;cursor:pointer;transition:transform .15s,background .2s;white-space:nowrap}
+.btn:hover{background:var(--or-vif)}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.ligne{background:transparent;color:var(--fort);border:1px solid var(--filet)}
+.btn.ligne:hover{border-color:var(--mute);background:transparent}
+
+/* Bande d'offre */
+.portes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.25fr);gap:12px;margin-top:26px}
+@container (max-width:760px){.portes{grid-template-columns:minmax(0,1fr)}}
+.porte{border:1px solid var(--filet);border-radius:16px;padding:20px;background:var(--salle-2);display:grid;gap:4px;align-content:start}
+.porte.lot{border-color:var(--or);background:linear-gradient(180deg,rgba(200,169,81,.10),rgba(200,169,81,.02))}
+.porte .nom{font:500 11px var(--m);letter-spacing:.12em;text-transform:uppercase;color:var(--or-vif)}
+.porte .quoi{font-size:15px;color:var(--fort);line-height:1.4}
+.porte .prix{font-size:36px;font-weight:600;letter-spacing:-.03em;line-height:1;margin-top:12px}
+.porte .prix s{font-size:18px;color:var(--mute);font-weight:500;margin-left:8px}
+.porte .pour{color:var(--mute);font-size:13.5px}
+.porte .btn{margin-top:14px;width:100%}
+@container (max-width:760px){.porte{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 12px;padding:16px}.porte .nom,.porte .quoi{grid-column:1}.porte .prix{grid-column:2;grid-row:1/3;margin:0;font-size:28px;text-align:right}.porte .pour{grid-column:1}.porte .btn{grid-column:1/-1;margin-top:10px}}
+.sous-portes{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;margin-top:16px;color:var(--mute);font-size:14.5px}
+.sous-portes a{color:var(--fort);text-underline-offset:4px;text-decoration-color:var(--filet)}
+.sous-portes a:hover{text-decoration-color:var(--fort)}
+
+/* Clara en un écran */
+.clara{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;margin-top:28px;align-items:start}
+@container (max-width:760px){.clara{grid-template-columns:minmax(0,1fr);gap:18px}}
+.moments{display:grid;gap:10px}
+.moment{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;padding:16px 18px;border:1px solid var(--filet);border-radius:14px;background:var(--salle-2)}
+.moment .j{font:500 11px var(--m);letter-spacing:.1em;color:var(--or-vif);text-transform:uppercase;padding-top:3px}
+.moment .e{font:500 11px var(--m);letter-spacing:.08em;color:var(--mute);text-transform:uppercase;margin-bottom:4px}
+.moment p{font-size:16px;line-height:1.45}
+.compte{border:1px solid var(--filet);border-radius:16px;background:var(--salle-2);padding:20px}
+.compte .qui{display:flex;align-items:center;gap:12px}
+.compte .av{width:40px;height:40px;border-radius:50%;background:var(--salle-3);display:grid;place-items:center;font:600 14px var(--g);color:var(--or-vif)}
+.compte .pts{font-size:44px;font-weight:600;letter-spacing:-.03em;line-height:1;margin-top:18px;color:var(--or-vif)}
+.compte .pts-l{color:var(--mute);font-size:13px;margin-top:6px}
+.compte ul{list-style:none;margin:16px 0 0;padding:14px 0 0;border-top:1px solid var(--filet);display:grid;gap:8px}
+.compte li{display:flex;gap:12px;align-items:baseline;font-size:14.5px}
+.compte li b{font-size:18px;min-width:28px;font-weight:600}
+.carres{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-top:16px}
+.carres i{aspect-ratio:1;border-radius:3px;background:var(--or)}
+.carres i.b2{background:#7fc4dd}
+.relance{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin-top:24px;padding-top:22px;border-top:1px solid var(--filet)}
+.relance p{font-size:17px;flex:1 1 280px}
+.trente{margin-top:14px}
+.trente button{font:500 14.5px var(--g);color:var(--fort);background:transparent;border:0;padding:8px 0;cursor:pointer;display:inline-flex;gap:8px;align-items:center;min-height:44px}
+.trente svg{transition:transform .3s var(--ease)}
+.trente[data-ouvert=true] svg{transform:rotate(180deg)}
+.trente .liste{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s var(--ease)}
+.trente[data-ouvert=true] .liste{grid-template-rows:1fr}
+.trente .liste>div{min-height:0;overflow:hidden}
+.trente ol{list-style:none;margin:6px 0 0;padding:0}
+.trente li{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;padding:9px 0;border-bottom:1px solid var(--filet);font-size:14.5px;color:var(--fort)}
+.trente li span{font:500 11px var(--m);color:var(--mute);letter-spacing:.08em;text-transform:uppercase;padding-top:3px}
+
+/* Attestation en petit */
+.atte{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr);gap:36px;align-items:center}
+@container (max-width:760px){.atte{grid-template-columns:minmax(0,1fr);gap:22px}}
+.atte figure{margin:0}
+.atte img{display:block;width:100%;max-width:400px;height:auto;border-radius:6px;box-shadow:0 30px 60px -20px rgba(0,0,0,.6),0 0 0 1px rgba(242,238,228,.06)}
+@container (max-width:760px){.atte img{max-width:300px;margin:0 auto}}
+.atte .faits{display:grid;gap:10px;margin-top:20px;padding:0;list-style:none}
+.atte .faits li{display:flex;gap:12px;font-size:15px;color:var(--fort);align-items:flex-start}
+.atte .faits svg{flex:none;margin-top:4px;color:var(--or-vif)}
+
+/* Animations du labo motion */
+.film{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;border:1px solid var(--filet)}
+.film iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.film-texte{margin-top:16px}
+.film-texte p{color:var(--mute);font-size:15px;margin-top:6px;max-width:60ch}
+.remplace{display:inline-block;font:500 11px var(--m);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);border:1px solid var(--filet);border-radius:999px;padding:5px 10px;margin-bottom:12px}
+.trio{display:grid;gap:56px;margin-top:28px}
+
+/* Recommandation */
+.reco{margin-top:40px;border:1px solid var(--or);border-radius:18px;padding:28px;background:linear-gradient(180deg,rgba(200,169,81,.08),transparent)}
+.reco ol{margin:16px 0 0;padding-left:22px;display:grid;gap:10px;color:var(--fort)}
+.reco li::marker{color:var(--or-vif);font-family:var(--m)}
+.garde{margin-top:20px;color:var(--mute);font-size:14.5px;max-width:70ch}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header>
+    <p class="mono" style="color:var(--or-vif)">Labo, page de vente de l'Academy, 6 octobre 2026</p>
+    <h1 style="margin-top:14px">Trois directions pour une page de vente plus courte</h1>
+    <p class="chapeau">Le programme est déjà replié depuis ce matin. Cette page montre ce qu'on peut faire du reste : le plan de la page à l'échelle, puis chaque bloc proposé tel qu'il s'afficherait, sur bureau et sur téléphone.</p>
+    <div class="chiffres">
+      <div><b>82 %</b><span>des visites de la page viennent d'un téléphone</span></div>
+      <div><b>28 s</b><span>d'attention par visiteur, en moyenne</span></div>
+      <div><b>22<sup style="font-size:.45em">e</sup> écran</b><span>où arrivent les tarifs sur téléphone (15<sup>e</sup> sur bureau)</span></div>
+      <div><b>23 sur 750</b><span>visiteurs ouvrent le tunnel de paiement, 2 achètent</span></div>
+    </div>
+    <p class="garde">GA4 du 16/09 au 05/10, pages /fr/academy et /en/academy. Longueurs mesurées sur la page française en ligne le 06/10, programme déjà replié.</p>
+  </header>
+
+  <!-- ============================================================ PLAN -->
+  <section class="bloc" id="plan">
+    <h2>Le plan de la page, à l'échelle</h2>
+    <p class="sous">Chaque rectangle est une section, à sa vraie hauteur. Les pointillés marquent les écrans. La bande dorée foncée est l'offre proposée par A, la dorée claire les tarifs complets, qui ne bougent pas.</p>
+    <div class="bascule" role="group" aria-label="Appareil">
+      <button type="button" data-app="bureau" aria-pressed="true">Bureau, 1440 px</button>
+      <button type="button" data-app="tel" aria-pressed="false">Téléphone, 390 px</button>
+    </div>
+    <div class="plans" id="plans"></div>
+    <div class="legende">
+      <span><i style="background:var(--salle-3)"></i>Inchangé</span>
+      <span><i style="background:#24314f"></i>Raccourci</span>
+      <span><i style="background:#2c3a2e"></i>Nouveau</span>
+      <span><i style="background:#3a2f4f"></i>Animation du labo motion</span>
+      <span><i style="background:var(--or-nuit)"></i>Offre</span>
+      <span><i style="background:var(--or)"></i>Tarifs complets</span>
+    </div>
+    <p class="garde">Aujourd'hui : mesuré. A et B : estimé à partir des maquettes ci-dessous, à remesurer une fois construit.</p>
+  </section>
+
+  <!-- ============================================================ A -->
+  <section class="bloc" id="a">
+    <div class="direction">
+      <div class="direction-tete"><span class="lettre">A</span><h2 style="margin:0">Rapprocher l'offre et resserrer le récit</h2></div>
+      <p class="sous" style="margin:6px 0 0">Trois changements, tous avec le contenu qui existe déjà. Rien de nouveau à tourner ni à rédiger. Faisable cette semaine.</p>
+    </div>
+    <div class="ce-qui">
+      <div><b>1. Une bande d'offre juste après le programme</b>Les trois formules, leur prix et un bouton, au 3<sup>e</sup> écran sur téléphone au lieu du 22<sup>e</sup>. Les tarifs complets restent en bas pour qui veut le détail.</div>
+      <div><b>2. Le récit de Clara en un seul écran</b>Le ruban, les quinze jours et « Fin de la démonstration » deviennent un bloc : trois moments, son compte, l'appel. Les trente jours restent à un clic.</div>
+      <div><b>3. L'attestation en petit</b>Le document réduit à gauche, un court texte à droite. La carte de profil disparaît : son compte est déjà montré juste au-dessus.</div>
+      <div><b>Ce qui ne bouge pas</b>Le haut de page, les avis et logos, le programme, les outils, le questionnaire, la visite, le MCP, « Une méthode née en salle » et les tarifs complets.</div>
+    </div>
+
+    <!-- 1. Bande d'offre -->
+    <h3 style="margin-top:44px">1. La bande d'offre, sous le programme</h3>
+    <div class="duo">
+      <div class="cadre"><div class="cadre-tete"><span class="mono">Bureau</span></div><div class="scene" data-gabarit="g-offre"></div></div>
+      <div class="cadre tel"><div class="cadre-tete"><span class="mono">Téléphone</span></div><div class="scene" data-gabarit="g-offre"></div></div>
+    </div>
+
+    <!-- 2. Clara -->
+    <h3 style="margin-top:64px">2. Le récit de Clara en un écran</h3>
+    <div class="duo">
+      <div class="cadre"><div class="cadre-tete"><span class="mono">Bureau</span></div><div class="scene" data-gabarit="g-clara"></div></div>
+      <div class="cadre tel"><div class="cadre-tete"><span class="mono">Téléphone</span></div><div class="scene" data-gabarit="g-clara"></div></div>
+    </div>
+
+    <!-- 3. Attestation -->
+    <h3 style="margin-top:64px">3. L'attestation en petit, avec son texte</h3>
+    <div class="duo">
+      <div class="cadre"><div class="cadre-tete"><span class="mono">Bureau</span></div><div class="scene" data-gabarit="g-atte"></div></div>
+      <div class="cadre tel"><div class="cadre-tete"><span class="mono">Téléphone</span></div><div class="scene" data-gabarit="g-atte"></div></div>
+    </div>
+
+    <details class="avant">
+      <summary><span>Ce que ces deux blocs remplacent aujourd'hui (capture réelle, 1440 px, 4 020 px de haut)</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <div class="rouleau"><img src="page-vente-courte/avant-recit-bureau.webp" alt="Le récit de Clara, l'attestation et la fin de la démonstration, tels qu'en ligne le 6 octobre" loading="lazy"></div>
+    </details>
+  </section>
+
+  <!-- ============================================================ B -->
+  <section class="bloc" id="b">
+    <div class="direction">
+      <div class="direction-tete"><span class="lettre">B</span><h2 style="margin:0">Montrer au lieu de raconter</h2></div>
+      <p class="sous" style="margin:6px 0 0">Les trois sections les plus longues deviennent chacune une animation du labo motion, que vous avez notées « J'adore », avec deux phrases à côté. Chaque animation tient sur un écran. Elle se lit sans le son, et le texte ne bouge que pour dire quelque chose.</p>
+    </div>
+    <div class="trio">
+      <div>
+        <span class="remplace">Remplace « L'espace que vous ouvrez chaque matin », 1 107 px sur bureau, 2 160 sur téléphone</span>
+        <div class="film"><iframe src="../../_shared/motion-lib/labo/essais/visite-academy.html" title="Visite de l'Academy" loading="lazy"></iframe></div>
+        <div class="film-texte"><h3>L'espace que vous ouvrez chaque matin</h3><p>Votre avis : « C'est excellent. » La caméra qui tient montre les modules, une leçon, l'atelier, la bibliothèque et l'assistant, sans flouter ce qu'on lit. À refaire en français avec les vrais écrans du jour avant la mise en ligne.</p></div>
+      </div>
+      <div>
+        <span class="remplace">Remplace le récit de Clara de la direction A</span>
+        <div class="film"><iframe src="../../_shared/motion-lib/labo/essais/carte-verre-recit.html" title="La carte raconte" loading="lazy"></iframe></div>
+        <div class="film-texte"><h3>De la première leçon au premier agent</h3><p>Votre avis : « Excellent, j'adore ! » Trois actes, la leçon, le prompt, le journal de l'agent : c'est le trajet de Clara en douze secondes. Le compte de Clara et l'appel restent dessous, les trente jours à un clic.</p></div>
+      </div>
+      <div>
+        <span class="remplace">Remplace « Le but final : des agents qui travaillent », 1 255 px sur bureau, 1 904 sur téléphone</span>
+        <div class="film"><iframe src="../../_shared/motion-lib/labo/essais/process-iso.html" title="E-mail, devis, facture" loading="lazy"></iframe></div>
+        <div class="film-texte"><h3>Une demande entre, une facture sort</h3><p>Votre avis : vous aimez les étapes qui avancent, mais les libellés empilés en haut à gauche étaient illisibles. À corriger avant tout usage : le nom de chaque étape naît à côté de l'étape, au moment où l'objet y arrive.</p></div>
+      </div>
+    </div>
+    <p class="garde">Sur téléphone, chaque animation se lit en pleine largeur (358 px, soit 201 px de haut). Les trois sont plus lourdes qu'une image : elles ne se chargent qu'en arrivant à l'écran, et une image fixe les remplace si le visiteur a demandé moins d'animation.</p>
+  </section>
+
+  <!-- ============================================================ C -->
+  <section class="bloc" id="c">
+    <div class="direction">
+      <div class="direction-tete"><span class="lettre">C</span><h2 style="margin:0">A tout de suite, B ensuite</h2></div>
+    </div>
+    <div class="reco">
+      <h3>Ce que je recommande</h3>
+      <ol>
+        <li>Mettre A en ligne cette semaine, sur les deux langues. C'est ce qui touche le vrai problème : la distance jusqu'au prix.</li>
+        <li>Mesurer deux semaines : clics sur la bande d'offre, ouvertures du tunnel, défilement jusqu'aux tarifs.</li>
+        <li>Pendant ce temps, préparer B au labo, en commençant par la visite de l'Academy refaite avec les écrans réels en français et en anglais.</li>
+        <li>Porter B en ligne seulement après l'avoir vu ici, une animation à la fois.</li>
+      </ol>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================ GABARITS -->
+<template id="g-offre">
+  <div class="b">
+    <h4>Choisissez votre formule</h4>
+    <p class="lead">L'assistant IA est compris dans les trois, et l'accès dure 60 jours quelle que soit la formule.</p>
+    <div class="portes">
+      <div class="porte">
+        <span class="nom">La méthode</span>
+        <span class="quoi">La méthode et votre outil</span>
+        <span class="prix">290 €</span>
+        <span class="pour">82 leçons, pour 60 jours</span>
+        <a class="btn ligne" href="#a">Commencer</a>
+      </div>
+      <div class="porte">
+        <span class="nom">Les automatisations</span>
+        <span class="quoi">Les agents, les chaînes et le MCP</span>
+        <span class="prix">250 €</span>
+        <span class="pour">118 leçons, pour 60 jours</span>
+        <a class="btn ligne" href="#a">Commencer</a>
+      </div>
+      <div class="porte lot">
+        <span class="nom">Les deux</span>
+        <span class="quoi">200 leçons en tout, aucun module fermé</span>
+        <span class="prix">440 €<s>540 €</s></span>
+        <span class="pour">pour 60 jours</span>
+        <a class="btn" href="#a">Commencer</a>
+      </div>
+    </div>
+    <div class="sous-portes">
+      <a href="#a">Ou 15 leçons offertes, 48 h, sans carte bancaire</a>
+      <span>Remboursement intégral sous 48 h, tant que moins de 5 % du parcours a été consulté.</span>
+      <a href="#a">Voir le détail des tarifs</a>
+    </div>
+  </div>
+</template>
+
+<template id="g-clara">
+  <div class="b">
+    <p class="mono" style="color:var(--or-vif);margin-bottom:10px">Compte de démonstration</p>
+    <h4>Trente jours dans un compte</h4>
+    <p class="lead">Clara Martin est une apprenante composée. Son compte se remplit selon le barème réel du produit.</p>
+    <div class="clara">
+      <div class="moments">
+        <div class="moment"><span class="j">Jour 2</span><div><div class="e">Débuter</div><p>Elle apprend la méthode. Cinq champs, et la demande s'écrit toute seule.</p></div></div>
+        <div class="moment"><span class="j">Jour 11</span><div><div class="e">Maîtriser</div><p>Question à 23 h. L'assistant répond, et il cite la leçon.</p></div></div>
+        <div class="moment"><span class="j">Jour 21</span><div><div class="e">Mettre en œuvre</div><p>Lundi, huit heures. Ses relances sont écrites. Elle les relit, elle envoie.</p></div></div>
+      </div>
+      <div class="compte">
+        <div class="qui"><span class="av">CM</span><div><div style="font-weight:600">Clara Martin</div><div class="mono" style="color:var(--mute)">Référent, platine</div></div></div>
+        <div class="pts">5 915</div>
+        <div class="pts-l">points, 30 jours d'affilée</div>
+        <div class="carres" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i><i></i><i class="b2"></i><i class="b2"></i><i class="b2"></i><i class="b2"></i><i class="b2"></i>
+          <i class="b2"></i><i class="b2"></i><i class="b2"></i><i class="b2"></i><i class="b2"></i><i class="b2"></i><i class="b2"></i><i class="b2"></i><i class="b2"></i><i class="b2"></i>
+        </div>
+        <ul>
+          <li><b>18</b>exercices déposés</li>
+          <li><b>9</b>quiz réussis</li>
+          <li><b>1</b>serveur MCP en état de marche</li>
+        </ul>
+      </div>
+    </div>
+    <div class="relance">
+      <p>Vous avez regardé le compte de Clara se remplir. Au tour du vôtre.</p>
+      <a class="btn" href="#a">Commencer</a>
+    </div>
+    <div class="trente" data-ouvert="false">
+      <button type="button" aria-expanded="false"><span>Voir les trente jours, jour par jour</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="liste"><div><ol>
+        <li><span>Jour 1</span>Elle ouvre son compte. Paul l'accueille, en face caméra.</li>
+        <li><span>Jour 2</span>Elle apprend la méthode. Cinq champs, et la demande s'écrit toute seule.</li>
+        <li><span>Jour 3</span>Elle rend un exercice, sur ses propres données.</li>
+        <li><span>Jour 6</span>Le quiz du module 2. Sans faute, au premier essai.</li>
+        <li><span>Jour 9</span>Elle choisit son outil. Le parcours ne garde que celui-là.</li>
+        <li><span>Jour 11</span>Question à 23 h. L'assistant répond, et il cite la leçon.</li>
+        <li><span>Jour 12</span>Elle arrête d'écrire ses prompts de zéro. Puis elle en ajoute un.</li>
+        <li><span>Jour 14</span>Cinq leçons dans la journée. Quelque chose tombe qu'elle ne cherchait pas.</li>
+        <li><span>Jour 15</span>On lui demande le visuel en trois formats. Pour hier.</li>
+        <li><span>Jour 18</span>Elle branche son premier serveur. Il lit son agenda, et rien d'autre.</li>
+        <li><span>Jour 21</span>Lundi, huit heures. Ses relances sont écrites. Elle les relit, elle envoie.</li>
+        <li><span>Jour 22</span>Trente minutes en visio. Préparées : il a lu ses exercices avant.</li>
+        <li><span>Jour 24</span>Un agent surveille ses livraisons. Il agit dans son couloir, il demande pour le reste.</li>
+        <li><span>Jour 26</span>Elle construit son premier serveur MCP. Et là, il faut s'arrêter deux minutes.</li>
+        <li><span>Jour 28</span>Elle compte. Pas une promesse : son relevé, sur sa semaine.</li>
+      </ol></div></div>
+    </div>
+  </div>
+</template>
+
+<template id="g-atte">
+  <div class="b">
+    <div class="atte">
+      <figure><img src="page-vente-courte/attestation.webp" alt="L'attestation d'usage professionnel de l'intelligence artificielle, au nom de Clara Martin" loading="lazy"></figure>
+      <div>
+        <h4>Une attestation à la fin du parcours</h4>
+        <p class="lead">Elle porte votre nom, les modules suivis et ce que vous avez construit. Elle vaut ce qu'on sait faire avec.</p>
+        <ul class="faits">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Les domaines couverts, étape par étape : débuter, maîtriser, mettre en œuvre</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Les exercices rendus, et le serveur MCP construit pour qui a pris Les automatisations</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>La mention, quand toutes les leçons sont terminées</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+(function(){
+  // Les gabarits sont rendus deux fois, en cadre bureau et en cadre téléphone :
+  // les requêtes @container font la mise en page selon la largeur du cadre.
+  document.querySelectorAll('.scene[data-gabarit]').forEach(function(s){
+    s.appendChild(document.getElementById(s.dataset.gabarit).content.cloneNode(true));
+  });
+  document.querySelectorAll('.trente').forEach(function(t){
+    var b = t.querySelector('button');
+    b.addEventListener('click', function(){
+      var o = t.dataset.ouvert !== 'true';
+      t.dataset.ouvert = String(o); b.setAttribute('aria-expanded', String(o));
+    });
+  });
+
+  // Le plan à l'échelle. Aujourd'hui : mesuré sur /fr/academy le 06/10/2026.
+  // A et B : estimations tirées des maquettes de cette page.
+  var ECRAN = { bureau: 900, tel: 844 };
+  var PLANS = {
+    bureau: {
+      auj: [['Haut de page',684,'normal'],['Avis et logos',229,'normal'],['Programme (replié)',1046,'normal'],['Quatre outils',587,'normal'],['Questionnaire',781,'normal'],['Visite de l\'espace',1107,'normal'],['MCP, agents',1255,'normal'],['Ruban',479,'change'],['Récit de Clara',1631,'change'],['Attestation',1193,'change'],['Fin de la démonstration',720,'change'],['Film, devant une salle',1264,'normal'],['Une méthode née en salle',1837,'normal'],['Tarifs',1600,'tarifs']],
+      a:   [['Haut de page',684,'normal'],['Avis et logos',229,'normal'],['Programme (replié)',1046,'normal'],['Offre',430,'offre'],['Quatre outils',587,'normal'],['Questionnaire',781,'normal'],['Visite de l\'espace',1107,'normal'],['MCP, agents',1255,'normal'],['Clara en un écran',880,'neuf'],['Attestation en petit',560,'neuf'],['Film, devant une salle',1264,'normal'],['Une méthode née en salle',1837,'normal'],['Tarifs',1600,'tarifs']],
+      b:   [['Haut de page',684,'normal'],['Avis et logos',229,'normal'],['Programme (replié)',1046,'normal'],['Offre',430,'offre'],['Quatre outils',587,'normal'],['Questionnaire',781,'normal'],['Visite animée',860,'motion'],['Agents, animés',860,'motion'],['La carte raconte + compte',1040,'motion'],['Attestation en petit',560,'neuf'],['Film, devant une salle',1264,'normal'],['Une méthode née en salle',1837,'normal'],['Tarifs',1600,'tarifs']]
+    },
+    tel: {
+      auj: [['Haut de page',803,'normal'],['Avis et logos',342,'normal'],['Programme (replié)',1335,'normal'],['Quatre outils',1095,'normal'],['Questionnaire',777,'normal'],['Visite de l\'espace',2160,'normal'],['MCP, agents',1904,'normal'],['Ruban',705,'change'],['Récit de Clara',2820,'change'],['Attestation',2098,'change'],['Fin de la démonstration',944,'change'],['Film, devant une salle',1084,'normal'],['Une méthode née en salle',1658,'normal'],['Tarifs',2883,'tarifs']],
+      a:   [['Haut de page',803,'normal'],['Avis et logos',342,'normal'],['Programme (replié)',1335,'normal'],['Offre',980,'offre'],['Quatre outils',1095,'normal'],['Questionnaire',777,'normal'],['Visite de l\'espace',2160,'normal'],['MCP, agents',1904,'normal'],['Clara en un écran',1500,'neuf'],['Attestation en petit',980,'neuf'],['Film, devant une salle',1084,'normal'],['Une méthode née en salle',1658,'normal'],['Tarifs',2883,'tarifs']],
+      b:   [['Haut de page',803,'normal'],['Avis et logos',342,'normal'],['Programme (replié)',1335,'normal'],['Offre',980,'offre'],['Quatre outils',1095,'normal'],['Questionnaire',777,'normal'],['Visite animée',620,'motion'],['Agents, animés',620,'motion'],['La carte raconte + compte',1250,'motion'],['Attestation en petit',980,'neuf'],['Film, devant une salle',1084,'normal'],['Une méthode née en salle',1658,'normal'],['Tarifs',2883,'tarifs']]
+    }
+  };
+  var TITRES = { auj: ['Aujourd\'hui', 'mesuré'], a: ['Direction A', 'estimé'], b: ['A puis B', 'estimé'] };
+
+  function ecranDe(px, app){ return Math.floor(px / ECRAN[app]) + 1; }
+  function dessiner(app){
+    var zone = document.getElementById('plans'); zone.textContent = '';
+    var echelle = app === 'bureau' ? 0.045 : 0.034;
+    ['auj','a','b'].forEach(function(cle){
+      var secs = PLANS[app][cle], y = 0, offre = null, tarifs = null;
+      secs.forEach(function(s){ if (s[2]==='offre' && offre===null) offre = y; if (s[2]==='tarifs') tarifs = y; y += s[1]; });
+      var total = y;
+      var col = document.createElement('div'); col.className = 'plan';
+      var h = document.createElement('h3'); h.textContent = TITRES[cle][0]; col.appendChild(h);
+      var v = document.createElement('p'); v.className = 'verdict';
+      var premier = offre !== null ? offre : tarifs;
+      v.innerHTML = (offre !== null ? 'Prix visibles au <b>' + ecranDe(premier, app) + '<sup>e</sup> écran</b>' : 'Prix visibles au <b>' + ecranDe(tarifs, app) + '<sup>e</sup> écran</b>') +
+        '<br>' + (total / ECRAN[app]).toFixed(1).replace('.', ',') + ' écrans en tout, ' + TITRES[cle][1];
+      col.appendChild(v);
+      var pile = document.createElement('div'); pile.className = 'pile';
+      secs.forEach(function(s){
+        var d = document.createElement('div'); d.className = 'sec'; d.dataset.t = s[2];
+        d.style.height = Math.max(8, Math.round(s[1] * echelle)) + 'px';
+        d.textContent = s[1] * echelle >= 13 ? s[0] : ''; d.title = s[0] + ', ' + s[1] + ' px';
+        pile.appendChild(d);
+      });
+      for (var e = 1; e * ECRAN[app] < total; e++) {
+        if (e % 2) continue;
+        var l = document.createElement('div'); l.className = 'ecran-ligne';
+        // Positionnée sur la somme des hauteurs arrondies, pour tomber juste sur la pile.
+        l.style.top = Math.round(e * ECRAN[app] * echelle) + 'px';
+        var sp = document.createElement('span'); sp.textContent = e; l.appendChild(sp); pile.appendChild(l);
+      }
+      col.appendChild(pile); zone.appendChild(col);
+    });
+  }
+  document.querySelectorAll('.bascule button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.bascule button').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); });
+      dessiner(b.dataset.app);
+    });
+  });
+  dessiner('bureau');
+})();
+</script>
+</body>
+</html>
