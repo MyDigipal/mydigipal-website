@@ -44,7 +44,7 @@ export const PROBLEMES: { id: string; titre: Txt; chapo: Txt; etudes: string[] }
       fr: 'Atteindre les bons comptes et obtenir des rendez-vous avec ceux qui décident.',
       en: 'Reach the right accounts and get meetings with the people who decide.',
     },
-    etudes: ['quantum-metrics', 'genesys', 'gwi', 'symbl-ai'],
+    etudes: ['servion', 'quantum-metrics', 'genesys', 'gwi', 'symbl-ai'],
   },
 ];
 
@@ -58,6 +58,7 @@ export const GROUPES: { id: string; nom: Txt; motCle?: string; etudes: string[] 
   { id: 'vulcain', nom: { fr: 'Groupe Vulcain', en: 'Vulcain Group' }, motCle: 'Vulcain', etudes: ['groupe-vulcain', 'vulcain-group'] },
   { id: 'lancien', nom: { fr: 'Groupe Lancien', en: 'Lancien Group' }, motCle: 'Lancien', etudes: ['groupe-lancien'] },
   { id: 'autodif', nom: { fr: 'Autodif', en: 'Autodif' }, motCle: 'Autodif', etudes: ['autodif'] },
+  { id: 'servion', nom: { fr: 'Servion', en: 'Servion' }, etudes: ['servion'] },
   { id: 'quantum', nom: { fr: 'Quantum Metrics', en: 'Quantum Metrics' }, etudes: ['quantum-metrics'] },
   { id: 'genesys', nom: { fr: 'Genesys', en: 'Genesys' }, etudes: ['genesys'] },
   { id: 'gwi', nom: { fr: 'GWI', en: 'GWI' }, etudes: ['gwi'] },

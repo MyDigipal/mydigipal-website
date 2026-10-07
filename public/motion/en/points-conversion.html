@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Douze conversions, un seul nom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+/* Servion, le tracking refait. À gauche, servion.com et ses douze points de conversion, chacun
+   aligné sur sa ligne. Le premier (la demande de démo) est montré lentement : le clic, l'événement
+   qui part, le signal qui se divise en quatre fils vers GA4, Google Ads, LinkedIn et Reddit, et le
+   même libellé qui s'inscrit dans les quatre colonnes. Puis les onze autres lignes s'allument de
+   plus en plus vite, et les leads s'additionnent tous canaux confondus. Tout est calculé depuis t. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(1000px 700px at 1250px 580px,rgba(29,113,184,.2),rgba(8,19,31,0) 70%)}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+#titre{position:absolute;left:110px;top:84px}
+#titre .ln{display:block;font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.06;transform:translateY(125%)}
+.ln.o{color:#e8bd62}
+.lab{position:absolute;font-size:19px;font-weight:600;color:#a9b8c8;line-height:1.3;white-space:nowrap}
+.lab .ln{display:block;transform:translateY(125%)}
+#fils{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+#dessus{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:6}
+/* le site */
+#nav{position:absolute;left:110px;top:244px;width:520px;height:676px;border-radius:20px;background:#fff;color:#0b1b2b;overflow:hidden;box-shadow:0 50px 100px -40px rgba(0,0,0,.85);z-index:2}
+.chrome{height:40px;background:#e9eef4;display:flex;align-items:center;padding:0 16px;gap:7px}
+.chrome i{width:10px;height:10px;border-radius:50%;background:#c7d2de}
+.url{margin-left:12px;flex:1;height:24px;border-radius:12px;background:#fff;display:flex;align-items:center;padding:0 12px;font-size:13px;font-weight:600;color:#5b6b7c;gap:6px}
+.menu{position:absolute;left:0;right:0;top:40px;height:44px;display:flex;align-items:center;padding:0 24px;gap:18px;font-size:13px;font-weight:600;color:#6b7f93;border-bottom:1px solid #eef2f6}
+.menu b{font-size:19px;font-weight:800;color:#0b1b2b;letter-spacing:-.02em;margin-right:auto}
+.zone{position:absolute;left:0;right:0}
+.rg{position:absolute;left:0;right:0;height:40px;display:flex;align-items:center;gap:10px;padding:0 24px;font-size:14px;font-weight:600;color:#26384a}
+.rg .tx{flex:1;white-space:nowrap;overflow:hidden}
+.rg .tx b{color:#0b1b2b;font-weight:800}
+.rg.w{color:#dfe7ef}
+.rg.w .tx b{color:#fff}
+.fld{flex:1;height:32px;border-radius:8px;background:#fff;border:1.5px solid #d6dee8;display:flex;align-items:center;padding:0 10px;font-size:13px;color:#8796a6;box-sizing:border-box}
+.bt{height:32px;line-height:32px;padding:0 14px;border-radius:16px;font-size:13px;font-weight:800;white-space:nowrap;flex:none}
+.bt.pri{background:#1D71B8;color:#fff}
+.bt.out{border:1.5px solid #1D71B8;color:#1D71B8;line-height:29px}
+.bt.clair{background:#fff;color:#0b1b2b}
+.prog{width:110px;height:8px;border-radius:4px;background:#e3eaf2;flex:none;overflow:hidden}
+.prog i{display:block;height:100%;width:100%;background:#7db8ee;transform-origin:left}
+.vid{width:58px;height:32px;border-radius:7px;background:#0B1B2B;flex:none;display:grid;place-items:center}
+.vid i{width:0;height:0;border-left:11px solid #fff;border-top:7px solid transparent;border-bottom:7px solid transparent;margin-left:3px}
+.lk{font-size:13px;font-weight:800;color:#7db8ee;white-space:nowrap}
+.soc{display:flex;gap:7px}
+.soc i{width:24px;height:24px;border-radius:50%;background:#294766}
+/* la grille des plateformes */
+.ent{position:absolute;top:226px;width:257px}
+.ent b{display:block;font-size:24px;font-weight:800;letter-spacing:-.02em;padding-left:16px}
+.ent small{display:block;font-size:13px;font-weight:700;color:#a9b8c8;padding-left:16px;margin-top:2px}
+.cel{position:absolute;width:257px;height:40px;box-sizing:border-box;border-radius:10px;border:1.5px dashed rgba(125,184,238,.2);display:flex;align-items:center;padding:0 14px;font-size:16px;font-weight:700;white-space:nowrap;z-index:3}
+.cel span{display:flex;align-items:center;gap:9px}
+.cel span i{width:7px;height:7px;border-radius:50%;background:#7db8ee;flex:none}
+.noeud{position:absolute;left:681px;width:18px;height:18px;margin-top:-9px;border-radius:50%;box-sizing:border-box;border:2px solid rgba(125,184,238,.35);background:#08131f;z-index:4}
+#pastille{position:absolute;left:0;top:0;height:34px;line-height:34px;padding:0 16px;border-radius:17px;background:#1D71B8;color:#fff;font-size:15px;font-weight:800;white-space:nowrap;z-index:7;box-shadow:0 12px 30px -10px rgba(29,113,184,.9)}
+#curseur{position:absolute;left:0;top:0;width:30px;height:30px;z-index:8}
+/* le total */
+.sg{position:absolute;top:922px;height:60px;border-radius:14px;background:#e8bd62;color:#0b1b2b;z-index:3}
+.sg .mask{position:absolute;left:18px;top:14px;font-size:16px;font-weight:800}
+.sg .mask .ln{display:block;transform:translateY(125%)}
+.plus{position:absolute;top:936px;width:14px;text-align:center;font-size:24px;font-weight:800;color:#e8bd62;line-height:30px;z-index:3}
+#barre{position:absolute;left:740px;top:922px;width:710px;height:60px;z-index:4;color:#0b1b2b;pointer-events:none}
+#barre .mask{position:absolute;top:10px}
+#barre .ln{display:block;transform:translateY(125%);white-space:nowrap}
+#bT{left:22px;font-size:24px;font-weight:800;letter-spacing:-.02em}
+#bS{right:22px;font-size:14px;font-weight:700;top:17px !important}
+#compte{position:absolute;left:110px;top:944px;display:flex;align-items:baseline;gap:12px;white-space:nowrap}
+#compte b{font-size:58px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;min-width:66px;text-align:right}
+#compte span{font-size:19px;font-weight:600;color:#a9b8c8}
+#compte span em{font-style:normal;color:#f4f7fa;font-weight:800}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="titre"></div>
+  <div class="lab" id="lS" style="right:110px;top:168px;text-align:right"></div>
+  <svg id="fils" viewBox="0 0 1920 1080"></svg>
+
+  <div id="nav">
+    <div class="chrome"><i></i><i></i><i></i><span class="url"><svg width="11" height="12" viewBox="0 0 11 12"><rect x="1" y="5" width="9" height="6.5" rx="1.5" fill="#8796a6"/><path d="M3 5V3.6a2.5 2.5 0 015 0V5" stroke="#8796a6" stroke-width="1.6" fill="none"/></svg>servion.com</span></div>
+    <div class="menu"><b>Servion</b><span>Solutions</span><span>Industries</span><span>Insights</span></div>
+    <div id="page"></div>
+  </div>
+
+  <div id="grille"></div>
+  <div id="total"></div>
+  <div id="barre"><div class="mask" id="bT"><span class="ln">Leads, all channels</span></div><div class="mask" id="bS"><span class="ln">GA4 + Google Ads + LinkedIn + Reddit</span></div></div>
+  <div class="lab" id="lT" style="left:1478px;top:920px"></div>
+  <div id="compte"><b id="nb">0</b><span id="cL"></span></div>
+
+  <svg id="dessus" viewBox="0 0 1920 1080">
+    <rect id="anneau" fill="none" stroke="#1D71B8" stroke-width="3" rx="18"/>
+  </svg>
+  <div id="pastille">Demo Request</div>
+  <svg id="curseur" viewBox="0 0 30 30"><path d="M5 3l18 11.5-7.6 1.6 4.4 8.6-3.6 1.8-4.4-8.6L6 23z" fill="#fff" stroke="#0b1b2b" stroke-width="1.6" stroke-linejoin="round"/></svg>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:500">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 16;
+window.DUR = window.DUREE;
+window.PRET = Promise.all([
+  document.fonts.load("800 52px 'Plus Jakarta Sans'"),
+  document.fonts.load("700 16px 'Plus Jakarta Sans'"),
+  document.fonts.load("600 14px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+
+(function () {
+'use strict';
+var EN = /\/en\//.test(location.pathname);
+/* Textes explicatifs : seuls eux changent de langue. Le site, les plateformes et les noms de
+   conversion restent en anglais dans les deux versions. */
+var TXT = EN ? {
+  page: 'Twelve conversions, one name',
+  titre: ['Twelve conversions,', 'one name everywhere.'],
+  lS: ['The same name, sent to all four platforms'],
+  compte: 'conversion points tracked on <em>servion.com</em>',
+  lT: ['Same name everywhere:', 'leads add up, no rework.']
+} : {
+  page: 'Douze conversions, un seul nom',
+  titre: ['Douze conversions,', 'un seul nom partout.'],
+  lS: ['Le même nom, envoyé aux quatre plateformes'],
+  compte: 'points de conversion suivis sur <em>servion.com</em>',
+  lT: ['Même nom partout :', 'les leads s’additionnent.']
+};
+document.documentElement.lang = EN ? 'en' : 'fr';
+document.title = TXT.page;
+
+var D = window.DUREE;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outCubic(p) { return 1 - Math.pow(1 - p, 3); }
+function inCubic(p) { return p * p * p; }
+function inOutCubic(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+var $ = function (id) { return document.getElementById(id); };
+var NS = 'http://www.w3.org/2000/svg';
+var stage = $('stage');
+
+function lignes(id, arr, cls) {
+  $(id).innerHTML = arr.map(function (s, i) { return '<div class="mask"><span class="ln' + (cls && cls[i] ? ' ' + cls[i] : '') + '">' + s + '</span></div>'; }).join('');
+}
+lignes('titre', TXT.titre, ['', 'o']);
+lignes('lS', TXT.lS);
+lignes('lT', TXT.lT);
+$('cL').innerHTML = '/ 12 ' + TXT.compte;
+
+function P(el) {
+  var s = stage.getBoundingClientRect(), r = el.getBoundingClientRect(), k = s.width / 1920;
+  return { x: (r.left - s.left) / k, y: (r.top - s.top) / k, w: r.width / k, h: r.height / k };
+}
+
+/* ---------- géométrie ---------- */
+var NOMS = ['Demo Request', 'Contact Lead', 'Chat Lead', 'Chat Initiated', 'Webinar Registration', 'Event Registration',
+  'Blueprint Completed', 'Assets Download', 'Subscription', 'Video Views', 'Email or Phone Click', 'Social Media Click'];
+var PLAT = [['GA4', 'Key event'], ['Google Ads', 'Conversion action'], ['LinkedIn', 'Conversion'], ['Reddit', 'Conversion event']];
+var LEADS = [0, 1, 2];                              /* les trois conversions qui sont des leads */
+var NAV_Y = 244, Y0 = 350, PAS = 48;                /* centre de la ligne i : Y0 + i * PAS */
+var XN = 690, XG = 740, CW = 257, CG = 14;          /* nœud, grille, colonne */
+function yL(i) { return Y0 + i * PAS; }
+function xC(k) { return XG + k * (CW + CG); }
+var XFIN = xC(3) + CW;
+
+/* le site : un élément par point de conversion, sur la hauteur de sa ligne */
+var RANGS = [
+  ['', '<span class="fld">Work email</span>', '<span class="bt pri" id="h0">Request a demo</span>'],
+  ['', '<span class="tx">Questions? Talk to our team.</span>', '<span class="bt out" id="h1">Contact us</span>'],
+  ['w', '<span class="tx"><b>Chat</b> · Leave your email for a reply</span>', '<span class="bt clair" id="h2">Send</span>'],
+  ['w', '<span class="tx">Hi, how can we help today?</span>', '<span class="bt pri" id="h3">Start chat</span>'],
+  ['', '<span class="tx"><b>Webinar</b> · CX in the age of agents</span>', '<span class="bt out" id="h4">Register</span>'],
+  ['', '<span class="tx"><b>Event</b> · CX leaders summit</span>', '<span class="bt out" id="h5">Register</span>'],
+  ['', '<span class="tx"><b>CX maturity blueprint</b></span><span class="prog"><i id="pg"></i></span>', '<span class="bt pri" id="h6">Complete</span>'],
+  ['', '<span class="tx"><b>Report</b> · State of agentic CX, PDF</span>', '<span class="bt out" id="h7">Download</span>'],
+  ['', '<span class="tx"><b>Newsletter</b></span><span class="fld" style="flex:none;width:170px">Your email</span>', '<span class="bt pri" id="h8">Subscribe</span>'],
+  ['', '<span class="vid" id="h9"><i></i></span><span class="tx">Watch: agentic AI in 90 seconds</span>', ''],
+  ['w', '<span class="tx"><b>Talk to us</b></span>', '<span class="lk" id="h10">Email us · Call us</span>'],
+  ['w', '<span class="tx"><b>Follow Servion</b></span>', '<span class="soc" id="h11"><i></i><i></i><i></i></span>']
+];
+var html = '';
+/* fonds des groupes : héros, fenêtre de chat, pied de page */
+function zone(i0, i1, fond, extra) { html += '<div class="zone" style="top:' + (yL(i0) - 24 - NAV_Y) + 'px;height:' + (yL(i1) - yL(i0) + 48) + 'px;background:' + fond + ';' + (extra || '') + '"></div>'; }
+zone(0, 1, '#eef5fc');
+html += '<div class="zone" style="top:' + (yL(2) - 22 - NAV_Y) + 'px;height:' + (yL(3) - yL(2) + 44) + 'px;left:16px;right:16px;border-radius:14px;background:#0B1B2B"></div>';
+zone(10, 11, '#0B1B2B', 'bottom:-40px;height:auto');
+RANGS.forEach(function (r, i) { html += '<div class="rg ' + r[0] + '" style="top:' + (yL(i) - 20 - NAV_Y) + 'px">' + r[1] + r[2] + '</div>'; });
+$('page').innerHTML = html;
+
+/* la grille */
+html = '';
+PLAT.forEach(function (p, k) { html += '<div class="ent" id="e' + k + '" style="left:' + xC(k) + 'px"><b>' + p[0] + '</b><small>' + p[1] + '</small></div>'; });
+NOMS.forEach(function (n, i) {
+  html += '<div class="noeud" id="nd' + i + '" style="top:' + yL(i) + 'px"></div>';
+  PLAT.forEach(function (p, k) { html += '<div class="cel" id="c' + i + '_' + k + '" style="left:' + xC(k) + 'px;top:' + (yL(i) - 20) + 'px"><span><i></i>' + n + '</span></div>'; });
+});
+$('grille').innerHTML = html;
+/* le total : quatre segments sous les colonnes, puis une seule barre */
+html = '';
+PLAT.forEach(function (p, k) {
+  html += '<div class="sg" id="sg' + k + '" style="left:' + xC(k) + 'px;width:' + CW + 'px"><div class="mask"><span class="ln">Leads</span></div></div>';
+  if (k) html += '<div class="plus" id="pl' + k + '" style="left:' + (xC(k) - 14) + 'px">+</div>';
+});
+$('total').innerHTML = html;
+
+/* les fils : un trait par ligne (site vers nœud vers colonnes), quatre arcs pour la première */
+var fils = $('fils');
+function el(nom, att) { var e = document.createElementNS(NS, nom); for (var a in att) e.setAttribute(a, att[a]); fils.appendChild(e); return e; }
+var LIG = NOMS.map(function (n, i) {
+  return {
+    entree: el('path', { d: 'M630,' + yL(i) + ' L' + XN + ',' + yL(i), stroke: '#7db8ee', 'stroke-width': 2.5, fill: 'none', pathLength: 1, 'stroke-dasharray': '1 1' }),
+    rayon: el('path', { d: 'M' + (XN + 9) + ',' + yL(i) + ' L' + XFIN + ',' + yL(i), stroke: '#7db8ee', 'stroke-width': 2.5, fill: 'none', pathLength: 1, 'stroke-dasharray': '1 1' }),
+    tete: el('circle', { r: 6, fill: '#f4f7fa' })
+  };
+});
+var ARCS = PLAT.map(function (p, k) {
+  var xe = xC(k) + CW / 2, ys = yL(0) - 20, pic = 321 - k * 13;
+  var d = 'M' + XN + ',' + (yL(0) - 9) + ' C' + (XN + 4 + k * 10) + ',' + pic + ' ' + (XN + 40 + k * 30) + ',' + pic + ' ' + (XN + 90 + k * 40) + ',' + pic + ' L' + (xe - 24) + ',' + pic + ' Q' + xe + ',' + pic + ' ' + xe + ',' + (pic + 9) + ' L' + xe + ',' + ys;
+  return { p: el('path', { d: d, stroke: '#7db8ee', 'stroke-width': 2.5, fill: 'none', pathLength: 1, 'stroke-dasharray': '1 1' }), tete: el('circle', { r: 6, fill: '#f4f7fa' }), path: null };
+});
+ARCS.forEach(function (a) { a.path = a.p; });
+var TICKS = PLAT.map(function (p, k) { var x = xC(k) + CW / 2; return el('path', { d: 'M' + x + ',' + (yL(11) + 22) + ' L' + x + ',920', stroke: '#e8bd62', 'stroke-width': 2.5, fill: 'none', pathLength: 1, 'stroke-dasharray': '1 1' }); });
+
+/* ---------- le temps ---------- */
+var T_CLIC = 2.3;
+var R = [T_CLIC, 4.5, 5.25, 5.9, 6.45, 6.95, 7.38, 7.76, 8.1, 8.4, 8.67, 8.92];
+var DUR_R = [0, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.48, 0.45, 0.42, 0.4, 0.4];
+var T_PAST = [2.45, 3.0], T_ARC = 3.05;
+/* instant où la cellule (i, k) s'allume */
+function tCel(i, k) {
+  if (i === 0) return T_ARC + 0.42 + k * 0.1;
+  var t0 = R[i] + 0.22, d = DUR_R[i], cible = (xC(k) + 10 - XN) / (XFIN - XN);
+  /* le rayon avance en outCubic : on inverse pour savoir quand il passe la cellule */
+  return t0 + d * (1 - Math.cbrt(1 - cible));
+}
+var T_OR = 9.9, T_SEG = 10.5, T_FUS = 11.4, T_BAR = 12.0, T_SORT = 15.2;
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  var fondu = 1 - inCubic(seg(t, T_SORT, T_SORT + 0.5));
+  function sortie(k) { return inCubic(seg(t, T_SORT + k * 0.06, T_SORT + 0.5 + k * 0.06)); }
+  function monte(sel, t0, pas) {
+    var ls = document.querySelectorAll(sel);
+    for (var j = 0; j < ls.length; j++) {
+      var pe = outExpo(seg(t, t0 + j * (pas || 0.12), t0 + 0.8 + j * (pas || 0.12))), ps = inCubic(seg(t, T_SORT + 0.1 + j * 0.06, T_SORT + 0.6 + j * 0.06));
+      ls[j].style.transform = 'translateY(' + (ps > 0 ? mix(0, 135, ps) : mix(125, 0, pe)).toFixed(2) + '%)';
+    }
+  }
+  monte('#titre .ln', 0.3, 0.14);
+
+  /* le site s'ouvre */
+  var nav = $('nav'), en = outExpo(seg(t, 0.7, 1.5));
+  nav.style.clipPath = 'inset(0 0 ' + (100 * Math.max(1 - en, sortie(0))).toFixed(2) + '% 0 round 20px)';
+  /* en-têtes et cases vides */
+  PLAT.forEach(function (p, k) {
+    var e = $('e' + k), pe = outExpo(seg(t, 1.0 + k * 0.1, 1.6 + k * 0.1));
+    e.style.clipPath = 'inset(0 ' + (100 * Math.max(1 - pe, sortie(1 + k))).toFixed(1) + '% 0 0)';
+  });
+
+  /* le clic sur Request a demo */
+  var h0 = P($('h0')), cx = h0.x + h0.w * 0.55, cy = h0.y + h0.h * 0.6;
+  var pc = outExpo(seg(t, 1.5, 2.2)), cur = $('curseur');
+  var clic = Math.sin(Math.PI * seg(t, T_CLIC - 0.05, T_CLIC + 0.2));
+  cur.style.transform = 'translate(' + mix(470, cx, pc).toFixed(1) + 'px,' + mix(760, cy, pc).toFixed(1) + 'px) scale(' + (1 - 0.15 * clic).toFixed(3) + ')';
+  cur.style.opacity = (outExpo(seg(t, 1.3, 1.6)) * (1 - seg(t, 3.0, 3.4))).toFixed(3);
+
+  /* les points de conversion : anneau sur l'élément cliqué, trait vers le nœud, rayon ou arcs */
+  var allumees = 0, anneau = $('anneau'), annA = 0;
+  NOMS.forEach(function (n, i) {
+    var h = $('h' + i), ti = R[i], L = LIG[i];
+    var appui = Math.sin(Math.PI * seg(t, ti - 0.05, ti + 0.25));
+    h.style.transform = 'scale(' + (1 - 0.07 * appui).toFixed(3) + ')';
+    h.style.filter = appui > 0 ? 'brightness(' + (1 - 0.2 * appui).toFixed(3) + ')' : '';
+    var pa = seg(t, ti, ti + (i ? 0.45 : 0.6));
+    if (pa > 0 && pa < 1) { var r = P(h), g = 4 + 10 * outCubic(pa); anneau.setAttribute('x', r.x - g); anneau.setAttribute('y', r.y - g); anneau.setAttribute('width', r.w + 2 * g); anneau.setAttribute('height', r.h + 2 * g); anneau.setAttribute('rx', Math.min(18, r.h / 2 + g)); annA = (1 - pa); }
+    /* le trait d'entrée : du bord du site au nœud */
+    var te = i === 0 ? outExpo(seg(t, T_PAST[0] + 0.25, T_PAST[1])) : outExpo(seg(t, ti + 0.05, ti + 0.22));
+    L.entree.style.strokeDashoffset = (1 - te).toFixed(4);
+    L.entree.style.opacity = ((te > 0 ? mix(1, 0.35, seg(t, ti + 1.2, ti + 1.8)) : 0) * fondu).toFixed(3);
+    var nd = $('nd' + i), on = te >= 1 ? 1 : 0;
+    nd.style.borderColor = on ? '#7db8ee' : 'rgba(125,184,238,.35)';
+    nd.style.background = on ? '#1D71B8' : '#08131f';
+    nd.style.opacity = (outExpo(seg(t, 1.2 + i * 0.04, 1.6 + i * 0.04)) * fondu).toFixed(3);
+    /* le rayon le long de la ligne (lignes 2 à 12) */
+    if (i > 0) {
+      var pr = seg(t, ti + 0.22, ti + 0.22 + DUR_R[i]), e = outCubic(pr);
+      L.rayon.style.strokeDashoffset = (1 - e).toFixed(4);
+      L.rayon.style.opacity = ((pr > 0 ? mix(1, 0.3, seg(t, ti + 0.9, ti + 1.5)) : 0) * fondu).toFixed(3);
+      L.tete.setAttribute('cx', mix(XN + 9, XFIN, e).toFixed(1)); L.tete.setAttribute('cy', yL(i));
+      L.tete.style.opacity = (pr > 0 && pr < 1 ? 1 : 0);
+    } else {
+      L.rayon.style.opacity = 0; L.tete.style.opacity = 0;
+    }
+    /* les quatre cases de la ligne */
+    var premiere = tCel(i, 0);
+    if (t >= premiere) allumees = i + 1;
+    PLAT.forEach(function (p, k) {
+      var c = $('c' + i + '_' + k), tc = tCel(i, k), pl = seg(t, tc, tc + 0.12), pt = outExpo(seg(t, tc, tc + 0.45));
+      var or = LEADS.indexOf(i) >= 0 ? outExpo(seg(t, T_OR + (i * 4 + k) * 0.04, T_OR + 0.4 + (i * 4 + k) * 0.04)) : 0;
+      var flash = pl > 0 ? 1 - outCubic(seg(t, tc + 0.1, tc + 0.7)) : 0;
+      c.style.borderStyle = pl > 0 ? 'solid' : 'dashed';
+      c.style.borderColor = or > 0 ? 'rgba(232,189,98,' + mix(0.55, 1, or).toFixed(3) + ')' : (pl > 0 ? 'rgba(' + Math.round(mix(125, 244, flash)) + ',' + Math.round(mix(184, 247, flash)) + ',' + Math.round(mix(238, 250, flash)) + ',' + mix(0.5, 1, flash).toFixed(3) + ')' : 'rgba(125,184,238,.2)');
+      c.style.background = pl > 0 ? '#10304d' : 'transparent';
+      c.style.color = or > 0 ? (or > 0.5 ? '#e8bd62' : '#f4f7fa') : '#f4f7fa';
+      var sp = c.firstChild;
+      sp.style.clipPath = 'inset(-4px ' + (100 * (1 - pt)).toFixed(1) + '% -4px -4px)';
+      sp.firstChild.style.background = or > 0.5 ? '#e8bd62' : '#7db8ee';
+      var so = sortie(2 + i * 0.25);
+      c.style.clipPath = so > 0 ? 'inset(0 0 ' + (100 * so).toFixed(1) + '% 0 round 10px)' : '';
+      c.style.opacity = (outExpo(seg(t, 1.2 + i * 0.04 + k * 0.03, 1.6 + i * 0.04 + k * 0.03))).toFixed(3);
+    });
+  });
+  anneau.style.opacity = (annA * fondu).toFixed(3);
+  $('pg').style.transform = 'scaleX(' + mix(0.35, 1, outExpo(seg(t, R[6] - 0.3, R[6]))).toFixed(3) + ')';
+
+  /* la première ligne : l'événement part du bouton, se divise en quatre fils */
+  var past = $('pastille'), pp = inOutCubic(seg(t, T_PAST[0], T_PAST[1]));
+  var pw = past.offsetWidth;
+  var px = mix(h0.x + h0.w / 2, XN, pp) - pw / 2, py = mix(h0.y + h0.h / 2, yL(0), pp) - 70 * Math.sin(Math.PI * pp) - 17;
+  var ps = 1 - outExpo(seg(t, T_PAST[1] - 0.05, T_PAST[1] + 0.2));
+  past.style.transform = 'translate(' + px.toFixed(1) + 'px,' + py.toFixed(1) + 'px) scale(' + ((0.6 + 0.4 * outExpo(seg(t, T_PAST[0], T_PAST[0] + 0.3))) * ps).toFixed(3) + ')';
+  past.style.opacity = (t >= T_PAST[0] && ps > 0.01 ? 1 : 0);
+  ARCS.forEach(function (a, k) {
+    var pa = outCubic(seg(t, T_ARC + k * 0.06, T_ARC + 0.42 + k * 0.1)), len = a.path.getTotalLength();
+    a.path.style.strokeDashoffset = (1 - pa).toFixed(4);
+    a.path.style.opacity = ((pa > 0 ? mix(1, 0.35, seg(t, 4.0, 4.6)) : 0) * fondu).toFixed(3);
+    var pt = a.path.getPointAtLength(len * pa);
+    a.tete.setAttribute('cx', pt.x.toFixed(1)); a.tete.setAttribute('cy', pt.y.toFixed(1));
+    a.tete.style.opacity = (pa > 0 && pa < 1 ? 1 : 0);
+  });
+  monte('#lS .ln', T_ARC + 0.5);
+
+  /* le compteur des points de conversion */
+  $('nb').textContent = allumees;
+  $('compte').style.clipPath = 'inset(-10px ' + (100 * (1 - outExpo(seg(t, 2.9, 3.5)))).toFixed(1) + '% -10px -10px)';
+  if (sortie(0) > 0) $('compte').style.clipPath = 'inset(-10px 0 ' + (100 * sortie(0)).toFixed(1) + '% -10px)';
+  $('nb').style.color = allumees === 12 ? '#e8bd62' : '#f4f7fa';
+
+  /* le total : les leads de chaque colonne descendent, puis les quatre segments n'en font qu'un */
+  var fus = inOutCubic(seg(t, T_FUS, T_FUS + 0.6));
+  PLAT.forEach(function (p, k) {
+    var pk = outExpo(seg(t, T_SEG + k * 0.1, T_SEG + 0.5 + k * 0.1));
+    var tk = TICKS[k]; tk.style.strokeDashoffset = (1 - outExpo(seg(t, T_SEG - 0.3 + k * 0.1, T_SEG + 0.1 + k * 0.1))).toFixed(4);
+    tk.style.opacity = ((1 - fus) * (t > T_SEG - 0.3 ? 1 : 0)).toFixed(3);
+    var sg = $('sg' + k);
+    sg.style.left = mix(xC(k), 740, fus).toFixed(1) + 'px';
+    sg.style.width = mix(CW, 710, fus).toFixed(1) + 'px';
+    sg.style.clipPath = 'inset(0 ' + (100 * (1 - pk)).toFixed(1) + '% ' + (100 * sortie(6)).toFixed(1) + '% 0 round 14px)';
+    var ln = sg.querySelector('.ln'), pe = outExpo(seg(t, T_SEG + 0.2 + k * 0.1, T_SEG + 0.8 + k * 0.1)), px2 = inCubic(seg(t, T_FUS - 0.25, T_FUS + 0.1));
+    ln.style.transform = 'translateY(' + (px2 > 0 ? mix(0, 135, px2) : mix(125, 0, pe)).toFixed(2) + '%)';
+    if (k) { var pl = $('pl' + k); pl.style.transform = 'scale(' + (outExpo(seg(t, T_SEG + 0.3 + k * 0.1, T_SEG + 0.7 + k * 0.1)) * (1 - outExpo(seg(t, T_FUS - 0.2, T_FUS + 0.1)))).toFixed(3) + ')'; }
+  });
+  monte('#barre .ln', T_BAR, 0.15);
+  monte('#lT .ln', T_BAR + 0.4);
+};
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

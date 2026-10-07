@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>L'IA écrit dans votre ton</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+/* Servion, les articles du blog. L'IA rédige le brouillon, mais avec la fiche de ton de Servion
+   ouverte à côté : chaque mot banni se fait barrer et remplacer par le mot du glossaire, un fil
+   relie la correction à la ligne de la fiche. Puis un expert de Servion commente, la phrase est
+   précisée, le statut passe de Draft à Approved puis Published. Tout est calculé depuis t. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(1000px 640px at 1060px 640px,rgba(29,113,184,.22),rgba(8,19,31,0) 70%)}
+#fils{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:5}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+#titre{position:absolute;left:110px;top:84px}
+#titre .ln{display:block;font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.06;transform:translateY(125%)}
+.ln.o{color:#e8bd62}
+.lab{position:absolute;font-size:19px;font-weight:600;color:#a9b8c8;line-height:1.3;white-space:nowrap}
+.lab .ln{display:block;transform:translateY(125%)}
+/* la fiche de ton */
+#fiche{position:absolute;left:110px;top:290px;width:420px;height:604px;box-sizing:border-box;border-radius:22px;background:#0e2033;border:1px solid rgba(125,184,238,.22);padding:28px 0 0;box-shadow:0 40px 80px -40px rgba(0,0,0,.8)}
+#fiche .k{padding:0 28px;font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#7db8ee}
+#fiche h3{margin:8px 0 6px;padding:0 28px;font-size:30px;font-weight:800;letter-spacing:-.02em}
+#fiche p{margin:0 0 6px;padding:0 28px;font-size:16px;font-weight:500;color:#a9b8c8;line-height:1.45}
+.sect{padding:0 28px;margin:18px 0 6px;font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a9b8c8}
+.row{position:relative;height:46px;margin:0 16px;padding:0 12px;border-radius:12px;display:flex;align-items:center;font-size:20px;font-weight:700}
+.row .w{position:relative}
+.row.non .w{color:#a9b8c8}
+.row.non .w::after{content:'';position:absolute;left:-3px;right:-3px;top:55%;height:2.5px;background:#a9b8c8;transform-origin:left;transform:scaleX(var(--s,0))}
+.row .ok{margin-left:auto;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7db8ee;clip-path:inset(0 100% 0 0)}
+.port{position:absolute;right:-22px;top:50%;width:11px;height:11px;margin-top:-5.5px;border-radius:50%;background:#7db8ee;opacity:0}
+/* le brouillon */
+#doc{position:absolute;left:640px;top:262px;width:820px;height:636px;overflow:hidden;box-sizing:border-box;border-radius:22px;background:#fff;color:#0b1b2b;box-shadow:0 50px 100px -40px rgba(0,0,0,.85)}
+#doc .barre{height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 22px 0 56px;border-bottom:1px solid #e6ebf1;font-size:15px;font-weight:600;color:#6b7f93}
+#doc .corps{padding:32px 56px 40px}
+#doc h1{margin:0 0 14px;font-size:40px;line-height:1.14;font-weight:800;letter-spacing:-.025em;color:#0b1b2b;min-height:92px}
+.byline{display:flex;align-items:center;font-size:15px;font-weight:600;color:#6b7f93;margin-bottom:24px;white-space:nowrap}
+.byline .av{width:24px;height:24px;border-radius:50%;background:#1D71B8;margin-right:10px;flex:none}
+.rv{display:inline-block;overflow:hidden;white-space:nowrap;vertical-align:top}
+.par{margin:0 0 14px;font-size:24px;line-height:1.5;font-weight:500;color:#26384a;min-height:36px}
+.bad,.rep{display:inline-block;white-space:nowrap;vertical-align:top;overflow:hidden}
+.bad{position:relative}
+.bad::after{content:'';position:absolute;left:0;right:0;top:56%;height:2.5px;background:#8796a6;transform-origin:left;transform:scaleX(var(--s,0))}
+.rep>span{display:inline-block;padding:0 5px;border-radius:6px;color:#1D71B8;font-weight:700}
+#anc,#ins{border-radius:4px}
+.nw{white-space:nowrap}
+#caret{position:relative}
+#caret::after{content:'';position:absolute;left:2px;bottom:-.12em;width:3px;height:1.1em;background:#1D71B8;border-radius:2px}
+.pill{position:relative;display:inline-block;height:36px;border-radius:18px;overflow:hidden;vertical-align:middle}
+.st{position:absolute;left:0;top:0;height:36px;line-height:36px;padding:0 16px;white-space:nowrap;font-size:14px;font-weight:800;display:flex;align-items:center;gap:7px}
+.st svg{width:15px;height:15px}
+/* la bulle de l'expert */
+#bulle{position:absolute;left:1510px;width:300px;box-sizing:border-box;border-radius:18px;background:#fff;color:#0b1b2b;padding:18px 20px 16px;box-shadow:0 40px 80px -36px rgba(0,0,0,.85)}
+.bh{display:flex;align-items:center;gap:12px}
+.avx{width:40px;height:40px;border-radius:50%;background:#0B1B2B;display:grid;place-items:center;flex:none}
+.bh b{display:block;font-size:16px;font-weight:800}
+.bh small{display:block;font-size:13px;font-weight:600;color:#6b7f93;margin-top:2px}
+.bt{margin:12px 0 0;font-size:17px;line-height:1.45;font-weight:500;color:#26384a}
+.bf{margin-top:12px;padding-top:11px;border-top:1px solid #e6ebf1;font-size:14px;font-weight:800;color:#1D71B8;display:flex;align-items:center;gap:8px}
+.bf span{display:flex;align-items:center;gap:8px;clip-path:inset(0 100% 0 0)}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="titre"></div>
+
+  <div id="fiche">
+    <div class="k">Servion · Brand guide</div>
+    <h3>Tone of voice</h3>
+    <p>Clear, specific, expert. We write for the people who run customer experience.</p>
+    <div class="sect" id="sU">Words we use</div>
+    <div class="row oui" id="u0"><span class="w">agentic AI</span><span class="ok">Applied</span><i class="port"></i></div>
+    <div class="row oui" id="u1"><span class="w">customer journeys</span><span class="ok">Applied</span><i class="port"></i></div>
+    <div class="row oui" id="u2"><span class="w">CX</span><span class="ok">Applied</span><i class="port"></i></div>
+    <div class="row oui" id="u3"><span class="w">contact center</span><span class="ok">Applied</span><i class="port"></i></div>
+    <div class="sect" id="sN">Words we avoid</div>
+    <div class="row non" id="n0"><span class="w">revolutionary</span></div>
+    <div class="row non" id="n1"><span class="w">synergy</span></div>
+    <div class="row non" id="n2"><span class="w">game-changer</span></div>
+  </div>
+  <div class="lab" id="l1" style="left:110px;top:918px"></div>
+
+  <div id="doc">
+    <div class="barre"><span>Servion CMS&nbsp;&nbsp;/&nbsp;&nbsp;Blog&nbsp;&nbsp;/&nbsp;&nbsp;Drafts</span>
+      <span class="pill" id="pill">
+        <span class="st" id="s0" style="color:#5b6b7c">Draft</span>
+        <span class="st" id="s1" style="color:#1D71B8"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>Approved</span>
+        <span class="st" id="s2" style="color:#0b1b2b"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6.2"/><path d="M1.8 8h12.4M8 1.8c2 2.2 2 10.2 0 12.4M8 1.8c-2 2.2-2 10.2 0 12.4"/></svg>Published on servion.com/blog</span>
+      </span>
+    </div>
+    <div class="corps">
+      <h1><span id="h1t"></span></h1>
+      <div class="byline"><span class="av"></span><span>Written with MyDigipal AI · 6 min read</span><span class="rv" id="rv"><span>&nbsp;·&nbsp;Reviewed by Servion CX architect</span></span></div>
+      <p class="par"><span id="i0"></span></p>
+      <p class="par"><span class="bad" id="b0"></span><span class="rep" id="r0"><span>Agentic AI</span></span><span id="p1a"></span><span id="anc"></span><span id="ins"></span><span id="p1b"></span></p>
+      <p class="par"><span id="p2a"></span><span class="bad" id="b1"></span><span class="nw"><span class="rep" id="r1"><span>on one customer journey</span></span><span id="p2b"></span></span></p>
+      <p class="par"><span id="p3a"></span><span class="bad" id="b2"></span><span class="nw"><span class="rep" id="r2"><span>the next step in CX</span></span><span id="p3b"></span></span></p>
+    </div>
+  </div>
+
+  <div id="bulle">
+    <div class="bh"><span class="avx"><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="7.5" r="4.2" fill="#7db8ee"/><path d="M2.8 20c0-4.6 3.7-7.6 8.2-7.6s8.2 3 8.2 7.6z" fill="#7db8ee"/></svg></span><span><b>Servion CX architect</b><small>Suggested a precision</small></span></div>
+    <p class="bt">Add the prerequisite: the agent needs clean CRM and order data before it can act.</p>
+    <div class="bf"><span id="bf"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>Resolved · applied to the draft</span></div>
+  </div>
+  <div class="lab" id="l2" style="left:1510px;top:0"></div>
+
+  <svg id="fils" viewBox="0 0 1920 1080">
+    <path id="w0" fill="none" stroke="#7db8ee" stroke-width="2.5" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1"/>
+    <path id="w1" fill="none" stroke="#7db8ee" stroke-width="2.5" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1"/>
+    <path id="w2" fill="none" stroke="#7db8ee" stroke-width="2.5" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1"/>
+    <path id="wc" fill="none" stroke="#e8bd62" stroke-width="2.5" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1"/>
+    <circle id="d0" r="6" fill="#1D71B8" stroke="#fff" stroke-width="2.5"/>
+    <circle id="d1" r="6" fill="#1D71B8" stroke="#fff" stroke-width="2.5"/>
+    <circle id="d2" r="6" fill="#1D71B8" stroke="#fff" stroke-width="2.5"/>
+    <circle id="dc" r="6" fill="#e8bd62" stroke="#fff" stroke-width="2.5"/>
+  </svg>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:500">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 18;
+window.DUR = window.DUREE;
+window.PRET = Promise.all([
+  document.fonts.load("800 52px 'Plus Jakarta Sans'"),
+  document.fonts.load("700 20px 'Plus Jakarta Sans'"),
+  document.fonts.load("600 15px 'Plus Jakarta Sans'"),
+  document.fonts.load("500 24px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+
+(function () {
+'use strict';
+var EN = /\/en\//.test(location.pathname);
+/* Textes explicatifs : seuls eux changent de langue. Les interfaces (fiche, CMS, commentaire)
+   restent en anglais dans les deux versions. */
+var TXT = EN ? {
+  page: 'AI writes in your voice',
+  titre: ['AI writes in your voice.', 'Your experts sign off.'],
+  l1: ['The glossary corrects the draft.'],
+  l2: ['A Servion expert reviews', 'and refines.']
+} : {
+  page: "L'IA écrit dans votre ton",
+  titre: ["L'IA écrit dans votre ton.", 'Vos experts valident.'],
+  l1: ['Le glossaire corrige le brouillon.'],
+  l2: ['Un expert de Servion relit', 'et précise.']
+};
+document.documentElement.lang = EN ? 'en' : 'fr';
+document.title = TXT.page;
+
+var D = window.DUREE;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function inCubic(p) { return p * p * p; }
+function rgb(a, b, p) { return 'rgb(' + [0, 1, 2].map(function (i) { return Math.round(mix(a[i], b[i], p)); }).join(',') + ')'; }
+var $ = function (id) { return document.getElementById(id); };
+var stage = $('stage');
+
+function lignes(id, arr, cls) {
+  $(id).innerHTML = arr.map(function (s, i) { return '<div class="mask"><span class="ln' + (cls && cls[i] ? ' ' + cls[i] : '') + '">' + s + '</span></div>'; }).join('');
+}
+lignes('titre', TXT.titre, ['', 'o']);
+lignes('l1', TXT.l1);
+lignes('l2', TXT.l2);
+
+/* position d'un élément dans le repère de la scène (le lecteur la met à l'échelle) */
+function P(el) {
+  var s = stage.getBoundingClientRect(), r = el.getBoundingClientRect(), k = s.width / 1920;
+  return { x: (r.left - s.left) / k, y: (r.top - s.top) / k, w: r.width / k, h: r.height / k };
+}
+
+/* ---------- la frappe : chaque morceau a son instant de départ ---------- */
+var TY = [];
+function chaine(t0, cps, items) {
+  var t = t0;
+  items.forEach(function (it) { TY.push({ el: $(it[0]), s: it[1], t0: t, cps: cps, fin: t + it[1].length / cps }); t += it[1].length / cps; });
+}
+chaine(2.5, 80, [['h1t', 'Five signs your contact center is ready for agentic AI']]);
+chaine(3.4, 58, [['i0', 'Most contact centers already run bots. Few run them as one system.']]);
+chaine(4.7, 58, [['b0', 'Revolutionary AI'], ['p1a', ' can now '], ['anc', 'resolve a customer request end to end'], ['p1b', '.']]);
+chaine(7.1, 60, [['p2a', 'Bots and human agents finally work '], ['b1', 'in synergy'], ['p2b', '.']]);
+chaine(8.8, 62, [['p3a', 'For most teams, it is '], ['b2', 'a game-changer'], ['p3b', '.']]);
+chaine(12.0, 40, [['ins', ', once it can read clean CRM and order data']]);
+var caret = document.createElement('span'); caret.id = 'caret';
+
+/* les trois corrections : mot banni (ligne de la fiche), mot du glossaire (ligne de la fiche) */
+var TC = [6.0, 8.0, 9.55];
+var NON = ['n0', 'n1', 'n2'], OUI = ['u0', 'u1', 'u2'];
+var T_COM = 10.9, T_RES = 13.3, T_OK = 13.8, T_PUB = 14.9, T_SORT = 17.0;
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  var sortie = function (k) { return inCubic(seg(t, T_SORT + k * 0.08, T_SORT + 0.55 + k * 0.08)); };
+  function clip(el, ent, sor, r) { el.style.clipPath = 'inset(0 0 ' + (100 * Math.max(1 - ent, sor)).toFixed(2) + '% 0 round ' + r + 'px)'; }
+
+  /* titre : chaque ligne monte de son masque, puis redescend à la sortie */
+  var lns = document.querySelectorAll('#titre .ln');
+  for (var j = 0; j < lns.length; j++) {
+    var pe = outExpo(seg(t, 0.3 + j * 0.14, 1.2 + j * 0.14)), ps = inCubic(seg(t, T_SORT + 0.2 + j * 0.06, T_SORT + 0.7 + j * 0.06));
+    lns[j].style.transform = 'translateY(' + (ps > 0 ? mix(0, 135, ps) : mix(125, 0, pe)).toFixed(2) + '%)';
+  }
+
+  /* la fiche de ton */
+  clip($('fiche'), outExpo(seg(t, 0.8, 1.6)), sortie(0), 22);
+  OUI.concat(['u3']).forEach(function (id, i) {
+    var r = $(id), p = outExpo(seg(t, 1.3 + i * 0.12, 1.9 + i * 0.12));
+    r.querySelector('.w').style.clipPath = 'inset(0 ' + (100 * (1 - p)).toFixed(1) + '% 0 0)';
+  });
+  NON.forEach(function (id, i) {
+    var r = $(id), p = outExpo(seg(t, 1.9 + i * 0.12, 2.5 + i * 0.12));
+    r.querySelector('.w').style.clipPath = 'inset(-6px ' + (100 * (1 - p)).toFixed(1) + '% -6px -6px)';
+    r.style.setProperty('--s', outExpo(seg(t, 2.3 + i * 0.12, 2.8 + i * 0.12)).toFixed(3));
+  });
+
+  /* le brouillon */
+  clip($('doc'), outExpo(seg(t, 1.6, 2.4)), sortie(1), 22);
+
+  /* la frappe */
+  var actif = null;
+  TY.forEach(function (it) {
+    var n = Math.floor(clamp((t - it.t0) * it.cps, 0, it.s.length));
+    if (it.el.textContent.length !== n) it.el.textContent = it.s.slice(0, n);
+    if (t >= it.t0) actif = it;
+  });
+  var montrer = actif && ((t >= 2.5 && t < 10.3) || (t >= 12.0 && t < 13.5));
+  if (montrer) {
+    if (actif.el.nextSibling !== caret) actif.el.parentNode.insertBefore(caret, actif.el.nextSibling);
+    var oisif = t > actif.fin + 0.05;
+    caret.style.opacity = oisif ? (Math.floor((t - actif.fin) * 2.6) % 2 === 0 ? 1 : 0) : 1;
+  } else if (caret.parentNode) caret.parentNode.removeChild(caret);
+
+  /* les corrections */
+  var acc = outExpo(seg(t, T_OK + 0.1, T_OK + 0.6));
+  var wires = [];
+  TC.forEach(function (tc, i) {
+    var bad = $('b' + i), rep = $('r' + i), inner = rep.firstChild;
+    var s = outExpo(seg(t, tc, tc + 0.35));
+    bad.style.setProperty('--s', (s * (1 - acc)).toFixed(3));
+    bad.style.color = rgb([38, 56, 74], [150, 165, 180], s);
+    if (acc > 0) bad.style.width = (bad.scrollWidth * (1 - acc)).toFixed(2) + 'px'; else bad.style.width = '';
+    var pr = outExpo(seg(t, tc + 0.45, tc + 0.9));
+    rep.style.width = (inner.offsetWidth * pr).toFixed(2) + 'px';
+    rep.style.marginLeft = pr > 0 ? (0.22 * (1 - acc)).toFixed(3) + 'em' : '0';
+    inner.style.background = 'rgba(29,113,184,' + (0.14 * (1 - acc)).toFixed(3) + ')';
+    inner.style.padding = '0 ' + (5 * (1 - acc)).toFixed(2) + 'px';
+    inner.style.boxShadow = acc > 0 ? 'inset 0 -2px 0 rgba(29,113,184,' + (0.45 * acc).toFixed(3) + ')' : 'none';
+    /* la ligne bannie s'éclaire dans la fiche, puis la ligne du glossaire prend le relais */
+    var flash = outExpo(seg(t, tc, tc + 0.25)) * (1 - outExpo(seg(t, tc + 0.9, tc + 1.6)));
+    $(NON[i]).style.background = 'rgba(232,189,98,' + (0.2 * flash).toFixed(3) + ')';
+    $(NON[i]).querySelector('.w').style.color = rgb([169, 184, 200], [232, 189, 98], flash);
+    var u = $(OUI[i]), lu = outExpo(seg(t, tc + 0.15, tc + 0.45));
+    u.style.background = 'rgba(29,113,184,' + (0.3 * lu).toFixed(3) + ')';
+    u.querySelector('.port').style.opacity = lu.toFixed(3);
+    u.querySelector('.ok').style.clipPath = 'inset(0 ' + (100 * (1 - outExpo(seg(t, tc + 0.5, tc + 0.9)))).toFixed(1) + '% 0 0)';
+    var a = P(u.querySelector('.port')), b = P(inner);
+    wires.push({ p: outExpo(seg(t, tc + 0.15, tc + 0.6)), x0: a.x + a.w / 2, y0: a.y + a.h / 2, x1: 664, y1: b.y + b.h / 2 });
+  });
+  var fondu = 1 - inCubic(seg(t, T_SORT, T_SORT + 0.5));
+  wires.forEach(function (w, i) {
+    var path = $('w' + i), dot = $('d' + i);
+    path.setAttribute('d', 'M' + w.x0.toFixed(1) + ',' + w.y0.toFixed(1) + ' C' + (w.x0 + 70) + ',' + w.y0.toFixed(1) + ' ' + (w.x1 - 80) + ',' + w.y1.toFixed(1) + ' ' + w.x1 + ',' + w.y1.toFixed(1));
+    path.style.strokeDashoffset = (1 - w.p).toFixed(4);
+    path.style.opacity = ((w.p > 0 ? 1 : 0) * mix(1, 0.6, acc) * fondu).toFixed(3);
+    dot.setAttribute('cx', w.x1); dot.setAttribute('cy', w.y1.toFixed(1));
+    dot.style.opacity = (seg(w.p, 0.85, 1) * fondu).toFixed(3);
+  });
+
+  /* l'expert commente : surlignage de la phrase, bulle, fil doré */
+  var anc = $('anc'), ins = $('ins');
+  var surl = outExpo(seg(t, T_COM, T_COM + 0.3)) * (1 - outExpo(seg(t, T_RES, T_RES + 0.5)));
+  anc.style.background = 'rgba(232,189,98,' + (0.38 * surl).toFixed(3) + ')';
+  ins.style.background = 'rgba(232,189,98,' + (0.30 * (1 - acc)).toFixed(3) + ')';
+  var pa = P(anc), bulle = $('bulle');
+  var by = pa.y - 26;
+  bulle.style.top = by.toFixed(1) + 'px';
+  clip(bulle, outExpo(seg(t, T_COM + 0.1, T_COM + 0.7)), sortie(2), 18);
+  $('bf').style.clipPath = 'inset(0 ' + (100 * (1 - outExpo(seg(t, T_RES, T_RES + 0.5)))).toFixed(1) + '% 0 0)';
+  var pc = outExpo(seg(t, T_COM + 0.3, T_COM + 0.8));
+  var cy0 = by + 39, cy1 = pa.y + 18;
+  $('wc').setAttribute('d', 'M1510,' + cy0.toFixed(1) + ' C1488,' + cy0.toFixed(1) + ' 1484,' + cy1.toFixed(1) + ' 1462,' + cy1.toFixed(1));
+  $('wc').style.strokeDashoffset = (1 - pc).toFixed(4);
+  $('wc').style.opacity = ((pc > 0 ? 1 : 0) * mix(1, 0.5, outExpo(seg(t, T_RES, T_RES + 0.5))) * fondu).toFixed(3);
+  $('dc').setAttribute('cx', 1462); $('dc').setAttribute('cy', cy1.toFixed(1));
+  $('dc').style.opacity = (seg(pc, 0.85, 1) * fondu).toFixed(3);
+
+  /* statut : Draft, puis Approved, puis Published */
+  var p1 = outExpo(seg(t, T_OK, T_OK + 0.5)), p2 = outExpo(seg(t, T_PUB, T_PUB + 0.5));
+  var s0 = $('s0'), s1 = $('s1'), s2 = $('s2');
+  s0.style.transform = 'translateY(' + (-110 * p1).toFixed(1) + '%)';
+  s1.style.transform = 'translateY(' + (110 * (1 - p1) - 110 * p2).toFixed(1) + '%)';
+  s2.style.transform = 'translateY(' + (110 * (1 - p2)).toFixed(1) + '%)';
+  $('pill').style.width = mix(mix(s0.offsetWidth, s1.offsetWidth, p1), s2.offsetWidth, p2).toFixed(1) + 'px';
+  $('pill').style.background = p2 > 0 ? rgb([227, 239, 250], [232, 189, 98], p2) : rgb([238, 242, 246], [227, 239, 250], p1);
+  var rv = $('rv');
+  rv.style.width = (rv.firstChild.offsetWidth * outExpo(seg(t, T_OK + 0.2, T_OK + 0.8))).toFixed(1) + 'px';
+
+  /* libellés, nés à côté de ce qu'ils nomment */
+  function monte(id, t0) {
+    var ls = document.querySelectorAll('#' + id + ' .ln');
+    for (var j = 0; j < ls.length; j++) {
+      var pe = outExpo(seg(t, t0 + j * 0.1, t0 + 0.8 + j * 0.1)), ps = inCubic(seg(t, T_SORT + j * 0.05, T_SORT + 0.45 + j * 0.05));
+      ls[j].style.transform = 'translateY(' + (ps > 0 ? mix(0, 135, ps) : mix(125, 0, pe)).toFixed(2) + '%)';
+    }
+  }
+  monte('l1', TC[0] + 0.3);
+  $('l2').style.top = (by + bulle.offsetHeight + 20).toFixed(1) + 'px';
+  monte('l2', T_COM + 0.5);
+};
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>
