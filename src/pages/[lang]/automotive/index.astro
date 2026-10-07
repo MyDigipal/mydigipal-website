@@ -1,510 +1,828 @@
 ---
+/**
+ * La page Automobile refaite (07/10/2026), en ligne depuis le même jour (« Allez, nickel, la
+ * page, tu peux mettre celle-ci », Paul). Elle a vécu quelques heures en aperçu caché sur
+ * `/{lang}/automotive-apercu`, qui n'est plus qu'un renvoi en `noindex` vers cette page.
+ *
+ * Demande de Paul : « une belle description de ce qu'on sait faire dans l'automobile »,
+ * inspirée des audits flash et des animations du labo motion, en gardant ce qui marchait sur
+ * la page actuelle (le rail du parcours, la chaîne du stock, les trois leviers, les verbatims).
+ *
+ * Aucun chiffre client écrit à la main : chaque chiffre, chaque titre et chaque légende de
+ * scène est LU dans la fiche de l'étude de cas (`chiffreDe`, `sceneDe`) ; le build s'arrête si
+ * la fiche a changé. Seuls les trois chiffres de l'agence du hero sont écrits ici (ceux des
+ * audits flash, `_commun_auto/apropos.html`).
+ */
+import { getCollection } from 'astro:content';
 import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 import Marque from '@/components/ui/Marque.astro';
+import HeroService from '@/components/sections/HeroService.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
-import PageHero from '@/components/ui/PageHero.astro';
-import BandeauLogos from '@/components/ui/BandeauLogos.astro';
-import TableauPalettes from '@/components/motion/TableauPalettes.astro';
 import AutomotiveRail from '@/components/sections/automotive/AutomotiveRail.astro';
+import AutomotiveFAQ from '@/components/sections/automotive/AutomotiveFAQ.astro';
 import VehicleAdsResultats from '@/components/sections/automotive/VehicleAdsResultats.astro';
+import BoucleRemarketing from '@/components/motion/BoucleRemarketing.astro';
+import SceneEtude from '@/components/etudes/SceneEtude.astro';
+import EstimateurAuto from '@/components/etudes/EstimateurAuto.astro';
 import { railParcours } from '@/components/motion/donnees-automobile';
 import { mesurerLogos } from '@/lib/logos-mesures';
+import { GROUPES } from '@/data/etudes-classement';
+import { LOGOS, enLettres, portrait } from '@/components/accueil/donnees';
 
 export function getStaticPaths() {
-  return Object.keys(languages).map((lang) => ({
-    params: { lang },
-  }));
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
 }
 
 const { lang } = Astro.params as { lang: Language };
-
-const content = {
-  en: {
-    seo: {
-      title: "Automotive Marketing | Car Dealership Ads",
-      description: "Specialized digital marketing for car dealerships. Google Ads, Dynamic Ads, and Paid Social campaigns that drive showroom visits and vehicle sales."
-    },
-    hero: {
-      badge: "Automotive marketing",
-      headline: "Drive more sales to your dealership",
-      subheadline: "Your vehicles deserve to be seen.",
-      description: "We specialize in automotive digital marketing. From Google Ads to Dynamic Ads, we help car dealerships reach buyers at every stage of their journey."
-    },
-    intro: {
-      title: "Why Automotive Needs Specialized Marketing",
-      description: "Selling cars is different. The buyer journey is longer, the competition is fierce, and local presence matters. That's why we've built expertise specifically for the automotive industry.",
-      points: [
-        { icon: "map-pin", title: "Local focus", description: "Target buyers in your dealership's geographic area with precision." },
-        { icon: "car", title: "Inventory integration", description: "Sync your vehicle inventory with dynamic ad campaigns." },
-        { icon: "trending-up", title: "Full funnel", description: "From awareness to showroom visit, we cover every touchpoint." },
-        { icon: "bar-chart", title: "Measurable ROI", description: "Track every click, visit, and sale with complete transparency." }
-      ]
-    },
-    stats: [
-      { value: "€150K", label: "Monthly budget managed" },
-      { value: "188K", label: "Clicks generated" },
-      { value: "10.6K", label: "Leads generated" },
-      { value: "50+", label: "Dealerships Served" }
-    ],
-    services: [
-      {
-        icon: "search",
-        name: "Google Ads",
-        tagline: "Dominate search results",
-        description: "Be there when car buyers are searching. Search, Display, YouTube, and Vehicle Listing Ads tailored for automotive dealerships.",
-        href: "/en/automotive/google-ads",
-        features: ["Search campaigns", "Display retargeting", "YouTube Ads", "Vehicle Listing Ads"],
-        highlights: [
-          "Brand & model-specific campaigns",
-          "New and used car targeting",
-          "Event promotion (open days, sales)",
-          "Budget allocation by objectives"
-        ],
-        color: "from-blue-500 to-cyan-500",
-        stat: { value: "10%", label: "Conversion rate (vs 2.5% industry average)" }
-      },
-      {
-        icon: "users",
-        name: "Paid Social",
-        tagline: "Reach buyers where they scroll",
-        description: "Engage potential car buyers on Facebook, Instagram, and TikTok with visually compelling campaigns that drive showroom visits.",
-        href: "/en/automotive/paid-social",
-        features: ["Facebook Ads", "Instagram ads", "Carousel campaigns", "Lead Gen Forms"],
-        highlights: [
-          "Lifestyle & interest targeting",
-          "Video showcases",
-          "Test drive bookings",
-          "Remarketing to website visitors"
-        ],
-        color: "from-pink-500 to-rose-500",
-        stat: { value: "3x", label: "Higher engagement vs static ads" }
-      },
-      {
-        icon: "refresh-cw",
-        name: "Dynamic Ads",
-        tagline: "Your inventory, automatically",
-        description: "Connect your vehicle inventory directly to Meta & Google. Show the right car to the right buyer at the right time, automatically.",
-        href: "/en/automotive/dynamic-ads",
-        features: ["Catalog integration", "Dynamic retargeting", "Cross-Sell", "Automatic updates"],
-        highlights: [
-          "Real-time inventory sync",
-          "Price & availability updates",
-          "Model-specific targeting",
-          "Automated creative generation"
-        ],
-        color: "from-indigo-500 to-purple-600",
-        stat: { value: "40%", label: "Lower cost per lead" }
-      }
-    ],
-    cta: "Learn more",
-    clients: {
-      title: "Trusted by Dealerships",
-      logos: [
-        { name: "DMD Group", logo: "/images/Client logo/DMD.png" },
-        { name: "Theobald Group", logo: "/images/Client logo/Theobald.png" },
-        { name: "BYmyCAR", logo: "/images/Client logo/BYmyCAR.png" },
-        { name: "Vulcain", logo: "/images/Client logo/Vulcain.png" },
-        { name: "EDA 42", logo: "/images/Client logo/EDA 42.png" },
-        { name: "GGP Auto", logo: "/images/Client logo/GGP Auto.png" },
-        { name: "Autovillage", logo: "/images/Client logo/Auto village.png" },
-        { name: "Dugat Group", logo: "/images/Client logo/Dugat.jpg" },
-        { name: "Warpcom", logo: "/images/Client logo/Warpcom.webp" },
-        { name: "Iroise Auto", logo: "/images/Client logo/Iroise Auto.png" }
-      ]
-    },
-    testimonials: {
-      title: "What dealerships say",
-      items: [
-        {
-          quote: "MyDigipal's automotive expertise is unmatched. They understand our industry, our challenges, and deliver campaigns that actually bring customers to our showroom.",
-          author: "Jennifer G.",
-          role: "Marketing Director",
-          company: "Theobald Group",
-          image: "/images/Client logo/Jennifer G.jpeg"
-        },
-        {
-          quote: "What sets MyDigipal apart is the proximity and personalized follow-up. They're always available, proactive with optimizations, and truly invested in our success.",
-          author: "Vanina F.",
-          role: "Digital Manager",
-          company: "Vulcain Group",
-          image: "/images/Client logo/Vanina F.jpeg"
-        }
-      ]
-    },
-    process: {
-      title: "Our approach",
-      steps: [
-        { number: "01", title: "Audit", description: "We analyze your current digital presence, competitors, and market opportunities." },
-        { number: "02", title: "Strategy", description: "Custom campaign strategy aligned with your sales objectives and inventory." },
-        { number: "03", title: "Launch", description: "Rapid deployment of campaigns with automotive-specific best practices." },
-        { number: "04", title: "Optimize", description: "Continuous optimization based on performance data and market trends." }
-      ]
-    }
-  },
-  fr: {
-    seo: {
-      title: "Marketing Automobile | Concessionnaires",
-      description: "Marketing digital spécialisé pour concessionnaires automobiles. Google Ads, Dynamic Ads et Paid Social pour générer des visites en showroom et des ventes."
-    },
-    hero: {
-      badge: "Marketing automobile",
-      headline: "Boostez les ventes de votre concession",
-      subheadline: "Vos véhicules méritent d'être vus.",
-      description: "On est spécialisés en marketing digital automobile. De Google Ads aux Dynamic Ads, on aide les concessionnaires à atteindre les acheteurs à chaque étape de leur parcours."
-    },
-    intro: {
-      title: "Pourquoi l'automobile nécessite un marketing spécialisé",
-      description: "Vendre des voitures, c'est différent. Le parcours d'achat est plus long, la concurrence est féroce, et la présence locale compte. C'est pourquoi on a développé une expertise spécifique pour l'industrie automobile.",
-      points: [
-        { icon: "map-pin", title: "Focus local", description: "Ciblez les acheteurs dans la zone géographique de votre concession avec précision." },
-        { icon: "car", title: "Intégration stock", description: "Synchronisez votre inventaire de véhicules avec des campagnes publicitaires dynamiques." },
-        { icon: "trending-up", title: "Full funnel", description: "De la notoriété à la visite en showroom, on couvre chaque point de contact." },
-        { icon: "bar-chart", title: "ROI mesurable", description: "Suivez chaque clic, visite et vente avec une transparence totale." }
-      ]
-    },
-    stats: [
-      { value: "150K€", label: "Budget mensuel géré" },
-      { value: "188K", label: "Clics générés" },
-      { value: "10.6K", label: "Leads générés" },
-      { value: "50+", label: "Concessions accompagnées" }
-    ],
-    services: [
-      {
-        icon: "search",
-        name: "Google Ads",
-        tagline: "Dominez les résultats de recherche",
-        description: "Soyez présent quand les acheteurs de voitures recherchent. Search, Display, YouTube et Vehicle Listing Ads adaptés aux concessionnaires automobiles.",
-        href: "/fr/automotive/google-ads",
-        features: ["Campagnes Search", "Retargeting Display", "YouTube Ads", "Vehicle Listing Ads"],
-        highlights: [
-          "Campagnes par marque & modèle",
-          "Ciblage voitures neuves et occasion",
-          "Promotion événements (portes ouvertes, soldes)",
-          "Allocation budget par objectifs"
-        ],
-        color: "from-blue-500 to-cyan-500",
-        stat: { value: "10 %", label: "de taux de conversion, contre 2,5 % en moyenne" }
-      },
-      {
-        icon: "users",
-        name: "Paid Social",
-        tagline: "Atteignez les acheteurs où ils scrollent",
-        description: "Engagez les acheteurs potentiels sur Facebook, Instagram et TikTok avec des campagnes visuellement percutantes qui génèrent des visites en showroom.",
-        href: "/fr/automotive/paid-social",
-        features: ["Facebook Ads", "Instagram Ads", "Campagnes carrousel", "Formulaires de leads"],
-        highlights: [
-          "Ciblage lifestyle & intérêts",
-          "Vidéos de présentation",
-          "Réservation essais",
-          "Remarketing visiteurs site"
-        ],
-        color: "from-pink-500 to-rose-500",
-        stat: { value: "3x", label: "plus d'engagement que les publicités statiques" }
-      },
-      {
-        icon: "refresh-cw",
-        name: "Dynamic Ads",
-        tagline: "Votre stock, automatiquement",
-        description: "Connectez votre stock de véhicules directement à Meta et Google. Montrez la bonne voiture au bon acheteur au bon moment, automatiquement.",
-        href: "/fr/automotive/dynamic-ads",
-        features: ["Intégration catalogue", "Retargeting dynamique", "Cross-sell", "Mises à jour auto"],
-        highlights: [
-          "Sync stock temps réel",
-          "Mises à jour prix & dispo",
-          "Ciblage par modèle",
-          "Génération créa automatique"
-        ],
-        color: "from-indigo-500 to-purple-600",
-        stat: { value: "40 %", label: "de coût par lead en moins" }
-      }
-    ],
-    cta: "En savoir plus",
-    clients: {
-      title: "Ils nous font confiance",
-      logos: [
-        { name: "Groupe DMD", logo: "/images/Client logo/DMD.png" },
-        { name: "Groupe Theobald", logo: "/images/Client logo/Theobald.png" },
-        { name: "BYmyCAR", logo: "/images/Client logo/BYmyCAR.png" },
-        { name: "Vulcain", logo: "/images/Client logo/Vulcain.png" },
-        { name: "EDA 42", logo: "/images/Client logo/EDA 42.png" },
-        { name: "GGP Auto", logo: "/images/Client logo/GGP Auto.png" },
-        { name: "Autovillage", logo: "/images/Client logo/Auto village.png" },
-        { name: "Groupe Dugat", logo: "/images/Client logo/Dugat.jpg" },
-        { name: "Warpcom", logo: "/images/Client logo/Warpcom.webp" },
-        { name: "Iroise Auto", logo: "/images/Client logo/Iroise Auto.png" }
-      ]
-    },
-    testimonials: {
-      title: "Ce que disent les concessions",
-      items: [
-        {
-          quote: "L'expertise automobile de MyDigipal est inégalée. Ils comprennent notre industrie, nos défis, et délivrent des campagnes qui amènent vraiment des clients en showroom.",
-          author: "Jennifer G.",
-          role: "Directrice Marketing",
-          company: "Groupe Theobald",
-          image: "/images/Client logo/Jennifer G.jpeg"
-        },
-        {
-          quote: "Ce qui distingue MyDigipal, c'est la proximité et le suivi personnalisé. Ils sont toujours disponibles, proactifs sur les optimisations, et vraiment investis dans notre succès.",
-          author: "Vanina F.",
-          role: "Responsable Digital",
-          company: "Groupe Vulcain",
-          image: "/images/Client logo/Vanina F.jpeg"
-        }
-      ]
-    },
-    process: {
-      title: "Notre approche",
-      steps: [
-        { number: "01", title: "Audit", description: "On analyse votre présence digitale actuelle, vos concurrents et les opportunités marché." },
-        { number: "02", title: "Stratégie", description: "Stratégie de campagne sur-mesure alignée avec vos objectifs de vente et votre stock." },
-        { number: "03", title: "Lancement", description: "Déploiement rapide des campagnes avec les best practices automobiles." },
-        { number: "04", title: "Optimisation", description: "Optimisation continue basée sur les données de performance et les tendances marché." }
-      ]
-    }
-  }
-};
-
-const c = content[lang] || content.en;
 const fr = lang === 'fr';
+const L = fr ? 'fr' : 'en';
 
-// Le tableau à palettes : trois chiffres de l'agence (gardés, à sourcer), le quatrième
-// écrit dessous. « 150K€ » devient « 150 » et l'unité « K€ ».
-const decouper = (s: { value: string; label: string }) => {
-  const [, chiffre = s.value, unite = ''] = s.value.match(/^([€$£]?[\d.,]+)\s*(.*)$/) ?? [];
-  return { chiffre: fr ? chiffre.replace('.', ',') : chiffre, unite, texte: fr ? s.label.charAt(0).toLowerCase() + s.label.slice(1) : s.label.toLowerCase() };
+/* ------------------------------------------------------------ les fiches */
+
+const etudes = (await getCollection('case-studies')).filter((s) => s.id.startsWith(`${L}/`));
+const slugDe = (id: string) => id.replace(/^(en|fr)\//, '');
+const fiche = (slug: string) => {
+  const e = etudes.find((s) => slugDe(s.id) === slug);
+  if (!e) throw new Error(`automotive : l'étude ${L}/${slug} est introuvable.`);
+  return e;
 };
-const tableau = [c.stats[0], c.stats[2], c.stats[3]].map(decouper);
-const quatrieme = decouper(c.stats[1]);
+const chiffreDe = (slug: string, i: number) => {
+  const c = (fiche(slug).data as any).chiffres?.[i];
+  if (!c) throw new Error(`automotive : ${L}/${slug} n'a pas de chiffre n° ${i}.`);
+  return { valeur: c.valeur as string, texte: c.texte as string };
+};
+/** La scène telle que la fiche la déclare (titre, légende et repos dans la bonne langue). */
+const sceneDe = (slug: string, labo: string, jeu?: string) => {
+  const plans = ((fiche(slug).data as any).plans ?? []) as any[];
+  const scenes = plans.flatMap((p) => [p.scene, ...(p.recit ?? []).map((c: any) => c.scene)]).filter(Boolean);
+  const s = scenes.find((x: any) => x.labo === labo && (jeu === undefined || x.jeu === jeu));
+  if (!s) throw new Error(`automotive : pas de scène ${labo}${jeu ? `?jeu=${jeu}` : ''} dans ${L}/${slug}.`);
+  return s;
+};
+const etudeUrl = (slug: string) => `/${lang}/case-studies/${slug}`;
 
-// Les logos, EN COULEUR : la version détourée de l'accueil quand elle existe.
-// Autovillage : la version en longueur, plus lisible dans la bande que le carré.
+/* ------------------------------------------------------------ les textes */
+
+const t = fr
+  ? {
+      seo: {
+        titre: 'Marketing digital automobile pour concessions',
+        description: 'Google Ads, formulaires Facebook, stock en annonces, appels et CRM : l’équipe digitale de plus de 150 concessions. Les résultats de nos clients, chiffrés.',
+      },
+      hero: {
+        badge: 'Marketing automobile',
+        titre: 'Boostez les ventes de votre concession',
+        texte: 'Pour une concession comme pour un groupe de dix marques : des acheteurs qui viennent, des contacts rappelés vite, et des campagnes jugées sur les voitures vendues.',
+        logos: 'Ils nous confient leurs campagnes',
+      },
+      rail: 'Le parcours d’un acheteur, de la recherche à l’essai',
+      railChapo: 'Vendre des voitures, c’est différent : le parcours d’achat est long, la concurrence est forte et la présence locale compte. Chaque levier agit à un moment précis du parcours ; ensemble, ils mènent l’acheteur jusqu’en concession.',
+      dossier: 'Lire le dossier',
+      page: 'Voir la page',
+    }
+  : {
+      seo: {
+        titre: 'Automotive digital marketing for car dealers',
+        description: 'Google Ads, Facebook lead forms, stock-based ads, calls and CRM: the digital team behind 150+ dealerships. Our clients’ results, with the real numbers.',
+      },
+      hero: {
+        badge: 'Automotive marketing',
+        titre: 'Drive more sales to your dealership',
+        texte: 'For a single dealership or a ten-brand group: buyers who come in, leads called back fast, and campaigns judged on the cars they sell.',
+        logos: 'They trust us with their campaigns',
+      },
+      rail: 'A buyer’s journey, from search to test drive',
+      railChapo: 'Selling cars is different: the buying journey is long, competition is fierce and local presence matters. Each lever acts at a precise moment of the journey; together, they bring the buyer to the dealership.',
+      dossier: 'Read the deep dive',
+      page: 'See the page',
+    };
+
+/* Les chiffres de l'agence, sur le tableau à palettes (ceux des audits flash). */
+const tableau = fr
+  ? [
+      { chiffre: '150', unite: '+', texte: 'concessions accompagnées' },
+      { chiffre: '150 000', unite: '€', texte: 'de budget publicitaire géré chaque mois' },
+      { chiffre: '10 600', texte: 'contacts générés pour nos clients automobiles' },
+    ]
+  : [
+      { chiffre: '150', unite: '+', texte: 'dealerships we work with' },
+      { chiffre: '€150,000', texte: 'of ad budget managed every month' },
+      { chiffre: '10,600', texte: 'leads generated for our automotive clients' },
+    ];
+
+/* Les logos du hero, EN COULEUR et à surface égale (version détourée quand elle existe). */
+const logosClients = [
+  { name: fr ? 'Groupe Theobald' : 'Theobald Group', logo: '/images/Client logo/Theobald.png' },
+  { name: fr ? 'Groupe DMD' : 'DMD Group', logo: '/images/Client logo/DMD.png' },
+  { name: 'Vulcain', logo: '/images/Client logo/Vulcain.png' },
+  { name: 'GGP Auto', logo: '/images/Client logo/GGP Auto.png' },
+  { name: 'Guyane Automobile', logo: '/images/Client logo/Guyane Automobile.webp' },
+  { name: fr ? 'Groupe Lancien' : 'Lancien Group', logo: '/images/Client logo/Groupe Lancien.png' },
+  { name: 'BYmyCAR', logo: '/images/Client logo/BYmyCAR.png' },
+  { name: 'EDA 42', logo: '/images/Client logo/EDA 42.png' },
+  { name: 'Autovillage', logo: '/images/Client logo/Auto village.png' },
+  { name: fr ? 'Groupe Dugat' : 'Dugat Group', logo: '/images/Client logo/Dugat.jpg' },
+  { name: 'Iroise Auto', logo: '/images/Client logo/Iroise Auto.png' },
+];
 const logos = await mesurerLogos(
-  c.clients.logos,
+  logosClients,
   { 'Groupe DMD': 'dmd', 'DMD Group': 'dmd', 'Groupe Theobald': 'theobald', 'Theobald Group': 'theobald', BYmyCAR: 'bymycar', Vulcain: 'vulcain' },
   { Autovillage: '/images/Automotive/Google Ads/92289030-0554-4210-a051-cef137629e42.webp' },
 );
 
-// Les marques de chaque levier, en couleur.
-const MARQUES: Record<string, string[]> = {
-  'Google Ads': ['Google Ads', 'YouTube'],
-  'Paid Social': ['Facebook', 'Instagram', 'TikTok'],
-  'Dynamic Ads': ['Meta Ads', 'Google Ads'],
+/* ------------------------------------------------------------ les trois problèmes */
+
+type Chapitre = {
+  marque: string;
+  titre: string;
+  paragraphes: string[];
+  scene: any;
+  chiffre: { valeur: string; texte: string };
+  liens: { href: string; label: string }[];
 };
 
-const rail = railParcours(lang);
-const t = {
-  pourquoi: fr ? 'Pourquoi l’automobile demande un marketing à part' : 'Why automotive needs its own kind of marketing',
-  rail: fr ? 'Le parcours d’un acheteur, de la recherche à l’essai' : 'A buyer’s journey, from search to test drive',
-  railChapo: fr
-    ? 'Trois leviers pour un seul acheteur. Chacun agit à un moment précis du parcours ; ensemble, ils le mènent jusqu’en concession.'
-    : 'Three levers for one buyer. Each acts at a precise moment of the journey; together, they bring the buyer to the dealership.',
-  leviers: fr ? 'Trois leviers pour les concessions' : 'Three levers for dealerships',
-  leviersChapo: fr ? 'Chacun a sa page : ce qu’il fait, pour qui, et ce qu’il a donné chez nos clients.' : 'Each has its page: what it does, for whom, and what it delivered for our clients.',
-  logos: fr ? 'Ils nous confient leurs campagnes' : 'They trust us with their campaigns',
+const acheteurs = {
+  titre: fr ? 'Faire venir des acheteurs' : 'Bring in buyers',
+  chapo: fr
+    ? 'Être là quand quelqu’un cherche une voiture près de chez lui, et lui faire laisser ses coordonnées sans effort.'
+    : 'Be there when someone is looking for a car near them, and get them to leave their details without effort.',
+  chapitres: [
+    {
+      marque: 'Google Ads',
+      titre: fr ? 'Répondre à ceux qui cherchent déjà' : 'Answer the people already searching',
+      paragraphes: fr
+        ? [
+            'Un acheteur tape un modèle, « occasion » et le nom de sa ville. Nous rangeons le compte par marque et par concession, pour que deux campagnes ne fassent pas monter le prix l’une de l’autre.',
+            'Nous ne comptons que les vraies conversions : formulaires, réservations d’essai, appels de plus d’une minute. Et le budget suit ce qui fait vendre.',
+          ]
+        : [
+            'A buyer types a model, “used” and the name of their town. We organise the account by brand and by dealership, so two campaigns never bid each other up.',
+            'We only count real conversions: forms, test drive bookings, calls longer than a minute. And the budget follows what sells.',
+          ],
+      scene: sceneDe('dmd-group', 'parcours-complet', 'dmd-pmax-ford'),
+      chiffre: chiffreDe('google-ads-car-dealers', 2),
+      liens: [
+        { href: etudeUrl('google-ads-car-dealers'), label: t.dossier },
+        { href: `/${lang}/automotive/google-ads`, label: fr ? 'Google Ads pour concessions' : 'Google Ads for dealerships' },
+      ],
+    },
+    {
+      marque: fr ? 'Facebook et Instagram' : 'Facebook and Instagram',
+      titre: fr ? 'Le formulaire qui ne quitte pas Facebook' : 'The form that never leaves Facebook',
+      paragraphes: fr
+        ? [
+            'Il voit passer le nouveau SUV de la concession d’à côté et touche « S’inscrire ». Son nom et son téléphone sont déjà écrits : dix secondes, sans quitter l’application.',
+            'Une offre précise par marque, jamais un « contactez-nous ». Deux ou trois questions qui trient, et le contact part chez le bon vendeur.',
+          ]
+        : [
+            'They scroll past the new SUV from the dealership down the road and tap “Sign up”. Their name and phone number are already filled in: ten seconds, without leaving the app.',
+            'One clear offer per brand, never a vague “contact us”. Two or three questions that sort the leads, and the contact goes straight to the right salesperson.',
+          ],
+      scene: sceneDe('facebook-lead-ads', 'course-formulaires', 'dmd-t3-2026'),
+      chiffre: chiffreDe('facebook-lead-ads', 0),
+      liens: [
+        { href: etudeUrl('facebook-lead-ads'), label: t.dossier },
+        { href: `/${lang}/automotive/paid-social`, label: fr ? 'Paid Social pour concessions' : 'Paid Social for dealerships' },
+      ],
+    },
+  ] as Chapitre[],
 };
+
+const contacts = {
+  titre: fr ? 'Ne laisser filer aucun contact' : 'Never let a lead slip away',
+  chapo: fr
+    ? 'Un appel décroché, un formulaire rappelé vite, et la vente au bout.'
+    : 'A call answered, a form called back fast, and the sale at the end.',
+  chapitres: [
+    {
+      marque: fr ? 'Appels et formulaires' : 'Calls and forms',
+      titre: fr ? 'Le contact chez le bon vendeur, tout de suite' : 'The lead with the right salesperson, right away',
+      paragraphes: fr
+        ? [
+            'Un contact qui attend jusqu’au lendemain a souvent déjà appelé ailleurs. Chaque formulaire part vers la bonne marque et la bonne concession, avec la voiture qui l’intéresse et ses réponses.',
+            'Au téléphone, un numéro de suivi rattache chaque appel à sa campagne, et seuls les appels de plus d’une minute comptent : ce sont de vraies conversations.',
+          ]
+        : [
+            'A lead left waiting until tomorrow has often called someone else already. Every form goes to the right brand and the right dealership, with the car they want and their answers.',
+            'On the phone, a tracking number ties each call to its campaign, and only calls longer than a minute count: those are real conversations.',
+          ],
+      scene: sceneDe('facebook-lead-ads', 'trajet-contact'),
+      chiffre: chiffreDe('dealership-calls', 0),
+      liens: [{ href: etudeUrl('dealership-calls'), label: t.dossier }],
+    },
+    {
+      marque: fr ? 'Du contact à la vente' : 'From lead to sale',
+      titre: fr ? 'Relier les campagnes aux ventes du CRM' : 'Connect campaigns to CRM sales',
+      paragraphes: fr
+        ? [
+            'Le canal, la campagne et le mot-clé voyagent avec le contact jusqu’au CRM. Contacts, opportunités et ventes sont rapprochés automatiquement, sans saisie à la main.',
+            'On compare alors les campagnes sur ce qu’elles coûtent par voiture vendue, plus sur ce qu’elles coûtent par clic.',
+          ]
+        : [
+            'The channel, the campaign and the keyword travel with the lead all the way into the CRM. Leads, opportunities and sales are matched automatically, with no manual entry.',
+            'Campaigns are then compared on what they cost per car sold, not per click.',
+          ],
+      scene: sceneDe('lead-to-sale', 'flux-ventes'),
+      chiffre: chiffreDe('lead-to-sale', 1),
+      liens: [{ href: etudeUrl('lead-to-sale'), label: t.dossier }],
+    },
+  ] as Chapitre[],
+};
+
+const mesure = {
+  titre: fr ? 'Savoir ce qui marche' : 'Know what works',
+  chapo: fr
+    ? 'Compter juste, puis lire les chiffres par marque, par ville et par vendeur.'
+    : 'Count right, then read the numbers by brand, by city and by salesperson.',
+  chapitres: [
+    {
+      marque: 'Tracking',
+      titre: fr ? 'Un contact compté une fois, pas deux' : 'One lead counted once, not twice',
+      paragraphes: fr
+        ? [
+            'Nous testons chaque site comme un client : remplir le formulaire, appeler, réserver un essai, et regarder ce qui part vraiment, pas ce que disent les réglages.',
+            'Un réglage préparé mais jamais publié, un outil qui envoie deux fois le même signal : ces pannes ne se voient pas, et elles faussent les campagnes.',
+          ]
+        : [
+            'We test every site like a customer: fill in the form, call, book a test drive, and look at what is actually sent, not what the settings say.',
+            'A setting prepared but never published, a tool sending the same signal twice: nobody sees these failures, and they skew the campaigns.',
+          ],
+      scene: sceneDe('dealership-tracking', 'compteur-double'),
+      chiffre: chiffreDe('dealership-tracking', 1),
+      liens: [{ href: etudeUrl('dealership-tracking'), label: t.dossier }],
+    },
+    {
+      marque: fr ? 'Tableau de bord' : 'Dashboard',
+      titre: fr ? 'Un tableau de bord qu’on ouvre vraiment le lundi' : 'A dashboard people actually open on Monday',
+      paragraphes: fr
+        ? [
+            'Dépense, contacts et ventes de la semaine sur un seul écran, à jour chaque matin, à la place des exports de chaque plateforme.',
+            'Puis chaque marque, chaque concession, chaque commercial : là où le budget travaille, et là où il dort.',
+          ]
+        : [
+            'The week’s spend, leads and sales on one screen, updated every morning, instead of an export from each platform.',
+            'Then each brand, each dealership, each salesperson: where the budget is working, and where it is asleep.',
+          ],
+      scene: sceneDe('dealer-dashboard', 'rapport-vente', 'guyane-t3-2026'),
+      chiffre: chiffreDe('dealer-dashboard', 0),
+      liens: [{ href: etudeUrl('dealer-dashboard'), label: t.dossier }],
+    },
+  ] as Chapitre[],
+};
+
+/* Les portes ouvertes : la boucle de remarketing, et deux chiffres de l'étude. */
+const portes = {
+  titre: fr ? 'Des portes ouvertes qui se remplissent' : 'Open days that fill up',
+  chapo: fr
+    ? 'Une offre, une réservation d’essai et une publicité autour de chaque concession, prêtes avant le jour J. Puis la voiture regardée revient dans le fil de ceux qui sont repartis sans appeler.'
+    : 'An offer, a test drive booking and an ad around each dealership, ready before the day. Then the car they looked at comes back into the feed of those who left without calling.',
+  chiffres: [chiffreDe('open-days', 0), chiffreDe('open-days', 2)],
+};
+
+/* ------------------------------------------------------------ les trois leviers (page actuelle) */
+
+const leviers = {
+  titre: fr ? 'Trois leviers, une page chacun' : 'Three levers, one page each',
+  chapo: fr ? 'Ce que chacun fait, pour qui, et ce qu’il a donné chez nos clients.' : 'What each one does, for whom, and what it delivered for our clients.',
+  lien: fr ? 'En savoir plus' : 'Learn more',
+  items: [
+    {
+      nom: 'Google Ads',
+      accroche: fr ? 'Dominez les résultats de recherche' : 'Dominate search results',
+      texte: fr
+        ? 'Soyez présent quand les acheteurs cherchent : Search, Display, YouTube et Vehicle Ads, rangés par marque et par concession.'
+        : 'Be there when car buyers are searching: Search, Display, YouTube and Vehicle Ads, organised by brand and by dealership.',
+      href: `/${lang}/automotive/google-ads`,
+      marques: ['Google Ads', 'YouTube'],
+      formats: fr ? ['Campagnes Search', 'Remarketing Display', 'YouTube', 'Vehicle Ads'] : ['Search campaigns', 'Display remarketing', 'YouTube', 'Vehicle Ads'],
+      chiffre: chiffreDe('google-ads-car-dealers', 1),
+    },
+    {
+      nom: 'Paid Social',
+      accroche: fr ? 'Atteignez les acheteurs là où ils font défiler' : 'Reach buyers where they scroll',
+      texte: fr
+        ? 'Facebook, Instagram et TikTok, ciblés autour de chaque concession, avec des formulaires intégrés qui arrivent chez le bon vendeur.'
+        : 'Facebook, Instagram and TikTok, targeted around each dealership, with instant forms that reach the right salesperson.',
+      href: `/${lang}/automotive/paid-social`,
+      marques: ['Facebook', 'Instagram', 'TikTok'],
+      formats: fr ? ['Formulaires intégrés', 'Vidéo verticale', 'Offre du mois', 'Remarketing'] : ['Instant forms', 'Vertical video', 'Offer of the month', 'Remarketing'],
+      chiffre: chiffreDe('facebook-lead-ads', 1),
+    },
+    {
+      nom: 'Dynamic Ads',
+      accroche: fr ? 'Votre stock, automatiquement' : 'Your stock, automatically',
+      texte: fr
+        ? 'Votre stock relié à Meta et à Google : la bonne voiture montrée au bon acheteur, avec son prix à jour, et retirée quand elle est vendue.'
+        : 'Your stock connected to Meta and Google: the right car shown to the right buyer, with its current price, and removed once sold.',
+      href: `/${lang}/automotive/dynamic-ads`,
+      marques: ['Meta Ads', 'Google Ads'],
+      formats: fr ? ['Catalogue de véhicules', 'Remarketing dynamique', 'Mise à jour quotidienne'] : ['Vehicle catalogue', 'Dynamic remarketing', 'Daily updates'],
+      chiffre: chiffreDe('vehicle-catalogue-ads', 0),
+    },
+  ],
+};
+
+/* ------------------------------------------------------------ les groupes */
+
+const groupesAuto = GROUPES.filter((g) => fiche(g.etudes[0]).data.category === 'automotive').map((g) => {
+  const e = fiche(g.etudes[0]);
+  const d = e.data as any;
+  const det = LOGOS[g.id];
+  return {
+    id: g.id,
+    nom: g.nom[L],
+    slug: g.etudes[0],
+    titre: d.title as string,
+    image: d.image as string,
+    logo: det ? det.src : (d.logo as string | undefined),
+    chiffre: chiffreDe(g.etudes[0], 0),
+    court: d.kpis?.[0]?.label as string,
+  };
+});
+/* Les logos des groupes à SURFACE égale, comme dans le bandeau : un logo presque carré
+   (Théobald) monte plus haut qu'un logo en longueur (Lancien). */
+const mesures = await mesurerLogos(groupesAuto.filter((g) => g.logo).map((g) => ({ name: g.id, logo: g.logo! })));
+const hauteurLogo = (id: string, k = 1) => {
+  const m = mesures.find((x) => x.name === id);
+  if (!m?.largeur || !m?.hauteur) return 36 * k;
+  /* Le fichier de Guyane Automobile garde une large marge transparente autour du mot. */
+  const marge = id === 'guyane' ? 1.45 : 1;
+  return Math.round(Math.min(58, Math.max(26, Math.sqrt(4400 / (m.largeur / m.hauteur)))) * k * marge);
+};
+const [groupeTete, ...groupesSuite] = groupesAuto;
+const nbEtudesAuto = etudes.filter((s) => s.data.category === 'automotive').length;
+const groupes = {
+  titre: fr ? 'Les groupes qu’on accompagne' : 'The dealer groups we work with',
+  chapo: fr
+    ? 'Sept portraits, sept façons de vendre des voitures. Chaque chiffre vient de leurs comptes.'
+    : 'Seven portraits, seven ways of selling cars. Every number comes from their own accounts.',
+  lire: fr ? 'Lire le portrait' : 'Read the portrait',
+  tout: fr ? 'Toutes nos études de cas' : 'All our case studies',
+  toutTexte: fr
+    ? `${enLettres(nbEtudesAuto, 'fr')} études automobiles, à parcourir par problème, par groupe ou par secteur.`
+    : `${enLettres(nbEtudesAuto, 'en')} automotive case studies, to browse by problem, by group or by sector.`,
+};
+
+/* ------------------------------------------------------------ la méthode et l'équipe */
+
+const methode = {
+  titre: fr ? 'Comment on travaille' : 'How we work',
+  chapo: fr
+    ? 'Les mêmes personnes de l’audit au point mensuel, des rapports que vous lisez sans nous, et le cadre de chaque constructeur respecté.'
+    : 'The same people from the audit to the monthly review, reports you can read without us, and every manufacturer’s rules respected.',
+  temps: fr
+    ? [
+        { quand: 'Avant de commencer', titre: 'L’audit offert', texte: 'Nous regardons vos annonces Google, Facebook et Instagram, votre site et votre stock, et nous vous montrons ce que nous changerions. Sans engagement.' },
+        { quand: 'Les premières semaines', titre: 'Le lancement', texte: 'Comptes rangés par marque et par concession, conversions vérifiées, stock relié aux annonces, formulaires reliés à vos équipes.' },
+        { quand: 'Chaque mois', titre: 'Le point mensuel', texte: 'Ce qui a marché, ce qu’on arrête, et où va le budget le mois suivant, avec les mêmes interlocuteurs qu’à l’audit.' },
+        { quand: 'Chaque matin', titre: 'Le rapport relié au CRM', texte: 'Dépense, contacts et ventes sur un seul écran, par marque et par concession, à lire sans nous.' },
+      ]
+    : [
+        { quand: 'Before we start', titre: 'The free audit', texte: 'We look at your Google, Facebook and Instagram ads, your website and your stock, and show you what we would change. No commitment.' },
+        { quand: 'The first weeks', titre: 'The launch', texte: 'Accounts organised by brand and by dealership, conversions checked, stock connected to the ads, forms connected to your teams.' },
+        { quand: 'Every month', titre: 'The monthly review', texte: 'What worked, what we stop, and where the budget goes next month, with the same people as at the audit.' },
+        { quand: 'Every morning', titre: 'The report tied to your CRM', texte: 'Spend, leads and sales on one screen, by brand and by dealership, readable without us.' },
+      ],
+  equipeTitre: fr ? 'Les personnes qui pilotent vos campagnes' : 'The people who run your campaigns',
+  equipe: [
+    { nom: 'Jordan Langlois', photo: portrait('jordan-langlois'), role: fr ? 'Responsable marketing digital, responsable des comptes automobiles' : 'Digital marketing lead, in charge of automotive accounts', detail: fr ? 'Stratégie et suivi' : 'Strategy and follow-up' },
+    { nom: 'Juliette Joire', photo: portrait('juliette-joire'), role: fr ? 'Manager de compte' : 'Account manager', detail: fr ? 'Suivi quotidien des campagnes, enchères, budgets et rapports' : 'Day-to-day campaigns, bids, budgets and reports' },
+    { nom: 'Alexandre Echement', photo: portrait('alexandre-echement'), role: fr ? 'Mise en œuvre et données' : 'Implementation and data', detail: fr ? 'Flux, Merchant Center, mesure, créations et tests' : 'Feeds, Merchant Center, tracking, creative and tests' },
+    { nom: 'Dikra Béchard', photo: '/images/team/Team_Dikra_Bechard.webp', role: fr ? 'Développement commercial' : 'Business development', detail: fr ? 'Votre premier contact chez nous' : 'Your first point of contact' },
+    { nom: 'Paul Andre', photo: portrait('paul-andre'), role: fr ? 'Fondateur' : 'Founder', detail: fr ? 'Il suit chaque compte de près' : 'Keeps a close eye on every account' },
+  ],
+};
+
+/* ------------------------------------------------------------ la parole des clients (page actuelle) */
+
+const paroles = {
+  titre: fr ? 'Ce que disent les concessions' : 'What dealerships say',
+  items: fr
+    ? [
+        { texte: 'L’expertise automobile de MyDigipal est inégalée. Ils comprennent notre industrie, nos défis, et délivrent des campagnes qui amènent vraiment des clients en showroom.', auteur: 'Jennifer G.', fonction: 'directrice marketing, Groupe Théobald', photo: '/images/Client logo/Jennifer G.jpeg' },
+        { texte: 'Ce qui distingue MyDigipal, c’est la proximité et le suivi personnalisé. Ils sont toujours disponibles, proactifs sur les optimisations, et vraiment investis dans notre succès.', auteur: 'Vanina F.', fonction: 'responsable digital, Groupe Vulcain', photo: '/images/Client logo/Vanina F.jpeg' },
+      ]
+    : [
+        { texte: 'MyDigipal’s automotive expertise is unmatched. They understand our industry, our challenges, and deliver campaigns that actually bring customers to our showroom.', auteur: 'Jennifer G.', fonction: 'marketing director, Theobald Group', photo: '/images/Client logo/Jennifer G.jpeg' },
+        { texte: 'What sets MyDigipal apart is the proximity and personalised follow-up. They’re always available, proactive with optimisations, and truly invested in our success.', auteur: 'Vanina F.', fonction: 'digital manager, Vulcain Group', photo: '/images/Client logo/Vanina F.jpeg' },
+      ],
+};
+
+/* ------------------------------------------------------------ les questions */
+
+const faq = fr
+  ? [
+      { question: 'Faut-il un gros budget pour commencer ?', answer: 'Non. On commence souvent par une marque ou par l’occasion, puis on élargit à ce qui vend. L’estimateur plus haut donne un ordre de grandeur pour votre zone et votre budget, à partir des résultats de nos comptes automobiles.' },
+      { question: 'Vous occupez-vous de groupes de plusieurs marques ?', answer: 'Oui, c’est le cas de la plupart de nos clients : dix marques chez Théobald, huit chez Guyane Automobile. Chaque marque a son budget, ses annonces et ses chiffres, et le groupe garde une vue d’ensemble.' },
+      { question: 'Comment travaillez-vous avec les programmes des constructeurs ?', answer: 'Certaines marques diffusent déjà pour vous dans leurs programmes, d’autres encadrent les recherches sur leur nom. Nous vérifions le cadre de chaque marque avant de lancer, pour compléter ce qu’elles font sans se marcher dessus.' },
+      { question: 'Que faut-il pour transformer notre stock en annonces ?', answer: 'Le stock de votre site, exporté chaque jour : modèle, année, kilométrage, prix, photos et concession. Nous en faisons un flux pour Google et pour Meta, et une voiture vendue sort des annonces toute seule.' },
+      { question: 'Pouvez-vous relier les contacts à notre CRM ?', answer: 'Oui. La source de chaque contact (canal, campagne, mot-clé) voyage jusqu’au CRM, puis contacts, opportunités et ventes sont rapprochés automatiquement, en temps réel quand le CRM le permet.' },
+    ]
+  : [
+      { question: 'Do we need a big budget to start?', answer: 'No. We often start with one brand or with used cars, then extend to what sells. The estimator above gives an order of magnitude for your area and budget, based on the results of the dealer accounts we run.' },
+      { question: 'Do you work with multi-brand dealer groups?', answer: 'Yes, most of our clients are: ten brands at Théobald, eight at Guyane Automobile. Each brand has its own budget, ads and numbers, and the group keeps the overall view.' },
+      { question: 'How do you work with manufacturer programmes?', answer: 'Some brands already advertise for you through their programmes, others set rules on searches for their name. We check each brand’s framework before launching, so we add to what they do instead of competing with it.' },
+      { question: 'What do you need to turn our stock into ads?', answer: 'The stock on your website, exported every day: model, year, mileage, price, photos and dealership. We turn it into a feed for Google and Meta, and a sold car leaves the ads on its own.' },
+      { question: 'Can you connect leads to our CRM?', answer: 'Yes. Each lead’s source (channel, campaign, keyword) travels into the CRM, then leads, opportunities and sales are matched automatically, in real time when the CRM allows it.' },
+    ];
+
+const fin = fr
+  ? { titre: 'Et chez vous, combien de voitures de plus ?', texte: 'Le calculateur chiffre vos campagnes en deux minutes. Ou écrivez-nous : réponse sous 24 h.' }
+  : { titre: 'How many more cars could you sell?', texte: 'The calculator prices your campaigns in two minutes. Or write to us: we reply within 24 hours.' };
+
+const problemes = [
+  { id: 'acheteurs', fond: 'encre', bloc: acheteurs },
+  { id: 'contacts', fond: 'blanc', bloc: contacts },
+  { id: 'mesure', fond: 'encre', bloc: mesure },
+] as const;
 ---
 
-<PageLayout lang={lang} title={c.seo.title} description={c.seo.description}>
-  <!-- Direction Encre, modèle AI Training (groupe 3, 30/09/2026). -->
-  <PageHero
-    eyebrow={c.hero.badge}
-    title={c.hero.headline}
-    subtitle={c.hero.subheadline}
-    description={c.hero.description}
-    actions={[
-      { href: `/${lang}/calculator?service=google-ads,paid-social`, label: fr ? 'Calculer mon budget' : 'Calculate my budget' },
-      { href: `/${lang}/contact`, label: fr ? 'Nous contacter' : 'Contact us', style: 'contour' },
-    ]}
-  />
+<PageLayout lang={lang} title={t.seo.titre} description={t.seo.description}>
+  <div class="auto-apercu">
+    <!-- 1. Le hero (blanc) : la phrase, les chiffres de l'agence sur le tableau à palettes,
+         les deux portes, puis les logos des clients en couleur. -->
+    <HeroService
+      lang={lang}
+      badge={t.hero.badge}
+      headline={t.hero.titre}
+      description={t.hero.texte}
+      tableau={tableau}
+      heroLogos={logos}
+      titreLogos={t.hero.logos}
+      serviceCalculateur="google-ads,paid-social"
+    />
 
-  <!-- Les logos des concessions, en couleur (blanc). -->
-  <section class="section-blanc py-10 lg:py-12">
-    <BandeauLogos titre={t.logos} logos={logos} />
-  </section>
+    <!-- 2. Le parcours d'un acheteur, sur le rail (brume) : gardé de la page actuelle. -->
+    <AutomotiveRail lang={lang} titre={t.rail} chapo={t.railChapo} stations={railParcours(lang)} fond="brume" />
 
-  <!-- Pourquoi un marketing à part (encre) : le tableau à palettes et les quatre raisons. -->
-  <section class="section-encre section-monte py-20 lg:py-32">
-    <div class="container-custom">
-      <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
-        <h2 class="titre-moyen">{t.pourquoi}</h2>
-        <p class="chapo">{c.intro.description}</p>
-      </header>
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-5">
-        <div class="carte-verre auto-tableau grid content-between gap-8 p-6 lg:p-9" data-reveal>
-          <TableauPalettes lang={lang} lignes={tableau} tete />
-          <p class="border-t border-white/10 pt-5 text-sur-encre-2">
-            <span class="font-display text-2xl font-extrabold tracking-[-0.03em] text-white">{quatrieme.chiffre}{quatrieme.unite}</span>
-            {' '}{quatrieme.texte}
-          </p>
-        </div>
-        <ul class="grid grid-cols-1 content-start gap-4 sm:grid-cols-2">
-          {c.intro.points.map((p, i) => (
-            <li class="carte-verre grid content-start gap-3 p-6" data-reveal style={`--i:${i}`}>
-              <span class="tuile tuile-pleine"><Icon name={p.icon} size={26} /></span>
-              <h3 class="titre-carte text-white">{p.title}</h3>
-              <p class="text-sur-encre-2">{p.description}</p>
+    <!-- 3, 6 et 8. Les trois problèmes, chacun en récit collé : le texte défile à gauche, la
+         scène du labo reste à droite et change avec le chapitre. Au téléphone, chaque scène
+         passe dans le flux, au-dessus de son chapitre. -->
+    {problemes.map((p) => (
+      <Fragment>
+        <section
+          id={p.id}
+          class:list={[`section-${p.fond}`, { 'section-monte': p.fond === 'encre' }, 'probleme py-20 lg:py-28']}
+        >
+          <div class="container-custom">
+            <header class="grid max-w-[760px] gap-5 lg:gap-6">
+              <h2 class:list={['titre-moyen', p.fond === 'encre' ? 'text-white' : 'text-encre']}>{p.bloc.titre}</h2>
+              <p class="chapo">{p.bloc.chapo}</p>
+            </header>
+            <div class="recit-colle" data-recit>
+              <div class="recit-chapitres">
+                {p.bloc.chapitres.map((c, j) => (
+                  <article class="recit-chapitre" data-chapitre={j}>
+                    <div class="recit-mobile"><SceneEtude lang={lang} scene={c.scene} fond={p.fond} id={`${p.id}-${j}-m`} /></div>
+                    <p class="levier-nom">{c.marque}</p>
+                    <h3 class:list={['recit-titre', p.fond === 'encre' ? 'text-white' : 'text-encre']}>{c.titre}</h3>
+                    {c.paragraphes.map((x) => <p class="recit-texte">{x}</p>)}
+                    <div class="chiffre-levier">
+                      <b>{c.chiffre.valeur}</b>
+                      <span>{c.chiffre.texte}</span>
+                    </div>
+                    <p class="liens-levier">
+                      {c.liens.map((l) => (
+                        <a href={l.href}>{l.label}<Icon name="arrow-right" size={16} /></a>
+                      ))}
+                    </p>
+                  </article>
+                ))}
+              </div>
+              <aside class="recit-scene" aria-hidden="true">
+                <div class="recit-pile">
+                  {p.bloc.chapitres.map((c, j) => (
+                    <div class:list={['recit-calque', { actif: j === 0 }]} data-calque={j}>
+                      <SceneEtude lang={lang} scene={c.scene} fond={p.fond} id={`${p.id}-${j}`} chargement="eager" />
+                    </div>
+                  ))}
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        {p.id === 'acheteurs' && (
+          <Fragment>
+            <!-- 4. Le stock qui devient des annonces, puis ce que cela donne en quatre mois
+                 (brume) : gardé de la page actuelle, avec le lien vers le dossier. -->
+            <VehicleAdsResultats lang={lang} fond="brume" chaine>
+              <p class="liens-levier mt-8">
+                <a href={etudeUrl('vehicle-catalogue-ads')}>{fr ? 'Lire le dossier : le stock qui devient l’annonce' : 'Read the deep dive: stock that becomes the ad'}<Icon name="arrow-right" size={16} /></a>
+              </p>
+            </VehicleAdsResultats>
+
+            <!-- 5. Les portes ouvertes (encre) : la boucle de remarketing, au défilement. -->
+            <section id="portes-ouvertes" class="section-encre section-monte py-20 lg:py-28">
+              <div class="container-custom">
+                <header class="grid max-w-[760px] gap-5 lg:gap-6">
+                  <h2 class="titre-moyen text-white">{portes.titre}</h2>
+                  <p class="chapo">{portes.chapo}</p>
+                </header>
+                <div class="mt-12 lg:mt-14">
+                  <BoucleRemarketing lang={lang} id="auto-boucle" defilement />
+                </div>
+                <div class="chiffres-portes">
+                  {portes.chiffres.map((c) => (
+                    <div><b>{c.valeur}</b><span>{c.texte}</span></div>
+                  ))}
+                </div>
+                <p class="liens-levier mt-8">
+                  <a href={etudeUrl('open-days')}>{t.dossier}<Icon name="arrow-right" size={16} /></a>
+                </p>
+              </div>
+            </section>
+          </Fragment>
+        )}
+      </Fragment>
+    ))}
+
+    <!-- 9. Les trois leviers (brume) : gardés de la page actuelle, une ligne chacun, ses
+         marques, et sur l'encre un chiffre lu dans l'étude de cas du levier. -->
+    <section class="section-brume py-20 lg:py-28">
+      <div class="container-custom">
+        <header class="mb-12 grid max-w-[760px] gap-5 lg:mb-14 lg:gap-6">
+          <h2 class="titre-moyen text-encre">{leviers.titre}</h2>
+          <p class="chapo">{leviers.chapo}</p>
+        </header>
+        <ul class="grid gap-4 lg:gap-5">
+          {leviers.items.map((s, i) => (
+            <li data-reveal style={`--i:${i}`}>
+              <a href={s.href} class="levier carte group grid grid-cols-1 gap-6 p-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:gap-10 lg:p-8">
+                <div class="grid content-start gap-4">
+                  <ul class="flex flex-wrap gap-2.5" aria-hidden="true">
+                    {s.marques.map((m) => (
+                      <li class="grid h-11 w-11 place-items-center rounded-xl bg-brume-clair"><Marque nom={m} taille={22} /></li>
+                    ))}
+                  </ul>
+                  <div class="grid gap-1">
+                    <h3 class="titre-carte text-encre transition-colors group-hover:text-marque lg:text-[2rem]">{s.nom}</h3>
+                    <p class="font-semibold text-slate-500">{s.accroche}</p>
+                  </div>
+                  <p class="max-w-[60ch] text-slate-600 text-pretty">{s.texte}</p>
+                  <ul class="puces">{s.formats.map((f) => <li>{f}</li>)}</ul>
+                  <span class="mt-1 inline-flex items-center gap-2 font-semibold text-marque transition-all group-hover:gap-3">
+                    {leviers.lien}
+                    <Icon name="arrow-right" size={18} />
+                  </span>
+                </div>
+                <div class="carte-encre grid content-between gap-6 p-6 lg:p-8">
+                  <p class="levier-grand">{s.chiffre.valeur}</p>
+                  <p class="text-base leading-relaxed text-sur-encre text-pretty">{s.chiffre.texte}</p>
+                </div>
+              </a>
             </li>
           ))}
         </ul>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Le tunnel d'un concessionnaire, sur le rail (blanc). -->
-  <AutomotiveRail lang={lang} titre={t.rail} chapo={t.railChapo} stations={rail} />
-
-  <!-- Le stock qui devient des annonces, en isométrie, puis ce que cela donne en quatre
-       mois (brume). La section d'encre qui suit monte dessus. -->
-  <VehicleAdsResultats lang={lang} fond="brume" chaine />
-
-  <!-- Notre approche (encre) : quatre temps sur une frise. -->
-  <section class="section-encre section-monte py-20 lg:py-32">
-    <div class="container-custom">
-      <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16">
-        <h2 class="titre-moyen">{c.process.title}</h2>
-      </header>
-      <ol class="frise grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-6">
-        {c.process.steps.map((s, i) => (
-          <li class="frise-temps grid content-start gap-3" data-reveal style={`--i:${i}`}>
-            <span class="frise-numero" aria-hidden="true">{i + 1}</span>
-            <h3 class="titre-carte text-white">{s.title}</h3>
-            <p class="text-sur-encre-2 text-pretty">{s.description}</p>
-          </li>
-        ))}
-      </ol>
-    </div>
-  </section>
-
-  <!-- Les trois leviers (brume) : une ligne chacun, ses marques, son chiffre sur l'encre. -->
-  <section class="section-brume py-20 lg:py-32">
-    <div class="container-custom">
-      <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
-        <h2 class="titre-moyen text-encre">{t.leviers}</h2>
-        <p class="chapo">{t.leviersChapo}</p>
-      </header>
-      <ul class="grid gap-4 lg:gap-5">
-        {c.services.map((s, i) => (
-          <li data-reveal style={`--i:${i}`}>
-            <a href={s.href} class="levier carte group grid grid-cols-1 gap-6 p-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-10 lg:p-8">
-              <div class="grid content-start gap-4">
-                <ul class="flex flex-wrap gap-2.5" aria-hidden="true">
-                  {(MARQUES[s.name] ?? []).map((m) => (
-                    <li class="grid h-11 w-11 place-items-center rounded-xl bg-brume-clair"><Marque nom={m} taille={22} /></li>
-                  ))}
-                </ul>
-                <div class="grid gap-1">
-                  <h3 class="titre-carte text-encre transition-colors group-hover:text-marque lg:text-[2rem]">{s.name}</h3>
-                  <p class="font-semibold text-slate-500">{s.tagline}</p>
-                </div>
-                <p class="max-w-[60ch] text-slate-600 text-pretty">{s.description}</p>
-                <ul class="puces">{s.features.map((f) => <li>{f}</li>)}</ul>
-                <span class="mt-1 inline-flex items-center gap-2 font-semibold text-marque transition-all group-hover:gap-3">
-                  {c.cta}
-                  <Icon name="arrow-right" size={18} />
-                </span>
-              </div>
-              <div class="carte-encre grid content-between gap-6 p-6 lg:p-8">
-                <p class="levier-chiffre">{s.stat.value}</p>
-                <div class="grid gap-3">
-                  <p class="text-lg text-sur-encre">{s.stat.label}</p>
-                  <ul class="grid gap-1.5 border-t border-white/10 pt-4">
-                    {s.highlights.slice(0, 3).map((h) => (
-                      <li class="flex items-start gap-2 text-sur-encre-2">
-                        <Icon name="check" size={16} class="mt-1 flex-none text-marque-clair" />
-                        <span>{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+    <!-- 10. Les groupes qu'on accompagne (blanc) : le premier en grand avec sa vignette,
+         les six autres autour, et la porte vers toutes les études. -->
+    <section class="section-blanc py-20 lg:py-28">
+      <div class="container-custom">
+        <header class="mb-12 grid max-w-[760px] gap-5 lg:mb-14 lg:gap-6">
+          <h2 class="titre-moyen text-encre">{groupes.titre}</h2>
+          <p class="chapo">{groupes.chapo}</p>
+        </header>
+        <ul class="groupes">
+          <li class="groupe-tete">
+            <a href={etudeUrl(groupeTete.slug)} class="carte group grid h-full overflow-hidden">
+              <span class="block aspect-[16/9] overflow-hidden">
+                <img src={groupeTete.image} alt="" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async" />
+              </span>
+              <span class="grid content-start gap-4 p-6 lg:p-8">
+                {groupeTete.logo ? <img src={groupeTete.logo} alt={groupeTete.nom} class="groupe-logo" style={`height:${hauteurLogo(groupeTete.id, 1.15)}px`} loading="lazy" decoding="async" /> : <span class="groupe-nom">{groupeTete.nom}</span>}
+                <span class="groupe-chiffre groupe-chiffre-grand">{groupeTete.chiffre.valeur}</span>
+                <span class="text-slate-600 text-pretty">{groupeTete.chiffre.texte}</span>
+                <span class="font-display text-xl font-extrabold leading-snug tracking-[-0.02em] text-encre text-pretty">{groupeTete.titre}</span>
+                <span class="inline-flex items-center gap-2 font-semibold text-marque transition-all group-hover:gap-3">{groupes.lire}<Icon name="arrow-right" size={16} /></span>
+              </span>
             </a>
           </li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  <!-- Ce que disent les concessions (encre). -->
-  <section class="section-encre section-monte py-20 lg:py-32">
-    <div class="container-custom">
-      <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16">
-        <h2 class="titre-moyen">{c.testimonials.title}</h2>
-      </header>
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
-        {c.testimonials.items.map((q, i) => (
-          <figure class="carte-verre grid content-between gap-8 p-6 lg:p-9" data-reveal style={`--i:${i}`}>
-            <blockquote>
-              <p class="citation">{fr ? `« ${q.quote} »` : `“${q.quote}”`}</p>
-            </blockquote>
-            <figcaption class="flex items-center gap-4">
-              {q.image && <img src={q.image} alt="" width="56" height="56" class="h-14 w-14 flex-none rounded-full object-cover" loading="lazy" decoding="async" />}
-              <span>
-                <span class="block font-semibold text-white">{q.author}</span>
-                <span class="block text-sur-encre-2">{[q.role, q.company].filter(Boolean).join(', ')}</span>
-              </span>
-            </figcaption>
-          </figure>
-        ))}
+          {groupesSuite.map((g) => (
+            <li>
+              <a href={etudeUrl(g.slug)} class="carte group grid h-full content-between gap-5 p-6">
+                <span class="grid h-16 items-center">
+                  {g.logo ? <img src={g.logo} alt={g.nom} class="groupe-logo" style={`height:${hauteurLogo(g.id)}px`} loading="lazy" decoding="async" /> : <span class="groupe-nom">{g.nom}</span>}
+                </span>
+                <span class="grid gap-2">
+                  <span class="groupe-chiffre">{g.chiffre.valeur}</span>
+                  <span class="text-[0.95rem] leading-snug text-slate-600">{g.court}</span>
+                </span>
+                <span class="inline-flex items-center gap-2 text-[0.95rem] font-semibold text-marque transition-all group-hover:gap-3">{g.nom}<Icon name="arrow-right" size={16} /></span>
+              </a>
+            </li>
+          ))}
+          <li class="groupe-tout">
+            <a href={`/${lang}/case-studies`} class="carte-encre group grid h-full content-between gap-6 p-6 lg:p-8">
+              <span class="font-display text-2xl font-extrabold leading-tight tracking-[-0.025em] text-white">{groupes.tout}</span>
+              <span class="text-sur-encre-2 text-pretty">{groupes.toutTexte}</span>
+              <span class="inline-flex items-center gap-2 font-semibold text-marque-clair transition-all group-hover:gap-3">{groupes.tout}<Icon name="arrow-right" size={16} /></span>
+            </a>
+          </li>
+        </ul>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <FinalCTA lang={lang} color="primary" />
+    <!-- 11. L'estimateur (brume) : « Vos chiffres, dans votre zone ». -->
+    <EstimateurAuto lang={lang} fond="brume" etude="automotive" />
+
+    <!-- 12. Comment on travaille, puis l'équipe automobile (encre). -->
+    <section class="section-encre section-monte py-20 lg:py-28">
+      <div class="container-custom">
+        <header class="mb-12 grid max-w-[760px] gap-5 lg:mb-16 lg:gap-6">
+          <h2 class="titre-moyen text-white">{methode.titre}</h2>
+          <p class="chapo">{methode.chapo}</p>
+        </header>
+        <ol class="frise">
+          {methode.temps.map((m, i) => (
+            <li class="frise-temps" data-reveal style={`--i:${i}`}>
+              <p class="frise-quand">{m.quand}</p>
+              <h3 class="titre-carte text-white">{m.titre}</h3>
+              <p class="text-sur-encre-2 text-pretty">{m.texte}</p>
+            </li>
+          ))}
+        </ol>
+
+        <h3 class="equipe-titre">{methode.equipeTitre}</h3>
+        <ul class="equipe">
+          {methode.equipe.map((p, i) => (
+            <li data-reveal style={`--i:${i}`}>
+              <span class="equipe-photo"><img src={p.photo} alt={p.nom} loading="lazy" decoding="async" width="320" height="400" /></span>
+              <b>{p.nom}</b>
+              <span class="equipe-role">{p.role}</span>
+              <span class="equipe-detail">{p.detail}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- 13. La parole des clients (brume) : les verbatims de la page actuelle. -->
+    <section class="section-brume py-20 lg:py-28">
+      <div class="container-custom">
+        <h2 class="titre-moyen mb-12 text-encre lg:mb-14">{paroles.titre}</h2>
+        <div class="paroles">
+          {paroles.items.map((q) => (
+            <figure class="parole">
+              <blockquote>{fr ? `« ${q.texte} »` : `“${q.texte}”`}</blockquote>
+              <figcaption>
+                <img src={q.photo} alt="" width="56" height="56" loading="lazy" decoding="async" />
+                <span><b>{q.auteur}</b>{q.fonction}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 14. Les questions (blanc), puis l'appel final (brume). -->
+    <AutomotiveFAQ lang={lang} faq={faq} />
+    <FinalCTA lang={lang} title={fin.titre} subtitle={fin.texte} />
+  </div>
 </PageLayout>
 
+<script>
+  /* Chaque scène du labo ne joue que lorsqu'elle est à l'écran ; sinon elle reste sur son
+     image de repos. Dans un récit collé, la scène de droite suit le chapitre lu.
+     (Même mécanique que `EtudeC.astro`.) */
+  function envoyer(f: HTMLIFrameElement | null, m: object) { f?.contentWindow?.postMessage(m, '*'); }
+  function repos(f: HTMLIFrameElement) { envoyer(f, { cmd: 'pause' }); envoyer(f, { cmd: 'seek', t: Number(f.dataset.repos || 0) }); }
+  function jouer(f: HTMLIFrameElement) { envoyer(f, { cmd: 'seek', t: 0 }); envoyer(f, { cmd: 'play' }); }
+  function brancher() {
+    if (!('IntersectionObserver' in window)) return;
+    const libres = Array.from(document.querySelectorAll<HTMLIFrameElement>('.auto-apercu .recit-mobile [data-scene-etude] iframe'));
+    const io = new IntersectionObserver((es) => es.forEach((e) => { const f = e.target as HTMLIFrameElement; e.isIntersecting ? jouer(f) : repos(f); }), { threshold: 0.4 });
+    libres.forEach((f) => { if (f.dataset.branche) return; f.dataset.branche = '1'; f.addEventListener('load', () => { repos(f); io.observe(f); }); });
+    document.querySelectorAll<HTMLElement>('.auto-apercu [data-recit]').forEach((r) => {
+      if (r.dataset.branche) return; r.dataset.branche = '1';
+      const calques = Array.from(r.querySelectorAll<HTMLElement>('.recit-calque'));
+      const cadres = calques.map((c) => c.querySelector('iframe'));
+      let actif = 0;
+      let visible = false;
+      cadres.forEach((f, i) => f?.addEventListener('load', () => { if (i !== actif || !visible) repos(f); }));
+      const activer = (i: number) => {
+        if (i === actif) return;
+        calques[actif].classList.remove('actif'); if (cadres[actif]) repos(cadres[actif]!);
+        actif = i; calques[i].classList.add('actif'); if (cadres[i]) jouer(cadres[i]!);
+      };
+      const ioR = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) activer(Number((e.target as HTMLElement).dataset.chapitre)); }), { rootMargin: '-45% 0px -45% 0px' });
+      r.querySelectorAll('[data-chapitre]').forEach((c) => ioR.observe(c));
+      /* La scène du premier chapitre joue dès que le récit arrive à l'écran. */
+      new IntersectionObserver((es) => es.forEach((e) => {
+        visible = e.isIntersecting;
+        const f = cadres[actif];
+        if (f) (visible ? jouer : repos)(f);
+      }), { threshold: 0.2 }).observe(r);
+    });
+  }
+  brancher();
+  document.addEventListener('astro:page-load', brancher);
+</script>
+
 <style>
-  .levier {
-    transition: box-shadow 300ms var(--mdp-entree);
+  @reference "../../styles/global.css";
+
+  /* Le nom du levier au-dessus d'un chapitre : un repère, pas une rubrique de section. */
+  .levier-nom { font-size: 1rem; font-weight: 600; color: var(--color-marque); }
+  :global(.section-encre) .levier-nom { color: var(--color-marque-clair); }
+
+  /* Le récit collé (repris de EtudeC) : le texte défile, la scène reste. */
+  .recit-colle { display: grid; gap: 40px; margin-top: 32px; }
+  .recit-chapitre { display: grid; gap: 14px; align-content: center; padding-block: 32px; }
+  .recit-texte { font-size: 1.0625rem; line-height: 1.7; color: var(--color-slate-600); max-width: 58ch; }
+  :global(.section-encre) .recit-texte { color: var(--texte-sombre); }
+  .recit-titre { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem); line-height: 1.08; text-wrap: balance; }
+  .recit-mobile { margin-bottom: 12px; }
+  .recit-scene { display: none; }
+  @media (min-width: 1024px) {
+    .recit-colle { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 64px; align-items: start; margin-top: 8px; }
+    .recit-chapitre { min-height: 78vh; padding-block: 8vh; }
+    .recit-mobile { display: none; }
+    .recit-scene { display: grid; position: sticky; top: 96px; height: calc(100vh - 140px); align-content: center; }
+    .recit-pile { position: relative; }
+    .recit-calque { position: absolute; inset: 0 0 auto 0; opacity: 0; transition: opacity 0.45s cubic-bezier(0.15, 1, 0.32, 1); pointer-events: none; }
+    .recit-calque:first-child { position: relative; }
+    .recit-calque.actif { opacity: 1; pointer-events: auto; }
   }
-  .levier:hover {
-    box-shadow: inset 0 0 0 1px rgb(29 113 184 / 0.35), 0 24px 50px -30px rgb(11 27 43 / 0.45);
+
+  /* Le chiffre d'un levier : grand, lu dans la fiche, avec sa phrase dessous. */
+  .chiffre-levier { display: grid; gap: 6px; margin-top: 10px; padding-top: 18px; border-top: 1px solid var(--filet); max-width: 52ch; }
+  :global(.section-encre) .chiffre-levier { border-top-color: rgb(125 184 238 / 0.22); }
+  .chiffre-levier b {
+    font-family: var(--font-display); font-weight: 800; letter-spacing: -0.04em; line-height: 1;
+    font-size: clamp(2.4rem, 1.8rem + 2vw, 3.4rem); color: var(--encre); font-variant-numeric: tabular-nums;
   }
-  .levier-chiffre {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: clamp(3.5rem, 2.2rem + 4vw, 5.5rem);
-    line-height: 0.9;
-    letter-spacing: -0.05em;
-    color: #fff;
-    white-space: nowrap;
+  :global(.section-encre) .chiffre-levier b { color: #fff; }
+  .chiffre-levier span { font-size: 0.97rem; line-height: 1.5; color: var(--color-slate-500); }
+  :global(.section-encre) .chiffre-levier span { color: var(--texte-sombre-2); }
+
+  .liens-levier { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 6px; }
+  .liens-levier a { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--color-marque); transition: gap 300ms var(--mdp-entree); }
+  .liens-levier a:hover { gap: 12px; }
+  :global(.section-encre) .liens-levier a { color: var(--color-marque-clair); }
+
+  /* Les deux chiffres des portes ouvertes, sous la boucle. */
+  .chiffres-portes { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1px; margin-top: 48px; background: rgb(125 184 238 / 0.18); border-radius: 22px; overflow: hidden; }
+  .chiffres-portes > div { display: grid; gap: 8px; align-content: start; padding: 26px; background: var(--encre-2); }
+  .chiffres-portes b { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.2rem, 1.6rem + 2.2vw, 3.4rem); line-height: 1; letter-spacing: -0.03em; color: #fff; }
+  .chiffres-portes span { font-size: 0.97rem; line-height: 1.5; color: var(--texte-sombre-2); }
+  @media (min-width: 768px) { .chiffres-portes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* Les trois leviers. */
+  .levier { transition: box-shadow 300ms var(--mdp-entree); }
+  .levier:hover { box-shadow: inset 0 0 0 1px rgb(29 113 184 / 0.35), 0 24px 50px -30px rgb(11 27 43 / 0.45); }
+  .levier-grand {
+    font-family: var(--font-display); font-weight: 800; line-height: 0.9; letter-spacing: -0.05em; color: #fff; white-space: nowrap;
+    font-size: clamp(3.25rem, 2.2rem + 3.6vw, 5.25rem);
   }
-  .citation {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.625rem);
-    line-height: 1.35;
-    letter-spacing: -0.015em;
-    color: #fff;
-    text-wrap: pretty;
-  }
-  .frise-numero {
-    position: relative;
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 999px;
-    background: var(--color-marque);
-    color: #fff;
-    font-family: var(--font-display);
-    font-weight: 800;
-  }
+
+  /* Les groupes : le premier en grand, six autour, la porte vers toutes les études. */
+  .groupes { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
   @media (min-width: 768px) {
-    .frise-temps {
-      position: relative;
-    }
-    /* Le trait de la frise, du numéro au suivant. */
-    .frise-temps:not(:last-child)::before {
-      content: '';
-      position: absolute;
-      top: 22px;
-      left: 56px;
-      right: -12px;
-      height: 2px;
-      background: rgb(255 255 255 / 0.16);
-    }
+    .groupes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .groupe-tete, .groupe-tout { grid-column: span 2; }
   }
+  @media (min-width: 1024px) {
+    .groupes { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+    .groupe-tete { grid-column: span 2; grid-row: span 2; }
+    .groupe-tout { grid-column: span 2; }
+  }
+  .groupe-logo { width: auto; max-width: 170px; object-fit: contain; object-position: left center; }
+  .groupe-nom { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; letter-spacing: -0.02em; color: var(--encre); }
+  .groupe-chiffre { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.9rem, 1.5rem + 1vw, 2.4rem); line-height: 1; letter-spacing: -0.04em; color: var(--encre); }
+  .groupe-chiffre-grand { font-size: clamp(2.8rem, 2rem + 2.6vw, 4.2rem); }
+
+  /* La méthode : quatre temps sur une frise, nommés par leur moment, sans numéro. */
+  .frise { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; margin: 0; padding: 0; list-style: none; }
+  .frise-temps { display: grid; align-content: start; gap: 10px; padding-top: 22px; border-top: 1px solid rgb(255 255 255 / 0.16); }
+  .frise-quand { font-weight: 600; color: var(--color-marque-clair); }
+  @media (min-width: 768px) { .frise { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 32px; } }
+  @media (min-width: 1024px) { .frise { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; } }
+
+  /* L'équipe automobile. */
+  .equipe-titre { margin-top: 80px; margin-bottom: 32px; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.1rem); line-height: 1.1; color: #fff; }
+  .equipe { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 16px; margin: 0; padding: 0; list-style: none; }
+  @media (min-width: 768px) { .equipe { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 24px; } }
+  @media (min-width: 1024px) { .equipe { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+  .equipe li { display: grid; align-content: start; gap: 4px; }
+  .equipe-photo { display: block; aspect-ratio: 4 / 5; margin-bottom: 12px; overflow: hidden; border-radius: 18px; background: var(--encre-2); }
+  .equipe-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .equipe b { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; letter-spacing: -0.01em; color: #fff; }
+  .equipe-role { font-size: 0.95rem; line-height: 1.4; color: var(--texte-sombre); }
+  .equipe-detail { font-size: 0.9rem; line-height: 1.45; color: var(--texte-sombre-2); }
+
+  /* La parole des clients : deux citations, la première un peu plus grande. */
+  .paroles { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px; }
+  @media (min-width: 1024px) { .paroles { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 72px; align-items: start; } }
+  .parole { margin: 0; display: grid; gap: 22px; }
+  .parole blockquote { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.3rem, 1.05rem + 1vw, 1.85rem); line-height: 1.35; letter-spacing: -0.02em; color: var(--encre); text-wrap: pretty; }
+  .parole + .parole blockquote { font-size: clamp(1.15rem, 1rem + 0.6vw, 1.4rem); }
+  .parole figcaption { display: flex; align-items: center; gap: 14px; color: var(--color-slate-500); }
+  .parole figcaption img { width: 56px; height: 56px; flex: none; border-radius: 999px; object-fit: cover; }
+  .parole figcaption span { display: grid; }
+  .parole figcaption b { color: var(--encre); font-weight: 600; }
 </style>
