@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>L’ABM, compte par compte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+/* L'ABM expliqué en une boucle. À gauche, la liste des comptes cibles : vingt-quatre cartes, une par
+   entreprise. Les annonces passent sur la liste et ne touchent qu'elle. Les comptes qui s'engagent
+   s'allument, leurs contacts apparaissent un par un. Les plus chauds passent en or, un fil part de
+   chacun vers la droite : l'agenda des commerciaux se remplit, ou la barre du pipeline monte.
+   Un jeu de données par client (?jeu=genesys|gwi|quantum|symbl), un jeu par défaut sans chiffre.
+   Tout est calculé depuis t. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(1100px 760px at 640px 560px,rgba(29,113,184,.16),rgba(8,19,31,0) 70%)}
+#scene{position:absolute;inset:0}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(125%)}
+#titre{position:absolute;left:110px;top:84px}
+#titre .ln{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.06;white-space:nowrap}
+.ln.o{color:#e8bd62}
+.lab{position:absolute;font-size:19px;font-weight:600;color:#a9b8c8;line-height:1.3;white-space:nowrap}
+.lab.g{display:flex;align-items:center;gap:12px}
+.lab.g .sym{flex:none}
+/* les cartes de comptes */
+.carte{position:absolute;width:172px;height:128px;box-sizing:border-box;border-radius:16px;border:1.5px dashed rgba(125,184,238,.2);background:rgba(255,255,255,.02);padding:14px 14px 0;z-index:3}
+.carte b{display:block;font-size:17px;font-weight:800;letter-spacing:-.01em;color:#f4f7fa;white-space:nowrap}
+.carte small{display:block;margin-top:3px;font-size:13px;font-weight:600;color:#8a9bb0;white-space:nowrap}
+.pts{position:absolute;left:14px;bottom:14px;display:flex;gap:6px}
+.pts i{width:18px;height:18px;border-radius:50%;background:#7db8ee;box-shadow:0 0 0 2px #10304d}
+.api{position:absolute;right:12px;top:13px;height:20px;line-height:18px;padding:0 7px;box-sizing:border-box;border-radius:10px;border:1.5px solid rgba(232,189,98,.8);font-size:11px;font-weight:800;color:#e8bd62}
+.vu{position:absolute;right:14px;bottom:18px;width:8px;height:8px;border-radius:50%;background:#7db8ee}
+#onde{position:absolute;top:290px;width:140px;height:554px;margin-left:-70px;background:linear-gradient(90deg,rgba(125,184,238,0),rgba(125,184,238,.22) 50%,rgba(125,184,238,0));z-index:4;pointer-events:none}
+#onde i{position:absolute;left:69px;top:0;bottom:0;width:2px;background:#7db8ee}
+/* le panneau de droite */
+#panneau{position:absolute;left:1250px;top:290px;width:560px;height:690px;border-radius:24px;background:#0d2135;box-shadow:0 50px 100px -40px rgba(0,0,0,.8);z-index:1}
+#pT{position:absolute;left:1290px;top:318px;width:480px;font-size:22px;font-weight:700;letter-spacing:-.01em;color:#f4f7fa;z-index:4}
+.jour{position:absolute;top:392px;width:96px;text-align:center;font-size:14px;font-weight:700;color:#8a9bb0;z-index:2}
+.heure{position:absolute;left:1290px;width:480px;height:1px;background:rgba(125,184,238,.14);z-index:2;transform-origin:left}
+.rdv{position:absolute;width:88px;height:50px;box-sizing:border-box;border-radius:10px;background:#1D71B8;color:#fff;padding:8px 9px 0;font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;z-index:4}
+.rdv small{display:block;font-size:11px;font-weight:600;color:#cfe3f5;margin-top:1px}
+.barre{position:absolute;width:150px;border-radius:14px 14px 4px 4px;z-index:3}
+.bl{position:absolute;width:190px;margin-left:-20px;text-align:center;font-size:16px;font-weight:700;color:#a9b8c8;line-height:1.3;z-index:3}
+#socle{position:absolute;left:1290px;top:640px;width:480px;height:2px;background:rgba(125,184,238,.25);z-index:3;transform-origin:left}
+#val{position:absolute;left:1290px;top:700px;font-size:118px;font-weight:800;letter-spacing:-.04em;line-height:1;color:#e8bd62;font-variant-numeric:tabular-nums;white-space:nowrap;z-index:4}
+#cap{position:absolute;left:1290px;top:836px;width:480px;font-size:22px;font-weight:600;line-height:1.35;color:#c9d6e3;z-index:4}
+#cap.seul{top:706px;font-size:34px;font-weight:800;letter-spacing:-.02em;color:#f4f7fa;line-height:1.2}
+#leg{position:absolute;left:110px;top:1012px;font-size:15px;font-weight:600;color:#6f8399;white-space:nowrap}
+#fils{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:2}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="scene">
+    <div id="titre"></div>
+    <div class="lab" id="lList" style="left:110px;top:246px"></div>
+    <div id="grille"></div>
+    <div id="onde"><i></i></div>
+    <div class="lab g" id="lWave" style="left:110px;top:872px"></div>
+    <div class="lab g" id="lEng" style="right:708px;top:872px"></div>
+    <div id="panneau"></div>
+    <div id="pT"><div class="mask"><span class="ln" id="pTl"></span></div></div>
+    <div id="sortie"></div>
+    <div id="val"><div class="mask"><span class="ln" id="valT"></span></div></div>
+    <div id="cap"></div>
+    <div id="leg"></div>
+    <svg id="fils" viewBox="0 0 1920 1080"></svg>
+  </div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:500">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+
+<script>
+window.STAGE = { w: 1920, h: 1080 };
+window.DUREE = 16;
+window.DUR = window.DUREE;
+window.PRET = Promise.all([
+  document.fonts.load("800 52px 'Plus Jakarta Sans'"),
+  document.fonts.load("700 22px 'Plus Jakarta Sans'"),
+  document.fonts.load("600 19px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+
+(function () {
+'use strict';
+var EN = /\/en\//.test(location.pathname);
+var CLE = (new URLSearchParams(location.search).get('jeu') || 'defaut').toLowerCase();
+
+/* ---------- les jeux de données ----------
+   Chaque jeu porte les chiffres de l'étude de cas de son client, jamais ceux d'un autre.
+   Les comptes affichés sont des exemples (secteur et région), jamais de vrais noms d'entreprise. */
+var JEUX = {
+  defaut: {
+    mode: 'agenda',
+    secteurs: { fr: ['Banque', 'Assurance', 'Retail', 'Santé', 'Télécoms', 'Énergie', 'Logiciel', 'Industrie'], en: ['Bank', 'Insurance', 'Retail', 'Health', 'Telecoms', 'Energy', 'Software', 'Industry'] },
+    regions: { fr: ['France', 'Royaume-Uni', 'Allemagne', 'Espagne', 'États-Unis', 'Italie'], en: ['France', 'UK', 'Germany', 'Spain', 'US', 'Italy'] },
+    fr: { titre: ['Une liste de comptes,', 'pas une liste de clics.'], lList: 'Les comptes choisis avec les commerciaux', lWave: 'Les annonces ne touchent que ces comptes', lEng: 'Ceux qui s’engagent s’allument',
+      panneau: 'L’agenda des commerciaux', valeur: '', texte: 'Des rendez-vous avec ceux qui décident.', legende: 'Exemple reconstitué · comptes représentés par leur secteur et leur pays' },
+    en: { titre: ['A list of accounts,', 'not a list of clicks.'], lList: 'Accounts chosen with the sales team', lWave: 'Ads reach these accounts only', lEng: 'Engaged accounts light up',
+      panneau: 'The sales team’s calendar', valeur: '', texte: 'Meetings with the people who decide.', legende: 'Illustrative example · accounts shown by sector and country' }
+  },
+  genesys: {
+    mode: 'agenda',
+    secteurs: { fr: ['Retail', 'Banque', 'Santé', 'Tech', 'Assurance', 'Télécoms', 'Voyage', 'Services'], en: ['Retail', 'Banking', 'Health', 'Tech', 'Insurance', 'Telecoms', 'Travel', 'Services'] },
+    regions: { fr: ['DACH', 'France', 'Espagne', 'Italie', 'Afrique du Sud', 'Moyen-Orient'], en: ['DACH', 'France', 'Spain', 'Italy', 'South Africa', 'Middle East'] },
+    fr: { titre: ['Genesys : les comptes d’abord,', 'les rendez-vous ensuite.'], lList: 'Des listes de comptes par région, revues chaque mois', lWave: 'LinkedIn, campagne par campagne', lEng: 'Plusieurs décideurs par compte',
+      panneau: 'L’agenda des commerciaux', valeur: 'x3', texte: 'de rendez-vous réservés auprès des comptes ciblés, face à la prospection à froid', legende: 'Genesys · campagnes LinkedIn dans les régions EMEA · comptes représentés par leur secteur et leur région' },
+    en: { titre: ['Genesys: accounts first,', 'then meetings.'], lList: 'Account lists by region, reviewed every month', lWave: 'LinkedIn, campaign by campaign', lEng: 'Several decision-makers per account',
+      panneau: 'The sales team’s calendar', valeur: '3x', texte: 'more meetings booked with target accounts than with cold outreach', legende: 'Genesys · LinkedIn campaigns across EMEA regions · accounts shown by sector and region' }
+  },
+  gwi: {
+    mode: 'barres', ratio: 2.5,
+    secteurs: { fr: ['Marque', 'Agence', 'Médias', 'Retail', 'Tech', 'Finance', 'Luxe', 'Conseil'], en: ['Brand', 'Agency', 'Media', 'Retail', 'Tech', 'Finance', 'Luxury', 'Consulting'] },
+    regions: { fr: ['Royaume-Uni', 'Irlande', 'États-Unis', 'Royaume-Uni', 'États-Unis', 'Irlande'], en: ['UK', 'Ireland', 'US', 'UK', 'US', 'Ireland'] },
+    fr: { titre: ['GWI : un message', 'par décideur.'], lList: 'Marques et agences, rôle par rôle', lWave: 'LinkedIn, Google Ads et Meta', lEng: 'Les équipes marketing et insights répondent',
+      panneau: 'Le pipeline, comptes ABM contre le reste', avant: 'Leads hors ABM', apres: 'Comptes ABM', valeur: 'x2,5', texte: 'de pipeline influencé par les comptes touchés par l’ABM', legende: 'GWI · LinkedIn, Google Ads et Meta, Royaume-Uni, Irlande et États-Unis · comptes représentés par leur secteur' },
+    en: { titre: ['GWI: one message', 'per decision-maker.'], lList: 'Brands and agencies, role by role', lWave: 'LinkedIn, Google Ads and Meta', lEng: 'Marketing and insights teams respond',
+      panneau: 'Pipeline, ABM accounts against the rest', avant: 'Non-ABM leads', apres: 'ABM accounts', valeur: '2.5x', texte: 'pipeline influenced by the accounts reached through ABM', legende: 'GWI · LinkedIn, Google Ads and Meta, UK, Ireland and US · accounts shown by sector' }
+  },
+  quantum: {
+    mode: 'barres', ratio: 0.75, inverse: true,
+    secteurs: { fr: ['Retail', 'Banque', 'Voyage', 'Assurance', 'Télécoms', 'Médias', 'E-commerce', 'Énergie'], en: ['Retail', 'Banking', 'Travel', 'Insurance', 'Telecoms', 'Media', 'E-commerce', 'Energy'] },
+    regions: { fr: ['États-Unis', 'Royaume-Uni', 'États-Unis', 'Canada', 'Royaume-Uni', 'États-Unis'], en: ['US', 'UK', 'US', 'Canada', 'UK', 'US'] },
+    fr: { titre: ['Quantum Metric : l’ABM', 'parti de zéro.'], lList: 'La liste de comptes, construite avec les commerciaux', lWave: 'Première campagne LinkedIn sur la liste', lEng: 'Les meilleurs comptes s’engagent tout de suite',
+      panneau: 'Le coût d’un lead, avant et après', avant: 'Campagnes précédentes', apres: 'Liste de comptes', valeur: '-25 %', texte: 'sur le coût par lead, avec un taux de clic en hausse de 60 %', legende: 'Quantum Metric · première campagne LinkedIn sur la liste de comptes · comptes représentés par leur secteur' },
+    en: { titre: ['Quantum Metric: ABM', 'from scratch.'], lList: 'The account list, built with the sales team', lWave: 'First LinkedIn campaign on the list', lEng: 'Top accounts engage straight away',
+      panneau: 'Cost per lead, before and after', avant: 'Previous campaigns', apres: 'Account list', valeur: '-25%', texte: 'on cost per lead, with click-through rate up 60%', legende: 'Quantum Metric · first LinkedIn campaign on the account list · accounts shown by sector' }
+  },
+  symbl: {
+    mode: 'barres', ratio: 4.5, api: true,
+    secteurs: { fr: ['Téléphonie', 'Ventes', 'Visio', 'CRM', 'Santé', 'Logiciel', 'Banque', 'Médias'], en: ['Call center', 'Sales tech', 'Video', 'CRM', 'Health', 'Software', 'Banking', 'Media'] },
+    regions: { fr: ['États-Unis', 'États-Unis', 'Inde', 'Royaume-Uni', 'États-Unis', 'Canada'], en: ['US', 'US', 'India', 'UK', 'US', 'Canada'] },
+    fr: { titre: ['Symbl.ai : des développeurs', 'aux décideurs.'], lList: 'Les comptes où des développeurs utilisent déjà l’API', lWave: 'LinkedIn et Google Ads', lEng: 'Les décideurs de ces comptes s’engagent',
+      panneau: 'Les demandes de démo des comptes ciblés', avant: 'Avant', apres: 'Avec l’ABM', valeur: 'x4,5', texte: 'demandes de démo, et 120 % de leads entreprise en plus', legende: 'Symbl.ai · LinkedIn et Google Ads · comptes représentés par leur secteur et leur pays' },
+    en: { titre: ['Symbl.ai: from developers', 'to decision-makers.'], lList: 'Accounts where developers already use the API', lWave: 'LinkedIn and Google Ads', lEng: 'Decision-makers at those accounts engage',
+      panneau: 'Demo requests from target accounts', avant: 'Before', apres: 'With ABM', valeur: '4.5x', texte: 'demo requests, and 120% more enterprise leads', legende: 'Symbl.ai · LinkedIn and Google Ads · accounts shown by sector and country' }
+  }
+};
+var J = JEUX[CLE] || JEUX.defaut;
+var TX = EN ? J.en : J.fr;
+var LG = EN ? 'en' : 'fr';
+document.documentElement.lang = LG;
+document.title = EN ? 'ABM, account by account' : 'L’ABM, compte par compte';
+
+var D = window.DUREE;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outCubic(p) { return 1 - Math.pow(1 - p, 3); }
+function inCubic(p) { return p * p * p; }
+function outBack(p) { var c = 1.4; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); }
+var $ = function (id) { return document.getElementById(id); };
+var NS = 'http://www.w3.org/2000/svg';
+
+function lignes(id, arr, cls) {
+  $(id).innerHTML = arr.map(function (s, i) { return '<div class="mask"><span class="ln' + (cls && cls[i] ? ' ' + cls[i] : '') + '">' + s + '</span></div>'; }).join('');
+}
+lignes('titre', TX.titre, ['', 'o']);
+lignes('lList', [TX.lList]);
+/* les deux légendes du bas portent le signe de ce qu'elles nomment */
+$('lWave').innerHTML = '<svg class="sym" width="26" height="26" viewBox="0 0 26 26"><rect x="12" y="2" width="2" height="22" fill="#7db8ee"/><rect x="4" y="2" width="18" height="22" fill="rgba(125,184,238,.22)"/></svg><div class="mask"><span class="ln">' + TX.lWave + '</span></div>';
+$('lEng').innerHTML = '<svg class="sym" width="26" height="26" viewBox="0 0 26 26"><rect x="1.5" y="3.5" width="23" height="19" rx="5" fill="#10304d" stroke="#7db8ee" stroke-width="1.5"/><circle cx="8" cy="16" r="3" fill="#7db8ee"/><circle cx="15" cy="16" r="3" fill="#7db8ee"/></svg><div class="mask"><span class="ln">' + TX.lEng + '</span></div>';
+$('pTl').textContent = TX.panneau;
+$('leg').textContent = TX.legende;
+
+/* ---------- la grille des comptes ---------- */
+var COLS = 6, ROWS = 4, CW = 172, CH = 128, GX = 14, GY = 14, X0 = 110, Y0 = 290;
+var N = COLS * ROWS, XFIN = X0 + COLS * CW + (COLS - 1) * GX;
+function cx(i) { return X0 + (i % COLS) * (CW + GX); }
+function cy(i) { return Y0 + Math.floor(i / COLS) * (CH + GY); }
+var ENG = [1, 4, 6, 9, 10, 13, 15, 16, 19, 22, 23];          /* les comptes qui s'engagent */
+var CONTACTS = [2, 3, 1, 2, 3, 1, 3, 2, 2, 3, 1];             /* leurs décideurs engagés */
+var HOT = [4, 10, 16, 23];                                      /* les plus chauds */
+var API = [1, 4, 9, 10, 15, 19, 21];                            /* Symbl : adoption développeur */
+var SEC = J.secteurs[LG], REG = J.regions[LG];
+var html = '';
+for (var i = 0; i < N; i++) {
+  var s = SEC[(i * 3 + Math.floor(i / COLS)) % SEC.length], r = REG[(i * 5 + 1) % REG.length];
+  html += '<div class="carte" id="k' + i + '" style="left:' + cx(i) + 'px;top:' + cy(i) + 'px"><b>' + s + '</b><small>' + r + '</small><div class="pts"><i></i><i></i><i></i></div><span class="vu"></span>' + (J.api && API.indexOf(i) >= 0 ? '<span class="api">API</span>' : '') + '</div>';
+}
+$('grille').innerHTML = html;
+function secteur(i) { return SEC[(i * 3 + Math.floor(i / COLS)) % SEC.length]; }
+function region(i) { return REG[(i * 5 + 1) % REG.length]; }
+
+/* ---------- la sortie : un agenda ou deux barres ---------- */
+var PX = 1290, PW = 480;
+var SLOTS = [[0, 1], [1, 3], [2, 0], [4, 2]];                   /* jour, créneau de chaque compte chaud */
+var CIBLES = [];                                                 /* point d'arrivée de chaque fil */
+html = '';
+if (J.mode === 'agenda') {
+  var JOURS = EN ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] : ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'];
+  JOURS.forEach(function (j, d) { html += '<div class="jour" id="j' + d + '" style="left:' + (PX + d * 96) + 'px">' + j + '</div>'; });
+  for (var h = 0; h <= 4; h++) html += '<div class="heure" id="hr' + h + '" style="top:' + (424 + h * 58) + 'px"></div>';
+  HOT.forEach(function (k, n) {
+    var d = SLOTS[n][0], c = SLOTS[n][1], x = PX + d * 96 + 4, y = 424 + c * 58 + 4;
+    html += '<div class="rdv" id="r' + n + '" style="left:' + x + 'px;top:' + y + 'px">' + secteur(k) + '<small>' + region(k) + '</small></div>';
+    CIBLES.push({ x: x, y: y + 25 });
+  });
+} else {
+  var HMAX = 230, BASE = 640, inv = !!J.inverse;
+  var hA = inv ? HMAX : HMAX / J.ratio, hB = inv ? HMAX * J.ratio : HMAX;
+  J.hauteurs = [hA, hB];
+  [[TX.avant, 1350, hA, 'a'], [TX.apres, 1590, hB, 'b']].forEach(function (b) {
+    html += '<div class="barre" id="b' + b[3] + '" style="left:' + b[1] + 'px;top:' + (BASE - b[2]) + 'px;height:' + b[2] + 'px;background:' + (b[3] === 'a' ? '#2a4560' : '#1D71B8') + '"></div>';
+  });
+  html += '<div id="socle"></div>';
+  CIBLES = HOT.map(function (k, n) { return { x: 1252, y: 470 + n * 26 }; });
+}
+$('sortie').innerHTML = html;
+if (J.mode !== 'agenda') {
+  /* les libellés des barres naissent sous leur barre */
+  var lb = document.createElement('div'); lb.innerHTML =
+    '<div class="bl" id="la" style="left:1350px;top:654px"><div class="mask"><span class="ln">' + TX.avant + '</span></div></div>' +
+    '<div class="bl" id="lb" style="left:1590px;top:654px"><div class="mask"><span class="ln">' + TX.apres + '</span></div></div>';
+  while (lb.firstChild) $('sortie').appendChild(lb.firstChild);
+  /* l'agenda n'existe pas : le grand chiffre descend un peu */
+  $('val').style.top = '706px'; $('cap').style.top = '842px';
+}
+$('valT').textContent = TX.valeur;
+if (TX.valeur) { lignes('cap', [TX.texte]); $('cap').querySelector('.ln').style.whiteSpace = 'normal'; }
+else { $('cap').className = 'seul'; lignes('cap', [TX.texte]); $('cap').querySelector('.ln').style.whiteSpace = 'normal'; }
+
+/* ---------- les fils, des comptes chauds vers la sortie ---------- */
+var fils = $('fils');
+function el(nom, att) { var e = document.createElementNS(NS, nom); for (var a in att) e.setAttribute(a, att[a]); fils.appendChild(e); return e; }
+var FILS = HOT.map(function (k, n) {
+  var x1 = cx(k) + CW, y1 = cy(k) + CH / 2, c = CIBLES[n], mx = (x1 + c.x) / 2;
+  /* le fil longe le haut de la ligne de cartes pour ne pas traverser les autres */
+  var d = 'M' + x1 + ',' + y1 + ' C' + (x1 + 40) + ',' + y1 + ' ' + (mx - 60) + ',' + c.y + ' ' + mx + ',' + c.y + ' L' + c.x + ',' + c.y;
+  return { p: el('path', { d: d, stroke: '#e8bd62', 'stroke-width': 2.5, fill: 'none', pathLength: 1, 'stroke-dasharray': '1 1' }), tete: el('circle', { r: 6, fill: '#fff4dc' }) };
+});
+
+/* ---------- le temps ---------- */
+var T_GRILLE = 0.9, T_ONDE = [2.5, 4.7], T_ENG = 5.1, T_ENG_FIN = 8.3, T_HOT = 8.7, T_PAN = 8.5, T_FIL = 9.3, T_SORTIE = 10.3, T_VAL = 11.2, T_FIN = 15.2;
+function tTouche(i) { var x = cx(i) + CW / 2; return mix(T_ONDE[0], T_ONDE[1], (x - X0 + 70) / (XFIN - X0 + 140)); }
+function tEng(n) { return T_ENG + (T_ENG_FIN - T_ENG) * Math.pow(n / ENG.length, 0.75); }
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  $('scene').style.opacity = (1 - inCubic(seg(t, T_FIN, T_FIN + 0.6))).toFixed(3);
+  function monte(sel, t0, pas) {
+    var ls = document.querySelectorAll(sel);
+    for (var j = 0; j < ls.length; j++) {
+      var pe = outExpo(seg(t, t0 + j * (pas || 0.12), t0 + 0.8 + j * (pas || 0.12)));
+      ls[j].style.transform = 'translateY(' + mix(125, 0, pe).toFixed(2) + '%)';
+    }
+  }
+  monte('#titre .ln', 0.3, 0.14);
+  monte('#lList .ln', 1.1);
+
+  /* la liste apparaît, rangée par rangée */
+  for (var i = 0; i < N; i++) {
+    var k = $('k' + i), row = Math.floor(i / COLS), col = i % COLS;
+    var pa = outExpo(seg(t, T_GRILLE + row * 0.12 + col * 0.04, T_GRILLE + 0.6 + row * 0.12 + col * 0.04));
+    k.style.opacity = pa.toFixed(3);
+    k.style.transform = 'translateY(' + mix(18, 0, pa).toFixed(1) + 'px)';
+    /* l'annonce passe : la carte est touchée */
+    var tt = tTouche(i), touche = t >= tt;
+    var vu = k.querySelector('.vu');
+    vu.style.opacity = touche ? outExpo(seg(t, tt, tt + 0.3)).toFixed(3) : 0;
+    /* engagement */
+    var n = ENG.indexOf(i), te = n >= 0 ? tEng(n) : 99, pe = outExpo(seg(t, te, te + 0.5));
+    var hot = HOT.indexOf(i), th = hot >= 0 ? T_HOT + hot * 0.12 : 99, ph = outExpo(seg(t, th, th + 0.45));
+    var flash = t >= te ? 1 - outCubic(seg(t, te + 0.05, te + 0.7)) : 0;
+    k.style.borderStyle = touche ? 'solid' : 'dashed';
+    if (ph > 0) {
+      k.style.borderColor = 'rgba(232,189,98,' + mix(0.6, 1, ph).toFixed(3) + ')';
+      k.style.boxShadow = '0 0 0 ' + (3 * ph).toFixed(1) + 'px rgba(232,189,98,.25), 0 20px 50px -20px rgba(232,189,98,' + (0.5 * ph).toFixed(3) + ')';
+    } else if (pe > 0) {
+      k.style.borderColor = 'rgba(' + Math.round(mix(125, 244, flash)) + ',' + Math.round(mix(184, 247, flash)) + ',' + Math.round(mix(238, 250, flash)) + ',' + mix(0.85, 1, flash).toFixed(3) + ')';
+      k.style.boxShadow = '';
+    } else {
+      k.style.borderColor = touche ? 'rgba(125,184,238,.32)' : 'rgba(125,184,238,.2)';
+      k.style.boxShadow = '';
+    }
+    k.style.background = pe > 0 ? 'rgba(16,48,77,' + mix(0.2, 1, pe).toFixed(3) + ')' : 'rgba(255,255,255,.02)';
+    /* les décideurs du compte apparaissent un par un */
+    var pts = k.querySelectorAll('.pts i'), nb = n >= 0 ? CONTACTS[n] : 0;
+    for (var p = 0; p < 3; p++) {
+      var tp = te + 0.15 + p * 0.22, pp = p < nb ? outBack(seg(t, tp, tp + 0.35)) : 0;
+      pts[p].style.transform = 'scale(' + Math.max(0, pp).toFixed(3) + ')';
+      pts[p].style.background = ph > 0.5 ? '#e8bd62' : '#7db8ee';
+    }
+    vu.style.background = pe > 0 ? 'rgba(125,184,238,0)' : '#7db8ee';
+    var api = k.querySelector('.api');
+    if (api) api.style.opacity = outExpo(seg(t, 1.6 + i * 0.03, 2.1 + i * 0.03)).toFixed(3);
+  }
+
+  /* la vague des annonces */
+  var po = seg(t, T_ONDE[0], T_ONDE[1]), onde = $('onde');
+  onde.style.left = mix(X0 - 70, XFIN + 70, po).toFixed(1) + 'px';
+  onde.style.opacity = (po > 0 && po < 1 ? Math.min(1, Math.sin(Math.PI * po) * 2) : 0).toFixed(3);
+  monte('#lWave .ln', T_ONDE[0] + 0.1);
+  $('lWave').querySelector('.sym').style.opacity = outExpo(seg(t, T_ONDE[0], T_ONDE[0] + 0.4)).toFixed(3);
+  monte('#lEng .ln', T_ENG + 0.2);
+  $('lEng').querySelector('.sym').style.opacity = outExpo(seg(t, T_ENG + 0.1, T_ENG + 0.5)).toFixed(3);
+
+  /* le panneau de droite s'ouvre */
+  var pn = outExpo(seg(t, T_PAN, T_PAN + 0.7));
+  $('panneau').style.clipPath = 'inset(0 0 ' + (100 * (1 - pn)).toFixed(2) + '% 0 round 24px)';
+  monte('#pT .ln', T_PAN + 0.3);
+
+  /* les fils partent des comptes chauds */
+  FILS.forEach(function (f, n) {
+    var pf = outCubic(seg(t, T_FIL + n * 0.18, T_FIL + 0.8 + n * 0.18)), len = f.p.getTotalLength();
+    f.p.style.strokeDashoffset = (1 - pf).toFixed(4);
+    f.p.style.opacity = (pf > 0 ? mix(1, 0.3, seg(t, T_SORTIE + 1.2, T_SORTIE + 1.8)) : 0).toFixed(3);
+    var pt = f.p.getPointAtLength(len * pf);
+    f.tete.setAttribute('cx', pt.x.toFixed(1)); f.tete.setAttribute('cy', pt.y.toFixed(1));
+    f.tete.style.opacity = (pf > 0 && pf < 1 ? 1 : 0);
+  });
+
+  if (J.mode === 'agenda') {
+    for (var d = 0; d < 5; d++) $('j' + d).style.opacity = outExpo(seg(t, T_PAN + 0.4 + d * 0.05, T_PAN + 0.9 + d * 0.05)).toFixed(3);
+    for (var h = 0; h <= 4; h++) $('hr' + h).style.transform = 'scaleX(' + outExpo(seg(t, T_PAN + 0.4 + h * 0.05, T_PAN + 1.1 + h * 0.05)).toFixed(3) + ')';
+    HOT.forEach(function (k, n) {
+      var ta = T_FIL + 0.75 + n * 0.18, pr = outBack(seg(t, ta, ta + 0.4)), r = $('r' + n);
+      r.style.transform = 'scale(' + Math.max(0, pr).toFixed(3) + ')';
+      r.style.opacity = (pr > 0 ? 1 : 0);
+    });
+  } else {
+    var pb = outExpo(seg(t, T_SORTIE - 0.6, T_SORTIE)), pc = outCubic(seg(t, T_SORTIE, T_SORTIE + 1.1));
+    $('socle').style.transform = 'scaleX(' + outExpo(seg(t, T_PAN + 0.4, T_PAN + 1.1)).toFixed(3) + ')';
+    $('ba').style.clipPath = 'inset(' + (100 * (1 - pb)).toFixed(2) + '% 0 0 0 round 14px 14px 4px 4px)';
+    $('bb').style.clipPath = 'inset(' + (100 * (1 - pc)).toFixed(2) + '% 0 0 0 round 14px 14px 4px 4px)';
+    $('bb').style.background = pc >= 1 ? '#e8bd62' : '#1D71B8';
+    $('bb').style.transition = 'none';
+    monte('#la .ln', T_SORTIE - 0.6);
+    monte('#lb .ln', T_SORTIE);
+  }
+  monte('#val .ln', T_VAL);
+  monte('#cap .ln', TX.valeur ? T_VAL + 0.35 : T_SORTIE + 0.6);
+  $('leg').style.opacity = outExpo(seg(t, T_VAL + 0.6, T_VAL + 1.2)).toFixed(3);
+};
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>
