@@ -6,7 +6,9 @@ import Icon from '@/components/ui/Icon.astro';
 import PageHero from '@/components/ui/PageHero.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import TestimonialSpotlight from '@/components/sections/TestimonialSpotlight.astro';
-import TableauPalettes from '@/components/motion/TableauPalettes.astro';
+import CarteEtude from '@/components/etudes/CarteEtude.astro';
+import { PROBLEMES, GROUPES, DOSSIERS, verifierClassement } from '@/data/etudes-classement';
+import { LOGOS } from '@/components/accueil/donnees';
 
 export async function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({
@@ -15,150 +17,177 @@ export async function getStaticPaths() {
 }
 
 const { lang } = Astro.params as { lang: Language };
+const fr = lang === 'fr';
+const l = fr ? 'fr' : 'en';
 
-// Get case studies for current language only
+// Les études de la langue, les plus récentes d'abord ; un portrait passe avant un dossier du
+// même jour.
 const allCaseStudies = await getCollection('case-studies');
+const slugDe = (id: string) => id.replace(/^(en|fr)\//, '');
+const rang = (s: any) => (s.data.format === 'portrait' ? 0 : s.data.format === 'dossier' ? 1 : 2);
 const caseStudies = allCaseStudies
   .filter((s) => s.id.startsWith(lang + '/'))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || rang(a) - rang(b));
+verifierClassement(caseStudies.map((s) => slugDe(s.id)));
+const parSlug = new Map(caseStudies.map((s) => [slugDe(s.id), s]));
+const etude = (slug: string) => parSlug.get(slug)!;
+// Le champ `client` français sert à retrouver les groupes cités par un dossier.
+const clientFr = new Map(allCaseStudies.filter((s) => s.id.startsWith('fr/')).map((s) => [slugDe(s.id), s.data.client]));
 
 const translations = {
   en: {
     title: 'Case Studies - B2B Tech and Automotive Results',
     description: 'Explore MyDigipal case studies and success stories. See how we help B2B tech and automotive clients achieve exceptional ROI through strategic digital marketing.',
-    hero: {
-      badge: 'Success stories',
-      headline: 'Our case studies',
-      subheadline: 'Real results for real businesses. See how our strategies drive growth.',
-    },
-    filterAll: 'All',
-    filterAutomotive: 'Automotive',
-    filterB2BTech: 'B2B Tech',
-    viewCaseStudy: 'View case study',
-    services: 'Services',
-    noResults: 'No case studies found.',
+    badge: 'Success stories',
+    headline: 'Our case studies',
+    subheadline: 'Real results for real businesses. Browse them by the problem you want to solve, by company, or by sector.',
   },
   fr: {
     title: 'Études de cas - Résultats B2B et automobile',
     description: 'Découvrez comment nous aidons les entreprises B2B tech et automobiles à obtenir des résultats exceptionnels grâce à un marketing digital stratégique.',
-    hero: {
-      badge: 'Études de cas',
-      headline: 'Nos études de cas',
-      subheadline: 'Des résultats réels pour de vraies entreprises. Découvrez comment nos stratégies stimulent la croissance.',
-    },
-    filterAll: 'Tous',
-    filterAutomotive: 'Automobile',
-    filterB2BTech: 'B2B Tech',
-    viewCaseStudy: 'Voir l\'étude',
-    services: 'Services',
-    noResults: 'Aucune étude de cas trouvée.',
+    badge: 'Études de cas',
+    headline: 'Nos études de cas',
+    subheadline: 'Des résultats réels pour de vraies entreprises. Parcourez-les par problème à régler, par entreprise ou par secteur.',
   },
 };
-
 const t = translations[lang] || translations.en;
-const fr = lang === 'fr';
-const slugDe = (id: string) => id.replace(/^(en|fr)\//, '');
-const chiffre = (v: string) => (fr ? v.replace(/(\d)\s?%/, '$1\u00a0%').replace(/(\d)\.(\d)/, '$1,$2') : v);
 
-// L'étude en vedette : la plus récente des études mises en avant. Ses trois premiers chiffres
-// tombent sur le tableau à palettes. Le verbatim vient d'une autre étude mise en avant.
-const vedettes = caseStudies.filter((s) => s.data.featured);
-const vedette = vedettes[0] ?? caseStudies[0];
-const tableau = (vedette.data.kpis as { value: string; label: string }[]).slice(0, 3).map((k) => {
-  const [, c = k.value, unite = ''] = k.value.match(/^([+\-−]?[\d.,\s]*\d)\s*(.*)$/) ?? [];
-  // Un sigle ou une marque garde sa majuscule (« SEO traffic », « Google Ads conversions »).
-  const texte = /^([A-Z]{2}|Google|Facebook|LinkedIn|Meta|Instagram|YouTube|TikTok|Waze)/.test(k.label) ? k.label : k.label.charAt(0).toLowerCase() + k.label.slice(1);
-  return { chiffre: fr ? c.replace('.', ',') : c, unite, texte };
-});
-const cite = vedettes.find((s) => s !== vedette && s.data.testimonial) ?? caseStudies.find((s) => s !== vedette && s.data.testimonial);
 const lx = {
-  vedette: fr ? 'À la une' : 'Featured',
-  lire: fr ? 'Lire l’étude de cas' : 'Read the case study',
-  toutes: fr ? 'Toutes les études' : 'All case studies',
-  automobile: fr ? 'Automobile' : 'Automotive',
+  toutes: fr ? `${caseStudies.length} études de cas` : `${caseStudies.length} case studies`,
+  voirPar: fr ? 'Voir par' : 'Browse by',
+  vues: [
+    { id: 'probleme', label: fr ? 'Problème' : 'Problem' },
+    { id: 'groupe', label: fr ? 'Entreprise' : 'Company' },
+    { id: 'secteur', label: fr ? 'Secteur' : 'Sector' },
+  ],
+  aussi: fr ? 'Aussi dans' : 'Also in',
+  etude: (n: number) => (fr ? `${n} étude${n > 1 ? 's' : ''}` : `${n} case stud${n > 1 ? 'ies' : 'y'}`),
 };
+
+const COURT: Record<string, { fr: string; en: string }> = {
+  'google-ads-car-dealers': { fr: 'Google Ads', en: 'Google Ads' },
+  'facebook-lead-ads': { fr: 'Formulaire Facebook', en: 'Facebook lead ads' },
+  'vehicle-catalogue-ads': { fr: 'Annonces catalogue', en: 'Catalogue ads' },
+  'open-days': { fr: 'Portes ouvertes', en: 'Open days' },
+  'dealership-calls': { fr: 'Appels', en: 'Phone calls' },
+  'lead-to-sale': { fr: 'Du contact à la vente', en: 'Lead to sale' },
+  'dealership-tracking': { fr: 'Tracking', en: 'Tracking' },
+  'dealer-dashboard': { fr: 'Tableau de bord', en: 'Dashboard' },
+  'theobald-group': { fr: 'Stratégie de 31 concessions', en: 'Strategy for 31 dealerships' },
+  'vulcain-group': { fr: 'Génération de contacts', en: 'Lead generation' },
+};
+
+const chiffre = (v: string) => (fr ? v.replace(/(\d)\s?%/, '$1 %').replace(/(\d)\.(\d)/, '$1,$2') : v);
+
+// Vue par entreprise : l'étude principale du groupe, puis ses autres études et les dossiers
+// qui le citent.
+const groupes = GROUPES.map((g) => {
+  const principale = etude(g.etudes[0]);
+  const autres = g.etudes.slice(1).map((s) => ({ slug: s, label: COURT[s]?.[l] ?? etude(s).data.title }));
+  const cites = g.motCle
+    ? DOSSIERS.filter((d) => !g.etudes.includes(d) && (clientFr.get(d) ?? '').includes(g.motCle!)).map((d) => ({ slug: d, label: COURT[d][l] }))
+    : [];
+  // Le logo détouré de l'accueil quand il existe ; un logo presque carré (Théobald) monte plus
+  // haut, sinon il paraît minuscule à côté des logos en longueur.
+  const det = LOGOS[g.id];
+  const logo = det ? det.src : principale.data.logo;
+  const carre = det ? det.largeur / det.hauteur < 1.6 : false;
+  return { ...g, principale, logo, carre, liens: [...autres, ...cites] };
+});
+const auto = groupes.filter((g) => g.principale.data.category === 'automotive');
+const b2b = groupes.filter((g) => g.principale.data.category !== 'automotive');
+
+// Vue par secteur.
+const secteurs = [
+  { id: 'automotive', titre: fr ? 'Automobile' : 'Automotive', etudes: caseStudies.filter((s) => s.data.category === 'automotive') },
+  { id: 'b2b-tech', titre: 'B2B Tech', etudes: caseStudies.filter((s) => s.data.category !== 'automotive') },
+];
+
+const vedettes = caseStudies.filter((s) => s.data.featured);
+const cite = vedettes.find((s) => s.data.testimonial) ?? caseStudies.find((s) => s.data.testimonial);
 ---
 
-<PageLayout
-  lang={lang}
-  title={t.title}
-  description={t.description}
->
-  <PageHero eyebrow={t.hero.badge} title={t.hero.headline} description={t.hero.subheadline} />
+<PageLayout lang={lang} title={t.title} description={t.description}>
+  <PageHero eyebrow={t.badge} title={t.headline} description={t.subheadline} />
 
-  <!-- L'étude à la une (encre) : sa photo, son logo en couleur, ses chiffres sur le tableau
-       à palettes. Direction Encre, groupe 4 (30/09/2026). -->
-  <section class="section-encre section-monte py-20 lg:py-28">
-    <div class="container-custom grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
-      <a href={`/${lang}/case-studies/${slugDe(vedette.id)}`} class="vedette-photo group" data-reveal>
-        <img src={vedette.data.image} alt={vedette.data.client} class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" decoding="async" />
-        {vedette.data.logo && (
-          <span class="absolute left-5 top-5 grid h-14 place-items-center rounded-2xl bg-white px-4">
-            <img src={vedette.data.logo} alt="" class="max-h-9 max-w-[140px] w-auto object-contain" />
-          </span>
-        )}
-      </a>
-      <div class="grid content-start gap-6">
-        <p class="text-base font-semibold text-sur-encre-2">{lx.vedette} · {vedette.data.client}</p>
-        <h2 class="titre-moyen">{vedette.data.title}</h2>
-        <div class="carte-verre p-6 lg:p-8">
-          <TableauPalettes lang={lang} lignes={tableau} tete />
-        </div>
-        <div class="pilules">
-          <a href={`/${lang}/case-studies/${slugDe(vedette.id)}`} class="pilule pilule-blanche">
-            {lx.lire}
-            <Icon name="arrow-right" size={18} class="pilule-fleche" />
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Toutes les études (brume), filtrables par secteur. -->
-  <section class="section-brume py-20 lg:py-28">
+  <!-- Toutes les études (brume). Le visiteur choisit comment les parcourir : par problème, par
+       entreprise ou par secteur (07/10/2026). Plus d'étude « à la une ». -->
+  <section class="section-brume py-16 lg:py-24" data-etudes>
     <div class="container-custom">
-      <div class="mb-10 flex flex-wrap items-end justify-between gap-6 lg:mb-14">
+      <div class="mb-12 flex flex-wrap items-end justify-between gap-6 lg:mb-16">
         <h2 class="titre-moyen text-encre">{lx.toutes}</h2>
-        <div class="flex flex-wrap gap-2" role="group" aria-label={fr ? 'Filtrer par secteur' : 'Filter by sector'}>
-          <button type="button" class="category-filter active" data-category="all" aria-pressed="true">{t.filterAll}</button>
-          <button type="button" class="category-filter" data-category="automotive" aria-pressed="false">{t.filterAutomotive}</button>
-          <button type="button" class="category-filter" data-category="b2b-tech" aria-pressed="false">{t.filterB2BTech}</button>
+        <div class="vues" role="tablist" aria-label={lx.voirPar}>
+          <span class="vues-libelle" aria-hidden="true">{lx.voirPar}</span>
+          {lx.vues.map((v, i) => (
+            <button type="button" role="tab" id={`onglet-${v.id}`} aria-controls={`vue-${v.id}`} aria-selected={i === 0 ? 'true' : 'false'} data-vue={v.id}>{v.label}</button>
+          ))}
         </div>
       </div>
 
-      <div id="no-results" class="hidden py-16 text-center">
-        <p class="text-xl text-slate-500">{t.noResults}</p>
+      <!-- Par problème -->
+      <div id="vue-probleme" role="tabpanel" aria-labelledby="onglet-probleme" data-vue-panneau="probleme" class="grid gap-16 lg:gap-20">
+        {PROBLEMES.map((p) => (
+          <div class="grid gap-8">
+            <div class="grid gap-2">
+              <h3 class="font-display text-2xl font-extrabold tracking-[-0.03em] text-encre lg:text-3xl">{p.titre[l]}</h3>
+              <p class="max-w-[60ch] text-lg text-slate-600">{p.chapo[l]} <span class="whitespace-nowrap text-slate-500">· {lx.etude(p.etudes.length)}</span></p>
+            </div>
+            <ul class="grille-etudes">
+              {p.etudes.map((s, i) => <CarteEtude lang={l} study={etude(s)} i={i} />)}
+            </ul>
+          </div>
+        ))}
       </div>
 
-      <ul id="case-studies-grid" class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {caseStudies.map((study, i) => {
-          const k = study.data.kpis[0];
-          const k2 = study.data.kpis[1];
-          return (
-            <li class="case-study-card" data-category={study.data.category} data-reveal style={`--i:${i % 3}`}>
-              <a href={`/${lang}/case-studies/${slugDe(study.id)}`} class="carte group grid h-full overflow-hidden">
-                <span class="relative block aspect-[16/10] overflow-hidden">
-                  <img src={study.data.image} alt="" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async" />
-                  {study.data.logo && (
-                    <span class="absolute left-4 top-4 grid h-11 place-items-center rounded-xl bg-white px-3">
-                      <img src={study.data.logo} alt="" class="max-h-7 max-w-[110px] w-auto object-contain" loading="lazy" decoding="async" />
-                    </span>
-                  )}
-                </span>
-                <span class="grid content-start gap-3 p-6">
-                  <span class="text-sm font-semibold text-slate-500">{study.data.category === 'automotive' ? lx.automobile : 'B2B Tech'} · {study.data.client}</span>
-                  <span class="font-display text-lg font-bold leading-snug text-encre text-pretty">{study.data.title}</span>
-                  <span class="mt-2 flex flex-wrap items-baseline gap-x-5 gap-y-2 border-t border-slate-200 pt-4">
-                    <span><span class="font-display text-4xl font-extrabold tracking-[-0.045em] text-encre">{chiffre(k.value)}</span> <span class="text-sm text-slate-600">{k.label}</span></span>
-                    {k2 && <span><span class="font-display text-2xl font-extrabold tracking-[-0.03em] text-encre">{chiffre(k2.value)}</span> <span class="text-sm text-slate-600">{k2.label}</span></span>}
-                  </span>
-                  <span class="mt-1 inline-flex items-center gap-2 font-semibold text-marque transition-all group-hover:gap-3">{t.viewCaseStudy}<Icon name="arrow-right" size={16} /></span>
-                </span>
-              </a>
-            </li>
-          );
-        })}
-      </ul>
+      <!-- Par entreprise -->
+      <div id="vue-groupe" role="tabpanel" aria-labelledby="onglet-groupe" data-vue-panneau="groupe" class="grid gap-14" hidden>
+        {[{ titre: fr ? 'Automobile' : 'Automotive', liste: auto }, { titre: 'B2B Tech', liste: b2b }].map((bloc) => (
+          <div class="grid gap-4">
+            <h3 class="font-display text-2xl font-extrabold tracking-[-0.03em] text-encre lg:text-3xl">{bloc.titre}</h3>
+            <ul class="groupes">
+              {bloc.liste.map((g) => {
+                const p = g.principale;
+                const k = p.data.kpis[0];
+                return (
+                  <li class="groupe">
+                    <a href={`/${lang}/case-studies/${slugDe(p.id)}`} class="groupe-tete group">
+                      <span class="groupe-logo">
+                        {g.logo ? <img src={g.logo} alt={g.nom[l]} class={g.carre ? 'carre' : ''} loading="lazy" decoding="async" /> : <span class="font-display font-bold text-encre">{g.nom[l]}</span>}
+                      </span>
+                      <span class="grid min-w-0 gap-1">
+                        <span class="text-sm font-semibold text-slate-500">{g.nom[l]}</span>
+                        <span class="font-display text-lg font-bold leading-snug text-encre text-pretty transition-colors group-hover:text-marque">{p.data.title}</span>
+                      </span>
+                      <span class="groupe-kpi">
+                        <b>{chiffre(k.value)}</b>
+                        <small>{k.label}</small>
+                      </span>
+                    </a>
+                    {g.liens.length > 0 && (
+                      <p class="groupe-aussi">
+                        <span>{lx.aussi}</span>
+                        {g.liens.map((x) => <a href={`/${lang}/case-studies/${x.slug}`}>{x.label}</a>)}
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <!-- Par secteur -->
+      <div id="vue-secteur" role="tabpanel" aria-labelledby="onglet-secteur" data-vue-panneau="secteur" class="grid gap-16 lg:gap-20" hidden>
+        {secteurs.map((s) => (
+          <div class="grid gap-8">
+            <h3 class="font-display text-2xl font-extrabold tracking-[-0.03em] text-encre lg:text-3xl">{s.titre} <span class="text-slate-400">· {lx.etude(s.etudes.length)}</span></h3>
+            <ul class="grille-etudes">
+              {s.etudes.map((st, i) => <CarteEtude lang={l} study={st} i={i} />)}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -166,32 +195,42 @@ const lx = {
     <TestimonialSpotlight lang={lang} quote={cite.data.testimonial.quote} author={cite.data.testimonial.author} role="" company={cite.data.testimonial.role} />
   )}
 
-  <FinalCTA lang={lang} title={lang === 'fr' ? 'Prêt à écrire votre success story ?' : 'Ready to write your success story?'} subtitle={lang === 'fr' ? 'Calculez votre plan sur mesure en 3 minutes, ou dites-nous où vous en êtes : on vous répond sous 24 h.' : 'Calculate your tailored plan in 3 minutes, or tell us where you stand: we reply within 24 hours.'} />
+  <FinalCTA lang={lang} title={fr ? 'Prêt à écrire votre success story ?' : 'Ready to write your success story?'} subtitle={fr ? 'Calculez votre plan sur mesure en 3 minutes, ou dites-nous où vous en êtes : on vous répond sous 24 h.' : 'Calculate your tailored plan in 3 minutes, or tell us where you stand: we reply within 24 hours.'} />
 </PageLayout>
 
 <script>
-  // Le filtre par secteur : les cartes gardent leur place dans la grille, seules les autres
-  // se masquent.
+  // Le choix de la vue : l'ancre (#par-groupe) l'emporte, puis le dernier choix du visiteur,
+  // sinon « par problème ». Sans JavaScript, la vue par problème montre déjà toutes les études.
+  const CLE = 'etudes-vue';
   function brancher() {
-    const boutons = Array.from(document.querySelectorAll<HTMLButtonElement>('.category-filter'));
-    const cartes = Array.from(document.querySelectorAll<HTMLElement>('.case-study-card'));
-    const vide = document.getElementById('no-results');
-    const grille = document.getElementById('case-studies-grid');
-    boutons.forEach((b) => {
-      if (b.dataset.branche) return;
-      b.dataset.branche = '1';
-      b.addEventListener('click', () => {
-        boutons.forEach((x) => { x.classList.toggle('active', x === b); x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-        const c = b.dataset.category;
-        let n = 0;
-        cartes.forEach((carte) => {
-          const ok = c === 'all' || carte.dataset.category === c;
-          carte.hidden = !ok;
-          if (ok) n++;
-        });
-        vide?.classList.toggle('hidden', n > 0);
-        grille?.classList.toggle('hidden', n === 0);
-      });
+    const racine = document.querySelector<HTMLElement>('[data-etudes]');
+    if (!racine || racine.dataset.branche) return;
+    racine.dataset.branche = '1';
+    const boutons = Array.from(racine.querySelectorAll<HTMLButtonElement>('[data-vue]'));
+    const panneaux = Array.from(racine.querySelectorAll<HTMLElement>('[data-vue-panneau]'));
+    const montrer = (vue: string, mesurer: boolean) => {
+      if (!panneaux.some((p) => p.dataset.vuePanneau === vue)) vue = 'probleme';
+      boutons.forEach((b) => b.setAttribute('aria-selected', b.dataset.vue === vue ? 'true' : 'false'));
+      panneaux.forEach((p) => { p.hidden = p.dataset.vuePanneau !== vue; });
+      if (!mesurer) return;
+      try { localStorage.setItem(CLE, vue); } catch { /* stockage indisponible */ }
+      history.replaceState(null, '', vue === 'probleme' ? location.pathname : `#par-${vue}`);
+      (window as unknown as { dataLayer?: Record<string, unknown>[] }).dataLayer?.push({ event: 'case_studies_view', case_studies_view: vue });
+    };
+    let depart = 'probleme';
+    try { depart = localStorage.getItem(CLE) || depart; } catch { /* stockage indisponible */ }
+    const ancre = location.hash.match(/^#par-(probleme|groupe|secteur)$/);
+    if (ancre) depart = ancre[1];
+    montrer(depart, false);
+    boutons.forEach((b) => b.addEventListener('click', () => montrer(b.dataset.vue!, true)));
+    // Flèches gauche et droite entre les onglets, comme un vrai groupe d'onglets.
+    racine.querySelector('[role="tablist"]')?.addEventListener('keydown', (e) => {
+      const k = (e as KeyboardEvent).key;
+      if (k !== 'ArrowRight' && k !== 'ArrowLeft') return;
+      const i = boutons.findIndex((b) => b.getAttribute('aria-selected') === 'true');
+      const n = boutons[(i + (k === 'ArrowRight' ? 1 : boutons.length - 1)) % boutons.length];
+      n.focus();
+      n.click();
     });
   }
   brancher();
@@ -199,29 +238,149 @@ const lx = {
 </script>
 
 <style>
-  .vedette-photo {
-    position: relative;
-    display: block;
-    overflow: hidden;
-    aspect-ratio: 4 / 3;
-    border-radius: var(--rayon-scene);
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 30px 60px -36px rgb(2 9 16 / 0.9);
-  }
-  .category-filter {
+  .vues {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
     border-radius: 999px;
-    padding: 10px 18px;
-    font-weight: 600;
-    color: #334155;
     background: #fff;
     box-shadow: inset 0 0 0 1px var(--filet);
+  }
+  .vues-libelle {
+    padding: 0 10px 0 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #64748b;
+  }
+  .vues button {
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-weight: 600;
+    color: #334155;
     transition: background-color 200ms, color 200ms;
   }
-  .category-filter:hover {
+  .vues button:hover {
     color: var(--color-marque);
   }
-  .category-filter.active {
+  .vues button[aria-selected='true'] {
     color: #fff;
     background: var(--color-marque);
-    box-shadow: none;
+  }
+  /* Au téléphone, les trois boutons sur une ligne, sans le libellé « Voir par ». */
+  @media (max-width: 559px) {
+    .vues {
+      width: 100%;
+      flex-wrap: nowrap;
+    }
+    .vues-libelle {
+      display: none;
+    }
+    .vues button {
+      flex: 1 1 0;
+      padding-inline: 8px;
+    }
+  }
+  .grille-etudes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  @media (min-width: 768px) {
+    .grille-etudes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) {
+    .grille-etudes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .groupes {
+    display: grid;
+    border-top: 1px solid var(--filet);
+  }
+  .groupe {
+    display: grid;
+    gap: 10px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--filet);
+  }
+  .groupe-tete {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr) 220px;
+    align-items: center;
+    gap: 24px;
+  }
+  .groupe-logo {
+    display: grid;
+    place-items: center;
+    justify-self: start;
+    height: 52px;
+    padding: 0 14px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet);
+  }
+  .groupe-logo img {
+    max-height: 30px;
+    max-width: 120px;
+    width: auto;
+    object-fit: contain;
+  }
+  .groupe-logo img.carre {
+    max-height: 40px;
+  }
+  .groupe-kpi {
+    display: grid;
+    text-align: right;
+  }
+  .groupe-kpi b {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    color: var(--color-encre);
+  }
+  .groupe-kpi small {
+    font-size: 13px;
+    line-height: 1.35;
+    color: #475569;
+  }
+  .groupe-aussi {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    margin: 0;
+    padding-left: 174px;
+    font-size: 14px;
+  }
+  .groupe-aussi span {
+    color: #64748b;
+    font-weight: 600;
+    margin-right: 2px;
+  }
+  .groupe-aussi a {
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-weight: 600;
+    color: var(--color-marque);
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet);
+  }
+  .groupe-aussi a:hover {
+    box-shadow: inset 0 0 0 1px var(--color-marque);
+  }
+  @media (max-width: 1023px) {
+    .groupe-tete {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px 16px;
+    }
+    .groupe-tete > :nth-child(2) {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    .groupe-kpi b { font-size: 26px; }
+    .groupe-kpi small { display: none; }
+    .groupe-aussi { padding-left: 0; }
   }
 </style>
