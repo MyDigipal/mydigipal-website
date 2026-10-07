@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
 <title>Ten seconds versus thirty</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -169,7 +169,7 @@ html,body{margin:0;background:#000;overflow:hidden}
   <div id="pasA"></div><div id="pasB"></div>
   <div id="conclusion">
     <div class="mask"><span class="ln" id="c1">10 seconds versus 30.</span></div>
-    <div class="mask"><span class="ln" id="c2">At DMD: <b>7,646 leads</b> from instant forms since January 2025.</span></div>
+    <div class="mask"><span class="ln" id="c2"></span></div>
   </div>
 </div>
 <div id="prechargeur">
@@ -202,6 +202,26 @@ function outBack(s) { return function (p) { return 1 + (s + 1) * Math.pow(p - 1,
 function inBack(s) { return function (p) { return (s + 1) * p * p * p - s * p * p; }; }
 function bosse(p) { return p <= 0 || p >= 1 ? 0 : Math.sin(Math.PI * p); }
 var $ = function (id) { return document.getElementById(id); };
+
+/* ---------- la phrase du bas : une par étude, choisie par ?jeu= ----------
+   Chaque étude cite le chiffre de son propre client, ou une phrase sans chiffre. Le jeu par
+   défaut (« dmd ») sert la galerie du labo. */
+var EN = document.documentElement.lang === 'en';
+function ent(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, EN ? ',' : ' '); }
+/* JEUX */
+var JEUX = {
+  'dmd': { fr: function () { return 'Chez DMD : <b>' + ent(7646) + ' contacts</b> par formulaire intégré depuis janvier 2025.'; },
+           en: function () { return 'At DMD: <b>' + ent(7646) + ' leads</b> from instant forms since January 2025.'; } },
+  'dmd-t3-2026': { fr: function () { return 'Chez DMD : <b>' + ent(2286) + ' contacts</b> par formulaire intégré au 3e trimestre 2026.'; },
+                   en: function () { return 'At DMD: <b>' + ent(2286) + ' leads</b> from instant forms in Q3 2026.'; } },
+  'lancien': { fr: function () { return 'Au groupe Lancien : <b>' + ent(2425) + ' contacts</b> par formulaire intégré depuis janvier 2025.'; },
+               en: function () { return 'At Lancien Group: <b>' + ent(2425) + ' leads</b> from instant forms since January 2025.'; } },
+  'portes-ouvertes': { fr: function () { return 'Pour une porte ouverte : <b>un essai réservé</b> sans quitter le fil.'; },
+                       en: function () { return 'For an open day: <b>a test drive booked</b> without leaving the feed.'; } }
+};
+/* FIN JEUX */
+var JEU = JEUX[new URLSearchParams(location.search).get('jeu')] || JEUX.dmd;
+$('c2').innerHTML = (EN ? JEU.en : JEU.fr)();
 
 /* Une berline dessinée, la même partout (jamais la photo d'un client). */
 var VOITURE = '<svg viewBox="0 0 300 110"><ellipse cx="150" cy="98" rx="132" ry="7" fill="rgba(11,27,43,.18)"/>' +

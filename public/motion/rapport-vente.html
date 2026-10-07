@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
 <title>Le rapport qui va jusqu'à la vente</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,7 @@
 /* Le rapport MyDigipal qui relie les campagnes Facebook au CRM. On le voit se construire comme
    dans l'app : les campagnes jusqu'au contact, puis le CRM ajoute projets et ventes, le tri par
    coût de vente renverse le classement, la caméra tient sur la meilleure campagne, et le budget
-   glisse vers ce qui vend. Phrases à gauche, objet à droite. Données d'exemple. */
+   glisse vers ce qui vend. Phrases à gauche, objet à droite. Les chiffres viennent du jeu de données (?jeu=). */
 html,body{margin:0;background:#000;overflow:hidden}
 #stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
 #fond{position:absolute;inset:0;background:radial-gradient(1100px 760px at 72% 52%,rgba(29,113,184,.26),transparent 70%),radial-gradient(600px 500px at 12% 80%,rgba(125,184,238,.06),transparent 70%)}
@@ -71,46 +71,42 @@ html,body{margin:0;background:#000;overflow:hidden}
 .resultat b{font-size:40px;font-weight:800;color:#b8862c;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 #curseur{position:absolute;left:0;top:0;width:26px;height:34px;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35))}
 #onde{position:absolute;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:2px solid #1d71b8;opacity:0}
+#source{position:absolute;left:110px;bottom:52px;font-size:17px;font-weight:600;letter-spacing:.02em;color:#6f859b;white-space:nowrap;opacity:0}
 #prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
 </style>
 </head>
 <body>
 <div id="stage">
   <div id="fond"></div>
-  <div class="leg" id="leg0" style="top:250px"><div class="mask"><span class="ln">Chaque campagne,</span></div><div class="mask"><span class="ln b">jusqu'au contact.</span></div></div>
-  <div class="leg" id="leg1" style="top:450px"><div class="mask"><span class="ln">Puis le CRM dit</span></div><div class="mask"><span class="ln b">qui a acheté.</span></div></div>
-  <div class="leg" id="leg2" style="top:650px"><div class="mask"><span class="ln">Et le budget</span></div><div class="mask"><span class="ln o">suit les ventes.</span></div></div>
+  <div class="leg" id="leg0" style="top:250px"><div class="mask"><span class="ln"></span></div><div class="mask"><span class="ln b"></span></div></div>
+  <div class="leg" id="leg1" style="top:450px"><div class="mask"><span class="ln"></span></div><div class="mask"><span class="ln b"></span></div></div>
+  <div class="leg" id="leg2" style="top:650px"><div class="mask"><span class="ln"></span></div><div class="mask"><span class="ln o"></span></div></div>
   <div id="cam">
     <div id="app">
       <div class="barre">
         <img alt="MyDigipal" src="data:image/png;base64,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">
-        <span class="fil">Rapports › Meta Ads › <b>Du clic à la vente</b></span>
-        <div class="droite"><span class="puce">1 – 30 sept. 2026</span><span class="bascule" id="bascule"><span class="interr" id="interr"><i id="pastille"></i></span>Relier au CRM</span></div>
+        <span class="fil" id="fil"></span>
+        <div class="droite"><span class="puce" id="periode"></span><span class="bascule" id="bascule"><span class="interr" id="interr"><i id="pastille"></i></span><span id="bascule-txt"></span></span></div>
       </div>
-      <div class="tuiles">
-        <div class="tuile"><span>Dépense</span><b id="k0">0 €</b></div>
-        <div class="tuile"><span>Contacts</span><b id="k1">0</b></div>
-        <div class="tuile crm"><span>Projets auto</span><b id="k2">–</b></div>
-        <div class="tuile crm"><span>Ventes</span><b id="k3">–</b></div>
-        <div class="tuile or"><span>Coût par vente</span><b id="k4">–</b></div>
-      </div>
+      <div class="tuiles" id="tuiles"></div>
       <div class="tableau" id="tableau">
         <div class="bande-crm" id="bande"></div>
-        <div class="etiquette-crm" id="etiq">DONNÉES DU CRM</div>
-        <div class="entete" id="entete"><span>Campagne</span><span>Dépense</span><span>Clics</span><span>Contacts</span><span>€ / contact</span><span data-c>Projets auto</span><span data-c>Ventes</span><span data-c id="hcpv">€ / vente</span></div>
+        <div class="etiquette-crm" id="etiq"></div>
+        <div class="entete" id="entete"></div>
         <div id="lignes"></div>
       </div>
       <div id="tiroir">
-        <span class="k">Campagne</span>
-        <h3>Essai SUV électrique</h3>
-        <span class="s">Du clic à la vente, sur le mois</span>
+        <span class="k" id="tiroir-k"></span>
+        <h3 id="tiroir-nom"></h3>
+        <span class="s" id="tiroir-sous"></span>
         <div id="etages"></div>
-        <div class="resultat"><span>Coût par vente</span><b id="tcpv">0 €</b></div>
+        <div class="resultat"><span id="tres-lib"></span><b id="tres">0</b></div>
       </div>
       <div id="onde"></div>
       <svg id="curseur" viewBox="0 0 26 34"><path d="M2 2 L2 27 L8.5 21 L13 31 L17.5 29 L13 19.5 L21.5 19.5 Z" fill="#0b1b2b" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
     </div>
   </div>
+  <div id="source"></div>
 </div>
 <div id="prechargeur">
   <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
@@ -140,47 +136,255 @@ function inCubic(p) { return p * p * p; }
 function inOutCubic(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
 function outBack(s) { return function (p) { return 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2); }; }
 function inBack(s) { return function (p) { return (s + 1) * p * p * p - s * p * p; }; }
-function fr(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
-function eur(n) { return fr(n) + ' €'; }
 var $ = function (id) { return document.getElementById(id); };
 
-/* Données d'exemple, cohérentes avec l'essai « parcours complet » : 4 800 €, 212 contacts, 41 projets, 14 ventes. */
-var R = [
-  { nom: 'Offre du mois · 2008', sous: 'Prospection', dep: 1450, clics: 1040, cont: 78, proj: 9, vte: 2, apres: 750 },
-  { nom: 'Essai SUV électrique', sous: 'Intention d\'achat', dep: 1200, clics: 620, cont: 39, proj: 13, vte: 6, apres: 1900 },
-  { nom: 'Occasions · catalogue', sous: 'Annonces catalogue', dep: 1050, clics: 860, cont: 56, proj: 11, vte: 4, apres: 1050 },
-  { nom: 'Portes ouvertes · octobre', sous: 'Événement', dep: 700, clics: 410, cont: 27, proj: 5, vte: 1, apres: 700 },
-  { nom: 'Utilitaires · professionnels', sous: 'Professionnels', dep: 400, clics: 190, cont: 12, proj: 3, vte: 1, apres: 400 }
+/* ---------- les jeux de données : un par étude, choisi par ?jeu= ----------
+   Le rapport se construit en trois temps : les lignes jusqu'au contact, puis une bascule ajoute
+   trois colonnes (le CRM, les appels ou le chat selon le client), le tri renverse le classement et
+   le tiroir ouvre la meilleure ligne. Toutes les valeurs viennent du jeu ; « exemple » (données
+   d'exemple) sert la galerie du labo. Formats : eur (euros entiers), prix (règle des arrondis),
+   ent (nombre), pct (pourcentage). */
+var EN = document.documentElement.lang === 'en';
+function T(o) { return o == null ? '' : (typeof o === 'string' ? o : (EN ? o.en : o.fr)); }
+/* JEUX */
+var L = {
+  dep: { fr: 'Dépense', en: 'Spend' }, clics: { fr: 'Clics', en: 'Clicks' }, cont: { fr: 'Contacts', en: 'Leads' },
+  cpc: { fr: '€ / contact', en: '€ / lead' }, eclic: { fr: '€ / clic', en: '€ / click' }, form: { fr: 'Formulaires', en: 'Forms' },
+  vte: { fr: 'Ventes', en: 'Sales' }, cpv: { fr: '€ / vente', en: '€ / sale' }, opp: { fr: 'Opportunités', en: 'Opportunities' },
+  cpvT: { fr: 'Coût par vente', en: 'Cost per sale' }, cpcT: { fr: 'Coût par contact', en: 'Cost per lead' },
+  camp: { fr: 'Campagne', en: 'Campaign' }, crm: { fr: 'Relier au CRM', en: 'Link to CRM' }, etiq: { fr: 'DONNÉES DU CRM', en: 'CRM DATA' },
+  meta: { fr: 'Rapports › Meta Ads › <b>Du clic à la vente</b>', en: 'Reports › Meta Ads › <b>Click to sale</b>' }
+};
+var LEGS_CRM = [
+  [{ fr: 'Chaque campagne,', en: 'Every campaign,' }, { fr: "jusqu'au contact.", en: 'down to the lead.' }],
+  [{ fr: 'Puis le CRM dit', en: 'Then the CRM shows' }, { fr: 'qui a acheté.', en: 'who bought.' }],
+  [{ fr: 'Et le budget', en: 'And the budget' }, { fr: 'suit les ventes.', en: 'follows the sales.' }]
 ];
-R.forEach(function (r) { r.cpc = r.dep / r.cont; r.cpv = Math.round(r.dep / r.vte); });
-/* rang après le tri par coût de vente, du meilleur au moins bon */
-var ordre = R.map(function (r, i) { return i; }).sort(function (a, b) { return R[a].cpv - R[b].cpv; });
-R.forEach(function (r, i) { r.rang = ordre.indexOf(i); });
-var MAXDEP = 1900;
+var COLS_META = [{ lab: L.dep, k: 'dep', f: 'eur' }, { lab: L.clics, k: 'clics', f: 'ent' }, { lab: L.cont, k: 'cont', f: 'ent' }, { lab: L.cpc, k: 'cpc', f: 'prix', calc: ['dep', 'cont'] }];
+var COLS_CRM = [{ lab: L.opp, k: 'opp', f: 'ent' }, { lab: L.vte, k: 'vte', f: 'ent' }, { lab: L.cpv, k: 'cpv', f: 'eur', calc: ['dep', 'vte'] }];
+var MARQUE = { fr: 'Campagne de marque', en: 'Brand campaign' }, CATAL = { fr: 'Annonces catalogue', en: 'Catalogue ads' };
+var MOINS_CHER = { fr: 'le moins cher au contact', en: 'cheapest per lead' };
+var JEUX = {
+  'exemple': {
+    source: { fr: "Données d'exemple", en: 'Example data' },
+    fil: L.meta, periode: { fr: '1er au 30 sept. 2026', en: '1-30 Sept 2026' }, bascule: L.crm, etiq: L.etiq, legs: LEGS_CRM,
+    cols: [{ lab: L.dep, k: 'dep', f: 'eur' }, { lab: L.clics, k: 'clics', f: 'ent' }, { lab: L.cont, k: 'cont', f: 'ent' }, { lab: L.cpc, k: 'cpc', f: 'eur', calc: ['dep', 'cont'] }],
+    cols2: [{ lab: { fr: 'Projets auto', en: 'Car projects' }, k: 'proj', f: 'ent' }, { lab: L.vte, k: 'vte', f: 'ent' }, { lab: L.cpv, k: 'cpv', f: 'eur', calc: ['dep', 'vte'] }],
+    tri: { k: 'cpv', sens: 1 },
+    lignes: [
+      { nom: { fr: 'Offre du mois · 2008', en: 'Monthly offer · 2008' }, sous: { fr: 'Prospection', en: 'Prospecting' }, dep: 1450, clics: 1040, cont: 78, proj: 9, vte: 2, apres: 750 },
+      { nom: { fr: 'Essai SUV électrique', en: 'Electric SUV test drive' }, sous: { fr: "Intention d'achat", en: 'Purchase intent' }, dep: 1200, clics: 620, cont: 39, proj: 13, vte: 6, apres: 1900 },
+      { nom: { fr: 'Occasions · catalogue', en: 'Used cars · catalogue' }, sous: CATAL, dep: 1050, clics: 860, cont: 56, proj: 11, vte: 4, apres: 1050 },
+      { nom: { fr: 'Portes ouvertes · octobre', en: 'Open days · October' }, sous: { fr: 'Événement', en: 'Event' }, dep: 700, clics: 410, cont: 27, proj: 5, vte: 1, apres: 700 },
+      { nom: { fr: 'Utilitaires · professionnels', en: 'Vans · business' }, sous: { fr: 'Professionnels', en: 'Business' }, dep: 400, clics: 190, cont: 12, proj: 3, vte: 1, apres: 400 }
+    ],
+    note: { i: 0, txt: { fr: 'le moins cher au contact, le plus cher à la vente', en: 'cheapest per lead, dearest per sale' } },
+    tuiles: [{ lab: L.dep, v: 4800, f: 'eur' }, { lab: L.cont, v: 212, f: 'ent' }, { lab: { fr: 'Projets auto', en: 'Car projects' }, v: 41, f: 'ent', crm: 1 }, { lab: L.vte, v: 14, f: 'ent', crm: 1 }, { lab: L.cpvT, v: 343, f: 'eur', crm: 1, or: 1 }],
+    tiroir: { i: 1, k: L.camp, sous: { fr: 'Du clic à la vente, sur le mois', en: 'From click to sale, over the month' },
+      etages: [[L.clics, 620, 1], [L.cont, 39, 0.72], [L.opp, 21, 0.52], [{ fr: 'Projets auto', en: 'Car projects' }, 13, 0.38], [L.vte, 6, 0.24]], res: { lab: L.cpvT, v: 200, f: 'eur' } }
+  },
+  'guyane-t3-2026': {
+    source: { fr: 'Guyane Automobile · publicité Meta et CRM MotorK · 3e trimestre 2026', en: 'Guyane Automobile · Meta ads and MotorK CRM · Q3 2026' },
+    fil: L.meta, periode: { fr: '1er juil. au 30 sept. 2026', en: '1 July to 30 Sept 2026' }, bascule: L.crm, etiq: L.etiq, legs: LEGS_CRM,
+    cols: COLS_META, cols2: COLS_CRM, tri: { k: 'cpv', sens: 1 },
+    lignes: [
+      { nom: { fr: 'Catalogue neuf', en: 'New car catalogue' }, sous: CATAL, dep: 1135, clics: 7390, cont: 219, opp: 46, vte: 4 },
+      { nom: { fr: 'Renault', en: 'Renault' }, sous: MARQUE, dep: 1088, clics: 3108, cont: 185, opp: 84, vte: 3 },
+      { nom: { fr: 'Kia', en: 'Kia' }, sous: MARQUE, dep: 843, clics: 2445, cont: 110, opp: 28, vte: 1 },
+      { nom: { fr: 'Dacia', en: 'Dacia' }, sous: MARQUE, dep: 612, clics: 2691, cont: 231, opp: 78, vte: 7 },
+      { nom: { fr: 'Occasions', en: 'Used cars' }, sous: CATAL, dep: 525, clics: 10917, cont: 471, opp: 60, vte: 2 }
+    ],
+    note: { i: 4, txt: MOINS_CHER },
+    tuiles: [{ lab: L.dep, v: 6431, f: 'eur' }, { lab: L.cont, v: 1486, f: 'ent' }, { lab: L.opp, v: 347, f: 'ent', crm: 1 }, { lab: L.vte, v: 19, f: 'ent', crm: 1 }, { lab: L.cpvT, v: 338, f: 'eur', crm: 1, or: 1 }],
+    tiroir: { i: 3, k: L.camp, sous: { fr: 'Du clic à la vente, sur le trimestre', en: 'From click to sale, over the quarter' },
+      etages: [[L.clics, 2691], [L.cont, 231], [L.opp, 78], [L.vte, 7]], res: { lab: L.cpvT, v: 87, f: 'eur' } }
+  },
+  'guyane-juillet-2026': {
+    source: { fr: 'Guyane Automobile · publicité Meta et CRM MotorK · juillet 2026', en: 'Guyane Automobile · Meta ads and MotorK CRM · July 2026' },
+    fil: L.meta, periode: { fr: '1er au 31 juil. 2026', en: '1-31 July 2026' }, bascule: L.crm, etiq: L.etiq, legs: LEGS_CRM,
+    cols: COLS_META, cols2: COLS_CRM, tri: { k: 'cpv', sens: 1 },
+    lignes: [
+      { nom: { fr: 'Renault', en: 'Renault' }, sous: MARQUE, dep: 365, clics: 1051, cont: 64, opp: 39, vte: 2 },
+      { nom: { fr: 'Occasions', en: 'Used cars' }, sous: CATAL, dep: 348, clics: 5491, cont: 306, opp: 39, vte: 2 },
+      { nom: { fr: 'Catalogue neuf', en: 'New car catalogue' }, sous: CATAL, dep: 319, clics: 2163, cont: 67, opp: 12, vte: 3 },
+      { nom: { fr: 'Kia', en: 'Kia' }, sous: MARQUE, dep: 285, clics: 959, cont: 35, opp: 5, vte: 0 },
+      { nom: { fr: 'Dacia', en: 'Dacia' }, sous: MARQUE, dep: 207, clics: 744, cont: 70, opp: 33, vte: 3 }
+    ],
+    note: { i: 1, txt: MOINS_CHER },
+    tuiles: [{ lab: L.dep, v: 2320, f: 'eur' }, { lab: L.cont, v: 572, f: 'ent' }, { lab: L.opp, v: 136, f: 'ent', crm: 1 }, { lab: L.vte, v: 10, f: 'ent', crm: 1 }, { lab: L.cpvT, v: 232, f: 'eur', crm: 1, or: 1 }],
+    tiroir: { i: 4, k: L.camp, sous: { fr: 'Du clic à la vente, sur le mois', en: 'From click to sale, over the month' },
+      etages: [[L.clics, 744], [L.cont, 70], [L.opp, 33], [L.vte, 3]], res: { lab: L.cpvT, v: 69, f: 'eur' } }
+  },
+  'theobald-t3-2026': {
+    source: { fr: 'Groupe Théobald · Google Ads · 3e trimestre 2026 · cinq marques', en: 'Theobald Group · Google Ads · Q3 2026 · five brands' },
+    fil: { fr: 'Rapports › Google Ads › <b>Contacts par marque</b>', en: 'Reports › Google Ads › <b>Leads by brand</b>' },
+    periode: { fr: '1er juil. au 30 sept. 2026', en: '1 July to 30 Sept 2026' },
+    bascule: { fr: 'Ajouter les appels', en: 'Add calls' }, etiq: { fr: 'APPELS DES ANNONCES', en: 'CALLS FROM ADS' },
+    legs: [
+      [{ fr: 'Chaque marque,', en: 'Every brand,' }, { fr: "jusqu'au formulaire.", en: 'down to the form.' }],
+      [{ fr: 'Puis les appels', en: 'Then the calls' }, { fr: 'comptent aussi.', en: 'count too.' }],
+      [{ fr: 'Et le budget', en: 'And the budget' }, { fr: 'suit les contacts.', en: 'follows the leads.' }]
+    ],
+    cols: [{ lab: L.dep, k: 'dep', f: 'eur' }, { lab: L.clics, k: 'clics', f: 'ent' }, { lab: L.eclic, k: 'eclic', f: 'prix', calc: ['dep', 'clics'] }, { lab: L.form, k: 'form', f: 'ent' }],
+    cols2: [{ lab: { fr: 'Appels', en: 'Calls' }, k: 'app', f: 'ent' }, { lab: L.cont, k: 'cont', f: 'ent' }, { lab: L.cpc, k: 'cpc', f: 'prix', calc: ['dep', 'cont'] }],
+    tri: { k: 'cpc', sens: 1 },
+    lignes: [
+      { nom: { fr: 'Omoda & Jaecoo', en: 'Omoda & Jaecoo' }, sous: { fr: 'France', en: 'France' }, dep: 27246, clics: 30386, form: 61, app: 1293, cont: 1354 },
+      { nom: { fr: 'MG', en: 'MG' }, sous: { fr: 'France et Belgique', en: 'France and Belgium' }, dep: 19882, clics: 80717, form: 104, app: 2671, cont: 2775 },
+      { nom: { fr: 'Honda', en: 'Honda' }, sous: { fr: 'France et Luxembourg', en: 'France and Luxembourg' }, dep: 9681, clics: 55418, form: 13, app: 602, cont: 615 },
+      { nom: { fr: 'Opel', en: 'Opel' }, sous: { fr: 'France', en: 'France' }, dep: 4101, clics: 15954, form: 5, app: 1103, cont: 1108 },
+      { nom: { fr: 'Mitsubishi', en: 'Mitsubishi' }, sous: { fr: 'France', en: 'France' }, dep: 817, clics: 7192, form: 10, app: 190, cont: 200 }
+    ],
+    note: { i: 1, txt: { fr: 'le plus de contacts du groupe', en: 'the most leads in the group' } },
+    tuiles: [{ lab: L.dep, v: 61726, f: 'eur' }, { lab: L.form, v: 193, f: 'ent' }, { lab: { fr: 'Appels', en: 'Calls' }, v: 5859, f: 'ent', crm: 1 }, { lab: L.cont, v: 6052, f: 'ent', crm: 1 }, { lab: L.cpcT, v: 10.2, f: 'prix', crm: 1, or: 1 }],
+    tiroir: { i: 3, k: { fr: 'Marque', en: 'Brand' }, sous: { fr: 'Des clics aux contacts, sur le trimestre', en: 'From clicks to leads, over the quarter' },
+      etages: [[L.clics, 15954], [L.form, 5], [{ fr: 'Appels', en: 'Calls' }, 1103], [L.cont, 1108]], res: { lab: L.cpcT, v: 3.7, f: 'prix' } }
+  },
+  'ggp-t3-2026': {
+    source: { fr: 'GGP Auto · Google Ads · 3e trimestre 2026', en: 'GGP Auto · Google Ads · Q3 2026' },
+    fil: { fr: 'Rapports › Google Ads › <b>Contacts par campagne</b>', en: 'Reports › Google Ads › <b>Leads by campaign</b>' },
+    periode: { fr: '1er juil. au 30 sept. 2026', en: '1 July to 30 Sept 2026' },
+    bascule: { fr: 'Ajouter le chat', en: 'Add chat' }, etiq: { fr: 'CONVERSATIONS DE CHAT', en: 'CHAT CONVERSATIONS' },
+    legs: [
+      [{ fr: 'Chaque campagne,', en: 'Every campaign,' }, { fr: "jusqu'au formulaire.", en: 'down to the form.' }],
+      [{ fr: 'Puis le chat', en: 'Then the chat' }, { fr: 'ajoute ses contacts.', en: 'adds its leads.' }],
+      [{ fr: 'Et le budget', en: 'And the budget' }, { fr: 'suit les contacts.', en: 'follows the leads.' }]
+    ],
+    cols: [{ lab: L.dep, k: 'dep', f: 'eur' }, { lab: L.clics, k: 'clics', f: 'ent' }, { lab: L.eclic, k: 'eclic', f: 'prix', calc: ['dep', 'clics'] }, { lab: L.form, k: 'form', f: 'ent' }],
+    cols2: [{ lab: { fr: 'Chat', en: 'Chat' }, k: 'chat', f: 'ent' }, { lab: L.cont, k: 'cont', f: 'ent' }, { lab: L.cpc, k: 'cpc', f: 'prix', calc: ['dep', 'cont'] }],
+    tri: { k: 'cpc', sens: 1 },
+    lignes: [
+      { nom: { fr: 'Occasion · toutes marques', en: 'Used · all brands' }, sous: { fr: 'Vehicle Ads', en: 'Vehicle Ads' }, dep: 4649, clics: 33264, form: 100, chat: 368, cont: 468 },
+      { nom: { fr: 'Occasion · Renault', en: 'Used · Renault' }, sous: { fr: 'Vehicle Ads', en: 'Vehicle Ads' }, dep: 4566, clics: 19428, form: 113, chat: 401, cont: 514 },
+      { nom: { fr: 'Occasion · recherche', en: 'Used · search' }, sous: { fr: 'Annonces Search', en: 'Search ads' }, dep: 4201, clics: 13814, form: 29, chat: 380, cont: 409 },
+      { nom: { fr: 'Occasion Renault · recherche', en: 'Used Renault · search' }, sous: { fr: 'Annonces Search', en: 'Search ads' }, dep: 3004, clics: 24051, form: 96, chat: 366, cont: 462 },
+      { nom: { fr: 'Occasion · Dacia', en: 'Used · Dacia' }, sous: { fr: 'Vehicle Ads', en: 'Vehicle Ads' }, dep: 1178, clics: 13128, form: 18, chat: 271, cont: 289 }
+    ],
+    note: { i: 1, txt: { fr: 'le plus de formulaires', en: 'the most forms' } },
+    tuiles: [{ lab: L.dep, v: 25722, f: 'eur' }, { lab: L.form, v: 450, f: 'ent' }, { lab: { fr: 'Chat', en: 'Chat' }, v: 2120, f: 'ent', crm: 1 }, { lab: L.cont, v: 2570, f: 'ent', crm: 1 }, { lab: { fr: 'Formulaires en un an', en: 'Forms, year on year' }, txt: { fr: 'x2,3', en: 'x2.3' }, crm: 1, or: 1 }],
+    tiroir: { i: 4, k: L.camp, sous: { fr: 'Des clics aux contacts, sur le trimestre', en: 'From clicks to leads, over the quarter' },
+      etages: [[L.clics, 13128], [L.form, 18], [{ fr: 'Chat', en: 'Chat' }, 271], [L.cont, 289]], res: { lab: L.cpcT, v: 4.1, f: 'prix' } }
+  },
+  'ggp-canaux': {
+    source: { fr: 'GGP Auto · CRM UpYourLeads, contacts en occasion · 1er janvier au 21 juillet 2026', en: 'GGP Auto · UpYourLeads CRM, used car leads · 1 January to 21 July 2026' },
+    fil: { fr: 'Rapports › CRM › <b>Ventes par canal</b>', en: 'Reports › CRM › <b>Sales by channel</b>' },
+    periode: { fr: '1er janv. au 21 juil. 2026', en: '1 Jan to 21 July 2026' },
+    bascule: { fr: 'Relier les ventes', en: 'Link sales' }, etiq: { fr: 'VENTES DU CRM', en: 'CRM SALES' },
+    legs: [
+      [{ fr: 'Chaque canal,', en: 'Every channel,' }, { fr: "jusqu'au contact.", en: 'down to the lead.' }],
+      [{ fr: 'Puis le CRM dit', en: 'Then the CRM shows' }, { fr: 'qui a acheté.', en: 'who bought.' }],
+      [{ fr: 'Le site du groupe', en: "The group's website" }, { fr: 'vend le mieux.', en: 'sells best.' }]
+    ],
+    grille: ['380px', '220px', '', '', '', '220px', '1fr'],
+    cols: [{ lab: L.cont, k: 'cont', f: 'ent' }],
+    cols2: [{ lab: L.vte, k: 'vte', f: 'ent' }, { lab: { fr: 'Taux de vente', en: 'Sales rate' }, k: 'taux', f: 'pct', calc: ['vte', 'cont', 100] }],
+    tri: { k: 'taux', sens: -1 },
+    lignes: [
+      { nom: { fr: 'LeBonCoin', en: 'LeBonCoin' }, sous: { fr: 'Place de marché', en: 'Marketplace' }, cont: 13943, vte: 741 },
+      { nom: { fr: 'La Centrale', en: 'La Centrale' }, sous: { fr: 'Place de marché', en: 'Marketplace' }, cont: 6772, vte: 534 },
+      { nom: { fr: 'Site internet GGP Auto', en: 'GGP Auto website' }, sous: { fr: 'Formulaires du site', en: 'Website forms' }, cont: 3776, vte: 439 },
+      { nom: { fr: 'Chat du site', en: 'Website chat' }, sous: { fr: 'Conversations eKonsilio', en: 'eKonsilio conversations' }, cont: 2245, vte: 169 }
+    ],
+    note: { i: 0, txt: { fr: 'le plus de contacts', en: 'the most leads' } },
+    tuiles: [{ lab: { fr: 'Contacts dans le CRM', en: 'Leads in the CRM' }, v: 48886, f: 'ent' }, { lab: L.vte, v: 5281, f: 'ent', crm: 1 }, { lab: { fr: 'Taux de vente', en: 'Sales rate' }, v: 10.8, f: 'pct', crm: 1 }, { lab: { fr: 'Média par vente du site', en: 'Media per website sale' }, v: 186, f: 'eur', crm: 1, or: 1 }],
+    tiroir: { i: 2, k: { fr: 'Canal', en: 'Channel' }, sous: { fr: 'Du contact à la vente, en sept mois', en: 'From lead to sale, over seven months' },
+      etages: [[L.cont, 3776], [L.vte, 439]], res: { lab: { fr: 'Taux de vente', en: 'Sales rate' }, v: 11.6, f: 'pct' } }
+  }
+};
+/* FIN JEUX */
+var JEU = JEUX[new URLSearchParams(location.search).get('jeu')] || JEUX.exemple;
+var SEP = EN ? ',' : ' ';
+function ent(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, SEP); }
+function dec(n, d) { var s = n.toFixed(d); if (/\.0+$/.test(s)) s = String(Math.round(n)); return EN ? s : s.replace('.', ','); }
+function euro(s) { return EN ? '€' + s : s + ' €'; }
+function fmt(n, f) {
+  if (n == null || isNaN(n)) return '-';
+  if (f === 'eur') return euro(ent(n));
+  /* Montants : sans décimale à partir de 10 €, une entre 1 et 10 €, deux en dessous de 1 €. */
+  if (f === 'prix') return euro(n >= 10 ? ent(n) : dec(n, n >= 1 ? 1 : 2));
+  if (f === 'pct') return EN ? dec(n, 1) + '%' : dec(n, 1) + ' %';
+  return ent(n);
+}
+var VIDE = '-';
+
+/* ---------- les valeurs calculées, le classement ---------- */
+var R = JEU.lignes, COLS = JEU.cols, COLS2 = JEU.cols2;
+R.forEach(function (r) {
+  COLS.concat(COLS2).forEach(function (c) {
+    if (!c.calc) return;
+    var a = r[c.calc[0]], b = r[c.calc[1]];
+    r[c.k] = b ? a / b * (c.calc[2] || 1) : null;
+  });
+});
+var TRI = JEU.tri;
+var ordre = R.map(function (r, i) { return i; }).sort(function (a, b) {
+  var x = R[a][TRI.k], y = R[b][TRI.k];
+  if (x == null) return 1; if (y == null) return -1;
+  return TRI.sens * (x - y);
+});
+R.forEach(function (r, i) { r.rang = ordre.indexOf(i); if (r.apres == null) r.apres = r.dep; });
+var A_DEP = COLS[0].k === 'dep';
+var MAXDEP = A_DEP ? Math.max.apply(null, R.map(function (r) { return Math.max(r.dep, r.apres); })) : 1;
+var BUDGET = R.some(function (r) { return r.apres !== r.dep; });
+var TI = JEU.tiroir;
+
+/* ---------- l'en-tête, les lignes, les tuiles, le tiroir ---------- */
+var G = JEU.grille || ['300px', '110px', '90px', '100px', '110px', '130px', '100px', '1fr'];
+var gab = [G[0]].concat(COLS.map(function (c, i) { return G[1 + i]; })).concat(COLS2.map(function (c, i) { return G[G.length - COLS2.length + i]; })).join(' ');
+var largeurAvant = 18 + [G[0]].concat(COLS.map(function (c, i) { return G[1 + i]; })).reduce(function (s, w) { return s + parseFloat(w); }, 0);
+$('bande').style.left = (largeurAvant - 6) + 'px';
+$('etiq').style.left = (largeurAvant + 8) + 'px';
+$('etiq').textContent = T(JEU.etiq);
+$('fil').innerHTML = T(JEU.fil);
+$('periode').textContent = T(JEU.periode);
+$('bascule-txt').textContent = T(JEU.bascule);
+$('source').textContent = T(JEU.source);
+var entete = $('entete');
+entete.style.gridTemplateColumns = gab;
+var triCol = null;
+entete.innerHTML = '<span>' + T(TI.k) + '</span>' + COLS.map(function (c) { return '<span>' + T(c.lab) + '</span>'; }).join('') +
+  COLS2.map(function (c) { return '<span data-c' + (c.k === TRI.k ? ' data-tri' : '') + '>' + T(c.lab) + '</span>'; }).join('');
+triCol = entete.querySelector('[data-tri]');
+var triLib = triCol ? triCol.textContent : '';
+var legs = [0, 1, 2].map(function (i) { return $('leg' + i); });
+legs.forEach(function (l, i) { var lns = l.querySelectorAll('.ln'); lns[0].textContent = T(JEU.legs[i][0]); lns[1].textContent = T(JEU.legs[i][1]); });
 
 var lignes = $('lignes');
 R.forEach(function (r, i) {
   var d = document.createElement('div');
   d.className = 'ligne'; d.id = 'l' + i;
-  d.innerHTML = '<div class="fond-ligne"></div><span><b class="nom">' + r.nom + '</b><i class="sous" style="font-style:normal">' + r.sous + '</i>' +
-    (i === 0 ? '<i class="note" style="font-style:normal">le moins cher au contact, le plus cher à la vente</i>' : '') + '</span>' +
-    '<span class="dep"><b data-v="dep">0</b><em></em></span><span data-v="clics">0</span><span data-v="cont">0</span><span data-v="cpc">0</span>' +
-    '<span class="crm" data-v="proj"></span><span class="crm" data-v="vte"></span><span class="cpv" data-v="cpv"></span>';
+  d.style.gridTemplateColumns = gab;
+  var note = JEU.note && JEU.note.i === i ? '<i class="note" style="font-style:normal">' + T(JEU.note.txt) + '</i>' : '';
+  d.innerHTML = '<div class="fond-ligne"></div><span><b class="nom">' + T(r.nom) + '</b><i class="sous" style="font-style:normal">' + T(r.sous) + '</i>' + note + '</span>' +
+    COLS.map(function (c, j) { return j === 0 && A_DEP ? '<span class="dep"><b data-v="' + c.k + '">0</b><em></em></span>' : '<span data-v="' + c.k + '">0</span>'; }).join('') +
+    COLS2.map(function (c, j) { return '<span class="' + (j === COLS2.length - 1 ? 'cpv' : 'crm') + '" data-v="' + c.k + '"></span>'; }).join('');
   lignes.appendChild(d);
 });
+var tuiles = $('tuiles');
+tuiles.style.gridTemplateColumns = 'repeat(' + JEU.tuiles.length + ',1fr)';
+tuiles.innerHTML = JEU.tuiles.map(function (k) { return '<div class="tuile' + (k.or ? ' or' : (k.crm ? ' crm' : '')) + '"><span>' + T(k.lab) + '</span><b>' + VIDE + '</b></div>'; }).join('');
+var K = [].slice.call(tuiles.querySelectorAll('b'));
+$('tiroir-k').textContent = T(TI.k);
+$('tiroir-nom').textContent = T(R[TI.i].nom);
+$('tiroir-sous').textContent = T(TI.sous);
+$('tres-lib').textContent = T(TI.res.lab);
 var etages = $('etages');
-var ETAGES = [['Clics', 620, 1], ['Contacts', 39, 0.72], ['Opportunités', 21, 0.52], ['Projets auto', 13, 0.38], ['Ventes', 6, 0.24]];
-ETAGES.forEach(function (e, i) {
+var E0 = TI.etages[0][1];
+TI.etages.forEach(function (e, i) {
+  if (e[2] == null) e[2] = 0.12 + 0.88 * Math.sqrt(e[1] / E0);
   var d = document.createElement('div');
-  d.className = 'etage' + (i === 4 ? ' or' : '');
-  d.innerHTML = '<span class="lib">' + e[0] + '</span><span class="bar"><i></i></span><b>0</b>';
+  d.className = 'etage' + (i === TI.etages.length - 1 ? ' or' : '');
+  d.innerHTML = '<span class="lib">' + T(e[0]) + '</span><span class="bar"><i></i></span><b>0</b>';
   etages.appendChild(d);
 });
+/* Un libellé trop long pour sa colonne est réduit, jamais coupé. */
+[].forEach.call(document.querySelectorAll('.ligne .nom, .entete span, .tuile span'), function (el) {
+  var w = el.clientWidth;
+  if (el.scrollWidth > w && w > 0) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * w / el.scrollWidth).toFixed(1) + 'px';
+});
 
-var legs = [0, 1, 2].map(function (i) { return $('leg' + i); });
-var cam = $('cam'), curseur = $('curseur'), onde = $('onde'), tiroir = $('tiroir'), pastille = $('pastille'), interr = $('interr');
-var K = [0, 1, 2, 3, 4].map(function (i) { return $('k' + i); });
-var hC = [].slice.call(document.querySelectorAll('.entete [data-c]'));
+var cam = $('cam'), curseur = $('curseur'), onde = $('onde'), tiroir = $('tiroir'), pastille = $('pastille'), interr = $('interr'), source = $('source');
+var hC = [].slice.call(entete.querySelectorAll('[data-c]'));
 
 /* Les clés de la caméra : elle tient chaque pose, puis glisse vers la suivante. */
 var CAM = [
@@ -197,9 +401,17 @@ function camera(t) {
   var p = inOutCubic(seg(t, a.t, b.t));
   return { s: mix(a.s, b.s, p), x: mix(a.x, b.x, p), y: mix(a.y, b.y, p) };
 }
-/* Le curseur : positions dans l'app, et les instants de clic. */
+/* Le curseur : positions dans l'app, et les instants de clic. La bascule est mesurée, sa largeur suit son libellé. */
+/* Centre d'un élément (ou de son texte), en coordonnées de l'app, mesuré avant toute transformation. */
+function centreDans(el, texte) {
+  var a = $('app').getBoundingClientRect(), r;
+  if (texte) { var g = document.createRange(); g.selectNodeContents(el); r = g.getBoundingClientRect(); } else r = el.getBoundingClientRect();
+  var k = a.width / ($('app').offsetWidth || a.width);
+  return [(r.left + r.width / 2 - a.left) / k, (r.top + r.height / 2 - a.top) / k];
+}
+var bx = centreDans(interr)[0] - 6;
 var CUR = [
-  { t: 0, x: 980, y: 720 }, { t: 4.4, x: 980, y: 720 }, { t: 5.2, x: 1032, y: 30 }, { t: 8.5, x: 1032, y: 30 },
+  { t: 0, x: 980, y: 720 }, { t: 4.4, x: 980, y: 720 }, { t: 5.2, x: bx, y: 30 }, { t: 8.5, x: bx, y: 30 },
   { t: 9.2, x: 1075, y: 236 }, { t: 10.6, x: 1075, y: 236 }, { t: 11.1, x: 420, y: 300 }, { t: 13.9, x: 420, y: 300 }, { t: 14.6, x: 700, y: 760 }
 ];
 var CLICS = [5.35, 9.35, 11.25];
@@ -210,6 +422,8 @@ function curseurA(t) {
   var p = inOutCubic(seg(t, a.t, b.t));
   return { x: mix(a.x, b.x, p), y: mix(a.y, b.y, p) };
 }
+/* Le clic de tri vise l'en-tête de la colonne triée, la tenue vise la ligne du tiroir. */
+if (triCol) { CUR[4].x = CUR[5].x = centreDans(triCol, true)[0] - 6; }
 
 window.render = function (t) {
   t = clamp(+t || 0, 0, D);
@@ -220,6 +434,7 @@ window.render = function (t) {
   var rx = 9 * (1 - e), ty = 70 * (1 - e) + 30 * inCubic(fin);
   cam.style.transform = 'perspective(2200px) translate(' + c.x.toFixed(1) + 'px,' + (c.y + ty).toFixed(1) + 'px) scale(' + c.s.toFixed(4) + ') rotateX(' + rx.toFixed(2) + 'deg)';
   cam.style.opacity = (Math.min(seg(t, 0.15, 0.6), 1 - fin)).toFixed(3);
+  source.style.opacity = (outQuart(seg(t, 1.0, 1.8)) * (1 - fin)).toFixed(3);
 
   /* les trois phrases, chacune à sa place ; la phrase en cours est claire, les autres passent en retrait */
   var LT = [0.6, 5.5, 14.3];
@@ -234,74 +449,78 @@ window.render = function (t) {
   });
 
   /* les lignes du tableau : elles entrent une à une, leurs chiffres montent */
-  var tri = inOutCubic(seg(t, 9.5, 10.6)), crm = seg(t, 5.6, 6.1), budget = inOutCubic(seg(t, 15.0, 16.4));
+  var tri = inOutCubic(seg(t, 9.5, 10.6)), crm = seg(t, 5.6, 6.1), budget = BUDGET ? inOutCubic(seg(t, 15.0, 16.4)) : 0;
   R.forEach(function (r, i) {
     var el = $('l' + i), t0 = 1.2 + i * 0.32, p = outExpo(seg(t, t0, t0 + 0.6)), v = outQuart(seg(t, t0 + 0.1, t0 + 1.4));
     var y = 70 + mix(i, r.rang, tri) * 72;
     el.style.top = y.toFixed(1) + 'px';
     el.style.opacity = p.toFixed(3);
     el.style.transform = 'translateX(' + (24 * (1 - p)).toFixed(1) + 'px)';
-    var dep = mix(r.dep, r.apres, budget);
-    el.querySelector('[data-v=dep]').textContent = eur(r.dep * v + (dep - r.dep));
-    el.querySelector('[data-v=dep]').style.color = r.apres > r.dep && budget > 0 ? '#1d71b8' : (r.apres < r.dep && budget > 0 ? '#7a8ea2' : '');
-    var barre = el.querySelector('em');
-    barre.style.width = (70 * dep / MAXDEP * outQuart(seg(t, 14.6, 15.0))).toFixed(1) + 'px';
-    barre.style.background = r.apres > r.dep ? '#1d71b8' : (r.apres < r.dep ? '#b8c6d4' : '#7db8ee');
-    el.querySelector('[data-v=clics]').textContent = fr(r.clics * v);
-    el.querySelector('[data-v=cont]').textContent = fr(r.cont * v);
-    el.querySelector('[data-v=cpc]').textContent = v > 0.98 ? eur(r.cpc) : '';
-    /* les colonnes du CRM se remplissent ligne après ligne */
+    COLS.forEach(function (col, j) {
+      var x = el.querySelector('[data-v=' + col.k + ']');
+      if (j === 0 && A_DEP) {
+        var dep = mix(r.dep, r.apres, budget);
+        x.textContent = fmt(r.dep * v + (dep - r.dep), col.f);
+        x.style.color = r.apres > r.dep && budget > 0 ? '#1d71b8' : (r.apres < r.dep && budget > 0 ? '#7a8ea2' : '');
+        var barre = el.querySelector('em');
+        barre.style.width = (70 * dep / MAXDEP * outQuart(seg(t, 14.6, 15.0))).toFixed(1) + 'px';
+        barre.style.background = r.apres > r.dep ? '#1d71b8' : (r.apres < r.dep ? '#b8c6d4' : '#7db8ee');
+      } else if (col.calc) x.textContent = v > 0.98 ? fmt(r[col.k], col.f) : '';
+      else x.textContent = fmt(r[col.k] * v, col.f);
+    });
+    /* les colonnes ajoutées se remplissent ligne après ligne */
     var tc = 6.3 + i * 0.36, q = outQuart(seg(t, tc, tc + 0.9));
-    var cp = el.querySelector('[data-v=proj]'), cv = el.querySelector('[data-v=vte]'), cc = el.querySelector('[data-v=cpv]');
-    cp.textContent = q > 0 ? fr(r.proj * q) : '';
-    cv.textContent = q > 0 ? fr(r.vte * q) : '';
-    cc.textContent = q > 0.97 ? eur(r.cpv) : '';
-    [cp, cv, cc].forEach(function (x) { x.style.opacity = q.toFixed(3); });
-    cc.style.color = r.rang === 0 ? '#b8862c' : '#0b1b2b';
-    /* la meilleure ligne prend un fond, la note de l'offre du mois s'écrit après le tri */
-    el.querySelector('.fond-ligne').style.opacity = (r.rang === 0 ? outQuart(seg(t, 10.3, 10.8)) : 0).toFixed(3);
+    COLS2.forEach(function (col, j) {
+      var x = el.querySelector('[data-v=' + col.k + ']');
+      x.textContent = q <= 0 ? '' : (col.calc ? (q > 0.97 ? fmt(r[col.k], col.f) : '') : fmt(r[col.k] * q, col.f));
+      x.style.opacity = q.toFixed(3);
+      if (j === COLS2.length - 1) x.style.color = r.rang === 0 ? '#b8862c' : '#0b1b2b';
+    });
+    /* la ligne du tiroir prend un fond, la note s'écrit après le tri */
+    el.querySelector('.fond-ligne').style.opacity = (i === TI.i ? outQuart(seg(t, 10.3, 10.8)) : 0).toFixed(3);
     el.querySelector('.fond-ligne').style.background = 'rgba(232,189,98,.16)';
     var note = el.querySelector('.note');
     if (note) { note.style.clipPath = 'inset(-4px ' + (100 * (1 - outQuart(seg(t, 10.6, 11.2)))).toFixed(1) + '% -4px 0)'; note.style.display = t > 10.55 ? 'inline-block' : 'none'; }
     el.querySelector('.sous').style.display = note && t > 10.55 ? 'none' : 'block';
   });
   hC.forEach(function (h, j) { var p = outQuart(seg(t, 5.8 + j * 0.15, 6.3 + j * 0.15)); h.style.opacity = p.toFixed(3); h.style.transform = 'translateY(' + (8 * (1 - p)).toFixed(1) + 'px)'; });
-  $('hcpv').className = t > 9.35 ? 'tri' : '';
-  $('hcpv').textContent = t > 9.35 ? '€ / vente ↑' : '€ / vente';
+  if (triCol) { triCol.className = t > 9.35 ? 'tri' : ''; triCol.textContent = triLib + (t > 9.35 ? (TRI.sens > 0 ? ' ↑' : ' ↓') : ''); }
   $('bande').style.opacity = crm.toFixed(3);
   $('bande').style.transform = 'scaleY(' + outExpo(crm).toFixed(3) + ')';
   $('bande').style.transformOrigin = '0 0';
   $('etiq').style.opacity = outQuart(seg(t, 5.9, 6.3)).toFixed(3);
 
-  /* la bascule « Relier au CRM » */
+  /* la bascule */
   var on = outExpo(seg(t, 5.35, 5.6));
   pastille.style.transform = 'translateX(' + (16 * on).toFixed(1) + 'px)';
   interr.style.background = on > 0.5 ? '#1d71b8' : '#cfd8e3';
 
   /* les tuiles du haut */
   var kv = outQuart(seg(t, 1.4, 3.2)), kc = outQuart(seg(t, 6.4, 8.4));
-  K[0].textContent = eur(4800 * kv);
-  K[1].textContent = fr(212 * kv);
-  K[2].textContent = kc > 0 ? fr(41 * kc) : '–';
-  K[3].textContent = kc > 0 ? fr(14 * kc) : '–';
-  K[4].textContent = kc > 0.97 ? eur(343) : '–';
+  JEU.tuiles.forEach(function (k, i) {
+    var p = k.crm ? kc : kv;
+    if (k.txt) { K[i].textContent = p > 0.97 ? T(k.txt) : VIDE; return; }
+    if (k.f === 'prix' || k.f === 'pct' || (k.or && k.crm)) { K[i].textContent = p > 0.97 ? fmt(k.v, k.f) : VIDE; return; }
+    K[i].textContent = p > 0 ? fmt(k.v * p, k.f) : VIDE;
+  });
 
-  /* le tiroir de la meilleure campagne */
+  /* le tiroir de la ligne mise en avant */
   var ti = outExpo(seg(t, 11.35, 12.0)) * (1 - inOutCubic(seg(t, 13.7, 14.2)));
   tiroir.style.transform = 'translateX(' + (105 * (1 - ti)).toFixed(2) + '%)';
   [].forEach.call(etages.children, function (d, i) {
     var p = outQuart(seg(t, 11.8 + i * 0.22, 12.4 + i * 0.22));
-    d.querySelector('i').style.width = (100 * ETAGES[i][2] * p).toFixed(1) + '%';
-    d.querySelector('b').textContent = fr(ETAGES[i][1] * p);
+    d.querySelector('i').style.width = (100 * TI.etages[i][2] * p).toFixed(1) + '%';
+    d.querySelector('b').textContent = fmt(TI.etages[i][1] * p, 'ent');
   });
-  $('tcpv').textContent = eur(200 * outQuart(seg(t, 12.7, 13.3)));
+  var pr = outQuart(seg(t, 12.7, 13.3));
+  $('tres').textContent = fmt(TI.res.v * pr, TI.res.f);
 
   /* le curseur et son onde au clic */
   var cu = curseurA(t), vis = Math.min(seg(t, 3.9, 4.3), 1 - seg(t, 15.0, 15.4));
   curseur.style.transform = 'translate(' + cu.x.toFixed(1) + 'px,' + cu.y.toFixed(1) + 'px)';
   curseur.style.opacity = vis.toFixed(3);
-  var on2 = 0, cx = 0;
-  CLICS.forEach(function (tc) { var p = seg(t, tc, tc + 0.45); if (p > 0 && p < 1) { on2 = p; cx = tc; } });
+  var on2 = 0;
+  CLICS.forEach(function (tc) { var p = seg(t, tc, tc + 0.45); if (p > 0 && p < 1) { on2 = p; } });
   onde.style.opacity = on2 > 0 ? (1 - on2).toFixed(3) : '0';
   onde.style.transform = 'translate(' + (cu.x + 3).toFixed(1) + 'px,' + (cu.y + 3).toFixed(1) + 'px) scale(' + (0.4 + 1.2 * outQuart(on2)).toFixed(3) + ')';
 };

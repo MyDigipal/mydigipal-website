@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
 <title>Du premier regard à la voiture vendue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,6 +37,7 @@ html,body{margin:0;background:#000;overflow:hidden}
 .bloc-crm .rang i{font-style:normal;font-size:22px;font-weight:600;color:#a9b8c8}
 .bloc-crm .rang.or b,.bloc-crm .rang.or i{color:#e8bd62}
 #lab5 .val{color:#e8bd62}
+#source{position:absolute;left:120px;bottom:52px;font-size:17px;font-weight:600;letter-spacing:.02em;color:#6f859b;white-space:nowrap}
 #prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
 </style>
 </head>
@@ -49,14 +50,15 @@ html,body{margin:0;background:#000;overflow:hidden}
     <div class="mask"><span class="ln b" id="t2">à la voiture vendue.</span></div>
   </div>
   <div class="lab" id="lab0"><span class="nom">Impressions</span><span class="val"><span data-n>0</span></span></div>
-  <div class="lab" id="lab1"><span class="nom">Clics</span><span class="val"><span data-n>0</span><span class="det">taux de clic 1,7 %</span></span></div>
+  <div class="lab" id="lab1"><span class="nom">Clics</span><span class="val"><span data-n>0</span><span class="det"></span></span></div>
   <div class="lab" id="lab2"><span class="nom">Sur le site</span><span class="val"><span data-n>0</span><span class="det">en moyenne</span></span></div>
-  <div class="lab" id="lab3"><span class="nom">Contacts</span><span class="val"><span data-n>0</span><span class="det">141 formulaires · 71 appels</span></span></div>
+  <div class="lab" id="lab3"><span class="nom">Contacts</span><span class="val"><span data-n>0</span><span class="det"></span></span></div>
   <div class="lab bloc-crm" id="lab4"><span class="nom">Dans le CRM</span>
-    <span class="rang" data-r="0"><b data-n>0</b><i>opportunités</i></span>
-    <span class="rang" data-r="1"><b data-n>0</b><i>projets automobile</i></span>
-    <span class="rang or" data-r="2"><b data-n>0</b><i>ventes</i></span></div>
-  <div class="lab or" id="lab5"><span class="nom">Le résultat remonte jusqu'à l'annonce</span><span class="val">343 €<span class="det">de média par voiture vendue</span></span></div>
+    <span class="rang" data-r="0"><b data-n>0</b><i></i></span>
+    <span class="rang" data-r="1"><b data-n>0</b><i></i></span>
+    <span class="rang or" data-r="2"><b data-n>0</b><i></i></span></div>
+  <div class="lab or" id="lab5"><span class="nom">Le résultat remonte jusqu'à l'annonce</span><span class="val"><span data-v></span><span class="det"></span></span></div>
+  <div id="source"></div>
 </div>
 <div id="prechargeur">
   <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
@@ -77,6 +79,77 @@ window.PRET = Promise.all([
 (function () {
 'use strict';
 var D = window.DUREE, TAU = Math.PI * 2;
+
+/* ---------- les jeux de données : un par étude, choisi par ?jeu= ----------
+   Chaque étude montre les chiffres réels de son client, jamais ceux d'une autre. Le jeu
+   « exemple » (données d'exemple) sert la galerie du labo. crm: null retire l'escalier du CRM ;
+   site: null retire l'étape « Sur le site » (formulaire intégré, sans visite du site). */
+var EN = document.documentElement.lang === 'en';
+function T(o) { return o == null ? '' : (typeof o === 'string' ? o : (EN ? o.en : o.fr)); }
+/* JEUX */
+var TAUX = { fr: 'taux de clic ', en: 'click-through rate ' };
+var F_FORM = { fr: 'formulaires', en: 'forms' }, F_APPEL = { fr: 'appels', en: 'calls' };
+var DEUX = { fr: "jusqu'au contact.", en: 'to the lead.' };
+var PAR_CONTACT = { fr: 'de média par contact', en: 'of media per lead' };
+var PAR_VENTE = { fr: 'de média par voiture vendue', en: 'of media per car sold' };
+var EN_UN_AN = { fr: 'En un an', en: 'In one year' };
+var JEUX = {
+  'exemple': {
+    source: { fr: "Données d'exemple", en: 'Example data' },
+    titre2: { fr: 'à la voiture vendue.', en: 'to the car sold.' },
+    imp: 184000, clics: 3120, site: 108,
+    contacts: [[141, F_FORM], [71, F_APPEL]],
+    crm: [[96, { fr: 'opportunités', en: 'opportunities' }], [41, { fr: 'projets automobile', en: 'car projects' }], [14, { fr: 'ventes', en: 'sales' }]],
+    fin: { prix: 343, det: PAR_VENTE }
+  },
+  'theobald-t1-2026': {
+    source: { fr: 'Groupe Théobald · Google Ads · 1er trimestre 2026', en: 'Theobald Group · Google Ads · Q1 2026' },
+    titre2: DEUX, imp: 7645864, clics: 96598, site: 112,
+    contacts: [[198, F_FORM], [3134, F_APPEL]], crm: null,
+    fin: { nom: EN_UN_AN, txt: { fr: 'x2,3', en: 'x2.3' }, det: { fr: 'de formulaires, avec 39 % de budget en moins', en: 'the forms, on 39% less budget' } }
+  },
+  'theobald-t2-2026': {
+    source: { fr: 'Groupe Théobald · Google Ads · 2e trimestre 2026', en: 'Theobald Group · Google Ads · Q2 2026' },
+    titre2: DEUX, imp: 22446432, clics: 281513, site: 90,
+    contacts: [[204, F_FORM], [5245, F_APPEL]], crm: null,
+    fin: { nom: EN_UN_AN, txt: { fr: 'x6,2', en: 'x6.2' }, det: { fr: "de contacts qu'au 2e trimestre 2025", en: 'the leads of Q2 2025' } }
+  },
+  'vulcain-polestar': {
+    source: { fr: 'Groupe Vulcain · lancement Polestar · 19 janvier au 17 février 2026', en: 'Vulcain Group · Polestar launch · 19 January to 17 February 2026' },
+    titre2: DEUX, imp: 69503, clics: 5643, site: 174,
+    contacts: [[15, F_FORM], [428, F_APPEL]], crm: null,
+    fin: { nom: { fr: 'Sur Performance Max', en: 'On Performance Max' }, prix: 4.07, det: PAR_CONTACT }
+  },
+  'dmd-pmax-ford': {
+    source: { fr: 'DMD · Performance Max Ford · octobre 2025 à septembre 2026', en: 'DMD · Ford Performance Max · October 2025 to September 2026' },
+    titre2: DEUX, imp: 11772668, clics: 64122, site: 307,
+    contacts: [[415, F_FORM], [18194, F_APPEL]], crm: null,
+    fin: { prix: 0.64, det: PAR_CONTACT }
+  },
+  'dmd-mars-2026': {
+    source: { fr: 'DMD · Performance Max Ford · mars 2026', en: 'DMD · Ford Performance Max · March 2026' },
+    titre2: { fr: 'au téléphone qui sonne.', en: 'to a ringing phone.' }, imp: 795273, clics: 7840, site: 332,
+    contacts: [[51, F_FORM], [2101, F_APPEL]], crm: null,
+    fin: { prix: 0.61, det: PAR_CONTACT }
+  },
+  'guyane': {
+    source: { fr: 'Guyane Automobile · publicité Meta et CRM · janvier à septembre 2026', en: 'Guyane Automobile · Meta ads and CRM · January to September 2026' },
+    titre2: { fr: 'à la voiture vendue.', en: 'to the car sold.' }, imp: 12765907, clics: 175569, site: null,
+    contacts: [[4572, { fr: 'formulaires intégrés', en: 'instant forms' }]],
+    crm: [[4426, { fr: 'contacts traités', en: 'leads handled' }], [1072, { fr: 'opportunités', en: 'opportunities' }], [78, { fr: 'ventes', en: 'sales' }]],
+    fin: { prix: 270, det: PAR_VENTE }
+  }
+};
+/* FIN JEUX */
+var JEU = JEUX[new URLSearchParams(location.search).get('jeu')] || JEUX.exemple;
+var CRM = !!JEU.crm;
+var SEP = EN ? ',' : ' ';
+function ent(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, SEP); }
+function dec(n, d) { var s = n.toFixed(d); if (/\.0+$/.test(s)) s = String(Math.round(n)); return EN ? s : s.replace('.', ','); }
+/* Montants : sans décimale à partir de 10 €, une entre 1 et 10 €, deux en dessous de 1 €. */
+function prix(n) { var s = n >= 10 ? ent(n) : dec(n, n >= 1 ? 1 : 2); return EN ? '€' + s : s + ' €'; }
+function pct(n) { var s = dec(n, n >= 10 ? 0 : 1); return EN ? s + '%' : s + ' %'; }
+var NB_CONTACTS = JEU.contacts.reduce(function (s, c) { return s + c[0]; }, 0);
 /* Projection isométrique vraie : x vers la droite et le bas, y vers la gauche et le bas, z vers le haut. */
 var U = 82, OX = 1080, OY = 641, C = Math.cos(Math.PI / 6), S = 0.5;
 
@@ -168,7 +241,7 @@ var X_DEPART = -8.2;                            /* la foule entre par le bout du
    sont écrits dans les libellés. Chacun a son destin, figé par le hasard. */
 var FOULE = [];
 (function () {
-  var cliqueurs = 0;
+  var cliqueurs = 0, convertis = 0;
   for (var i = 0; i < N_FOULE; i++) {
     var b = 2.1 + i * (4.4 / N_FOULE) + 0.02 * h(i, 1);
     var clique = (i % 9 === 4) && b < 6.2;
@@ -182,6 +255,7 @@ var FOULE = [];
       p.r = 0.55 + 0.35 * h(i, 5);
       p.conv = !p.rebond && (k % 5 !== 3);                       /* la plupart des visiteurs restés convertissent ici */
       p.appel = p.conv && (k % 3 === 2);
+      if (p.conv) p.ci = convertis++;
     }
     FOULE.push(p);
   }
@@ -243,15 +317,22 @@ function etatFoule(p, t) {
 /* Un contact : un cube qui sort du kiosque, gagne le pied du CRM, puis gravit ses marches. */
 var GRADINS = [ { x: X_CRM, d: [2.6, 2.8, 0.55] }, { x: X_CRM + 0.25, d: [1.9, 2.0, 0.55] }, { x: X_CRM + 0.5, d: [1.2, 1.2, 0.55] } ];
 var ZG = [0.55, 1.1, 1.65];
+var Z_ACCUEIL = 0.14, X_ACC = X_CRM - 1.2;                           /* sans CRM : le plateau bas où les contacts se rangent */
 function contact(p, t, t0, kiosque) {
   var c = p.k;
   var arrivee = t0 + 0.9;
   var base = [X_CRM - 1.8, (c % 4 - 1.5) * 0.42, HT];
   var forme = 'cube', or = 0;
+  if (!CRM) {
+    /* Sans CRM : chaque contact se range sur le plateau d'arrivée, puis passe à l'or quand il est compté. */
+    var ci = p.ci || 0;
+    base = [X_CRM - 1.75 + Math.floor(ci / 4) * 0.55, (ci % 4 - 1.5) * 0.55, Z_ACCUEIL];
+    if (t >= arrivee) return { x: base[0], y: base[1], z: base[2], a: 1, forme: forme, taille: 1, or: outQuart(seg(t, 13.2 + 0.09 * ci, 13.8 + 0.09 * ci)) };
+  }
   if (t < arrivee) {
     var u = inOutCubic(seg(t, t0, arrivee));
     var pop = outBack(2.2)(seg(t, t0, t0 + 0.3));
-    return { x: mix(kiosque[0] + 0.55, base[0], u), y: mix(kiosque[1], base[1], u), z: HT + 0.25 * bosse(u), a: 1, forme: forme, taille: pop, or: 0 };
+    return { x: mix(kiosque[0] + 0.55, base[0], u), y: mix(kiosque[1], base[1], u), z: mix(HT, base[2], u) + 0.25 * bosse(u), a: 1, forme: forme, taille: pop, or: 0 };
   }
   /* Les marches, une à une, avec un temps de pause entre chacune. */
   var n = MARCHES[c] || 1, pos = base.slice(), tt = arrivee + 0.35;
@@ -303,18 +384,31 @@ var scene = $('scene'), T1 = $('t1'), T2 = $('t2');
 var labs = [0, 1, 2, 3, 4, 5].map(function (i) { return $('lab' + i); });
 var nums = labs.map(function (l) { return l.querySelector('[data-n]'); });
 var rangs = [].slice.call(labs[4].querySelectorAll('.rang'));
-function fr(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
 /* Les étapes : où la ligne part, quand elle part, ce que le compteur atteint. */
 var ETAPES = [
-  { a: function () { return [X_ANN, 1.25, HT]; }, t: 2.9, ly: 560, val: function (p) { return fr(184000 * p); } },
-  { a: function () { return [X_CLIC, 1.25, HT]; }, t: 4.6, ly: 650, val: function (p) { return fr(3120 * p); } },
-  { a: function () { return [X_SITE + 0.25, 1.2, HT + 0.5]; }, t: 6.4, ly: 740, val: function (p) { var s = Math.round(108 * p); return Math.floor(s / 60) + ' min ' + String(s % 60).padStart(2, '0'); } },
-  { a: function () { return [X_CONV + 0.2, 1.25, HT]; }, t: 8.6, ly: 830, val: function (p) { return fr(212 * p); } },
-  { a: function () { return [X_CRM + 0.5, -0.1, ZG[2]]; }, t: 11.2, ly: 330, droite: true, val: null },
+  { a: function () { return [X_ANN, 1.25, HT]; }, t: 2.9, ly: 560, val: function (p) { return ent(JEU.imp * p); } },
+  { a: function () { return [X_CLIC, 1.25, HT]; }, t: 4.6, ly: 650, val: function (p) { return ent(JEU.clics * p); } },
+  { a: function () { return [X_SITE + 0.25, 1.2, HT + 0.5]; }, t: 6.4, ly: 740, cache: JEU.site == null, val: function (p) { var s = Math.round((JEU.site || 0) * p); return Math.floor(s / 60) + ' min ' + String(s % 60).padStart(2, '0'); } },
+  { a: function () { return [X_CONV + 0.2, 1.25, HT]; }, t: 8.6, ly: JEU.site == null ? 740 : 830, val: function (p) { return ent(NB_CONTACTS * p); } },
+  { a: function () { return [X_CRM + 0.5, -0.1, ZG[2]]; }, t: 11.2, ly: 330, droite: true, cache: !CRM, val: null },
   { a: function () { return [X_ANN, -1.45, 2.0]; }, t: 17.6, ly: 150, haut: true, val: null }
 ];
 /* Les trois rangs du CRM : chacun s'écrit quand le premier contact atteint sa marche. */
-var RANGS = [{ t: 11.2, n: 96 }, { t: 12.6, n: 41 }, { t: 14.2, n: 14 }];
+var RANGS = [0, 1, 2].map(function (j) { return { t: [11.2, 12.6, 14.2][j], n: CRM ? JEU.crm[j][0] : 0 }; });
+/* Les textes du jeu, posés une fois. */
+T2.textContent = T(JEU.titre2);
+labs[1].querySelector('.det').textContent = T(TAUX) + pct(100 * JEU.clics / JEU.imp);
+labs[3].querySelector('.det').textContent = JEU.contacts.length > 1 ? JEU.contacts.map(function (c) { return ent(c[0]) + ' ' + T(c[1]); }).join(' · ') : T(JEU.contacts[0][1]);
+if (CRM) {
+  /* la colonne des nombres prend la largeur du plus long, pour que les libellés restent alignés */
+  var largeur = Math.max(62, 21 * Math.max.apply(null, JEU.crm.map(function (c) { return ent(c[0]).length; })));
+  rangs.forEach(function (r, j) { r.querySelector('i').textContent = T(JEU.crm[j][1]); r.querySelector('b').style.minWidth = largeur + 'px'; });
+}
+if (JEU.fin.nom) labs[5].querySelector('.nom').textContent = T(JEU.fin.nom);
+labs[5].querySelector('[data-v]').textContent = JEU.fin.prix != null ? prix(JEU.fin.prix) : T(JEU.fin.txt);
+labs[5].querySelector('.det').textContent = T(JEU.fin.det);
+var SOURCE = $('source');
+SOURCE.textContent = T(JEU.source);
 var LX = 120, RX = 1530, HX = 860;
 var T_RETOUR = 15.6, T_RETOUR_FIN = 17.6;
 
@@ -362,7 +456,7 @@ window.render = function (t) {
   if (hP > 0.01) om += ombre(piste.V, zp);
   if (kA > 0.01) om += ombre(annonce.V, zp);
   if (kS > 0.01) om += ombre(ecran.V, zp);
-  if (kR[0] > 0.01) om += ombre(solide([X_CRM, -0.1, ZG[0] / 2], [2.6, 2.8, ZG[0]]).V, zp) + ombre(solide([X_CRM + 0.25, -0.1, ZG[1] / 2], [1.9, 2.0, ZG[1]]).V, zp) + ombre(solide([X_CRM + 0.5, -0.1, ZG[2] / 2], [1.2, 1.2, ZG[2]]).V, zp);
+  if (kR[0] > 0.01 && CRM) om += ombre(solide([X_CRM, -0.1, ZG[0] / 2], [2.6, 2.8, ZG[0]]).V, zp) + ombre(solide([X_CRM + 0.25, -0.1, ZG[1] / 2], [1.9, 2.0, ZG[1]]).V, zp) + ombre(solide([X_CRM + 0.5, -0.1, ZG[2] / 2], [1.2, 1.2, ZG[2]]).V, zp);
   if (om) { DEFS += '<clipPath id="sol"><polygon points="' + ptsList(facePts(plaque, 4)) + '"/></clipPath>'; s += '<g clip-path="url(#sol)" fill="#020a14" opacity=".55">' + om + '</g>'; }
 
   /* le panneau de l'annonce, au fond : sa face avant porte une vraie petite annonce */
@@ -419,9 +513,11 @@ window.render = function (t) {
       s += quad(surFaceY(-0.7 + 0.312, xf, zf, rect(0.07, 0.04, 0.3, 0.1)), 'fill="' + rgb(MARQUE) + '"');
     }
   }
+  /* sans CRM : un plateau bas où les contacts se rangent, qui passe à l'or quand ils sont comptés */
+  if (!CRM && kR[0] > 0.01) s += bloc([X_ACC, 0, Z_ACCUEIL * kR[0] / 2], [2.0, 2.5, Z_ACCUEIL * kR[0]], melC(BLOC, [168, 128, 50], outQuart(seg(t, 13.6, 14.6))));
   /* les gradins du CRM */
   for (i = 0; i < 3; i++) {
-    if (kR[i] < 0.01) continue;
+    if (kR[i] < 0.01 || !CRM) continue;
     var g = GRADINS[i], hz = ZG[i], base0 = i ? ZG[i - 1] : 0;
     var hReal = (hz - base0) * kR[i];
     var teinte = i === 2 ? melC(BLOC, [168, 128, 50], outQuart(seg(t, 13.6, 14.6))) : BLOC;
@@ -465,7 +561,7 @@ window.render = function (t) {
   if (retour > 0) {
     var nPts = 64, pts = [], fin = Math.max(2, Math.round(nPts * inOutCubic(retour)));
     for (i = 0; i <= nPts; i++) {
-      var u = i / nPts, xx = mix(X_CRM + 0.4, X_ANN + 0.1, u), zz = mix(ZG[2] + 0.4, 2.2, u) + 1.6 * Math.sin(Math.PI * u), yy = mix(-0.4, -1.2, u);
+      var u = i / nPts, xx = mix(CRM ? X_CRM + 0.4 : X_ACC, X_ANN + 0.1, u), zz = mix(CRM ? ZG[2] + 0.4 : 0.7, 2.2, u) + 1.6 * Math.sin(Math.PI * u), yy = mix(-0.4, -1.2, u);
       pts.push(proj([xx, yy, zz]));
     }
     var d = '';
@@ -481,9 +577,10 @@ window.render = function (t) {
 
   /* les libellés hors de la scène, reliés par un trait qui part de l'étape quand elle a lieu */
   var traits = '', sortie = seg(t, 22.6, 23.2), courante = -1;
-  for (i = 0; i < ETAPES.length; i++) if (t >= ETAPES[i].t) courante = i;
+  for (i = 0; i < ETAPES.length; i++) if (t >= ETAPES[i].t && !ETAPES[i].cache) courante = i;
   for (i = 0; i < ETAPES.length; i++) {
     var E = ETAPES[i], lab = labs[i], A = proj(E.a()), pd = outExpo(seg(t, E.t, E.t + 0.6)), pl = outQuart(seg(t, E.t + 0.35, E.t + 0.9));
+    if (E.cache) { lab.style.opacity = 0; continue; }
     var Bx, By, Cx, Cy;
     if (E.haut) { Bx = A[0]; By = E.ly; Cx = HX - 18; Cy = By; }
     else if (!E.droite) { By = E.ly; Bx = A[0] - (By - A[1]); Cy = By; Cx = LX + Math.max(lab.offsetWidth, 200) + 28; if (Bx < Cx + 30) Bx = Cx + 30; }
@@ -509,9 +606,10 @@ window.render = function (t) {
     if (E.droite) for (var j = 0; j < 3; j++) {
       var R = RANGS[j], pr = outQuart(seg(t, R.t + 0.2, R.t + 0.7));
       rangs[j].style.clipPath = 'inset(-6px ' + (100 * (1 - pr)).toFixed(2) + '% -6px 0)';
-      rangs[j].querySelector('b').textContent = fr(R.n * outQuart(seg(t, R.t + 0.3, R.t + 1.4)));
+      rangs[j].querySelector('b').textContent = ent(R.n * outQuart(seg(t, R.t + 0.3, R.t + 1.4)));
     }
   }
+  SOURCE.style.opacity = (outQuart(seg(t, 1.2, 2.0)) * (1 - sortie) * opa).toFixed(3);
   if (traits) scene.insertAdjacentHTML('beforeend', '<g opacity="' + ((1 - sortie) * opa).toFixed(3) + '">' + traits + '</g>');
 
   /* le titre : chaque ligne arrive au moment où le récit l'atteint */
