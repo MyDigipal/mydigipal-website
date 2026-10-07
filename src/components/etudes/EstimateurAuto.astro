@@ -1,0 +1,696 @@
+---
+/**
+ * « Estimez vos propres chiffres » : l'estimateur des études de cas automobiles (idée
+ * d'Alexandre, validée par Paul le 07/10/2026). Le visiteur dit ce qu'il vend (neuf,
+ * occasion, les deux), son budget publicitaire mensuel et sa zone (une ville et un rayon) ;
+ * il obtient des fourchettes d'impressions, de clics, de contacts et de ventes possibles,
+ * puis peut rejouer l'animation « Du premier regard à la voiture vendue » avec ses chiffres
+ * (`/motion/parcours-complet.html?jeu=perso`).
+ *
+ * Les repères chiffrés et leurs sources sont dans `src/data/estimateur-auto.json` : du compte
+ * médian (prudent) au 70e centile (favorable) de nos comptes automobiles. La population de
+ * la zone vient de `public/data/estimateur-communes.json` (scripts/estimateur-communes.py),
+ * chargé seulement à l'ouverture de l'outil. La recherche de ville interroge l'API publique
+ * geo.api.gouv.fr (CORS ouvert), et retombe sur les villes du fichier si elle ne répond pas.
+ *
+ * Mesure : `dataLayer.push({ event: 'case_study_estimate', ... })` à chaque calcul stable,
+ * et avec `estimate_action: 'parcours'` quand le visiteur rejoue l'animation.
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import refs from '@/data/estimateur-auto.json';
+
+interface Props {
+  lang: Language;
+  /** blanc, brume ou encre : choisi par EtudeC selon les sections voisines. */
+  fond: 'blanc' | 'brume' | 'encre';
+  /** L'encre monte sur la section claire qui précède. */
+  monte?: boolean;
+  /** Le slug de l'étude, pour la mesure. */
+  etude: string;
+}
+const { lang, fond, monte = false, etude } = Astro.props;
+const fr = lang === 'fr';
+const sombre = fond === 'encre';
+
+/* On ne transmet au navigateur que les nombres : les sources restent dans le JSON. */
+const plat = (m: any) => ({ p: m.prudent, f: m.favorable });
+const seg = (s: any) => ({ cpm: plat(s.cpm), cpc: plat(s.cpc), cpl: plat(s.coutContact), taux: plat(s.tauxVente) });
+const donnees = {
+  rep: { vn: refs.repartition.vn, vo: refs.repartition.vo, deux: refs.repartition['les-deux'] },
+  google: { vn: seg(refs.plateformes.google.vn), vo: seg(refs.plateformes.google.vo) },
+  meta: { vn: seg(refs.plateformes.meta.vn), vo: seg(refs.plateformes.meta.vo) },
+  adultes: refs.audience.partAdultes.valeur,
+  acheteurs: { vn: refs.audience.partAcheteurs.vn, vo: refs.audience.partAcheteurs.vo, deux: refs.audience.partAcheteurs['les-deux'] },
+  freq: refs.audience.frequenceMax,
+  contactsMax: refs.audience.partContactsMax.valeur,
+  ventesMax: refs.audience.partVentesMax.valeur,
+  fichier: refs.population.fichier,
+};
+
+const t = fr
+  ? {
+      titre: 'Vos chiffres, dans votre zone',
+      chapo: 'Pas besoin de 30 000 € par mois pour vendre des voitures. Dites-nous ce que vous vendez, votre budget et votre zone : l’estimation part des résultats de nos comptes automobiles.',
+      ouvrir: 'Estimez vos propres chiffres',
+      vendez: 'Ce que vous vendez',
+      vn: 'Neuf', vo: 'Occasion', deux: 'Les deux',
+      budget: 'Budget publicitaire par mois',
+      ville: 'Ville de votre concession',
+      villeAide: 'Tapez les premières lettres, puis choisissez dans la liste.',
+      rayon: 'Zone de chalandise',
+      vide: 'Choisissez votre ville : l’estimation s’affiche ici.',
+      ventes: 'ventes possibles par mois', vente1: 'vente possible par mois',
+      imp: 'Impressions par mois', clics: 'Clics sur vos annonces', contacts: 'Contacts (formulaires et appels)', cout: 'Coût d’un contact',
+      parcours: 'Voir mon parcours',
+      prudence: 'Estimation indicative, établie sur nos comptes automobiles (Google Ads et Meta, douze derniers mois). Elle ne vaut pas promesse : le résultat dépend de votre stock, de vos prix et de la vitesse à laquelle vos équipes rappellent.',
+      calculer: 'Calculer mon budget', contact: 'Nous contacter',
+      grand: 'Voir en grand',
+      titreScene: 'Votre parcours, du premier regard au contact',
+      erreur: 'La population de la zone n’a pas pu se charger. Rechargez la page pour réessayer.',
+    }
+  : {
+      titre: 'Your numbers, in your area',
+      chapo: 'You don’t need €30,000 a month to sell cars. Tell us what you sell, your budget and your area: the estimate starts from the results of the dealer accounts we run.',
+      ouvrir: 'Estimate your own numbers',
+      vendez: 'What you sell',
+      vn: 'New cars', vo: 'Used cars', deux: 'Both',
+      budget: 'Monthly ad budget',
+      ville: 'Your dealership’s town',
+      villeAide: 'Type the first letters, then pick from the list.',
+      rayon: 'Catchment area',
+      vide: 'Pick your town: the estimate appears here.',
+      ventes: 'possible sales per month', vente1: 'possible sale per month',
+      imp: 'Impressions per month', clics: 'Clicks on your ads', contacts: 'Leads (forms and calls)', cout: 'Cost per lead',
+      parcours: 'Show my journey',
+      prudence: 'Indicative estimate, based on the dealer accounts we run (Google Ads and Meta, last twelve months). It is not a promise: results depend on your stock, your prices and how fast your team calls back.',
+      calculer: 'Calculate my budget', contact: 'Contact us',
+      grand: 'View full screen',
+      titreScene: 'Your journey, from first glance to lead',
+      erreur: 'The population data for your area could not load. Reload the page to try again.',
+    };
+const lienCalc = `/${lang}/calculator?service=google-ads,paid-social`;
+const lienContact = `/${lang}/contact`;
+---
+
+<section
+  class:list={['estimateur', `section-${fond}`, { 'section-monte': monte && sombre, sombre }]}
+  data-estimateur
+  data-lang={lang}
+  data-etude={etude}
+  aria-labelledby="estimateur-titre"
+>
+  <script is:inline type="application/json" data-estimateur-refs set:html={JSON.stringify(donnees)} />
+  <div class="container-custom py-20 lg:py-28">
+    <div class="est-tete">
+      <h2 id="estimateur-titre" class:list={['titre-moyen', sombre ? 'text-white' : 'text-encre']}>{t.titre}</h2>
+      <p class="chapo">{t.chapo}</p>
+      <div class="pilules">
+        <button type="button" class="pilule pilule-pleine" data-est-ouvrir aria-expanded="false" aria-controls="estimateur-outil">
+          <Icon name="sliders" size={18} />{t.ouvrir}
+        </button>
+      </div>
+    </div>
+
+    <div class="est-outil" id="estimateur-outil" hidden data-est-outil>
+      <form class="est-form" data-est-form novalidate>
+        <fieldset class="est-champ">
+          <legend class="est-label">{t.vendez}</legend>
+          <div class="est-choix">
+            <label><input type="radio" name="type" value="vn" /><span>{t.vn}</span></label>
+            <label><input type="radio" name="type" value="vo" checked /><span>{t.vo}</span></label>
+            <label><input type="radio" name="type" value="deux" /><span>{t.deux}</span></label>
+          </div>
+        </fieldset>
+
+        <div class="est-champ">
+          <div class="est-ligne">
+            <label class="est-label" for="est-budget">{t.budget}</label>
+            <output class="est-valeur" for="est-budget" data-est-budget-val></output>
+          </div>
+          <input id="est-budget" name="budget" type="range" min="500" max="15000" step="250" value="1000" data-est-budget />
+          <div class="est-bornes" aria-hidden="true"><span>{fr ? '500 €' : '€500'}</span><span>{fr ? '15 000 €' : '€15,000'}</span></div>
+        </div>
+
+        <div class="est-champ est-ville">
+          <label class="est-label" for="est-ville">{t.ville}</label>
+          <div class="est-saisie">
+          <input
+            id="est-ville" name="ville" type="text" autocomplete="off" spellcheck="false"
+            role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="est-villes"
+            aria-describedby="est-ville-aide" placeholder={fr ? 'Roanne, Metz, Rennes…' : 'Roanne, Metz, Rennes…'}
+            data-est-ville
+          />
+          <ul id="est-villes" class="est-liste" role="listbox" hidden data-est-liste></ul>
+          </div>
+          <p id="est-ville-aide" class="est-aide">{t.villeAide}</p>
+        </div>
+
+        <div class="est-champ">
+          <div class="est-ligne">
+            <label class="est-label" for="est-rayon">{t.rayon}</label>
+            <output class="est-valeur" for="est-rayon" data-est-rayon-val></output>
+          </div>
+          <input id="est-rayon" name="rayon" type="range" min="5" max="60" step="5" value="20" data-est-rayon />
+          <div class="est-bornes" aria-hidden="true"><span>5 km</span><span>60 km</span></div>
+        </div>
+      </form>
+
+      <div class="est-resultat" aria-live="polite" data-est-resultat>
+        <p class="est-vide" data-est-vide><Icon name="map-pin" size={22} />{t.vide}</p>
+        <div class="est-plein" hidden data-est-plein>
+          <p class="est-zone" data-est-zone></p>
+          <p class="est-ventes" data-un={t.vente1} data-plusieurs={t.ventes}><b data-est-ventes></b><span data-est-ventes-lib>{t.ventes}</span></p>
+          <dl class="est-chiffres">
+            <div><dt>{t.contacts}</dt><dd data-est-contacts></dd></div>
+            <div><dt>{t.cout}</dt><dd data-est-cout></dd></div>
+            <div><dt>{t.clics}</dt><dd data-est-clics></dd></div>
+            <div><dt>{t.imp}</dt><dd data-est-imp></dd></div>
+          </dl>
+          <p class="est-note" data-est-repartition></p>
+          <p class="est-alerte" hidden data-est-alerte><Icon name="alert-triangle" size={18} /><span></span></p>
+          <div class="pilules">
+            <button type="button" class:list={['pilule', sombre ? 'pilule-pleine' : 'pilule-blanche']} data-est-parcours>
+              <Icon name="play" size={18} />{t.parcours}
+            </button>
+          </div>
+        </div>
+        <p class="est-erreur" hidden data-est-erreur><Icon name="alert-triangle" size={18} />{t.erreur}</p>
+      </div>
+    </div>
+
+    <figure class="est-scene" hidden data-est-scene>
+      <div class="est-cadre"><iframe title={t.titreScene} data-est-iframe></iframe></div>
+      <figcaption><a href="#" target="_blank" rel="noopener" data-est-grand>{t.grand}</a></figcaption>
+    </figure>
+
+    <div class="est-suite" hidden data-est-suite>
+      <p class="est-prudence">{t.prudence}</p>
+      <div class="pilules">
+        <a href={lienCalc} class="pilule pilule-pleine">{t.calculer}<Icon name="arrow-right" size={18} class="pilule-fleche" /></a>
+        <a href={lienContact} class:list={['pilule', sombre ? 'pilule-claire' : 'pilule-contour']}>{t.contact}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  type Paire = { p: number; f: number };
+  type Seg = { cpm: Paire; cpc: Paire; cpl: Paire; taux: Paire };
+  type Donnees = {
+    rep: Record<'vn' | 'vo' | 'deux', { google: number; meta: number }>;
+    google: { vn: Seg; vo: Seg };
+    meta: { vn: Seg; vo: Seg };
+    adultes: number;
+    acheteurs: Record<'vn' | 'vo' | 'deux', number>;
+    freq: { meta: number; google: number };
+    contactsMax: number;
+    ventesMax: number;
+    fichier: string;
+  };
+  type Ville = { nom: string; dep: string; lat: number; lon: number; pop: number };
+  type Grille = { pas: number; cellules: Map<number, number>; villes: Ville[] };
+  type Scenario = { imp: number; clics: number; contacts: number; ventes: number; utile: number };
+
+  const CLE = (i: number, j: number) => i * 100000 + j;
+
+  function brancher(sec: HTMLElement) {
+    if (sec.dataset.branche) return;
+    sec.dataset.branche = '1';
+    const fr = sec.dataset.lang === 'fr';
+    const D: Donnees = JSON.parse(sec.querySelector('[data-estimateur-refs]')!.textContent || '{}');
+    const $ = <T extends Element = HTMLElement>(s: string) => sec.querySelector(s) as T;
+
+    const ouvrir = $<HTMLButtonElement>('[data-est-ouvrir]');
+    const outil = $('[data-est-outil]');
+    const form = $<HTMLFormElement>('[data-est-form]');
+    const budget = $<HTMLInputElement>('[data-est-budget]');
+    const budgetVal = $('[data-est-budget-val]');
+    const rayon = $<HTMLInputElement>('[data-est-rayon]');
+    const rayonVal = $('[data-est-rayon-val]');
+    const champVille = $<HTMLInputElement>('[data-est-ville]');
+    const liste = $<HTMLUListElement>('[data-est-liste]');
+    const vide = $('[data-est-vide]');
+    const plein = $('[data-est-plein]');
+    const erreur = $('[data-est-erreur]');
+    const alerte = $('[data-est-alerte]');
+    const scene = $('[data-est-scene]');
+    const iframe = $<HTMLIFrameElement>('[data-est-iframe]');
+    const grand = $<HTMLAnchorElement>('[data-est-grand]');
+    const suite = $('[data-est-suite]');
+
+    /* ---------- mise en forme ---------- */
+    const nf = new Intl.NumberFormat(fr ? 'fr-FR' : 'en-GB');
+    /* Plus Jakarta Sans n'a pas l'espace fine insécable : on la remplace par l'insécable. */
+    const nombre = (n: number) => nf.format(n).replace(/ /g, ' ');
+    const arrondi = (n: number) => {
+      if (n < 100) return Math.round(n);
+      const p = Math.pow(10, Math.floor(Math.log10(n)) - 1);
+      return Math.round(n / p) * p;
+    };
+    /* Montants : sans décimale à partir de 10 €, une entre 1 et 10 €, deux en dessous. */
+    const montant = (n: number) => {
+      const d = n >= 10 ? 0 : n >= 1 ? 1 : 2;
+      let s = new Intl.NumberFormat(fr ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 0, maximumFractionDigits: d }).format(n).replace(/ /g, ' ');
+      return fr ? s + ' €' : '€' + s;
+    };
+    const a = fr ? ' à ' : ' to ';
+    const fourchette = (x: number, y: number, f: (n: number) => string = (n) => nombre(arrondi(n))) => {
+      const lo = Math.min(x, y), hi = Math.max(x, y);
+      const sl = f(lo), sh = f(hi);
+      return sl === sh ? sh : sl + a + sh;
+    };
+    const ventesTexte = (x: number, y: number) => {
+      const lo = Math.round(Math.min(x, y)), hi = Math.round(Math.max(x, y));
+      if (hi < 1) return fr ? 'Moins d’une' : 'Under one';
+      if (lo === hi) return String(hi);
+      if (lo < 1) return (fr ? 'Jusqu’à ' : 'Up to ') + hi;
+      return lo + a + hi;
+    };
+
+    /* ---------- la population, chargée à l'ouverture ---------- */
+    let grille: Promise<Grille> | null = null;
+    function chargerGrille(): Promise<Grille> {
+      if (!grille) {
+        grille = fetch(D.fichier)
+          .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+          .then((j) => {
+            const cellules = new Map<number, number>();
+            let i = 0, k = 0;
+            for (let n = 0; n < j.cellules.length; n += 3) {
+              i += j.cellules[n]; k += j.cellules[n + 1];
+              cellules.set(CLE(i, k), j.cellules[n + 2]);
+            }
+            const villes: Ville[] = j.villes.map((v: any[]) => ({ nom: v[0], dep: v[1], lat: v[2], lon: v[3], pop: v[4] }));
+            return { pas: j.pas, cellules, villes };
+          });
+        grille.catch(() => { grille = null; });
+      }
+      return grille;
+    }
+    function populationDans(g: Grille, lat: number, lon: number, km: number) {
+      const R = 6371, rad = Math.PI / 180;
+      const dLat = km / 111.2 + g.pas, dLon = km / (111.2 * Math.cos(lat * rad)) + g.pas;
+      let total = 0;
+      for (let i = Math.floor((lat - dLat) / g.pas); i <= Math.floor((lat + dLat) / g.pas); i++) {
+        for (let j = Math.floor((lon - dLon) / g.pas); j <= Math.floor((lon + dLon) / g.pas); j++) {
+          const v = g.cellules.get(CLE(i, j));
+          if (!v) continue;
+          const la = (i + 0.5) * g.pas, lo = (j + 0.5) * g.pas;
+          const h = Math.sin(((la - lat) * rad) / 2) ** 2 + Math.cos(lat * rad) * Math.cos(la * rad) * Math.sin(((lo - lon) * rad) / 2) ** 2;
+          if (2 * R * Math.asin(Math.sqrt(h)) <= km) total += v;
+        }
+      }
+      return total;
+    }
+
+    /* ---------- le calcul ---------- */
+    let ville: Ville | null = null;
+    const type = () => ((form.elements.namedItem('type') as RadioNodeList).value || 'vo') as 'vn' | 'vo' | 'deux';
+
+    function scenario(cle: 'p' | 'f', t: 'vn' | 'vo' | 'deux', b: number, adultes: number, acheteurs: number): Scenario {
+      const segs: Array<['vn' | 'vo', number]> = t === 'deux' ? [['vn', 0.5], ['vo', 0.5]] : [[t, 1]];
+      const tot: Scenario = { imp: 0, clics: 0, contacts: 0, ventes: 0, utile: 0 };
+      (['google', 'meta'] as const).forEach((pf) => {
+        const part = D.rep[t][pf];
+        const r = { imp: 0, clics: 0, contacts: 0, ventes: 0, utile: 0 };
+        segs.forEach(([s, w]) => {
+          const R = D[pf][s];
+          const dep = b * part * w;
+          const contacts = dep / R.cpl[cle];
+          r.utile += dep;
+          r.imp += (dep / R.cpm[cle]) * 1000;
+          r.clics += dep / R.cpc[cle];
+          r.contacts += contacts;
+          r.ventes += contacts * R.taux[cle];
+        });
+        /* On ne peut pas montrer à une petite zone plus d'impressions qu'elle n'a d'adultes. */
+        const plafond = adultes * D.freq[pf];
+        const k = r.imp > plafond ? plafond / r.imp : 1;
+        (Object.keys(tot) as (keyof Scenario)[]).forEach((c) => { tot[c] += r[c] * k; });
+      });
+      const maxContacts = acheteurs * 0.25 * D.contactsMax;
+      if (tot.contacts > maxContacts) {
+        const k = maxContacts / tot.contacts;
+        (Object.keys(tot) as (keyof Scenario)[]).forEach((c) => { tot[c] *= k; });
+      }
+      tot.ventes = Math.min(tot.ventes, (acheteurs / 12) * D.ventesMax);
+      return tot;
+    }
+
+    let dernier: { bas: Scenario; haut: Scenario; t: string; b: number; km: number } | null = null;
+    let minuterie = 0, derniereMesure = '';
+
+    async function calculer() {
+      if (!ville) { vide.hidden = false; plein.hidden = true; return; }
+      let g: Grille;
+      try { g = await chargerGrille(); } catch { erreur.hidden = false; vide.hidden = true; plein.hidden = true; return; }
+      erreur.hidden = true;
+      const t = type(), b = Number(budget.value), km = Number(rayon.value);
+      const pop = Math.max(populationDans(g, ville.lat, ville.lon, km), ville.pop);
+      const adultes = pop * D.adultes;
+      const acheteurs = adultes * D.acheteurs[t];
+      const bas = scenario('p', t, b, adultes, acheteurs);
+      const haut = scenario('f', t, b, adultes, acheteurs);
+      dernier = { bas, haut, t, b, km };
+
+      const quoi = fr
+        ? { vn: 'une voiture neuve', vo: 'une voiture d’occasion', deux: 'une voiture' }[t]
+        : { vn: 'a new car', vo: 'a used car', deux: 'a car' }[t];
+      $('[data-est-zone]').innerHTML = fr
+        ? `Autour de ${ville.nom}, dans un rayon de ${km} km : <b>${nombre(arrondi(adultes))} adultes</b>, dont <b>${nombre(arrondi(acheteurs))}</b> cherchent ${quoi} dans l’année.`
+        : `Around ${ville.nom}, within ${km} km: <b>${nombre(arrondi(adultes))} adults</b>, of whom <b>${nombre(arrondi(acheteurs))}</b> are looking for ${quoi} this year.`;
+      $('[data-est-ventes]').textContent = ventesTexte(bas.ventes, haut.ventes);
+      const lv = $('.est-ventes');
+      $('[data-est-ventes-lib]').textContent = Math.round(Math.max(bas.ventes, haut.ventes)) <= 1 ? lv.dataset.un! : lv.dataset.plusieurs!;
+      $('[data-est-contacts]').textContent = fourchette(bas.contacts, haut.contacts);
+      $('[data-est-cout]').textContent = fourchette(haut.utile / Math.max(haut.contacts, 1e-9), bas.utile / Math.max(bas.contacts, 1e-9), montant);
+      $('[data-est-clics]').textContent = fourchette(bas.clics, haut.clics);
+      $('[data-est-imp]').textContent = fourchette(bas.imp, haut.imp);
+      const rep = D.rep[t];
+      $('[data-est-repartition]').textContent = fr
+        ? `Budget réparti : Google Ads ${Math.round(rep.google * 100)} %, Meta ${Math.round(rep.meta * 100)} %.`
+        : `Budget split: Google Ads ${Math.round(rep.google * 100)}%, Meta ${Math.round(rep.meta * 100)}%.`;
+      const utile = Math.min(bas.utile, haut.utile);
+      if (utile < b * 0.97) {
+        const plafond = Math.max(250, Math.floor(utile / 250) * 250);
+        alerte.querySelector('span')!.textContent = fr
+          ? `Au-delà d’environ ${montant(plafond)} par mois, votre zone ne suffit plus : élargissez le rayon pour que le budget travaille.`
+          : `Above roughly ${montant(plafond)} a month, your area runs out of buyers: widen the radius so the budget keeps working.`;
+        alerte.hidden = false;
+      } else alerte.hidden = true;
+      vide.hidden = true;
+      plein.hidden = false;
+      suite.hidden = false;
+
+      /* La mesure : une fois que le visiteur a fini de bouger les curseurs. */
+      clearTimeout(minuterie);
+      minuterie = window.setTimeout(() => mesurer('calcul'), 900);
+    }
+
+    function mesurer(action: 'calcul' | 'parcours') {
+      if (!dernier || !ville) return;
+      const d = dernier;
+      const cle = [action, d.t, d.b, d.km, ville.nom].join('|');
+      if (action === 'calcul' && cle === derniereMesure) return;
+      if (action === 'calcul') derniereMesure = cle;
+      const w = window as any;
+      w.dataLayer = w.dataLayer || [];
+      w.dataLayer.push({
+        event: 'case_study_estimate',
+        estimate_action: action,
+        case_study: sec.dataset.etude,
+        estimate_type: d.t,
+        estimate_budget: d.b,
+        estimate_radius_km: d.km,
+        estimate_city: ville.nom,
+        estimate_contacts_low: Math.round(Math.min(d.bas.contacts, d.haut.contacts)),
+        estimate_contacts_high: Math.round(Math.max(d.bas.contacts, d.haut.contacts)),
+        estimate_sales_low: Math.round(Math.min(d.bas.ventes, d.haut.ventes) * 10) / 10,
+        estimate_sales_high: Math.round(Math.max(d.bas.ventes, d.haut.ventes) * 10) / 10,
+      });
+    }
+
+    /* ---------- les champs ---------- */
+    function majCurseurs() {
+      budgetVal.textContent = montant(Number(budget.value)) + (fr ? ' par mois' : ' a month');
+      rayonVal.textContent = rayon.value + ' km';
+      [budget, rayon].forEach((r) => {
+        const p = ((Number(r.value) - Number(r.min)) / (Number(r.max) - Number(r.min))) * 100;
+        r.style.setProperty('--p', p.toFixed(1) + '%');
+      });
+    }
+    form.addEventListener('input', (e) => {
+      if (e.target === champVille) return;
+      majCurseurs();
+      calculer();
+    });
+    form.addEventListener('submit', (e) => e.preventDefault());
+
+    /* ---------- la ville, avec suggestions ---------- */
+    let choix: Ville[] = [], actif = -1, requete = 0, tempo = 0;
+    const sansAccent = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[-'’\s]+/g, ' ').trim();
+
+    function afficherListe() {
+      liste.innerHTML = '';
+      if (!choix.length) {
+        const li = document.createElement('li');
+        li.className = 'est-aucune';
+        li.textContent = champVille.value.trim().length >= 2 ? (fr ? 'Aucune ville trouvée.' : 'No town found.') : '';
+        if (li.textContent) liste.appendChild(li);
+      }
+      choix.forEach((v, i) => {
+        const li = document.createElement('li');
+        li.id = 'est-ville-' + i;
+        li.setAttribute('role', 'option');
+        li.setAttribute('aria-selected', String(i === actif));
+        li.innerHTML = `<b></b><span></span>`;
+        li.querySelector('b')!.textContent = v.nom + (v.dep ? ` (${v.dep})` : '');
+        li.querySelector('span')!.textContent = nombre(v.pop) + (fr ? ' hab.' : ' residents');
+        li.addEventListener('mousedown', (e) => { e.preventDefault(); retenir(v); });
+        liste.appendChild(li);
+      });
+      const ouvert = liste.children.length > 0;
+      liste.hidden = !ouvert;
+      champVille.setAttribute('aria-expanded', String(ouvert));
+      champVille.setAttribute('aria-activedescendant', actif >= 0 ? 'est-ville-' + actif : '');
+    }
+    function fermerListe() { liste.hidden = true; champVille.setAttribute('aria-expanded', 'false'); actif = -1; }
+    function retenir(v: Ville) {
+      ville = v;
+      champVille.value = v.nom + (v.dep ? ` (${v.dep})` : '');
+      fermerListe();
+      calculer();
+    }
+    async function chercher(q: string) {
+      const n = ++requete;
+      let res: Ville[] = [];
+      try {
+        const ctl = new AbortController();
+        const arret = setTimeout(() => ctl.abort(), 3500);
+        const r = await fetch(`https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,centre,population,codeDepartement&boost=population&limit=6`, { signal: ctl.signal });
+        clearTimeout(arret);
+        if (!r.ok) throw new Error(String(r.status));
+        const j = await r.json();
+        res = j.filter((c: any) => c.centre && c.population).map((c: any) => ({ nom: c.nom, dep: c.codeDepartement || '', lat: c.centre.coordinates[1], lon: c.centre.coordinates[0], pop: c.population }));
+      } catch {
+        /* L'API ne répond pas : on cherche dans les villes de 5 000 habitants et plus du fichier. */
+        try {
+          const g = await chargerGrille();
+          const s = sansAccent(q);
+          res = g.villes.filter((v) => sansAccent(v.nom).startsWith(s)).slice(0, 6);
+        } catch { res = []; }
+      }
+      if (n !== requete) return;
+      choix = res;
+      actif = res.length ? 0 : -1;
+      afficherListe();
+    }
+    champVille.addEventListener('input', () => {
+      ville = null;
+      const q = champVille.value.trim();
+      clearTimeout(tempo);
+      if (q.length < 2) { choix = []; fermerListe(); calculer(); return; }
+      tempo = window.setTimeout(() => chercher(q), 180);
+    });
+    champVille.addEventListener('keydown', (e) => {
+      if (liste.hidden || !choix.length) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); actif = (actif + 1) % choix.length; afficherListe(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); actif = (actif - 1 + choix.length) % choix.length; afficherListe(); }
+      else if (e.key === 'Enter') { e.preventDefault(); if (actif >= 0) retenir(choix[actif]); }
+      else if (e.key === 'Escape') { fermerListe(); }
+    });
+    champVille.addEventListener('blur', () => setTimeout(fermerListe, 120));
+
+    /* ---------- ouvrir l'outil, rejouer le parcours ---------- */
+    ouvrir.addEventListener('click', () => {
+      outil.hidden = false;
+      ouvrir.setAttribute('aria-expanded', 'true');
+      ouvrir.closest('.pilules')!.setAttribute('hidden', '');
+      chargerGrille().catch(() => {});
+      majCurseurs();
+      champVille.focus({ preventScroll: true });
+      const w = window as any;
+      w.dataLayer = w.dataLayer || [];
+      w.dataLayer.push({ event: 'case_study_estimate', estimate_action: 'ouverture', case_study: sec.dataset.etude });
+    });
+    $('[data-est-parcours]').addEventListener('click', () => {
+      if (!dernier) return;
+      const { bas, haut } = dernier;
+      const moy = (x: number, y: number) => (x + y) / 2;
+      const contacts = Math.max(1, Math.round(moy(bas.contacts, haut.contacts)));
+      const params = new URLSearchParams({
+        jeu: 'perso',
+        imp: String(Math.round(moy(bas.imp, haut.imp))),
+        clics: String(Math.round(moy(bas.clics, haut.clics))),
+        contacts: String(contacts),
+        cpl: (moy(bas.utile, haut.utile) / contacts).toFixed(2),
+      });
+      const url = `/motion/${fr ? '' : 'en/'}parcours-complet.html?${params}`;
+      iframe.src = url;
+      grand.href = url;
+      scene.hidden = false;
+      const doux = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+      requestAnimationFrame(() => scene.scrollIntoView({ behavior: doux ? 'smooth' : 'auto', block: 'center' }));
+      mesurer('parcours');
+    });
+  }
+
+  function tout() { document.querySelectorAll<HTMLElement>('[data-estimateur]').forEach(brancher); }
+  tout();
+  document.addEventListener('astro:page-load', tout);
+</script>
+
+<style>
+  .est-tete { display: grid; gap: 20px; justify-items: start; max-width: 68ch; }
+
+  .est-outil {
+    display: grid; gap: 20px; margin-top: 40px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 1024px) {
+    .est-outil { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 24px; align-items: stretch; }
+  }
+  .est-outil[hidden], .est-scene[hidden], .est-suite[hidden], [data-est-plein][hidden] { display: none; }
+
+  /* Le formulaire : une carte blanche sur fond clair, du verre sur l'encre. */
+  .est-form {
+    display: grid; gap: 26px; padding: 24px; align-content: start;
+    border-radius: var(--rayon-panneau); background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet), 0 18px 40px -28px rgb(11 27 43 / 0.35);
+  }
+  .sombre .est-form { background: rgb(255 255 255 / 0.06); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 30px 60px -36px rgb(2 9 16 / 0.9); }
+  @media (min-width: 640px) { .est-form { padding: 32px; } }
+
+  .est-champ { display: grid; gap: 10px; border: 0; margin: 0; padding: 0; min-width: 0; }
+  .est-label { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; color: var(--encre); padding: 0; }
+  .sombre .est-label { color: #fff; }
+  .est-ligne { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+  .est-valeur { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; letter-spacing: -0.02em; color: var(--color-marque); font-variant-numeric: tabular-nums; }
+  .sombre .est-valeur { color: var(--marque-clair); }
+  .est-aide, .est-bornes { font-size: 0.875rem; color: #5B6B7B; }
+  .sombre .est-aide, .sombre .est-bornes { color: var(--texte-sombre-2); }
+  .est-bornes { display: flex; justify-content: space-between; margin-top: -2px; }
+
+  /* Le choix neuf / occasion / les deux : trois boutons côte à côte. */
+  .est-choix { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 5px; border-radius: 999px; background: var(--brume); }
+  .sombre .est-choix { background: rgb(255 255 255 / 0.07); }
+  .est-choix label { position: relative; display: block; cursor: pointer; }
+  .est-choix input { position: absolute; inset: 0; opacity: 0; cursor: pointer; margin: 0; }
+  .est-choix span {
+    display: grid; place-items: center; height: 44px; padding: 0 8px; border-radius: 999px;
+    font-weight: 600; font-size: 0.95rem; color: #334155; text-align: center; line-height: 1.1;
+    transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease;
+  }
+  .sombre .est-choix span { color: var(--texte-sombre-2); }
+  .est-choix input:checked + span { background: #fff; color: var(--encre); box-shadow: 0 1px 2px rgb(11 27 43 / 0.12), 0 6px 16px -8px rgb(11 27 43 / 0.35); }
+  .sombre .est-choix input:checked + span { background: var(--color-marque); color: #fff; box-shadow: none; }
+  .est-choix input:focus-visible + span { outline: 2px solid var(--color-marque); outline-offset: 2px; }
+  .sombre .est-choix input:focus-visible + span { outline-color: #fff; }
+
+  /* Les curseurs : la piste se remplit jusqu'à la valeur. */
+  input[type='range'] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 32px; background: transparent; cursor: pointer; margin: 0;
+    --plein: var(--color-marque); --vide: #D5DEE8;
+  }
+  .sombre input[type='range'] { --plein: var(--marque-clair); --vide: rgb(255 255 255 / 0.16); }
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 6px; border-radius: 999px;
+    background: linear-gradient(to right, var(--plein) 0 var(--p, 0%), var(--vide) var(--p, 0%) 100%);
+  }
+  input[type='range']::-moz-range-track { height: 6px; border-radius: 999px; background: var(--vide); }
+  input[type='range']::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--plein); }
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 26px; height: 26px; margin-top: -10px; border-radius: 50%;
+    background: #fff; border: 2px solid var(--plein); box-shadow: 0 2px 8px rgb(11 27 43 / 0.25);
+  }
+  input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 2px solid var(--plein); box-shadow: 0 2px 8px rgb(11 27 43 / 0.25); }
+  input[type='range']:focus-visible { outline: 2px solid var(--color-marque); outline-offset: 4px; border-radius: 8px; }
+  .sombre input[type='range']:focus-visible { outline-color: #fff; }
+
+  /* La ville et ses suggestions. */
+  .est-saisie { position: relative; }
+  .est-ville input[type='text'] {
+    width: 100%; height: 52px; padding: 0 18px; border-radius: 14px; font-size: 1rem; color: var(--encre);
+    background: #fff; border: 1px solid #B9C6D3;
+  }
+  .est-ville input[type='text']::placeholder { color: #6B7B8B; }
+  .est-ville input[type='text']:focus { outline: 2px solid var(--color-marque); outline-offset: 1px; border-color: var(--color-marque); }
+  .sombre .est-ville input[type='text'] { background: rgb(255 255 255 / 0.08); border-color: rgb(255 255 255 / 0.24); color: #fff; }
+  .sombre .est-ville input[type='text']::placeholder { color: #94A6B8; }
+  .sombre .est-ville input[type='text']:focus { outline-color: #fff; border-color: #fff; }
+  .est-liste {
+    position: absolute; z-index: 5; left: 0; right: 0; top: calc(100% + 6px);
+    margin: 0; padding: 6px; list-style: none; border-radius: 14px; background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet), 0 24px 48px -20px rgb(11 27 43 / 0.45);
+  }
+  .est-liste[hidden] { display: none; }
+  .est-liste :global(li) {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: var(--encre);
+  }
+  .est-liste :global(li b) { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+  .est-liste :global(li span) { font-size: 0.85rem; color: #5B6B7B; white-space: nowrap; }
+  .est-liste :global(li[aria-selected='true']), .est-liste :global(li[role='option']:hover) { background: var(--color-marque-doux); }
+  .est-liste :global(li.est-aucune) { cursor: default; color: #5B6B7B; }
+
+  /* Le résultat : une carte d'encre sur fond clair, blanche sur l'encre. */
+  .est-resultat {
+    display: grid; align-content: start; gap: 20px; padding: 24px; min-height: 280px;
+    border-radius: var(--rayon-panneau); color: var(--texte-sombre);
+    background: radial-gradient(110% 80% at 100% 0%, rgb(29 113 184 / 0.5), transparent 65%), var(--encre);
+    box-shadow: var(--ombre-forte);
+  }
+  .sombre .est-resultat { background: #fff; color: var(--encre); box-shadow: 0 30px 60px -36px rgb(2 9 16 / 0.9); }
+  @media (min-width: 640px) { .est-resultat { padding: 32px; } }
+  .est-vide, .est-erreur { display: flex; gap: 12px; align-items: flex-start; align-self: center; font-size: 1.05rem; line-height: 1.5; color: var(--texte-sombre-2); max-width: 36ch; }
+  .sombre .est-vide, .sombre .est-erreur { color: #4B5B6B; }
+  .est-vide[hidden], .est-erreur[hidden], .est-alerte[hidden] { display: none; }
+  .est-vide :global(svg), .est-erreur :global(svg) { flex: none; margin-top: 2px; color: var(--marque-clair); }
+  .sombre .est-vide :global(svg), .sombre .est-erreur :global(svg) { color: var(--color-marque); }
+  .est-plein { display: grid; gap: 20px; }
+  .est-zone { font-size: 1rem; line-height: 1.55; color: var(--texte-sombre-2); }
+  .est-zone :global(b) { color: #fff; font-weight: 600; }
+  .sombre .est-zone { color: #4B5B6B; }
+  .sombre .est-zone :global(b) { color: var(--encre); }
+
+  .est-ventes { display: grid; gap: 4px; }
+  .est-ventes b {
+    font-family: var(--font-display); font-weight: 800; letter-spacing: -0.035em; line-height: 1;
+    font-size: clamp(2.6rem, 1.9rem + 3vw, 4.25rem); color: #e8bd62; font-variant-numeric: tabular-nums;
+  }
+  .sombre .est-ventes b { color: #9A6B12; }
+  .est-ventes span { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; letter-spacing: -0.01em; color: #fff; }
+  .sombre .est-ventes span { color: var(--encre); }
+
+  .est-chiffres { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 0; border-radius: 16px; overflow: hidden; background: rgb(125 184 238 / 0.2); }
+  .sombre .est-chiffres { background: var(--filet); }
+  .est-chiffres > div { display: grid; gap: 6px; align-content: start; padding: 16px; background: var(--encre-2); }
+  .sombre .est-chiffres > div { background: var(--brume); }
+  .est-chiffres dt { font-size: 0.85rem; line-height: 1.35; color: var(--texte-sombre-2); }
+  .sombre .est-chiffres dt { color: #4B5B6B; }
+  .est-chiffres dd { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; letter-spacing: -0.02em; line-height: 1.15; color: #fff; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .sombre .est-chiffres dd { color: var(--encre); }
+  @media (max-width: 359px) { .est-chiffres { grid-template-columns: minmax(0, 1fr); } }
+
+  .est-note { font-size: 0.9rem; color: var(--texte-sombre-2); }
+  .sombre .est-note { color: #4B5B6B; }
+  .est-alerte { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; font-size: 0.92rem; line-height: 1.45; background: rgb(232 189 98 / 0.14); color: #F6E2B5; }
+  .est-alerte :global(svg) { flex: none; margin-top: 2px; }
+  .sombre .est-alerte { background: #FBF3E1; color: #6B4A0C; }
+
+  /* L'animation avec les chiffres du visiteur. */
+  .est-scene { margin: 32px 0 0; }
+  .est-cadre {
+    position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: var(--rayon-scene, 24px); overflow: hidden; background: #08131f;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08), 0 40px 90px -40px rgb(11 27 43 / 0.55);
+  }
+  .est-cadre iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+  .est-scene figcaption { margin-top: 12px; font-size: 0.9rem; }
+  .est-scene figcaption a { font-weight: 600; color: var(--color-marque); }
+  .sombre .est-scene figcaption a { color: var(--marque-clair); }
+  @media (min-width: 1024px) { .est-scene figcaption { display: none; } }
+
+  .est-suite { display: grid; gap: 20px; margin-top: 32px; justify-items: start; }
+  .est-prudence { max-width: 72ch; font-size: 0.95rem; line-height: 1.6; color: #4B5B6B; }
+  .sombre .est-prudence { color: var(--texte-sombre-2); }
+</style>

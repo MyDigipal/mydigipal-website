@@ -10,6 +10,7 @@ import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import SceneEtude from './SceneEtude.astro';
+import EstimateurAuto from './EstimateurAuto.astro';
 import { enrichir } from '@/lib/texte-etude';
 
 interface Props {
@@ -34,6 +35,13 @@ const fondApres = (i: number) => (i === 0 ? 'encre' : plans[i - 1].fond);
 const citationClaire = plans.length > 0 && plans[plans.length - 1].fond === 'encre';
 /* Des chiffres en grille pleine : quatre sur une ligne, deux par deux, sinon par trois. */
 const colonnes = (n: number) => `--cols:${n === 4 ? 4 : n === 2 ? 2 : 3}`;
+/* L'estimateur des études automobiles, juste avant les questions (ou avant les autres études).
+   Son fond suit le voisinage : brume ou blanc s'il diffère des deux sections voisines ; sinon
+   (un blanc avant, une brume après), une section d'encre qui monte sur la précédente. */
+const avecEstimateur = d.category === 'automotive';
+const fondAvant = d.reglages ? 'blanc' : (d.citation || d.retenir) ? (citationClaire ? 'brume' : 'encre') : plans.length ? plans[plans.length - 1].fond : 'encre';
+const fondApresEstimateur = d.faq ? 'brume' : autres.length ? 'blanc' : 'brume';
+const fondEstimateur = (['brume', 'blanc'] as const).find((f) => f !== fondAvant && f !== fondApresEstimateur) ?? 'encre';
 ---
 
 <!-- L'en-tête : le logo du client, la rubrique, le titre, ce qu'on va lire. -->
@@ -161,6 +169,10 @@ const colonnes = (n: number) => `--cols:${n === 4 ? 4 : n === 2 ? 2 : 3}`;
       </ol>
     </div>
   </section>
+)}
+
+{avecEstimateur && (
+  <EstimateurAuto lang={lang} fond={fondEstimateur} monte={fondEstimateur === 'encre' && fondAvant !== 'encre'} etude={slugDe(etude.id)} />
 )}
 
 {d.faq && (

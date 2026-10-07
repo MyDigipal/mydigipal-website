@@ -138,7 +138,24 @@ var JEUX = {
     contacts: [[4572, { fr: 'formulaires intégrés', en: 'instant forms' }]],
     crm: [[4426, { fr: 'contacts traités', en: 'leads handled' }], [1072, { fr: 'opportunités', en: 'opportunities' }], [78, { fr: 'ventes', en: 'sales' }]],
     fin: { prix: 270, det: PAR_VENTE }
-  }
+  },
+  /* Les chiffres d'un visiteur, posés par l'estimateur des études de cas
+     (src/components/etudes/EstimateurAuto.astro) : ?jeu=perso&imp=&clics=&contacts=&cpl=
+     Chaque valeur est bornée ; une valeur absente ou illisible prend celle par défaut.
+     Pas de CRM : la scène finit sur le coût d'un contact. */
+  'perso': (function () {
+    var q = new URLSearchParams(location.search);
+    function lire(k, def, min, max) { var v = parseFloat(q.get(k)); return isFinite(v) ? Math.min(max, Math.max(min, v)) : def; }
+    var imp = Math.round(lire('imp', 120000, 1000, 50000000));
+    var clics = Math.round(lire('clics', 2600, 10, imp));
+    var contacts = Math.round(lire('contacts', 90, 1, clics));
+    return {
+      source: { fr: 'Votre estimation · indicative, établie sur nos comptes automobiles', en: 'Your estimate · indicative, based on our automotive accounts' },
+      titre2: DEUX, imp: imp, clics: clics, site: null,
+      contacts: [[contacts, { fr: 'formulaires et appels', en: 'forms and calls' }]], crm: null,
+      fin: { nom: { fr: 'Votre coût par contact', en: 'Your cost per lead' }, prix: lire('cpl', 11, 0.1, 1000), det: PAR_CONTACT }
+    };
+  })()
 };
 /* FIN JEUX */
 var JEU = JEUX[new URLSearchParams(location.search).get('jeu')] || JEUX.exemple;
