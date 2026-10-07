@@ -109,6 +109,10 @@ et huit **dossiers** (`facebook-lead-ads`, `open-days`, `vehicle-catalogue-ads`,
   lus ailleurs PAR POSITION : 0 conversions (accueil, index des services), 1 formulaire intégré
   (Paid Social auto), 2 Performance Max (hero Google Ads, libellé anglais vérifié), 3 trafic SEO
   (page SEO), 4 annonces catalogue (Dynamic Ads). Ne pas réordonner.
+- **Servion** (`servion`, 07/10/2026) : premier portrait B2B au gabarit en plans, avec trois scènes
+  neuves (`campagne-hub`, `article-ton`, `points-conversion`), titres FR ou EN selon l'adresse
+  (`/motion/en/`), interfaces en anglais. `campagne-hub` se modifie dans
+  `labo/campagne-hub.src.html` puis `python build_campagne_hub.py` (copie aussi vers le site).
 - **La page d'index** (`case-studies/index.astro`, 07/10/2026) : plus d'étude à la une ; le
   visiteur choisit la vue (problème, entreprise, secteur), retenue en `#par-groupe` /
   `#par-secteur` et dans le navigateur, mesurée par l'événement `case_studies_view`. Le
