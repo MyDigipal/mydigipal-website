@@ -102,6 +102,18 @@ et huit **dossiers** (`facebook-lead-ads`, `open-days`, `vehicle-catalogue-ads`,
 - Les citations sont écrites par nous (`validee: false`), affichées tout de suite, à faire
   valider par chaque client ; la liste est dans le pilotage du chantier
   (https://claude.ai/artifact/DUTLEBuVoapkFAqx7MDwrg).
+- **Versions anglaises** (07/10/2026) : chaque scène existe dans `public/motion/en/`, produite
+  par `_shared/motion-lib/labo/build_en.py` ; `SceneEtude` la charge sur les pages anglaises, et
+  les fiches anglaises ont leur vignette `<slug>-en.webp`.
+- **DMD** (`dmd-group`, 07/10/2026) est devenu un portrait, à la même adresse. ⚠️ Ses `kpis` sont
+  lus ailleurs PAR POSITION : 0 conversions (accueil, index des services), 1 formulaire intégré
+  (Paid Social auto), 2 Performance Max (hero Google Ads, libellé anglais vérifié), 3 trafic SEO
+  (page SEO), 4 annonces catalogue (Dynamic Ads). Ne pas réordonner.
+- **La page d'index** (`case-studies/index.astro`, 07/10/2026) : plus d'étude à la une ; le
+  visiteur choisit la vue (problème, entreprise, secteur), retenue en `#par-groupe` /
+  `#par-secteur` et dans le navigateur, mesurée par l'événement `case_studies_view`. Le
+  classement est dans `src/data/etudes-classement.ts` ; le build s'arrête si une étude n'y
+  figure pas, donc **toute nouvelle étude s'y range** (un problème, un groupe ou `DOSSIERS`).
 - ⚠️ Le suffixe du titre « | MyDigipal » fait **12** caractères (et non 13) : `seo.title`
   entre 38 et 48. Et `&` compte pour cinq caractères (`&amp;`) dans le contrôle SEO.
 
