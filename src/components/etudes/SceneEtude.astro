@@ -20,7 +20,7 @@ interface Props {
 const { lang, scene, fond, id, chargement = 'lazy' } = Astro.props;
 const fr = lang === 'fr';
 /* Les scènes ont une version anglaise dans `public/motion/en/` (labo : `build_en.py`). */
-const urlScene = scene.labo ? `/motion/${fr ? '' : 'en/'}${scene.labo}.html` : '';
+const urlScene = scene.labo ? `/motion/${fr ? '' : 'en/'}${scene.labo}.html${scene.jeu ? `?jeu=${scene.jeu}` : ''}` : '';
 ---
 {scene.labo ? (
   <figure class="scene-etude" data-scene-etude>
@@ -40,7 +40,7 @@ const urlScene = scene.labo ? `/motion/${fr ? '' : 'en/'}${scene.labo}.html` : '
 ) : (
   <figure class="scene-etude scene-composant">
     {scene.composant === 'chaine-stock' && <ChaineStock lang={lang} id={`${id}-chaine`} fond={fond === 'encre' ? 'encre' : 'clair'} />}
-    {scene.composant === 'boucle-remarketing' && <BoucleRemarketing lang={lang} id={`${id}-boucle`} />}
+    {scene.composant === 'boucle-remarketing' && <BoucleRemarketing lang={lang} id={`${id}-boucle`} defilement />}
     {scene.composant === 'graphique-cumul' && <GraphiqueCumul lang={lang} id={`${id}-graphique`} />}
     {scene.legende && <figcaption class="scene-pied"><span>{scene.legende}</span></figcaption>}
   </figure>

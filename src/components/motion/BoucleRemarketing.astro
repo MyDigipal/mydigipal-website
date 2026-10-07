@@ -7,6 +7,11 @@
  * à droite ; la scène avance toute seule tant qu'elle est à l'écran, un clic sur un temps y va.
  * Sans script, sous mouvement réduit ou avec `?fige=1` : les quatre écrans côte à côte.
  * À poser dans une `.section-encre`. Maquettes dessinées par nos soins.
+ *
+ * `defilement` (07/10/2026, retour d'Alexandre sur l'étude portes ouvertes : « il faudrait pouvoir
+ * scroll plutôt qu'un timer ») : dès 1 024 px, la scène reste collée à l'écran et c'est le
+ * défilement de la page qui fait passer d'un temps à l'autre ; un clic sur un temps y amène.
+ * En dessous, les quatre écrans restent à plat, tous lisibles, sans rien qui avance seul.
  */
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
@@ -15,9 +20,10 @@ import VoitureMaquette from '@/components/ui/VoitureMaquette.astro';
 interface Props {
   lang: Language;
   id?: string;
+  defilement?: boolean;
 }
 
-const { lang, id = 'boucle-remarketing' } = Astro.props;
+const { lang, id = 'boucle-remarketing', defilement = false } = Astro.props;
 const fr = lang === 'fr';
 
 const t = fr
@@ -75,7 +81,8 @@ const t = fr
     };
 ---
 
-<div class="rmk" id={id} data-boucle-remarketing data-acte="0">
+<div class:list={['rmk-piste', defilement && 'rmk-piste-defile']} data-rmk-piste>
+<div class="rmk" id={id} data-boucle-remarketing data-acte="0" data-defilement={defilement ? '' : undefined}>
   <ol class="rmk-temps">
     {t.temps.map(([titre, texte], i) => (
       <li class:list={[i === 0 && 'on']}>
@@ -144,6 +151,7 @@ const t = fr
     </div>
   </div>
 </div>
+</div>
 
 <script>
   // La scène avance d'un temps à l'autre tant qu'elle est à l'écran ; un clic sur un temps y va.
@@ -152,6 +160,10 @@ const t = fr
   const TENIR = 4400;
   document.querySelectorAll<HTMLElement>('[data-boucle-remarketing]').forEach((root) => {
     if (FIGE) return;
+    if (root.hasAttribute('data-defilement')) {
+      defiler(root);
+      return;
+    }
     const temps = Array.from(root.querySelectorAll<HTMLElement>('.rmk-temps li'));
     const faces = Array.from(root.querySelectorAll<HTMLElement>('.rmk-face'));
     let n = 0;
@@ -200,12 +212,69 @@ const t = fr
       aller(k);
     };
   });
+
+  /** Le mode défilement : le temps en cours suit la position dans la piste, plus de minuterie. */
+  function defiler(root: HTMLElement) {
+    const piste = root.closest<HTMLElement>('[data-rmk-piste]');
+    if (!piste || !window.matchMedia('(min-width: 1024px)').matches) return;
+    const temps = Array.from(root.querySelectorAll<HTMLElement>('.rmk-temps li'));
+    const faces = Array.from(root.querySelectorAll<HTMLElement>('.rmk-face'));
+    const HAUT = 120;
+    root.classList.add('js');
+    piste.classList.add('actif');
+    let n = -1;
+    const aller = (k: number) => {
+      if (k === n) return;
+      n = k;
+      root.setAttribute('data-acte', String(n));
+      temps.forEach((li, i) => {
+        li.classList.toggle('on', i === n);
+        li.querySelector('button')?.setAttribute('aria-pressed', String(i === n));
+      });
+      faces.forEach((f, i) => f.classList.toggle('on', i === n));
+    };
+    const course = () => Math.max(1, piste.offsetHeight - root.offsetHeight);
+    let trame = 0;
+    const suivre = () => {
+      trame = 0;
+      const p = Math.min(1, Math.max(0, (HAUT - piste.getBoundingClientRect().top) / course()));
+      const x = p * faces.length;
+      const k = Math.min(faces.length - 1, Math.floor(x));
+      aller(k);
+      temps.forEach((li, i) => li.style.setProperty('--p', String(i < k ? 1 : i > k ? 0 : Math.min(1, x - k))));
+    };
+    const demander = () => { if (!trame) trame = requestAnimationFrame(suivre); };
+    window.addEventListener('scroll', demander, { passive: true });
+    window.addEventListener('resize', demander);
+    temps.forEach((li, i) =>
+      li.querySelector('button')?.addEventListener('click', () => {
+        const haut = piste.getBoundingClientRect().top + window.scrollY - HAUT;
+        window.scrollTo({ top: haut + ((i + 0.5) / faces.length) * course(), behavior: 'smooth' });
+      }),
+    );
+    suivre();
+  }
 </script>
 
 <style>
   .rmk {
     display: grid;
     gap: 28px;
+  }
+  /* Le mode défilement : une piste haute, la scène collée sous l'en-tête pendant qu'on la parcourt. */
+  .rmk-piste.actif {
+    height: 300vh;
+  }
+  .rmk-piste.actif .rmk {
+    position: sticky;
+    top: 120px;
+  }
+  .rmk[data-defilement].js .rmk-temps button {
+    cursor: pointer;
+  }
+  .rmk[data-defilement].js .rmk-temps li.on button::after {
+    animation: none;
+    transform: scaleX(var(--p, 0));
   }
   .rmk-temps {
     display: grid;

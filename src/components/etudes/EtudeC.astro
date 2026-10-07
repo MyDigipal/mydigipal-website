@@ -127,10 +127,14 @@ const colonnes = (n: number) => `--cols:${n === 4 ? 4 : n === 2 ? 2 : 3}`;
   <section class={citationClaire ? 'section-brume parole-claire' : `section-encre ${plans.length ? 'section-monte' : ''}`}>
     <div class="container-custom grid gap-14 py-20 lg:py-28">
       {d.citation && (
-        <figure class="citation-etude">
-          <blockquote>« {d.citation.texte} »</blockquote>
-          <figcaption><b>{d.citation.auteur}</b>, {d.citation.fonction}</figcaption>
-        </figure>
+        <div class={d.autreCitation ? 'citations-deux' : ''}>
+          {[d.citation, d.autreCitation].filter(Boolean).map((c: any) => (
+            <figure class="citation-etude">
+              <blockquote>« {c.texte} »</blockquote>
+              <figcaption><b>{c.auteur}</b>, {c.fonction}</figcaption>
+            </figure>
+          ))}
+        </div>
       )}
       {d.retenir && (
         <div class="grid gap-6">
@@ -290,7 +294,12 @@ const colonnes = (n: number) => `--cols:${n === 4 ? 4 : n === 2 ? 2 : 3}`;
     .recit-calque.actif { opacity: 1; pointer-events: auto; }
   }
 
-  .citation-etude { margin: 0; display: grid; gap: 18px; max-width: 46ch; }
+  .citation-etude { margin: 0; display: grid; gap: 18px; max-width: 46ch; align-content: start; }
+  .citations-deux { display: grid; gap: 48px; }
+  @media (min-width: 1024px) {
+    .citations-deux { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px; }
+    .citations-deux .citation-etude blockquote { font-size: clamp(1.25rem, 1rem + 0.9vw, 1.65rem); }
+  }
   .citation-etude blockquote { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem); line-height: 1.35; letter-spacing: -0.02em; color: #fff; }
   .citation-etude figcaption { color: var(--texte-sombre-2); }
   .citation-etude figcaption b { color: #fff; font-weight: 600; }

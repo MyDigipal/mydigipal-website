@@ -65,6 +65,10 @@ const sceneEtude = z.object({
   titre: z.string(),
   legende: z.string().optional(),
   repos: z.number().optional(),
+  /* Le jeu de données de la scène pour cette page (?jeu=...) : une scène chiffrée montre les
+     chiffres du client de la page, jamais les mêmes d'une étude à l'autre (retour d'Alexandre,
+     07/10/2026). */
+  jeu: z.string().optional(),
 });
 /* Un plan de la direction C : un fond, un titre, du texte, et au choix une scène, un récit
    collé (texte à gauche, scène à droite, emprunté à la direction A), des cartes ou des chiffres. */
@@ -136,6 +140,13 @@ const caseStudiesCollection = defineCollection({
       fonction: z.string(),
       /* false tant que le client n'a pas relu : la citation s'affiche quand même (décision
          de Paul, 06/10/2026), la liste de relecture est dans le pilotage du chantier. */
+      validee: z.boolean().default(false),
+    }).optional(),
+    /* Une seconde voix, quand l'étude porte sur deux clients (portes ouvertes : Théobald et Vulcain). */
+    autreCitation: z.object({
+      texte: z.string(),
+      auteur: z.string(),
+      fonction: z.string(),
       validee: z.boolean().default(false),
     }).optional(),
     retenir: z.object({
