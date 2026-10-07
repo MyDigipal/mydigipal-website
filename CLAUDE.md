@@ -1158,3 +1158,16 @@ automobiles manquait sur le site, « que ce soit pour paid social, mais aussi po
   existantes sur cette carte : la grille de trois cartes blanches n'est plus rendue sur ces deux
   pages. La variante `google` d'`AnnoncesMaquettes` (page Google Ads) garde sa grille.
 - Sous 1024 px : une colonne, la carte à plat, les puces en ligne. Vérifié à 390 px.
+
+### La page Automobile refaite (07/10/2026, en ligne)
+
+Demande de Paul : « une belle description de ce qu'on sait faire dans l'automobile », inspirée
+des audits flash et des animations du labo. `src/pages/[lang]/automotive/index.astro` : hero aux
+chiffres de l'agence (150+ concessions, confirmé par Paul ; 150 000 € gérés par mois ; 10 600
+contacts), rail du parcours, puis les leviers rangés par problème (ceux de
+`src/data/etudes-classement.ts`), chacun avec sa scène (labo via `SceneEtude` et son `jeu`, ou
+composants du site), un chiffre LU dans la fiche de son étude (le build s'arrête si une fiche
+change) et le lien vers elle ; la chaîne du stock, les portes ouvertes au défilement, les trois
+leviers, les sept groupes, l'estimateur, la méthode et l'équipe automobile, les verbatims, la FAQ.
+Une même scène n'apparaît qu'une fois sur la page. `/{lang}/automotive-apercu` (l'aperçu montré
+à Paul) n'est plus qu'un renvoi en `noindex`.
