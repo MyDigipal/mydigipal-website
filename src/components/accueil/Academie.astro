@@ -104,6 +104,9 @@ const t = fr
       ecrans: 'Les écrans de l’Academy',
       pause: 'Mettre la vidéo en pause',
       lire: 'Lire la vidéo',
+      sonOn: 'Activer le son',
+      sonOff: 'Couper le son',
+      avancer: 'Avancer ou reculer dans la vidéo',
       presentation: 'L’AI Academy en 30 secondes',
       filmsTitre: 'La méthode, devant une vraie salle.',
       filmsChapeau: 'Des extraits d’une conférence donnée pour les équipes de SeLoger, avec le son. Les données sont fictives, les réflexes sont ceux de la formation.',
@@ -128,6 +131,9 @@ const t = fr
       ecrans: 'Academy screens',
       pause: 'Pause the video',
       lire: 'Play the video',
+      sonOn: 'Turn sound on',
+      sonOff: 'Mute',
+      avancer: 'Seek in the video',
       presentation: 'The AI Academy in 30 seconds',
       filmsTitre: 'Paul shows you around.',
       filmsChapeau: 'Films with sound: the learner space, a lesson from the inside, and the automations running on a real setup.',
@@ -223,10 +229,23 @@ const faits = [
         >
           <source src={`/academy/videos/presentation-v4-${lang}.mp4`} type="video/mp4" />
         </video>
-        <button type="button" class="academie-lecture est-arretee" aria-label={t.lire} data-pres-bouton data-pause={t.pause} data-lire={t.lire}>
+      </div>
+      {/* La barre de la vidéo (07/10/2026, Paul : « il faut que la personne puisse démuter
+          le son, ou cliquer pour avancer ou reculer ») : le son à gauche, parce que le bouton collant du calculateur et la bulle du chat
+          occupent le bas droit de l'écran ; puis lecture, curseur et durée. */}
+      <div class="pres-barre" data-pres-barre>
+        <button type="button" class="pres-b pres-son" aria-pressed="false" aria-label={t.sonOn} data-pres-son data-activer={t.sonOn} data-couper={t.sonOff}>
+          <svg class="son-coupe" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m23 9-6 6M17 9l6 6"/></svg>
+          <svg class="son-actif" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+          <span class="pres-son-texte" data-pres-son-texte>{t.sonOn}</span>
+        </button>
+        <button type="button" class="pres-b est-arretee" aria-label={t.lire} data-pres-bouton data-pause={t.pause} data-lire={t.lire}>
           <Icon name="pause" size={16} class="icone-pause" />
           <Icon name="play" size={16} class="icone-lire" />
         </button>
+        <span class="pres-temps" data-pres-temps>0:00</span>
+        <input type="range" class="pres-curseur" min="0" max="1000" step="1" value="0" aria-label={t.avancer} data-pres-curseur />
+        <span class="pres-temps" data-pres-duree>0:00</span>
       </div>
     </figure>
     )}
@@ -542,6 +561,83 @@ const faits = [
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+  .pres-barre {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    color: #fff;
+  }
+  .pres-b {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.7rem;
+    border-radius: 999px;
+    border: 0;
+    background: rgb(10 18 29 / 0.78);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition: background-color 0.25s var(--ease-sortie);
+    flex: none;
+  }
+  .pres-b:hover {
+    background: rgb(10 18 29 / 0.95);
+  }
+  .pres-b :global(.icone-lire),
+  .pres-b.est-arretee :global(.icone-pause) {
+    display: none;
+  }
+  .pres-b.est-arretee :global(.icone-lire) {
+    display: block;
+  }
+  .pres-son .son-actif,
+  .pres-son[aria-pressed='true'] .son-coupe {
+    display: none;
+  }
+  .pres-son[aria-pressed='true'] .son-actif {
+    display: block;
+  }
+  .pres-son[aria-pressed='false'] {
+    background: #c8a951;
+    color: #0d1424;
+  }
+  .pres-son[aria-pressed='false']:hover {
+    background: #d6ba69;
+  }
+  .pres-temps {
+    flex: none;
+    min-width: 2.4rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: rgb(255 255 255 / 0.85);
+    text-align: center;
+  }
+  .pres-curseur {
+    flex: 1;
+    min-width: 0;
+    height: 1.5rem;
+    accent-color: #c8a951;
+    cursor: pointer;
+  }
+  @media (max-width: 639px) {
+    .pres-barre {
+      gap: 0.5rem;
+    }
+    .pres-son-texte,
+    .pres-temps[data-pres-duree] {
+      display: none;
+    }
   }
   /* Une lueur du bleu du logo derrière l'écran, pas un dégradé de fond. */
   .academie-panneau::before {
@@ -1216,6 +1312,59 @@ const faits = [
     };
     v.addEventListener('play', etat);
     v.addEventListener('pause', etat);
+    // Le curseur et les temps.
+    const curseur = bloc.querySelector<HTMLInputElement>('[data-pres-curseur]');
+    const temps = bloc.querySelector<HTMLElement>('[data-pres-temps]');
+    const duree = bloc.querySelector<HTMLElement>('[data-pres-duree]');
+    const minutes = (x: number) => `${Math.floor(x / 60)}:${String(Math.floor(x % 60)).padStart(2, '0')}`;
+    let glisse = false;
+    const suivre = () => {
+      if (!v.duration || !isFinite(v.duration)) return;
+      if (duree) duree.textContent = minutes(v.duration);
+      if (temps) temps.textContent = minutes(v.currentTime);
+      if (curseur && !glisse) curseur.value = String(Math.round((v.currentTime / v.duration) * 1000));
+    };
+    v.addEventListener('timeupdate', suivre);
+    v.addEventListener('loadedmetadata', suivre);
+    if (curseur) {
+      const lacher = () => { glisse = false; };
+      curseur.addEventListener('pointerdown', () => { glisse = true; v.preload = 'auto'; });
+      curseur.addEventListener('input', () => {
+        if (!v.duration || !isFinite(v.duration)) { v.preload = 'auto'; v.load(); return; }
+        v.currentTime = (Number(curseur.value) / 1000) * v.duration;
+        if (temps) temps.textContent = minutes(v.currentTime);
+      });
+      curseur.addEventListener('change', lacher);
+      curseur.addEventListener('pointerup', lacher);
+    }
+    // Le son : la première fois, la vidéo repart du début pour être entendue en entier.
+    const son = bloc.querySelector<HTMLButtonElement>('[data-pres-son]');
+    const sonTexte = bloc.querySelector<HTMLElement>('[data-pres-son-texte]');
+    let dejaEntendu = false;
+    const etatSon = () => {
+      if (!son) return;
+      const libelle = (v.muted ? son.dataset.activer : son.dataset.couper) ?? '';
+      son.setAttribute('aria-pressed', v.muted ? 'false' : 'true');
+      son.setAttribute('aria-label', libelle);
+      if (sonTexte) sonTexte.textContent = libelle;
+    };
+    son?.addEventListener('click', () => {
+      v.muted = !v.muted;
+      if (!v.muted) {
+        if (!dejaEntendu) {
+          v.currentTime = 0;
+          dejaEntendu = true;
+        }
+        arretee = false;
+        v.play().catch(() => {});
+        (window as unknown as { dataLayer?: Record<string, unknown>[] }).dataLayer?.push({
+          event: 'academy_video_sound',
+          video_id: 'presentation-accueil',
+        });
+      }
+      etatSon();
+    });
+    v.addEventListener('volumechange', etatSon);
     new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting && !arretee) v.play().catch(() => {});
@@ -1239,6 +1388,7 @@ const faits = [
     window.addEventListener('accueil-film-lecture', () => {
       arretee = true;
       v.pause();
+      v.muted = true;
     });
   });
 
