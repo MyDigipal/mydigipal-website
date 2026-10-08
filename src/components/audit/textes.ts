@@ -16,12 +16,11 @@ export const ENDPOINT_AUDIT = 'https://academy.mydigipal.com/api/site/audit';
 export const pageAudit = (lang: Language) => `/${lang}/automotive/audit`;
 
 export const TRANCHES: { code: string; fr: string; en: string }[] = [
-  { code: 'moins-2k', fr: 'Moins de 2 000 €', en: 'Under €2,000' },
-  { code: '2k-5k', fr: '2 000 à 5 000 €', en: '€2,000 to €5,000' },
-  { code: '5k-10k', fr: '5 000 à 10 000 €', en: '€5,000 to €10,000' },
-  { code: '10k-25k', fr: '10 000 à 25 000 €', en: '€10,000 to €25,000' },
-  { code: '25k-50k', fr: '25 000 à 50 000 €', en: '€25,000 to €50,000' },
-  { code: 'plus-50k', fr: 'Plus de 50 000 €', en: 'Over €50,000' },
+  { code: 'moins-1k', fr: 'Moins de 1 000 €', en: 'Under €1,000' },
+  { code: '1k-2k', fr: '1 000 à 2 000 €', en: '€1,000 to €2,000' },
+  { code: '2k-4k', fr: '2 000 à 4 000 €', en: '€2,000 to €4,000' },
+  { code: '4k-7k', fr: '4 000 à 7 000 €', en: '€4,000 to €7,000' },
+  { code: 'plus-7k', fr: 'Plus de 7 000 €', en: 'Over €7,000' },
 ];
 
 const FR = {

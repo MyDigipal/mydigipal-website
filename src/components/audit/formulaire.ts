@@ -117,6 +117,8 @@ function brancher(form: HTMLFormElement) {
       website_url: String(f.get('website_url') || ''),
       duree_saisie_ms: debut ? Date.now() - debut : -1,
       emplacement: d.emplacement,
+      // Le bouton qui a ouvert la fenêtre (`hero-automotive-google-ads`, `ancre`...).
+      bouton: form.closest<HTMLElement>('dialog')?.dataset.bouton || '',
       source: window.location.href,
       language: d.lang,
       provenance: provenance(),
@@ -192,6 +194,7 @@ function brancherBoutons() {
         form.hidden = false;
         merci.hidden = true;
       }
+      modale.dataset.bouton = a.dataset.auditOuvrir || 'bouton';
       ouvrir(modale);
     });
   });
@@ -206,6 +209,7 @@ function brancherBoutons() {
     modale.querySelectorAll<HTMLElement>('[data-audit-fermer]').forEach((b) => b.addEventListener('click', () => modale.close()));
     if (window.location.hash === '#audit' && typeof modale.showModal === 'function') {
       pousser({ event: 'audit_form_open', audit_placement: 'ancre', form_location: window.location.pathname });
+      modale.dataset.bouton = 'ancre';
       ouvrir(modale);
     }
   }
