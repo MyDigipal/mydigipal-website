@@ -51,7 +51,7 @@ const FR = {
     },
     merciTitre: 'On vous envoie votre audit sous 24 h',
     /** `{email}` est remplacé dans le navigateur par l'adresse saisie. */
-    merciTexte: 'Il arrivera à {email}. Un e-mail de confirmation part maintenant : s’il n’est pas là dans cinq minutes, regardez dans vos indésirables.',
+    merciTexte: 'Il arrivera à {email}.',
     fermer: 'Fermer',
   },
 };
@@ -83,7 +83,7 @@ const EN: typeof FR = {
       trop: 'Too many requests from this connection. Try again in a few minutes.',
     },
     merciTitre: 'Your audit arrives within 24 hours',
-    merciTexte: 'It will go to {email}. A confirmation email is on its way: if it is not there in five minutes, check your spam folder.',
+    merciTexte: 'It will go to {email}.',
     fermer: 'Close',
   },
 };

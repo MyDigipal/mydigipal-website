@@ -13,6 +13,7 @@
  * Pilotage et maquettes : docs/calculator/refonte-2026-09/calculateur-en-etapes.html
  */
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { avertissementConfirmation } from '@/lib/expediteur-confirmations';
 import type { Currency, ServiceDomain } from '../calculator/types';
 import { CURRENCY_CONFIGS, DURATION_CONFIG } from '../calculator/data';
 import type { ContactType } from '../calculator/data/emailing-services';
@@ -674,6 +675,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       <div className="py-6">
         <h3 className="font-display text-2xl font-extrabold tracking-[-0.025em] text-slate-900">{L(lang, 'Merci, votre devis est en route', 'Thank you, your quote is on its way')}</h3>
         <p className="mt-2 max-w-prose text-slate-600">{L(lang, 'Vous le recevez par email dans quelques minutes. Un expert vous rappelle sous 24 à 48 h pour l’ajuster avec vous.', 'It will reach your inbox in a few minutes. An expert will get back to you within 24 to 48 hours to fine-tune it with you.')}</p>
+        <p className="mt-4 max-w-prose rounded-xl bg-slate-100 px-4 py-3 text-[15px] text-slate-800">{avertissementConfirmation(lang === 'fr' ? 'fr' : 'en', 'devis')}</p>
         {dryRun && <p className="mt-4 rounded-xl bg-yellow-50 px-4 py-3 text-sm text-yellow-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
       </div>
     );
@@ -843,6 +845,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       <div className="rounded-3xl bg-slate-900 p-6 text-white sm:p-10">
         <h3 className="font-display text-2xl font-extrabold tracking-[-0.025em] sm:text-3xl">{L(lang, `Merci ${firstName}, c’est parti`, `Thank you ${firstName}, we’re on it`)}</h3>
         <p className="mt-3 max-w-2xl text-slate-300">{L(lang, `Le devis arrive dans votre boîte mail dans quelques minutes. On étudie ${contact.company.trim()} de près, et on revient vers vous sous 24 à 48 h.`, `The quote reaches your inbox in a few minutes. We take a close look at ${contact.company.trim()} and get back to you within 24 to 48 hours.`)}</p>
+        <p className="mt-4 max-w-2xl rounded-xl bg-white/10 px-4 py-3 text-[15px] text-white">{avertissementConfirmation(lang === 'fr' ? 'fr' : 'en', 'devis')}</p>
         {/* Pas de prise de rendez-vous (Paul, 25/09/2026) : le formulaire de contact. */}
         <a href={`/${lang}/contact`} className="mt-6 inline-flex h-12 items-center rounded-full bg-white px-6 text-[15px] font-semibold text-slate-900">{L(lang, 'Nous contacter', 'Contact us')}</a>
         {dryRun && <p className="mt-5 rounded-xl bg-yellow-50 px-4 py-3 text-sm text-yellow-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}

@@ -1,8 +1,13 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
+import { EXPEDITEUR_CONFIRMATIONS, avertissementConfirmation } from '@/lib/expediteur-confirmations';
 import { type Language, languages } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 import MagneticButton from '@/components/ui/MagneticButton.astro';
+
+// L'avertissement commun aux trois formulaires (Paul, 08/10/2026), l'adresse en gras.
+const avertissementHtml = (l: 'fr' | 'en') =>
+  avertissementConfirmation(l, 'contact').replace(EXPEDITEUR_CONFIRMATIONS, `<strong>${EXPEDITEUR_CONFIRMATIONS}</strong>`);
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -17,7 +22,7 @@ const content = {
     h1: 'Thanks! We\'re on it.',
     intro: 'We\'ve received your message and we\'ll get back to you with a personalised plan within 24h (usually faster).',
     spamHeading: 'Check your spam folder NOW',
-    spamLead: 'We just sent you a confirmation email from <strong>paul@mydigipal.com</strong>.',
+    spamLead: avertissementHtml('en'),
     spamSub: 'If you don\'t see it within 1 minute:',
     spamStep1: 'Check your <strong>Spam / Promotions / Junk</strong> folder',
     spamStep2: 'Mark it as <strong>"Not spam"</strong> or drag it into your <strong>"Inbox"</strong>',
@@ -43,7 +48,7 @@ const content = {
     h1: 'Merci ! On s\'en occupe.',
     intro: 'On a bien reçu votre message et on revient vers vous avec un plan personnalisé sous 24h (souvent plus vite).',
     spamHeading: 'Vérifiez vos spams MAINTENANT',
-    spamLead: 'On vient de vous envoyer un email de confirmation depuis <strong>paul@mydigipal.com</strong>.',
+    spamLead: avertissementHtml('fr'),
     spamSub: 'Si vous ne le voyez pas dans 1 minute :',
     spamStep1: 'Regardez dans votre dossier <strong>Spam / Promotions / Indésirables</strong>',
     spamStep2: 'Marquez-le comme <strong>"non spam"</strong> ou glissez-le dans votre <strong>"Boîte de réception"</strong>',

@@ -13,6 +13,7 @@
 import type { Language } from '@/i18n/config';
 import Icon from '@/components/ui/Icon.astro';
 import { ENDPOINT_AUDIT, TRANCHES, textesAudit } from './textes';
+import { avertissementConfirmation } from '@/lib/expediteur-confirmations';
 
 interface Props {
   lang: Language;
@@ -126,6 +127,7 @@ const fr = lang === 'fr';
     <span class="audit-merci-icone"><Icon name="check" size={26} /></span>
     <h2 class="audit-form-titre">{t.merciTitre}</h2>
     <p class="audit-form-chapo" data-merci-texte={t.merciTexte}></p>
+    <p class="audit-avertissement">{avertissementConfirmation(lang, 'audit')}</p>
   </div>
 </div>
 
@@ -272,6 +274,15 @@ const fr = lang === 'fr';
   }
   .audit-merci[hidden] {
     display: none;
+  }
+  .audit-avertissement {
+    padding: 14px 16px;
+    border-radius: var(--rayon-interieur);
+    background: var(--brume);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--encre);
+    text-wrap: pretty;
   }
   .audit-merci-icone {
     display: grid;
