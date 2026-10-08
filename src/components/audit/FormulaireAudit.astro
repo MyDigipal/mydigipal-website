@@ -1,0 +1,296 @@
+---
+/**
+ * Le formulaire de demande d'audit gratuit (08/10/2026). Il vit à deux endroits : dans la
+ * fenêtre que le bouton « Demandez votre audit gratuit » ouvre (`ModaleAudit`), et dans le
+ * haut de la page `/{lang}/automotive/audit`. Le comportement est dans `formulaire.ts`,
+ * chargé une seule fois par page quel que soit le nombre de formulaires.
+ *
+ * Deux champs obligatoires (le groupe, l'adresse), deux facultatifs (le budget, un mot).
+ * Pas de calcul de sécurité comme sur la page contact : un champ caché que seuls les robots
+ * remplissent et un délai minimal de saisie suffisent, et chaque champ de plus coûte des
+ * demandes. La mention de confidentialité remplace une case à cocher.
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import { ENDPOINT_AUDIT, TRANCHES, textesAudit } from './textes';
+
+interface Props {
+  lang: Language;
+  /** `modale` (le bouton d'une page) ou `page` (la page de l'audit) : part avec la demande. */
+  emplacement: 'modale' | 'page';
+  /** Préfixe des identifiants, unique dans la page. */
+  id: string;
+  /** Le titre du formulaire est-il affiché ? */
+  titre?: boolean;
+  /** Le chapeau sous le titre (la page de l'audit l'a déjà dans son premier écran). */
+  chapo?: boolean;
+}
+
+const { lang, emplacement, id, titre = true, chapo = true } = Astro.props;
+const t = textesAudit(lang).form;
+const fr = lang === 'fr';
+---
+
+<div class="audit-form-bloc" data-audit-bloc>
+  <form
+    class="audit-form"
+    data-audit-form
+    data-endpoint={ENDPOINT_AUDIT}
+    data-lang={lang}
+    data-emplacement={emplacement}
+    data-texte-envoi={t.envoi}
+    data-texte-envoyer={t.envoyer}
+    data-erreur-groupe={t.erreurs.groupe}
+    data-erreur-email={t.erreurs.email}
+    data-erreur-envoi={t.erreurs.envoi}
+    data-erreur-trop={t.erreurs.trop}
+    novalidate
+    aria-labelledby={titre ? `${id}-titre` : undefined}
+    aria-label={titre ? undefined : t.titre}
+  >
+    {titre && (
+      <header class="audit-form-tete">
+        <h2 id={`${id}-titre`} class="audit-form-titre">{t.titre}</h2>
+        {chapo && <p class="audit-form-chapo">{t.chapo}</p>}
+      </header>
+    )}
+
+    <div class="audit-champ">
+      <label for={`${id}-groupe`}>{t.groupe}</label>
+      <input
+        id={`${id}-groupe`}
+        name="groupe"
+        type="text"
+        required
+        minlength="2"
+        maxlength="160"
+        autocomplete="organization"
+        aria-describedby={`${id}-groupe-aide ${id}-groupe-erreur`}
+      />
+      <p id={`${id}-groupe-aide`} class="audit-aide">{t.groupeAide}</p>
+      <p id={`${id}-groupe-erreur`} class="audit-erreur" data-erreur-de="groupe" hidden></p>
+    </div>
+
+    <div class="audit-champ">
+      <label for={`${id}-email`}>{t.email}</label>
+      <input
+        id={`${id}-email`}
+        name="email"
+        type="email"
+        required
+        maxlength="160"
+        autocomplete="email"
+        inputmode="email"
+        spellcheck="false"
+        aria-describedby={`${id}-email-erreur`}
+      />
+      <p id={`${id}-email-erreur`} class="audit-erreur" data-erreur-de="email" hidden></p>
+    </div>
+
+    <div class="audit-champ">
+      <label for={`${id}-budget`}>{t.budget} <span class="audit-facultatif">({t.facultatif})</span></label>
+      <div class="audit-select">
+        <select id={`${id}-budget`} name="budget" aria-describedby={`${id}-budget-aide`}>
+          <option value="">{t.budgetVide}</option>
+          {TRANCHES.map((tr) => <option value={tr.code}>{fr ? tr.fr : tr.en}</option>)}
+        </select>
+        <Icon name="chevron-down" size={18} class="audit-select-fleche" />
+      </div>
+      <p id={`${id}-budget-aide`} class="audit-aide">{t.budgetAide}</p>
+    </div>
+
+    <div class="audit-champ">
+      <label for={`${id}-message`}>{t.message} <span class="audit-facultatif">({t.facultatif})</span></label>
+      <textarea id={`${id}-message`} name="message" rows="2" maxlength="2000" placeholder={t.messagePlaceholder}></textarea>
+    </div>
+
+    <!-- Le piège : invisible et hors du parcours au clavier, seuls les robots le remplissent. -->
+    <div class="audit-piege" aria-hidden="true">
+      <label for={`${id}-website-url`}>Website</label>
+      <input id={`${id}-website-url`} name="website_url" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <p class="audit-erreur audit-erreur-envoi" data-erreur-envoi role="alert" hidden></p>
+
+    <button type="submit" class="pilule pilule-pleine audit-envoyer">
+      <span data-libelle>{t.envoyer}</span>
+      <Icon name="arrow-right" size={18} class="pilule-fleche" />
+    </button>
+
+    <p class="audit-rgpd">
+      {t.rgpd} <a href={`/${lang}/privacy-policy`}>{t.rgpdLien}</a>
+    </p>
+  </form>
+
+  <div class="audit-merci" data-audit-merci hidden tabindex="-1">
+    <span class="audit-merci-icone"><Icon name="check" size={26} /></span>
+    <h2 class="audit-form-titre">{t.merciTitre}</h2>
+    <p class="audit-form-chapo" data-merci-texte={t.merciTexte}></p>
+  </div>
+</div>
+
+<script>
+  import { initFormulairesAudit } from './formulaire';
+  initFormulairesAudit();
+  document.addEventListener('astro:page-load', initFormulairesAudit);
+</script>
+
+<style>
+  .audit-form {
+    display: grid;
+    gap: 16px;
+  }
+  .audit-form-tete {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .audit-form-titre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.5rem;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--encre);
+    text-wrap: balance;
+  }
+  .audit-form-chapo {
+    font-size: 1rem;
+    line-height: 1.55;
+    color: #4B5B6B;
+    text-wrap: pretty;
+  }
+
+  .audit-champ {
+    display: grid;
+    gap: 8px;
+  }
+  .audit-champ label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--encre);
+  }
+  .audit-facultatif {
+    font-weight: 400;
+    color: #5F7084;
+  }
+  .audit-champ input,
+  .audit-champ select,
+  .audit-champ textarea {
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 14px;
+    border-radius: var(--rayon-interieur);
+    border: 1px solid #B9C6D4;
+    background: #fff;
+    color: var(--encre);
+    font-size: 1rem;
+    line-height: 1.4;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .audit-champ textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+  .audit-champ textarea::placeholder {
+    color: #6B7B8C;
+  }
+  .audit-champ input:focus,
+  .audit-champ select:focus,
+  .audit-champ textarea:focus {
+    outline: none;
+    border-color: var(--color-marque);
+    box-shadow: 0 0 0 3px rgb(29 113 184 / 0.18);
+  }
+  .audit-champ [aria-invalid='true'] {
+    border-color: #C2362B;
+  }
+  .audit-select {
+    position: relative;
+  }
+  .audit-select select {
+    appearance: none;
+    padding-right: 42px;
+    cursor: pointer;
+  }
+  .audit-select :global(.audit-select-fleche) {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    transform: translateY(-50%);
+    color: #5F7084;
+    pointer-events: none;
+  }
+  .audit-aide {
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: #5F7084;
+  }
+  .audit-erreur {
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: #B42318;
+  }
+  .audit-erreur-envoi {
+    padding: 12px 14px;
+    border-radius: var(--rayon-interieur);
+    background: #FEF3F2;
+  }
+  .audit-piege {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .audit-envoyer {
+    width: 100%;
+    margin-top: 4px;
+  }
+  .audit-envoyer[aria-busy='true'] {
+    opacity: 0.75;
+    cursor: progress;
+  }
+  .audit-rgpd {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: #5F7084;
+    text-align: center;
+  }
+  .audit-rgpd a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .audit-merci {
+    display: grid;
+    justify-items: start;
+    gap: 12px;
+    outline: none;
+  }
+  .audit-merci[hidden] {
+    display: none;
+  }
+  .audit-merci-icone {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    background: var(--color-marque-doux);
+    color: var(--color-marque);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .audit-merci:not([hidden]) {
+      animation: audit-merci-entree 450ms var(--mdp-entree) both;
+    }
+  }
+  @keyframes audit-merci-entree {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+</style>

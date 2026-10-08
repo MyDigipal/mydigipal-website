@@ -96,6 +96,8 @@ export const GET: APIRoute = async () => {
 
   // Automotive hub
   addBilingualPage('/automotive', 0.9, 'weekly');
+  // La page de l'audit gratuit (08/10/2026) : hors du menu, mais indexable.
+  addBilingualPage('/automotive/audit', 0.7, 'monthly');
 
   // Legal pages
   addBilingualPage('/privacy-policy', 0.3, 'yearly');

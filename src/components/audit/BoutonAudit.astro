@@ -1,0 +1,65 @@
+---
+/**
+ * Le bouton « Demandez votre audit gratuit » (08/10/2026), réutilisable partout.
+ *
+ * C'est un lien vers la page de l'audit (`/{lang}/automotive/audit#demande`) : sans
+ * JavaScript, ou sur une page qui n'a pas de `ModaleAudit`, il y mène. Quand la page porte
+ * une `ModaleAudit`, le clic ouvre la fenêtre à la place et pousse `audit_form_open`.
+ *
+ * Pour l'ajouter ailleurs : `<BoutonAudit lang={lang} emplacement="nom-de-la-page" />`,
+ * plus une seule `<ModaleAudit lang={lang} />` dans la page.
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import { pageAudit, textesAudit } from './textes';
+
+interface Props {
+  lang: Language;
+  /** Où est le bouton (mesure `audit_placement` de `audit_form_open`). */
+  emplacement?: string;
+  /** `pleine` (bleu) par défaut ; `blanche` sur un fond d'encre ou bleu. */
+  variante?: 'pleine' | 'blanche' | 'contour';
+  /** Le libellé court (« Audit gratuit »), pour une place étroite. */
+  court?: boolean;
+  /** Libellé court sous 640 px, long au-delà : pour tenir à côté d'un second bouton. */
+  adaptatif?: boolean;
+  class?: string;
+}
+
+const { lang, emplacement = 'bouton', variante = 'pleine', court = false, adaptatif = false, class: classe = '' } = Astro.props;
+const t = textesAudit(lang);
+---
+
+<a
+  href={`${pageAudit(lang)}#demande`}
+  class:list={['pilule', `pilule-${variante}`, classe]}
+  data-audit-ouvrir={emplacement}
+>
+  {adaptatif ? (
+    <Fragment>
+      <span class="audit-libelle-court">{t.boutonCourt}</span>
+      <span class="audit-libelle-long">{t.bouton}</span>
+    </Fragment>
+  ) : court ? t.boutonCourt : t.bouton}
+  <Icon name="arrow-right" size={18} class="pilule-fleche" />
+</a>
+
+<script>
+  import { initFormulairesAudit } from './formulaire';
+  initFormulairesAudit();
+  document.addEventListener('astro:page-load', initFormulairesAudit);
+</script>
+
+<style>
+  .audit-libelle-long {
+    display: none;
+  }
+  @media (min-width: 640px) {
+    .audit-libelle-court {
+      display: none;
+    }
+    .audit-libelle-long {
+      display: inline;
+    }
+  }
+</style>

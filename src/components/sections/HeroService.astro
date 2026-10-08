@@ -4,6 +4,8 @@ import { t } from '@/i18n/utils';
 import Icon from '@/components/ui/Icon.astro';
 import BandeauLogos from '@/components/ui/BandeauLogos.astro';
 import TableauPalettes from '@/components/motion/TableauPalettes.astro';
+import BoutonAudit from '@/components/audit/BoutonAudit.astro';
+import ModaleAudit from '@/components/audit/ModaleAudit.astro';
 
 interface Metric {
   value: string;
@@ -40,6 +42,12 @@ interface Props {
   serviceCalculateur?: string;
   /** Les chiffres montrés sur le tableau à palettes, à la place des `metrics` (AI Training). */
   tableau?: { chiffre: string; unite?: string; texte: string }[];
+  /**
+   * Les pages automobiles (08/10/2026) : « Demandez votre audit gratuit » devient la porte
+   * principale et ouvre la fenêtre du formulaire ; « Calculer mon budget » passe en second.
+   * La valeur est l'emplacement mesuré (`audit_placement`).
+   */
+  audit?: string;
 }
 
 const {
@@ -56,6 +64,7 @@ const {
   titreLogos,
   serviceCalculateur,
   tableau = [],
+  audit,
 } = Astro.props;
 
 // `color` et `testimonial` restent acceptés : toutes les pages portent le bleu du
@@ -99,15 +108,24 @@ const showPanel = tableau.length > 0 || resultats.length > 0 || points.length > 
           {description}
         </p>
 
-        <div class="pilules mt-3">
-          <a href={`/${lang}/calculator${serviceCalculateur ? `?service=${serviceCalculateur}` : ''}`} class="pilule pilule-pleine">
-            {t(lang, 'cta.calculateBudget')}
-            <Icon name="arrow-right" size={18} class="pilule-fleche" />
-          </a>
-          <a href={`/${lang}/contact`} class="pilule pilule-contour">
-            {lbl.contact}
-          </a>
-        </div>
+        {audit ? (
+          <div class="pilules mt-3">
+            <BoutonAudit lang={lang} emplacement={audit} adaptatif />
+            <a href={`/${lang}/calculator${serviceCalculateur ? `?service=${serviceCalculateur}` : ''}`} class="pilule pilule-contour">
+              {t(lang, 'cta.calculateBudget')}
+            </a>
+          </div>
+        ) : (
+          <div class="pilules mt-3">
+            <a href={`/${lang}/calculator${serviceCalculateur ? `?service=${serviceCalculateur}` : ''}`} class="pilule pilule-pleine">
+              {t(lang, 'cta.calculateBudget')}
+              <Icon name="arrow-right" size={18} class="pilule-fleche" />
+            </a>
+            <a href={`/${lang}/contact`} class="pilule pilule-contour">
+              {lbl.contact}
+            </a>
+          </div>
+        )}
       </div>
 
       {showPanel && (
@@ -151,6 +169,8 @@ const showPanel = tableau.length > 0 || resultats.length > 0 || points.length > 
       )}
     </div>
   </div>
+
+  {audit && <ModaleAudit lang={lang} />}
 
   <div class="border-y border-slate-200 py-10 lg:py-12">
     <BandeauLogos titre={titreLogos ?? (heroLogos && heroLogos.length > 0 ? lbl.trustedTraining : lbl.trusted)} logos={heroLogos} />

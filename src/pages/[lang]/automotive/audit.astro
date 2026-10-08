@@ -1,0 +1,750 @@
+---
+/**
+ * La page de l'audit gratuit (Paul, 08/10/2026), `/{lang}/automotive/audit`, hors du menu.
+ *
+ * Elle sert deux entrées : le bouton « Demandez votre audit gratuit » des pages automobiles
+ * quand le visiteur veut en savoir plus, et la campagne Meta du Mondial de l'Auto (Paris,
+ * 12 au 18 octobre 2026), qui y renvoie directement. Elle doit donc tenir seule : la
+ * promesse et le formulaire dès le premier écran, puis ce que contient l'audit, comment ça
+ * se passe (les trois temps animés), qui le fait, et les questions.
+ *
+ * Le formulaire est celui de la fenêtre (`FormulaireAudit`, emplacement `page`) ; l'envoi
+ * pousse `audit_request` (GA4 et Lead Meta par GTM). Aucun chiffre client écrit ici : seuls
+ * les chiffres de l'agence (150 concessions, 150 000 € gérés par mois, 10 600 contacts,
+ * 15 personnes, créée en 2019, Paris et Londres).
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import { type Language, languages } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import BandeauLogos from '@/components/ui/BandeauLogos.astro';
+import TableauPalettes from '@/components/motion/TableauPalettes.astro';
+import AutomotiveFAQ from '@/components/sections/automotive/AutomotiveFAQ.astro';
+import FormulaireAudit from '@/components/audit/FormulaireAudit.astro';
+import BoutonAudit from '@/components/audit/BoutonAudit.astro';
+import { mesurerLogos } from '@/lib/logos-mesures';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+const fr = lang === 'fr';
+
+const t = fr
+  ? {
+      seo: {
+        titre: 'Audit marketing digital automobile gratuit',
+        description:
+          'Demandez votre audit gratuit : votre publicité Google et Meta sur l’année, le SEO de votre site et nos recommandations d’actions, envoyés sous 24 h.',
+      },
+      rubrique: 'Audit gratuit pour groupes et concessions',
+      titre: 'Votre audit marketing digital, gratuit, sous 24 h',
+      chapo:
+        'On étudie votre publicité de l’année et votre site, puis on vous dit quelles actions lancer en premier. Il suffit du nom de votre groupe et d’une adresse.',
+      garanties: ['Gratuit et sans engagement', 'Envoyé sous 24 h', 'Préparé par notre équipe automobile'],
+      logos: 'Ils nous confient leurs campagnes',
+      contenu: {
+        titre: 'Ce que contient votre audit',
+        chapo: 'Un document écrit pour votre groupe, à lire en dix minutes, avec des exemples tirés de vos propres annonces.',
+        blocs: [
+          {
+            icone: 'bar-chart',
+            titre: 'Votre publicité sur l’année',
+            source: 'Lu dans le centre de transparence des annonces Google et la bibliothèque publicitaire de Meta : ce que vos clients voient vraiment.',
+            points: [
+              'Vos annonces Google et Meta des douze derniers mois',
+              'Ce qu’elles mettent en avant, marque par marque',
+              'Votre présence sur les réseaux sociaux',
+              'Ce qui manque : le stock, les offres, les zones',
+            ],
+          },
+          {
+            icone: 'search',
+            titre: 'Votre site vu par Google',
+            points: [
+              'Les recherches sur lesquelles vous ressortez',
+              'Celles que vous laissez à vos concurrents',
+              'Ce qui freine votre site',
+            ],
+          },
+          {
+            icone: 'target',
+            titre: 'Nos recommandations',
+            points: [
+              'Les actions qu’on lancerait en premier chez vous',
+              'Des exemples d’annonces pour vos marques',
+              'Pourquoi, et ce que vous pouvez en attendre',
+            ],
+          },
+        ],
+      },
+      etapes: {
+        titre: 'Comment ça se passe',
+        chapo: 'Trois temps, et rien à préparer de votre côté.',
+        temps: [
+          {
+            quand: 'Aujourd’hui',
+            titre: 'Vous remplissez le formulaire',
+            texte: 'Le nom de votre groupe et une adresse. Deux minutes, pas plus.',
+          },
+          {
+            quand: 'Dans la journée',
+            titre: 'On étudie votre présence',
+            texte: 'SEO, réseaux sociaux, Google Ads, Meta : on regarde ce qui tourne et ce qui manque.',
+          },
+          {
+            quand: 'Sous 24 h',
+            titre: 'On vous recommande des actions',
+            texte: 'Les actions de marketing digital automobile qui nous semblent les plus utiles chez vous.',
+          },
+        ],
+        scene: {
+          groupe: 'Groupe ou concession',
+          valeurGroupe: 'Votre groupe',
+          email: 'E-mail',
+          valeurEmail: 'vous@votre-groupe.fr',
+          canaux: ['SEO', 'Réseaux sociaux', 'Google Ads', 'Meta', 'Site internet'],
+          recos: ['Mettre le stock en annonces', 'Une campagne par marque', 'Rappeler chaque contact sous 1 h'],
+        },
+      },
+      equipe: {
+        titre: 'L’équipe digitale de plus de 150 concessions',
+        texte:
+          'MyDigipal accompagne des groupes automobiles depuis 2019, depuis Paris et Londres. Quinze personnes : des spécialistes Google Ads, Meta et SEO, et les outils qui relient vos contacts à vos ventes.',
+        lien: 'Voir les études de cas',
+      },
+      tableau: [
+        { chiffre: '150', unite: '+', texte: 'concessions accompagnées' },
+        { chiffre: '150 000', unite: '€', texte: 'de budget publicitaire géré chaque mois' },
+        { chiffre: '10 600', texte: 'contacts générés pour nos clients automobiles' },
+      ],
+      faq: [
+        { question: 'L’audit est-il vraiment gratuit ?', answer: 'Oui, et sans engagement. C’est notre façon de vous montrer comment on travaille : si les recommandations vous parlent, on en discute ; sinon, vous gardez l’audit.' },
+        { question: 'De quoi avez-vous besoin ?', answer: 'Du nom de votre groupe ou de votre concession et d’une adresse. On travaille à partir de ce qui est public : vos annonces, votre site, vos pages sur les réseaux sociaux. Aucun accès à vos comptes n’est nécessaire.' },
+        { question: 'Qui prépare l’audit ?', answer: 'Notre équipe automobile, celle qui gère les campagnes de nos clients concessionnaires. Ce n’est pas un rapport automatique : chaque audit est relu et écrit pour votre groupe.' },
+        { question: 'Et si nous travaillons déjà avec une agence ou un constructeur ?', answer: 'L’audit en tient compte. Il dit ce qui fonctionne déjà, et ce qui pourrait venir compléter ce que font votre agence ou les programmes de vos marques.' },
+      ],
+      fin: {
+        titre: 'Voyons ce qu’on ferait chez vous',
+        texte: 'Le nom de votre groupe, une adresse, et l’audit arrive sous 24 h.',
+      },
+    }
+  : {
+      seo: {
+        titre: 'Free automotive digital marketing audit',
+        description:
+          'Get your free audit: your Google and Meta advertising over the year, your website’s SEO and the actions we recommend, sent to you within 24 hours.',
+      },
+      rubrique: 'Free audit for dealer groups and dealerships',
+      titre: 'Your digital marketing audit, free, within 24 hours',
+      chapo:
+        'We study your advertising over the year and your website, then tell you which actions to start with. All we need is your group’s name and an email address.',
+      garanties: ['Free, no commitment', 'Sent within 24 hours', 'Prepared by our automotive team'],
+      logos: 'They trust us with their campaigns',
+      contenu: {
+        titre: 'What your audit contains',
+        chapo: 'A document written for your group, a ten-minute read, with examples taken from your own ads.',
+        blocs: [
+          {
+            icone: 'bar-chart',
+            titre: 'Your advertising over the year',
+            source: 'Read from Google’s Ads Transparency Center and Meta’s Ad Library: what your customers actually see.',
+            points: [
+              'Your Google and Meta ads from the last twelve months',
+              'What they push, brand by brand',
+              'Your presence on social media',
+              'What is missing: stock, offers, areas',
+            ],
+          },
+          {
+            icone: 'search',
+            titre: 'Your website as Google sees it',
+            points: [
+              'The searches you show up for',
+              'The ones you leave to your competitors',
+              'What holds your website back',
+            ],
+          },
+          {
+            icone: 'target',
+            titre: 'Our recommendations',
+            points: [
+              'The actions we would start with for you',
+              'Example ads for your brands',
+              'Why, and what you can expect from them',
+            ],
+          },
+        ],
+      },
+      etapes: {
+        titre: 'How it works',
+        chapo: 'Three steps, and nothing to prepare on your side.',
+        temps: [
+          {
+            quand: 'Today',
+            titre: 'You fill in the form',
+            texte: 'Your group’s name and an email address. Two minutes at most.',
+          },
+          {
+            quand: 'During the day',
+            titre: 'We study your presence',
+            texte: 'SEO, social media, Google Ads, Meta: we look at what works and what is missing.',
+          },
+          {
+            quand: 'Within 24 hours',
+            titre: 'We recommend actions',
+            texte: 'The automotive digital marketing actions we think would help you most.',
+          },
+        ],
+        scene: {
+          groupe: 'Dealer group or dealership',
+          valeurGroupe: 'Your group',
+          email: 'Email',
+          valeurEmail: 'you@your-group.com',
+          canaux: ['SEO', 'Social media', 'Google Ads', 'Meta', 'Website'],
+          recos: ['Turn your stock into ads', 'One campaign per brand', 'Call every lead back within 1 hour'],
+        },
+      },
+      equipe: {
+        titre: 'The digital team behind more than 150 dealerships',
+        texte:
+          'MyDigipal has worked with dealer groups since 2019, from Paris and London. Fifteen people: Google Ads, Meta and SEO specialists, and the tools that connect your leads to your sales.',
+        lien: 'See the case studies',
+      },
+      tableau: [
+        { chiffre: '150', unite: '+', texte: 'dealerships we work with' },
+        { chiffre: '€150,000', texte: 'of ad budget managed every month' },
+        { chiffre: '10,600', texte: 'leads generated for our automotive clients' },
+      ],
+      faq: [
+        { question: 'Is the audit really free?', answer: 'Yes, with no commitment. It is how we show you the way we work: if the recommendations make sense to you, we talk about them; if not, the audit is yours to keep.' },
+        { question: 'What do you need from us?', answer: 'Your dealer group or dealership name and an email address. We work from what is public: your ads, your website, your social media pages. No access to your accounts is needed.' },
+        { question: 'Who prepares the audit?', answer: 'Our automotive team, the people who run our dealer clients’ campaigns. It is not an automated report: every audit is reviewed and written for your group.' },
+        { question: 'What if we already work with an agency or a manufacturer programme?', answer: 'The audit takes it into account. It says what already works, and what could complement what your agency or your brands’ programmes do.' },
+      ],
+      fin: {
+        titre: 'Let’s see what we would do for you',
+        texte: 'Your group’s name, an email address, and the audit arrives within 24 hours.',
+      },
+    };
+
+/* Les logos clients, EN COULEUR et à surface égale, comme la page Automobile. */
+const logos = await mesurerLogos(
+  [
+    { name: fr ? 'Groupe Theobald' : 'Theobald Group', logo: '/images/Client logo/Theobald.png' },
+    { name: fr ? 'Groupe DMD' : 'DMD Group', logo: '/images/Client logo/DMD.png' },
+    { name: 'Vulcain', logo: '/images/Client logo/Vulcain.png' },
+    { name: 'GGP Auto', logo: '/images/Client logo/GGP Auto.png' },
+    { name: 'Guyane Automobile', logo: '/images/Client logo/Guyane Automobile.webp' },
+    { name: fr ? 'Groupe Lancien' : 'Lancien Group', logo: '/images/Client logo/Groupe Lancien.png' },
+    { name: 'BYmyCAR', logo: '/images/Client logo/BYmyCAR.png' },
+    { name: 'EDA 42', logo: '/images/Client logo/EDA 42.png' },
+    { name: fr ? 'Groupe Dugat' : 'Dugat Group', logo: '/images/Client logo/Dugat.jpg' },
+    { name: 'Iroise Auto', logo: '/images/Client logo/Iroise Auto.png' },
+  ],
+  { 'Groupe DMD': 'dmd', 'DMD Group': 'dmd', 'Groupe Theobald': 'theobald', 'Theobald Group': 'theobald', BYmyCAR: 'bymycar', Vulcain: 'vulcain' },
+);
+
+const [blocPub, blocSeo, blocReco] = t.contenu.blocs;
+const sc = t.etapes.scene;
+---
+
+<PageLayout lang={lang} title={t.seo.titre} description={t.seo.description}>
+  <!-- 1. Le premier écran (blanc) : la promesse à gauche, le formulaire à droite. Au
+       téléphone, le formulaire suit directement le chapeau. -->
+  <section class="section-blanc">
+    <div class="container-custom pt-10 pb-16 sm:pt-14 lg:pt-18 lg:pb-24">
+      <div class="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16">
+        <div class="grid justify-items-start gap-5 lg:gap-6 lg:pt-6">
+          <p class="rubrique">{t.rubrique}</p>
+          <h1 class="titre-grand text-encre" lang={lang}>{t.titre}</h1>
+          <p class="chapo max-w-[52ch]">{t.chapo}</p>
+          <ul class="audit-garanties">
+            {t.garanties.map((g) => (
+              <li><Icon name="check" size={18} class="text-marque" /><span>{g}</span></li>
+            ))}
+          </ul>
+        </div>
+
+        <div id="demande" class="audit-carte-form scroll-mt-28">
+          <FormulaireAudit lang={lang} emplacement="page" id="audit-page" chapo={false} />
+        </div>
+      </div>
+    </div>
+
+    <div class="border-y border-slate-200 py-10 lg:py-12">
+      <BandeauLogos titre={t.logos} logos={logos} />
+    </div>
+  </section>
+
+  <!-- 2. Ce que contient l'audit (brume) : la publicité en grand sur l'encre, le SEO et les
+       recommandations à côté, de tailles différentes. -->
+  <section class="section-brume py-20 lg:py-28">
+    <div class="container-custom">
+      <header class="mb-12 grid max-w-[760px] gap-5 lg:mb-16">
+        <h2 class="titre-moyen text-encre">{t.contenu.titre}</h2>
+        <p class="chapo">{t.contenu.chapo}</p>
+      </header>
+
+      <div class="audit-contenu">
+        <article class="carte-encre audit-bloc audit-bloc-pub" data-reveal style="--i:0">
+          <span class="tuile tuile-pleine"><Icon name={blocPub.icone} size={26} /></span>
+          <h3 class="titre-carte text-white">{blocPub.titre}</h3>
+          <ul class="audit-points audit-points-sombre">
+            {blocPub.points.map((p) => <li><Icon name="check" size={18} /><span>{p}</span></li>)}
+          </ul>
+          <p class="audit-source">{blocPub.source}</p>
+        </article>
+        <article class="carte audit-bloc" data-reveal style="--i:1">
+          <span class="tuile"><Icon name={blocSeo.icone} size={24} /></span>
+          <h3 class="titre-carte text-encre">{blocSeo.titre}</h3>
+          <ul class="audit-points">
+            {blocSeo.points.map((p) => <li><Icon name="check" size={18} /><span>{p}</span></li>)}
+          </ul>
+        </article>
+        <article class="audit-bloc audit-bloc-reco" data-reveal style="--i:2">
+          <span class="tuile tuile-pleine"><Icon name={blocReco.icone} size={24} /></span>
+          <h3 class="titre-carte text-encre">{blocReco.titre}</h3>
+          <ul class="audit-points">
+            {blocReco.points.map((p) => <li><Icon name="check" size={18} /><span>{p}</span></li>)}
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Comment ça se passe (encre) : trois temps sur une frise qui se trace, chacun avec
+       sa petite scène. Joué une fois à l'approche ; posé à l'état final sous
+       prefers-reduced-motion ou sans JavaScript. -->
+  <section class="section-encre section-monte py-20 lg:py-28">
+    <div class="container-custom">
+      <header class="mb-12 grid max-w-[760px] gap-5 lg:mb-16">
+        <h2 class="titre-moyen">{t.etapes.titre}</h2>
+        <p class="chapo">{t.etapes.chapo}</p>
+      </header>
+
+      <ol class="etapes" data-etapes>
+        <li class="etape" style="--e:0">
+          <div class="etape-scene" aria-hidden="true">
+            <div class="sc-champ">
+              <span class="sc-label">{sc.groupe}</span>
+              <span class="sc-valeur"><span class="sc-tape">{sc.valeurGroupe}</span></span>
+            </div>
+            <div class="sc-champ sc-champ-2">
+              <span class="sc-label">{sc.email}</span>
+              <span class="sc-valeur"><span class="sc-tape">{sc.valeurEmail}</span></span>
+            </div>
+            <span class="sc-bouton">{fr ? 'Recevoir mon audit' : 'Get my audit'}</span>
+          </div>
+          <p class="etape-quand">{t.etapes.temps[0].quand}</p>
+          <h3 class="etape-titre">{t.etapes.temps[0].titre}</h3>
+          <p class="etape-texte">{t.etapes.temps[0].texte}</p>
+        </li>
+
+        <li class="etape" style="--e:1">
+          <div class="etape-scene" aria-hidden="true">
+            <ul class="sc-canaux">
+              {sc.canaux.map((c, i) => (
+                <li style={`--c:${i}`}><span>{c}</span><Icon name="check" size={16} class="sc-coche" /></li>
+              ))}
+            </ul>
+          </div>
+          <p class="etape-quand">{t.etapes.temps[1].quand}</p>
+          <h3 class="etape-titre">{t.etapes.temps[1].titre}</h3>
+          <p class="etape-texte">{t.etapes.temps[1].texte}</p>
+        </li>
+
+        <li class="etape" style="--e:2">
+          <div class="etape-scene" aria-hidden="true">
+            <ul class="sc-recos">
+              {sc.recos.map((r, i) => (
+                <li style={`--r:${i}`}><Icon name="arrow-right" size={16} /><span>{r}</span></li>
+              ))}
+            </ul>
+          </div>
+          <p class="etape-quand">{t.etapes.temps[2].quand}</p>
+          <h3 class="etape-titre">{t.etapes.temps[2].titre}</h3>
+          <p class="etape-texte">{t.etapes.temps[2].texte}</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 4. Qui le fait (brume) : l'équipe en quelques lignes, les chiffres de l'agence sur le
+       tableau à palettes. -->
+  <section class="section-brume py-20 lg:py-28">
+    <div class="container-custom grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-18">
+      <div class="grid justify-items-start gap-5 lg:gap-6">
+        <h2 class="titre-moyen text-encre">{t.equipe.titre}</h2>
+        <p class="chapo">{t.equipe.texte}</p>
+        <a href={`/${lang}/case-studies`} class="audit-lien">
+          {t.equipe.lien}
+          <Icon name="arrow-right" size={18} />
+        </a>
+      </div>
+      <div class="carte-encre audit-panneau">
+        <TableauPalettes lang={lang} lignes={t.tableau} tete />
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Les questions (blanc). -->
+  <AutomotiveFAQ lang={lang} faq={t.faq} />
+
+  <!-- 6. La fin (encre) : le bouton remonte au formulaire. -->
+  <section class="section-encre section-monte py-20 lg:py-28">
+    <div class="container-custom grid justify-items-start gap-6">
+      <h2 class="titre-moyen max-w-[18ch]">{t.fin.titre}</h2>
+      <p class="chapo">{t.fin.texte}</p>
+      <div class="pilules mt-2">
+        <BoutonAudit lang={lang} emplacement="page-audit-fin" variante="blanche" />
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .audit-garanties {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    margin-top: 4px;
+  }
+  .audit-garanties li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.975rem;
+    font-weight: 600;
+    color: var(--encre);
+  }
+
+  /* La carte du formulaire : blanche sur blanc, détachée par un filet et l'ombre teintée du site. */
+  .audit-carte-form {
+    padding: 24px 18px;
+    border-radius: var(--rayon-panneau);
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--filet), 0 30px 60px -36px rgb(11 27 43 / 0.45);
+  }
+  @media (min-width: 640px) {
+    .audit-carte-form {
+      padding: 32px 30px;
+    }
+  }
+
+  /* Ce que contient l'audit : la publicité occupe la hauteur à gauche. */
+  .audit-contenu {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  @media (min-width: 1024px) {
+    .audit-contenu {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      grid-template-rows: auto auto;
+      gap: 20px;
+    }
+    .audit-bloc-pub {
+      grid-row: span 2;
+    }
+  }
+  .audit-bloc {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    padding: 28px 24px;
+  }
+  @media (min-width: 1024px) {
+    .audit-bloc {
+      padding: 36px;
+    }
+    .audit-bloc-pub {
+      gap: 22px;
+      padding: 44px 40px;
+    }
+    .audit-bloc-pub .titre-carte {
+      font-size: 1.85rem;
+    }
+  }
+  .audit-source {
+    margin-top: auto;
+    padding-top: 22px;
+    border-top: 1px solid var(--filet-sombre);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--texte-sombre-2);
+  }
+  @media (min-width: 1024px) {
+    .audit-bloc-pub {
+      align-content: stretch;
+      grid-template-rows: auto auto auto 1fr;
+    }
+    .audit-source {
+      align-self: end;
+    }
+  }
+  .audit-bloc-reco {
+    border-radius: var(--rayon-panneau);
+    background: var(--color-marque-doux);
+  }
+  .audit-points {
+    display: grid;
+    gap: 12px;
+  }
+  .audit-points li {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 12px;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #334155;
+  }
+  .audit-points li :global(svg) {
+    margin-top: 3px;
+    color: var(--color-marque);
+  }
+  .audit-points-sombre li {
+    font-size: 1.0625rem;
+    color: var(--texte-sombre);
+  }
+  .audit-points-sombre li :global(svg) {
+    color: var(--color-marque-clair);
+  }
+
+  /* Les trois temps. La frise : un filet clair, et par-dessus la ligne bleue qui se trace. */
+  .etapes {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 44px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 1024px) {
+    .etapes {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 28px;
+      padding-top: 26px;
+    }
+    .etapes::before,
+    .etapes::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      border-radius: 2px;
+      background: rgb(255 255 255 / 0.14);
+    }
+    .etapes::after {
+      background: var(--color-marque-clair);
+      transform-origin: left center;
+    }
+  }
+  .etape {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+  }
+  .etape-scene {
+    display: grid;
+    align-content: center;
+    gap: 10px;
+    min-height: 196px;
+    margin-bottom: 14px;
+    padding: 20px;
+    border-radius: var(--rayon-panneau);
+    background: rgb(255 255 255 / 0.06);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  }
+  .etape-quand {
+    font-weight: 600;
+    color: var(--color-marque-clair);
+  }
+  .etape-titre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.375rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .etape-texte {
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--texte-sombre-2);
+    max-width: 38ch;
+  }
+
+  /* Scène 1 : deux champs qui se remplissent, puis le bouton. */
+  .sc-champ {
+    display: grid;
+    gap: 6px;
+  }
+  .sc-label {
+    font-size: 0.8125rem;
+    color: var(--texte-sombre-2);
+  }
+  .sc-valeur {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    background: rgb(255 255 255 / 0.95);
+    color: var(--encre);
+    font-size: 0.9375rem;
+    overflow: hidden;
+  }
+  .sc-tape {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .sc-bouton {
+    justify-self: start;
+    margin-top: 4px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    background: var(--color-marque);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  /* Scène 2 : les canaux étudiés, cochés l'un après l'autre. */
+  .sc-canaux {
+    display: grid;
+    gap: 8px;
+  }
+  .sc-canaux li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgb(255 255 255 / 0.08);
+    font-size: 0.9375rem;
+    color: var(--texte-sombre);
+  }
+  .sc-canaux :global(.sc-coche) {
+    color: var(--color-marque-clair);
+  }
+
+  /* Scène 3 : les recommandations, qui arrivent une à une. */
+  .sc-recos {
+    display: grid;
+    gap: 10px;
+  }
+  .sc-recos li {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--encre);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .sc-recos li :global(svg) {
+    color: var(--color-marque);
+  }
+
+  /* Le mouvement : seulement sous html.mv (JavaScript actif et mouvement accepté, posé par
+     BaseLayout). Sans lui, tout est à l'état final. Le script pose `joue` à l'approche. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.mv) .etapes:not(.joue) .etape {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    :global(html.mv) .etapes:not(.joue)::after {
+      transform: scaleX(0);
+    }
+    :global(html.mv) .etapes:not(.joue) .sc-tape {
+      max-width: 0;
+    }
+    :global(html.mv) .etapes:not(.joue) .sc-bouton,
+    :global(html.mv) .etapes:not(.joue) .sc-coche,
+    :global(html.mv) .etapes:not(.joue) .sc-recos li {
+      opacity: 0;
+    }
+    :global(html.mv) .etapes:not(.joue) .sc-recos li {
+      transform: translateY(10px);
+    }
+
+    .etapes.joue::after {
+      transition: transform 2400ms var(--mdp-entree);
+    }
+    .etapes.joue .etape {
+      transition:
+        opacity 500ms linear calc(var(--e) * 900ms),
+        transform 700ms var(--mdp-entree) calc(var(--e) * 900ms);
+    }
+    .etapes.joue .sc-tape {
+      max-width: 100%;
+      transition: max-width 900ms steps(18, end) 450ms;
+    }
+    .etapes.joue .sc-champ-2 .sc-tape {
+      transition-delay: 1100ms;
+    }
+    .etapes.joue .sc-bouton {
+      transition: opacity 300ms ease 1900ms;
+    }
+    .etapes.joue .sc-coche {
+      transition: opacity 250ms ease calc(1300ms + var(--c) * 280ms);
+    }
+    .etapes.joue .sc-recos li {
+      transition:
+        opacity 350ms ease calc(2300ms + var(--r) * 350ms),
+        transform 500ms var(--mdp-entree) calc(2300ms + var(--r) * 350ms);
+    }
+  }
+
+  .audit-panneau {
+    padding: 28px 24px;
+  }
+  @media (min-width: 1024px) {
+    .audit-panneau {
+      padding: 40px;
+    }
+  }
+  .audit-lien {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--color-marque);
+    transition: gap 300ms var(--mdp-entree);
+  }
+  .audit-lien:hover {
+    gap: 12px;
+  }
+</style>
+
+<script>
+  // Joue la frise une fois, quand elle entre à l'écran. Sans IntersectionObserver, elle se
+  // pose directement à l'état final.
+  function frise() {
+    const el = document.querySelector<HTMLElement>('[data-etapes]');
+    if (!el || el.dataset.pret) return;
+    el.dataset.pret = '1';
+    const jouer = () => el.classList.add('joue');
+    if (!('IntersectionObserver' in window)) return jouer();
+    const io = new IntersectionObserver(
+      (entrees) => {
+        if (entrees.some((e) => e.isIntersecting)) {
+          jouer();
+          io.disconnect();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(el);
+  }
+  frise();
+  document.addEventListener('astro:page-load', frise);
+</script>

@@ -1,0 +1,120 @@
+---
+/**
+ * La fenêtre de demande d'audit (08/10/2026), ouverte par tout `BoutonAudit` de la page.
+ * Une seule par page : `HeroService` la pose quand on lui passe `audit`, une autre page la
+ * pose elle-même à côté de son bouton. Sans elle, le bouton reste un lien vers la page de
+ * l'audit, qui porte le même formulaire.
+ *
+ * `<dialog>` natif : le focus reste dans la fenêtre, Échap la ferme, le reste de la page
+ * devient inerte. Au téléphone, elle monte du bas et prend la hauteur de l'écran.
+ */
+import type { Language } from '@/i18n/config';
+import Icon from '@/components/ui/Icon.astro';
+import FormulaireAudit from './FormulaireAudit.astro';
+import { textesAudit } from './textes';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const t = textesAudit(lang).form;
+---
+
+<dialog class="audit-modale" data-audit-modale aria-labelledby="audit-modale-titre">
+  <div class="audit-modale-carte">
+    <button type="button" class="audit-modale-fermer" data-audit-fermer aria-label={t.fermer}>
+      <Icon name="close" size={20} />
+    </button>
+    <FormulaireAudit lang={lang} emplacement="modale" id="audit-modale" />
+  </div>
+</dialog>
+
+<style>
+  .audit-modale {
+    width: min(100% - 32px, 520px);
+    max-width: none;
+    max-height: min(100dvh - 48px, 900px);
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: var(--rayon-panneau);
+    background: #fff;
+    color: var(--encre);
+    box-shadow: var(--ombre-forte);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  .audit-modale::backdrop {
+    background: rgb(11 27 43 / 0.62);
+  }
+  .audit-modale-carte {
+    position: relative;
+    padding: 28px 24px 24px;
+  }
+  .audit-modale-fermer {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    color: #4B5B6B;
+    transition: background-color 150ms ease;
+  }
+  .audit-modale-fermer:hover {
+    background: var(--brume);
+  }
+  .audit-modale-fermer:focus-visible {
+    outline: 2px solid var(--color-marque);
+    outline-offset: 2px;
+  }
+  /* Le titre ne passe pas sous la croix. */
+  .audit-modale :global(.audit-form-tete) {
+    padding-right: 40px;
+  }
+
+  @media (max-width: 639px) {
+    .audit-modale {
+      width: 100%;
+      max-height: 100dvh;
+      height: 100dvh;
+      margin: 0;
+      border-radius: 0;
+    }
+    .audit-modale-carte {
+      padding: 22px 16px 28px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .audit-modale-carte {
+      padding: 36px 36px 30px;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .audit-modale[open] {
+      animation: audit-modale-entree 380ms var(--mdp-entree) both;
+    }
+    .audit-modale[open]::backdrop {
+      animation: audit-voile-entree 250ms ease both;
+    }
+  }
+  @keyframes audit-modale-entree {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+  @keyframes audit-voile-entree {
+    from {
+      opacity: 0;
+    }
+  }
+
+  :global(html.audit-ouvert) {
+    overflow: hidden;
+  }
+</style>
