@@ -33,6 +33,8 @@ pas relancer, vérifier avec `render_list_deploys` (il porte `trigger: "api"`).
 - `src/content.config.ts` (top-level), pas `src/content/config.ts`
 - Chaque collection : `loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/X' })`
 - Utiliser `entry.id` (pas `entry.slug`), `render(entry)` (pas `entry.render()`)
+- Le `type: 'content'` des anciennes collections n'est plus accepté : chaque collection déclare son `loader`.
+- Pièges détaillés de la migration Tailwind 4 / Astro 6 (ancien skill retiré le 10/10/2026, recopié mot pour mot) : `docs/anciens-skills-retires-2026-10-10.md`.
 
 ### Convention images blog
 - Frontmatter `image:` toujours en path local : `image: '/images/Blog Thumbnails/<slug>.jpg'`
