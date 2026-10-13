@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Votre stock, sur cinq vitrines Google</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(760px 640px at 540px 560px,rgba(29,113,184,.18),rgba(8,19,31,0) 72%)}
+#scene{position:absolute;inset:0}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(125%)}
+#titre{position:absolute;left:70px;top:58px}
+#titre .ln{font-size:58px;font-weight:800;letter-spacing:-.03em;line-height:1.06;white-space:nowrap}
+.ln.o{color:#e8bd62}
+.panneau{position:absolute;border-radius:24px;background:#0d2135;box-shadow:0 50px 100px -40px rgba(0,0,0,.8)}
+#fils{position:absolute;left:0;top:0;width:1080px;height:1080px;pointer-events:none;z-index:6}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+#leg{position:absolute;left:70px;top:1034px;font-size:17px;font-weight:600;color:#6f8399;white-space:nowrap}
+#compte{position:absolute;left:70px;top:884px;display:flex;align-items:baseline;gap:16px;z-index:5}
+#compte b{font-size:66px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;color:#f4f7fa}
+#compte span{font-size:23px;font-weight:600;color:#a9b8c8;max-width:760px;line-height:1.3}
+#compte span em{font-style:normal;color:#f4f7fa;font-weight:800}
+#quand{position:absolute;right:70px;top:72px;height:44px;line-height:41px;box-sizing:border-box;padding:0 18px;border-radius:22px;border:1.5px solid rgba(232,189,98,.8);font-size:20px;font-weight:700;color:#e8bd62;white-space:nowrap}
+
+#ag{left:70px;top:226px;width:380px;height:630px;z-index:2}
+.in{position:absolute;z-index:3}
+.k{font-size:20px;font-weight:700;color:#8a9bb0;white-space:nowrap}
+#agN{font-size:34px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+#agS{position:absolute;left:94px;top:328px;font-size:20px;font-weight:600;color:#a9b8c8;white-space:nowrap;z-index:3}
+#agP{position:absolute;left:94px;top:358px;font-size:28px;font-weight:800;color:#e8bd62;letter-spacing:-.02em;white-space:nowrap;z-index:3}
+#im{position:absolute;left:94px;top:406px;width:332px;height:92px;box-sizing:border-box;border-radius:14px;padding:14px 16px;background:linear-gradient(135deg,#1D71B8,#0b3a63);z-index:3;overflow:hidden}
+#im b{display:block;font-size:22px;font-weight:800;line-height:1.15;color:#fff}
+#im span{display:block;margin-top:6px;font-size:17px;font-weight:600;color:#cfe3f5}
+#im i{position:absolute;right:-30px;top:-34px;width:120px;height:120px;border-radius:50%;border:2px solid rgba(232,189,98,.45)}
+.hl{position:absolute;left:94px;width:332px;height:40px;line-height:40px;box-sizing:border-box;padding:0 14px;border-radius:10px;background:rgba(125,184,238,.08);font-size:20px;font-weight:700;color:#f4f7fa;white-space:nowrap;overflow:hidden;z-index:3}
+#sgs{position:absolute;left:94px;top:718px;width:332px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;z-index:3}
+.sg{position:relative;box-sizing:border-box;padding:5px 14px;border-radius:999px;border:1.5px solid rgba(232,189,98,.75);font-size:20px;font-weight:700;line-height:1.25;color:#e8bd62;white-space:nowrap;z-index:3}
+
+#hub{position:absolute;left:462px;top:472px;width:136px;height:136px;box-sizing:border-box;border-radius:50%;background:#10304d;border:2px solid #7db8ee;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:4}
+#hub b{font-size:22px;font-weight:800;letter-spacing:-.01em}
+#hub small{margin-top:4px;max-width:112px;font-size:15px;font-weight:600;color:#a9b8c8;line-height:1.25}
+
+.tl{position:absolute;left:630px;width:380px;height:112px;box-sizing:border-box;border-radius:18px;background:#0d2135;border:1.5px solid rgba(125,184,238,.25);z-index:3;padding:10px 14px}
+.tl .hd{display:flex;align-items:center;gap:10px;height:30px}
+.tl .ic{flex:none;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.tl .ic svg,.tl .ic img{width:18px;height:18px}
+.tl .nm{font-size:20px;font-weight:800}
+.tl .ad{margin-top:8px;height:56px;box-sizing:border-box;border-radius:10px;background:#f8fafc;color:#202124;padding:6px 12px;overflow:hidden}
+.tl .ad small{display:block;font-size:13px;font-weight:700;color:#5f6368}
+.tl .ad b{display:block;margin-top:2px;font-size:18px;font-weight:700;color:#1a0dab;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl .ad.fx{display:flex;align-items:center;gap:10px;padding:5px 10px 5px 5px}
+.tl .ad .tx{flex:1;min-width:0}
+.tl .ad .t1{font-size:17px;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl .ad .t2{margin-top:2px;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl .ad.yt{background:#0f0f0f;color:#fff}
+.tl .ad.yt .th{flex:none;position:relative;width:82px;height:46px;border-radius:7px;background:linear-gradient(135deg,#1D71B8,#0b3a63)}
+.tl .ad.yt .th:before{content:"";position:absolute;left:28px;top:12px;width:26px;height:20px;border-radius:5px;background:#FF0000}
+.tl .ad.yt .th:after{content:"";position:absolute;left:38px;top:17px;border-style:solid;border-width:5px 0 5px 8px;border-color:transparent transparent transparent #fff}
+.tl .ad.yt .du{position:absolute;right:4px;bottom:3px;padding:0 4px;border-radius:4px;background:rgba(0,0,0,.8);font-size:10px;font-weight:700;color:#fff;z-index:1}
+.tl .ad.yt .t2{color:#aaa}
+.tl .ad.bn{justify-content:space-between;padding:0 10px 0 14px;background:linear-gradient(100deg,#0b3a63 0%,#1D71B8 70%,#2f86d6 100%);color:#fff;position:relative}
+.tl .ad.bn .t1{font-size:18px;font-weight:800}
+.tl .ad.bn .t2{color:#cfe3f5}
+.tl .ad.bn .cta{flex:none;padding:7px 12px;border-radius:999px;background:#e8bd62;color:#08131f;font-size:13px;font-weight:800}
+.tl .ad.gm{background:#fff;color:#202124;padding:0 12px}
+.tl .ad.gm .av{flex:none;width:32px;height:32px;border-radius:50%;background:#0b1b2b;color:#fff;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.tl .ad.gm .t1{font-size:15px;color:#202124}
+.tl .ad.gm .t1 em{display:inline-block;margin-left:6px;padding:0 5px;border-radius:4px;background:#fdf1d0;color:#7a5a00;font-size:11px;font-style:normal;font-weight:800;vertical-align:1px}
+.tl .ad.gm .t2{font-size:14px;font-weight:500;color:#5f6368}
+.tl .ad.gm .t2 b{display:inline;margin:0;font-size:14px;color:#202124}
+.tl .ad.dc{background:#fff;color:#202124;padding:5px 5px 5px 12px}
+.tl .ad.dc .t1{font-size:16px;color:#202124}
+.tl .ad.dc .t2{font-size:12px;color:#5f6368}
+.tl .ad.dc .dth{flex:none;width:86px;height:46px;border-radius:8px;background:linear-gradient(135deg,#e8bd62,#c7972f);color:#08131f;font-size:15px;font-weight:800;line-height:46px;text-align:center}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="scene">
+    <div id="titre"></div>
+    <div id="quand"></div>
+    <div class="panneau" id="ag"></div>
+    <div class="in k" id="kAG" style="left:94px;top:248px"></div>
+    <div class="in" id="nAG" style="left:94px;top:276px"><div class="mask"><span class="ln" id="agN"></span></div></div>
+    <div id="agS"></div>
+    <div id="agP"></div>
+    <div id="im"><i></i><b id="imB"></b><span id="imS"></span></div>
+    <div class="in k" id="kH" style="left:94px;top:516px"></div>
+    <div class="hl" id="h0" style="top:546px"></div>
+    <div class="hl" id="h1" style="top:592px"></div>
+    <div class="hl" id="h2" style="top:638px"></div>
+    <div class="in k" id="kS" style="left:94px;top:692px"></div>
+    <div id="sgs"><div class="sg" id="g0"></div><div class="sg" id="g1"></div><div class="sg" id="g2"></div></div>
+    <div id="hub"><b>Google</b><small id="hubS"></small></div>
+    <div id="tiles"></div>
+    <div id="compte"><b id="nb">0</b><span id="cpt"></span></div>
+    <div id="leg"></div>
+    <svg id="fils" viewBox="0 0 1080 1080"></svg>
+  </div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:500">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+<script>
+window.STAGE = { w: 1080, h: 1080 };
+window.DUREE = 15;
+window.PRET = Promise.all([
+  document.fonts.load("800 58px 'Plus Jakarta Sans'"),
+  document.fonts.load("700 20px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+(function () {
+'use strict';
+/* Adapté le 13/10/2026 de la scène Performance Max de l'audit Exaforce, pour une concession :
+   les voitures du stock alimentent les cinq vitrines Google (Vehicle Ads, Performance Max).
+   Une seule source pour les deux langues : la copie de /motion/en/ parle anglais. Aucun
+   chiffre de résultat : les prix sont ceux d'annonces maquettées. Image de repos : t = 14. */
+var D = window.DUREE;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outCubic(p) { return 1 - Math.pow(1 - p, 3); }
+function inCubic(p) { return p * p * p; }
+function outBack(p) { var c = 1.4; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); }
+var $ = function (id) { return document.getElementById(id); };
+var NS = 'http://www.w3.org/2000/svg';
+function lignes(id, arr, cls) {
+  $(id).innerHTML = arr.map(function (s, i) { return '<div class="mask"><span class="ln' + (cls && cls[i] ? ' ' + cls[i] : '') + '">' + s + '</span></div>'; }).join('');
+}
+function monte(t, sel, t0, pas) {
+  var ls = document.querySelectorAll(sel);
+  for (var j = 0; j < ls.length; j++) {
+    var pe = outExpo(seg(t, t0 + j * (pas || 0.12), t0 + 0.8 + j * (pas || 0.12)));
+    ls[j].style.transform = 'translateY(' + mix(125, 0, pe).toFixed(2) + '%)';
+  }
+}
+function apparait(el, t, t0, dy, dur) {
+  var p = outExpo(seg(t, t0, t0 + (dur || 0.6)));
+  el.style.opacity = p.toFixed(3);
+  el.style.transform = 'translateY(' + mix(dy === undefined ? 16 : dy, 0, p).toFixed(1) + 'px)';
+  return p;
+}
+function svgEl(parent, nom, att) { var e = document.createElementNS(NS, nom); for (var a in att) e.setAttribute(a, att[a]); parent.appendChild(e); return e; }
+function fil(f, p, opa) {
+  var len = f.p.getTotalLength();
+  f.p.style.strokeDashoffset = (1 - p).toFixed(4);
+  f.p.style.opacity = (p > 0 ? (opa === undefined ? 1 : opa) : 0).toFixed(3);
+  var pt = f.p.getPointAtLength(len * p);
+  f.tete.setAttribute('cx', pt.x.toFixed(1)); f.tete.setAttribute('cy', pt.y.toFixed(1));
+  f.tete.style.opacity = (p > 0 && p < 1 ? 1 : 0);
+}
+function nouveauFil(svg, d, couleur) {
+  return { p: svgEl(svg, 'path', { d: d, stroke: couleur || '#e8bd62', 'stroke-width': 2.5, fill: 'none', pathLength: 1, 'stroke-dasharray': '1 1' }),
+           tete: svgEl(svg, 'circle', { r: 6, fill: '#fff4dc' }) };
+}
+
+var EN = /\/motion\/en\//.test(location.pathname);
+var TX_ = EN ? {
+  titre: ['Your stock,', 'on five Google surfaces.'],
+  quand: 'Updated daily from your stock',
+  kAG: 'In your stock', kH: 'Ad headlines', kS: 'Audience signals',
+  sg: ['Vehicle page visitors', 'Leads in your CRM', 'In-market for an SUV'],
+  hub1: 'places and bids', hub2: 'learns from test drive requests',
+  cpt: 'Google surfaces fed by <em>one stock feed</em>',
+  leg: 'Ads mocked up for a dealership',
+  sp: 'Sponsored', ad: 'Ad', moi: 'Your dealership', site: 'your-group.com', cta: 'Book',
+  V: [
+    { n: 'Peugeot 3008', s: 'Hybrid · used · 2022', p: '€27,900', ib: 'Part-exchange welcome', is: 'Test drive this weekend',
+      h: ['Used Peugeot 3008 Hybrid', '12-Month Warranty Included', 'Part-Exchange Welcome'],
+      yt: 'The 3008 in 30 seconds', bn: 'Your 3008 is waiting.', bs: 'Test drive this weekend', gm: 'Still available', gs: 'part-exchange on site', dc: '3008 Hybrid, under warranty' },
+    { n: 'Renault Clio', s: 'E-Tech · used · 2023', p: '€18,490', ib: 'Ready to drive away', is: 'Inspected and guaranteed',
+      h: ['Used Renault Clio E-Tech', 'Inspected, Ready to Drive', 'Book Your Test Drive'],
+      yt: 'The Clio in 30 seconds', bn: 'Your Clio is waiting.', bs: 'Ready to drive away', gm: 'Just arrived', gs: 'inspected and guaranteed', dc: 'Clio E-Tech, ready to drive' },
+    { n: 'Kia Sportage', s: 'Hybrid · new', p: '€36,990', ib: 'Offer of the month', is: 'Book your test drive',
+      h: ['New Kia Sportage Hybrid', 'Offer of the Month', 'Test Drive in 2 Clicks'],
+      yt: 'The Sportage in 30 seconds', bn: 'The new Sportage.', bs: 'Offer of the month', gm: 'Offer of the month', gs: 'test drive this weekend', dc: 'Sportage, offer of the month' }
+  ],
+  loc: 'en-GB'
+} : {
+  titre: ['Votre stock,', 'sur cinq vitrines Google.'],
+  quand: 'Mis à jour chaque jour avec le stock',
+  kAG: 'Dans votre stock', kH: 'Titres d’annonce', kS: 'Signaux d’audience',
+  sg: ['Visiteurs des fiches véhicule', 'Contacts du CRM', 'En recherche d’un SUV'],
+  hub1: 'place et enchérit', hub2: 'apprend des demandes d’essai',
+  cpt: 'vitrines Google alimentées par <em>un seul flux</em>',
+  leg: 'Annonces maquettées pour une concession',
+  sp: 'Sponsorisé', ad: 'Annonce', moi: 'Votre concession', site: 'votre-groupe.fr', cta: 'Réserver',
+  V: [
+    { n: 'Peugeot 3008', s: 'Hybrid · occasion · 2022', p: '27 900 €', ib: 'Reprise sur place', is: 'Essai ce week-end',
+      h: ['3008 Hybrid d’Occasion', 'Garantie 12 Mois Incluse', 'Reprise de Votre Véhicule'],
+      yt: 'Le 3008 en 30 secondes', bn: 'Votre 3008 vous attend.', bs: 'Essai ce week-end', gm: 'Toujours disponible', gs: 'reprise sur place', dc: '3008 Hybrid, garantie 12 mois' },
+    { n: 'Renault Clio', s: 'E-Tech · occasion · 2023', p: '18 490 €', ib: 'Prête à partir', is: 'Contrôlée et garantie',
+      h: ['Clio E-Tech d’Occasion', 'Contrôlée, Prête à Partir', 'Réservez Votre Essai'],
+      yt: 'La Clio en 30 secondes', bn: 'Votre Clio vous attend.', bs: 'Prête à partir', gm: 'Tout juste arrivée', gs: 'contrôlée et garantie', dc: 'Clio E-Tech, prête à partir' },
+    { n: 'Kia Sportage', s: 'Hybride · neuf', p: '36 990 €', ib: 'Offre du mois', is: 'Réservez votre essai',
+      h: ['Nouveau Sportage Hybride', 'L’Offre du Mois', 'Essai en Deux Clics'],
+      yt: 'Le Sportage en 30 secondes', bn: 'Le nouveau Sportage.', bs: 'Offre du mois', gm: 'Offre du mois', gs: 'essai ce week-end', dc: 'Sportage, offre du mois' }
+  ],
+  loc: 'fr-FR'
+};
+document.documentElement.lang = EN ? 'en' : 'fr';
+document.title = TX_.titre.join(' ').replace(/\.$/, '');
+lignes('titre', TX_.titre, ['', 'o']);
+$('quand').textContent = TX_.quand;
+$('kAG').textContent = TX_.kAG; $('kH').textContent = TX_.kH; $('kS').textContent = TX_.kS;
+TX_.sg.forEach(function (x, i) { $('g' + i).textContent = x; });
+$('cpt').innerHTML = TX_.cpt;
+$('leg').textContent = TX_.leg;
+
+var ICONES = ['<img alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMjIuNTYgMTIuMjVjMC0uNzgtLjA3LTEuNTMtLjItMi4yNUgxMnY0LjI2aDUuOTJjLS4yNiAxLjM3LTEuMDQgMi41My0yLjIxIDMuMzF2Mi43N2gzLjU3YzIuMDgtMS45MiAzLjI4LTQuNzQgMy4yOC04LjA5eiIgZmlsbD0iIzQyODVGNCIvPjxwYXRoIGQ9Ik0xMiAyM2MyLjk3IDAgNS40Ni0uOTggNy4yOC0yLjY2bC0zLjU3LTIuNzdjLS45OC42Ni0yLjIzIDEuMDYtMy43MSAxLjA2LTIuODYgMC01LjI5LTEuOTMtNi4xNi00LjUzSDIuMTh2Mi44NEMzLjk5IDIwLjUzIDcuNyAyMyAxMiAyM3oiIGZpbGw9IiMzNEE4NTMiLz48cGF0aCBkPSJNNS44NCAxNC4wOWMtLjIyLS42Ni0uMzUtMS4zNi0uMzUtMi4wOXMuMTMtMS40My4zNS0yLjA5VjcuMDdIMi4xOEMxLjQzIDguNTUgMSAxMC4yMiAxIDEycy40MyAzLjQ1IDEuMTggNC45M2wyLjg1LTIuMjIuODEtLjYyeiIgZmlsbD0iI0ZCQkMwNSIvPjxwYXRoIGQ9Ik0xMiA1LjM4YzEuNjIgMCAzLjA2LjU2IDQuMjEgMS42NGwzLjE1LTMuMTVDMTcuNDUgMi4wOSAxNC45NyAxIDEyIDEgNy43IDEgMy45OSAzLjQ3IDIuMTggNy4wN2wzLjY2IDIuODRjLjg3LTIuNiAzLjMtNC41MyA2LjE2LTQuNTN6IiBmaWxsPSIjRUE0MzM1Ii8+PHBhdGggZD0iTTEgMWgyMnYyMkgxeiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==">', '<svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>', '<svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M4.421.01a2.947 2.947 0 0 0-2.828 1.52 2.967 2.967 0 0 0 1.094 4.076l10.6 6.064 4.79-2.672a3.546 3.546 0 0 1 1.811-.443L5.701.424A2.947 2.947 0 0 0 4.42.01ZM1.164 4.768v14.484a3.474 3.474 0 0 1 2.972-1.687 3.47 3.47 0 0 1 2.961 1.672l.004-10.53L2.44 6.04a3.433 3.433 0 0 1-1.275-1.271Zm18.42 4.289a3.08 3.08 0 0 0-1.264.379L7.6 15.414c.003 1.873-.011 3.745.003 5.617 0 .4-.072.988-.396 1.606l12.548-7.227 1.487-.83a2.978 2.978 0 0 0 1.463-3.511 3.08 3.08 0 0 0-3.121-2.012ZM4.136 18.065A2.967 2.967 0 1 0 4.134 24a2.967 2.967 0 0 0 .002-5.935z"/></svg>', '<svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>', '<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>'];
+var NOMS = ['Search', 'YouTube', 'Display', 'Gmail', 'Discover'];
+var COUL = ['#fff', '#FF0000', '#4285F4', '#EA4335', '#34A853'];
+function annonce(n, v) {
+  if (n === 0) return { k: '', h: '<small>' + TX_.sp + ' · ' + TX_.site + '</small><b>' + v.h[0] + '</b>' };
+  if (n === 1) return { k: 'fx yt', h: '<div class="th"><span class="du">0:30</span></div><div class="tx"><div class="t1">' + v.yt + '</div><div class="t2">' + TX_.moi + ' · ' + TX_.sp + '</div></div>' };
+  if (n === 2) return { k: 'fx bn', h: '<div class="tx"><div class="t1">' + v.bn + '</div><div class="t2">' + v.bs + '</div></div><span class="cta">' + TX_.cta + '</span>' };
+  if (n === 3) return { k: 'fx gm', h: '<span class="av">V</span><div class="tx"><div class="t1">' + TX_.moi + '<em>' + TX_.ad + '</em></div><div class="t2"><b>' + v.n + '</b> · ' + v.gm.toLowerCase() + '</div></div>' };
+  return { k: 'fx dc', h: '<div class="tx"><div class="t1">' + v.dc + '</div><div class="t2">' + TX_.site + ' · ' + TX_.sp + '</div></div><div class="dth">' + v.p + '</div>' };
+}
+var TT = [228, 352, 476, 600, 724];
+$('tiles').innerHTML = NOMS.map(function (nm, i) {
+  return '<div class="tl" id="t' + i + '" style="top:' + TT[i] + 'px"><div class="hd"><span class="ic" style="background:' + COUL[i] + '">' + ICONES[i] + '</span><span class="nm">' + nm + '</span></div><div class="ad" id="ta' + i + '"></div></div>';
+}).join('');
+
+var svg = $('fils');
+var HY = 540;
+var IN = [566, 612, 724].map(function (y) { return nouveauFil(svg, 'M450,' + y + ' C468,' + y + ' 452,' + HY + ' 464,' + HY, '#7db8ee'); });
+var OUT = TT.map(function (y) { var yy = y + 56; return nouveauFil(svg, 'M596,' + HY + ' C618,' + HY + ' 606,' + yy + ' 630,' + yy, '#7db8ee'); });
+var BACK = TT.map(function (y) { var yy = y + 62; return nouveauFil(svg, 'M630,' + yy + ' C606,' + yy + ' 618,' + (HY + 8) + ' 596,' + (HY + 8), '#e8bd62'); });
+var SW = [10.6, 11.6];
+var dernier = -1;
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  $('scene').style.opacity = (1 - inCubic(seg(t, 14.3, 14.9))).toFixed(3);
+  monte(t, '#titre .ln', 0.3, 0.14);
+  $('quand').style.opacity = outExpo(seg(t, 0.9, 1.5)).toFixed(3);
+  var pn = outExpo(seg(t, 0.7, 1.4));
+  $('ag').style.clipPath = 'inset(0 0 ' + (100 * (1 - pn)).toFixed(2) + '% 0 round 24px)';
+  $('kAG').style.opacity = outExpo(seg(t, 1.0, 1.4)).toFixed(3);
+
+  /* la voiture du stock : trois voitures défilent, comme le flux du jour */
+  var vi = 0; SW.forEach(function (s, i) { if (t >= s) vi = i + 1; });
+  var v = TX_.V[vi];
+  if (vi !== dernier) {
+    $('agN').textContent = v.n; $('agS').textContent = v.s; $('agP').textContent = v.p;
+    $('imB').textContent = v.ib; $('imS').textContent = v.is;
+    for (var q = 0; q < 5; q++) { var a = annonce(q, v), el = $('ta' + q); el.className = 'ad' + (a.k ? ' ' + a.k : ''); el.innerHTML = a.h; }
+    dernier = vi;
+  }
+  var tn = vi === 0 ? 1.05 : SW[vi - 1];
+  monte(t, '#nAG .ln', tn);
+  var ps = vi === 0 ? 1 : outExpo(seg(t, SW[vi - 1], SW[vi - 1] + 0.45));
+  ['agS', 'agP', 'im'].forEach(function (id, i) {
+    var el = $(id), p0 = apparait(el, t, 1.2 + i * 0.15, 10, 0.5);
+    if (vi > 0) { el.style.opacity = ps.toFixed(3); el.style.transform = 'translateX(' + mix(-14, 0, ps).toFixed(1) + 'px)'; }
+  });
+  ['kH', 'kS'].forEach(function (id, i) { $(id).style.opacity = outExpo(seg(t, 1.8 + i * 0.6, 2.2 + i * 0.6)).toFixed(3); });
+  for (var i = 0; i < 3; i++) {
+    var hl = $('h' + i);
+    hl.textContent = v.h[i];
+    apparait(hl, t, 1.9 + i * 0.12, 10, 0.5);
+    if (vi > 0) { var ph2 = outExpo(seg(t, SW[vi - 1] + i * 0.06, SW[vi - 1] + 0.4 + i * 0.06)); hl.style.transform = 'translateX(' + mix(-14, 0, ph2).toFixed(1) + 'px)'; hl.style.opacity = ph2.toFixed(3); }
+    apparait($('g' + i), t, 2.5 + i * 0.1, 10, 0.5);
+  }
+
+  /* le moteur de Google */
+  var ph = outBack(seg(t, 3.1, 3.6)), hub = $('hub');
+  hub.style.transform = 'scale(' + Math.max(0, ph).toFixed(3) + ')';
+  var or = seg(t, 8.3, 8.8);
+  hub.style.borderColor = or > 0 ? '#e8bd62' : '#7db8ee';
+  hub.style.background = or > 0 ? 'rgba(232,189,98,' + mix(0.1, 0.18, or).toFixed(3) + ')' : '#10304d';
+  hub.style.boxShadow = '0 0 0 ' + (10 * or).toFixed(1) + 'px rgba(232,189,98,.14)';
+  $('hubS').textContent = or > 0 ? TX_.hub2 : TX_.hub1;
+  IN.forEach(function (f, n) { fil(f, outCubic(seg(t, 3.5 + n * 0.12, 4.2 + n * 0.12)), mix(1, 0.25, seg(t, 4.6, 5.2))); });
+  for (var n = 0; n < 5; n++) {
+    var t0 = 4.6 + n * 0.42;
+    fil(OUT[n], outCubic(seg(t, t0, t0 + 0.55)), mix(1, 0.25, seg(t, t0 + 0.8, t0 + 1.3)));
+    var tl = $('t' + n);
+    apparait(tl, t, t0 + 0.35, 0, 0.5);
+    var pa = outExpo(seg(t, t0 + 0.55, t0 + 1.0)), ad = $('ta' + n);
+    if (vi > 0) pa = Math.min(pa, outExpo(seg(t, SW[vi - 1] + 0.2 + n * 0.08, SW[vi - 1] + 0.6 + n * 0.08)));
+    ad.style.opacity = pa.toFixed(3);
+    ad.style.transform = 'translateX(' + mix(-14, 0, pa).toFixed(1) + 'px)';
+    /* les demandes d'essai remontent au moteur */
+    var tb = 7.5 + n * 0.12;
+    fil(BACK[n], outCubic(seg(t, tb, tb + 0.7)), mix(1, 0.3, seg(t, tb + 1.0, tb + 1.6)));
+    var fl = t >= tb ? 1 - seg(t, tb, tb + 0.8) : 0;
+    tl.style.borderColor = fl > 0 ? 'rgba(232,189,98,' + (0.4 + 0.6 * fl).toFixed(3) + ')' : 'rgba(125,184,238,.25)';
+  }
+  var nt = 0; for (var m = 0; m < 5; m++) if (t >= 4.6 + m * 0.42 + 0.35) nt = m + 1;
+  $('nb').textContent = nt;
+  apparait($('compte'), t, 4.7, 12, 0.5);
+  $('leg').style.opacity = outExpo(seg(t, 12.6, 13.2)).toFixed(3);
+};
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

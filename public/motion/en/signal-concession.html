@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Une demande d'essai, le même signal partout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(760px 640px at 700px 600px,rgba(29,113,184,.2),rgba(8,19,31,0) 72%)}
+#scene{position:absolute;inset:0}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(125%)}
+.ln.o{color:#e8bd62}
+#titre{position:absolute;left:70px;top:58px}
+#titre .ln{font-size:58px;font-weight:800;letter-spacing:-.03em;line-height:1.06;white-space:nowrap}
+#sous{position:absolute;left:70px;top:206px;font-size:22px;font-weight:600;color:#a9b8c8;white-space:nowrap}
+#fils{position:absolute;left:0;top:0;width:1080px;height:1080px;pointer-events:none;z-index:4}
+
+#site{position:absolute;left:70px;top:270px;width:400px;height:660px;border-radius:22px;background:#fff;color:#0b1b2b;overflow:hidden;box-shadow:0 50px 100px -40px rgba(0,0,0,.85);z-index:2}
+.chrome{height:38px;background:#e9eef4;display:flex;align-items:center;padding:0 14px;gap:7px}
+.chrome i{width:10px;height:10px;border-radius:50%;background:#c7d2de}
+.url{margin-left:10px;flex:1;height:24px;border-radius:12px;background:#fff;display:flex;align-items:center;padding:0 12px;font-size:15px;font-weight:600;color:#5b6b7c}
+.menu{height:56px;display:flex;align-items:center;padding:0 22px;border-bottom:1px solid #eef2f6}
+.menu b{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.rg{position:absolute;left:0;right:0;height:78px;display:flex;align-items:center;gap:14px;padding:0 22px;box-sizing:border-box;border-bottom:1px solid #eef2f6;font-size:20px;font-weight:700;color:#26384a;white-space:nowrap}
+.rg i.pt{width:10px;height:10px;border-radius:50%;background:#7db8ee;flex:none}
+.rg span{flex:1}
+.rg .ok{width:28px;height:28px;border-radius:50%;background:#e8bd62;color:#0b1b2b;display:grid;place-items:center;font-size:17px;font-weight:800;flex:none}
+
+.ent{position:absolute;top:276px;width:118px;text-align:center;font-size:21px;font-weight:800;letter-spacing:-.02em;white-space:nowrap;z-index:3}
+.cel{position:absolute;width:118px;height:52px;box-sizing:border-box;border-radius:12px;border:1.5px dashed rgba(125,184,238,.25);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;white-space:nowrap;z-index:5;color:#f4f7fa}
+#compte{position:absolute;left:70px;top:962px;display:flex;align-items:baseline;gap:16px;white-space:nowrap;z-index:5}
+#compte b{font-size:66px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;min-width:40px;text-align:right}
+#compte span{font-size:23px;font-weight:600;color:#a9b8c8}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="scene">
+    <div id="titre"></div>
+    <div id="sous"><div class="mask"><span class="ln" id="sousT"></span></div></div>
+    <div id="site">
+      <div class="chrome"><i></i><i></i><i></i><span class="url" id="url"></span></div>
+      <div class="menu"><b id="marque"></b></div>
+      <div id="lignes"></div>
+    </div>
+    <div id="entetes"></div>
+    <div id="cellules"></div>
+    <svg id="fils" viewBox="0 0 1080 1080"></svg>
+    <div id="compte"><b id="nb">0</b><span id="cpt"></span></div>
+  </div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+<script>
+window.STAGE = { w: 1080, h: 1080 };
+window.DUREE = 14;
+window.PRET = Promise.all([
+  document.fonts.load("800 58px 'Plus Jakarta Sans'"),
+  document.fonts.load("700 20px 'Plus Jakarta Sans'"),
+  document.fonts.load("600 22px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+(function () {
+'use strict';
+/* Adapté le 13/10/2026 de la scène « One demo request, one signal everywhere » de l'audit
+   Exaforce, pour une concession, au format carré. Une seule source pour les deux langues :
+   la copie de /motion/en/ parle anglais. Le compteur est le nombre de points de contact de la
+   maquette, pas un résultat client. */
+var EN = /\/motion\/en\//.test(location.pathname);
+var TX_ = EN ? {
+  titre: ['One test drive request,', 'one signal everywhere.'],
+  sous: 'The same name, sent to all four',
+  marque: 'Your dealership', url: 'your-dealership.com',
+  dest: ['GA4', 'Google Ads', 'Meta', 'CRM'],
+  pts: [
+    ['Test drive request', 'drive'], ['Quote request', 'quote'], ['Trade-in valuation', 'trade_in'],
+    ['Call over one minute', 'call'], ['Facebook lead form', 'fb_lead'], ['Service booking', 'service'], ['Chat', 'chat']
+  ],
+  cpt: 'touchpoints, one naming plan', loc: 'en-GB'
+} : {
+  titre: ['Une demande d’essai,', 'le même signal partout.'],
+  sous: 'Le même nom, envoyé aux quatre',
+  marque: 'Votre concession', url: 'votre-concession.fr',
+  dest: ['GA4', 'Google Ads', 'Meta', 'CRM'],
+  pts: [
+    ['Demande d’essai', 'essai'], ['Demande de devis', 'devis'], ['Estimation de reprise', 'reprise'],
+    ['Appel de plus d’une minute', 'appel'], ['Formulaire Facebook', 'lead_fb'], ['Rendez-vous atelier', 'atelier'], ['Chat', 'chat']
+  ],
+  cpt: 'points de contact, un seul plan de nommage', loc: 'fr-FR'
+};
+document.documentElement.lang = EN ? 'en' : 'fr';
+document.title = TX_.titre.join(' ');
+
+var D = window.DUREE;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outCubic(p) { return 1 - Math.pow(1 - p, 3); }
+function inCubic(p) { return p * p * p; }
+function inOut(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+var $ = function (id) { return document.getElementById(id); };
+var NS = 'http://www.w3.org/2000/svg';
+function lignes(id, arr, cls) {
+  $(id).innerHTML = arr.map(function (s, i) { return '<div class="mask"><span class="ln' + (cls && cls[i] ? ' ' + cls[i] : '') + '">' + s + '</span></div>'; }).join('');
+}
+function monte(t, sel, t0, pas) {
+  var ls = document.querySelectorAll(sel);
+  for (var j = 0; j < ls.length; j++) {
+    var pe = outExpo(seg(t, t0 + j * (pas || 0.12), t0 + 0.8 + j * (pas || 0.12)));
+    ls[j].style.transform = 'translateY(' + mix(125, 0, pe).toFixed(2) + '%)';
+  }
+}
+function apparait(el, t, t0, dy, dur) {
+  var p = outExpo(seg(t, t0, t0 + (dur || 0.6)));
+  el.style.opacity = p.toFixed(3);
+  el.style.transform = 'translateY(' + mix(dy === undefined ? 16 : dy, 0, p).toFixed(1) + 'px)';
+  return p;
+}
+function svgEl(parent, nom, att) { var e = document.createElementNS(NS, nom); for (var a in att) e.setAttribute(a, att[a]); parent.appendChild(e); return e; }
+
+lignes('titre', TX_.titre, ['', 'o']);
+$('sousT').textContent = TX_.sous;
+$('marque').textContent = TX_.marque;
+$('url').textContent = TX_.url;
+$('cpt').textContent = TX_.cpt;
+
+/* La géométrie : le site à gauche, quatre colonnes à droite, une ligne par point de contact. */
+var N = TX_.pts.length;
+var Y0 = 270 + 38 + 56;           /* haut de la première ligne du site */
+var H = 78;                        /* hauteur d'une ligne */
+var CX = [500, 630, 760, 890];     /* gauche de chaque colonne */
+var W = 118;
+function yCentre(k) { return Y0 + k * H + H / 2; }
+
+$('lignes').innerHTML = TX_.pts.map(function (p, k) {
+  return '<div class="rg" id="g' + k + '" style="top:' + (38 + 56 + k * H) + 'px"><i class="pt"></i><span>' + p[0] + '</span><b class="ok" id="ok' + k + '">✓</b></div>';
+}).join('');
+$('entetes').innerHTML = TX_.dest.map(function (d, c) {
+  return '<div class="ent" id="e' + c + '" style="left:' + CX[c] + 'px">' + d + '</div>';
+}).join('');
+var html = '';
+for (var k = 0; k < N; k++) for (var c = 0; c < 4; c++) {
+  html += '<div class="cel" id="c' + k + '_' + c + '" style="left:' + CX[c] + 'px;top:' + (yCentre(k) - 26) + 'px"><span>' + TX_.pts[k][1] + '</span></div>';
+}
+$('cellules').innerHTML = html;
+
+/* Un fil par ligne, du site jusqu'à la dernière colonne, avec une tête lumineuse. */
+var svg = $('fils');
+var FILS = [];
+for (var f = 0; f < N; f++) {
+  var y = yCentre(f);
+  FILS.push({
+    p: svgEl(svg, 'path', { d: 'M470,' + y + ' L1008,' + y, stroke: '#e8bd62', 'stroke-width': 2.5, fill: 'none', pathLength: 1, 'stroke-dasharray': '1 1' }),
+    tete: svgEl(svg, 'circle', { r: 7, fill: '#fff4dc', cy: y })
+  });
+}
+
+/* Le calendrier : les lignes du site arrivent, puis chaque point de contact part à son tour. */
+var T0 = 2.2, PAS = 1.15, COURSE = 0.9;
+function depart(k) { return T0 + k * PAS; }
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  $('scene').style.opacity = (1 - inCubic(seg(t, 13.3, 13.9))).toFixed(3);
+  monte(t, '#titre .ln', 0.3, 0.14);
+  monte(t, '#sous .ln', 0.7);
+  apparait($('site'), t, 0.6, 24, 0.8);
+  for (var c = 0; c < 4; c++) apparait($('e' + c), t, 1.0 + c * 0.1, 12, 0.6);
+
+  for (var k = 0; k < N; k++) {
+    var g = $('g' + k), ok = $('ok' + k);
+    apparait(g, t, 1.0 + k * 0.08, 10, 0.5);
+    var t0 = depart(k);
+    var actif = t >= t0 - 0.1 && t < t0 + COURSE + 0.1;
+    var fait = t >= t0 + COURSE;
+    g.style.background = actif ? '#eef5fc' : '#fff';
+    g.style.color = actif ? '#1D71B8' : '#26384a';
+    ok.style.opacity = outExpo(seg(t, t0 + COURSE, t0 + COURSE + 0.35)).toFixed(3);
+    ok.style.transform = 'scale(' + mix(0.4, 1, outCubic(seg(t, t0 + COURSE, t0 + COURSE + 0.35))).toFixed(3) + ')';
+
+    /* Le fil avance de 470 à 1008 ; la cellule s'allume quand la tête passe sur elle. */
+    var p = inOut(seg(t, t0, t0 + COURSE));
+    var fl = FILS[k];
+    fl.p.style.strokeDashoffset = (1 - p).toFixed(4);
+    fl.p.style.opacity = (p > 0 ? mix(1, 0.22, seg(t, t0 + COURSE + 0.2, t0 + COURSE + 0.8)) : 0).toFixed(3);
+    var x = mix(470, 1008, p);
+    fl.tete.setAttribute('cx', x.toFixed(1));
+    fl.tete.style.opacity = p > 0 && p < 1 ? 1 : 0;
+
+    for (var c2 = 0; c2 < 4; c2++) {
+      var cel = $('c' + k + '_' + c2);
+      var milieu = CX[c2] + W / 2;
+      var tPasse = t0 + COURSE * ((milieu - 470) / 538);
+      var on = t >= tPasse;
+      var flash = on ? 1 - outCubic(seg(t, tPasse, tPasse + 0.7)) : 0;
+      apparait(cel, t, 1.2 + k * 0.05, 0, 0.5);
+      cel.style.borderStyle = on ? 'solid' : 'dashed';
+      cel.style.borderColor = on ? 'rgba(232,189,98,' + mix(0.45, 1, flash).toFixed(3) + ')' : 'rgba(125,184,238,.25)';
+      cel.style.background = on ? 'rgba(16,48,77,' + mix(0.85, 1, flash).toFixed(3) + ')' : 'rgba(255,255,255,.02)';
+      cel.style.color = on ? '#f4f7fa' : 'rgba(244,247,250,.32)';
+      cel.style.boxShadow = flash > 0 ? '0 0 0 ' + (5 * flash).toFixed(1) + 'px rgba(232,189,98,.22)' : '';
+    }
+  }
+
+  var tc = depart(N - 1) + COURSE + 0.3;
+  apparait($('compte'), t, tc, 12, 0.5);
+  $('nb').textContent = Math.round(N * outCubic(seg(t, tc + 0.05, tc + 0.9))).toLocaleString(TX_.loc);
+};
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

@@ -135,6 +135,9 @@ for (const c of campagnes) {
       <p class="chapo">{t.chapo}</p>
     </header>
 
+    <!-- La scène passée par la page (la recherche qui trouve sa campagne), avant le détail. -->
+    {Astro.slots.has('default') && <div class="mb-14 lg:mb-20"><slot /></div>}
+
     <ul class="grid gap-4 lg:gap-5">
       {campagnes.map((c, i) => (
         <li class="carte camp" data-reveal style={`--i:${i}`}>

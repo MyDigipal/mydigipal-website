@@ -10,6 +10,7 @@ import RubanCalculateur from '@/components/sections/RubanCalculateur.astro';
 import CaseStudyCarousel from '@/components/sections/CaseStudyCarousel.astro';
 import CarteVerre from '@/components/motion/CarteVerre.astro';
 import BoucleRemarketing from '@/components/motion/BoucleRemarketing.astro';
+import SceneExpliquee from '@/components/motion/SceneExpliquee.astro';
 import { carteCompte, railFormulaire } from '@/components/motion/donnees-automobile';
 import { mesurerLogos } from '@/lib/logos-mesures';
 
@@ -162,7 +163,21 @@ const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust u
        les six étapes, les cas d'usage et les trois résultats de la fiche ne sont plus rendus
        sur cette page : les scènes disent la même chose une seule fois. -->
   {isDynamicAds && <DynamicAdsFlow lang={lang} />}
-  {isDynamicAds && <DynamicAdsChannels lang={lang} />}
+  {isDynamicAds && (
+    <DynamicAdsChannels lang={lang}>
+      <!-- Côté Google, le même flux alimente Performance Max : cinq vitrines (13/10/2026,
+           scène adaptée de l'audit Exaforce). -->
+      <header class="mb-10 grid max-w-[880px] gap-4 lg:mb-14">
+        <h3 class="titre-moyen text-encre">{fr ? 'Et chez Google, cinq vitrines pour un seul flux' : 'And on Google, five surfaces from one feed'}</h3>
+        <p class="chapo">
+          {fr
+            ? 'Le flux de votre stock alimente aussi Performance Max : la même voiture passe dans la recherche, sur YouTube, sur les sites partenaires, dans Gmail et dans Discover.'
+            : 'Your stock feed also powers Performance Max: the same car appears in search, on YouTube, on partner sites, in Gmail and in Discover.'}
+        </p>
+      </header>
+      <SceneExpliquee lang={lang} nom="vitrines-google" repos={14} />
+    </DynamicAdsChannels>
+  )}
   {isDynamicAds && (
     <section class="section-encre section-monte py-20 lg:py-32">
       <div class="container-custom">
@@ -192,13 +207,39 @@ const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust u
     </AutomotiveWhySection>
   )}
   {whySection && isPaidSocial && (
-    <AutomotiveWhySection lang={lang} data={whySection} marques={['Facebook', 'Instagram', 'TikTok', 'LinkedIn']} />
+    <AutomotiveWhySection lang={lang} data={whySection} marques={['Facebook', 'Instagram', 'TikTok', 'LinkedIn']}>
+      <!-- L'audience autour de la concession jusqu'à l'essai réservé (13/10/2026, scène
+           adaptée de l'audit Exaforce). -->
+      <SceneExpliquee lang={lang} nom="audience-meta" fond="encre" />
+    </AutomotiveWhySection>
   )}
   <!-- Google Ads (refonte du 01/10/2026, mêmes principes que Dynamic Ads) : une campagne par
        situation, avec ses mots-clés et son annonce (blanc), puis les trois formats qui complètent
        le Search, chacun avec sa maquette (brume). -->
-  {isGoogleAds && <CampagnesSearch lang={lang} />}
+  {isGoogleAds && (
+    <CampagnesSearch lang={lang}>
+      <SceneExpliquee lang={lang} nom="recherche-concession" />
+    </CampagnesSearch>
+  )}
   {isGoogleAds && <AnnoncesMaquettes lang={lang} variante="google" />}
+
+  <!-- Google Ads : ce que Google apprend des contacts du site (blanc, 13/10/2026, scène
+       adaptée de l'audit Exaforce). Entre les maquettes (brume) et les résultats (encre). -->
+  {isGoogleAds && (
+    <section class="section-blanc pt-20 pb-28 lg:pt-32 lg:pb-40">
+      <div class="container-custom">
+        <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
+          <h2 class="titre-moyen text-encre">{fr ? 'Google apprend de vos vrais contacts' : 'Google learns from your real leads'}</h2>
+          <p class="chapo">
+            {fr
+              ? 'Une campagne n’enchérit bien que si elle sait ce qui fait vendre. Chaque contact du site reçoit un nom et part partout, pour que Google mise sur des demandes d’essai, pas sur des clics.'
+              : 'A campaign only bids well if it knows what sells. Every lead on your site gets a name and is sent everywhere, so Google bets on test drive requests, not on clicks.'}
+          </p>
+        </header>
+        <SceneExpliquee lang={lang} nom="signal-concession" inverse />
+      </div>
+    </section>
+  )}
 
   <!-- Paid Social : trois annonces et leur maquette (brume), puis du formulaire Meta au CRM,
        sur le rail (blanc). -->

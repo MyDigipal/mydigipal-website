@@ -1,0 +1,103 @@
+---
+/**
+ * Une scène carrée du labo et, à côté, ce qu'elle montre en trois ou quatre étapes écrites
+ * (13/10/2026). Au téléphone, la scène puis les étapes ; dès lg, côte à côte, la scène à
+ * gauche ou à droite (`inverse`). Les textes sont dans `donnees-scenes.ts`.
+ * `fond` : `encre` dans une `.section-encre`, `clair` sur le blanc ou la brume.
+ */
+import type { Language } from '@/i18n/config';
+import SceneLabo from './SceneLabo.astro';
+import { texteScene, type NomScene } from './donnees-scenes';
+
+interface Props {
+  lang: Language;
+  nom: NomScene;
+  fond?: 'encre' | 'clair';
+  inverse?: boolean;
+  /** Instant de repos de la scène, quand elle n'est pas à l'écran. */
+  repos?: number;
+  class?: string;
+}
+
+const { lang, nom, fond = 'clair', inverse = false, repos, class: classe = '' } = Astro.props;
+const t = texteScene(nom, lang);
+---
+
+<div class:list={['scene-expliquee', `scene-expliquee-${fond}`, { 'scene-expliquee-inverse': inverse }, classe]}>
+  <SceneLabo lang={lang} nom={nom} titre={t.titre} repos={repos} class="scene-expliquee-cadre" />
+  <ol class="scene-etapes">
+    {t.etapes.map((e) => (
+      <li>
+        <b>{e.titre}</b>
+        <span>{e.texte}</span>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .scene-expliquee {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    align-items: center;
+  }
+  .scene-expliquee :global(.scene-expliquee-cadre) {
+    max-width: 560px;
+  }
+  @media (min-width: 1024px) {
+    .scene-expliquee {
+      grid-template-columns: minmax(0, 560px) minmax(0, 1fr);
+      gap: 64px;
+    }
+    .scene-expliquee-inverse {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 560px);
+    }
+    .scene-expliquee-inverse .scene-etapes {
+      order: -1;
+    }
+  }
+
+  /* Les étapes : un filet, le titre en gras, la phrase dessous ; pas de numéros. */
+  .scene-etapes {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .scene-etapes li {
+    display: grid;
+    gap: 6px;
+    padding: 18px 0;
+    border-top: 1px solid var(--filet);
+  }
+  .scene-etapes li:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .scene-etapes b {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--encre);
+  }
+  .scene-etapes span {
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-slate-600);
+    max-width: 52ch;
+    text-wrap: pretty;
+  }
+  .scene-expliquee-encre .scene-etapes li {
+    border-top-color: rgb(255 255 255 / 0.14);
+  }
+  .scene-expliquee-encre .scene-etapes b {
+    color: #fff;
+  }
+  .scene-expliquee-encre .scene-etapes span {
+    color: var(--texte-sombre-2);
+  }
+</style>
