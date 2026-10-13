@@ -183,7 +183,19 @@ function brancherBoutons() {
     a.dataset.pret = '1';
     a.addEventListener('click', (e) => {
       pousser({ event: 'audit_form_open', audit_placement: a.dataset.auditOuvrir || 'bouton', form_location: window.location.pathname });
-      if (!modale || typeof modale.showModal !== 'function') return;
+      if (!modale || typeof modale.showModal !== 'function') {
+        // Sur la page de l'audit elle-même : on remonte au formulaire sans recharger la page.
+        // Le lien ne porte pas la chaîne de requête (UTM, fbclid de la campagne) : le suivre
+        // rechargerait la page sans elle (13/10/2026).
+        const cible = document.getElementById('demande');
+        const sansBarre = (p: string) => p.replace(/\/+$/, '');
+        if (cible && sansBarre(new URL(a.href, window.location.href).pathname) === sansBarre(window.location.pathname)) {
+          e.preventDefault();
+          cible.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+          cible.querySelector<HTMLInputElement>('input[name="groupe"]')?.focus({ preventScroll: true });
+        }
+        return;
+      }
       e.preventDefault();
       // Une demande déjà envoyée dans cette page : on rouvre sur le formulaire vierge.
       const bloc = modale.querySelector<HTMLElement>('[data-audit-bloc]');

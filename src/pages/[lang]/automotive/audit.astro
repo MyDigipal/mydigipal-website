@@ -9,6 +9,10 @@
  * promesse et le formulaire dès le premier écran, puis ce que contient l'audit, comment ça
  * se passe (les trois temps animés), qui le fait, et les questions.
  *
+ * Depuis le 13/10/2026, pour le visiteur pas encore prêt : après « qui le fait », les trois
+ * pages automobiles (ce que chaque levier apporte) et quatre extraits d'études de cas, chiffres
+ * lus dans les fiches, puis un rappel qui ramène au formulaire (`page-audit-preuves`).
+ *
  * Le formulaire est celui de la fenêtre (`FormulaireAudit`, emplacement `page`) ; l'envoi
  * pousse `audit_request` (GA4 et Lead Meta par GTM). Aucun chiffre client écrit ici : seuls
  * les chiffres de l'agence (150 concessions, 150 000 € gérés par mois, 10 600 contacts,
@@ -22,7 +26,12 @@ import TableauPalettes from '@/components/motion/TableauPalettes.astro';
 import AutomotiveFAQ from '@/components/sections/automotive/AutomotiveFAQ.astro';
 import FormulaireAudit from '@/components/audit/FormulaireAudit.astro';
 import BoutonAudit from '@/components/audit/BoutonAudit.astro';
+import { getCollection } from 'astro:content';
+import Marque from '@/components/ui/Marque.astro';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
+import ChaineStock from '@/components/motion/ChaineStock.astro';
 import { mesurerLogos } from '@/lib/logos-mesures';
+import { GROUPES } from '@/data/etudes-classement';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -248,6 +257,87 @@ const logos = await mesurerLogos(
 
 const [blocPub, blocSeo, blocReco] = t.contenu.blocs;
 const sc = t.etapes.scene;
+
+/* ------------------------------------------------------------ pour qui n'est pas encore prêt
+   Ajouté le 13/10/2026 pour la campagne du Mondial de l'Auto : un visiteur qui ne remplit pas
+   le formulaire tout de suite peut découvrir ce qu'on fait et voir des preuves, puis revenir au
+   formulaire. Toujours APRÈS le formulaire et ses arguments. Les chiffres sont LUS dans les
+   fiches des études de cas (même méthode que la page Automobile) : le build s'arrête si une
+   fiche change. */
+
+const L = fr ? 'fr' : 'en';
+const etudes = (await getCollection('case-studies')).filter((s) => s.id.startsWith(`${L}/`));
+const fiche = (slug: string) => {
+  const e = etudes.find((s) => s.id.replace(/^(en|fr)\//, '') === slug);
+  if (!e) throw new Error(`audit : l'étude ${L}/${slug} est introuvable.`);
+  return e;
+};
+const chiffreDe = (slug: string, i: number) => {
+  const c = (fiche(slug).data as any).chiffres?.[i];
+  if (!c) throw new Error(`audit : ${L}/${slug} n'a pas de chiffre n° ${i}.`);
+  return { valeur: c.valeur as string, texte: c.texte as string };
+};
+const nomGroupe = (id: string) => GROUPES.find((g) => g.id === id)!.nom[L];
+
+const expertises = {
+  titre: fr ? 'Ce qu’on fait pour les concessions' : 'What we do for dealerships',
+  chapo: fr
+    ? 'Trois leviers, une page chacun, pour voir comment on s’y prend avant de demander votre audit.'
+    : 'Three levers, one page each, to see how we work before you ask for your audit.',
+  lien: fr ? 'Voir la page' : 'See the page',
+  items: [
+    {
+      nom: 'Google Ads',
+      sous: fr ? 'Search, Performance Max, YouTube' : 'Search, Performance Max, YouTube',
+      marques: ['Google Ads', 'YouTube'],
+      texte: fr
+        ? 'Vos concessions apparaissent quand un acheteur cherche un modèle près de chez lui, et le budget va aux campagnes qui font vendre.'
+        : 'Your dealerships show up when a buyer searches for a model near them, and the budget goes to the campaigns that sell cars.',
+      href: `/${lang}/automotive/google-ads`,
+      scene: 'recherche-concession',
+    },
+    {
+      nom: 'Paid Social',
+      sous: fr ? 'Facebook et Instagram' : 'Facebook and Instagram',
+      marques: ['Facebook', 'Instagram'],
+      texte: fr
+        ? 'Les acheteurs de votre zone laissent leurs coordonnées en dix secondes, sans quitter l’application, et le contact arrive chez le bon vendeur.'
+        : 'Buyers in your area leave their details in ten seconds without leaving the app, and the lead reaches the right salesperson.',
+      href: `/${lang}/automotive/paid-social`,
+      scene: 'audience-meta',
+    },
+    {
+      nom: 'Dynamic Ads',
+      sous: fr ? 'Vehicle Ads sur Google et Meta' : 'Vehicle Ads on Google and Meta',
+      marques: ['Meta Ads', 'Google Ads'],
+      texte: fr
+        ? 'Chaque voiture de votre stock devient une annonce avec son prix à jour, en ligne en quelques jours, et retirée dès qu’elle est vendue.'
+        : 'Every car in your stock becomes an ad with its current price, live within days, and taken down as soon as it is sold.',
+      href: `/${lang}/automotive/dynamic-ads`,
+      scene: 'chaine-stock',
+    },
+  ],
+};
+
+/* Quatre extraits : un par levier, et la vente au bout. Un seul lien par étude. */
+const preuves = {
+  titre: fr ? 'Ce que ça a donné chez nos clients' : 'What it delivered for our clients',
+  chapo: fr
+    ? 'Des chiffres tirés de leurs comptes, avec l’étude complète derrière chacun.'
+    : 'Numbers taken from their own accounts, with the full case study behind each one.',
+  lire: fr ? 'Lire l’étude' : 'Read the case study',
+  tout: fr ? 'Toutes nos études de cas' : 'All our case studies',
+  rappel: {
+    titre: fr ? 'Et chez vous, qu’est-ce qu’on lancerait en premier ?' : 'And for you, what would we start with?',
+    texte: fr ? 'Votre audit gratuit, sous 24 h.' : 'Your free audit, within 24 hours.',
+  },
+  items: [
+    { slug: 'groupe-theobald', nom: nomGroupe('theobald'), chiffre: chiffreDe('groupe-theobald', 0) },
+    { slug: 'dmd-group', nom: nomGroupe('dmd'), chiffre: chiffreDe('dmd-group', 0) },
+    { slug: 'vehicle-catalogue-ads', nom: fr ? 'Dossier Vehicle Ads' : 'Vehicle Ads deep dive', chiffre: chiffreDe('vehicle-catalogue-ads', 0) },
+    { slug: 'ggp-auto', nom: nomGroupe('ggp'), chiffre: chiffreDe('ggp-auto', 1) },
+  ].map((p) => ({ ...p, titreEtude: fiche(p.slug).data.title as string, href: `/${lang}/case-studies/${p.slug}` })),
+};
 ---
 
 <PageLayout lang={lang} title={t.seo.titre} description={t.seo.description}>
@@ -389,10 +479,94 @@ const sc = t.etapes.scene;
     </div>
   </section>
 
-  <!-- 5. Les questions (blanc). -->
+  <!-- 5. Ce qu'on fait (blanc) : les trois pages automobiles, chacune avec sa scène animée
+       (Google Ads et Meta : scènes de l'audit Exaforce adaptées ; Dynamic Ads : la chaîne du
+       stock) et ce que le levier apporte au concessionnaire. -->
+  <section class="section-blanc pt-20 pb-28 lg:pt-28 lg:pb-36">
+    <div class="container-custom">
+      <header class="mb-10 grid max-w-[760px] gap-5 lg:mb-14">
+        <h2 class="titre-moyen text-encre">{expertises.titre}</h2>
+        <p class="chapo">{expertises.chapo}</p>
+      </header>
+      <div class="expertises">
+        {expertises.items.map((s, i) => (
+          <article class:list={['expertise', { 'expertise-large': s.scene === 'chaine-stock', 'expertise-inverse': i === 1 }]}>
+            <div class="expertise-txt">
+              <div class="expertise-tete">
+                <span class="flex gap-2" aria-hidden="true">
+                  {s.marques.map((m) => (
+                    <span class="grid h-10 w-10 place-items-center rounded-xl bg-brume-clair"><Marque nom={m} taille={20} /></span>
+                  ))}
+                </span>
+                <span class="grid gap-0.5">
+                  <h3 class="titre-carte text-encre"><a href={s.href} class="transition-colors hover:text-marque">{s.nom}</a></h3>
+                  <span class="text-[0.95rem] font-semibold text-slate-500">{s.sous}</span>
+                </span>
+              </div>
+              <p class="expertise-texte">{s.texte}</p>
+              <a href={s.href} class="expertise-lien">
+                {expertises.lien}
+                <Icon name="arrow-right" size={18} />
+              </a>
+            </div>
+            <div class="expertise-scene">
+              {s.scene === 'chaine-stock'
+                ? <ChaineStock lang={lang} id="audit-chaine" fond="clair" />
+                : <SceneLabo lang={lang} nom={s.scene} titre={`${s.nom}, ${s.sous}`} />}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Les preuves (encre) : quatre extraits d'études de cas, chiffre lu dans la fiche, la
+       porte vers toutes les études, puis le rappel qui ramène au formulaire. -->
+  <section class="section-encre section-monte py-20 lg:py-28">
+    <div class="container-custom">
+      <header class="mb-10 grid max-w-[760px] gap-5 lg:mb-14">
+        <h2 class="titre-moyen">{preuves.titre}</h2>
+        <p class="chapo">{preuves.chapo}</p>
+      </header>
+      <ul class="preuves">
+        {preuves.items.map((p, i) => (
+          <li data-reveal style={`--i:${i}`}>
+            <a href={p.href} class="preuve carte-verre group">
+              <span class="preuve-nom">{p.nom}</span>
+              <span class="preuve-chiffre">{p.chiffre.valeur}</span>
+              <span class="preuve-texte">{p.chiffre.texte}</span>
+              <span class="preuve-titre">{p.titreEtude}</span>
+              <span class="preuve-lien">
+                {preuves.lire}
+                <Icon name="arrow-right" size={16} />
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="mt-8">
+        <a href={`/${lang}/case-studies`} class="audit-lien audit-lien-clair">
+          {preuves.tout}
+          <Icon name="arrow-right" size={18} />
+        </a>
+      </p>
+
+      <div class="rappel">
+        <div class="grid gap-2">
+          <p class="rappel-titre">{preuves.rappel.titre}</p>
+          <p class="text-sur-encre-2">{preuves.rappel.texte}</p>
+        </div>
+        <div class="pilules">
+          <BoutonAudit lang={lang} emplacement="page-audit-preuves" variante="blanche" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Les questions (blanc). -->
   <AutomotiveFAQ lang={lang} faq={t.faq} />
 
-  <!-- 6. La fin (encre) : le bouton remonte au formulaire. -->
+  <!-- 8. La fin (encre) : le bouton remonte au formulaire. -->
   <section class="section-encre section-monte py-20 lg:py-28">
     <div class="container-custom grid justify-items-start gap-6">
       <h2 class="titre-moyen max-w-[18ch]">{t.fin.titre}</h2>
@@ -723,6 +897,169 @@ const sc = t.etapes.scene;
   }
   .audit-lien:hover {
     gap: 12px;
+  }
+  .audit-lien-clair {
+    color: var(--color-marque-clair);
+  }
+
+  /* Ce qu'on fait : un levier par bloc, sa scène à côté (alternée), séparés par un filet.
+     Au téléphone : le texte, puis la scène. La chaîne du stock prend toute la largeur. */
+  .expertises {
+    display: grid;
+  }
+  .expertise {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding: 36px 0;
+    border-top: 1px solid var(--filet);
+  }
+  .expertise:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .expertise-txt {
+    display: grid;
+    align-content: center;
+    gap: 14px;
+  }
+  @media (min-width: 1024px) {
+    .expertise {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 64px;
+      padding: 56px 0;
+    }
+    .expertise-inverse .expertise-txt {
+      order: 2;
+    }
+    .expertise-large {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+    .expertise-large .expertise-txt {
+      max-width: 760px;
+    }
+  }
+  .expertise-tete {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .expertise-texte {
+    max-width: 60ch;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-slate-600);
+    text-wrap: pretty;
+  }
+  .expertise-lien {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--color-marque);
+    transition: gap 300ms var(--mdp-entree);
+  }
+  .expertise-lien:hover {
+    gap: 12px;
+  }
+
+  /* Les preuves : quatre extraits sur l'encre, deux par ligne dès md. */
+  .preuves {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  @media (min-width: 768px) {
+    .preuves {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+  }
+  .preuve {
+    display: grid;
+    height: 100%;
+    align-content: start;
+    gap: 10px;
+    padding: 24px;
+    transition: box-shadow 300ms var(--mdp-entree);
+  }
+  .preuve:hover {
+    box-shadow: inset 0 0 0 1px rgb(125 184 238 / 0.45), 0 30px 60px -36px rgb(2 9 16 / 0.9);
+  }
+  @media (min-width: 1024px) {
+    .preuve {
+      padding: 32px;
+    }
+  }
+  .preuve-nom {
+    font-weight: 600;
+    color: var(--color-marque-clair);
+  }
+  .preuve-chiffre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.4rem, 1.8rem + 2vw, 3.4rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+  .preuve-texte {
+    font-size: 0.97rem;
+    line-height: 1.5;
+    color: var(--texte-sombre);
+    text-wrap: pretty;
+  }
+  .preuve-titre {
+    margin-top: 6px;
+    padding-top: 14px;
+    border-top: 1px solid var(--filet-sombre);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: #fff;
+    text-wrap: pretty;
+  }
+  .preuve-lien {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--color-marque-clair);
+    transition: gap 300ms var(--mdp-entree);
+  }
+  .preuve:hover .preuve-lien {
+    gap: 12px;
+  }
+
+  /* Le rappel : ramène au formulaire du haut de page. */
+  .rappel {
+    display: grid;
+    gap: 20px;
+    margin-top: 48px;
+    padding-top: 36px;
+    border-top: 1px solid rgb(255 255 255 / 0.16);
+  }
+  .rappel-titre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.1rem);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: #fff;
+    text-wrap: balance;
+  }
+  @media (min-width: 1024px) {
+    .rappel {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 40px;
+    }
   }
 </style>
 

@@ -1,0 +1,81 @@
+---
+/**
+ * Une scène du labo motion (`public/motion/<nom>.html`, contrat `render(t)` + `lecteur.js`),
+ * dans un cadre qui garde ses proportions, à poser sur n'importe quelle page (13/10/2026).
+ *
+ * Chargée à l'approche, jouée en boucle tant qu'elle est à l'écran, posée sur son image de
+ * repos sinon. La version anglaise est servie depuis `/motion/en/` sur les pages anglaises.
+ * Scènes carrées tirées de l'audit Exaforce et adaptées à l'automobile :
+ * `recherche-concession` (Google Ads) et `audience-meta` (Facebook et Instagram).
+ */
+import type { Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+  /** Nom du fichier dans `public/motion/`, sans `.html`. */
+  nom: string;
+  /** Titre accessible du cadre. */
+  titre: string;
+  /** `carre` (1080 x 1080) ou `large` (16:9). */
+  format?: 'carre' | 'large';
+  /** Instant posé quand la scène n'est pas à l'écran (secondes). */
+  repos?: number;
+  class?: string;
+}
+
+const { lang, nom, titre, format = 'carre', repos = 13, class: classe = '' } = Astro.props;
+const url = `/motion/${lang === 'fr' ? '' : 'en/'}${nom}.html`;
+---
+
+<figure class:list={['scene-labo', `scene-labo-${format}`, classe]} data-scene-labo>
+  <iframe src={url} title={titre} loading="lazy" data-repos={repos} tabindex="-1"></iframe>
+</figure>
+
+<style>
+  .scene-labo {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--rayon-scene, 24px);
+    background: #08131f;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08), 0 40px 90px -40px rgb(11 27 43 / 0.55);
+  }
+  .scene-labo-carre { aspect-ratio: 1 / 1; }
+  .scene-labo-large { aspect-ratio: 16 / 9; }
+  .scene-labo iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  /* Même mécanique que les scènes des études de cas : jouer à l'écran, se poser sinon. */
+  function envoyer(f: HTMLIFrameElement, m: object) { f.contentWindow?.postMessage(m, '*'); }
+  function brancherScenes() {
+    const cadres = Array.from(document.querySelectorAll<HTMLIFrameElement>('[data-scene-labo] iframe'));
+    const repos = (f: HTMLIFrameElement) => { envoyer(f, { cmd: 'pause' }); envoyer(f, { cmd: 'seek', t: Number(f.dataset.repos || 0) }); };
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(
+      (es) => es.forEach((e) => {
+        const f = e.target as HTMLIFrameElement;
+        f.dataset.visible = e.isIntersecting ? '1' : '';
+        if (e.isIntersecting) { envoyer(f, { cmd: 'seek', t: 0 }); envoyer(f, { cmd: 'play' }); } else repos(f);
+      }),
+      { threshold: 0.35 },
+    );
+    cadres.forEach((f) => {
+      if (f.dataset.branche) return;
+      f.dataset.branche = '1';
+      f.addEventListener('load', () => { if (!f.dataset.visible) repos(f); });
+      io.observe(f);
+    });
+  }
+  brancherScenes();
+  document.addEventListener('astro:page-load', brancherScenes);
+</script>

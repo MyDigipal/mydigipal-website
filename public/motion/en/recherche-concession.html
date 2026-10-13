@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Un acheteur cherche, la bonne campagne répond</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(1100px 760px at 640px 560px,rgba(29,113,184,.16),rgba(8,19,31,0) 70%)}
+#scene{position:absolute;inset:0}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(125%)}
+#titre{position:absolute;left:110px;top:84px}
+#titre .ln{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.06;white-space:nowrap}
+.ln.o{color:#e8bd62}
+.lab{position:absolute;font-size:19px;font-weight:600;color:#a9b8c8;line-height:1.3;white-space:nowrap}
+.panneau{position:absolute;border-radius:24px;background:#0d2135;box-shadow:0 50px 100px -40px rgba(0,0,0,.8)}
+.pT{position:absolute;font-size:22px;font-weight:700;letter-spacing:-.01em;color:#f4f7fa}
+#leg{position:absolute;left:110px;top:1012px;font-size:15px;font-weight:600;color:#6f8399;white-space:nowrap}
+#fils{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:6}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+#leg{top:1022px}
+#compte{position:absolute;left:110px;top:930px;display:flex;align-items:baseline;gap:14px;white-space:nowrap;z-index:5}
+#compte b{font-size:58px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;color:#f4f7fa}
+#compte span{font-size:19px;font-weight:600;color:#a9b8c8}
+#compte span em{font-style:normal;color:#f4f7fa;font-weight:800}
+#quand{position:absolute;right:110px;top:112px;height:40px;line-height:37px;box-sizing:border-box;padding:0 18px;border-radius:20px;border:1.5px solid rgba(232,189,98,.8);font-size:17px;font-weight:700;color:#e8bd62;white-space:nowrap}
+
+#stage{width:1080px;height:1080px}
+#lueur{background:radial-gradient(760px 640px at 540px 560px,rgba(29,113,184,.18),rgba(8,19,31,0) 72%)}
+#fils{width:1080px;height:1080px}
+#titre{left:70px;top:58px}
+#titre .ln{font-size:58px}
+#leg{left:70px;top:1034px;font-size:17px}
+#compte{left:70px;top:900px}
+#compte b{font-size:66px}
+#compte span{font-size:23px;white-space:normal;max-width:640px;line-height:1.3}
+
+#srch{position:absolute;left:70px;top:226px;width:940px;height:372px;border-radius:24px;background:#f8fafc;box-shadow:0 50px 100px -40px rgba(0,0,0,.8);overflow:hidden;z-index:2}
+#bar{position:absolute;left:30px;top:26px;width:880px;height:72px;box-sizing:border-box;border-radius:36px;border:1.5px solid #d6dbe3;background:#fff;box-shadow:0 2px 8px rgba(32,33,36,.08)}
+#gl{position:absolute;left:24px;top:20px;width:30px;height:30px}
+#q{position:absolute;left:74px;top:16px;font-size:30px;font-weight:500;color:#202124;white-space:nowrap}
+#caret{display:inline-block;width:2px;height:32px;margin-left:2px;vertical-align:-5px;background:#1a73e8}
+#ad{position:absolute;left:30px;top:118px;width:880px;box-sizing:border-box;padding:18px 22px 20px;border-radius:16px;border:2px solid rgba(232,189,98,0)}
+#ad .sp{font-size:18px;font-weight:700;color:#202124}
+#ad .adv{display:flex;align-items:center;gap:12px;margin-top:10px}
+#ad .fav{flex:none;width:36px;height:36px;border-radius:50%;background:#0b1b2b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800}
+#ad .adv b{display:block;font-size:20px;font-weight:600;color:#202124}
+#ad .adv small{display:block;font-size:16px;color:#4d5156;margin-top:1px}
+#ad .h{margin-top:12px;font-size:31px;font-weight:600;line-height:1.2;color:#1a0dab;letter-spacing:-.01em}
+#nad{position:absolute;left:30px;top:130px;width:880px;box-sizing:border-box;padding:26px 26px;border-radius:16px;border:2px dashed #c9a24d;background:#fffaf0;font-size:28px;font-weight:700;color:#7a5a12}
+#nad small{display:block;margin-top:8px;font-size:21px;font-weight:600;color:#8b6d2a;line-height:1.35}
+#ripple{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:3px solid #e8bd62;z-index:4}
+#pan{left:70px;top:640px;width:940px;height:222px}
+#pT{left:100px;top:806px;font-size:24px}
+#pS{position:absolute;right:100px;top:812px;font-size:18px;font-weight:600;color:#8a9bb0}
+.tile{position:absolute;top:664px;width:166px;height:132px;box-sizing:border-box;border-radius:16px;border:1.5px solid rgba(125,184,238,.22);background:rgba(255,255,255,.02);padding:14px 14px 0;z-index:3}
+.tile b{display:block;font-size:21px;font-weight:800;line-height:1.18;letter-spacing:-.01em}
+.tile em{position:absolute;left:14px;bottom:12px;font-style:normal;font-size:36px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:#a9b8c8}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="scene">
+    <div id="titre"></div>
+    <div id="srch">
+      <div id="bar"><img id="gl" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMjIuNTYgMTIuMjVjMC0uNzgtLjA3LTEuNTMtLjItMi4yNUgxMnY0LjI2aDUuOTJjLS4yNiAxLjM3LTEuMDQgMi41My0yLjIxIDMuMzF2Mi43N2gzLjU3YzIuMDgtMS45MiAzLjI4LTQuNzQgMy4yOC04LjA5eiIgZmlsbD0iIzQyODVGNCIvPjxwYXRoIGQ9Ik0xMiAyM2MyLjk3IDAgNS40Ni0uOTggNy4yOC0yLjY2bC0zLjU3LTIuNzdjLS45OC42Ni0yLjIzIDEuMDYtMy43MSAxLjA2LTIuODYgMC01LjI5LTEuOTMtNi4xNi00LjUzSDIuMTh2Mi44NEMzLjk5IDIwLjUzIDcuNyAyMyAxMiAyM3oiIGZpbGw9IiMzNEE4NTMiLz48cGF0aCBkPSJNNS44NCAxNC4wOWMtLjIyLS42Ni0uMzUtMS4zNi0uMzUtMi4wOXMuMTMtMS40My4zNS0yLjA5VjcuMDdIMi4xOEMxLjQzIDguNTUgMSAxMC4yMiAxIDEycy40MyAzLjQ1IDEuMTggNC45M2wyLjg1LTIuMjIuODEtLjYyeiIgZmlsbD0iI0ZCQkMwNSIvPjxwYXRoIGQ9Ik0xMiA1LjM4YzEuNjIgMCAzLjA2LjU2IDQuMjEgMS42NGwzLjE1LTMuMTVDMTcuNDUgMi4wOSAxNC45NyAxIDEyIDEgNy43IDEgMy45OSAzLjQ3IDIuMTggNy4wN2wzLjY2IDIuODRjLjg3LTIuNiAzLjMtNC41MyA2LjE2LTQuNTN6IiBmaWxsPSIjRUE0MzM1Ii8+PHBhdGggZD0iTTEgMWgyMnYyMkgxeiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg=="><div id="q"><span id="qt"></span><span id="caret"></span></div></div>
+      <div id="ad"><div class="sp" id="sp"></div><div class="adv"><span class="fav">V</span><div><b id="adn"></b><small id="adu"></small></div></div><div class="h" id="adh"></div></div>
+      <div id="nad"><span id="nadt"></span><small id="nads"></small></div>
+      <div id="ripple"></div>
+    </div>
+    <div class="panneau" id="pan"></div>
+    <div class="pT" id="pT"><div class="mask"><span class="ln" id="pTt"></span></div></div>
+    <div id="pS"></div>
+    <div id="tiles"></div>
+    <div id="compte"><b id="nb">0</b><span id="cpt"></span></div>
+    <div id="leg"></div>
+    <svg id="fils" viewBox="0 0 1080 1080"></svg>
+  </div>
+</div>
+<div id="prechargeur">
+  <span style="font-family:'Plus Jakarta Sans';font-weight:500">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:600">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span>
+  <span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span>
+</div>
+<script>
+window.STAGE = { w: 1080, h: 1080 };
+window.DUREE = 14;
+window.PRET = Promise.all([
+  document.fonts.load("800 58px 'Plus Jakarta Sans'"),
+  document.fonts.load("600 22px 'Plus Jakarta Sans'"),
+  document.fonts.load("500 30px 'Plus Jakarta Sans'")
+]).then(function () { return document.fonts.ready; });
+(function () {
+'use strict';
+var D = window.DUREE;
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function seg(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+function mix(a, b, p) { return a + (b - a) * p; }
+function outExpo(p) { return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p); }
+function outCubic(p) { return 1 - Math.pow(1 - p, 3); }
+function inCubic(p) { return p * p * p; }
+function inOut(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+function outBack(p) { var c = 1.4; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); }
+var $ = function (id) { return document.getElementById(id); };
+var NS = 'http://www.w3.org/2000/svg';
+function lignes(id, arr, cls) {
+  $(id).innerHTML = arr.map(function (s, i) { return '<div class="mask"><span class="ln' + (cls && cls[i] ? ' ' + cls[i] : '') + '">' + s + '</span></div>'; }).join('');
+}
+function monte(t, sel, t0, pas) {
+  var ls = document.querySelectorAll(sel);
+  for (var j = 0; j < ls.length; j++) {
+    var pe = outExpo(seg(t, t0 + j * (pas || 0.12), t0 + 0.8 + j * (pas || 0.12)));
+    ls[j].style.transform = 'translateY(' + mix(125, 0, pe).toFixed(2) + '%)';
+  }
+}
+function apparait(el, t, t0, dy, dur) {
+  var p = outExpo(seg(t, t0, t0 + (dur || 0.6)));
+  el.style.opacity = p.toFixed(3);
+  el.style.transform = 'translateY(' + mix(dy === undefined ? 16 : dy, 0, p).toFixed(1) + 'px)';
+  return p;
+}
+function svgEl(parent, nom, att) { var e = document.createElementNS(NS, nom); for (var a in att) e.setAttribute(a, att[a]); parent.appendChild(e); return e; }
+/* un fil qui se dessine de 0 à 1, avec une tête lumineuse */
+function fil(f, p, opa) {
+  var len = f.p.getTotalLength();
+  f.p.style.strokeDashoffset = (1 - p).toFixed(4);
+  f.p.style.opacity = (p > 0 ? (opa === undefined ? 1 : opa) : 0).toFixed(3);
+  var pt = f.p.getPointAtLength(len * p);
+  f.tete.setAttribute('cx', pt.x.toFixed(1)); f.tete.setAttribute('cy', pt.y.toFixed(1));
+  f.tete.style.opacity = (p > 0 && p < 1 ? 1 : 0);
+}
+function nouveauFil(svg, d, couleur) {
+  return { p: svgEl(svg, 'path', { d: d, stroke: couleur || '#e8bd62', 'stroke-width': 2.5, fill: 'none', pathLength: 1, 'stroke-dasharray': '1 1' }),
+           tete: svgEl(svg, 'circle', { r: 6, fill: '#fff4dc' }) };
+}
+
+/* Adapté le 13/10/2026 de la scène Google Search de l'audit Exaforce, pour une concession.
+   Une seule source pour les deux langues : la copie de /motion/en/ parle anglais. Le seul
+   chiffre est celui de l'étude de cas « open-days » (Vulcain, mars 2026). */
+var EN = /\/motion\/en\//.test(location.pathname);
+var TX_ = EN ? {
+  titre: ['A car buyer searches,', 'the right campaign answers.'],
+  leg: 'Example searches · ads mocked up for a dealership',
+  sp: 'Sponsored', adn: 'Your dealership',
+  nad: 'No ad shown', nads: '“jobs” is on the negative keyword list, so no budget is spent here',
+  pT: 'Your Search campaigns', pS: 'One campaign per intent',
+  cpt: 'Google conversions over ten days of open days at Vulcain, March 2026',
+  rows: [['Your own name', 'Brand'], ['New cars, by brand', 'New'], ['Used cars', 'Used'], ['Open days', 'Event'], ['After-sales', 'Service']],
+  q: [
+    { q: 'used peugeot 3008 lyon', u: 'your-group.com › used › peugeot-3008', h: 'Used Peugeot 3008 in Lyon | Part-Exchange Welcome' },
+    { q: 'kia open day rennes', u: 'your-group.com › open-days', h: 'Kia Open Days in Rennes | Book Your Test Drive' },
+    { q: 'hyundai tucson hybrid price', u: 'your-group.com › hyundai › tucson', h: 'Hyundai Tucson Hybrid | Offer of the Month' }
+  ],
+  neg: 'car salesman jobs', loc: 'en-GB'
+} : {
+  titre: ['Un acheteur cherche,', 'la bonne campagne répond.'],
+  leg: 'Recherches d’exemple · annonces maquettées pour une concession',
+  sp: 'Sponsorisé', adn: 'Votre concession',
+  nad: 'Aucune annonce', nads: '« emploi » est dans la liste des mots exclus : aucun budget dépensé ici',
+  pT: 'Vos campagnes Search', pS: 'Une campagne par intention',
+  cpt: 'conversions Google en dix jours de portes ouvertes chez Vulcain, en mars 2026',
+  rows: [['Votre nom de marque', 'Nom'], ['Neuf, par marque', 'VN'], ['Occasion', 'VO'], ['Portes ouvertes', 'JPO'], ['Après-vente', 'APV']],
+  q: [
+    { q: 'peugeot 3008 occasion lyon', u: 'votre-groupe.fr › occasion › peugeot-3008', h: 'Peugeot 3008 d’Occasion à Lyon | Reprise de Votre Véhicule' },
+    { q: 'portes ouvertes kia rennes', u: 'votre-groupe.fr › portes-ouvertes', h: 'Portes Ouvertes Kia à Rennes | Réservez Votre Essai' },
+    { q: 'hyundai tucson hybride prix', u: 'votre-groupe.fr › hyundai › tucson', h: 'Hyundai Tucson Hybride | Offre du Mois et Essai' }
+  ],
+  neg: 'vendeur automobile emploi', loc: 'fr-FR'
+};
+document.documentElement.lang = EN ? 'en' : 'fr';
+document.title = TX_.titre.join(' ');
+lignes('titre', TX_.titre, ['', 'o']);
+$('leg').textContent = TX_.leg;
+$('sp').textContent = TX_.sp; $('adn').textContent = TX_.adn;
+$('nadt').textContent = TX_.nad; $('nads').textContent = TX_.nads;
+$('pTt').textContent = TX_.pT; $('pS').textContent = TX_.pS; $('cpt').textContent = TX_.cpt;
+
+var ROWS = TX_.rows.map(function (r) { return { n: r[0], v: r[1] }; });
+var TX = [100, 280, 460, 640, 820];
+$('tiles').innerHTML = ROWS.map(function (r, i) {
+  return '<div class="tile" id="r' + i + '" style="left:' + TX[i] + 'px"><b>' + r.n + '</b><em>' + r.v + '</em></div>';
+}).join('');
+
+var LIGNE = [2, 3, 1];
+var Q = TX_.q.map(function (x, i) { return { q: x.q, row: LIGNE[i], u: x.u, h: x.h }; });
+var B = [1.4, 4.5, 7.6], BN = 10.6, NEG = TX_.neg;
+var svg = $('fils');
+var FILS = Q.map(function (x) {
+  var xc = TX[x.row] + 83;
+  return nouveauFil(svg, 'M540,598 C540,632 ' + xc + ',630 ' + xc + ',664');
+});
+
+window.render = function (t) {
+  t = clamp(+t || 0, 0, D);
+  $('scene').style.opacity = (1 - inCubic(seg(t, 13.3, 13.9))).toFixed(3);
+  monte(t, '#titre .ln', 0.3, 0.14);
+  apparait($('srch'), t, 0.6, 24, 0.8);
+  var pn = outExpo(seg(t, 0.8, 1.5));
+  $('pan').style.clipPath = 'inset(0 0 ' + (100 * (1 - pn)).toFixed(2) + '% 0 round 24px)';
+  monte(t, '#pT .ln', 1.0);
+  $('pS').style.opacity = outExpo(seg(t, 1.2, 1.7)).toFixed(3);
+  for (var i = 0; i < ROWS.length; i++) apparait($('r' + i), t, 1.1 + i * 0.08, 12, 0.6);
+
+  var k = -1;
+  for (var j = 0; j < 3; j++) if (t >= B[j] && t < B[j] + 3.0) k = j;
+  var neg = t >= BN;
+  var texte = '', b0 = 0;
+  if (k >= 0) { texte = Q[k].q; b0 = B[k]; }
+  else if (neg) { texte = NEG; b0 = BN; }
+  var nb = Math.floor(texte.length * seg(t, b0, b0 + (neg ? 0.6 : 0.8)));
+  $('qt').textContent = texte.slice(0, nb);
+  var effacer = k >= 0 ? seg(t, b0 + 2.75, b0 + 3.0) : 0;
+  $('q').style.opacity = (1 - effacer).toFixed(3);
+  $('caret').style.opacity = (Math.floor(t * 2.4) % 2 === 0 || (nb > 0 && nb < texte.length)) ? 1 : 0;
+
+  var ad = $('ad');
+  if (k >= 0) {
+    $('adh').textContent = Q[k].h; $('adu').textContent = Q[k].u;
+    var pa = outExpo(seg(t, b0 + 1.0, b0 + 1.5));
+    ad.style.opacity = (pa * (1 - effacer)).toFixed(3);
+    ad.style.transform = 'translateY(' + mix(14, 0, pa).toFixed(1) + 'px)';
+    var pc = seg(t, b0 + 1.7, b0 + 2.0), off = 1 - seg(t, b0 + 2.5, b0 + 2.8);
+    ad.style.borderColor = 'rgba(232,189,98,' + (pc * off).toFixed(3) + ')';
+    ad.style.background = 'rgba(232,189,98,' + (0.08 * pc * off).toFixed(3) + ')';
+    var pr = seg(t, b0 + 1.7, b0 + 2.25), rp = $('ripple');
+    rp.style.left = '470px'; rp.style.top = '270px';
+    rp.style.opacity = (pr > 0 && pr < 1 ? 1 - pr : 0).toFixed(3);
+    rp.style.transform = 'scale(' + mix(0.4, 2.6, outCubic(pr)).toFixed(3) + ')';
+  } else { ad.style.opacity = 0; $('ripple').style.opacity = 0; }
+
+  var pnad = neg ? outExpo(seg(t, BN + 0.75, BN + 1.25)) : 0;
+  $('nad').style.opacity = pnad.toFixed(3);
+  $('nad').style.transform = 'translateY(' + mix(12, 0, pnad).toFixed(1) + 'px)';
+
+  FILS.forEach(function (f, n) {
+    var p = outCubic(seg(t, B[n] + 1.85, B[n] + 2.45));
+    fil(f, p, mix(1, 0.2, seg(t, B[n] + 2.6, B[n] + 3.1)));
+  });
+  for (var r = 0; r < ROWS.length; r++) {
+    var n = -1; Q.forEach(function (x, m) { if (x.row === r) n = m; });
+    var row = $('r' + r), em = row.querySelector('em');
+    if (n < 0) { row.style.borderColor = 'rgba(125,184,238,.22)'; row.style.background = 'rgba(255,255,255,.02)'; em.style.color = '#a9b8c8'; continue; }
+    var ta = B[n] + 2.45, pl = outExpo(seg(t, ta, ta + 0.4));
+    var flash = t >= ta ? 1 - outCubic(seg(t, ta + 0.05, ta + 0.9)) : 0;
+    row.style.borderColor = pl > 0 ? 'rgba(232,189,98,' + mix(0.35, 1, flash).toFixed(3) + ')' : 'rgba(125,184,238,.22)';
+    row.style.background = pl > 0 ? 'rgba(16,48,77,' + mix(0.2, 1, pl).toFixed(3) + ')' : 'rgba(255,255,255,.02)';
+    row.style.boxShadow = flash > 0 ? '0 0 0 ' + (4 * flash).toFixed(1) + 'px rgba(232,189,98,.22)' : '';
+    em.style.color = pl > 0.5 ? '#e8bd62' : '#a9b8c8';
+  }
+  apparait($('compte'), t, 11.6, 12, 0.5);
+  $('nb').textContent = Math.round(324 * outCubic(seg(t, 11.7, 12.8))).toLocaleString(TX_.loc);
+  $('leg').style.opacity = outExpo(seg(t, 11.9, 12.5)).toFixed(3);
+};
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>
