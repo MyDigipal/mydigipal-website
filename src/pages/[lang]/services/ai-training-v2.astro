@@ -4,10 +4,10 @@
  * actuelle (`[slug].astro`, `ai-training`) reste en ligne jusqu'à la validation de Paul.
  * Pilotage : docs/ai-training-refonte/index.html.
  *
- * De 17 blocs à 10, et le rythme des fonds (jamais deux sections d'encre collées) :
- * hero (blanc) · formats (encre) · simulateur (brume) · ce qui est compris (blanc) ·
- * après la formation (encre) · par métier (brume) · la méthode (blanc) · les preuves (encre) ·
- * aller plus loin (brume) · questions (blanc) · appel final.
+ * Le rythme des fonds (jamais deux sections d'encre collées), deuxième version du 14/10 :
+ * hero (blanc, la scène du labo) · formats (encre) · la séance de 3 h (blanc) · les parcours (encre) ·
+ * ce qui est compris (blanc) · CRAFT et sécurité (brume) · après la formation (encre) · par métier (blanc) ·
+ * preuves (encre) · l'Academy (blanc) · le simulateur (brume) · questions (blanc) · appel final.
  */
 import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language } from '@/i18n/config';
@@ -17,14 +17,15 @@ import { ACADEMY_REPLI, type PrixAcademy } from '@/lib/formation/grille';
 import { faqFormation } from '@/data/formation/faq';
 
 import HeroService from '@/components/sections/HeroService.astro';
-import SceneFormationSurMesure from '@/components/motion/SceneFormationSurMesure.astro';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
 import TarifsFormation from '@/components/formation/TarifsFormation.tsx';
 import FriseInclus from '@/components/formation/FriseInclus.astro';
+import SeanceTroisHeures from '@/components/formation/SeanceTroisHeures.astro';
+import ParcoursFormation from '@/components/formation/ParcoursFormation.astro';
 import ApresFormation from '@/components/formation/ApresFormation.astro';
 import TrainingUseCases from '@/components/sections/TrainingUseCases.astro';
 import TrainingAgenda from '@/components/sections/TrainingAgenda.astro';
 import PreuvesFormation from '@/components/formation/PreuvesFormation.astro';
-import AllerPlusLoin from '@/components/formation/AllerPlusLoin.astro';
 import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 
@@ -83,25 +84,41 @@ const finale = lang === 'fr'
     serviceCalculateur="ai-training"
     lienBudget="#simulateur"
   >
-    <SceneFormationSurMesure slot="panneau" lang={lang} logo={{ src: '/images/Training Logo/Kering.svg', nom: 'Kering' }} />
+    <SceneLabo slot="panneau" lang={lang} nom="formation-sur-mesure" format="carre" repos={17} controles titre={lang === 'fr' ? 'Comment nous construisons votre formation' : 'How we build your training'} />
   </HeroService>
 
-  <TarifsFormation
-    client:load
+  <!-- Les formats et leurs prix (encre). Trois îlots partagent le même état : devise, format. -->
+  <TarifsFormation client:load partie="formats"
     lang={lang}
     academyTtc={academyTtc}
     academyFaits={{ lecons: faits.lecons, heures: faits.heures, note: faits.note, retours: faits.retours }}
     academyHref={`/${lang}/academy`}
     contactHref={`/${lang}/contact?topic=formation`}
-    video={{ src: `/academy/demos/${lang === 'fr' ? 'fr/' : ''}programme.mp4`, poster: `/academy/demos/${lang === 'fr' ? 'fr/' : ''}programme.jpg` }}
+    video={{ src: `/academy/videos/presentation-v4-${lang}.mp4`, poster: `/academy/videos/presentation-v4-${lang}.webp` }}
   />
-
-  <FriseInclus lang={lang} />
-  <ApresFormation lang={lang} />
-  <TrainingUseCases lang={lang} premiers={['bar-chart']} />
-  <TrainingAgenda lang={lang} fond="blanc" securiteForte />
-  <PreuvesFormation lang={lang} note={faits.note} retours={faits.retours} />
-  <AllerPlusLoin lang={lang} />
+  <SeanceTroisHeures lang={lang} />                    <!-- blanc : la séance minute par minute -->
+  <ParcoursFormation lang={lang} />                    <!-- encre : introduction et parcours spécialisés -->
+  <FriseInclus lang={lang} />                          <!-- blanc : ce qui est compris, le rail animé -->
+  <TrainingAgenda lang={lang} securiteForte />         <!-- brume : CRAFT et la sécurité des données -->
+  <ApresFormation lang={lang} />                       <!-- encre : ce qu'ils en font le lendemain -->
+  <TrainingUseCases lang={lang} fond="blanc" premiers={['bar-chart']} />
+  <PreuvesFormation lang={lang} note={faits.note} retours={faits.retours} />  <!-- encre -->
+  <TarifsFormation client:visible partie="academy"
+    lang={lang}
+    academyTtc={academyTtc}
+    academyFaits={{ lecons: faits.lecons, heures: faits.heures, note: faits.note, retours: faits.retours }}
+    academyHref={`/${lang}/academy`}
+    contactHref={`/${lang}/contact?topic=formation`}
+    video={{ src: `/academy/videos/presentation-v4-${lang}.mp4`, poster: `/academy/videos/presentation-v4-${lang}.webp` }}
+  />
+  <TarifsFormation client:visible partie="simulateur"
+    lang={lang}
+    academyTtc={academyTtc}
+    academyFaits={{ lecons: faits.lecons, heures: faits.heures, note: faits.note, retours: faits.retours }}
+    academyHref={`/${lang}/academy`}
+    contactHref={`/${lang}/contact?topic=formation`}
+    video={{ src: `/academy/videos/presentation-v4-${lang}.mp4`, poster: `/academy/videos/presentation-v4-${lang}.webp` }}
+  />
   <ServiceFAQ lang={lang} service="ai-training" contenu={faqFormation(lang)} />
   <FinalCTA lang={lang} title={finale.title} subtitle={finale.subtitle} lienBudget="#simulateur" />
 </PageLayout>

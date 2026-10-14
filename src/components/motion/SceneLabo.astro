@@ -20,15 +20,23 @@ interface Props {
   format?: 'carre' | 'large';
   /** Instant posé quand la scène n'est pas à l'écran (secondes). */
   repos?: number;
+  /** Barre de progression, pause au clic, aller à un instant (règle de Paul du 13/10/2026). */
+  controles?: boolean;
   class?: string;
 }
 
-const { lang, nom, titre, format = 'carre', repos = 13, class: classe = '' } = Astro.props;
+const { lang, nom, titre, format = 'carre', repos = 13, controles = false, class: classe = '' } = Astro.props;
 const url = `/motion/${lang === 'fr' ? '' : 'en/'}${nom}.html`;
 ---
 
-<figure class:list={['scene-labo', `scene-labo-${format}`, classe]} data-scene-labo>
+<figure class:list={['scene-labo', `scene-labo-${format}`, classe, { 'scene-labo-controles': controles }]} data-scene-labo>
   <iframe src={url} title={titre} loading="lazy" data-repos={repos} tabindex="-1"></iframe>
+  {controles && (
+    <>
+      <button type="button" class="sl-calque" data-sl-calque aria-label={lang === 'fr' ? 'Mettre en pause ou reprendre' : 'Pause or resume'}></button>
+      <div class="sl-barre" data-sl-barre><input type="range" min="0" max="1000" value="0" aria-label={lang === 'fr' ? 'Aller à un instant' : 'Seek'} /></div>
+    </>
+  )}
 </figure>
 
 <style>
@@ -43,6 +51,10 @@ const url = `/motion/${lang === 'fr' ? '' : 'en/'}${nom}.html`;
   }
   .scene-labo-carre { aspect-ratio: 1 / 1; }
   .scene-labo-large { aspect-ratio: 16 / 9; }
+  .sl-calque { position: absolute; inset: 0; border: 0; background: transparent; cursor: pointer; z-index: 1; }
+  .sl-barre { position: absolute; left: 16px; right: 16px; bottom: 12px; z-index: 2; opacity: 0; transition: opacity .25s; }
+  .scene-labo-controles:hover .sl-barre, .scene-labo-controles[data-pause] .sl-barre, .sl-barre:focus-within { opacity: 1; }
+  .sl-barre input { width: 100%; height: 18px; accent-color: #e8bd62; cursor: pointer; }
   .scene-labo iframe {
     position: absolute;
     inset: 0;
@@ -76,6 +88,28 @@ const url = `/motion/${lang === 'fr' ? '' : 'en/'}${nom}.html`;
       io.observe(f);
     });
   }
+  /* Les contrôles : la scène dit où elle en est ({ essai, t, duree, joue }), la barre suit. */
+  function brancherControles() {
+    document.querySelectorAll<HTMLElement>('.scene-labo-controles').forEach((fig) => {
+      if (fig.dataset.controles) return;
+      fig.dataset.controles = '1';
+      const f = fig.querySelector('iframe')!;
+      const curseur = fig.querySelector<HTMLInputElement>('[data-sl-barre] input')!;
+      let duree = 1;
+      let pause = false;
+      window.addEventListener('message', (e) => {
+        if (e.source !== f.contentWindow || !e.data?.essai) return;
+        duree = e.data.duree || 1;
+        if (document.activeElement !== curseur) curseur.value = String(Math.round((e.data.t / duree) * 1000));
+      });
+      fig.querySelector('[data-sl-calque]')!.addEventListener('click', () => {
+        pause = !pause;
+        if (pause) { fig.dataset.pause = '1'; envoyer(f, { cmd: 'pause' }); } else { delete fig.dataset.pause; envoyer(f, { cmd: 'play' }); }
+      });
+      curseur.addEventListener('input', () => { pause = true; fig.dataset.pause = '1'; envoyer(f, { cmd: 'pause' }); envoyer(f, { cmd: 'seek', t: (Number(curseur.value) / 1000) * duree }); });
+    });
+  }
   brancherScenes();
-  document.addEventListener('astro:page-load', brancherScenes);
+  brancherControles();
+  document.addEventListener('astro:page-load', () => { brancherScenes(); brancherControles(); });
 </script>

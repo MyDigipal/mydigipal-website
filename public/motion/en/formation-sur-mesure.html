@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Votre formation, à votre marque</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@500;600&display=block" rel="stylesheet">
+<style>
+/* La formation sur mesure, en trois actes (page AI Training, demande de Paul du 14/10/2026) :
+   1. on écoute l'équipe en visio, ses demandes s'écrivent à côté de qui parle ;
+   2. les demandes volent dans le programme et en deviennent les lignes, le logo de la marque
+      se forme en particules d'or puis se pose ;
+   3. le programme se déploie en trois cartes en relief : en salle (la vraie photo de La Poste),
+      à distance, en ligne avec l'Academy. Les libellés vivent sous les cartes, jamais dessus.
+   render(t) est pur ; une seule famille pour les titres (Plus Jakarta Sans), Inter dans les écrans. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(900px 700px at 80% -10%,rgba(29,113,184,.32),rgba(8,19,31,0) 65%),radial-gradient(700px 600px at 0% 110%,rgba(232,189,98,.08),rgba(8,19,31,0) 60%)}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(140%);white-space:nowrap}
+#titre{position:absolute;left:72px;top:64px;z-index:9}
+#titre .k .ln{font-size:30px;font-weight:700;color:#7DB8EE;letter-spacing:.01em;margin-bottom:12px}
+#titre .t .ln{font-size:60px;font-weight:800;letter-spacing:-.035em;line-height:1.04}
+#titre .t .ln .o{color:#e8bd62}
+.titre-acte{position:absolute;left:0;top:0}
+
+/* Acte 1 : la visio. */
+#visio{position:absolute;left:72px;top:388px;width:600px;height:430px;border-radius:30px;background:#0d2135;box-shadow:0 60px 120px -50px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.08);font-family:Inter,sans-serif}
+#visio .barre{position:absolute;left:0;right:0;top:0;height:54px;display:flex;align-items:center;gap:10px;padding:0 22px;color:#a9b8c8;font-size:20px;font-weight:600}
+#visio .barre i{width:11px;height:11px;border-radius:9px;background:rgba(255,255,255,.18)}
+#visio .barre span{margin-left:10px}
+#visio .barre b{margin-left:auto;display:flex;align-items:center;gap:8px;color:#f4f7fa;font-weight:600}
+#visio .barre b:before{content:'';width:9px;height:9px;border-radius:9px;background:#ef4444}
+.tuile{position:absolute;width:274px;height:172px;border-radius:20px;background:#13304b;overflow:hidden}
+.tuile .av{position:absolute;left:50%;top:44%;width:74px;height:74px;margin:-37px 0 0 -37px;border-radius:99px;display:grid;place-items:center;font-size:28px;font-weight:600;color:#08131f}
+.tuile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%}
+.tuile .nom{position:absolute;left:10px;bottom:10px;padding:4px 10px;border-radius:8px;background:rgba(8,19,31,.78);font-size:19px;font-weight:600;color:#f4f7fa;white-space:nowrap}
+.tuile .anneau{position:absolute;inset:0;border-radius:20px;box-shadow:inset 0 0 0 4px #7DB8EE;opacity:0}
+#fils{position:absolute;left:0;top:0;width:1080px;height:1080px;pointer-events:none;z-index:4}
+#fils path{fill:none;stroke:#7DB8EE;stroke-width:2.5;stroke-linecap:round;opacity:.7}
+.note{position:absolute;left:712px;width:300px;padding:18px 20px;border-radius:20px;background:#fff;color:#0b1b2b;box-shadow:0 30px 60px -30px rgba(0,0,0,.9);z-index:6;transform-origin:0 50%}
+.note small{display:block;font-family:Inter,sans-serif;font-size:20px;font-weight:600;color:#1D71B8;margin-bottom:4px}
+.note p{margin:0;font-size:31px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+
+/* Acte 2 : le programme, en relief. */
+#scene3d{position:absolute;inset:0;perspective:1600px;perspective-origin:50% 40%}
+#prog{position:absolute;left:250px;top:300px;width:580px;height:640px;border-radius:30px;background:#fff;color:#0b1b2b;transform-origin:50% 0;box-shadow:0 70px 140px -60px rgba(0,0,0,.95);z-index:5}
+#prog .tete{position:absolute;left:0;right:0;top:0;height:170px;border-radius:30px 30px 0 0;background:linear-gradient(180deg,#f3f6fa,#fff)}
+#logo{position:absolute;left:44px;top:44px;width:230px;height:82px;display:flex;align-items:center}
+#logo img{max-width:100%;max-height:100%}
+#prog .t1{position:absolute;left:44px;top:180px;font-size:40px;font-weight:800;letter-spacing:-.03em}
+#prog .t2{position:absolute;left:44px;top:232px;font-family:Inter,sans-serif;font-size:23px;font-weight:600;color:#4b5b6b}
+#prog .badge{position:absolute;right:40px;top:58px;padding:8px 14px;border-radius:99px;background:#eaf3fb;color:#1D71B8;font-family:Inter,sans-serif;font-size:19px;font-weight:600}
+.ligne{position:absolute;left:36px;right:36px;height:60px;border-radius:16px;background:#f3f6fa;display:flex;align-items:center;gap:14px;padding:0 18px;font-size:27px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.ligne i{flex:none;width:30px;height:30px;border-radius:99px;background:#1D71B8;display:grid;place-items:center}
+.ligne i:after{content:'';width:12px;height:7px;border-left:3px solid #fff;border-bottom:3px solid #fff;transform:translateY(-2px) rotate(-45deg)}
+.ligne.or i{background:#e8bd62}
+#poussiere{position:absolute;left:0;top:0;width:1080px;height:1080px;pointer-events:none;z-index:8}
+
+/* Acte 3 : trois façons de suivre la formation. */
+.carte{position:absolute;top:640px;width:300px;height:244px;border-radius:24px;overflow:hidden;background:#0d2135;box-shadow:0 50px 100px -45px rgba(0,0,0,.95),inset 0 0 0 1px rgba(255,255,255,.1);z-index:3}
+.carte img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.carte.salle img{object-position:50% 40%}
+.grille{position:absolute;inset:16px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:9px}
+.grille i{position:relative;border-radius:12px;background:#13304b;display:grid;place-items:center}
+.grille i b{width:36px;height:36px;border-radius:99px}
+.grille i s{position:absolute;inset:0;border-radius:12px;box-shadow:inset 0 0 0 3px #7DB8EE;opacity:0}
+.academy{position:absolute;inset:0;background:radial-gradient(260px 180px at 80% 0%,rgba(232,189,98,.22),transparent 70%),#0d1424;font-family:Inter,sans-serif}
+.academy .ac-t{position:absolute;left:22px;top:18px;font-family:'Plus Jakarta Sans';font-size:26px;font-weight:800;color:#f4f7fa}
+.academy .ac-t em{font-style:normal;color:#e8bd62}
+.academy .mod{position:absolute;left:22px;right:22px;height:40px;border-radius:10px;background:rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;padding:0 12px;font-size:18px;font-weight:600;color:#c9d3dd;white-space:nowrap}
+.academy .mod u{flex:none;width:16px;height:16px;border-radius:99px;border:2px solid #e8bd62;text-decoration:none}
+.academy .mod u.ok{background:#e8bd62}
+.academy .pb{position:absolute;left:22px;right:22px;bottom:22px;height:10px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}
+.academy .pb span{display:block;height:100%;width:100%;background:#e8bd62;border-radius:99px;transform-origin:0 50%}
+.legende{position:absolute;top:904px;width:300px;text-align:center;z-index:3}
+.legende .mask .ln{font-size:38px;font-weight:800;letter-spacing:-.02em;text-align:center}
+.legende .s .ln{font-family:Inter,sans-serif;font-size:23px;font-weight:600;color:#a9b8c8;letter-spacing:0}
+#fils3{position:absolute;left:0;top:0;width:1080px;height:1080px;pointer-events:none;z-index:2}
+#fils3 path{fill:none;stroke:rgba(125,184,238,.5);stroke-width:2.5;stroke-linecap:round}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+
+  <div id="titre">
+    <div class="titre-acte" id="ta0"><div class="mask k"><span class="ln" data-txt="k0"></span></div><div class="mask t"><span class="ln" data-txt="t0a"></span></div><div class="mask t"><span class="ln" data-txt="t0b"></span></div></div>
+    <div class="titre-acte" id="ta1"><div class="mask k"><span class="ln" data-txt="k1"></span></div><div class="mask t"><span class="ln" data-txt="t1a"></span></div><div class="mask t"><span class="ln" data-txt="t1b"></span></div></div>
+    <div class="titre-acte" id="ta2"><div class="mask k"><span class="ln" data-txt="k2"></span></div><div class="mask t"><span class="ln" data-txt="t2a"></span></div><div class="mask t"><span class="ln" data-txt="t2b"></span></div></div>
+  </div>
+
+  <svg id="fils3" viewBox="0 0 1080 1080"><path id="f3a" pathLength="1"/><path id="f3b" pathLength="1"/><path id="f3c" pathLength="1"/></svg>
+
+  <div id="scene3d">
+    <!-- Acte 3 : les trois cartes (derrière le programme au départ). -->
+    <div class="carte salle" id="c0" style="left:60px"><img src="/images/accueil/formation-la-poste-800.avif" alt=""></div>
+    <div class="carte" id="c1" style="left:390px"><div class="grille">
+      <i><b style="background:#7DB8EE"></b><s></s></i><i><b style="background:#e8bd62"></b><s></s></i><i><b style="background:#3B8FD9"></b><s></s></i>
+      <i><b style="background:#a9b8c8"></b><s></s></i><i><b style="background:#7DB8EE"></b><s></s></i><i><b style="background:#e8bd62"></b><s></s></i>
+    </div></div>
+    <div class="carte" id="c2" style="left:720px"><div class="academy">
+      <div class="ac-t">AI <em>Academy</em></div>
+      <div class="mod" style="top:66px"><u class="ok"></u><span data-txt="m0"></span></div>
+      <div class="mod" style="top:114px"><u class="ok"></u><span data-txt="m1"></span></div>
+      <div class="mod" style="top:162px"><u></u><span data-txt="m2"></span></div>
+      <div class="pb"><span id="pb"></span></div>
+    </div></div>
+
+    <!-- Acte 2 : le programme. -->
+    <div id="prog">
+      <div class="tete"></div>
+      <div id="logo"><img id="logoImg" src="/images/Training Logo/Kering.svg" alt=""></div>
+      <div class="badge" data-txt="badge"></div>
+      <div class="t1" data-txt="prog"></div>
+      <div class="t2" data-txt="pour"></div>
+      <div class="ligne" id="l0" style="top:290px"><i></i><span data-txt="l0"></span></div>
+      <div class="ligne" id="l1" style="top:360px"><i></i><span data-txt="l1"></span></div>
+      <div class="ligne" id="l2" style="top:430px"><i></i><span data-txt="l2"></span></div>
+      <div class="ligne or" id="l3" style="top:500px"><i></i><span data-txt="l3"></span></div>
+      <div class="ligne or" id="l4" style="top:570px"><i></i><span data-txt="l4"></span></div>
+    </div>
+  </div>
+
+  <!-- Acte 1 : la visio et les demandes. -->
+  <div id="visio">
+    <div class="barre"><i></i><i></i><i></i><span data-txt="visio"></span><b data-txt="direct"></b></div>
+    <div class="tuile" style="left:18px;top:66px"><img src="/images/team/Team_Paul_Andre.webp" alt=""><div class="nom">Paul, MyDigipal</div><div class="anneau" id="a0"></div></div>
+    <div class="tuile" style="left:308px;top:66px"><div class="av" style="background:#7DB8EE">C</div><div class="nom" data-txt="r1"></div><div class="anneau" id="a1"></div></div>
+    <div class="tuile" style="left:18px;top:248px"><div class="av" style="background:#e8bd62">S</div><div class="nom" data-txt="r2"></div><div class="anneau" id="a2"></div></div>
+    <div class="tuile" style="left:308px;top:248px"><div class="av" style="background:#a9b8c8">M</div><div class="nom" data-txt="r3"></div><div class="anneau" id="a3"></div></div>
+  </div>
+  <svg id="fils" viewBox="0 0 1080 1080"><path id="fa" pathLength="1"/><path id="fb" pathLength="1"/><path id="fc" pathLength="1"/></svg>
+  <div class="note" id="n0" style="top:388px"><small data-txt="nk0"></small><p data-txt="n0"></p></div>
+  <div class="note" id="n1" style="top:540px"><small data-txt="nk1"></small><p data-txt="n1"></p></div>
+  <div class="note" id="n2" style="top:692px"><small data-txt="nk2"></small><p data-txt="n2"></p></div>
+
+  <canvas id="poussiere" width="1080" height="1080"></canvas>
+
+  <div class="legende" id="lg0" style="left:60px"><div class="mask"><span class="ln" data-txt="g0"></span></div><div class="mask s"><span class="ln" data-txt="gs0"></span></div></div>
+  <div class="legende" id="lg1" style="left:390px"><div class="mask"><span class="ln" data-txt="g1"></span></div><div class="mask s"><span class="ln" data-txt="gs1"></span></div></div>
+  <div class="legende" id="lg2" style="left:720px"><div class="mask"><span class="ln" data-txt="g2"></span></div><div class="mask s"><span class="ln" data-txt="gs2"></span></div></div>
+</div>
+<div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
+
+<script>
+window.STAGE = { w: 1080, h: 1080 };
+window.DUREE = 19.4;
+
+(function () {
+  'use strict';
+  var EN = /\/en\//.test(location.pathname) || /[?&]lang=en/.test(location.search);
+  var TXT = EN ? {
+    k0: '1 · We listen', t0a: 'Your tools, your teams,', t0b: 'your <span class="o">priorities</span>.',
+    k1: '2 · We build', t1a: 'A programme', t1b: 'with <span class="o">your name</span> on it.',
+    k2: '3 · We train', t2a: 'On-site, remote', t2b: 'or <span class="o">online</span>.',
+    visio: 'Diagnostic call', direct: 'Live', r1: 'Finance director', r2: 'Reporting lead', r3: 'Financial controller',
+    nk0: 'Tools', n0: 'Copilot, Excel, Teams', nk1: 'Team', n1: 'Finance, all levels', nk2: 'Priority', n2: 'Month-end reporting',
+    badge: 'Tailored', prog: 'AI programme', pour: 'Finance team, 3-hour sessions',
+    l0: 'Copilot, Excel, Teams', l1: 'Finance use cases', l2: 'Month-end reporting', l3: 'The CRAFT method', l4: 'Data security',
+    m0: 'The CRAFT method', m1: 'Copilot track', m2: 'Your first agent',
+    g0: 'On-site', gs0: 'at your offices', g1: 'Remote', gs1: 'Teams, Zoom or Meet', g2: 'Online', gs2: 'with the AI Academy'
+  } : {
+    k0: '1 · On vous écoute', t0a: 'Vos outils, vos équipes,', t0b: 'vos <span class="o">priorités</span>.',
+    k1: '2 · On construit', t1a: 'Un programme', t1b: '<span class="o">à votre marque</span>.',
+    k2: '3 · On forme', t2a: 'En salle, à distance', t2b: 'ou <span class="o">en ligne</span>.',
+    visio: 'Call de diagnostic', direct: 'En direct', r1: 'Directrice financière', r2: 'Responsable reporting', r3: 'Contrôleur de gestion',
+    nk0: 'Outils', n0: 'Copilot, Excel, Teams', nk1: 'Équipe', n1: 'La finance, tous niveaux', nk2: 'Priorité', n2: 'Le reporting du mois',
+    badge: 'Sur mesure', prog: 'Programme IA', pour: 'Équipe finance, séances de 3 h',
+    l0: 'Copilot, Excel, Teams', l1: 'Les cas de la finance', l2: 'Le reporting du mois', l3: 'La méthode CRAFT', l4: 'La sécurité des données',
+    m0: 'La méthode CRAFT', m1: 'Le parcours Copilot', m2: 'Votre premier agent',
+    g0: 'En salle', gs0: 'dans vos locaux', g1: 'À distance', gs1: 'Teams, Zoom ou Meet', g2: 'En ligne', gs2: 'avec l’AI Academy'
+  };
+  document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+  if (EN) document.documentElement.lang = 'en';
+
+  /* ---------- Courbes ---------- */
+  function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return c01((t - a) / (b - a)); }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function bez(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    return function (x) { var t = x; for (var i = 0; i < 8; i++) { var d = (3 * ax * t + 2 * bx) * t + cx, e = ((ax * t + bx) * t + cx) * t - x; if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } t = c01(t); return ((ay * t + by) * t + cy) * t; };
+  }
+  var A = bez(0.15, 1, 0.32, 1);           // entrée, courbe A
+  var S = bez(0.333, 0, 0.667, 0);         // sortie
+  function ressort(x) { if (x <= 0) return 0; if (x >= 1) return 1; var z = 0.55, w = 9; var wd = w * Math.sqrt(1 - z * z); var e = Math.exp(-z * w * x); return 1 - e * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x)); }
+  var $ = function (id) { return document.getElementById(id); };
+  function pose(el, o, tr) { el.style.opacity = o; el.style.transform = tr || ''; }
+
+  /* ---------- Titres : chaque acte monte de son masque, puis sort par le haut. ---------- */
+  var TITRES = [[0.3, 6.1], [6.9, 11.9], [12.6, 18.4]];
+  function titres(t) {
+    TITRES.forEach(function (p, i) {
+      var lns = $('ta' + i).querySelectorAll('.ln');
+      lns.forEach(function (ln, j) {
+        var e = A(seg(t, p[0] + j * 0.13, p[0] + j * 0.13 + 0.95));
+        var s = S(seg(t, p[1] + j * 0.06, p[1] + j * 0.06 + 0.4));
+        ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+      });
+    });
+  }
+
+  /* ---------- Les particules du logo : graine fixe, positions pures de t. ---------- */
+  var cv = $('poussiere'), cx = cv.getContext('2d');
+  var P = [];
+  function graine(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function echantillonner() {
+    var img = $('logoImg'), box = { x: 250 + 44, y: 300 + 44, w: 230, h: 82 };
+    var k = Math.min(box.w / (img.naturalWidth || 230), box.h / (img.naturalHeight || 82));
+    var w = Math.round((img.naturalWidth || 230) * k), h = Math.round((img.naturalHeight || 82) * k);
+    var off = document.createElement('canvas'); off.width = w; off.height = h;
+    var o = off.getContext('2d'); o.drawImage(img, 0, 0, w, h);
+    var d = o.getImageData(0, 0, w, h).data, pts = [];
+    for (var y = 0; y < h; y += 2) for (var x = 0; x < w; x += 2) if (d[(y * w + x) * 4 + 3] > 120) pts.push([box.x + x, box.y + (box.h - h) / 2 + y]);
+    var r = graine(1408);
+    for (var i = pts.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var tmp = pts[i]; pts[i] = pts[j]; pts[j] = tmp; }
+    pts = pts.slice(0, 1400);
+    P = pts.map(function (p, i) {
+      var a = r() * Math.PI * 2, rad = 260 + r() * 420;
+      return { x0: 540 + Math.cos(a) * rad, y0: 520 + Math.sin(a) * rad * 0.8, x1: p[0], y1: p[1], d: r() * 0.7, s: 1.2 + r() * 1.6, tour: (r() - 0.5) * 2.2 };
+    });
+  }
+  function poussiere(t) {
+    cx.clearRect(0, 0, 1080, 1080);
+    if (t < 7.2 || t > 10.2) return;
+    var fin = 1 - seg(t, 9.4, 10.0);
+    cx.fillStyle = '#e8bd62';
+    for (var i = 0; i < P.length; i++) {
+      var p = P[i], k = A(seg(t, 7.3 + p.d, 8.9 + p.d * 0.7));
+      var ang = p.tour * (1 - k);
+      var dx = p.x0 - p.x1, dy = p.y0 - p.y1;
+      var x = p.x1 + (dx * Math.cos(ang) - dy * Math.sin(ang)) * (1 - k);
+      var y = p.y1 + (dx * Math.sin(ang) + dy * Math.cos(ang)) * (1 - k);
+      cx.globalAlpha = Math.min(1, seg(t, 7.2 + p.d * 0.5, 7.6 + p.d * 0.5)) * fin * 0.95;
+      cx.fillRect(x, y, p.s * (1 - k) + 1.6, p.s * (1 - k) + 1.6);
+    }
+    cx.globalAlpha = 1;
+  }
+
+  /* ---------- Le rendu ---------- */
+  var LIGNES = [{ top: 290 }, { top: 360 }, { top: 430 }];
+  window.render = function (t) {
+    titres(t);
+    var boucle = S(seg(t, 18.4, 19.3));   // fermeture de boucle : tout descend et s'en va
+    var bas = boucle * 60;
+
+    // Acte 1 : la visio entre, les intervenants parlent tour à tour, leurs demandes s'écrivent.
+    var vIn = A(seg(t, 0.4, 1.2)), vOut = A(seg(t, 6.3, 7.1));
+    pose($('visio'), vIn * (1 - vOut), 'translate(' + ((1 - vIn) * -60 - vOut * 640).toFixed(1) + 'px,0) scale(' + lerp(1, 0.9, vOut) + ')');
+    // Paul ouvre, puis la directrice financière, le contrôleur de gestion, le responsable reporting.
+    var parle = [[0.9, 1.6], [1.6, 3.0], [4.4, 5.8], [3.0, 4.4]];
+    parle.forEach(function (p, i) { $('a' + i).style.opacity = Math.min(seg(t, p[0], p[0] + 0.2), 1 - seg(t, p[1], p[1] + 0.2)); });
+    // Chaque fil part de qui parle et finit à sa demande ; aucun ne traverse une tuile.
+    var CHEMINS = [
+      'M654 540 C 690 540, 680 440, 712 440',
+      'M654 722 C 690 722, 680 592, 712 592',
+      'M227 810 C 227 870, 640 870, 712 760'
+    ];
+    ['fa', 'fb', 'fc'].forEach(function (id, i) {
+      var el = $(id); el.setAttribute('d', CHEMINS[i]);
+      var k = A(seg(t, 1.7 + i * 1.4, 2.3 + i * 1.4));
+      el.style.strokeDasharray = '1'; el.style.strokeDashoffset = String(1 - k);
+      el.style.opacity = 0.7 * (1 - seg(t, 6.2, 6.6));
+    });
+    // Les demandes : elles naissent à côté de qui parle, puis volent vers les lignes du programme.
+    for (var i = 0; i < 3; i++) {
+      var n = $('n' + i);
+      var arr = A(seg(t, 1.9 + i * 1.4, 2.6 + i * 1.4));
+      var vol = A(seg(t, 6.9 + i * 0.55, 7.8 + i * 0.55));
+      var dx = (250 + 36) - 712, dy = (300 + LIGNES[i].top) - (388 + i * 152);
+      var sc = lerp(1, 0.86, vol);
+      pose(n, arr * (1 - seg(t, 7.7 + i * 0.55, 7.85 + i * 0.55)), 'translate(' + (dx * vol + (1 - arr) * 30).toFixed(1) + 'px,' + (dy * vol).toFixed(1) + 'px) scale(' + sc + ')');
+    }
+
+    // Acte 2 : le programme entre en pivotant, ses lignes reçoivent les demandes, le logo se forme.
+    var pIn = A(seg(t, 6.5, 7.6)), reduit = A(seg(t, 12.0, 13.2));
+    var prog = $('prog');
+    prog.style.opacity = pIn;
+    prog.style.transform = 'translate(' + ((1 - pIn) * 260 + reduit * 0).toFixed(1) + 'px,' + (reduit * -78 + bas).toFixed(1) + 'px) rotateY(' + ((1 - pIn) * -28).toFixed(2) + 'deg) scale(' + lerp(1, 0.5, reduit) + ')';
+    for (var j = 0; j < 5; j++) {
+      var l = $('l' + j);
+      var k2 = j < 3 ? A(seg(t, 7.75 + j * 0.55, 8.1 + j * 0.55)) : A(seg(t, 9.3 + (j - 3) * 0.45, 9.9 + (j - 3) * 0.45));
+      pose(l, k2, 'translateY(' + ((1 - k2) * (j < 3 ? 0 : 16)).toFixed(1) + 'px)');
+    }
+    var lg = seg(t, 9.2, 9.9);
+    $('logo').style.opacity = lg;
+    $('logo').style.transform = 'scale(' + lerp(0.94, 1, A(lg)) + ')';
+    poussiere(t);
+
+    // Acte 3 : les trois cartes sortent de derrière le programme et se posent en éventail.
+    var cibles = [{ x: 60, r: 14 }, { x: 390, r: 0 }, { x: 720, r: -14 }];
+    for (var c = 0; c < 3; c++) {
+      var k3 = ressort(seg(t, 12.7 + c * 0.25, 14.0 + c * 0.25));
+      var e3 = A(seg(t, 12.7 + c * 0.25, 13.6 + c * 0.25));
+      var x = lerp(390, cibles[c].x, k3), y = lerp(-180, 0, e3);
+      pose($('c' + c), e3, 'translate(' + (x - [60, 390, 720][c]).toFixed(1) + 'px,' + (y + bas).toFixed(1) + 'px) rotateY(' + (cibles[c].r * k3).toFixed(2) + 'deg) scale(' + lerp(0.7, 1, e3) + ')');
+      var lgd = $('lg' + c);
+      lgd.querySelectorAll('.ln').forEach(function (ln, q) {
+        var e = A(seg(t, 13.8 + c * 0.3 + q * 0.13, 14.7 + c * 0.3 + q * 0.13));
+        var s = S(seg(t, 18.4, 18.8));
+        ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+      });
+    }
+    ['f3a', 'f3b', 'f3c'].forEach(function (id, q) {
+      var x = [210, 540, 870][q];
+      $(id).setAttribute('d', 'M540 ' + (556 + bas) + ' C 540 ' + (600 + bas) + ', ' + x + ' ' + (590 + bas) + ', ' + x + ' ' + (640 + bas));
+      $(id).style.strokeDasharray = '1';
+      $(id).style.strokeDashoffset = String(1 - A(seg(t, 13.2 + q * 0.2, 14.0 + q * 0.2)));
+      $(id).style.opacity = 1 - boucle;
+    });
+    // Ce qui vit dans les cartes : la visio s'allume tour à tour, la barre de l'Academy avance.
+    var tuiles = document.querySelectorAll('#c1 .grille s');
+    tuiles.forEach(function (s, q) { var a = 14.4 + q * 0.5; s.style.opacity = Math.min(seg(t, a, a + 0.15), 1 - seg(t, a + 0.5, a + 0.65)); });
+    $('pb').style.transform = 'scaleX(' + lerp(0.12, 0.68, A(seg(t, 14.6, 16.8))).toFixed(3) + ')';
+    $('c0').querySelector('img').style.transform = 'scale(' + lerp(1.12, 1.0, seg(t, 12.7, 18.4)).toFixed(3) + ')';
+  };
+
+  window.PRET = Promise.all([
+    document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"'),
+    new Promise(function (ok) { var i = $('logoImg'); if (i.complete && i.naturalWidth) ok(); else { i.onload = ok; i.onerror = ok; } })
+  ]).then(function () { echantillonner(); });
+  window.render(0);
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

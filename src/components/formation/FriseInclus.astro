@@ -1,12 +1,14 @@
 ---
 /**
- * Ce qui est compris dans chaque séance, en trois temps : avant, pendant, après (14/10/2026).
- * La liste est celle de Paul, fusionnée avec ce que la page disait déjà ; rien d'autre.
- * Remplace « Comment nous créons votre formation » (TrainingProcess), qui racontait déjà
- * ce chemin. La ligne se dessine une fois à l'arrivée, puis chaque temps se pose à son
- * point ; sans script ou sous mouvement réduit, tout est déjà posé.
+ * Ce qui est compris dans chaque séance (14/10/2026, deuxième version). Paul a trouvé la liste
+ * à puces « chiante » et préférait l'ancienne section animée : on reprend donc le rail de
+ * « Comment nous créons votre formation » (`RailMorphing`, une forme qui voyage de station en
+ * station et change de forme), avec SA liste : diagnostic, formulaire aux participants, calls
+ * de brief et briefs écrits, programme sur le métier et contenu en avance, la séance,
+ * l'enregistrement et les recommandations. Rien d'autre n'est promis.
  */
 import type { Language } from '@/i18n/config';
+import RailMorphing from '@/components/motion/RailMorphing.astro';
 
 interface Props {
   lang: Language;
@@ -15,137 +17,42 @@ const { lang } = Astro.props;
 
 const T = {
   fr: {
-    titre: 'Ce qui est compris, avant, pendant et après chaque séance',
+    titre: 'Ce qui est compris, avant, pendant et après la séance',
     chapo: 'À distance comme en présentiel, en 3 heures comme à la journée. C’est ce travail autour de la séance qui la rend utile dès le lendemain.',
-    temps: [
-      {
-        nom: 'Avant',
-        icone: 'avant',
-        items: [
-          ['Un call de diagnostic', 'où en est l’équipe avec l’IA, quels outils, quels usages déjà en place'],
-          ['Un formulaire à chaque participant', 'pour connaître chacun et personnaliser encore'],
-          ['Plusieurs calls de brief, et des briefs écrits', 'pour caler le programme avec vous'],
-          ['Un programme bâti sur votre métier', 'les cas d’usage de vos équipes, dans vos outils'],
-          ['L’accès au contenu avant la séance', 'pour arriver avec ses questions'],
-        ],
-      },
-      {
-        nom: 'Pendant',
-        icone: 'pendant',
-        items: [
-          ['Une séance animée par un praticien', 'chacun travaille sur ses propres fichiers'],
-          ['Un support interactif', 'remis à chaque participant'],
-        ],
-      },
-      {
-        nom: 'Après',
-        icone: 'apres',
-        items: [
-          ['L’enregistrement des séquences', 'et la transcription écrite'],
-          ['Des recommandations d’outils', 'adaptées à votre contexte'],
-        ],
-      },
+    stations: [
+      { titre: 'Le diagnostic', texte: 'Un call pour savoir où en est l’équipe avec l’IA, ses outils, ses usages. Puis un formulaire à chaque participant, pour connaître chacun.', forme: 'loupe' },
+      { titre: 'Les briefs', texte: 'Plusieurs calls de brief et des briefs écrits : nous calons le programme avec vous, cas par cas.', forme: 'bulle' },
+      { titre: 'Votre programme', texte: 'Bâti sur les cas de votre métier, dans vos outils. Le contenu est accessible avant la séance.', forme: 'structure' },
+      { titre: 'La séance', texte: 'Animée par un praticien : chacun travaille sur ses propres fichiers, avec un support interactif remis à tous.', forme: 'curseur' },
+      { titre: 'Et après', texte: 'L’enregistrement des séquences, la transcription écrite, et des recommandations d’outils pour votre contexte.', forme: 'courbe' },
     ],
   },
   en: {
-    titre: 'What is included, before, during and after every session',
+    titre: 'What is included, before, during and after the session',
     chapo: 'Remote or on-site, three hours or a full day. The work around the session is what makes it useful the very next day.',
-    temps: [
-      {
-        nom: 'Before',
-        icone: 'avant',
-        items: [
-          ['A diagnostic call', 'where the team stands with AI, which tools, which uses are already in place'],
-          ['A questionnaire for every participant', 'to get to know each person and tailor even further'],
-          ['Several briefing calls, and written briefs', 'to shape the programme with you'],
-          ['A programme built on your trade', 'your teams’ use cases, in your tools'],
-          ['Access to the content before the session', 'so people arrive with their questions'],
-        ],
-      },
-      {
-        nom: 'During',
-        icone: 'pendant',
-        items: [
-          ['A session led by a practitioner', 'everyone works on their own files'],
-          ['Interactive material', 'handed to every participant'],
-        ],
-      },
-      {
-        nom: 'After',
-        icone: 'apres',
-        items: [
-          ['The recording of the sequences', 'and the written transcript'],
-          ['Tool recommendations', 'fitted to your context'],
-        ],
-      },
+    stations: [
+      { titre: 'The diagnostic', texte: 'A call to see where the team stands with AI, its tools, its uses. Then a questionnaire for every participant, to get to know each person.', forme: 'loupe' },
+      { titre: 'The briefs', texte: 'Several briefing calls and written briefs: we shape the programme with you, case by case.', forme: 'bulle' },
+      { titre: 'Your programme', texte: 'Built on the cases of your trade, in your tools. The content is available before the session.', forme: 'structure' },
+      { titre: 'The session', texte: 'Led by a practitioner: everyone works on their own files, with interactive material for all.', forme: 'curseur' },
+      { titre: 'And after', texte: 'The recording of the sequences, the written transcript, and tool recommendations for your context.', forme: 'courbe' },
     ],
   },
 }[lang];
 ---
 
-<section class="section-blanc fi" data-frise>
+<section class="section-blanc fi" id="compris">
   <div class="container-custom">
     <header class="fi-tete">
       <h2 class="titre-moyen text-encre">{T.titre}</h2>
       <p class="chapo">{T.chapo}</p>
     </header>
-    <ol class="fi-frise">
-      <span class="fi-ligne" aria-hidden="true"></span>
-      {T.temps.map((tp, i) => (
-        <li class={`fi-temps fi-${tp.icone}`} style={`--i:${i}`}>
-          <div class="fi-tete-temps"><span class="fi-point" aria-hidden="true"></span><h3>{tp.nom}</h3></div>
-          <ul>
-            {tp.items.map(([titre, texte]) => (
-              <li><strong>{titre}</strong><span>{texte}</span></li>
-            ))}
-          </ul>
-        </li>
-      ))}
-    </ol>
+    <RailMorphing lang={lang} stations={T.stations as { titre: string; texte: string; forme: 'loupe' | 'bulle' | 'structure' | 'curseur' | 'courbe' }[]} />
   </div>
 </section>
 
 <style>
   .fi { padding: 80px 0; }
   @media (min-width: 1024px) { .fi { padding: 120px 0; } }
-  .fi-tete { display: grid; gap: 18px; max-width: 820px; margin-bottom: 48px; }
-  .fi-frise { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
-  @media (min-width: 1024px) { .fi-frise { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr); gap: 40px; } }
-  .fi-ligne { display: none; }
-  @media (min-width: 1024px) {
-    .fi-ligne { display: block; position: absolute; left: 9px; right: 0; top: 9px; height: 2px; background: var(--color-marque); transform-origin: left center; }
-  }
-  .fi-tete-temps { display: grid; gap: 14px; justify-items: start; }
-  .fi-point { width: 20px; height: 20px; border-radius: 999px; background: #fff; border: 4px solid var(--color-marque); position: relative; z-index: 1; }
-  .fi-pendant .fi-point { background: var(--color-marque); }
-  .fi-tete-temps h3 { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; font-size: 22px; margin: 0; color: var(--encre); }
-  .fi-temps ul { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 14px; }
-  .fi-temps ul li { display: grid; gap: 2px; padding-left: 16px; position: relative; }
-  .fi-temps ul li::before { content: ''; position: absolute; left: 0; top: .6em; width: 6px; height: 6px; border-radius: 99px; background: var(--marque-clair); }
-  .fi-temps strong { font-weight: 600; color: var(--encre); }
-  .fi-temps span { font-size: 15px; color: #4B5B6B; }
-  @media (max-width: 1023px) {
-    .fi-temps { padding-left: 34px; position: relative; }
-    .fi-tete-temps { position: relative; }
-    .fi-point { position: absolute; left: -34px; top: 4px; }
-    .fi-temps:not(:last-child)::after { content: ''; position: absolute; left: 9px; top: 26px; bottom: -32px; width: 2px; background: var(--color-marque); opacity: .35; }
-  }
-  /* Le mouvement : l'état de départ n'existe que sous html.mv, la frise finit posée. */
-  :global(html.mv) .fi-frise:not(.fi-jouee) .fi-ligne { transform: scaleX(0); }
-  :global(html.mv) .fi-frise:not(.fi-jouee) .fi-temps { opacity: 0; transform: translateY(12px); }
-  .fi-jouee .fi-ligne { transition: transform 2.2s cubic-bezier(0.15, 1, 0.32, 1); }
-  .fi-jouee .fi-temps { transition: opacity .55s cubic-bezier(0.15, 1, 0.32, 1), transform .55s cubic-bezier(0.15, 1, 0.32, 1); transition-delay: calc(0.25s + var(--i) * 0.75s); }
+  .fi-tete { display: grid; gap: 18px; max-width: 820px; margin-bottom: 40px; }
 </style>
-
-<script>
-  function initFrise() {
-    document.querySelectorAll<HTMLElement>('[data-frise] .fi-frise').forEach((f) => {
-      if (f.dataset.pret) return;
-      f.dataset.pret = '1';
-      if (!document.documentElement.classList.contains('mv')) { f.classList.add('fi-jouee'); return; }
-      new IntersectionObserver(([e], o) => { if (e.isIntersecting) { f.classList.add('fi-jouee'); o.disconnect(); } }, { threshold: 0.3 }).observe(f);
-    });
-  }
-  initFrise();
-  document.addEventListener('astro:page-load', initFrise);
-</script>

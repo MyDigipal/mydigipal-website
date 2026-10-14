@@ -1,0 +1,281 @@
+---
+/**
+ * Ce que contient une séance de 3 h (14/10/2026). Le déroulé est celui des séances réellement
+ * données (3 h à distance, minutage revu après la première session ; voir le pilotage), sans
+ * nom de client. La frise est proportionnelle au temps ; une tête de lecture la parcourt et, à
+ * chaque partie, la scène de droite montre ce que font les participants. Chaque partie tient
+ * au moins 4 s ; un clic sur une partie y va, un clic sur la scène met en pause. Sans script ou
+ * sous mouvement réduit : la frise et toutes les parties sont lisibles, la première ouverte.
+ */
+import type { Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+const fr = lang === 'fr';
+
+type Partie = { min: number; nom: string; texte: string; scene: string; pause?: boolean };
+const PARTIES: Partie[] = fr
+  ? [
+      { min: 5, nom: 'Accueil', texte: 'Chacun dit son niveau : débutant, intermédiaire ou avancé. La séance s’ajuste dès la première minute.', scene: 'niveaux' },
+      { min: 20, nom: 'Votre cadre', texte: 'Les outils autorisés chez vous, vos règles internes, à qui s’adresser. Présenté avec votre équipe.', scene: 'cadre' },
+      { min: 30, nom: 'Comprendre l’IA', texte: 'Le vocabulaire, les risques, les règles du jeu, l’empreinte énergétique. Et un jeu pour démarrer : « IA ou pas IA ? »', scene: 'jeu' },
+      { min: 20, nom: 'La méthode CRAFT', texte: 'Contexte, rôle, action, format, ton : lettre par lettre, puis deux avant et après en direct, sur vos tâches.', scene: 'craft' },
+      { min: 15, nom: 'Exercice 1, seul', texte: 'Un prompt CRAFT sur une vraie tâche, minuteur lancé. Des volontaires partagent leur écran, on retravaille en direct.', scene: 'minuteur' },
+      { min: 10, nom: 'Pause', texte: 'Dix minutes, et les questions qui arrivent pendant.', scene: 'pause', pause: true },
+      { min: 30, nom: 'Aller plus loin', texte: 'Six techniques, la dictée, les instructions personnalisées, une hallucination prise sur le fait, un tableur interrogé à quatre niveaux.', scene: 'tableur' },
+      { min: 25, nom: 'Exercice 2, en équipe', texte: 'Un cas par équipe de cinq, un document partagé, les étapes réparties : un vrai livrable, avec ou sans fichier.', scene: 'equipe' },
+      { min: 15, nom: 'Restitution', texte: 'Chaque équipe montre son livrable, son prompt, et ce qui a coincé. On corrige ensemble.', scene: 'restitution' },
+      { min: 10, nom: 'Et demain', texte: 'Un agent et une automatisation en démonstration, et le plan d’action de chacun pour la semaine.', scene: 'demain' },
+    ]
+  : [
+      { min: 5, nom: 'Welcome', texte: 'Everyone states their level: beginner, intermediate or advanced. The session adjusts from minute one.', scene: 'niveaux' },
+      { min: 20, nom: 'Your framework', texte: 'The tools allowed in your company, your internal rules, who to ask. Presented with your team.', scene: 'cadre' },
+      { min: 30, nom: 'Understanding AI', texte: 'The vocabulary, the risks, the ground rules, the energy footprint. And a game to start: “AI or not AI?”', scene: 'jeu' },
+      { min: 20, nom: 'The CRAFT method', texte: 'Context, role, action, format, tone: letter by letter, then two live before-and-afters, on your tasks.', scene: 'craft' },
+      { min: 15, nom: 'Exercise 1, solo', texte: 'A CRAFT prompt on a real task, timer running. Volunteers share their screen and we rework it live.', scene: 'minuteur' },
+      { min: 10, nom: 'Break', texte: 'Ten minutes, and the questions that come up in between.', scene: 'pause', pause: true },
+      { min: 30, nom: 'Going further', texte: 'Six techniques, dictation, custom instructions, a hallucination caught red-handed, a spreadsheet questioned at four levels.', scene: 'tableur' },
+      { min: 25, nom: 'Exercise 2, in teams', texte: 'One case per team of five, a shared document, the steps split up: a real deliverable, with or without a file.', scene: 'equipe' },
+      { min: 15, nom: 'Show and tell', texte: 'Each team shows its deliverable, its prompt, and what got stuck. We fix it together.', scene: 'restitution' },
+      { min: 10, nom: 'Tomorrow', texte: 'An agent and an automation demonstrated, and everyone’s action plan for the week.', scene: 'demain' },
+    ];
+const total = PARTIES.reduce((a, p) => a + p.min, 0);
+let cumul = 0;
+const reperes = PARTIES.map((p) => { const debut = cumul; cumul += p.min; return { debut, fin: cumul }; });
+const horaire = (m: number) => `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')}`;
+
+const T = fr
+  ? {
+      titre: 'Trois heures, minute par minute',
+      chapo: 'Le déroulé de nos séances à distance. Jamais toute la théorie puis toute la pratique : on alterne, et chacun manipule.',
+      repart: 'Ils repartent avec',
+      repartListe: ['le support interactif', 'l’enregistrement et la transcription', 'le récapitulatif des prompts types', 'l’aide-mémoire des exercices', 'un plan d’action en cinq étapes'],
+      journee: 'Et à la journée',
+      journeeListe: ['un déjeuner réservé aux questions de chacun', 'ce que font les autres entreprises', 'un atelier en îlots : vos cas classés par faisabilité et impact', 'la donnée et les process, le socle de l’IA', 'une feuille de route collective, et ce que chacun fait lundi'],
+      jeuQ: 'Ce texte a-t-il été écrit par une IA ?', oui: 'IA', non: 'Pas IA',
+      niveaux: ['Débutant', 'Intermédiaire', 'Avancé'],
+      cadre: ['Outils autorisés', 'Données à ne jamais coller', 'Qui contacter'],
+      craft: [['C', 'Contexte'], ['R', 'Rôle'], ['A', 'Action'], ['F', 'Format'], ['T', 'Ton']],
+      minuteur: 'Écran partagé',
+      tableur: ['Question', 'Extraction', 'Analyse', 'Livrable'],
+      equipe: 'Document partagé',
+      restitution: ['Le livrable', 'Le prompt', 'Ce qui a coincé'],
+      demain: ['Digérer', 'Prendre le réflexe', 'Repérer où l’IA aide', 'Transmettre', 'Aller plus loin'],
+      pause: 'Pause',
+      aller: 'Aller à',
+    }
+  : {
+      titre: 'Three hours, minute by minute',
+      chapo: 'How our remote sessions run. Never all the theory then all the practice: we alternate, and everyone gets hands-on.',
+      repart: 'They leave with',
+      repartListe: ['the interactive material', 'the recording and transcript', 'a recap of the template prompts', 'the exercise cheat sheet', 'a five-step action plan'],
+      journee: 'And on a full day',
+      journeeListe: ['a lunch kept for everyone’s questions', 'what other companies are doing', 'a group workshop: your cases ranked by feasibility and impact', 'data and processes, the foundation of AI', 'a shared roadmap, and what everyone does on Monday'],
+      jeuQ: 'Was this text written by an AI?', oui: 'AI', non: 'Not AI',
+      niveaux: ['Beginner', 'Intermediate', 'Advanced'],
+      cadre: ['Allowed tools', 'Data never to paste', 'Who to ask'],
+      craft: [['C', 'Context'], ['R', 'Role'], ['A', 'Action'], ['F', 'Format'], ['T', 'Tone']],
+      minuteur: 'Shared screen',
+      tableur: ['Question', 'Extraction', 'Analysis', 'Deliverable'],
+      equipe: 'Shared document',
+      restitution: ['The deliverable', 'The prompt', 'What got stuck'],
+      demain: ['Digest', 'Build the habit', 'Spot where AI helps', 'Pass it on', 'Go further'],
+      pause: 'Break',
+      aller: 'Go to',
+    };
+---
+
+<section class="section-blanc s3" id="seance" data-seance>
+  <div class="container-custom">
+    <header class="s3-tete">
+      <h2 class="titre-moyen text-encre">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+    </header>
+
+    <!-- La frise : chaque partie a la largeur de sa durée. -->
+    <div class="s3-frise" role="tablist">
+      {PARTIES.map((p, i) => (
+        <button type="button" role="tab" class:list={['s3-bloc', { 's3-pause': p.pause, 's3-court': p.min < 10 }]} style={`flex:${p.min}`} data-i={i} aria-selected={i === 0 ? 'true' : 'false'} aria-label={`${T.aller} ${p.nom}`}>
+          <span class="s3-bloc-fond"><span class="s3-remplit"></span></span>
+          <span class="s3-bloc-nom">{p.nom}</span>
+          <span class="s3-bloc-min">{p.min} min</span>
+        </button>
+      ))}
+    </div>
+    <div class="s3-heures" aria-hidden="true"><span>0 h 00</span><span>1 h 00</span><span>2 h 00</span><span>3 h 00</span></div>
+
+    <div class="s3-corps">
+      <div class="s3-textes">
+        {PARTIES.map((p, i) => (
+          <article class:list={['s3-texte', { actif: i === 0 }]} data-texte={i}>
+            <p class="s3-quand">{horaire(reperes[i].debut)} · {p.min} min</p>
+            <h3>{p.nom}</h3>
+            <p>{p.texte}</p>
+          </article>
+        ))}
+      </div>
+
+      <div class="s3-scene" data-scene aria-hidden="true">
+        <div class="s3-vue actif" data-vue="niveaux"><div class="v-niveaux">{T.niveaux.map((n, k) => <span style={`--k:${k}`}><i></i>{n}</span>)}</div></div>
+        <div class="s3-vue" data-vue="cadre"><div class="v-cadre">{T.cadre.map((c, k) => <span style={`--k:${k}`}><b></b>{c}</span>)}</div></div>
+        <div class="s3-vue" data-vue="jeu"><div class="v-jeu"><p>{T.jeuQ}</p><div class="v-lignes"><i></i><i></i><i></i></div><div class="v-choix"><span>{T.oui}</span><span>{T.non}</span></div></div></div>
+        <div class="s3-vue" data-vue="craft"><div class="v-craft">{T.craft.map(([l, m], k) => <span style={`--k:${k}`}><b>{l}</b>{m}</span>)}</div></div>
+        <div class="s3-vue" data-vue="minuteur"><div class="v-minuteur"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="v-fond" /><circle cx="60" cy="60" r="50" class="v-arc" pathLength="1" /></svg><span>15:00</span><small>{T.minuteur}</small></div></div>
+        <div class="s3-vue" data-vue="pause"><div class="v-pause"><span>{T.pause}</span><small>10 min</small></div></div>
+        <div class="s3-vue" data-vue="tableur"><div class="v-tableur"><div class="v-grille">{Array.from({ length: 12 }, () => <i></i>)}</div><ol>{T.tableur.map((x, k) => <li style={`--k:${k}`}>{x}</li>)}</ol></div></div>
+        <div class="s3-vue" data-vue="equipe"><div class="v-equipe"><div class="v-tete">{[0, 1, 2, 3, 4].map((k) => <i style={`--k:${k}`}></i>)}</div><div class="v-doc"><small>{T.equipe}</small><i></i><i></i><i></i></div></div></div>
+        <div class="s3-vue" data-vue="restitution"><div class="v-restitution">{T.restitution.map((x, k) => <span style={`--k:${k}`}>{x}</span>)}</div></div>
+        <div class="s3-vue" data-vue="demain"><ol class="v-demain">{T.demain.map((x, k) => <li style={`--k:${k}`}>{x}</li>)}</ol></div>
+      </div>
+    </div>
+
+    <div class="s3-pied">
+      <div><h3>{T.repart}</h3><ul>{T.repartListe.map((x) => <li>{x}</li>)}</ul></div>
+      <div><h3>{T.journee}</h3><ul>{T.journeeListe.map((x) => <li>{x}</li>)}</ul></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .s3 { padding: 88px 0; }
+  @media (min-width: 1024px) { .s3 { padding: 128px 0; } }
+  .s3-tete { display: grid; gap: 18px; max-width: 820px; margin-bottom: 40px; }
+
+  .s3-frise { display: flex; gap: 4px; }
+  .s3-bloc { position: relative; min-width: 0; border: 0; background: transparent; padding: 0; cursor: pointer; text-align: left; display: grid; gap: 8px; }
+  .s3-bloc-fond { position: relative; display: block; height: 14px; border-radius: 99px; background: var(--brume); overflow: hidden; }
+  .s3-pause .s3-bloc-fond { background: repeating-linear-gradient(135deg, var(--brume) 0 6px, #fff 6px 10px); }
+  .s3-remplit { position: absolute; inset: 0; background: var(--color-marque); transform-origin: left center; transform: scaleX(0); }
+  .s3-bloc.fait .s3-remplit { transform: scaleX(1); }
+  .s3-bloc-nom { font-size: 13px; font-weight: 700; color: #4B5B6B; line-height: 1.2; overflow-wrap: anywhere; }
+  .s3-bloc-min { font-size: 12px; color: #7a8a9a; }
+  .s3-bloc[aria-selected='true'] .s3-bloc-nom { color: var(--encre); }
+  .s3-bloc:focus-visible { outline: 2px solid var(--color-marque); outline-offset: 4px; border-radius: 6px; }
+  @media (max-width: 899px) { .s3-bloc-nom, .s3-bloc-min { display: none; } .s3-bloc[aria-selected='true'] .s3-bloc-fond { outline: 2px solid var(--color-marque); outline-offset: 2px; } }
+  .s3-court .s3-bloc-nom, .s3-court .s3-bloc-min { visibility: hidden; }
+  .s3-heures { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: #7a8a9a; }
+
+  .s3-corps { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; align-items: center; }
+  @media (min-width: 1024px) { .s3-corps { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 56px; } }
+  .s3-textes { display: grid; }
+  /* L'ancien texte sort d'abord, vers le haut ; le nouveau entre ensuite : ils ne se superposent jamais. */
+  .s3-texte { grid-area: 1 / 1; opacity: 0; transform: translateY(-10px); transition: opacity .18s ease, transform .2s ease; pointer-events: none; }
+  .s3-texte.actif { opacity: 1; transform: none; pointer-events: auto; transition: opacity .45s cubic-bezier(0.15, 1, 0.32, 1) .22s, transform .55s cubic-bezier(0.15, 1, 0.32, 1) .22s; }
+  .s3-quand { margin: 0 0 8px; font-size: 14px; font-weight: 600; color: var(--color-marque); }
+  .s3-texte h3 { margin: 0 0 12px; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(28px, 3vw, 40px); line-height: 1.05; color: var(--encre); }
+  .s3-texte p:last-child { margin: 0; font-size: 18px; line-height: 1.6; color: #4B5B6B; max-width: 46ch; }
+
+  .s3-scene { position: relative; aspect-ratio: 16 / 11; border-radius: 28px; background: radial-gradient(500px 300px at 85% 0%, rgb(29 113 184 / 0.32), transparent 70%), var(--encre); overflow: hidden; cursor: pointer; box-shadow: var(--ombre-forte); }
+  .s3-vue { position: absolute; inset: 0; display: grid; place-items: center; padding: 8%; opacity: 0; transform: translateX(6%); transition: opacity .2s ease, transform .25s ease; color: #fff; }
+  .s3-vue.sortie { transform: translateX(-6%); }
+  .s3-vue.actif { opacity: 1; transform: none; transition: opacity .45s cubic-bezier(0.15, 1, 0.32, 1) .22s, transform .6s cubic-bezier(0.15, 1, 0.32, 1) .22s; }
+  .s3-vue * { box-sizing: border-box; }
+  /* Dans chaque vue, les éléments arrivent l'un après l'autre (--k), quand la vue devient active. */
+  .s3-vue [style*='--k'] { opacity: 0; transform: translateY(10px); transition: opacity .45s cubic-bezier(0.15, 1, 0.32, 1), transform .55s cubic-bezier(0.15, 1, 0.32, 1); transition-delay: calc(0.25s + var(--k) * 0.22s); }
+  .s3-vue.actif [style*='--k'] { opacity: 1; transform: none; }
+
+  .v-niveaux { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  .v-niveaux span { display: grid; justify-items: center; gap: 10px; padding: 22px 26px; border-radius: 20px; background: rgb(255 255 255 / 0.07); font-weight: 700; font-size: 18px; }
+  .v-niveaux i { width: 34px; height: 46px; border-radius: 16px 16px 8px 8px; background: var(--marque-clair); }
+  .v-cadre { display: grid; gap: 12px; width: 100%; max-width: 420px; }
+  .v-cadre span { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 16px; background: #fff; color: var(--encre); font-weight: 700; font-size: 18px; }
+  .v-cadre b { width: 26px; height: 26px; border-radius: 8px; background: var(--color-marque); flex: none; }
+  .v-jeu { width: 100%; max-width: 440px; border-radius: 22px; background: #fff; color: var(--encre); padding: 24px; display: grid; gap: 16px; }
+  .v-jeu p { margin: 0; font-weight: 800; font-size: 20px; }
+  .v-lignes { display: grid; gap: 8px; }
+  .v-lignes i { height: 10px; border-radius: 6px; background: var(--brume); }
+  .v-lignes i:nth-child(2) { width: 86%; } .v-lignes i:nth-child(3) { width: 64%; }
+  .v-choix { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .v-choix span { text-align: center; padding: 12px; border-radius: 12px; font-weight: 700; background: var(--brume); }
+  .s3-vue.actif .v-choix span:first-child { animation: choix 3s 1.2s both; }
+  @keyframes choix { 0%, 30% { background: var(--brume); color: var(--encre); } 40%, 100% { background: var(--color-marque); color: #fff; } }
+  .v-craft { display: grid; gap: 10px; width: 100%; max-width: 420px; }
+  .v-craft span { display: flex; align-items: center; gap: 16px; padding: 10px 14px; border-radius: 14px; background: rgb(255 255 255 / 0.07); font-weight: 700; font-size: 19px; }
+  .v-craft b { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--color-marque); font-family: var(--font-display); font-size: 22px; }
+  .v-minuteur { position: relative; display: grid; justify-items: center; gap: 12px; }
+  .v-minuteur svg { width: 180px; height: 180px; transform: rotate(-90deg); }
+  .v-minuteur circle { fill: none; stroke-width: 8; }
+  .v-fond { stroke: rgb(255 255 255 / 0.12); }
+  .v-arc { stroke: #e8bd62; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .s3-vue.actif .v-arc { animation: arc 4s linear both; }
+  @keyframes arc { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 0.7; } }
+  .v-minuteur span { position: absolute; top: 70px; font-family: var(--font-display); font-weight: 800; font-size: 34px; }
+  .v-minuteur small { font-size: 15px; color: var(--texte-sombre-2); }
+  .v-pause { display: grid; justify-items: center; gap: 6px; }
+  .v-pause span { font-family: var(--font-display); font-weight: 800; font-size: 48px; }
+  .v-pause small { color: var(--texte-sombre-2); font-size: 18px; }
+  .v-tableur { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 22px; align-items: center; width: 100%; }
+  .v-grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 14px; border-radius: 16px; background: #fff; }
+  .v-grille i { height: 26px; border-radius: 6px; background: var(--brume); }
+  .v-grille i:nth-child(3n+1) { background: #eaf3fb; }
+  .v-tableur ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .v-tableur li { padding: 10px 16px; border-radius: 12px; background: rgb(255 255 255 / 0.08); font-weight: 700; font-size: 17px; }
+  .v-tableur li:last-child { background: #e8bd62; color: var(--encre); }
+  .v-equipe { display: grid; gap: 18px; justify-items: center; width: 100%; }
+  .v-tete { display: flex; gap: 10px; }
+  .v-tete i { width: 40px; height: 40px; border-radius: 99px; background: var(--marque-clair); }
+  .v-tete i:nth-child(2n) { background: #e8bd62; }
+  .v-doc { width: 100%; max-width: 380px; border-radius: 18px; background: #fff; padding: 18px; display: grid; gap: 9px; }
+  .v-doc small { color: var(--color-marque); font-weight: 700; font-size: 14px; }
+  .v-doc i { height: 10px; border-radius: 6px; background: var(--brume); }
+  .v-doc i:nth-child(3) { width: 80%; } .v-doc i:nth-child(4) { width: 56%; }
+  .v-restitution { display: grid; gap: 12px; width: 100%; max-width: 380px; }
+  .v-restitution span { padding: 16px 18px; border-radius: 16px; background: #fff; color: var(--encre); font-weight: 800; font-size: 19px; }
+  .v-restitution span:last-child { background: rgb(255 255 255 / 0.1); color: #fff; }
+  .v-demain { list-style: none; counter-reset: d; margin: 0; padding: 0; display: grid; gap: 9px; width: 100%; max-width: 400px; }
+  .v-demain li { counter-increment: d; display: flex; gap: 12px; align-items: center; padding: 10px 14px; border-radius: 14px; background: rgb(255 255 255 / 0.07); font-weight: 700; font-size: 17px; }
+  .v-demain li::before { content: counter(d); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 99px; background: #e8bd62; color: var(--encre); font-size: 15px; flex: none; }
+
+  .s3-pied { margin-top: 56px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  @media (min-width: 900px) { .s3-pied { grid-template-columns: 1fr 1fr; gap: 48px; } }
+  .s3-pied h3 { margin: 0 0 12px; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: var(--encre); }
+  .s3-pied ul { margin: 0; padding: 0 0 0 20px; display: grid; gap: 6px; color: #4B5B6B; }
+
+  @media (prefers-reduced-motion: reduce) { .s3-vue, .s3-texte, .s3-vue [style*='--k'] { transition: none; } .s3-vue.actif .v-arc, .s3-vue.actif .v-choix span:first-child { animation: none; } }
+</style>
+
+<script>
+  /* La tête de lecture : 4,5 s par partie, la partie se remplit sur la frise ; un clic sur une
+     partie y va, un clic sur la scène met en pause ; elle ne démarre qu'à l'écran. */
+  function initSeance() {
+    document.querySelectorAll<HTMLElement>('[data-seance]').forEach((sec) => {
+      if (sec.dataset.pret) return;
+      sec.dataset.pret = '1';
+      const blocs = [...sec.querySelectorAll<HTMLButtonElement>('.s3-bloc')];
+      const textes = [...sec.querySelectorAll<HTMLElement>('[data-texte]')];
+      const vues = [...sec.querySelectorAll<HTMLElement>('[data-vue]')];
+      const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]fige=1/.test(location.search);
+      const PAS = 4500;
+      let i = 0, debut = 0, pause = false, raf = 0, visible = false, ecoule = 0;
+      function aller(n: number) {
+        i = (n + blocs.length) % blocs.length;
+        blocs.forEach((b, k) => { b.setAttribute('aria-selected', String(k === i)); b.classList.toggle('fait', k < i); const r = b.querySelector<HTMLElement>('.s3-remplit')!; r.style.transform = k < i ? 'scaleX(1)' : 'scaleX(0)'; });
+        textes.forEach((t, k) => t.classList.toggle('actif', k === i));
+        const nom = blocs[i].dataset.scene;
+        vues.forEach((v) => { const a = v.dataset.vue === nom; v.classList.toggle('sortie', v.classList.contains('actif') && !a); v.classList.toggle('actif', a); });
+        ecoule = 0; debut = performance.now();
+      }
+      blocs.forEach((b, k) => { b.dataset.scene = SCENES[k]; b.addEventListener('click', () => { aller(k); }); });
+      sec.querySelector('[data-scene]')!.addEventListener('click', () => { pause = !pause; if (!pause) debut = performance.now() - ecoule; });
+      aller(0);
+      if (reduit) return;
+      const boucle = (now: number) => {
+        if (visible && !pause) {
+          ecoule = now - debut;
+          const r = blocs[i].querySelector<HTMLElement>('.s3-remplit')!;
+          r.style.transform = `scaleX(${Math.min(1, ecoule / PAS)})`;
+          if (ecoule >= PAS) aller(i + 1);
+        }
+        raf = requestAnimationFrame(boucle);
+      };
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) debut = performance.now() - ecoule; }, { threshold: 0.35 }).observe(sec.querySelector('.s3-corps')!);
+      raf = requestAnimationFrame(boucle);
+      void raf;
+    });
+  }
+  const SCENES = ['niveaux', 'cadre', 'jeu', 'craft', 'minuteur', 'pause', 'tableur', 'equipe', 'restitution', 'demain'];
+  initSeance();
+  document.addEventListener('astro:page-load', initSeance);
+</script>

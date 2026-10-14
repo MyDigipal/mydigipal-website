@@ -1,0 +1,162 @@
+---
+/**
+ * Les parcours (14/10/2026, demande de Paul) : deux niveaux d'introduction (débutant,
+ * intermédiaire), puis quatre parcours spécialisés (agents, automatisations, serveur MCP,
+ * l'IA dans toute l'entreprise). Le contenu vient des séances réellement données et des
+ * offres en place (inventaire du pilotage) ; les prix « à partir de » viennent de la grille.
+ * Un chemin se dessine du débutant vers les spécialités ; chaque étape ouvre sa fiche, et une
+ * visite automatique les parcourt jusqu'au premier geste. Sans script : toutes les fiches
+ * sont dans le HTML, la première ouverte.
+ */
+import type { Language } from '@/i18n/config';
+import { GRILLE, type Devise } from '@/lib/formation/grille';
+import { montant } from '@/lib/formation/moteur';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+const fr = lang === 'fr';
+const dv: Devise = fr ? 'EUR' : 'USD';
+const des = (v: number) => (fr ? `À partir de ${montant(v, lang, dv)}` : `From ${montant(v, lang, dv)}`);
+
+type Fiche = { cle: string; groupe: string; nom: string; pour: string; apprend: string[]; construit: string; format: string };
+const FICHES: Fiche[] = fr
+  ? [
+      { cle: 'debutant', groupe: 'Introduction', nom: 'Débutant', pour: 'Ceux qui n’ont jamais vraiment utilisé l’IA, ou si peu.', apprend: ['Ce qu’est un modèle de langage, un prompt, une hallucination', 'L’outil autorisé chez vous, et les données à ne jamais coller', 'La méthode CRAFT, puis itérer et vérifier'], construit: 'Des exercices sur leurs vraies tâches : préparer une réunion, écrire un message délicat, résumer un long texte en cinq points.', format: 'Une séance de 3 h' },
+      { cle: 'intermediaire', groupe: 'Introduction', nom: 'Intermédiaire', pour: 'Ceux qui s’en servent déjà et veulent des résultats fiables.', apprend: ['Questions inversées, imitation de style, étape par étape, auto-évaluation', 'Les instructions personnalisées et le travail sur fichiers', 'Les garde-fous, et les images'], construit: 'Auditer un texte contre une charte puis le réécrire, transformer une note en brief, tirer l’histoire d’un tableau.', format: 'Une séance de 3 h ou une journée. Les deux niveaux peuvent tourner dans la même salle : chaque groupe choisit le sien.' },
+      { cle: 'agents', groupe: 'Spécialisé', nom: 'Créer vos agents', pour: 'Les équipes qui répètent les mêmes demandes chaque semaine.', apprend: ['Configurer une fois un assistant : ses instructions, ses documents de référence', 'En GPT, en Gem ou en agent Copilot, selon votre outil', 'Dans l’ordre : la tâche planifiée, l’agent, puis l’automatisation'], construit: 'Vos assistants, construits en séance : par exemple celui qui répond depuis vos documents, cite le passage, et dit « non précisé » quand la réponse n’y est pas.', format: 'Plusieurs séances de 3 h, sur devis' },
+      { cle: 'automatisations', groupe: 'Spécialisé', nom: 'Automatisations', pour: 'Growth managers, marketing ops, équipes opérations.', apprend: ['Des workflows n8n ou Make, construits en direct', 'Une validation humaine aux étapes sensibles', 'Enrichir des leads, synchroniser campagnes et reporting, recevoir les alertes d’erreur'], construit: 'Un workflow qui tourne chaque matin sans vous, et un plan à 30 jours.', format: `Une journée. ${des(GRILLE.parcours.automatisations[dv])}` },
+      { cle: 'mcp', groupe: 'Spécialisé', nom: 'Votre serveur MCP', pour: 'CMO techniques, fondateurs, consultants.', apprend: ['Une IA débranchée conseille, une IA branchée exécute', 'Définir les outils de votre serveur, le déployer sur votre infrastructure', 'Interroger toute votre stack marketing en langage naturel'], construit: 'Un serveur MCP sur mesure, en ligne chez vous, sa documentation complète et un mois de support.', format: `Deux jours. ${des(GRILLE.parcours.mcp[dv])}` },
+      { cle: 'entreprise', groupe: 'Spécialisé', nom: 'L’IA dans toute l’entreprise', pour: 'La direction, puis toutes les équipes.', apprend: ['Une sensibilisation pour tous, puis des ateliers par métier', 'Une règle d’équipe, et des ambassadeurs dans chaque service', 'Un atelier qui classe vos cas par faisabilité et impact'], construit: 'Vos cas d’usage priorisés et une feuille de route partagée par la direction.', format: 'Sur mesure : chiffrez-le avec le simulateur plus bas' },
+    ]
+  : [
+      { cle: 'debutant', groupe: 'Introduction', nom: 'Beginner', pour: 'People who have never really used AI, or barely.', apprend: ['What a language model, a prompt and a hallucination are', 'The tool allowed in your company, and the data never to paste', 'The CRAFT method, then iterating and checking'], construit: 'Exercises on their real tasks: preparing a meeting, writing a delicate message, summarising a long text in five points.', format: 'One 3-hour session' },
+      { cle: 'intermediaire', groupe: 'Introduction', nom: 'Intermediate', pour: 'People who already use it and want reliable results.', apprend: ['Reverse questions, style imitation, step by step, self-assessment', 'Custom instructions and working on files', 'Guardrails, and images'], construit: 'Auditing a text against guidelines then rewriting it, turning a note into a brief, finding the story in a spreadsheet.', format: 'One 3-hour session or a full day. Both levels can run in the same room: each group picks its own.' },
+      { cle: 'agents', groupe: 'Specialised', nom: 'Building your agents', pour: 'Teams who repeat the same requests every week.', apprend: ['Setting up an assistant once: its instructions, its reference documents', 'As a GPT, a Gem or a Copilot agent, depending on your tool', 'In order: the scheduled task, the agent, then the automation'], construit: 'Your assistants, built in the session: for instance one that answers from your documents, quotes the passage, and says “not stated” when the answer is not there.', format: 'Several 3-hour sessions, on quote' },
+      { cle: 'automatisations', groupe: 'Specialised', nom: 'Automations', pour: 'Growth managers, marketing ops, operations teams.', apprend: ['n8n or Make workflows, built live', 'A human check at the sensitive steps', 'Enriching leads, syncing campaigns and reporting, getting error alerts'], construit: 'A workflow that runs every morning without you, and a 30-day plan.', format: `One day. ${des(GRILLE.parcours.automatisations[dv])}` },
+      { cle: 'mcp', groupe: 'Specialised', nom: 'Your MCP server', pour: 'Technical CMOs, founders, consultants.', apprend: ['An unplugged AI advises, a plugged-in AI acts', 'Defining your server’s tools, deploying it on your infrastructure', 'Querying your whole marketing stack in plain language'], construit: 'A custom MCP server, live on your side, its full documentation and one month of support.', format: `Two days. ${des(GRILLE.parcours.mcp[dv])}` },
+      { cle: 'entreprise', groupe: 'Specialised', nom: 'AI across the company', pour: 'Leadership first, then every team.', apprend: ['An awareness session for all, then workshops by trade', 'A team policy, and champions in every department', 'A workshop that ranks your cases by feasibility and impact'], construit: 'Your prioritised use cases and a roadmap shared by leadership.', format: 'Tailored: price it with the simulator below' },
+    ];
+
+const T = fr
+  ? { titre: 'Deux niveaux pour démarrer, quatre parcours pour aller plus loin', chapo: 'Chaque équipe part de là où elle en est. Les parcours spécialisés se bâtissent sur votre projet, et nous prenons le temps de le comprendre.', pour: 'Pour qui', apprend: 'Ce qu’on y apprend', construit: 'Ce qu’ils en font', format: 'Format', intro: 'Introduction', spe: 'Spécialisés' }
+  : { titre: 'Two levels to get started, four tracks to go further', chapo: 'Every team starts from where it is. The specialised tracks are built on your project, and we take the time to understand it.', pour: 'For whom', apprend: 'What they learn', construit: 'What they do with it', format: 'Format', intro: 'Introduction', spe: 'Specialised' };
+
+// Les positions des étapes sur le chemin (viewBox 520 x 500).
+const POS = [
+  { x: 70, y: 430 }, { x: 70, y: 290 },
+  { x: 250, y: 70 }, { x: 250, y: 170 }, { x: 250, y: 270 }, { x: 250, y: 370 },
+];
+---
+
+<section class="section-encre section-monte pf2" id="parcours" data-parcours>
+  <div class="container-custom">
+    <header class="pf2-tete">
+      <h2 class="titre-moyen">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+    </header>
+
+    <div class="pf2-grille">
+      <div class="pf2-carte" aria-hidden="false">
+        <svg viewBox="0 0 520 500" class="pf2-svg" aria-hidden="true">
+          <path class="pf2-trait" pathLength="1" d="M70 430 V290" />
+          {[70, 170, 270, 370].map((y) => <path class="pf2-trait pf2-branche" pathLength="1" d={`M70 290 C 70 ${y + 10}, 150 ${y}, 250 ${y}`} />)}
+          <text x="20" y="485" class="pf2-groupe">{T.intro}</text>
+          <text x="235" y="28" class="pf2-groupe">{T.spe}</text>
+        </svg>
+        {FICHES.map((f, i) => (
+          <button type="button" class="pf2-etape" data-i={i} aria-pressed={i === 0 ? 'true' : 'false'} style={`left:${(POS[i].x / 520) * 100}%;top:${(POS[i].y / 500) * 100}%`}>
+            <span class="pf2-point"></span>
+            <span class="pf2-nom">{f.nom}</span>
+          </button>
+        ))}
+      </div>
+
+      <div class="pf2-fiches">
+        {FICHES.map((f, i) => (
+          <article class:list={['pf2-fiche', { actif: i === 0 }]} data-fiche={i}>
+            <p class="pf2-sur">{f.groupe}</p>
+            <h3>{f.nom}</h3>
+            <dl>
+              <div><dt>{T.pour}</dt><dd>{f.pour}</dd></div>
+              <div><dt>{T.apprend}</dt><dd><ul>{f.apprend.map((a) => <li>{a}</li>)}</ul></dd></div>
+              <div><dt>{T.construit}</dt><dd>{f.construit}</dd></div>
+              <div class="pf2-format"><dt>{T.format}</dt><dd>{f.format}</dd></div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pf2 { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .pf2 { padding: 128px 0 136px; } }
+  .pf2-tete { display: grid; gap: 18px; max-width: 820px; margin-bottom: 44px; }
+  .pf2-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; align-items: center; }
+  @media (min-width: 1024px) { .pf2-grille { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; } }
+
+  .pf2-carte { position: relative; width: 100%; max-width: 560px; aspect-ratio: 520 / 500; justify-self: center; }
+  .pf2-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .pf2-trait { fill: none; stroke: rgb(125 184 238 / 0.55); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .pf2-groupe { fill: var(--texte-sombre-2); font: 600 14px var(--font-sans); }
+  .pf2-etape { position: absolute; transform: translate(-50%, -50%); border: 0; background: transparent; padding: 0; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #fff; }
+  .pf2-point { width: 26px; height: 26px; border-radius: 99px; background: var(--encre); border: 4px solid var(--marque-clair); flex: none; transition: transform .35s cubic-bezier(0.15, 1, 0.32, 1), background-color .3s; }
+  .pf2-nom { position: absolute; left: 36px; top: 50%; transform: translateY(-50%); width: max-content; max-width: 220px; text-align: left; line-height: 1.25; font-weight: 700; font-size: clamp(14px, 1.4vw, 17px); color: var(--texte-sombre); padding: 6px 12px; border-radius: 99px; transition: background-color .3s, color .3s; }
+  @media (max-width: 639px) { .pf2-nom { max-width: 140px; font-size: 13px; padding: 4px 8px; } .pf2-point { width: 20px; height: 20px; } }
+  .pf2-etape[aria-pressed='true'] .pf2-point { background: #e8bd62; border-color: #e8bd62; transform: scale(1.25); }
+  .pf2-etape[aria-pressed='true'] .pf2-nom { background: #fff; color: var(--encre); }
+  .pf2-etape:focus-visible .pf2-nom { outline: 2px solid var(--marque-clair); }
+
+  .pf2-fiches { display: grid; }
+  .pf2-fiche { grid-area: 1 / 1; opacity: 0; transform: translateY(-10px); transition: opacity .18s ease, transform .2s ease; pointer-events: none; border-radius: 28px; padding: 28px; background: rgb(255 255 255 / 0.05); border: 1px solid var(--filet-sombre); }
+  @media (min-width: 768px) { .pf2-fiche { padding: 36px; } }
+  .pf2-fiche.actif { opacity: 1; transform: none; pointer-events: auto; transition: opacity .45s cubic-bezier(0.15, 1, 0.32, 1) .22s, transform .55s cubic-bezier(0.15, 1, 0.32, 1) .22s; }
+  .pf2-sur { margin: 0 0 6px; font-size: 14px; font-weight: 600; color: #e8bd62; }
+  .pf2-fiche h3 { margin: 0 0 20px; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(26px, 2.6vw, 34px); color: #fff; }
+  .pf2-fiche dl { margin: 0; display: grid; gap: 16px; }
+  .pf2-fiche dt { font-size: 13px; font-weight: 600; color: var(--marque-clair); margin-bottom: 4px; }
+  .pf2-fiche dd { margin: 0; color: var(--texte-sombre); font-size: 16px; line-height: 1.55; }
+  .pf2-fiche ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+  .pf2-format dd { font-weight: 700; color: #fff; }
+
+  /* Le chemin se dessine à l'arrivée ; sans script ou sous mouvement réduit, il est déjà là. */
+  :global(html.mv) [data-parcours]:not(.pf2-joue) .pf2-trait { stroke-dashoffset: 1; }
+  :global(html.mv) [data-parcours]:not(.pf2-joue) .pf2-etape { opacity: 0; }
+  .pf2-joue .pf2-trait { transition: stroke-dashoffset 1.4s cubic-bezier(0.15, 1, 0.32, 1); }
+  .pf2-joue .pf2-branche { transition-delay: .9s; }
+  .pf2-joue .pf2-etape { transition: opacity .5s cubic-bezier(0.15, 1, 0.32, 1); }
+  .pf2-joue .pf2-etape:nth-of-type(2) { transition-delay: .6s; }
+  .pf2-joue .pf2-etape:nth-of-type(n+3) { transition-delay: 1.8s; }
+</style>
+
+<script>
+  function initParcours() {
+    document.querySelectorAll<HTMLElement>('[data-parcours]').forEach((sec) => {
+      if (sec.dataset.pret) return;
+      sec.dataset.pret = '1';
+      const etapes = [...sec.querySelectorAll<HTMLButtonElement>('.pf2-etape')];
+      const fiches = [...sec.querySelectorAll<HTMLElement>('[data-fiche]')];
+      let i = 0, auto = true, minuterie = 0;
+      const aller = (n: number) => {
+        i = n;
+        etapes.forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+        fiches.forEach((f, k) => f.classList.toggle('actif', k === i));
+      };
+      etapes.forEach((b, k) => b.addEventListener('click', () => { auto = false; window.clearInterval(minuterie); aller(k); }));
+      const bouge = document.documentElement.classList.contains('mv');
+      if (!bouge) { sec.classList.add('pf2-joue'); return; }
+      new IntersectionObserver(([e], o) => {
+        if (!e.isIntersecting) return;
+        sec.classList.add('pf2-joue');
+        o.disconnect();
+        // La visite : 6 s par fiche (le temps de la lire), jusqu'au premier clic.
+        minuterie = window.setInterval(() => { if (auto) aller((i + 1) % etapes.length); }, 6000);
+      }, { threshold: 0.35 }).observe(sec.querySelector('.pf2-grille')!);
+    });
+  }
+  initParcours();
+  document.addEventListener('astro:page-load', initParcours);
+</script>

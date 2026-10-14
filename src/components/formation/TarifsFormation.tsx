@@ -18,6 +18,9 @@ import './tarifs.css';
 
 interface Props {
   lang: Lang;
+  /** Trois îlots partagent le même état (devise, format, effectif) par un événement de fenêtre :
+   *  les formats en haut de page, l'Academy plus bas, le simulateur plus bas encore. */
+  partie: 'formats' | 'academy' | 'simulateur';
   academyTtc: PrixAcademy;
   academyFaits: { lecons: number; heures: string; note: string; retours: number };
   academyHref: string;
@@ -69,7 +72,9 @@ function Devises({ valeur, surChoix, sombre }: { valeur: Devise; surChoix: (d: D
   );
 }
 
-export default function TarifsFormation({ lang, academyTtc, academyFaits, academyHref, contactHref, video }: Props) {
+const EVENEMENT = 'mdp-formation:etat';
+
+export default function TarifsFormation({ lang, partie, academyTtc, academyFaits, academyHref, contactHref, video }: Props) {
   const t = COPY[lang];
   const [etat, setEtat] = useState<Etat>(() => etatDefaut(lang));
   const [touche, setTouche] = useState(false);
@@ -77,7 +82,10 @@ export default function TarifsFormation({ lang, academyTtc, academyFaits, academ
   const [joues, setJoues] = useState<Record<string, boolean>>({});
   const [partage, setPartage] = useState('');
   const [formulaire, setFormulaire] = useState(false);
-  const simRef = useRef<HTMLElement>(null);
+  const etatRef = useRef<Etat>(etat);
+  etatRef.current = etat;
+  const [son, setSon] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const joursRef = useRef<Record<string, HTMLDivElement | null>>({});
 
   const r = useMemo(() => chiffrer(etat, academyTtc, lang), [etat, academyTtc, lang]);
@@ -117,25 +125,42 @@ export default function TarifsFormation({ lang, academyTtc, academyFaits, academ
     return () => obs.disconnect();
   }, [lang]);
 
-  // L'adresse suit le chiffrage dès que le visiteur a touché à quelque chose.
+  // Les trois îlots se tiennent au courant : un changement dans l'un se reporte dans les autres.
   useEffect(() => {
-    if (!touche) return;
+    const ecoute = (e: Event) => {
+      const d = (e as CustomEvent<{ etat: Etat; de: string }>).detail;
+      if (!d || d.de === partie) return;
+      setEtat(d.etat);
+      if (partie === 'simulateur') setTouche(true);
+    };
+    window.addEventListener(EVENEMENT, ecoute);
+    return () => window.removeEventListener(EVENEMENT, ecoute);
+  }, [partie]);
+
+  // L'adresse suit le chiffrage dès que le visiteur a touché à quelque chose (le simulateur seul l'écrit).
+  useEffect(() => {
+    if (!touche || partie !== 'simulateur') return;
     history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${versAdresse(etat)}`);
-  }, [etat, touche]);
+  }, [etat, touche, partie]);
 
   // La mesure des réglages, une fois le geste terminé (pas à chaque cran du curseur).
   useEffect(() => {
-    if (!touche) return;
+    if (!touche || partie !== 'simulateur') return;
     const id = window.setTimeout(() => pousser('training_simulator_change', {
       training_duration: etat.duree, training_mode: etat.mode, training_headcount_band: tranche(etat.n),
       training_groups: etat.groupes === 'pleniere' ? 'together' : etat.groupes === 'auto' ? 'auto' : 'custom',
       training_academy: etat.academy, currency: etat.devise,
     }), 900);
     return () => window.clearTimeout(id);
-  }, [etat, touche]);
+  }, [etat, touche, partie]);
 
-  const changer = (p: Partial<Etat>) => { setTouche(true); setEtat((e) => ({ ...e, ...p })); };
-  const allerAuSimulateur = () => simRef.current?.scrollIntoView({ behavior: bouge ? 'smooth' : 'auto', block: 'start' });
+  const changer = (p: Partial<Etat>) => {
+    const nouvel = { ...etatRef.current, ...p };
+    setTouche(true);
+    setEtat(nouvel);
+    window.dispatchEvent(new CustomEvent(EVENEMENT, { detail: { etat: nouvel, de: partie } }));
+  };
+  const allerAuSimulateur = () => document.getElementById('simulateur')?.scrollIntoView({ behavior: bouge ? 'smooth' : 'auto', block: 'start' });
 
   const choisirFormat = (duree: Duree, mode: Mode) => {
     changer({ duree, mode });
@@ -162,6 +187,7 @@ export default function TarifsFormation({ lang, academyTtc, academyFaits, academ
 
   return (
     <>
+      {partie === 'formats' && (
       <section className="section-encre section-monte tf-formats" id="formats">
         <div className="container-custom">
           <header className="tf-entete">
@@ -203,14 +229,26 @@ export default function TarifsFormation({ lang, academyTtc, academyFaits, academ
             })}
           </div>
 
+        </div>
+      </section>
+      )}
+
+      {partie === 'academy' && (
+      <section className="section-blanc tf-academy-section" id="academy">
+        <div className="container-custom">
           <div className="tf-academy">
-            <video src={video.src} poster={video.poster} muted loop playsInline autoPlay preload="none" aria-hidden="true" />
+            <div className="tf-video">
+              <video ref={videoRef} src={video.src} poster={video.poster} muted={!son} loop playsInline autoPlay preload="metadata" />
+              <button type="button" className="tf-son" onClick={() => { const v = videoRef.current; setSon(!son); if (v) { v.muted = son; if (!son) { v.currentTime = 0; v.play().catch(() => {}); } } }}>
+                {son ? t.academy.couper : t.academy.ecouter}
+              </button>
+            </div>
             <div>
               <p className="tf-academy-sur">{t.academy.sur}</p>
-              <h3>{t.academy.titre}</h3>
+              <h2 className="tf-academy-titre">{t.academy.titre}</h2>
               <p>{t.academy.texte}</p>
               <div className="tf-offre">
-                <div className="tf-offre-prix"><span className="chiffre">{M(avec)}</span><s>{M(sans)}</s><small>{t.academy.ht}</small></div>
+                <div className="tf-offre-prix"><span className="chiffre">{M(avec)}</span><s>{M(sans)}</s><small>{t.academy.ht}</small><Devises valeur={etat.devise} surChoix={(d) => changer({ devise: d })} sombre /></div>
                 <span className="tf-offre-texte">{t.academy.offre}</span>
               </div>
               <div className="tf-faits">
@@ -224,15 +262,12 @@ export default function TarifsFormation({ lang, academyTtc, academyFaits, academ
               </div>
             </div>
           </div>
-
-          <div className="tf-pied">
-            <p className="tf-inclus"><strong>{t.inclusTitre}</strong>{t.inclus.map((x) => <span key={x}>{Icone.coche}{x}</span>)}</p>
-            <p><strong>{t.parcoursTitre}</strong> {t.parcours(M(GRILLE.parcours.automatisations[etat.devise]))}</p>
-          </div>
         </div>
       </section>
+      )}
 
-      <section className="section-brume tf-simulateur" id="simulateur" ref={simRef}>
+      {partie === 'simulateur' && (
+      <section className="section-brume tf-simulateur" id="simulateur">
         <div className="container-custom">
           <header className="tf-sim-tete">
             <h2 className="titre-moyen text-encre">{t.sim.titre}</h2>
@@ -311,6 +346,8 @@ export default function TarifsFormation({ lang, academyTtc, academyFaits, academ
           </div>
         </div>
       </section>
+
+      )}
 
       {formulaire && <Formulaire lang={lang} etat={etat} academyTtc={academyTtc} surFermer={() => setFormulaire(false)} lienPartage={lienPartage} />}
     </>

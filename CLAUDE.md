@@ -1097,23 +1097,31 @@ La page actuelle (`[slug].astro`, `ai-training`) reste en ligne jusqu'à la vali
   `metadata.source = 'formation-simulator'`. Mesure : `training_simulator_change`,
   `training_format_select`, `training_quote_share`, `training_quote_open`, `training_quote_submit`
   (avec `user_data` et `event_id`, comme le calculateur).
-- **Les sections** (`components/formation/`) : `FriseInclus` (avant, pendant, après : la liste de Paul,
-  remplace `TrainingProcess`), `ApresFormation` (fusion des trois sections de bénéfices, autour des
-  tâches citées par les participants), `PreuvesFormation`, `AllerPlusLoin` (parcours techniques).
+- **Deuxième version (14/10 au soir, retours de Paul : « pas assez d'animation, pas assez détaillé »)** :
+  le simulateur n'est plus collé aux prix. Trois îlots `TarifsFormation` (`partie` = `formats`,
+  `academy`, `simulateur`) partagent l'état par l'événement `mdp-formation:etat`. Ordre : hero (scène),
+  formats (encre), `SeanceTroisHeures` (la séance minute par minute, d'après les séances réellement
+  données, sans nom de client), `ParcoursFormation` (débutant, intermédiaire, puis agents,
+  automatisations, serveur MCP, l'IA dans toute l'entreprise), `FriseInclus` (« ce qui est compris »
+  sur le rail `RailMorphing`, Paul préférait l'ancienne section animée à la liste), CRAFT et sécurité,
+  `ApresFormation`, par métier, `PreuvesFormation`, l'Academy (vidéo `presentation-v4-{lang}`, son au
+  clic ; Paul a refusé la démo `programme.mp4`), le simulateur, la FAQ.
   Réutilisés avec de nouvelles options sans effet ailleurs : `TrainingUseCases` (`fond`, `premiers`),
   `TrainingAgenda` (`fond`, `securiteForte`), `ServiceFAQ` (`contenu`, FAQ dans
   `data/formation/faq.ts`), `HeroService` et `FinalCTA` (`lienBudget`), `HeroService` (slot `panneau`
-  et `chiffres`).
+  et `chiffres`), `SceneLabo` (`controles` : barre de progression, pause au clic, aller à un instant).
 - **Les avis** : l'export des 497 retours est dans `mydigipal-academy/atelier/retours/`.
   `scripts/avis-formation.py` en tire `data/formation/stats-avis.json` (animation 9,5/10 sur 494 notes,
   85 % de 9 ou 10, 12 entreprises) ; la note globale reste celle de l'API (9,4, arbitrage de Paul).
   Les verbatims (`data/formation/avis.ts`) sont mot pour mot, avec la ligne de l'export ; l'autre langue
   est une traduction, signalée sous la citation. Auteur prénom + initiale. Jamais On Train.
-- **Le hero** : plus de tableau à palettes sur cette page (Paul, 14/10 : « j'aime pas cette animation
-  avec les chiffres qui défilent »), ni de chiffre qui bascule dans le simulateur. À la place,
-  `motion/SceneFormationSurMesure.astro` : on écoute l'équipe, son programme se construit et le logo de
-  sa marque s'y pose, puis la formation en salle, à distance ou en ligne. Fonction du temps, image
-  finale par défaut, barre de progression, pause au clic, rejouer ; `__scene.aller(t)` pour vérifier.
+- **Le hero** : plus de tableau à palettes sur cette page (Paul : « j'aime pas cette animation avec les
+  chiffres qui défilent »), ni de chiffre qui bascule. À la place, la scène du labo
+  `formation-sur-mesure` (`_shared/motion-lib/labo/essais/`, copiée dans `public/motion/` et
+  `public/motion/en/`, langue lue dans l'adresse) : la visio de diagnostic et les demandes qui
+  s'écrivent, le programme où le logo du client se forme en particules d'or, puis les trois cartes
+  en salle (la vraie photo de La Poste), à distance, en ligne. Une première scène faite à la main
+  dans le composant a été jugée « dégueulasse » et supprimée : les scènes se font au labo.
 - **Contact** : « Formation IA » / « AI Training » dans les puces, cochée par `?topic=formation`,
   `mcp`, `parcours-technique` ou `technical-track`.
 
