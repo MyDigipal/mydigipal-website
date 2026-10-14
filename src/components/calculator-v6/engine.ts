@@ -189,8 +189,8 @@ export function optionsFor(q: Question, answers: Answers): Option[] {
   }
   if (q.id === 'tr-format') {
     return [
-      { value: 'half', label: { fr: 'Demi-journée', en: 'Half day' }, desc: { fr: '3 heures', en: '3 hours' }, price: aiTrainingPricing.single.halfDay.price, oneOff: true, info: 'train:half' },
-      { value: 'full', label: { fr: 'Journée complète', en: 'Full day' }, desc: { fr: '6 h 30', en: '6.5 hours' }, price: aiTrainingPricing.single.fullDay.price, oneOff: true, info: 'train:full' }
+      { value: 'half', label: { fr: 'Séance de 3 h', en: '3-hour session' }, desc: { fr: 'Notre format de prédilection', en: 'Our preferred format' }, price: aiTrainingPricing.single.halfDay.price, oneOff: true, info: 'train:half' },
+      { value: 'full', label: { fr: 'Journée complète', en: 'Full day' }, desc: { fr: 'Pour aller au fond', en: 'To go deep' }, price: aiTrainingPricing.single.fullDay.price, oneOff: true, info: 'train:full' }
     ];
   }
   if (q.id === 'tr-sessions') {
@@ -307,10 +307,12 @@ export function devis(st: QuoteState): Quote {
     if (d === 'ai-training' && a['tr-format'] && typeof a['tr-sessions'] === 'number' && a['tr-mode']) {
       const n = a['tr-sessions'] as number;
       const tier = n >= 5 ? aiTrainingPricing.bulk : aiTrainingPricing.single;
-      const unit = a['tr-format'] === 'full' ? tier.fullDay.price : tier.halfDay.price;
       const full = a['tr-format'] === 'full';
-      lines.push({ kind: 'service', service: 'ai-training', label: { fr: `${full ? 'Journée complète' : 'Demi-journée'} x ${n}`, en: `${full ? 'Full day' : 'Half day'} x ${n}` },
-        level: { fr: `${full ? 'Journée complète' : 'Demi-journée'} x ${n} session(s)${a['tr-mode'] === 'onsite' ? ' (présentiel)' : ''}`, en: `${full ? 'Full day' : 'Half day'} x ${n} session(s)${a['tr-mode'] === 'onsite' ? ' (in-person)' : ''}` },
+      // Le présentiel coûte plus cher par séance (grille unique), en plus du déplacement.
+      const ecart = a['tr-mode'] === 'onsite' ? (full ? aiTrainingPricing.surcoutPresentiel.fullDay : aiTrainingPricing.surcoutPresentiel.halfDay) * (n >= 5 ? tier.halfDay.price / aiTrainingPricing.single.halfDay.price : 1) : 0;
+      const unit = (full ? tier.fullDay.price : tier.halfDay.price) + ecart;
+      lines.push({ kind: 'service', service: 'ai-training', label: { fr: `${full ? 'Journée complète' : 'Séance de 3 h'} x ${n}`, en: `${full ? 'Full day' : '3-hour session'} x ${n}` },
+        level: { fr: `${full ? 'Journée complète' : 'Séance de 3 h'} x ${n}${a['tr-mode'] === 'onsite' ? ' (présentiel)' : ''}`, en: `${full ? 'Full day' : '3-hour session'} x ${n}${a['tr-mode'] === 'onsite' ? ' (on-site)' : ''}` },
         amount: unit * n, per: 'once', info: `train:${a['tr-format']}` });
       if (a['tr-mode'] === 'onsite') lines.push({ kind: 'service', service: 'travel', label: { fr: 'Déplacement', en: 'Travel' }, amount: TRAVEL_COST, per: 'once', info: 'train:onsite' });
     }

@@ -1,124 +1,33 @@
 ---
+import { type Language, languages } from '@/i18n/config';
+
 /**
- * La nouvelle page AI Training, en travail (14/10/2026) : `noindex`, hors du sitemap, la page
- * actuelle (`[slug].astro`, `ai-training`) reste en ligne jusqu'à la validation de Paul.
- * Pilotage : docs/ai-training-refonte/index.html.
- *
- * Le rythme des fonds (jamais deux sections d'encre collées), deuxième version du 14/10 :
- * hero (blanc, la scène du labo) · formats (encre) · la séance de 3 h (blanc) · les parcours (encre) ·
- * ce qui est compris (blanc) · CRAFT et sécurité (brume) · après la formation (encre) · par métier (blanc) ·
- * preuves (encre) · l'Academy (blanc) · le simulateur (brume) · questions (blanc) · appel final.
+ * `/{lang}/services/ai-training-v2` : l'adresse de travail de la refonte du 14/10/2026, gardée
+ * vivante parce qu'elle a pu être partagée pendant la validation. La page vit à
+ * `/{lang}/services/ai-training`. Renvoi côté client (même raison que `academy-v2.astro` : les
+ * redirections de Render se saisissent dans son dashboard) ; le script garde le `#chiffrage&...`
+ * d'un lien partagé, qu'une balise meta ne transmettrait pas.
  */
-import PageLayout from '@/layouts/PageLayout.astro';
-import { type Language } from '@/i18n/config';
-import { getEntry } from 'astro:content';
-import { lireAcademy, faitsAcademy } from '@/components/accueil/donnees';
-import { ACADEMY_REPLI, type PrixAcademy } from '@/lib/formation/grille';
-import { faqFormation } from '@/data/formation/faq';
-
-import HeroService from '@/components/sections/HeroService.astro';
-import SceneLabo from '@/components/motion/SceneLabo.astro';
-import TarifsFormation from '@/components/formation/TarifsFormation.tsx';
-import FriseInclus from '@/components/formation/FriseInclus.astro';
-import SeanceTroisHeures from '@/components/formation/SeanceTroisHeures.astro';
-import ParcoursFormation from '@/components/formation/ParcoursFormation.astro';
-import ApresFormation from '@/components/formation/ApresFormation.astro';
-import TrainingUseCases from '@/components/sections/TrainingUseCases.astro';
-import TrainingAgenda from '@/components/sections/TrainingAgenda.astro';
-import PreuvesFormation from '@/components/formation/PreuvesFormation.astro';
-import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
-import FinalCTA from '@/components/sections/FinalCTA.astro';
-
 export function getStaticPaths() {
-  return [{ params: { lang: 'fr' } }, { params: { lang: 'en' } }];
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
 }
 
 const { lang } = Astro.params as { lang: Language };
-const fiche = await getEntry('services', `${lang}/ai-training`);
-if (!fiche) throw new Error(`Fiche ai-training introuvable pour ${lang}`);
-const { title, description, hero, seo } = fiche.data;
-
-// L'Academy : faits et prix publics lus dans son API au build, instantané en secours.
-const academy = await lireAcademy(lang);
-const faits = faitsAcademy(academy, lang);
-const programme = academy.offres?.find((o) => o.id === 'programme') as { prix?: Record<string, number> } | undefined;
-const academyTtc: PrixAcademy = programme?.prix?.EUR && programme.prix.GBP && programme.prix.USD
-  ? { EUR: programme.prix.EUR / 100, GBP: programme.prix.GBP / 100, USD: programme.prix.USD / 100 }
-  : ACADEMY_REPLI;
-
-const tableauHero = lang === 'fr'
-  ? [
-      { chiffre: '2 500', unite: '+', texte: 'personnes formées à l’IA' },
-      { chiffre: faits.note, unite: '/10', texte: 'note moyenne des participants' },
-      { chiffre: String(faits.retours), texte: 'retours de participants' },
-    ]
-  : [
-      { chiffre: '2,500', unite: '+', texte: 'people trained on AI' },
-      { chiffre: faits.note, unite: '/10', texte: 'average rating from participants' },
-      { chiffre: String(faits.retours), texte: 'participant reviews' },
-    ];
-
-// Les clients de formation (pas de Chanel ; Kering reste sur cette page).
-const heroLogos = [
-  { name: 'Kering', logo: '/images/Training Logo/Kering.svg' },
-  { name: 'Gucci', logo: '/images/Training Logo/Gucci.avif' },
-  { name: 'La Poste', logo: '/images/Training Logo/La poste.png' },
-  { name: 'Pierre Fabre', logo: '/images/Training Logo/Pierre fabre.avif' },
-  { name: 'Pernod Ricard', logo: '/images/Training Logo/Pernod Ricard.avif' },
-];
-
-const finale = lang === 'fr'
-  ? { title: 'Prêt à former votre équipe ?', subtitle: 'Chiffrez votre cas en une minute avec le simulateur, ou écrivez-nous : nous construisons chaque séance sur les cas de votre métier.' }
-  : { title: 'Ready to train your team?', subtitle: 'Price your case in a minute with the simulator, or write to us: we build every session on the cases of your trade.' };
+const cible = `/${lang}/services/ai-training`;
 ---
 
-<PageLayout lang={lang} title={seo?.title || title} description={seo?.description || description} noindex>
-  <HeroService
-    lang={lang}
-    badge={hero?.badge}
-    headline={hero?.headline || title}
-    subheadline={hero?.subheadline}
-    description={description}
-    chiffres={tableauHero.map((c) => ({ chiffre: `${c.chiffre}${c.unite ?? ''}`, texte: c.texte }))}
-    heroLogos={heroLogos}
-    serviceCalculateur="ai-training"
-    lienBudget="#simulateur"
-  >
-    <SceneLabo slot="panneau" lang={lang} nom="formation-sur-mesure" format="carre" repos={17} controles titre={lang === 'fr' ? 'Comment nous construisons votre formation' : 'How we build your training'} />
-  </HeroService>
-
-  <!-- Les formats et leurs prix (encre). Trois îlots partagent le même état : devise, format. -->
-  <TarifsFormation client:load partie="formats"
-    lang={lang}
-    academyTtc={academyTtc}
-    academyFaits={{ lecons: faits.lecons, heures: faits.heures, note: faits.note, retours: faits.retours }}
-    academyHref={`/${lang}/academy`}
-    contactHref={`/${lang}/contact?topic=formation`}
-    video={{ src: `/academy/videos/presentation-v4-${lang}.mp4`, poster: `/academy/videos/presentation-v4-${lang}.webp` }}
-  />
-  <SeanceTroisHeures lang={lang} />                    <!-- blanc : la séance minute par minute -->
-  <ParcoursFormation lang={lang} />                    <!-- encre : introduction et parcours spécialisés -->
-  <FriseInclus lang={lang} />                          <!-- blanc : ce qui est compris, le rail animé -->
-  <TrainingAgenda lang={lang} securiteForte />         <!-- brume : CRAFT et la sécurité des données -->
-  <ApresFormation lang={lang} />                       <!-- encre : ce qu'ils en font le lendemain -->
-  <TrainingUseCases lang={lang} fond="blanc" premiers={['bar-chart']} />
-  <PreuvesFormation lang={lang} note={faits.note} retours={faits.retours} />  <!-- encre -->
-  <TarifsFormation client:visible partie="academy"
-    lang={lang}
-    academyTtc={academyTtc}
-    academyFaits={{ lecons: faits.lecons, heures: faits.heures, note: faits.note, retours: faits.retours }}
-    academyHref={`/${lang}/academy`}
-    contactHref={`/${lang}/contact?topic=formation`}
-    video={{ src: `/academy/videos/presentation-v4-${lang}.mp4`, poster: `/academy/videos/presentation-v4-${lang}.webp` }}
-  />
-  <TarifsFormation client:visible partie="simulateur"
-    lang={lang}
-    academyTtc={academyTtc}
-    academyFaits={{ lecons: faits.lecons, heures: faits.heures, note: faits.note, retours: faits.retours }}
-    academyHref={`/${lang}/academy`}
-    contactHref={`/${lang}/contact?topic=formation`}
-    video={{ src: `/academy/videos/presentation-v4-${lang}.mp4`, poster: `/academy/videos/presentation-v4-${lang}.webp` }}
-  />
-  <ServiceFAQ lang={lang} service="ai-training" contenu={faqFormation(lang)} />
-  <FinalCTA lang={lang} title={finale.title} subtitle={finale.subtitle} lienBudget="#simulateur" />
-</PageLayout>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirection</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href={`https://mydigipal.com${cible}`} />
+    <script is:inline define:vars={{ cible }}>
+      window.location.replace(cible + window.location.search + window.location.hash);
+    </script>
+    <noscript><meta http-equiv="refresh" content={`0; url=${cible}`} /></noscript>
+  </head>
+  <body>
+    <p>Cette page a déménagé : <a href={cible}>{cible}</a></p>
+  </body>
+</html>

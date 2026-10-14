@@ -189,12 +189,12 @@ export function info(key: string | null | undefined, lang: Lang, currency: Curre
   if (type === 'train') {
     const p = aiTrainingPricing;
     const kick = domainName('ai-training', lang);
-    if (a === 'half') return { kick, title: L(lang, 'Demi-journée, 3 h', 'Half day, 3 hours'), meta: `${money(p.single.halfDay.price, currency, lang)}${L(lang, ' la session', ' per session')}`, list: cleanAll(halfDayFeatures[lang]).slice(0, 5), video: 'ai-training' };
-    if (a === 'full') return { kick, title: L(lang, 'Journée complète, 6 h 30', 'Full day, 6.5 hours'), meta: `${money(p.single.fullDay.price, currency, lang)}${L(lang, ' la session', ' per session')}`, text: L(lang, 'Le contenu de la demi-journée, et en plus :', 'Everything in the half day, plus:'), list: cleanAll(fullDayAdditionalFeatures[lang]).slice(0, 5), video: 'ai-training' };
+    if (a === 'half') return { kick, title: L(lang, 'Séance de 3 h', '3-hour session'), meta: `${money(p.single.halfDay.price, currency, lang)}${L(lang, ' la session', ' per session')}`, list: cleanAll(halfDayFeatures[lang]).slice(0, 5), video: 'ai-training' };
+    if (a === 'full') return { kick, title: L(lang, 'Journée complète', 'Full day'), meta: `${money(p.single.fullDay.price, currency, lang)}${L(lang, ' la session', ' per session')}`, text: L(lang, 'Le contenu de la séance de 3 h, et en plus :', 'Everything in the 3-hour session, plus:'), list: cleanAll(fullDayAdditionalFeatures[lang]).slice(0, 5), video: 'ai-training' };
     if (a === 'sessions') return { kick, title: L(lang, 'Tarif dégressif', 'Volume pricing'), list: [
       `${L(lang, '1 session : ', '1 session: ')}${money(p.single.halfDay.price, currency, lang)} / ${money(p.single.fullDay.price, currency, lang)}`,
       `${L(lang, 'À partir de 5 sessions : ', 'From 5 sessions: ')}${money(p.bulk.halfDay.price, currency, lang)} / ${money(p.bulk.fullDay.price, currency, lang)}${L(lang, ' la session', ' per session')}`
-    ], note: L(lang, 'Demi-journée / journée complète.', 'Half day / full day.') };
+    ], note: L(lang, 'Séance de 3 h / journée complète.', '3-hour session / full day.') };
     if (a === 'remote') return { kick, title: L(lang, 'À distance', 'Remote'), text: L(lang, 'En visio, sans frais de déplacement.', 'By video call, no travel costs.') };
     if (a === 'onsite') return { kick, title: L(lang, 'Dans vos locaux', 'At your office'), text: `${L(lang, 'Frais de déplacement de ', 'Travel costs of ')}${money(TRAVEL_COST, currency, lang)}${L(lang, ' en plus.', ' on top.')}` };
   }

@@ -1069,11 +1069,13 @@ servent dans leur `bottom`. Un nouvel élément flottant fait de même, et ne me
 glissement donne une hauteur partielle. `Assistant.tsx` et la bulle de reprise de
 `BaseLayout.astro` lisent donc sa classe `translate-y-0` et sa hauteur.
 
-## La page AI Training refaite (14/10/2026, en travail sur `/{lang}/services/ai-training-v2`)
+## La page AI Training refaite (14/10/2026, EN LIGNE sur `/{lang}/services/ai-training`)
 
 Pilotage : `docs/ai-training-refonte/index.html` (questions de prix, maquettes, décisions de Paul).
-La page actuelle (`[slug].astro`, `ai-training`) reste en ligne jusqu'à la validation de Paul ;
-`ai-training-v2.astro` est en `noindex` et hors du sitemap (le sitemap ne lit que les collections).
+Basculée le 14/10 au soir sur validation de Paul (« la nouvelle, elle est très bien ») : la page vit
+dans `services/ai-training.astro` (route statique) et `[slug].astro` ne génère plus `ai-training` ;
+l'ancienne page et ses sections propres ne sont plus rendues (« qu'on n'en ait plus qu'une »).
+`ai-training-v2.astro` n'est plus qu'un renvoi en `noindex` qui garde le `#chiffrage&...`.
 
 - **La gamme (Paul, 14/10)** : une séance de 3 h (le format qu'il préfère) ou une journée, à distance
   ou en présentiel, l'Academy en option. Plus de séances d'une ou deux heures, plus de one-to-one ni de
@@ -1084,8 +1086,10 @@ La page actuelle (`[slug].astro`, `ai-training`) reste en ligne jusqu'à la vali
   parcours techniques au double de l'ancienne grille, Academy hors taxes (prix TTC de l'API / 1,2 en
   euros et en livres) à -30 % avec une formation. ⚠️ Encore provisoires : le barème du déplacement, le
   niveau du webinaire, la portée des -30 % (toute formation ou présentiel seul), les livres par défaut
-  aux anglophones du Royaume-Uni. À la bascule, le calculateur (`ai-training-services.ts`), l'accueil
-  (`accueil/donnees.ts`) et la FAQ actuelle doivent lire cette grille.
+  aux anglophones du Royaume-Uni. Le calculateur (`calculator/data/ai-training-services.ts` lit la
+  grille : séance de 3 h, journée, écart du présentiel par séance, déplacement Paris par défaut,
+  -15 % dès 5 séances) et l'accueil (« la séance de 3 h ») la suivent depuis la bascule. Le
+  calculateur reste en euros convertis au taux, la page en prix fixés par devise.
 - **Le moteur** : `src/lib/formation/moteur.ts`, fonctions pures (`chiffrer`, `recommandation`,
   `montant`, `versAdresse` / `depuisAdresse`). Tests : `npm run test:formation` (Node 24 lit le
   TypeScript ; cas nommés calculés à la main). L'état part dans l'adresse en `#chiffrage&n=...&c=EUR`,

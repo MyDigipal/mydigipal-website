@@ -272,7 +272,7 @@ export function lignePrix(d: ServiceDomain, lang: Lang): LignePrix {
   }
   if (p.once) {
     if (d === 'ai-training') {
-      return { principal: fr ? `${montant(p.once, lang)} la demi-journée` : `${montant(p.once, lang)} per half day` };
+      return { principal: fr ? `${montant(p.once, lang)} la séance de 3 h` : `${montant(p.once, lang)} per 3-hour session` };
     }
     return { principal: fr ? `dès ${montant(p.once, lang)}` : `from ${montant(p.once, lang)}` };
   }

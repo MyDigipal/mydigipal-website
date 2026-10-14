@@ -3,7 +3,6 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import { type Language, languages } from '@/i18n/config';
 import { t } from '@/i18n/utils';
 import { getCollection } from 'astro:content';
-import { lireAcademy, faitsAcademy } from '@/components/accueil/donnees';
 import { kpiDe } from '@/lib/etudes-de-cas';
 
 // SEO Schemas
@@ -39,19 +38,7 @@ import PaidSocialChannels from '@/components/sections/PaidSocialChannels.astro';
 import PaidSocialProcess from '@/components/sections/PaidSocialProcess.astro';
 import PaidSocialServices from '@/components/sections/PaidSocialServices.astro';
 
-// AI Training specific sections
-import WhyAITraining from '@/components/sections/WhyAITraining.astro';
-import AITrainingModules from '@/components/sections/AITrainingModules.astro';
-import TrainingClients from '@/components/sections/TrainingClients.astro';
-import TrainingTestimonials from '@/components/sections/TrainingTestimonials.astro';
-import TrainingProcess from '@/components/sections/TrainingProcess.astro';
-import TrainingBenefitsManagers from '@/components/sections/TrainingBenefitsManagers.astro';
-import TrainingBenefitsEmployees from '@/components/sections/TrainingBenefitsEmployees.astro';
-import TrainingAgenda from '@/components/sections/TrainingAgenda.astro';
-import TrainingUseCases from '@/components/sections/TrainingUseCases.astro';
-import MCPBuildSection from '@/components/sections/MCPBuildSection.astro';
 import MarketingStackGrid from '@/components/sections/MarketingStackGrid.astro';
-import MCPTrainingTracks from '@/components/sections/MCPTrainingTracks.astro';
 
 // Emailing specific sections
 import WhyEmailing from '@/components/sections/WhyEmailing.astro';
@@ -115,6 +102,8 @@ export async function getStaticPaths() {
 
       for (const service of services) {
         const slug = service.id.replace(`${lang}/`, '').replace('.mdx', '');
+        // AI Training a sa propre page depuis la refonte du 14/10/2026 (`ai-training.astro`).
+        if (slug === 'ai-training') continue;
         paths.push({
           params: { lang, slug },
           props: { service },
@@ -155,24 +144,8 @@ const heroCas: Record<string, [string, number, string][]> = {
 if (heroCas[slug]) {
   metricsHero = await Promise.all(heroCas[slug].map(([cas, i, verif]) => kpiDe(lang, cas, i, verif)));
 }
-// AI Training : le tableau à palettes du hero (30/09/2026). « 2 500+ personnes formées »
-// est le chiffre de l'agence (remis à la demande de Paul) ; la note et le nombre de
-// retours viennent de l'API de l'Academy, instantané en secours.
-let tableauHero: { chiffre: string; unite?: string; texte: string }[] = [];
-if (slug === 'ai-training') {
-  const faits = faitsAcademy(await lireAcademy(lang), lang);
-  tableauHero = lang === 'fr'
-    ? [
-        { chiffre: '2 500', unite: '+', texte: 'personnes formées à l’IA' },
-        { chiffre: faits.note, unite: '/10', texte: 'note moyenne des participants' },
-        { chiffre: String(faits.retours), texte: 'retours de participants' },
-      ]
-    : [
-        { chiffre: '2,500', unite: '+', texte: 'people trained on AI' },
-        { chiffre: faits.note, unite: '/10', texte: 'average rating from participants' },
-        { chiffre: String(faits.retours), texte: 'participant reviews' },
-      ];
-}
+// Le tableau à palettes du hero n'était porté que par AI Training, qui a sa page depuis le 14/10/2026.
+const tableauHero: { chiffre: string; unite?: string; texte: string }[] = [];
 
 // Top feature titles surfaced as scannable "what you get" proof in the hero.
 const heroProofPoints = (features || []).slice(0, 4).map((f: { title: string }) => f.title);
@@ -182,13 +155,6 @@ const heroProofPoints = (features || []).slice(0, 4).map((f: { title: string }) 
 // acquisition clients shown by default on the other service pages.
 // Pas de Chanel (Paul, 27/09/2026) ; Kering reste sur cette page.
 const heroLogosByService: Record<string, { name: string; logo: string }[]> = {
-  'ai-training': [
-    { name: 'Kering', logo: '/images/Training Logo/Kering.svg' },
-    { name: 'Gucci', logo: '/images/Training Logo/Gucci.avif' },
-    { name: 'La Poste', logo: '/images/Training Logo/La poste.png' },
-    { name: 'Pierre Fabre', logo: '/images/Training Logo/Pierre fabre.avif' },
-    { name: 'Pernod Ricard', logo: '/images/Training Logo/Pernod Ricard.avif' },
-  ],
 };
 const heroLogos = heroLogosByService[slug];
 
@@ -201,8 +167,6 @@ const isSEOService = slug === 'seo';
 const isGoogleAdsService = slug === 'google-ads';
 // Check if this is the Paid Social service page
 const isPaidSocialService = slug === 'paid-social';
-// Check if this is the AI Training service page
-const isAITrainingService = slug === 'ai-training';
 // Check if this is the Emailing service page
 const isEmailingService = slug === 'emailing';
 // Check if this is the AI Solutions service page
@@ -215,7 +179,7 @@ const isTrackingService = slug === 'tracking-reporting';
 const isAIContentService = slug === 'ai-content';
 
 // Check if this is any AI service page (for blog section)
-const isAIService = isAITrainingService || isAISolutionsService || isAIContentService;
+const isAIService = isAISolutionsService || isAIContentService;
 
 // Blog articles data for AI service pages
 const blogArticles = {
@@ -381,25 +345,6 @@ const breadcrumbItems = [
     </>
   )}
 
-  <!-- AI Training Service: Interactive Sections -->
-  {isAITrainingService && (
-    <>
-      <!-- Direction Encre, correction de cap (30/09/2026) : un visuel dominant par section,
-           l'encre ponctue sans jamais deux sections sombres collées. -->
-      <WhyAITraining lang={lang} />                <!-- encre : quatre cartes de verre -->
-      <TrainingBenefitsManagers lang={lang} />     <!-- blanc : la photo de La Poste -->
-      <TrainingUseCases lang={lang} />             <!-- brume : les départements en cartes -->
-      <TrainingBenefitsEmployees lang={lang} />    <!-- encre : l'escalier des acquis -->
-      <TrainingAgenda lang={lang} />               <!-- brume : CRAFT sur la grille suisse -->
-      <TrainingProcess lang={lang} />              <!-- blanc : le rail -->
-      <AITrainingModules lang={lang} />            <!-- encre : les formats en objets -->
-      <TrainingClients lang={lang} />              <!-- blanc : 2 500+ et les logos -->
-      <TrainingTestimonials lang={lang} />         <!-- encre -->
-      <MarketingStackGrid lang={lang} />           <!-- blanc : la passerelle, les vrais logos -->
-      <MCPBuildSection lang={lang} />              <!-- encre : le serveur MCP, carte de verre -->
-      <MCPTrainingTracks lang={lang} />            <!-- brume -->
-    </>
-  )}
 
   <!-- Emailing Service: Interactive Sections -->
   {isEmailingService && (
@@ -497,7 +442,7 @@ const breadcrumbItems = [
   )}
 
   <!-- Testimonial Spotlight (skip for AI Training and B2B ABM which have their own testimonials) -->
-  {testimonial && !isAITrainingService && !isB2BABMService && !isGoogleAdsService && (
+  {testimonial && !isB2BABMService && !isGoogleAdsService && (
     <TestimonialSpotlight
       lang={lang}
       quote={testimonial.quote}
@@ -570,9 +515,6 @@ const breadcrumbItems = [
   )}
   {isPaidSocialService && (
     <ServiceFAQ lang={lang} service="paid-social" color={color} />
-  )}
-  {isAITrainingService && (
-    <ServiceFAQ lang={lang} service="ai-training" color="training" />
   )}
   {isEmailingService && (
     <ServiceFAQ lang={lang} service="emailing" color="emailing" />

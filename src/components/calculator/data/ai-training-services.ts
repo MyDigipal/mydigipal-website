@@ -23,46 +23,35 @@ export const aiTrainingConfig: AITrainingConfig = {
   colorClass: 'emerald'
 };
 
-// Pricing structure
+// Les prix viennent de LA grille des formations (`lib/formation/grille.ts`, 14/10/2026) : la page
+// AI Training, son simulateur, ce calculateur et l'accueil lisent les mêmes chiffres. Ici, en
+// euros et à distance ; le présentiel ajoute son écart par séance (`surcoutPresentiel`) et le
+// déplacement. La remise « dès 5 séances » est celle de la grille (-15 %).
+import { GRILLE } from '@/lib/formation/grille';
+const REMISE_5 = GRILLE.remises.find((r) => r.des === 5)?.taux ?? 0;
+const D = GRILLE.durees;
 export const aiTrainingPricing = {
-  // Single session pricing
   single: {
-    fullDay: {
-      price: 2800, // £2400 converted
-      duration: '6.5h',
-      name: 'Full Day',
-      nameFr: 'Journée complète'
-    },
-    halfDay: {
-      price: 1500, // £1300 converted
-      duration: '3h',
-      name: 'Half Day',
-      nameFr: 'Demi-journée'
-    }
+    fullDay: { price: D.jour.distance.EUR, duration: '1 day', name: 'Full day', nameFr: 'Journée complète' },
+    halfDay: { price: D['3h'].distance.EUR, duration: '3h', name: '3-hour session', nameFr: 'Séance de 3 h' },
   },
-  // 5+ sessions pricing (bulk discount)
   bulk: {
-    fullDay: {
-      price: 2200, // £1900 converted
-      duration: '6.5h',
-      name: 'Full Day',
-      nameFr: 'Journée complète'
-    },
-    halfDay: {
-      price: 1150, // £1000 converted
-      duration: '3h',
-      name: 'Half Day',
-      nameFr: 'Demi-journée'
-    }
+    fullDay: { price: Math.round(D.jour.distance.EUR * (1 - REMISE_5)), duration: '1 day', name: 'Full day', nameFr: 'Journée complète' },
+    halfDay: { price: Math.round(D['3h'].distance.EUR * (1 - REMISE_5)), duration: '3h', name: '3-hour session', nameFr: 'Séance de 3 h' },
   },
-  // In-person travel cost estimate (one-off fee)
+  /** L'écart du présentiel, par séance. */
+  surcoutPresentiel: {
+    halfDay: D['3h'].site.EUR - D['3h'].distance.EUR,
+    fullDay: D.jour.site.EUR - D.jour.distance.EUR,
+  },
+  // Le déplacement depuis Londres : Paris par défaut (le cas le plus courant), le reste au devis.
   travelCost: {
-    min: 300,
-    max: 700,
-    default: 500,
-    description: 'One-off travel fee based on client location (300€ nearby, 700€ if hotel required)',
-    descriptionFr: 'Frais de déplacement unique selon localisation (300€ proche, 700€ si hôtel nécessaire)'
-  }
+    min: GRILLE.deplacement.zones.londres.EUR,
+    max: GRILLE.deplacement.zones.europe.EUR,
+    default: GRILLE.deplacement.zones.paris.EUR,
+    description: 'Travel from London, depending on the destination and on a hotel night',
+    descriptionFr: 'Déplacement depuis Londres, selon la destination et une nuit d’hôtel',
+  },
 };
 
 // Half-day features
