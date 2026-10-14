@@ -97,7 +97,7 @@ export default function TarifsFormation({ lang, partie, academyTtc, academyFaits
     const depuis = depuisAdresse(window.location.hash, etatDefaut(lang));
     if (depuis) setEtat(depuis);
     else if (lang === 'en') {
-      // Provisoire, en attente de Paul : les livres aux visiteurs anglophones qui sont au Royaume-Uni.
+      // Les livres aux visiteurs anglophones qui sont au Royaume-Uni (décision de Paul du 14/10/2026).
       try {
         if (Intl.DateTimeFormat().resolvedOptions().timeZone === 'Europe/London') setEtat((e) => ({ ...e, devise: 'GBP' }));
       } catch { /* fuseau inconnu : dollars */ }

@@ -13,9 +13,9 @@
  * - l'Academy se vend hors taxes aux entreprises, à -30 % pour chaque salarié d'un client
  *   qui réserve une formation (et pour ses entreprises partenaires).
  *
- * ⚠️ Encore à valider par Paul (provisoire, mais en place) : le barème du déplacement, le
- * niveau du webinaire au-delà de 50 personnes, et la portée des -30 % (toute formation,
- * ou seulement le présentiel).
+ * Validé par Paul le 14/10/2026 au soir : le barème du déplacement par destination, +50 % pour
+ * une séance de plus de 50 personnes (format webinaire), les -30 % de l'Academy avec TOUTE
+ * formation (à distance comprise), et les livres par défaut aux anglophones du Royaume-Uni.
  */
 
 export type Devise = 'EUR' | 'GBP' | 'USD';

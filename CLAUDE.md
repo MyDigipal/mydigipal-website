@@ -1084,9 +1084,10 @@ l'ancienne page et ses sections propres ne sont plus rendues (« qu'on n'en ait 
   dollars), jamais convertis. 10 à 15 personnes idéal, +15 % de 21 à 50, +50 % au-delà (webinaire),
   remises de volume -5 à -20 %, déplacement depuis Londres par destination plus nuits d'hôtel,
   parcours techniques au double de l'ancienne grille, Academy hors taxes (prix TTC de l'API / 1,2 en
-  euros et en livres) à -30 % avec une formation. ⚠️ Encore provisoires : le barème du déplacement, le
-  niveau du webinaire, la portée des -30 % (toute formation ou présentiel seul), les livres par défaut
-  aux anglophones du Royaume-Uni. Le calculateur (`calculator/data/ai-training-services.ts` lit la
+  euros et en livres) à -30 % avec une formation. Validés par Paul le 14/10 au soir : le barème du
+  déplacement par destination, +50 % au-delà de 50 personnes (il a préféré garder la majoration à un
+  forfait webinaire), les -30 % avec toute formation, les livres par défaut aux anglophones du
+  Royaume-Uni. Le calculateur (`calculator/data/ai-training-services.ts` lit la
   grille : séance de 3 h, journée, écart du présentiel par séance, déplacement Paris par défaut,
   -15 % dès 5 séances) et l'accueil (« la séance de 3 h ») la suivent depuis la bascule. Le
   calculateur reste en euros convertis au taux, la page en prix fixés par devise.
