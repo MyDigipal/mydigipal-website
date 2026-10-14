@@ -6,9 +6,11 @@ interface Props {
   lang: Language;
   service: 'seo' | 'google-ads' | 'paid-social' | 'abm' | 'ai-training' | 'emailing' | 'ai-solutions' | 'tracking-reporting' | 'ai-content';
   color?: 'seo' | 'ads' | 'social' | 'abm' | 'training' | 'emailing' | 'ai' | 'tracking' | 'content' | 'primary';
+  /** Un contenu propre à la page (la FAQ de la formation, écrite sur la grille unique). */
+  contenu?: { title: string; subtitle?: string; faqs: { question: string; answer: string }[] };
 }
 
-const { lang, service, color = 'primary' } = Astro.props;
+const { lang, service, color = 'primary', contenu } = Astro.props;
 
 // `color` reste accepté (les pages le passent) : les questions ont un seul style
 // depuis la direction Encre (30/09/2026).
@@ -576,7 +578,7 @@ const faqContent = {
   },
 };
 
-const t = faqContent[service]?.[lang] || faqContent['seo'][lang];
+const t = contenu || faqContent[service]?.[lang] || faqContent['seo'][lang];
 const faqs = t.faqs;
 ---
 

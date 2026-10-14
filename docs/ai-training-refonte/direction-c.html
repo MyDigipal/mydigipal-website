@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Direction C, la phrase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="commun/base.css">
+<style>
+  .demande { padding: 72px 0 120px; }
+  @media (min-width: 1024px) { .demande { padding: 112px 0 168px; } }
+  .phrase { font-family: var(--display); font-weight: 700; letter-spacing: -0.025em; line-height: 1.5; font-size: clamp(26px, 3.6vw, 46px); margin: 18px 0 0; max-width: 1080px; color: var(--texte-sombre-2); }
+  .phrase .champ { color: #fff; font: inherit; letter-spacing: inherit; background: transparent; border: 0; border-bottom: 3px solid var(--marque-clair); border-radius: 0; padding: 0 2px; cursor: pointer; -webkit-appearance: none; appearance: none; line-height: 1.1; }
+  .phrase select.champ { padding-right: 1.05em; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237DB8EE' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right center; background-size: .7em; }
+  .phrase select.champ option { color: var(--encre); font-size: 16px; }
+  .phrase input.champ { width: 3.2ch; text-align: center; -moz-appearance: textfield; }
+  .phrase input.champ::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .phrase .champ:focus-visible { outline: 2px solid var(--marque-clair); outline-offset: 4px; }
+  .phrase [hidden] { display: none; }
+  .aide { margin-top: 22px; font-size: 14px; color: var(--texte-sombre-2); }
+
+  /* La réponse, comme un devis sur papier qui monte sur l'encre. */
+  .reponse { padding: 0 0 96px; }
+  .papier { background: #fff; border-radius: var(--rayon-scene); margin-top: calc(var(--rayon-scene) * -2.2); box-shadow: 0 30px 60px -30px rgba(11, 27, 43, .35); padding: 26px 20px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 34px; position: relative; }
+  @media (min-width: 768px) { .papier { padding: 48px 52px; } }
+  .papier-tete { display: grid; gap: 22px; }
+  @media (min-width: 900px) { .papier-tete { grid-template-columns: minmax(0, 1fr) auto; align-items: end; } }
+  .papier-tete h2 { font-family: var(--display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(24px, 2.6vw, 34px); line-height: 1.15; margin: 6px 0 0; }
+  .pp { text-align: left; }
+  @media (min-width: 900px) { .pp { text-align: right; } }
+  .pp .chiffre { font-size: clamp(48px, 6vw, 72px); line-height: .95; display: block; color: var(--marque); }
+  .pp span { font-size: 14px; color: var(--texte-2); }
+  .pp-devises { margin-top: 10px; }
+
+  /* Les séances, posées comme des cartes de planning. */
+  .seances { display: flex; flex-wrap: wrap; gap: 10px; }
+  .seance { border: 1px solid var(--filet); border-radius: 16px; padding: 12px 14px; display: grid; gap: 2px; min-width: 120px; transform-origin: 50% 100%; animation: pose .55s var(--entree) backwards; }
+  .seance strong { font-size: 15px; }
+  .seance span { font-size: 13px; color: var(--texte-2); }
+  .seance.academy { background: #FFF8E6; border-color: #F2DFA8; }
+  @keyframes pose { from { opacity: 0; transform: translateY(14px) scale(.96); } }
+
+  .compte { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  @media (min-width: 900px) { .compte { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 48px; } }
+  .lignes { margin: 0; display: grid; gap: 12px; }
+  .lignes div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; padding-bottom: 12px; border-bottom: 1px dashed var(--filet); }
+  .lignes dt { font-weight: 600; }
+  .lignes dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .lignes .detail { grid-column: 1 / -1; font-size: 13px; color: var(--texte-2); }
+  .total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-weight: 700; }
+  .total .chiffre { font-size: 30px; }
+  .reco { margin: 0; background: var(--marque-doux); border-radius: 16px; padding: 14px 16px; font-size: 15px; }
+  .reco:empty { display: none; }
+  .actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-content: start; min-width: 0; }
+  .actions .pilule { white-space: normal; text-align: center; }
+  .envoi { background: var(--brume); border-radius: 20px; padding: 18px; display: grid; gap: 10px; }
+  .envoi p { margin: 0; font-size: 14px; color: var(--texte-2); }
+  .envoi blockquote { margin: 0; font-size: 15px; background: #fff; border-radius: 12px; padding: 12px 14px; }
+  .partage-ok { font-size: 13px; color: var(--marque); min-height: 18px; }
+
+  /* La frise de ce qui est compris : avant, pendant, après. */
+  .frise-titre { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; font-size: 22px; margin: 0 0 6px; }
+  .frise { position: relative; display: grid; gap: 22px; margin-top: 18px; }
+  @media (min-width: 900px) { .frise { grid-template-columns: 1.6fr 1fr 1fr; gap: 28px; } }
+  .frise-ligne { display: none; }
+  @media (min-width: 900px) {
+    .frise-ligne { display: block; position: absolute; left: 6px; right: 6px; top: 7px; height: 2px; background: var(--marque); transform-origin: left; transform: scaleX(1); }
+    html.mv .frise:not(.jouee) .frise-ligne { transform: scaleX(0); }
+    .frise.jouee .frise-ligne { transition: transform 2.4s var(--entree); }
+  }
+  .temps { display: grid; gap: 10px; align-content: start; }
+  .temps-tete { display: grid; justify-items: start; gap: 12px; font-weight: 700; font-size: 17px; }
+  .temps-tete i { width: 16px; height: 16px; border-radius: 99px; background: #fff; border: 3px solid var(--marque); position: relative; z-index: 1; flex: none; }
+  .temps ul { list-style: none; margin: 0; padding: 0 0 0 16px; display: grid; gap: 8px; }
+  .temps li { font-size: 14px; color: var(--texte-2); position: relative; }
+  .temps li::before { content: ''; position: absolute; left: -16px; top: .62em; width: 6px; height: 6px; border-radius: 99px; background: var(--marque-clair); }
+  html.mv .frise:not(.jouee) .temps { opacity: 0; transform: translateY(10px); }
+  .frise.jouee .temps { transition: opacity .55s var(--entree), transform .55s var(--entree); }
+</style>
+</head>
+<body>
+<div class="provisoire">Maquette C. Prix provisoires, en attente de ta décision (<a href="index.html#questions">les questions</a>).</div>
+
+<section class="section-encre demande">
+  <div class="conteneur">
+    <p class="rubrique">Formats et tarifs</p>
+    <p class="phrase" id="phrase">
+      Nous voulons former
+      <input class="champ" id="n" type="number" min="1" max="2000" inputmode="numeric" aria-label="Nombre de personnes">
+      <span id="mot-personnes">personnes</span>,
+      en
+      <select class="champ" id="duree" aria-label="Durée"><option value="3h">séances de 3 heures</option><option value="jour">journées complètes</option></select>
+      <select class="champ" id="mode" aria-label="Mode"><option value="distance">à distance</option><option value="site">en présentiel</option></select><span id="bout-site">
+      <select class="champ" id="zone" aria-label="Lieu"><option value="londres">à Londres</option><option value="uk">au Royaume-Uni</option><option value="paris">à Paris</option><option value="france">en France ou dans un pays voisin</option><option value="europe">ailleurs en Europe</option><option value="monde">hors d'Europe</option></select>
+      <select class="champ" id="hotel" aria-label="Hôtel"><option value="0">sans hôtel</option><option value="1">avec hôtel</option></select></span>,
+      <select class="champ" id="groupes" aria-label="Groupes"><option value="auto">par groupes de 10 à 15</option><option value="pleniere">tous ensemble</option></select>,
+      <select class="champ" id="academy" aria-label="Academy"><option value="0">sans</option><option value="1">avec</option></select>
+      l'Academy pour continuer.
+    </p>
+    <p class="aide">Chaque mot souligné se change. La réponse s'écrit dessous, et son lien se partage tel quel.</p>
+  </div>
+</section>
+
+<section class="reponse">
+  <div class="conteneur">
+    <article class="papier" aria-live="polite">
+      <div class="papier-tete">
+        <div>
+          <p class="rubrique" style="margin:0">Votre chiffrage</p>
+          <h2 id="resume"></h2>
+        </div>
+        <div class="pp"><span class="chiffre" id="pp"></span><span>par personne, hors taxes</span><div id="devises-papier" class="pp-devises"></div></div>
+      </div>
+
+      <div class="seances" id="seances"></div>
+
+      <div class="compte">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-content:start;min-width:0">
+          <dl class="lignes" id="lignes"></dl>
+          <div class="total"><span>Total hors taxes</span><span class="chiffre" id="total"></span></div>
+          <p class="mention" style="margin:0">Prix indicatif. Le devis définitif suit un échange avec vous.</p>
+          <p class="reco" id="reco"></p>
+        </div>
+        <div class="actions">
+          <div class="envoi">
+            <p>Vous préparez la demande pour quelqu'un d'autre ? Envoyez-lui ce chiffrage, il le retrouvera à l'identique.</p>
+            <blockquote id="apercu"></blockquote>
+            <button class="pilule pilule-pleine" type="button" id="partager">Copier le lien pour mon responsable</button>
+            <span class="partage-ok" id="partage-ok"></span>
+          </div>
+          <div class="pilules"><button class="pilule pilule-contour" type="button">Recevoir ce devis par e-mail</button><a class="pilule pilule-contour" href="#" style="color:var(--encre)">Nous contacter</a></div>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="frise-titre">Ce qui est compris dans chaque séance</h3>
+        <p class="mention" style="margin:0">À distance comme en présentiel, en 3 heures comme à la journée.</p>
+        <div class="frise" id="frise">
+          <span class="frise-ligne"></span>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<script src="commun/moteur.js"></script>
+<script>
+(function () {
+  const S = window.MDP_SIM;
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]fige=1/.test(location.search);
+  if (!reduit) document.documentElement.classList.add('mv');
+  let etat = S.depuisAdresse(location.hash) || { ...S.ETAT_DEFAUT, n: 38 };
+  const M = (v) => S.montant(v, 'fr', etat.devise);
+  const selDevise = S.selecteurDevise(() => etat, (dv) => { etat.devise = dv; rendre(); });
+  const $ = (s) => document.querySelector(s);
+
+  /* La frise : avant, pendant, après. L'état par défaut est l'état final ; elle se joue une fois. */
+  const frise = $('#frise');
+  [['Avant la séance', S.INCLUS.avant], ['Pendant', S.INCLUS.pendant], ['Après', S.INCLUS.apres]].forEach(([titre, liste], i) => {
+    const d = document.createElement('div'); d.className = 'temps'; d.style.transitionDelay = `${0.35 + i * 0.8}s`;
+    d.innerHTML = `<div class="temps-tete"><i></i>${titre}</div><ul>${liste.map((x) => `<li>${x}</li>`).join('')}</ul>`;
+    frise.appendChild(d);
+  });
+  if (!reduit) new IntersectionObserver(([e], o) => { if (e.isIntersecting) { frise.classList.add('jouee'); o.disconnect(); } }, { threshold: 0.35 }).observe(frise);
+
+  /* Les champs de la phrase s'ajustent à leur mot. */
+  const mesure = document.createElement('span');
+  mesure.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;font:inherit;letter-spacing:inherit';
+  $('#phrase').appendChild(mesure);
+  function ajuster(sel) {
+    mesure.textContent = sel.options[sel.selectedIndex].text;
+    sel.style.width = `calc(${mesure.getBoundingClientRect().width}px + 1.2em)`;
+  }
+
+  const champs = ['duree', 'mode', 'zone', 'hotel', 'groupes', 'academy'];
+  champs.forEach((id) => $('#' + id).addEventListener('change', (e) => {
+    const v = e.target.value;
+    if (id === 'hotel' || id === 'academy') etat[id] = v === '1'; else etat[id] = v;
+    rendre();
+  }));
+  $('#n').addEventListener('input', (e) => { const v = parseInt(e.target.value, 10); if (v > 0) { etat.n = Math.min(2000, v); rendre(); } });
+
+  let signatureAvant = '';
+  function rendre() {
+    const r = S.chiffrer(etat);
+    if (document.activeElement !== $('#n')) $('#n').value = etat.n;
+    $('#n').style.width = `${String(etat.n).length + 0.9}ch`;
+    $('#mot-personnes').textContent = etat.n > 1 ? 'personnes' : 'personne';
+    $('#duree').value = etat.duree; $('#mode').value = etat.mode; $('#zone').value = etat.zone;
+    $('#hotel').value = etat.hotel ? '1' : '0'; $('#groupes').value = etat.groupes === 'pleniere' ? 'pleniere' : 'auto'; $('#academy').value = etat.academy ? '1' : '0';
+    $('#bout-site').hidden = etat.mode !== 'site';
+    champs.forEach((id) => ajuster($('#' + id)));
+
+    const d = S.GRILLE.durees[etat.duree];
+    $('#resume').textContent = r.seances > 1
+      ? `${r.n} personnes, ${r.seances} groupes, ${r.seances} ${etat.duree === '3h' ? 'séances de 3 h' : 'journées'} ${etat.mode === 'site' ? 'dans vos locaux' : 'à distance'}.`
+      : `${r.n} ${r.n > 1 ? 'personnes' : 'personne'}, ${etat.duree === '3h' ? 'une séance de 3 h' : 'une journée'} ${etat.mode === 'site' ? 'dans vos locaux' : 'à distance'}.`;
+    selDevise.maj();
+    $('#pp').textContent = M(r.parPersonne);
+
+    // Les cartes de séance se reposent seulement quand le découpage change.
+    const signature = r.groupes.join(',') + etat.duree + etat.mode + etat.academy;
+    if (signature !== signatureAvant) {
+      const montrees = r.groupes.slice(0, 12);
+      $('#seances').innerHTML = montrees.map((t, i) => `<div class="seance" style="animation-delay:${reduit ? 0 : i * 60}ms${reduit ? ';animation:none' : ''}"><strong>Séance ${i + 1}</strong><span>${t} pers., ${d.court}</span></div>`).join('')
+        + (r.groupes.length > 12 ? `<div class="seance"><strong>+ ${r.groupes.length - 12}</strong><span>autres séances</span></div>` : '')
+        + (etat.academy ? `<div class="seance academy" style="animation-delay:${montrees.length * 60}ms"><strong>Puis l'Academy</strong><span>${r.n} accès, à son rythme</span></div>` : '');
+      signatureAvant = signature;
+    }
+    $('#lignes').innerHTML = r.lignes.map((l) => `<div><dt>${l.libelle}</dt><dd>${M(l.montant)}</dd><span class="detail">${l.detail}</span></div>`).join('');
+    $('#total').textContent = M(r.total);
+    $('#reco').textContent = S.recommandation(etat);
+    const txt = (id) => { const s = $('#' + id); return s.options[s.selectedIndex].text; };
+    const lieu = etat.mode === 'site' ? ` ${txt('zone')} ${txt('hotel')}` : '';
+    $('#apercu').textContent = `Former ${etat.n} ${etat.n > 1 ? 'personnes' : 'personne'} en ${txt('duree')} ${txt('mode')}${lieu}, ${txt('groupes')}, ${txt('academy')} l'Academy : ${M(r.total)} HT, soit ${M(r.parPersonne)} par personne (indicatif).`;
+    history.replaceState(null, '', S.versAdresse(etat));
+  }
+  $('#partager').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(location.href); $('#partage-ok').textContent = 'Lien copié.'; } catch { $('#partage-ok').textContent = location.href; }
+  });
+  $('#devises-papier').appendChild(selDevise);
+  if (document.fonts) document.fonts.ready.then(() => champs.forEach((id) => ajuster($('#' + id))));
+  rendre();
+})();
+</script>
+</body>
+</html>

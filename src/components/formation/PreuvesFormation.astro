@@ -1,0 +1,152 @@
+---
+/**
+ * Les preuves de la page AI Training (14/10/2026) : les logos et les verbatims réunis.
+ * - la note et le nombre de retours viennent de l'API de l'Academy (instantané en secours) ;
+ * - la note de l'animation et la part des 9 et 10 viennent de l'export des retours
+ *   (`data/formation/stats-avis.json`, écrit par `scripts/avis-formation.py`) ;
+ * - les verbatims sont ceux des participants, mot pour mot (`data/formation/avis.ts`).
+ */
+import type { Language } from '@/i18n/config';
+import { AVIS } from '@/data/formation/avis';
+import stats from '@/data/formation/stats-avis.json';
+import { mesurerLogos, type LogoMesure } from '@/lib/logos-mesures';
+
+interface Props {
+  lang: Language;
+  note: string;
+  retours: number;
+}
+const { lang, note, retours } = Astro.props;
+
+const nombre = (v: number) => v.toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: v % 1 ? 1 : 0 });
+const T = {
+  fr: {
+    titre: 'Ils l’ont suivie. Voici ce qu’ils en disent.',
+    chapo: `Chaque séance se termine par un questionnaire. ${retours} participants l’ont rempli, de 2022 à aujourd’hui.`,
+    chiffres: [
+      [`${note}/10`, `note moyenne, sur ${retours} retours écrits`],
+      [`${nombre(stats.animation.moyenne)}/10`, `pour l’animation, sur ${stats.animation.notes} notes`],
+      [`${stats.animation.part9et10} %`, 'donnent 9 ou 10 à l’animation'],
+      [`${stats.entreprises}`, 'entreprises formées, en France, au Royaume-Uni et ailleurs'],
+    ],
+    traduit: 'traduit de l’anglais',
+    logos: 'Ils nous ont confié leurs équipes',
+  },
+  en: {
+    titre: 'They took it. Here is what they say.',
+    chapo: `Every session ends with a questionnaire. ${retours} participants have filled it in since 2022.`,
+    chiffres: [
+      [`${note}/10`, `average rating, from ${retours} written reviews`],
+      [`${nombre(stats.animation.moyenne)}/10`, `for the trainer, from ${stats.animation.notes} ratings`],
+      [`${stats.animation.part9et10}%`, 'give the trainer 9 or 10'],
+      [`${stats.entreprises}`, 'companies trained, in France, the UK and beyond'],
+    ],
+    traduit: 'translated from French',
+    logos: 'They trusted us with their teams',
+  },
+}[lang];
+
+const [vedette, ...autres] = AVIS;
+const L = '/images/Training Logo/';
+const LOGOS = [
+  ['Kering', 'Kering.svg'], ['Gucci', 'Gucci.avif'], ['La Poste', 'La poste.png'], ['Pierre Fabre', 'Pierre fabre.avif'],
+  ['Pernod Ricard', 'Pernod Ricard.avif'], ['La Redoute', 'La Redoute.svg'], ['Moët Hennessy', 'Moet_Hennessy_Logo.png'],
+  ['Balenciaga', 'Balenciaga-logo.webp'], ['GL Events', 'GL events.png'], ['Datawords', 'Datawords.png'],
+  ['Kaufman & Broad', 'Kaufman broad.avif'], ['E.Leclerc', 'Leclerc.png'],
+];
+// Les logos à SURFACE égale, comme sur l'accueil : la version détourée quand elle existe.
+const DETOURES: Record<string, string> = {
+  Gucci: 'gucci', 'La Poste': 'la-poste', 'Pierre Fabre': 'pierre-fabre', 'Pernod Ricard': 'pernod-ricard',
+  'La Redoute': 'la-redoute', 'Moët Hennessy': 'moet-hennessy', Balenciaga: 'balenciaga', 'GL Events': 'gl-events',
+  Datawords: 'datawords', 'Kaufman & Broad': 'kaufman-broad', 'E.Leclerc': 'leclerc',
+};
+const mesures = await mesurerLogos(LOGOS.map(([name, f]) => ({ name, logo: `${L}${f}` })), DETOURES);
+const parNom = Object.fromEntries(mesures.map((m) => [m.name, m]));
+const hauteur = (m: LogoMesure | undefined, surface: number, min: number, max: number) =>
+  m?.largeur && m.hauteur ? Math.round(Math.min(max, Math.max(min, Math.sqrt(surface / (m.largeur / m.hauteur)) * (m.echelle ?? 1)))) : min;
+---
+
+<section class="section-encre section-monte pf" id="avis">
+  <div class="container-custom">
+    <header class="pf-tete">
+      <h2 class="titre-moyen">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+    </header>
+
+    <dl class="pf-chiffres">
+      {T.chiffres.map(([c, l]) => (
+        <div><dt>{l}</dt><dd>{c}</dd></div>
+      ))}
+    </dl>
+
+    <figure class="pf-vedette">
+      <blockquote>
+        <p>{vedette.texte[lang]}</p>
+      </blockquote>
+      <figcaption>
+        <span class="pf-plaque pf-plaque-grande"><img src={parNom[vedette.societe]?.logo ?? vedette.logo} alt={vedette.societe} loading="lazy" style={`height:${hauteur(parNom[vedette.societe], 900, 14, 28)}px`} /></span>
+        <span><strong>{vedette.auteur}</strong> {vedette.session[lang]}{vedette.langue !== lang && <em>, {T.traduit}</em>}</span>
+      </figcaption>
+    </figure>
+
+    <ul class="pf-grille">
+      {autres.map((a) => (
+        <li>
+          <blockquote><p>{a.texte[lang]}</p></blockquote>
+          <div class="pf-auteur">
+            <span class="pf-plaque"><img src={parNom[a.societe]?.logo ?? a.logo} alt={a.societe} loading="lazy" style={`height:${hauteur(parNom[a.societe], 600, 12, 24)}px`} /></span>
+            <span><strong>{a.auteur}</strong><small>{a.session[lang]}{a.langue !== lang && `, ${T.traduit}`}</small></span>
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    <div class="pf-logos">
+      <p>{T.logos}</p>
+      <ul>
+        {mesures.map((m) => <li><img src={m.logo} alt={m.name} loading="lazy" style={`height:${hauteur(m, 1500, 14, 34)}px`} /></li>)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pf { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .pf { padding: 128px 0 136px; } }
+  .pf-tete { display: grid; gap: 18px; max-width: 820px; margin-bottom: 40px; }
+  .pf-chiffres { margin: 0 0 48px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; }
+  @media (min-width: 1024px) { .pf-chiffres { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .pf-chiffres div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 6px; padding-top: 16px; border-top: 1px solid var(--filet-sombre); }
+  .pf-chiffres dd { margin: 0; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(34px, 4vw, 52px); line-height: 1; color: #fff; }
+  .pf-chiffres dt { font-size: 14px; color: var(--texte-sombre-2); }
+
+  .pf-vedette { margin: 0 0 32px; border-radius: 28px; padding: 28px 24px; background: linear-gradient(135deg, rgb(29 113 184 / 0.32), rgb(255 255 255 / 0.03)); border: 1px solid rgb(125 184 238 / 0.3); display: grid; gap: 20px; }
+  @media (min-width: 768px) { .pf-vedette { padding: 40px 44px; } }
+  .pf-vedette blockquote { margin: 0; }
+  .pf-vedette p { margin: 0; font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: clamp(22px, 2.6vw, 32px); line-height: 1.25; color: #fff; max-width: 40ch; }
+  .pf-vedette figcaption { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; color: var(--texte-sombre-2); font-size: 15px; }
+  .pf-vedette strong { color: #fff; font-weight: 600; margin-right: 6px; }
+  .pf-vedette em { font-style: normal; }
+
+  .pf-grille { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  @media (min-width: 768px) { .pf-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .pf-grille { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .pf-grille li { border-radius: 22px; padding: 22px; background: rgb(255 255 255 / 0.05); border: 1px solid var(--filet-sombre); display: grid; gap: 18px; align-content: space-between; }
+  .pf-grille blockquote { margin: 0; }
+  .pf-grille p { margin: 0; color: var(--texte-sombre); font-size: 16px; line-height: 1.55; }
+  .pf-auteur { display: flex; align-items: center; gap: 12px; }
+  .pf-plaque { flex: none; width: 76px; height: 40px; border-radius: 10px; background: #fff; display: grid; place-items: center; padding: 6px 10px; }
+  .pf-plaque { overflow: hidden; }
+  .pf-plaque img { display: block; max-width: 100%; width: auto; object-fit: contain; }
+  .pf-plaque-grande { width: 120px; height: 52px; }
+  .pf-auteur strong { display: block; color: #fff; font-weight: 600; font-size: 14px; }
+  .pf-auteur small { display: block; color: var(--texte-sombre-2); font-size: 13px; }
+
+  .pf-logos { margin-top: 56px; display: grid; gap: 18px; }
+  .pf-logos p { margin: 0; font-size: 14px; color: var(--texte-sombre-2); }
+  .pf-logos ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  @media (min-width: 768px) { .pf-logos ul { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+  .pf-logos li { height: 64px; border-radius: 14px; background: #fff; display: grid; place-items: center; padding: 10px 14px; }
+  .pf-logos li { overflow: hidden; }
+  .pf-logos img { display: block; max-width: 100%; width: auto; object-fit: contain; }
+</style>

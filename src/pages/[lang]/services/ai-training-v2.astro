@@ -1,0 +1,107 @@
+---
+/**
+ * La nouvelle page AI Training, en travail (14/10/2026) : `noindex`, hors du sitemap, la page
+ * actuelle (`[slug].astro`, `ai-training`) reste en ligne jusqu'à la validation de Paul.
+ * Pilotage : docs/ai-training-refonte/index.html.
+ *
+ * De 17 blocs à 10, et le rythme des fonds (jamais deux sections d'encre collées) :
+ * hero (blanc) · formats (encre) · simulateur (brume) · ce qui est compris (blanc) ·
+ * après la formation (encre) · par métier (brume) · la méthode (blanc) · les preuves (encre) ·
+ * aller plus loin (brume) · questions (blanc) · appel final.
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import { type Language } from '@/i18n/config';
+import { getEntry } from 'astro:content';
+import { lireAcademy, faitsAcademy } from '@/components/accueil/donnees';
+import { ACADEMY_REPLI, type PrixAcademy } from '@/lib/formation/grille';
+import { faqFormation } from '@/data/formation/faq';
+
+import HeroService from '@/components/sections/HeroService.astro';
+import SceneFormationSurMesure from '@/components/motion/SceneFormationSurMesure.astro';
+import TarifsFormation from '@/components/formation/TarifsFormation.tsx';
+import FriseInclus from '@/components/formation/FriseInclus.astro';
+import ApresFormation from '@/components/formation/ApresFormation.astro';
+import TrainingUseCases from '@/components/sections/TrainingUseCases.astro';
+import TrainingAgenda from '@/components/sections/TrainingAgenda.astro';
+import PreuvesFormation from '@/components/formation/PreuvesFormation.astro';
+import AllerPlusLoin from '@/components/formation/AllerPlusLoin.astro';
+import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'fr' } }, { params: { lang: 'en' } }];
+}
+
+const { lang } = Astro.params as { lang: Language };
+const fiche = await getEntry('services', `${lang}/ai-training`);
+if (!fiche) throw new Error(`Fiche ai-training introuvable pour ${lang}`);
+const { title, description, hero, seo } = fiche.data;
+
+// L'Academy : faits et prix publics lus dans son API au build, instantané en secours.
+const academy = await lireAcademy(lang);
+const faits = faitsAcademy(academy, lang);
+const programme = academy.offres?.find((o) => o.id === 'programme') as { prix?: Record<string, number> } | undefined;
+const academyTtc: PrixAcademy = programme?.prix?.EUR && programme.prix.GBP && programme.prix.USD
+  ? { EUR: programme.prix.EUR / 100, GBP: programme.prix.GBP / 100, USD: programme.prix.USD / 100 }
+  : ACADEMY_REPLI;
+
+const tableauHero = lang === 'fr'
+  ? [
+      { chiffre: '2 500', unite: '+', texte: 'personnes formées à l’IA' },
+      { chiffre: faits.note, unite: '/10', texte: 'note moyenne des participants' },
+      { chiffre: String(faits.retours), texte: 'retours de participants' },
+    ]
+  : [
+      { chiffre: '2,500', unite: '+', texte: 'people trained on AI' },
+      { chiffre: faits.note, unite: '/10', texte: 'average rating from participants' },
+      { chiffre: String(faits.retours), texte: 'participant reviews' },
+    ];
+
+// Les clients de formation (pas de Chanel ; Kering reste sur cette page).
+const heroLogos = [
+  { name: 'Kering', logo: '/images/Training Logo/Kering.svg' },
+  { name: 'Gucci', logo: '/images/Training Logo/Gucci.avif' },
+  { name: 'La Poste', logo: '/images/Training Logo/La poste.png' },
+  { name: 'Pierre Fabre', logo: '/images/Training Logo/Pierre fabre.avif' },
+  { name: 'Pernod Ricard', logo: '/images/Training Logo/Pernod Ricard.avif' },
+];
+
+const finale = lang === 'fr'
+  ? { title: 'Prêt à former votre équipe ?', subtitle: 'Chiffrez votre cas en une minute avec le simulateur, ou écrivez-nous : nous construisons chaque séance sur les cas de votre métier.' }
+  : { title: 'Ready to train your team?', subtitle: 'Price your case in a minute with the simulator, or write to us: we build every session on the cases of your trade.' };
+---
+
+<PageLayout lang={lang} title={seo?.title || title} description={seo?.description || description} noindex>
+  <HeroService
+    lang={lang}
+    badge={hero?.badge}
+    headline={hero?.headline || title}
+    subheadline={hero?.subheadline}
+    description={description}
+    chiffres={tableauHero.map((c) => ({ chiffre: `${c.chiffre}${c.unite ?? ''}`, texte: c.texte }))}
+    heroLogos={heroLogos}
+    serviceCalculateur="ai-training"
+    lienBudget="#simulateur"
+  >
+    <SceneFormationSurMesure slot="panneau" lang={lang} logo={{ src: '/images/Training Logo/Kering.svg', nom: 'Kering' }} />
+  </HeroService>
+
+  <TarifsFormation
+    client:load
+    lang={lang}
+    academyTtc={academyTtc}
+    academyFaits={{ lecons: faits.lecons, heures: faits.heures, note: faits.note, retours: faits.retours }}
+    academyHref={`/${lang}/academy`}
+    contactHref={`/${lang}/contact?topic=formation`}
+    video={{ src: `/academy/demos/${lang === 'fr' ? 'fr/' : ''}programme.mp4`, poster: `/academy/demos/${lang === 'fr' ? 'fr/' : ''}programme.jpg` }}
+  />
+
+  <FriseInclus lang={lang} />
+  <ApresFormation lang={lang} />
+  <TrainingUseCases lang={lang} premiers={['bar-chart']} />
+  <TrainingAgenda lang={lang} fond="blanc" securiteForte />
+  <PreuvesFormation lang={lang} note={faits.note} retours={faits.retours} />
+  <AllerPlusLoin lang={lang} />
+  <ServiceFAQ lang={lang} service="ai-training" contenu={faqFormation(lang)} />
+  <FinalCTA lang={lang} title={finale.title} subtitle={finale.subtitle} lienBudget="#simulateur" />
+</PageLayout>

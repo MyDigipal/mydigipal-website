@@ -8,9 +8,11 @@ interface Props {
   /** Titre et texte propres à la page ; les deux portes restent les mêmes. */
   title?: string;
   subtitle?: string;
+  /** Où mène « Calculer mon budget » quand la page a son propre simulateur (AI Training). */
+  lienBudget?: string;
 }
 
-const { lang, color = 'primary', title, subtitle } = Astro.props;
+const { lang, color = 'primary', title, subtitle, lienBudget } = Astro.props;
 
 // `color` reste accepté (les pages le passent), mais la fin de page est la même
 // partout depuis le 25/09/2026, dans le bleu du logo.
@@ -48,7 +50,7 @@ const t = { ...content[lang], ...(title ? { title } : {}), ...(subtitle ? { subt
         {t.subtitle}
       </p>
       <div class="pilules mt-3">
-        <a href={`/${lang}/calculator`} class="pilule pilule-blanche">
+        <a href={lienBudget || `/${lang}/calculator`} class="pilule pilule-blanche">
           {t.primaryButton}
           <Icon name="arrow-right" size={18} class="pilule-fleche" />
         </a>

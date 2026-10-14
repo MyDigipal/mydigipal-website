@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Direction A, quatre cases</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="commun/base.css">
+<style>
+  .formats { padding: 72px 0 104px; }
+  @media (min-width: 1024px) { .formats { padding: 112px 0 144px; } }
+  .entete { display: grid; gap: 18px; max-width: 860px; margin-bottom: 48px; }
+
+  /* La grille 2 x 2 : les colonnes sont le mode, les lignes la durée. */
+  .cases { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: stretch; }
+  .axe-col { font-size: 14px; font-weight: 600; color: var(--texte-sombre-2); padding: 0 4px 4px; display: flex; align-items: center; gap: 8px; }
+  .axe-col svg { width: 18px; height: 18px; color: var(--marque-clair); }
+  .axe-ligne { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 14px; font-weight: 600; color: var(--texte-sombre-2); display: flex; align-items: center; justify-content: center; }
+  .case { position: relative; text-align: left; border: 1px solid var(--filet-sombre); background: rgba(255, 255, 255, .04); border-radius: 24px; padding: 22px; cursor: pointer; display: grid; gap: 10px; align-content: start; transition: background-color .35s var(--entree), border-color .35s var(--entree), transform .35s var(--entree); color: inherit; }
+  .case:hover { background: rgba(255, 255, 255, .07); }
+  .case[aria-pressed="true"] { background: #fff; color: var(--encre); border-color: #fff; }
+  .case .horloge { width: 56px; height: 56px; }
+  .case .horloge circle.fond { stroke: rgba(255, 255, 255, .14); }
+  .case[aria-pressed="true"] .horloge circle.fond { stroke: var(--filet); }
+  .case .horloge .arc { stroke: var(--marque-clair); transition: stroke-dashoffset .9s var(--entree); }
+  .case[aria-pressed="true"] .horloge .arc { stroke: var(--marque); }
+  .case-nom { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; font-size: 20px; line-height: 1.15; margin: 0; }
+  .case-texte { font-size: 15px; color: var(--texte-sombre-2); margin: 0; }
+  .case[aria-pressed="true"] .case-texte { color: var(--texte-2); }
+  .case-prix { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-top: 6px; }
+  .case-prix .chiffre { font-size: 28px; }
+  .case-prix small { font-size: 13px; color: var(--texte-sombre-2); }
+  .case[aria-pressed="true"] .case-prix small { color: var(--texte-2); }
+  .case-tete { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+  .case-coche { width: 28px; height: 28px; border-radius: 999px; border: 1px solid var(--filet-sombre); display: grid; place-items: center; flex: none; }
+  .case[aria-pressed="true"] .case-coche { background: var(--marque); border-color: var(--marque); color: #fff; }
+  .case-coche svg { width: 16px; height: 16px; opacity: 0; }
+  .case[aria-pressed="true"] .case-coche svg { opacity: 1; }
+  @media (max-width: 639px) {
+    .cases { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+    .axe-ligne { display: none; }
+    .cases > span:first-child { display: none; }
+    .case { padding: 14px; border-radius: 18px; gap: 6px; }
+    .case .horloge { width: 40px; height: 40px; }
+    .case-nom { font-size: 16px; }
+    .case-texte { display: none; }
+    .case-prix .chiffre { font-size: 21px; }
+    .case-ligne-titre { grid-column: 1 / -1; font-size: 13px; font-weight: 600; color: var(--texte-sombre-2); padding: 10px 2px 0; }
+  }
+  @media (min-width: 640px) { .case-ligne-titre { display: none; } }
+
+  /* L'Academy en complément, sur toute la largeur. */
+  .complement { margin-top: 20px; display: grid; gap: 24px; align-items: center; border-radius: 28px; padding: 22px; background: linear-gradient(135deg, rgba(29, 113, 184, .22), rgba(255, 255, 255, .03)); border: 1px solid var(--filet-sombre); }
+  @media (min-width: 900px) { .complement { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); padding: 28px 28px 28px 36px; } }
+  .complement video { width: 100%; border-radius: 18px; aspect-ratio: 16 / 10; object-fit: cover; background: #0d1424; }
+  .complement h3 { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; font-size: 24px; margin: 6px 0 10px; }
+  .complement p { margin: 0 0 14px; color: var(--texte-sombre-2); }
+  .faits { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 4px 0 18px; }
+  .faits div { display: grid; }
+  .faits .chiffre { font-size: 24px; color: #fff; }
+  .faits span { font-size: 13px; color: var(--texte-sombre-2); }
+
+  .inclus-rappel { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; font-size: 14px; color: var(--texte-sombre-2); }
+  .inclus-rappel strong { color: #fff; font-weight: 600; }
+  .inclus-rappel span { display: inline-flex; gap: 8px; align-items: center; }
+  .inclus-rappel svg { width: 16px; height: 16px; color: var(--marque-clair); }
+
+  /* Le simulateur. */
+  .simulateur { padding: 72px 0 96px; }
+  @media (min-width: 1024px) { .simulateur { padding: 104px 0 128px; } }
+  .sim-grille { display: grid; gap: 28px; }
+  @media (min-width: 1024px) { .sim-grille { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 40px; align-items: start; } }
+  .reglages { background: #fff; border-radius: 28px; padding: 24px; display: grid; gap: 28px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); }
+  @media (min-width: 768px) { .reglages { padding: 36px; } }
+  .reglage { display: grid; gap: 12px; }
+  .reglage-titre { font-weight: 700; font-size: 15px; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+  .reglage-aide { font-size: 14px; color: var(--texte-2); margin: 0; }
+  .effectif { display: flex; gap: 16px; align-items: center; }
+  .groupes-visu { display: flex; flex-wrap: wrap; gap: 14px; }
+  .groupe { display: grid; gap: 6px; }
+  .groupe-points { display: grid; grid-template-columns: repeat(6, 8px); gap: 4px; }
+  .groupe-points i { width: 8px; height: 8px; border-radius: 99px; background: var(--marque); transform: scale(1); transition: transform .45s var(--entree); }
+  .groupe-points i.vient { transform: scale(0); }
+  .groupe small { font-size: 12px; color: var(--texte-2); }
+  .bascule { display: flex; gap: 12px; align-items: center; cursor: pointer; }
+  .bascule input { width: 22px; height: 22px; accent-color: var(--marque); }
+  .lieu { display: grid; gap: 12px; }
+  .lieu[hidden] { display: none; }
+
+  .ticket { background: var(--encre); color: var(--texte-sombre); border-radius: 28px; padding: 26px; display: grid; gap: 18px; }
+  @media (min-width: 1024px) { .ticket { position: sticky; top: 64px; padding: 32px; } }
+  .ticket-pp { display: grid; gap: 2px; }
+  .ticket-pp .chiffre { font-size: clamp(44px, 6vw, 64px); line-height: 1; }
+  .ticket-pp span { color: var(--texte-sombre-2); font-size: 14px; }
+  .lignes { display: grid; gap: 10px; padding: 16px 0; border-top: 1px solid var(--filet-sombre); border-bottom: 1px solid var(--filet-sombre); margin: 0; }
+  .lignes div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; }
+  .lignes dt { font-weight: 600; font-size: 15px; }
+  .lignes dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+  .lignes .detail { grid-column: 1 / -1; font-size: 13px; color: var(--texte-sombre-2); }
+  .total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .total .chiffre { font-size: 30px; }
+  .reco { font-size: 14px; color: var(--texte-sombre); background: rgba(125, 184, 238, .12); border-radius: 16px; padding: 12px 14px; margin: 0; }
+  .reco:empty { display: none; }
+  .ticket .pilules .pilule { flex: 1 1 auto; }
+  .partage-ok { font-size: 13px; color: var(--marque-clair); min-height: 18px; }
+  .ticket .mention { color: var(--texte-sombre-2); margin: 0; }
+  .ticket .devises { background: rgba(255, 255, 255, .08); }
+  .ticket-haut { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--texte-sombre-2); }
+  .devises-ligne { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 13px; color: var(--texte-sombre-2); }
+  .parcours-ligne { margin: 14px 0 0; font-size: 14px; color: var(--texte-sombre-2); }
+  .parcours-ligne strong { color: #fff; font-weight: 600; }
+
+  /* Le chiffre qui bascule : chaque caractère change sur un volet. */
+  .volets { display: inline-flex; }
+  .volets span { display: inline-block; }
+  .volets span.bascule-v { animation: volet .42s var(--entree); }
+  @keyframes volet { from { transform: rotateX(-90deg); opacity: .2; } to { transform: none; opacity: 1; } }
+
+  /* Barre du bas au téléphone. */
+  .barre-mobile { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--encre); color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; transform: translateY(110%); transition: transform .4s var(--entree); }
+  .barre-mobile.visible { transform: none; }
+  .barre-mobile .chiffre { font-size: 22px; }
+  .barre-mobile small { display: block; font-size: 12px; color: var(--texte-sombre-2); }
+  @media (min-width: 1024px) { .barre-mobile { display: none; } }
+</style>
+</head>
+<body>
+<div class="provisoire">Maquette A. Prix provisoires, en attente de ta décision (<a href="index.html#questions">les questions</a>). L'Academy est lue dans l'instantané de l'API.</div>
+
+<section class="section-encre formats">
+  <div class="conteneur">
+    <header class="entete">
+      <p class="rubrique">Les formats</p>
+      <h2 class="titre-moyen">Deux durées, deux façons d'y assister. Vous choisissez une case.</h2>
+      <p class="chapo">Une séance de 3 heures pour prendre en main, une journée pour aller au fond. À distance ou dans vos locaux, le contenu est le même, construit sur les cas de votre métier.</p>
+    </header>
+
+    <div class="devises-ligne"><span>Les prix en</span><span id="devises-formats"></span></div>
+    <div class="cases" id="cases" role="group" aria-label="Choisir un format">
+      <span></span>
+      <span class="axe-col"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>À distance</span>
+      <span class="axe-col"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>En présentiel</span>
+    </div>
+
+    <div class="complement">
+      <video src="../../public/academy/demos/fr/programme.mp4" poster="../../public/academy/demos/fr/programme.jpg" muted loop playsinline autoplay></video>
+      <div>
+        <p class="rubrique" style="margin:0">En complément</p>
+        <h3>La MyDigipal AI Academy, pour que chacun continue</h3>
+        <p>La formation en ligne prend le relais de la séance : le parcours de son outil, des exercices relus, à son rythme.</p>
+        <div class="faits" id="faits-academy"></div>
+        <button class="pilule pilule-blanche" id="ajout-academy" type="button">Ajouter l'Academy au chiffrage</button>
+      </div>
+    </div>
+
+    <p class="inclus-rappel" id="inclus-rappel"></p>
+    <p class="parcours-ligne" id="parcours-ligne"></p>
+  </div>
+</section>
+
+<section class="section-brume simulateur" id="simulateur">
+  <div class="conteneur">
+    <header class="entete">
+      <p class="rubrique">Votre chiffrage</p>
+      <h2 class="titre-moyen">Combien coûte la formation de votre équipe ?</h2>
+      <p class="chapo">Réglez l'effectif, la durée et le mode. Nous proposons le découpage en groupes, vous pouvez le changer. Le lien du chiffrage se partage tel quel.</p>
+    </header>
+
+    <div class="sim-grille">
+      <div class="reglages">
+        <div class="reglage">
+          <label class="reglage-titre" for="effectif">Combien de personnes à former ?</label>
+          <div class="effectif">
+            <input type="range" id="effectif" min="1" max="200" step="1">
+            <input type="number" class="effectif-saisie" id="effectif-n" min="1" max="2000" inputmode="numeric" aria-label="Nombre de personnes">
+          </div>
+        </div>
+        <div class="reglage">
+          <span class="reglage-titre">Durée</span>
+          <div class="segment" data-cle="duree"><button type="button" data-v="3h">Séance de 3 h</button><button type="button" data-v="jour">Journée complète</button></div>
+        </div>
+        <div class="reglage">
+          <span class="reglage-titre">Mode</span>
+          <div class="segment" data-cle="mode"><button type="button" data-v="distance">À distance</button><button type="button" data-v="site">En présentiel</button></div>
+          <div class="lieu" id="lieu">
+            <div class="segment" data-cle="zone"><button type="button" data-v="londres">Londres</button><button type="button" data-v="uk">Royaume-Uni</button><button type="button" data-v="paris">Paris</button><button type="button" data-v="france">France et voisins</button><button type="button" data-v="europe">Reste de l'Europe</button><button type="button" data-v="monde">Hors d'Europe</button></div>
+            <label class="bascule"><input type="checkbox" id="hotel"> Une nuit d'hôtel est nécessaire</label>
+          </div>
+        </div>
+        <div class="reglage">
+          <span class="reglage-titre">Groupes <span class="segment" data-cle="groupes" style="font-weight:600"><button type="button" data-v="auto">Groupes de 10 à 15</button><button type="button" data-v="pleniere">Une seule séance</button></span></span>
+          <div class="groupes-visu" id="groupes-visu" aria-live="polite"></div>
+          <p class="reglage-aide" id="groupes-aide"></p>
+        </div>
+        <div class="reglage">
+          <label class="bascule"><input type="checkbox" id="academy"> <span><strong>Ajouter la MyDigipal AI Academy</strong> pour chaque personne formée</span></label>
+        </div>
+      </div>
+
+      <aside class="ticket" aria-live="polite">
+        <div class="ticket-haut"><span>Hors taxes</span><span id="devises-ticket"></span></div>
+        <div class="ticket-pp"><span>Par personne</span><span class="chiffre volets" id="pp"></span></div>
+        <dl class="lignes" id="lignes"></dl>
+        <div class="total"><span>Total hors taxes</span><span class="chiffre" id="total"></span></div>
+        <p class="mention">Hors taxes, prix indicatif. Le devis définitif suit un échange avec vous.</p>
+        <p class="reco" id="reco"></p>
+        <div class="pilules">
+          <button class="pilule pilule-pleine" type="button">Recevoir ce devis</button>
+          <button class="pilule pilule-contour" type="button" id="partager"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Partager ce chiffrage</button>
+        </div>
+        <p class="partage-ok" id="partage-ok"></p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div class="barre-mobile" id="barre-mobile"><div><small>Par personne, hors taxes</small><span class="chiffre" id="pp-mobile"></span></div><a class="pilule pilule-blanche" href="#simulateur">Voir le détail</a></div>
+
+<script src="commun/moteur.js"></script>
+<script>
+(function () {
+  const S = window.MDP_SIM, G = S.GRILLE;
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]fige=1/.test(location.search);
+  let etat = S.depuisAdresse(location.hash) || { ...S.ETAT_DEFAUT };
+  const M = (v) => S.montant(v, 'fr', etat.devise);
+  const $ = (s) => document.querySelector(s);
+  const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+  /* Les quatre cases. */
+  const cases = $('#cases');
+  const textes = {
+    '3h': { distance: 'En visio, sur vos outils. Le format qui s\'insère dans une semaine chargée.', site: 'Dans vos locaux, en demi-journée. Deux groupes peuvent passer le même jour.' },
+    jour: { distance: 'Deux temps en visio, le matin les bases, l\'après-midi vos cas en profondeur.', site: 'Une journée entière avec l\'équipe : le format des séminaires et des comités.' },
+  };
+  ['3h', 'jour'].forEach((d) => {
+    const titre = document.createElement('span'); titre.className = 'case-ligne-titre'; titre.textContent = G.durees[d].nom; cases.appendChild(titre);
+    const axe = document.createElement('span'); axe.className = 'axe-ligne'; axe.textContent = G.durees[d].nom; cases.appendChild(axe);
+    ['distance', 'site'].forEach((m) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'case'; b.dataset.duree = d; b.dataset.mode = m;
+      const part = d === '3h' ? 0.25 : 0.6; // 3 h ou 7 h sur la journée de 12 h dessinée
+      const c = 2 * Math.PI * 22;
+      b.innerHTML = `<div class="case-tete"><svg class="horloge" viewBox="0 0 56 56" fill="none" stroke-width="5" stroke-linecap="round"><circle class="fond" cx="28" cy="28" r="22"/><circle class="arc" cx="28" cy="28" r="22" transform="rotate(-90 28 28)" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - part)}" data-plein="${c * (1 - part)}" data-vide="${c}"/></svg><span class="case-coche">${check}</span></div>
+        <h3 class="case-nom">${G.durees[d].nom}, ${m === 'site' ? 'en présentiel' : 'à distance'}</h3>
+        <p class="case-texte">${textes[d][m]}</p>
+        <div class="case-prix"><span class="chiffre" data-prix="${d}|${m}"></span><small>la séance${m === 'site' ? ', plus le déplacement' : ''}</small></div>`;
+      b.addEventListener('click', () => {
+        etat.duree = d; etat.mode = m; rendre(true);
+        document.getElementById('simulateur').scrollIntoView({ behavior: reduit ? 'auto' : 'smooth' });
+      });
+      cases.appendChild(b);
+    });
+  });
+
+  /* L'arc d'horloge se dessine quand la case est choisie : c'est la durée qui se lit. */
+  function dessinerArc(b) {
+    const arc = b.querySelector('.arc');
+    if (reduit) return;
+    arc.style.transition = 'none'; arc.style.strokeDashoffset = arc.dataset.vide;
+    arc.getBoundingClientRect();
+    arc.style.transition = ''; arc.style.strokeDashoffset = arc.dataset.plein;
+  }
+
+  /* L'Academy : faits de l'instantané de l'API. */
+  // Secours quand la page est ouverte en file:// (fetch refusé) : les valeurs de l'instantané du 14/10.
+  const SECOURS = { faits: { lessons: 200, heures: '21 h 05' }, avis: { note: 9.4, nombre: 497 }, offres: [{ prix: { EUR: 29000 } }] };
+  const afficherFaits = (d) => {
+    $('#faits-academy').innerHTML = `<div><span class="chiffre">${d.faits.lessons}</span><span>leçons</span></div><div><span class="chiffre">${d.faits.heures.replace(/ /g, ' ')}</span><span>de contenu</span></div><div><span class="chiffre">${d.avis.note.toLocaleString('fr-FR')}/10</span><span>${d.avis.nombre} avis</span></div><div><span class="chiffre" id="prix-academy">${M(S.academyHT(etat.devise, 1))}</span><span>HT par personne, -25 % dès 10</span></div>`;
+  };
+  fetch('../../src/data/academy/jour30-fr.json').then((r) => r.json()).then(afficherFaits).catch(() => afficherFaits(SECOURS));
+  $('#ajout-academy').addEventListener('click', () => { etat.academy = true; rendre(true); document.getElementById('simulateur').scrollIntoView({ behavior: reduit ? 'auto' : 'smooth' }); });
+
+  $('#inclus-rappel').innerHTML = '<strong>Dans chaque séance :</strong>' + ['call de diagnostic', 'formulaire aux participants', 'calls et briefs écrits', 'contenu en avance', 'enregistrement'].map((t) => `<span>${check}${t}</span>`).join('');
+
+  /* La devise : un sélecteur partout où il y a un prix, un seul état. */
+  const selDevises = ['#devises-formats', '#devises-ticket'].map((id) => { const sd = S.selecteurDevise(() => etat, (dv) => { etat.devise = dv; rendre(); }); $(id).appendChild(sd); return sd; });
+
+  /* Réglages. */
+  const curseur = $('#effectif'), saisie = $('#effectif-n');
+  curseur.addEventListener('input', () => { etat.n = +curseur.value; rendre(); });
+  saisie.addEventListener('input', () => { const v = parseInt(saisie.value, 10); if (v > 0) { etat.n = Math.min(2000, v); rendre(); } });
+  document.querySelectorAll('.segment[data-cle]').forEach((s) => s.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button'); if (!b) return;
+    etat[s.dataset.cle] = b.dataset.v; rendre();
+  }));
+  $('#hotel').addEventListener('change', (e) => { etat.hotel = e.target.checked; rendre(); });
+  $('#academy').addEventListener('change', (e) => { etat.academy = e.target.checked; rendre(); });
+
+  let ppAvant = '';
+  function volets(el, texte) {
+    if (reduit || texte.length !== ppAvant.length) { el.textContent = texte; ppAvant = texte; return; }
+    el.innerHTML = [...texte].map((c, i) => `<span class="${c !== ppAvant[i] ? 'bascule-v' : ''}" style="animation-delay:${i * 45}ms">${c === ' ' || c === ' ' ? '&#8239;' : c}</span>`).join('');
+    ppAvant = texte;
+  }
+
+  function rendre(arcAussi) {
+    const r = S.chiffrer(etat);
+    curseur.value = Math.min(200, etat.n); if (document.activeElement !== saisie) saisie.value = etat.n;
+    document.querySelectorAll('.segment[data-cle]').forEach((s) => s.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(etat[s.dataset.cle] === b.dataset.v))));
+    $('#lieu').hidden = etat.mode !== 'site';
+    $('#hotel').checked = etat.hotel; $('#academy').checked = etat.academy;
+    cases.querySelectorAll('.case').forEach((b) => {
+      const choisie = b.dataset.duree === etat.duree && b.dataset.mode === etat.mode;
+      const avant = b.getAttribute('aria-pressed') === 'true';
+      b.setAttribute('aria-pressed', String(choisie));
+      if (choisie && !avant && arcAussi) dessinerArc(b);
+    });
+    // Les groupes en pastilles : un point par personne, jusqu'à 36 par groupe affiché.
+    const visu = $('#groupes-visu');
+    const montres = r.groupes.slice(0, 8);
+    visu.innerHTML = montres.map((t, i) => `<div class="groupe"><div class="groupe-points">${'<i class="vient"></i>'.repeat(Math.min(t, 36))}</div><small>${r.groupes.length > 1 ? 'Groupe ' + (i + 1) + ', ' : ''}${t} pers.</small></div>`).join('') + (r.groupes.length > 8 ? `<div class="groupe"><small>et ${r.groupes.length - 8} autres groupes</small></div>` : '');
+    requestAnimationFrame(() => visu.querySelectorAll('i').forEach((p, i) => setTimeout(() => p.classList.remove('vient'), reduit ? 0 : Math.min(i * 6, 500))));
+    $('#groupes-aide').textContent = etat.groupes === 'pleniere'
+      ? (r.n > 20 ? 'Une seule séance pour tout le monde : on démontre et on répond aux questions, sans suivi individuel.' : 'Une seule séance pour tout le groupe.')
+      : r.seances === 1 ? 'Un seul groupe : chacun travaille sur ses propres fichiers.'
+      : `${r.n} personnes en ${r.seances} séances : de 10 à 15 par groupe, chacun travaille sur ses propres fichiers.`;
+
+    $('#lignes').innerHTML = r.lignes.map((l) => `<div><dt>${l.libelle}</dt><dd>${M(l.montant)}</dd><span class="detail">${l.detail}</span></div>`).join('');
+    $('#total').textContent = M(r.total) + (r.surDevis ? ' + déplacement' : '');
+    volets($('#pp'), M(r.parPersonne));
+    $('#pp-mobile').textContent = M(r.parPersonne);
+    cases.querySelectorAll('[data-prix]').forEach((el) => { const [d, m] = el.dataset.prix.split('|'); el.textContent = M(G.durees[d][m][etat.devise]); });
+    const pa = $('#prix-academy'); if (pa) pa.textContent = M(S.academyHT(etat.devise, 1));
+    $('#parcours-ligne').innerHTML = `<strong>Pour construire :</strong> des parcours techniques sur mesure (serveur MCP, automatisations, data et BI), bâtis sur votre projet, à partir de ${M(G.parcours[0].des[etat.devise])}.`;
+    selDevises.forEach((sd) => sd.maj());
+    $('#reco').textContent = S.recommandation(etat);
+    history.replaceState(null, '', S.versAdresse(etat));
+  }
+
+  $('#partager').addEventListener('click', async () => {
+    const url = location.href;
+    try { await navigator.clipboard.writeText(url); $('#partage-ok').textContent = 'Lien copié : il rouvre exactement ce chiffrage.'; }
+    catch { $('#partage-ok').textContent = url; }
+  });
+
+  // Au téléphone, la barre du prix apparaît quand le simulateur est à l'écran.
+  new IntersectionObserver(([e]) => $('#barre-mobile').classList.toggle('visible', e.isIntersecting), { threshold: 0.05 }).observe($('#simulateur'));
+
+  rendre(true);
+})();
+</script>
+</body>
+</html>

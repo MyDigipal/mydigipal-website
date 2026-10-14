@@ -30,7 +30,7 @@ const t = {
       company: "Company",
       companyPlaceholder: "Your Company",
       service: "Services Interested In",
-      serviceOptions: ["SEO", "Google Ads", "Paid Social", "ABM", "Content Creation", "Marketing Automation", "Full Strategy", "Other"],
+      serviceOptions: ["SEO", "Google Ads", "Paid Social", "ABM", "AI Training", "Content Creation", "Marketing Automation", "Full Strategy", "Other"],
       message: "Tell us about your project",
       messagePlaceholder: "What are your goals? What challenges are you facing?",
       submit: "Send Message",
@@ -99,7 +99,7 @@ const t = {
       company: "Entreprise",
       companyPlaceholder: "Votre entreprise",
       service: "Services souhaités",
-      serviceOptions: ["SEO", "Google Ads", "Paid Social", "ABM", "Création de contenu", "Marketing Automation", "Stratégie complète", "Autre"],
+      serviceOptions: ["SEO", "Google Ads", "Paid Social", "ABM", "Formation IA", "Création de contenu", "Marketing Automation", "Stratégie complète", "Autre"],
       message: "Parlez-nous de votre projet",
       messagePlaceholder: "Quels sont vos objectifs ? Quels défis rencontrez-vous ?",
       submit: "Envoyer le message",
@@ -465,6 +465,17 @@ const seo = {
 
 <script define:vars={{ webhookUrl: 'https://academy.mydigipal.com/api/site/contact', pageLang: lang }}>
   const form = document.getElementById('contact-form');
+
+  // `?topic=` des liens des pages IA (14/10/2026) : la formation coche « Formation IA ».
+  // La valeur envoyée au CRM est le libellé de la puce, comme pour les autres services.
+  (function () {
+    const sujet = new URLSearchParams(window.location.search).get('topic') || '';
+    const formation = ['formation', 'mcp', 'parcours-technique', 'technical-track'];
+    if (!formation.includes(sujet) || !form) return;
+    const libelle = pageLang === 'fr' ? 'Formation IA' : 'AI Training';
+    const puce = form.querySelector('input[name="services"][value="' + libelle + '"]');
+    if (puce) puce.checked = true;
+  })();
   const messageField = document.getElementById('message');
   const optionalGroup = document.getElementById('optional-fields-group');
 

@@ -1,0 +1,74 @@
+/* Socle commun des maquettes : les jetons du système Encre du site (global.css). */
+:root {
+  --encre: #0B1B2B;
+  --encre-2: #102A43;
+  --brume: #F3F6FA;
+  --marque: #1D71B8;
+  --marque-fonce: #155A93;
+  --marque-doux: #EAF3FB;
+  --marque-clair: #7DB8EE;
+  --texte: #0F172A;
+  --texte-2: #475569;
+  --texte-sombre: #F4F7FA;
+  --texte-sombre-2: #A9B8C8;
+  --filet: #E2E8F0;
+  --filet-sombre: rgba(255, 255, 255, .12);
+  --rayon-scene: 32px;
+  --entree: cubic-bezier(0.15, 1, 0.32, 1);
+  --sortie: cubic-bezier(0.333, 0, 0.667, 0);
+  --display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  --sans: 'Inter', system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; font-family: var(--sans); color: var(--texte); background: #fff; line-height: 1.55; overflow-x: hidden; }
+img, video, svg { display: block; max-width: 100%; }
+button, input, select { font: inherit; color: inherit; }
+.conteneur { width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+@media (min-width: 768px) { .conteneur { padding: 0 32px; } }
+
+.section-blanc { background: #fff; }
+.section-brume { background: var(--brume); }
+.section-encre { background: radial-gradient(1200px 600px at 85% -10%, rgba(29, 113, 184, .28), transparent 60%), var(--encre); color: var(--texte-sombre); }
+.section-monte { margin-top: calc(var(--rayon-scene) * -1); border-radius: var(--rayon-scene) var(--rayon-scene) 0 0; position: relative; }
+
+.titre-moyen { font-family: var(--display); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; font-size: clamp(30px, 4.2vw, 50px); margin: 0; }
+.chapo { font-size: clamp(17px, 1.4vw, 19px); color: var(--texte-2); margin: 0; max-width: 62ch; }
+.section-encre .chapo { color: var(--texte-sombre-2); }
+.rubrique { font-size: 13px; font-weight: 600; color: var(--texte-2); letter-spacing: .02em; margin: 0 0 14px; }
+.section-encre .rubrique { color: var(--texte-sombre-2); }
+
+.pilules { display: flex; flex-wrap: wrap; gap: 10px; }
+.pilule { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 999px; font-weight: 600; font-size: 15px; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: background-color .2s, color .2s, border-color .2s; white-space: nowrap; }
+.pilule-pleine { background: var(--marque); color: #fff; }
+.pilule-pleine:hover { background: var(--marque-fonce); }
+.pilule-contour { background: transparent; border-color: currentColor; }
+.pilule-blanche { background: #fff; color: var(--encre); }
+.pilule svg { width: 18px; height: 18px; flex: none; }
+
+/* Bandeau qui rappelle que les prix attendent Paul. */
+.provisoire { position: sticky; top: 0; z-index: 50; background: #FEF3C7; color: #713F12; font-size: 13px; padding: 8px 16px; text-align: center; border-bottom: 1px solid #FDE68A; }
+.provisoire a { color: inherit; }
+
+/* Contrôle segmenté, partagé par les directions. */
+.segment { display: inline-flex; padding: 4px; border-radius: 999px; background: var(--brume); gap: 4px; flex-wrap: wrap; }
+.section-encre .segment { background: rgba(255, 255, 255, .08); }
+.segment button { border: 0; background: transparent; border-radius: 999px; padding: 10px 18px; font-weight: 600; font-size: 14px; cursor: pointer; color: var(--texte-2); transition: background-color .25s var(--entree), color .25s; }
+.section-encre .segment button { color: var(--texte-sombre-2); }
+.segment button[aria-pressed="true"] { background: #fff; color: var(--encre); box-shadow: 0 1px 2px rgba(15, 23, 42, .08), 0 4px 12px rgba(15, 23, 42, .06); }
+.segment button:focus-visible, .pilule:focus-visible { outline: 2px solid var(--marque); outline-offset: 2px; }
+
+input[type="range"] { width: 100%; accent-color: var(--marque); height: 28px; }
+.effectif-saisie { width: 92px; height: 44px; border-radius: 12px; border: 1px solid var(--filet); padding: 0 12px; font-weight: 700; font-size: 18px; text-align: right; background: #fff; color: var(--texte); }
+
+.mention { font-size: 13px; color: var(--texte-2); }
+.section-encre .mention { color: var(--texte-sombre-2); }
+.chiffre { font-family: var(--display); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; } }
+
+/* Le sélecteur de devise, posé à côté de chaque prix. */
+.devises { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: rgba(15, 23, 42, .06); }
+.section-encre .devises, .sur-encre .devises { background: rgba(255, 255, 255, .08); }
+.devises button { border: 0; background: transparent; border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 600; cursor: pointer; color: inherit; opacity: .7; }
+.devises button[aria-pressed="true"] { background: #fff; color: var(--encre); opacity: 1; }

@@ -10,9 +10,13 @@ import CartesDepartements from '@/components/sections/CartesDepartements.astro';
 
 interface Props {
   lang: Language;
+  /** Brume par défaut ; blanc sur la nouvelle page pour tenir le rythme des fonds. */
+  fond?: 'brume' | 'blanc';
+  /** Les départements à montrer d'abord, par icône (`bar-chart` : la finance). */
+  premiers?: string[];
 }
 
-const { lang } = Astro.props;
+const { lang, fond = 'brume', premiers = [] } = Astro.props;
 
 const translations = {
   en: {
@@ -80,12 +84,12 @@ const translations = {
 const t = translations[lang] || translations.en;
 ---
 
-<section class="section-brume py-20 lg:py-32">
+<section class={`section-${fond} py-20 lg:py-32`}>
   <div class="container-custom">
     <header class="mb-12 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
       <h2 class="titre-moyen text-encre">{t.headline}</h2>
       <p class="chapo">{t.subtitle}</p>
     </header>
-    <CartesDepartements lang={lang} departements={t.departments} fond="clair" />
+    <CartesDepartements lang={lang} departements={[...t.departments].sort((a, b) => (premiers.includes(b.icone) ? 1 : 0) - (premiers.includes(a.icone) ? 1 : 0))} fond="clair" />
   </div>
 </section>

@@ -4,9 +4,12 @@ import GrilleSuisse from '@/components/motion/GrilleSuisse.astro';
 
 interface Props {
   lang: Language;
+  fond?: 'brume' | 'blanc';
+  /** La sécurité en panneau d'encre à côté de la méthode, plutôt qu'en encart (nouvelle page). */
+  securiteForte?: boolean;
 }
 
-const { lang } = Astro.props;
+const { lang, fond = 'brume', securiteForte = false } = Astro.props;
 
 const translations = {
   en: {
@@ -49,7 +52,7 @@ const t = translations[lang] || translations.en;
 <!-- Direction Encre (30/09/2026) : la méthode CRAFT sur la brume, posée sur la grille
      suisse (essai `grille-suisse`, gardé par Paul) : la grille se déploie, chaque rang
      pose sa lettre, son mot et un exemple. -->
-<section class="section-brume py-20 lg:py-32">
+<section class={`section-${fond} py-20 lg:py-32`}>
   <div class="container-custom">
     <header class="mb-10 grid max-w-[880px] gap-5 lg:mb-16 lg:gap-6">
       <h2 class="titre-moyen text-encre">{t.headline}</h2>
@@ -62,12 +65,14 @@ const t = translations[lang] || translations.en;
       conclusion={t.conclusion}
     />
 
-    <div class="mt-14 grid max-w-[880px] grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-2 rounded-[20px] bg-white p-6 shadow-[inset_0_0_0_1px_var(--filet)] lg:mt-20 lg:p-8">
+    <div class:list={securiteForte
+      ? 'mt-14 grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-3 rounded-[28px] bg-encre p-7 text-white lg:mt-20 lg:p-12 securite-forte'
+      : 'mt-14 grid max-w-[880px] grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-2 rounded-[20px] bg-white p-6 shadow-[inset_0_0_0_1px_var(--filet)] lg:mt-20 lg:p-8'}>
       <span class="row-span-2 grid h-14 w-14 place-items-center rounded-2xl bg-marque-doux text-marque" aria-hidden="true">
         <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" /></svg>
       </span>
-      <h3 class="text-lg font-semibold text-encre">{t.securityTitle}</h3>
-      <p class="text-slate-600">{t.securityText}</p>
+      <h3 class:list={securiteForte ? 'font-display text-2xl font-extrabold tracking-[-0.02em] text-white lg:text-3xl' : 'text-lg font-semibold text-encre'}>{t.securityTitle}</h3>
+      <p class:list={securiteForte ? 'max-w-[70ch] text-lg text-sur-encre-2' : 'text-slate-600'}>{t.securityText}</p>
     </div>
   </div>
 </section>

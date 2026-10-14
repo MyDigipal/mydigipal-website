@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Direction B, la salle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="commun/base.css">
+<style>
+  .salle { padding: 72px 0 104px; }
+  @media (min-width: 1024px) { .salle { padding: 104px 0 136px; } }
+  .entete { display: grid; gap: 18px; max-width: 860px; margin-bottom: 40px; }
+  .plateau { display: grid; gap: 20px; }
+  @media (min-width: 1100px) { .plateau { grid-template-columns: minmax(0, 1fr) 380px; gap: 28px; align-items: start; } }
+
+  .scene { position: relative; border-radius: 28px; background: rgba(255, 255, 255, .03); border: 1px solid var(--filet-sombre); overflow: hidden; }
+  .scene svg { width: 100%; height: auto; }
+  .scene .tuile { fill: rgba(255, 255, 255, .05); stroke: rgba(255, 255, 255, .16); stroke-width: 1.5; }
+  .scene .tuile-barre { fill: rgba(255, 255, 255, .08); }
+  .scene .table { fill: rgba(125, 184, 238, .10); stroke: rgba(125, 184, 238, .45); stroke-width: 1.5; }
+  .scene .salle-mur { fill: none; stroke: rgba(255, 255, 255, .22); stroke-width: 2; stroke-dasharray: 2 6; stroke-linecap: round; }
+  .scene .estrade { fill: rgba(125, 184, 238, .25); }
+  .scene .lib { fill: var(--texte-sombre-2); font: 600 15px var(--sans); }
+  .scene .lib-fort { fill: #fff; font: 700 16px var(--sans); }
+  .scene svg.etroit .lib { font-size: 24px; }
+  .scene svg.etroit .lib-fort { font-size: 26px; }
+  .scene .point { fill: var(--marque-clair); transition: transform .75s var(--entree), opacity .4s var(--entree); }
+  .scene .point.formateur { fill: #fff; }
+  .scene .anneau { fill: none; stroke: #E9C46A; stroke-width: 1.6; opacity: 0; transition: opacity .5s var(--entree), transform .75s var(--entree); }
+  .scene.avec-academy .anneau { opacity: .9; }
+  .scene .route { fill: none; stroke: var(--marque-clair); stroke-width: 2; stroke-dasharray: 6 7; }
+  .scene .decor { opacity: 0; transition: opacity .45s var(--entree) .25s; }
+  .scene .decor.visible { opacity: 1; }
+  .scene-pied { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; padding: 0 22px 18px; font-size: 13px; color: var(--texte-sombre-2); }
+
+  /* La journée dessinée : 8 h à 18 h. */
+  .journee { padding: 6px 22px 20px; }
+  .journee-axe { position: relative; height: 36px; border-radius: 10px; background: rgba(255, 255, 255, .05); }
+  .journee-bloc { position: absolute; top: 4px; bottom: 4px; border-radius: 7px; background: var(--marque); display: flex; align-items: center; padding: 0 10px; font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; transform-origin: left; transition: left .6s var(--entree), width .6s var(--entree), opacity .4s; }
+  .journee-bloc.b2 { background: #2F8AD6; }
+  .journee-heures { display: flex; justify-content: space-between; font-size: 11px; color: var(--texte-sombre-2); margin-top: 6px; }
+
+  .panneau { display: grid; gap: 18px; }
+  .carte-reglages { background: rgba(255, 255, 255, .05); border: 1px solid var(--filet-sombre); border-radius: 24px; padding: 20px; display: grid; gap: 18px; }
+  .reglage { display: grid; gap: 10px; }
+  .reglage-titre { font-weight: 600; font-size: 14px; color: var(--texte-sombre-2); }
+  .effectif { display: flex; gap: 14px; align-items: center; }
+  .effectif-saisie { background: rgba(255, 255, 255, .08); color: #fff; border-color: var(--filet-sombre); }
+  .bascule { display: flex; gap: 10px; align-items: center; cursor: pointer; font-size: 14px; }
+  .bascule input { width: 20px; height: 20px; accent-color: var(--marque); }
+  [hidden] { display: none !important; }
+  .stepper { display: inline-flex; align-items: center; gap: 4px; }
+  .stepper button { width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--filet-sombre); background: transparent; color: #fff; cursor: pointer; display: grid; place-items: center; }
+  .stepper svg { width: 16px; height: 16px; }
+  .stepper output { min-width: 110px; text-align: center; font-weight: 600; font-size: 14px; }
+
+  .ticket { background: #fff; color: var(--encre); border-radius: 24px; padding: 22px; display: grid; gap: 14px; }
+  .pp .chiffre { font-size: 52px; line-height: 1; display: block; }
+  .pp span { font-size: 13px; color: var(--texte-2); }
+  .lignes { margin: 0; display: grid; gap: 8px; border-top: 1px solid var(--filet); padding-top: 14px; }
+  .lignes div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; font-size: 14px; }
+  .lignes dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .lignes .detail { grid-column: 1 / -1; font-size: 12px; color: var(--texte-2); }
+  .total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--filet); padding-top: 12px; font-weight: 600; }
+  .total .chiffre { font-size: 24px; }
+  .reco { margin: 0; font-size: 13px; background: var(--marque-doux); border-radius: 14px; padding: 10px 12px; }
+  .reco:empty { display: none; }
+  .inclus { font-size: 13px; color: var(--texte-2); margin: 0; }
+  .inclus strong { color: var(--encre); }
+  .ticket .pilule { width: 100%; }
+  .ticket-haut { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .choix { height: 44px; border-radius: 12px; border: 1px solid var(--filet-sombre); background: rgba(255, 255, 255, .08); color: #fff; padding: 0 12px; font-weight: 600; font-size: 14px; }
+  .choix option { color: var(--encre); }
+  .partage-ok { font-size: 12px; color: var(--marque); min-height: 16px; margin: 0; }
+</style>
+</head>
+<body>
+<div class="provisoire">Maquette B. Prix provisoires, en attente de ta décision (<a href="index.html#questions">les questions</a>).</div>
+
+<section class="section-encre salle">
+  <div class="conteneur">
+    <header class="entete">
+      <p class="rubrique">Formats et tarifs</p>
+      <h2 class="titre-moyen">Dites-nous combien vous êtes. On dessine la formation.</h2>
+      <p class="chapo">Chaque point est une personne de votre équipe. Changez l'effectif, la durée ou le mode : les groupes se forment, la journée se remplit, le prix suit.</p>
+    </header>
+
+    <div class="plateau">
+      <div class="scene" id="scene">
+        <svg id="svg" viewBox="0 0 1000 600" role="img" aria-label="Les participants répartis en groupes"></svg>
+        <div class="journee" aria-hidden="true">
+          <div class="journee-axe" id="journee"></div>
+          <div class="journee-heures"><span>8 h</span><span>10 h</span><span>12 h</span><span>14 h</span><span>16 h</span><span>18 h</span></div>
+        </div>
+        <div class="scene-pied"><span id="echelle"></span><span id="legende-academy"></span></div>
+      </div>
+
+      <div class="panneau">
+        <div class="carte-reglages">
+          <div class="reglage">
+            <label class="reglage-titre" for="effectif">Personnes à former</label>
+            <div class="effectif"><input type="range" id="effectif" min="1" max="200"><input type="number" class="effectif-saisie" id="effectif-n" min="1" max="2000" inputmode="numeric" aria-label="Nombre de personnes"></div>
+          </div>
+          <div class="reglage"><span class="reglage-titre">Durée</span><div class="segment" data-cle="duree"><button type="button" data-v="3h">3 heures</button><button type="button" data-v="jour">Journée</button></div></div>
+          <div class="reglage"><span class="reglage-titre">Mode</span><div class="segment" data-cle="mode"><button type="button" data-v="distance">À distance</button><button type="button" data-v="site">En présentiel</button></div></div>
+          <div class="reglage" id="lieu">
+            <span class="reglage-titre">Où ?</span>
+            <select class="choix" id="zone" aria-label="Destination"><option value="londres">Londres</option><option value="uk">Royaume-Uni, hors Londres</option><option value="paris">Paris</option><option value="france">France et pays voisins</option><option value="europe">Reste de l'Europe</option><option value="monde">Hors d'Europe</option></select>
+            <label class="bascule"><input type="checkbox" id="hotel"> Avec une nuit d'hôtel</label>
+          </div>
+          <div class="reglage">
+            <span class="reglage-titre">Groupes</span>
+            <div class="stepper">
+              <button type="button" id="moins" aria-label="Moins de groupes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 12h12"/></svg></button>
+              <output id="nb-groupes"></output>
+              <button type="button" id="plus" aria-label="Plus de groupes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 12h12M12 6v12"/></svg></button>
+            </div>
+          </div>
+          <label class="bascule"><input type="checkbox" id="academy"> Ajouter l'Academy pour chacun</label>
+        </div>
+
+        <aside class="ticket" aria-live="polite">
+          <div class="ticket-haut"><span class="mention">Hors taxes</span><span id="devises-ticket"></span></div>
+          <div class="pp"><span>Par personne, hors taxes</span><span class="chiffre" id="pp"></span></div>
+          <dl class="lignes" id="lignes"></dl>
+          <div class="total"><span>Total</span><span class="chiffre" id="total"></span></div>
+          <p class="reco" id="reco"></p>
+          <p class="inclus"><strong>Inclus :</strong> call de diagnostic, formulaire aux participants, calls et briefs écrits, contenu en avance, enregistrement.</p>
+          <button class="pilule pilule-pleine" type="button">Recevoir ce devis</button>
+          <button class="pilule pilule-contour" type="button" id="partager">Partager ce chiffrage</button>
+          <p class="partage-ok" id="partage-ok"></p>
+          <p class="mention" style="margin:0">Prix indicatif, devis définitif après échange.</p>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="commun/moteur.js"></script>
+<script>
+(function () {
+  const S = window.MDP_SIM;
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]fige=1/.test(location.search);
+  let etat = S.depuisAdresse(location.hash) || { ...S.ETAT_DEFAUT, n: 38 };
+  const M = (v) => S.montant(v, 'fr', etat.devise);
+  const $ = (s) => document.querySelector(s);
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = $('#svg'), scene = $('#scene');
+  const MAX_POINTS = 120;
+  const etroit = matchMedia('(max-width: 640px)');
+  let W = 1000, H = 600;
+
+  const decor = document.createElementNS(NS, 'g');
+  const calquePoints = document.createElementNS(NS, 'g');
+  svg.append(decor, calquePoints);
+  const points = [];
+
+  function el(nom, attrs, parent) { const e = document.createElementNS(NS, nom); for (const k in attrs) e.setAttribute(k, attrs[k]); (parent || decor).appendChild(e); return e; }
+  function texte(x, y, t, cls, ancre) { const e = el('text', { x, y, class: cls || 'lib', 'text-anchor': ancre || 'start' }); e.textContent = t; return e; }
+
+  /* Une place par point, selon le mode et le découpage. Fonction pure de l'état. */
+  function places(r, nPoints, parPoint) {
+    const res = [], deco = [];
+    const site = etat.mode === 'site';
+    const k = r.groupes.length;
+    const zoneX = 40, zoneY = site ? 110 : 40, zoneW = W - 80, zoneH = H - zoneY - 40;
+    if (site) {
+      deco.push(['rect', { x: 24, y: 92, width: W - 48, height: H - 112, rx: 28, class: 'salle-mur' }]);
+      deco.push(['texte', 40, 76, 'Vos locaux', 'lib-fort']);
+      deco.push(etat.zone === 'londres' ? ['texte', W - 60, 76, 'À Londres, déplacement compris', 'lib', 'end'] : ['route']);
+    }
+    if (k === 1 && r.n > 15) {
+      // Une seule séance : des rangs face à l'estrade (ou à l'écran partagé).
+      const cols = Math.ceil(Math.sqrt(nPoints * 2.4));
+      const pas = Math.min(zoneW / (cols + 1), 34);
+      const rangs = Math.ceil(nPoints / cols);
+      const x0 = W / 2 - (cols - 1) * pas / 2, y0 = zoneY + 70;
+      deco.push(site ? ['rect', { x: W / 2 - 120, y: zoneY + 8, width: 240, height: 26, rx: 13, class: 'estrade' }] : ['rect', { x: 40, y: 30, width: W - 80, height: H - 70, rx: 22, class: 'tuile' }]);
+      deco.push(['texte', W / 2, zoneY + 52, site ? 'Une séance, tout le monde dans la salle' : r.n > 50 ? 'Un webinaire pour tout le monde' : 'Une seule visio pour tout le monde', 'lib', 'middle']);
+      for (let i = 0; i < nPoints; i++) res.push([x0 + (i % cols) * pas, y0 + Math.floor(i / cols) * pas * 0.9]);
+      return { res, deco, formateur: [W / 2, zoneY + 21] };
+    }
+    // Plusieurs groupes : des tuiles de visio, ou des tables dans la salle.
+    const colsG = etroit.matches ? Math.min(k, 2) : Math.min(k, k <= 4 ? k : Math.ceil(Math.sqrt(k * 1.6)));
+    const rangsG = Math.ceil(k / colsG);
+    const cw = Math.min(zoneW / colsG, 340), ch = Math.min(zoneH / rangsG, cw * 0.78 + 40);
+    const x0 = W / 2 - (cw * colsG) / 2, y0 = zoneY + (zoneH - ch * rangsG) / 2;
+    let idx = 0;
+    r.groupes.forEach((taille, g) => {
+      const cx = x0 + cw * (g % colsG) + cw / 2, cy = y0 + ch * Math.floor(g / colsG) + ch / 2 - 8;
+      const nG = Math.max(1, Math.round(taille / parPoint));
+      const rayon = Math.min(cw, ch) * 0.3;
+      if (site) {
+        deco.push(['circle', { cx, cy, r: rayon * 0.62, class: 'table' }]);
+        for (let i = 0; i < nG && idx < nPoints; i++, idx++) { const a = (i / nG) * Math.PI * 2 - Math.PI / 2; res.push([cx + Math.cos(a) * rayon, cy + Math.sin(a) * rayon]); }
+      } else {
+        const tw = cw - 24, th = ch - 40;
+        deco.push(['rect', { x: cx - tw / 2, y: cy - th / 2, width: tw, height: th, rx: 16, class: 'tuile' }]);
+        deco.push(['rect', { x: cx - tw / 2, y: cy - th / 2, width: tw, height: 18, rx: 9, class: 'tuile-barre' }]);
+        const c = Math.ceil(Math.sqrt(nG * (tw / th)));
+        const pas = Math.min((tw - 30) / c, 30);
+        const lignes = Math.ceil(nG / c);
+        for (let i = 0; i < nG && idx < nPoints; i++, idx++) res.push([cx - (Math.min(c, nG) - 1) * pas / 2 + (i % c) * pas, cy + 8 - (lignes - 1) * pas / 2 + Math.floor(i / c) * pas]);
+      }
+      // Le libellé naît à côté du groupe, jamais dessus.
+      deco.push(['texte', cx, cy + ch / 2 - 2, k > 1 ? `Groupe ${g + 1}, ${taille} pers.` : `${taille} ${taille > 1 ? 'personnes' : 'personne'}`, 'lib', 'middle']);
+    });
+    while (res.length < nPoints) res.push(res[res.length - 1] || [W / 2, H / 2]);
+    return { res, deco, formateur: null };
+  }
+
+  function dessinerDecor(deco, r) {
+    decor.replaceChildren();
+    deco.forEach((d) => {
+      if (d[0] === 'texte') texte(d[1], d[2], d[3], d[4], d[5]);
+      else if (d[0] === 'route') {
+        const z = S.GRILLE.deplacement.zones[etat.zone];
+        const g = el('g', {});
+        const x1 = W - 400, x2 = W - 120, y = 62;
+        el('circle', { cx: x1, cy: y, r: 5, fill: '#fff' }, g);
+        el('path', { d: `M${x1 + 10} ${y} Q ${(x1 + x2) / 2} ${y - 34} ${x2 - 10} ${y}`, class: 'route' }, g);
+        el('circle', { cx: x2, cy: y, r: 7, fill: '#7DB8EE' }, g);
+        const t1 = el('text', { x: x1, y: y + 24, class: 'lib', 'text-anchor': 'middle' }, g); t1.textContent = 'Londres';
+        const t2 = el('text', { x: x2, y: y + 24, class: 'lib', 'text-anchor': 'middle' }, g); t2.textContent = z.nom;
+        if (etat.hotel) { const t3 = el('text', { x: (x1 + x2) / 2, y: y - 30, class: 'lib', 'text-anchor': 'middle' }, g); t3.textContent = '+ nuit d\'hôtel'; }
+      } else el(d[0], d[1]);
+    });
+  }
+
+  function rendreScene(r) {
+    W = etroit.matches ? 600 : 1000; H = etroit.matches ? (etat.mode === 'site' ? 820 : 760) : 600;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.classList.toggle('etroit', etroit.matches);
+    const parPoint = Math.max(1, Math.ceil(r.n / MAX_POINTS));
+    const nPoints = Math.ceil(r.n / parPoint);
+    const { res, deco, formateur } = places(r, nPoints, parPoint);
+    dessinerDecor(deco, r);
+    while (points.length < nPoints) {
+      const g = document.createElementNS(NS, 'g');
+      const a = document.createElementNS(NS, 'circle'); a.setAttribute('r', 10); a.setAttribute('class', 'anneau');
+      const c = document.createElementNS(NS, 'circle'); c.setAttribute('r', 6); c.setAttribute('class', 'point');
+      g.append(a, c); calquePoints.appendChild(g);
+      const depart = points.length ? points[points.length - 1].pos : [W / 2, H / 2];
+      [a, c].forEach((n) => { n.style.transform = `translate(${depart[0]}px, ${depart[1]}px) scale(0)`; });
+      points.push({ g, a, c, pos: depart });
+    }
+    points.forEach((p, i) => {
+      const actif = i < nPoints;
+      const [x, y] = actif ? res[i] : p.pos;
+      p.pos = [x, y];
+      const delai = reduit ? 0 : Math.min(i * 4, 400);
+      [p.a, p.c].forEach((n) => {
+        n.style.transitionDelay = `${delai}ms`;
+        n.style.transition = reduit ? 'none' : '';
+        n.style.transform = `translate(${x}px, ${y}px) scale(${actif ? 1 : 0})`;
+      });
+    });
+    scene.classList.toggle('avec-academy', etat.academy);
+    $('#echelle').textContent = parPoint > 1 ? `Un point pour ${parPoint} personnes` : 'Un point par personne';
+    $('#legende-academy').textContent = etat.academy ? 'Cercle doré : chacun continue sur l\'Academy après la séance' : '';
+    rendreJournee(r);
+  }
+
+  /* La journée : où tombent les séances entre 8 h et 18 h. */
+  function rendreJournee(r) {
+    const j = $('#journee');
+    const pos = (h) => ((h - 8) / 10) * 100;
+    const blocs = [];
+    if (etat.duree === 'jour') { blocs.push([9, 12.5, 'Matin'], [13.5, 17, 'Après-midi']); }
+    else if (etat.mode === 'site' && r.seances >= 2) { blocs.push([9, 12, 'Groupe 1'], [14, 17, 'Groupe 2']); }
+    else blocs.push([9.5, 12.5, '3 heures']);
+    while (j.children.length < 2) { const b = document.createElement('div'); b.className = 'journee-bloc'; j.appendChild(b); }
+    [...j.children].forEach((b, i) => {
+      const d = blocs[i];
+      b.classList.toggle('b2', etat.duree !== 'jour' && i === 1);
+      if (!d) { b.style.opacity = 0; return; }
+      b.style.opacity = 1; b.style.left = pos(d[0]) + '%'; b.style.width = (pos(d[1]) - pos(d[0])) + '%'; b.textContent = d[2];
+    });
+  }
+
+  /* Réglages. */
+  const curseur = $('#effectif'), saisie = $('#effectif-n');
+  curseur.addEventListener('input', () => { etat.n = +curseur.value; if (typeof etat.groupes === 'number') etat.groupes = 'auto'; rendre(); });
+  saisie.addEventListener('input', () => { const v = parseInt(saisie.value, 10); if (v > 0) { etat.n = Math.min(2000, v); etat.groupes = 'auto'; rendre(); } });
+  document.querySelectorAll('.segment[data-cle]').forEach((s) => s.addEventListener('click', (ev) => { const b = ev.target.closest('button'); if (!b) return; etat[s.dataset.cle] = b.dataset.v; rendre(); }));
+  $('#hotel').addEventListener('change', (e) => { etat.hotel = e.target.checked; rendre(); });
+  $('#zone').addEventListener('change', (e) => { etat.zone = e.target.value; rendre(); });
+  const selDevise = S.selecteurDevise(() => etat, (dv) => { etat.devise = dv; rendre(); });
+  $('#devises-ticket').appendChild(selDevise);
+  $('#academy').addEventListener('change', (e) => { etat.academy = e.target.checked; rendre(); });
+  const nbActuel = () => S.chiffrer(etat).seances;
+  $('#moins').addEventListener('click', () => { const k = nbActuel() - 1; etat.groupes = k <= 1 ? 'pleniere' : k; rendre(); });
+  $('#plus').addEventListener('click', () => { etat.groupes = Math.min(etat.n, nbActuel() + 1); rendre(); });
+  etroit.addEventListener('change', () => rendre());
+
+  function rendre() {
+    const r = S.chiffrer(etat);
+    curseur.value = Math.min(200, etat.n); if (document.activeElement !== saisie) saisie.value = etat.n;
+    document.querySelectorAll('.segment[data-cle]').forEach((s) => s.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(etat[s.dataset.cle] === b.dataset.v))));
+    $('#lieu').hidden = etat.mode !== 'site';
+    $('#hotel').checked = etat.hotel; $('#academy').checked = etat.academy;
+    $('#nb-groupes').textContent = r.seances === 1 ? 'Une séance' : `${r.seances} groupes`;
+    rendreScene(r);
+    $('#zone').value = etat.zone; selDevise.maj();
+    $('#pp').textContent = M(r.parPersonne);
+    $('#lignes').innerHTML = r.lignes.map((l) => `<div><dt>${l.libelle}</dt><dd>${M(l.montant)}</dd><span class="detail">${l.detail}</span></div>`).join('');
+    $('#total').textContent = M(r.total);
+    $('#reco').textContent = S.recommandation(etat);
+    history.replaceState(null, '', S.versAdresse(etat));
+  }
+  $('#partager').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(location.href); $('#partage-ok').textContent = 'Lien copié : il rouvre ce chiffrage.'; } catch { $('#partage-ok').textContent = location.href; }
+  });
+  rendre();
+})();
+</script>
+</body>
+</html>

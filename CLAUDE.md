@@ -337,7 +337,7 @@ validation par Paul, cutover ensuite. Les composants V1 restent en place sur les
 pages qui les utilisent encore (services/[slug], blog, contact).
 
 ### Cohérence avec le Hub auth (mydigipal-dashboard/)
-Le Hub MyDigipal a son propre handoff Claude Design (KPI cards, charts ECharts, tables enrichies). Les deux ecosystèmes design sont distincts mais coordonnés via `~/.claude/projects/_shared/design-handoff-sync.md` :
+Le Hub MyDigipal a son propre handoff Claude Design (KPI cards, charts ECharts, tables enrichies). Les deux ecosystèmes design sont distincts mais coordonnés via `~/.claude/projects/_shared/_archive/design-handoff-sync_PERIME-site-3B82F6.md` (archivé le 08/10/2026 : il donne encore le site en `#3B82F6`, les lignes ci-dessous font foi) :
 - Site = Inter + Plus Jakarta Sans, un seul bleu d'accent (celui du logo, #1D71B8) depuis le 25/09/2026 (section 7 bis) ; l'ancienne palette indigo→violet→cyan n'existe plus
 - Hub = Inter + Space Grotesk, palette brand-blue/dark + channel colors data
 - Patterns transversaux : count-up easing (easeOutCubic 1400ms), reveal-on-scroll cubic-bezier, magnetic button portable
@@ -886,7 +886,8 @@ Dans `src/components/motion/`, sur le socle `src/lib/motion/` ; à voir sur `/{l
 `/ai`, AI Training, AI Solutions, AI Content, FR et EN. L'ordre des sections est choisi pour que
 l'encre ponctue sans jamais deux sections sombres collées (commentaires dans `[slug].astro`).
 - **Animations** : AI Training, la grille de mots (`components/motion/GrilleMots.astro`, CRAFT :
-  chaque lettre écrit sa ligne dans un prompt d'exemple) et la carte de verre du serveur MCP ;
+  chaque lettre écrit sa ligne dans un prompt d'exemple ; remplacée depuis par `GrilleSuisse`, voir
+  plus bas) et la carte de verre du serveur MCP ;
   AI Solutions, le rail d'une automatisation (`AIAutomationRail.astro`) et la même carte MCP ;
   AI Content, le rail en quatre états (`AIContentProcess.astro`) ; `/ai`, un aiguillage vers les
   quatre offres, sans animation lourde.
@@ -1067,6 +1068,54 @@ servent dans leur `bottom`. Un nouvel élément flottant fait de même, et ne me
 ⚠️ Le bandeau entre en glissant pendant 300 ms : une mesure de sa POSITION prise pendant ce
 glissement donne une hauteur partielle. `Assistant.tsx` et la bulle de reprise de
 `BaseLayout.astro` lisent donc sa classe `translate-y-0` et sa hauteur.
+
+## La page AI Training refaite (14/10/2026, en travail sur `/{lang}/services/ai-training-v2`)
+
+Pilotage : `docs/ai-training-refonte/index.html` (questions de prix, maquettes, décisions de Paul).
+La page actuelle (`[slug].astro`, `ai-training`) reste en ligne jusqu'à la validation de Paul ;
+`ai-training-v2.astro` est en `noindex` et hors du sitemap (le sitemap ne lit que les collections).
+
+- **La gamme (Paul, 14/10)** : une séance de 3 h (le format qu'il préfère) ou une journée, à distance
+  ou en présentiel, l'Academy en option. Plus de séances d'une ou deux heures, plus de one-to-one ni de
+  « grand format » présentés à part.
+- **UNE grille de prix** : `src/lib/formation/grille.ts`, prix FIXÉS dans chaque devise (euros, livres,
+  dollars), jamais convertis. 10 à 15 personnes idéal, +15 % de 21 à 50, +50 % au-delà (webinaire),
+  remises de volume -5 à -20 %, déplacement depuis Londres par destination plus nuits d'hôtel,
+  parcours techniques au double de l'ancienne grille, Academy hors taxes (prix TTC de l'API / 1,2 en
+  euros et en livres) à -30 % avec une formation. ⚠️ Encore provisoires : le barème du déplacement, le
+  niveau du webinaire, la portée des -30 % (toute formation ou présentiel seul), les livres par défaut
+  aux anglophones du Royaume-Uni. À la bascule, le calculateur (`ai-training-services.ts`), l'accueil
+  (`accueil/donnees.ts`) et la FAQ actuelle doivent lire cette grille.
+- **Le moteur** : `src/lib/formation/moteur.ts`, fonctions pures (`chiffrer`, `recommandation`,
+  `montant`, `versAdresse` / `depuisAdresse`). Tests : `npm run test:formation` (Node 24 lit le
+  TypeScript ; cas nommés calculés à la main). L'état part dans l'adresse en `#chiffrage&n=...&c=EUR`,
+  lisible : un lien partagé ou une proposition commerciale rouvre la page pré-réglée.
+- **L'îlot** `components/formation/TarifsFormation.tsx` (`client:load`) : les deux formats (prix PAR
+  PERSONNE en vedette, Paul : « ça donne l'impression que c'est vraiment pas cher »), l'Academy, le
+  simulateur, la fenêtre du devis. `?envoi=test` n'envoie rien (charge utile dans la console). Le devis
+  part sur `POST academy.mydigipal.com/api/site/devis` avec un bloc `formation` et
+  `metadata.source = 'formation-simulator'`. Mesure : `training_simulator_change`,
+  `training_format_select`, `training_quote_share`, `training_quote_open`, `training_quote_submit`
+  (avec `user_data` et `event_id`, comme le calculateur).
+- **Les sections** (`components/formation/`) : `FriseInclus` (avant, pendant, après : la liste de Paul,
+  remplace `TrainingProcess`), `ApresFormation` (fusion des trois sections de bénéfices, autour des
+  tâches citées par les participants), `PreuvesFormation`, `AllerPlusLoin` (parcours techniques).
+  Réutilisés avec de nouvelles options sans effet ailleurs : `TrainingUseCases` (`fond`, `premiers`),
+  `TrainingAgenda` (`fond`, `securiteForte`), `ServiceFAQ` (`contenu`, FAQ dans
+  `data/formation/faq.ts`), `HeroService` et `FinalCTA` (`lienBudget`), `HeroService` (slot `panneau`
+  et `chiffres`).
+- **Les avis** : l'export des 497 retours est dans `mydigipal-academy/atelier/retours/`.
+  `scripts/avis-formation.py` en tire `data/formation/stats-avis.json` (animation 9,5/10 sur 494 notes,
+  85 % de 9 ou 10, 12 entreprises) ; la note globale reste celle de l'API (9,4, arbitrage de Paul).
+  Les verbatims (`data/formation/avis.ts`) sont mot pour mot, avec la ligne de l'export ; l'autre langue
+  est une traduction, signalée sous la citation. Auteur prénom + initiale. Jamais On Train.
+- **Le hero** : plus de tableau à palettes sur cette page (Paul, 14/10 : « j'aime pas cette animation
+  avec les chiffres qui défilent »), ni de chiffre qui bascule dans le simulateur. À la place,
+  `motion/SceneFormationSurMesure.astro` : on écoute l'équipe, son programme se construit et le logo de
+  sa marque s'y pose, puis la formation en salle, à distance ou en ligne. Fonction du temps, image
+  finale par défaut, barre de progression, pause au clic, rejouer ; `__scene.aller(t)` pour vérifier.
+- **Contact** : « Formation IA » / « AI Training » dans les puces, cochée par `?topic=formation`,
+  `mcp`, `parcours-technique` ou `technical-track`.
 
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)
 

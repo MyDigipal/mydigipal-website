@@ -1,0 +1,167 @@
+/* Les formats, l'Academy et le simulateur de la page AI Training (14/10/2026).
+   Préfixe `tf-` : rien ne fuit vers le reste du site. Jetons du système Encre (global.css). */
+
+.tf-formats { padding: 72px 0 104px; }
+@media (min-width: 1024px) { .tf-formats { padding: 112px 0 136px; } }
+.tf-formats .chiffre, .tf-simulateur .chiffre, .tf-fenetre .chiffre { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+
+.tf-entete { display: grid; gap: 22px; margin-bottom: 44px; }
+@media (min-width: 1024px) { .tf-entete { grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 48px; margin-bottom: 56px; } }
+.tf-entete-texte { display: grid; gap: 18px; max-width: 760px; }
+.tf-entete-devise { display: grid; gap: 8px; justify-items: start; font-size: 13px; color: var(--texte-sombre-2); }
+@media (min-width: 1024px) { .tf-entete-devise { justify-items: end; text-align: right; } }
+
+/* Le sélecteur de devise. */
+.tf-devises { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: rgb(15 23 42 / 0.06); }
+.tf-devises-sombre { background: rgb(255 255 255 / 0.08); }
+.tf-devises button { border: 0; background: transparent; border-radius: 999px; padding: 6px 11px; font-size: 12px; font-weight: 600; cursor: pointer; color: inherit; opacity: .72; }
+.tf-devises button[aria-pressed="true"] { background: #fff; color: var(--encre); opacity: 1; }
+.tf-devises button:focus-visible { outline: 2px solid var(--marque-clair); outline-offset: 2px; }
+
+/* Deux formats de poids différent : la séance de 3 h domine. */
+.tf-gamme { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 1024px) { .tf-gamme { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 20px; } }
+.tf-format { border-radius: 28px; padding: 24px; display: grid; gap: 22px; align-content: start; border: 1px solid var(--filet-sombre); background: linear-gradient(180deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.02)); }
+@media (min-width: 768px) { .tf-format { padding: 32px; } }
+.tf-format-vedette { background: radial-gradient(700px 320px at 0% 0%, rgb(29 113 184 / 0.38), transparent 70%), linear-gradient(180deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.03)); border-color: rgb(125 184 238 / 0.35); }
+.tf-format-sur { font-size: 13px; font-weight: 600; color: var(--marque-clair); margin: 0; }
+.tf-format-nom { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(28px, 3vw, 38px); line-height: 1.05; margin: 6px 0 0; color: #fff; }
+.tf-format-texte { color: var(--texte-sombre-2); margin: 0; max-width: 52ch; }
+
+/* La journée de 8 h à 18 h : on voit ce que la séance occupe. */
+.tf-jour { display: grid; gap: 8px; }
+.tf-jour-axe { position: relative; height: 46px; border-radius: 14px; background: rgb(255 255 255 / 0.05); overflow: hidden; }
+.tf-jour-bloc { position: absolute; top: 6px; bottom: 6px; border-radius: 10px; background: var(--color-marque); display: flex; align-items: center; padding: 0 12px; font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; transform-origin: left center; transition: transform .9s var(--mdp-entree); }
+.tf-jour-bloc span { transition: opacity .4s var(--mdp-entree) .6s; }
+.tf-jour-bloc.tf-second { background: #3B8FD9; transition-delay: .35s; }
+.tf-jour-bloc.tf-second span { transition-delay: .95s; }
+.tf-jour.tf-attend .tf-jour-bloc { transform: scaleX(0); }
+.tf-jour.tf-attend .tf-jour-bloc span { opacity: 0; }
+.tf-jour-heures { display: flex; justify-content: space-between; font-size: 11px; color: var(--texte-sombre-2); }
+.tf-jour-legende { font-size: 13px; color: var(--texte-sombre-2); margin: 0; }
+
+/* Les prix, lisibles sans rien toucher : à distance et en présentiel côte à côte. */
+.tf-prix { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border-top: 1px solid var(--filet-sombre); }
+.tf-prix-col { text-align: left; background: transparent; border: 0; color: inherit; padding: 20px 4px 4px; display: grid; gap: 4px; align-content: start; cursor: pointer; font: inherit; }
+.tf-prix-col + .tf-prix-col { padding-left: 20px; border-left: 1px solid var(--filet-sombre); }
+.tf-prix-mode { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--texte-sombre-2); }
+.tf-prix-mode svg { width: 16px; height: 16px; color: var(--marque-clair); }
+.tf-prix-pp { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.tf-prix-pp .chiffre { font-size: clamp(38px, 4.4vw, 56px); line-height: 1; color: #fff; }
+.tf-format:not(.tf-format-vedette) .tf-prix-pp .chiffre { font-size: clamp(32px, 3.4vw, 44px); }
+.tf-prix-pp small { font-size: 14px; color: var(--texte-sombre-2); }
+.tf-prix-seance { font-size: 14px; color: var(--texte-sombre); }
+.tf-prix-seance span { color: var(--texte-sombre-2); }
+.tf-prix-lien { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--marque-clair); display: inline-flex; gap: 6px; align-items: center; }
+.tf-prix-lien svg { width: 14px; height: 14px; transition: transform .3s var(--mdp-entree); }
+.tf-prix-col:hover .tf-prix-lien svg { transform: translateY(2px); }
+.tf-prix-col:focus-visible { outline: 2px solid var(--marque-clair); outline-offset: 4px; border-radius: 12px; }
+@media (max-width: 479px) { .tf-prix-col + .tf-prix-col { padding-left: 14px; } .tf-prix-lien { white-space: nowrap; font-size: 12px; } }
+
+/* L'Academy en complément, avec l'offre réservée aux clients de la formation. */
+.tf-academy { margin-top: 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: center; border-radius: 28px; padding: 22px; background: #0d1424; border: 1px solid rgb(233 196 106 / 0.28); }
+@media (min-width: 1024px) { .tf-academy { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); padding: 26px 36px 26px 26px; gap: 40px; } }
+.tf-academy video { width: 100%; border-radius: 18px; aspect-ratio: 16 / 10; object-fit: cover; background: #0d1424; }
+.tf-academy-sur { font-size: 13px; font-weight: 600; color: #E9C46A; margin: 0; }
+.tf-academy h3 { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; font-size: clamp(22px, 2.2vw, 28px); line-height: 1.15; margin: 8px 0 10px; color: #fff; }
+.tf-academy p { margin: 0; color: var(--texte-sombre-2); }
+.tf-offre { margin: 18px 0; display: grid; gap: 6px; padding: 16px 18px; border-radius: 18px; background: rgb(233 196 106 / 0.08); }
+.tf-offre-prix { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.tf-offre-prix .chiffre { font-size: 36px; color: #fff; line-height: 1; }
+.tf-offre-prix s { color: var(--texte-sombre-2); font-size: 16px; }
+.tf-offre-prix small { color: var(--texte-sombre-2); font-size: 14px; }
+.tf-offre-texte { font-size: 14px; color: var(--texte-sombre); }
+.tf-faits { display: flex; flex-wrap: wrap; gap: 8px 26px; margin: 0 0 20px; }
+.tf-faits div { display: grid; }
+.tf-faits .chiffre { font-size: 20px; color: #fff; }
+.tf-faits span:not(.chiffre) { font-size: 12px; color: var(--texte-sombre-2); }
+
+.tf-pied { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@media (min-width: 1024px) { .tf-pied { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 20px; } }
+.tf-pied p { margin: 0; font-size: 14px; color: var(--texte-sombre-2); }
+.tf-pied strong { color: #fff; font-weight: 600; }
+.tf-inclus { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.tf-inclus span { display: inline-flex; gap: 6px; align-items: center; }
+.tf-inclus svg { width: 15px; height: 15px; color: var(--marque-clair); flex: none; }
+
+/* Le simulateur. */
+.tf-simulateur { padding: 72px 0 96px; scroll-margin-top: 72px; }
+@media (min-width: 1024px) { .tf-simulateur { padding: 104px 0 128px; } }
+.tf-sim-tete { display: grid; gap: 16px; max-width: 760px; margin-bottom: 40px; }
+.tf-sim-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+@media (min-width: 1024px) { .tf-sim-grille { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; align-items: start; } }
+.tf-reglages { background: #fff; border-radius: 28px; padding: 24px; display: grid; gap: 26px; box-shadow: 0 1px 2px rgb(15 23 42 / 0.04); }
+@media (min-width: 768px) { .tf-reglages { padding: 34px; } }
+.tf-reglage { display: grid; gap: 12px; }
+.tf-reglage-titre { font-weight: 700; font-size: 15px; color: var(--encre); }
+.tf-aide { font-size: 14px; color: #4B5B6B; margin: 0; }
+.tf-effectif { display: flex; gap: 16px; align-items: center; }
+.tf-effectif input[type="range"] { flex: 1; accent-color: var(--color-marque); height: 28px; }
+.tf-saisie { width: 92px; height: 44px; border-radius: 12px; border: 1px solid var(--filet); padding: 0 12px; font-weight: 700; font-size: 18px; text-align: right; background: #fff; color: var(--encre); }
+.tf-deux { display: grid; gap: 22px; }
+@media (min-width: 640px) { .tf-deux { grid-template-columns: auto auto; justify-content: start; gap: 28px; } }
+.tf-segment { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 999px; background: var(--brume); justify-self: start; }
+.tf-segment button { border: 0; background: transparent; border-radius: 999px; padding: 10px 18px; font-weight: 600; font-size: 14px; cursor: pointer; color: #4B5B6B; transition: background-color .25s var(--mdp-entree), color .25s; }
+.tf-segment button[aria-pressed="true"] { background: #fff; color: var(--encre); box-shadow: 0 1px 2px rgb(15 23 42 / 0.08), 0 4px 12px rgb(15 23 42 / 0.06); }
+.tf-segment button:focus-visible { outline: 2px solid var(--color-marque); outline-offset: 2px; }
+.tf-choix { height: 44px; border-radius: 12px; border: 1px solid var(--filet); background: #fff; padding: 0 12px; font-weight: 600; font-size: 14px; max-width: 100%; color: var(--encre); }
+.tf-lieu { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; margin-top: -10px; }
+.tf-bascule { display: flex; gap: 12px; align-items: center; cursor: pointer; font-size: 15px; color: var(--encre); }
+.tf-bascule input { width: 22px; height: 22px; accent-color: var(--color-marque); flex: none; }
+.tf-groupes { display: flex; flex-wrap: wrap; gap: 14px 18px; }
+.tf-groupe { display: grid; gap: 6px; }
+.tf-points { display: grid; grid-template-columns: repeat(5, 8px); gap: 4px; }
+.tf-points i { width: 8px; height: 8px; border-radius: 99px; background: var(--color-marque); }
+.tf-points i.tf-vient { animation: tf-pastille .45s var(--mdp-entree) backwards; }
+@keyframes tf-pastille { from { transform: scale(0); } }
+.tf-groupe small { font-size: 12px; color: #4B5B6B; }
+.tf-academy-choix { border-radius: 18px; background: #FFF8E6; padding: 14px 16px; }
+.tf-academy-choix small { display: block; font-size: 13px; color: #7A5B12; margin-top: 2px; }
+
+.tf-ticket { background: var(--encre); color: var(--texte-sombre); border-radius: 28px; padding: 26px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.tf-court { display: none; }
+@media (max-width: 479px) { .tf-long { display: none; } .tf-court { display: inline; } .tf-ticket { padding: 22px 18px; } }
+.tf-academy-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; }
+.tf-lien-clair { color: #fff; font-weight: 600; font-size: 15px; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgb(255 255 255 / 0.4); }
+.tf-lien-clair:hover { text-decoration-color: #fff; }
+@media (min-width: 1024px) { .tf-ticket { position: sticky; top: 96px; padding: 32px; } }
+.tf-ticket-haut { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--texte-sombre-2); }
+.tf-ticket-pp { display: grid; gap: 4px; }
+.tf-ticket-pp .chiffre { font-size: clamp(56px, 7vw, 80px); line-height: .95; color: #fff; }
+.tf-ticket-pp > span:last-child { color: var(--texte-sombre-2); font-size: 15px; }
+.tf-volets { display: inline-flex; }
+.tf-volets span { display: inline-block; animation: tf-volet .42s var(--mdp-entree) backwards; }
+@keyframes tf-volet { from { transform: rotateX(-90deg); opacity: .2; } }
+.tf-lignes { display: grid; gap: 10px; padding: 16px 0; border-top: 1px solid var(--filet-sombre); border-bottom: 1px solid var(--filet-sombre); margin: 0; }
+.tf-lignes div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; }
+.tf-lignes dt { font-weight: 600; font-size: 15px; }
+.tf-lignes dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+.tf-detail { grid-column: 1 / -1; font-size: 13px; color: var(--texte-sombre-2); }
+.tf-total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.tf-total .chiffre { font-size: 28px; }
+.tf-mention { color: var(--texte-sombre-2); margin: 0; font-size: 13px; }
+.tf-reco { font-size: 14px; background: rgb(125 184 238 / 0.12); border-radius: 16px; padding: 12px 14px; margin: 0; }
+.tf-ticket .pilule svg { width: 18px; height: 18px; flex: none; }
+.tf-partage { font-size: 13px; color: var(--marque-clair); min-height: 18px; margin: 0; overflow-wrap: anywhere; }
+.tf-contact { font-size: 14px; color: var(--texte-sombre-2); text-decoration: underline; text-underline-offset: 3px; justify-self: start; }
+.tf-contact:hover { color: #fff; }
+
+/* La fenêtre du devis. */
+.tf-voile { position: fixed; inset: 0; z-index: 10000; background: rgb(11 27 43 / 0.62); display: grid; place-items: center; padding: 16px; }
+.tf-fenetre { position: relative; width: 100%; max-width: 480px; max-height: calc(100dvh - 32px); overflow-y: auto; background: #fff; border-radius: 24px; padding: 28px 24px 24px; box-shadow: var(--ombre-forte); }
+.tf-fenetre h3 { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; font-size: 24px; margin: 0 36px 8px 0; color: var(--encre); }
+.tf-fenetre form { display: grid; gap: 14px; }
+.tf-form-texte { margin: 0; font-size: 15px; color: #4B5B6B; }
+.tf-champ { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: #4B5B6B; }
+.tf-champ input, .tf-champ textarea { border: 1px solid var(--filet); border-radius: 12px; padding: 11px 13px; font: inherit; font-size: 16px; font-weight: 400; color: var(--encre); }
+.tf-champ input:focus, .tf-champ textarea:focus { outline: 2px solid var(--color-marque); outline-offset: 1px; }
+.tf-piege { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.tf-erreur { margin: 0; color: #B91C1C; font-size: 14px; }
+.tf-ok { margin: 8px 0 0; font-size: 16px; color: var(--encre); }
+.tf-fermer { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 999px; border: 0; background: var(--brume); color: var(--encre); display: grid; place-items: center; cursor: pointer; }
+.tf-fermer svg { width: 16px; height: 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-volets span, .tf-points i.tf-vient { animation: none; }
+  .tf-jour-bloc, .tf-jour-bloc span { transition: none; }
+}

@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Direction A, deuxième version</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="commun/base.css">
+<style>
+  .formats { padding: 72px 0 104px; }
+  @media (min-width: 1024px) { .formats { padding: 112px 0 136px; } }
+  .entete { display: grid; gap: 22px; margin-bottom: 44px; }
+  @media (min-width: 1024px) { .entete { grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 48px; margin-bottom: 56px; } }
+  .entete-texte { display: grid; gap: 18px; max-width: 760px; }
+  .entete-devise { display: grid; gap: 8px; justify-items: start; font-size: 13px; color: var(--texte-sombre-2); }
+  @media (min-width: 1024px) { .entete-devise { justify-items: end; text-align: right; } }
+
+  /* Deux formats de poids différent : la séance de 3 h domine, la journée l'accompagne. */
+  .gamme { display: grid; gap: 16px; }
+  @media (min-width: 1024px) { .gamme { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 20px; } }
+  .format { position: relative; border-radius: 28px; padding: 24px; display: grid; gap: 22px; align-content: start; border: 1px solid var(--filet-sombre); background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02)); }
+  @media (min-width: 768px) { .format { padding: 32px; } }
+  .format-vedette { background: radial-gradient(700px 320px at 0% 0%, rgba(29, 113, 184, .38), transparent 70%), linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .03)); border-color: rgba(125, 184, 238, .35); }
+  .format-sur { font-size: 13px; font-weight: 600; color: var(--marque-clair); margin: 0; }
+  .format-nom { font-family: var(--display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(28px, 3vw, 38px); line-height: 1.05; margin: 6px 0 0; }
+  .format-texte { color: var(--texte-sombre-2); margin: 0; max-width: 52ch; }
+
+  /* La journée de 8 h à 18 h : on voit ce que la séance occupe. */
+  .jour { display: grid; gap: 8px; }
+  .jour-axe { position: relative; height: 46px; border-radius: 14px; background: rgba(255, 255, 255, .05); overflow: hidden; }
+  .jour-bloc { position: absolute; top: 6px; bottom: 6px; border-radius: 10px; background: var(--marque); display: flex; align-items: center; padding: 0 12px; font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; transform-origin: left center; }
+  .jour-bloc.second { background: #3B8FD9; }
+  html.mv .jour:not(.jouee) .jour-bloc { transform: scaleX(0); }
+  html.mv .jour:not(.jouee) .jour-bloc span { opacity: 0; }
+  .jour.jouee .jour-bloc { transition: transform .9s var(--entree); }
+  .jour.jouee .jour-bloc span { transition: opacity .4s var(--entree) .6s; }
+  .jour.jouee .jour-bloc.second { transition-delay: .35s; }
+  .jour.jouee .jour-bloc.second span { transition-delay: .95s; }
+  .jour-heures { display: flex; justify-content: space-between; font-size: 11px; color: var(--texte-sombre-2); }
+  .jour-legende { font-size: 13px; color: var(--texte-sombre-2); margin: 0; }
+
+  /* Les prix, lisibles sans rien toucher : à distance et en présentiel côte à côte. */
+  .prix { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border-top: 1px solid var(--filet-sombre); }
+  .prix-col { text-align: left; background: transparent; border: 0; color: inherit; padding: 20px 4px 4px; display: grid; gap: 4px; align-content: start; cursor: pointer; border-radius: 0; position: relative; }
+  .prix-col + .prix-col { padding-left: 20px; border-left: 1px solid var(--filet-sombre); }
+  .prix-mode { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--texte-sombre-2); }
+  .prix-mode svg { width: 16px; height: 16px; color: var(--marque-clair); }
+  .prix-pp { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .prix-pp .chiffre { font-size: clamp(38px, 4.4vw, 56px); line-height: 1; color: #fff; }
+  .format:not(.format-vedette) .prix-pp .chiffre { font-size: clamp(32px, 3.4vw, 44px); }
+  .prix-pp small { font-size: 14px; color: var(--texte-sombre-2); }
+  .prix-seance { font-size: 14px; color: var(--texte-sombre); }
+  .prix-seance span { color: var(--texte-sombre-2); }
+  .prix-lien { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--marque-clair); display: inline-flex; gap: 6px; align-items: center; }
+  @media (max-width: 479px) { .prix-col + .prix-col { padding-left: 14px; } .prix-lien { white-space: nowrap; font-size: 12px; } }
+  .prix-lien svg { width: 14px; height: 14px; transition: transform .3s var(--entree); }
+  .prix-col:hover .prix-lien svg { transform: translateY(2px); }
+  .prix-col:focus-visible { outline: 2px solid var(--marque-clair); outline-offset: 4px; border-radius: 12px; }
+
+  /* L'Academy, en complément, avec l'offre réservée aux clients de la formation. */
+  .academy { margin-top: 16px; display: grid; gap: 24px; align-items: center; border-radius: 28px; padding: 22px; background: #0d1424; border: 1px solid rgba(233, 196, 106, .28); }
+  @media (min-width: 1024px) { .academy { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); padding: 26px 36px 26px 26px; gap: 40px; } }
+  .academy video { width: 100%; border-radius: 18px; aspect-ratio: 16 / 10; object-fit: cover; background: #0d1424; }
+  .academy-sur { font-size: 13px; font-weight: 600; color: #E9C46A; margin: 0; }
+  .academy h3 { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; font-size: clamp(22px, 2.2vw, 28px); line-height: 1.15; margin: 8px 0 10px; }
+  .academy p { margin: 0; color: var(--texte-sombre-2); }
+  .offre { margin: 18px 0; display: grid; gap: 6px; padding: 16px 18px; border-radius: 18px; background: rgba(233, 196, 106, .08); }
+  .offre-prix { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .offre-prix .chiffre { font-size: 36px; color: #fff; line-height: 1; }
+  .offre-prix s { color: var(--texte-sombre-2); font-size: 16px; }
+  .offre-prix small { color: var(--texte-sombre-2); font-size: 14px; }
+  .offre-texte { font-size: 14px; color: var(--texte-sombre); }
+  .faits { display: flex; flex-wrap: wrap; gap: 8px 26px; margin: 0 0 20px; }
+  .faits div { display: grid; }
+  .faits .chiffre { font-size: 20px; color: #fff; }
+  .faits span { font-size: 12px; color: var(--texte-sombre-2); }
+
+  .pied { margin-top: 28px; display: grid; gap: 14px; }
+  @media (min-width: 1024px) { .pied { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 20px; } }
+  .pied p { margin: 0; font-size: 14px; color: var(--texte-sombre-2); }
+  .pied strong { color: #fff; font-weight: 600; }
+  .inclus { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+  .inclus span { display: inline-flex; gap: 6px; align-items: center; }
+  .inclus svg { width: 15px; height: 15px; color: var(--marque-clair); flex: none; }
+
+  /* Le simulateur. */
+  .simulateur { padding: 72px 0 96px; }
+  @media (min-width: 1024px) { .simulateur { padding: 104px 0 128px; } }
+  .sim-tete { display: grid; gap: 16px; max-width: 760px; margin-bottom: 40px; }
+  .sim-grille { display: grid; gap: 24px; }
+  @media (min-width: 1024px) { .sim-grille { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; align-items: start; } }
+  .reglages { background: #fff; border-radius: 28px; padding: 24px; display: grid; gap: 26px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); }
+  @media (min-width: 768px) { .reglages { padding: 34px; } }
+  .reglage { display: grid; gap: 12px; }
+  .reglage-titre { font-weight: 700; font-size: 15px; }
+  .reglage-aide { font-size: 14px; color: var(--texte-2); margin: 0; }
+  .effectif { display: flex; gap: 16px; align-items: center; }
+  .deux { display: grid; gap: 22px; }
+  @media (min-width: 640px) { .deux { grid-template-columns: auto auto; justify-content: start; gap: 28px; } }
+  .choix { height: 44px; border-radius: 12px; border: 1px solid var(--filet); background: #fff; padding: 0 12px; font-weight: 600; font-size: 14px; max-width: 100%; }
+  .lieu { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
+  .lieu[hidden] { display: none; }
+  .bascule { display: flex; gap: 12px; align-items: center; cursor: pointer; }
+  .bascule input { width: 22px; height: 22px; accent-color: var(--marque); flex: none; }
+  .groupes-visu { display: flex; flex-wrap: wrap; gap: 14px 18px; }
+  .groupe { display: grid; gap: 6px; }
+  .groupe-points { display: grid; grid-template-columns: repeat(5, 8px); gap: 4px; }
+  .groupe-points i { width: 8px; height: 8px; border-radius: 99px; background: var(--marque); transition: transform .45s var(--entree); }
+  .groupe-points i.vient { transform: scale(0); }
+  .groupe small { font-size: 12px; color: var(--texte-2); }
+  .academy-choix { border-radius: 18px; background: #FFF8E6; padding: 14px 16px; }
+  .academy-choix small { display: block; font-size: 13px; color: #7A5B12; margin-top: 2px; }
+
+  .ticket { background: var(--encre); color: var(--texte-sombre); border-radius: 28px; padding: 26px; display: grid; gap: 18px; }
+  @media (min-width: 1024px) { .ticket { position: sticky; top: 56px; padding: 32px; } }
+  .ticket .devises { background: rgba(255, 255, 255, .08); }
+  .ticket-haut { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--texte-sombre-2); }
+  .ticket-pp { display: grid; gap: 4px; }
+  .ticket-pp .chiffre { font-size: clamp(56px, 7vw, 80px); line-height: .95; color: #fff; }
+  .ticket-pp span { color: var(--texte-sombre-2); font-size: 15px; }
+  .lignes { display: grid; gap: 10px; padding: 16px 0; border-top: 1px solid var(--filet-sombre); border-bottom: 1px solid var(--filet-sombre); margin: 0; }
+  .lignes div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; }
+  .lignes dt { font-weight: 600; font-size: 15px; }
+  .lignes dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+  .lignes .detail { grid-column: 1 / -1; font-size: 13px; color: var(--texte-sombre-2); }
+  .total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .total .chiffre { font-size: 28px; }
+  .ticket .mention { color: var(--texte-sombre-2); margin: 0; }
+  .reco { font-size: 14px; background: rgba(125, 184, 238, .12); border-radius: 16px; padding: 12px 14px; margin: 0; }
+  .reco:empty { display: none; }
+  .ticket .pilules .pilule { flex: 1 1 auto; }
+  .partage-ok { font-size: 13px; color: var(--marque-clair); min-height: 18px; margin: 0; }
+
+  .volets { display: inline-flex; }
+  .volets span { display: inline-block; }
+  .volets span.bascule-v { animation: volet .42s var(--entree); }
+  @keyframes volet { from { transform: rotateX(-90deg); opacity: .2; } to { transform: none; opacity: 1; } }
+
+  .barre-mobile { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--encre); color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; transform: translateY(110%); transition: transform .4s var(--entree); }
+  .barre-mobile.visible { transform: none; }
+  .barre-mobile .chiffre { font-size: 22px; }
+  .barre-mobile small { display: block; font-size: 12px; color: var(--texte-sombre-2); }
+  @media (min-width: 1024px) { .barre-mobile { display: none; } }
+</style>
+</head>
+<body>
+<div class="provisoire">Direction A, deuxième version. Grille validée le 14/10 ; déplacement et webinaire encore à valider (<a href="index.html#questions">le pilotage</a>).</div>
+
+<section class="section-encre formats">
+  <div class="conteneur">
+    <header class="entete">
+      <div class="entete-texte">
+        <p class="rubrique" style="margin:0">Formats et tarifs</p>
+        <h2 class="titre-moyen">Trois heures pour prendre en main. Une journée pour aller au fond.</h2>
+        <p class="chapo">À distance ou dans vos locaux, sur les cas de votre métier. Le prix est celui de la séance, quel que soit l'effectif jusqu'à 20 personnes.</p>
+      </div>
+      <div class="entete-devise"><span>Afficher les prix en</span><span id="devises-formats"></span></div>
+    </header>
+
+    <div class="gamme" id="gamme"></div>
+
+    <div class="academy">
+      <video src="../../public/academy/demos/fr/programme.mp4" poster="../../public/academy/demos/fr/programme.jpg" muted loop playsinline autoplay></video>
+      <div>
+        <p class="academy-sur">En complément</p>
+        <h3>La MyDigipal AI Academy, pour que chacun continue après la séance</h3>
+        <p>La formation en ligne prend le relais : le parcours de son outil, des exercices relus, à son rythme.</p>
+        <div class="offre">
+          <div class="offre-prix"><span class="chiffre" id="academy-avec"></span><s id="academy-sans"></s><small>HT par personne</small></div>
+          <span class="offre-texte">-30 % pour chacun de vos salariés dès que vous réservez une formation, et pour vos entreprises partenaires.</span>
+        </div>
+        <div class="faits" id="faits-academy"></div>
+        <button class="pilule pilule-blanche" id="ajout-academy" type="button">Ajouter l'Academy au chiffrage</button>
+      </div>
+    </div>
+
+    <div class="pied">
+      <p class="inclus" id="inclus"></p>
+      <p id="parcours-ligne"></p>
+    </div>
+  </div>
+</section>
+
+<section class="section-brume simulateur" id="simulateur">
+  <div class="conteneur">
+    <header class="sim-tete">
+      <p class="rubrique" style="margin:0">Votre chiffrage</p>
+      <h2 class="titre-moyen" style="color:var(--encre)">Combien coûte la formation de votre équipe ?</h2>
+      <p class="chapo">Indiquez combien vous êtes : nous proposons le découpage en groupes, vous le changez si besoin. Le lien du chiffrage se partage tel quel.</p>
+    </header>
+
+    <div class="sim-grille">
+      <div class="reglages">
+        <div class="reglage">
+          <label class="reglage-titre" for="effectif">Combien de personnes à former ?</label>
+          <div class="effectif">
+            <input type="range" id="effectif" min="1" max="200" step="1">
+            <input type="number" class="effectif-saisie" id="effectif-n" min="1" max="2000" inputmode="numeric" aria-label="Nombre de personnes">
+          </div>
+        </div>
+        <div class="deux">
+          <div class="reglage"><span class="reglage-titre">Durée</span><div class="segment" data-cle="duree"><button type="button" data-v="3h">Séance de 3 h</button><button type="button" data-v="jour">Journée</button></div></div>
+          <div class="reglage"><span class="reglage-titre">Mode</span><div class="segment" data-cle="mode"><button type="button" data-v="distance">À distance</button><button type="button" data-v="site">En présentiel</button></div></div>
+        </div>
+        <div class="lieu" id="lieu">
+          <select class="choix" id="zone" aria-label="Où ?"><option value="londres">À Londres</option><option value="uk">Ailleurs au Royaume-Uni</option><option value="paris">À Paris</option><option value="france">En France ou dans un pays voisin</option><option value="europe">Ailleurs en Europe</option><option value="monde">Hors d'Europe</option></select>
+          <label class="bascule"><input type="checkbox" id="hotel"> Une nuit d'hôtel est nécessaire</label>
+        </div>
+        <div class="reglage">
+          <span class="reglage-titre">Groupes</span>
+          <div class="segment" data-cle="groupes"><button type="button" data-v="auto">Groupes de 10 à 15</button><button type="button" data-v="pleniere">Tous ensemble</button></div>
+          <div class="groupes-visu" id="groupes-visu" aria-live="polite"></div>
+          <p class="reglage-aide" id="groupes-aide"></p>
+        </div>
+        <label class="bascule academy-choix"><input type="checkbox" id="academy"> <span><strong>Ajouter la MyDigipal AI Academy</strong> pour chaque personne formée<small id="academy-choix-prix"></small></span></label>
+      </div>
+
+      <aside class="ticket" aria-live="polite">
+        <div class="ticket-haut"><span>Hors taxes</span><span id="devises-ticket"></span></div>
+        <div class="ticket-pp"><span class="chiffre volets" id="pp"></span><span id="pp-legende"></span></div>
+        <dl class="lignes" id="lignes"></dl>
+        <div class="total"><span>Total</span><span class="chiffre" id="total"></span></div>
+        <p class="mention">Prix indicatif. Le devis définitif suit un échange avec vous.</p>
+        <p class="reco" id="reco"></p>
+        <div class="pilules">
+          <button class="pilule pilule-pleine" type="button">Recevoir ce devis</button>
+          <button class="pilule pilule-contour" type="button" id="partager"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Envoyer à mon responsable</button>
+        </div>
+        <p class="partage-ok" id="partage-ok"></p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div class="barre-mobile" id="barre-mobile"><div><small>Par personne, hors taxes</small><span class="chiffre" id="pp-mobile"></span></div><a class="pilule pilule-blanche" href="#simulateur">Voir le détail</a></div>
+
+<script src="commun/moteur.js"></script>
+<script>
+(function () {
+  const S = window.MDP_SIM, G = S.GRILLE;
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]fige=1/.test(location.search);
+  if (!reduit) document.documentElement.classList.add('mv');
+  let etat = S.depuisAdresse(location.hash) || { ...S.ETAT_DEFAUT };
+  const M = (v) => S.montant(v, 'fr', etat.devise);
+  const $ = (s) => document.querySelector(s);
+  const REF = 12; // le groupe de référence pour le prix par personne
+  const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const fleche = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
+  const icones = {
+    distance: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
+    site: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+  };
+
+  /* Les deux formats. */
+  const FORMATS = [
+    { duree: '3h', vedette: true, sur: 'Notre format de prédilection', texte: 'Assez court pour garder toute l\'attention, assez long pour que chacun travaille sur ses propres fichiers. Deux équipes peuvent passer dans la même journée.', blocs: [[9, 12, 'Équipe 1'], [14, 17, 'Équipe 2']], legende: 'Deux séances de 3 h dans la même journée, un seul déplacement.' },
+    { duree: 'jour', vedette: false, sur: 'Pour aller au fond', texte: 'Le matin les bases, l\'après-midi vos cas en profondeur. Le format des séminaires et des comités de direction.', blocs: [[9, 12.5, 'Matin'], [13.5, 17, 'Après-midi']], legende: 'Une journée avec la même équipe.' },
+  ];
+  const pos = (h) => ((h - 8) / 10) * 100;
+  $('#gamme').innerHTML = FORMATS.map((f) => `
+    <article class="format${f.vedette ? ' format-vedette' : ''}">
+      <div><p class="format-sur">${f.sur}</p><h3 class="format-nom">${G.durees[f.duree].nom}</h3></div>
+      <p class="format-texte">${f.texte}</p>
+      <div class="jour" aria-hidden="true">
+        <div class="jour-axe">${f.blocs.map((b, i) => `<div class="jour-bloc${i ? ' second' : ''}" style="left:${pos(b[0])}%;width:${pos(b[1]) - pos(b[0])}%"><span>${b[2]}</span></div>`).join('')}</div>
+        <div class="jour-heures"><span>8 h</span><span>10 h</span><span>12 h</span><span>14 h</span><span>16 h</span><span>18 h</span></div>
+        <p class="jour-legende">${f.legende}</p>
+      </div>
+      <div class="prix">${['distance', 'site'].map((m) => `
+        <button type="button" class="prix-col" data-duree="${f.duree}" data-mode="${m}">
+          <span class="prix-mode">${icones[m]}${m === 'site' ? 'En présentiel' : 'À distance'}</span>
+          <span class="prix-pp"><span class="chiffre" data-pp="${f.duree}|${m}"></span><small>par personne</small></span>
+          <span class="prix-seance"><b data-seance="${f.duree}|${m}"></b> <span>${f.duree === '3h' ? 'la séance' : 'la journée'}, pour ${REF}${m === 'site' ? ', plus le déplacement' : ''}</span></span>
+          <span class="prix-lien">Chiffrer mon cas ${fleche}</span>
+        </button>`).join('')}
+      </div>
+    </article>`).join('');
+  document.querySelectorAll('.prix-col').forEach((b) => b.addEventListener('click', () => {
+    etat.duree = b.dataset.duree; etat.mode = b.dataset.mode; rendre();
+    $('#simulateur').scrollIntoView({ behavior: reduit ? 'auto' : 'smooth' });
+  }));
+  // La journée se dessine une fois, quand elle arrive à l'écran ; sans script, elle est déjà dessinée.
+  if (!reduit) document.querySelectorAll('.jour').forEach((j) => new IntersectionObserver(([e], o) => { if (e.isIntersecting) { j.classList.add('jouee'); o.disconnect(); } }, { threshold: 0.6 }).observe(j));
+
+  /* L'Academy : faits de l'instantané de l'API (secours en file://). */
+  const SECOURS = { faits: { lessons: 200, heures: '21 h 05' }, avis: { note: 9.4, nombre: 497 } };
+  const faits = (d) => { $('#faits-academy').innerHTML = `<div><span class="chiffre">${d.faits.lessons}</span><span>leçons</span></div><div><span class="chiffre">${d.faits.heures.replace(/ /g, ' ')}</span><span>de contenu</span></div><div><span class="chiffre">${d.avis.note.toLocaleString('fr-FR')}/10</span><span>${d.avis.nombre} avis</span></div>`; };
+  fetch('../../src/data/academy/jour30-fr.json').then((r) => r.json()).then(faits).catch(() => faits(SECOURS));
+  $('#ajout-academy').addEventListener('click', () => { etat.academy = true; rendre(); $('#simulateur').scrollIntoView({ behavior: reduit ? 'auto' : 'smooth' }); });
+
+  $('#inclus').innerHTML = '<strong>Dans chaque séance :</strong>' + ['call de diagnostic', 'formulaire aux participants', 'calls et briefs écrits', 'contenu en avance', 'enregistrement'].map((t) => `<span>${check}${t}</span>`).join('');
+
+  /* La devise : un sélecteur à côté de chaque prix, un seul état. */
+  const selDevises = ['#devises-formats', '#devises-ticket'].map((id) => { const sd = S.selecteurDevise(() => etat, (dv) => { etat.devise = dv; rendre(); }); $(id).appendChild(sd); return sd; });
+
+  /* Réglages. */
+  const curseur = $('#effectif'), saisie = $('#effectif-n');
+  curseur.addEventListener('input', () => { etat.n = +curseur.value; rendre(); });
+  saisie.addEventListener('input', () => { const v = parseInt(saisie.value, 10); if (v > 0) { etat.n = Math.min(2000, v); rendre(); } });
+  document.querySelectorAll('.segment[data-cle]').forEach((s) => s.addEventListener('click', (ev) => { const b = ev.target.closest('button'); if (!b) return; etat[s.dataset.cle] = b.dataset.v; rendre(); }));
+  $('#zone').addEventListener('change', (e) => { etat.zone = e.target.value; rendre(); });
+  $('#hotel').addEventListener('change', (e) => { etat.hotel = e.target.checked; rendre(); });
+  $('#academy').addEventListener('change', (e) => { etat.academy = e.target.checked; rendre(); });
+
+  let ppAvant = '';
+  function volets(el, texte) {
+    if (reduit || texte.length !== ppAvant.length) { el.textContent = texte; ppAvant = texte; return; }
+    el.innerHTML = [...texte].map((c, i) => `<span class="${c !== ppAvant[i] ? 'bascule-v' : ''}" style="animation-delay:${i * 45}ms">${c === ' ' || c === ' ' ? '&#8239;' : c}</span>`).join('');
+    ppAvant = texte;
+  }
+
+  function rendre() {
+    const r = S.chiffrer(etat), dv = etat.devise;
+    // Les prix de la gamme.
+    document.querySelectorAll('[data-pp]').forEach((el) => { const [d, m] = el.dataset.pp.split('|'); el.textContent = M(G.durees[d][m][dv] / REF); });
+    document.querySelectorAll('[data-seance]').forEach((el) => { const [d, m] = el.dataset.seance.split('|'); el.textContent = M(G.durees[d][m][dv]); });
+    $('#academy-avec').textContent = M(S.academyHT(dv, 1, true));
+    $('#academy-sans').textContent = M(S.academyHT(dv, 1, false));
+    $('#academy-choix-prix').textContent = `${M(S.academyHT(dv, 1, true))} HT par personne au lieu de ${M(S.academyHT(dv, 1, false))}, -30 % avec la formation`;
+    $('#parcours-ligne').innerHTML = `<strong>Pour construire :</strong> des parcours techniques sur mesure (serveur MCP, automatisations, data et BI), bâtis sur votre projet et sa compréhension fine, à partir de ${M(G.parcours[0].des[dv])}.`;
+    selDevises.forEach((sd) => sd.maj());
+
+    // Le simulateur.
+    curseur.value = Math.min(200, etat.n); if (document.activeElement !== saisie) saisie.value = etat.n;
+    document.querySelectorAll('.segment[data-cle]').forEach((s) => s.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(etat[s.dataset.cle] === b.dataset.v))));
+    $('#lieu').hidden = etat.mode !== 'site';
+    $('#zone').value = etat.zone; $('#hotel').checked = etat.hotel; $('#academy').checked = etat.academy;
+    const visu = $('#groupes-visu');
+    const montres = r.groupes.slice(0, 8);
+    visu.innerHTML = montres.map((t, i) => `<div class="groupe"><div class="groupe-points">${'<i class="vient"></i>'.repeat(Math.min(t, 40))}</div><small>${r.groupes.length > 1 ? 'Groupe ' + (i + 1) + ', ' : ''}${t} pers.</small></div>`).join('') + (r.groupes.length > 8 ? `<div class="groupe"><small>et ${r.groupes.length - 8} autres groupes</small></div>` : '');
+    requestAnimationFrame(() => visu.querySelectorAll('i').forEach((p, i) => setTimeout(() => p.classList.remove('vient'), reduit ? 0 : Math.min(i * 6, 500))));
+    $('#groupes-aide').textContent = etat.groupes === 'pleniere'
+      ? (r.n > 50 ? 'Au-delà de 50 personnes, la séance devient un webinaire : démonstrations et questions, sans travail individuel.' : r.n > 20 ? 'Une seule séance pour tout le monde : on démontre et on répond aux questions, sans suivi individuel.' : 'Une seule séance pour tout le groupe.')
+      : r.seances === 1 ? 'Un seul groupe : chacun travaille sur ses propres fichiers.'
+      : `${r.n} personnes en ${r.seances} groupes : de 10 à 15 par séance, chacun travaille sur ses propres fichiers.`;
+
+    $('#lignes').innerHTML = r.lignes.map((l) => `<div><dt>${l.libelle}</dt><dd>${M(l.montant)}</dd><span class="detail">${l.detail}</span></div>`).join('');
+    $('#total').textContent = M(r.total) + (r.surDevis ? ' + déplacement' : '');
+    volets($('#pp'), M(r.parPersonne));
+    $('#pp-legende').textContent = `par personne, pour ${r.n} ${r.n > 1 ? 'personnes' : 'personne'}`;
+    $('#pp-mobile').textContent = M(r.parPersonne);
+    $('#reco').textContent = S.recommandation(etat);
+    history.replaceState(null, '', S.versAdresse(etat));
+  }
+
+  $('#partager').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(location.href); $('#partage-ok').textContent = 'Lien copié : votre responsable retrouvera exactement ce chiffrage.'; }
+    catch { $('#partage-ok').textContent = location.href; }
+  });
+  new IntersectionObserver(([e]) => $('#barre-mobile').classList.toggle('visible', e.isIntersecting), { threshold: 0.05 }).observe($('#simulateur'));
+
+  rendre();
+})();
+</script>
+</body>
+</html>

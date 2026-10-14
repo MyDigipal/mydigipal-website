@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Refonte AI Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="commun/base.css">
+<style>
+  body { background: var(--brume); }
+  .page { max-width: 1440px; margin: 0 auto; padding: 40px 16px 96px; display: grid; gap: 28px; }
+  @media (min-width: 768px) { .page { padding: 56px 32px 120px; } }
+  header.tete { display: grid; gap: 14px; }
+  header.tete h1 { font-family: var(--display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(32px, 4.4vw, 52px); line-height: 1.05; margin: 0; }
+  .etat { display: flex; flex-wrap: wrap; gap: 8px; }
+  .etat span { background: #fff; border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 600; color: var(--texte-2); }
+  .etat span.attend { background: #FEF3C7; color: #713F12; }
+  nav.sommaire { display: flex; flex-wrap: wrap; gap: 8px; }
+  nav.sommaire a { font-size: 14px; color: var(--marque-fonce); text-decoration: none; background: #fff; padding: 8px 14px; border-radius: 999px; }
+  section.bloc { background: #fff; border-radius: 28px; padding: 24px; display: grid; gap: 18px; scroll-margin-top: 16px; }
+  @media (min-width: 768px) { section.bloc { padding: 36px 40px; } }
+  section.bloc h2 { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; font-size: 26px; margin: 0; }
+  section.bloc h3 { font-size: 17px; margin: 0; }
+  p { margin: 0; }
+  ul.liste { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  .question { border-top: 1px solid var(--filet); padding-top: 18px; display: grid; gap: 8px; }
+  .question:first-of-type { border-top: 0; padding-top: 0; }
+  .question h3 { display: flex; gap: 12px; align-items: baseline; }
+  .question h3 b { font-family: var(--display); color: var(--marque); font-size: 15px; }
+  .reco { background: var(--marque-doux); border-radius: 14px; padding: 12px 14px; font-size: 15px; }
+  .reco strong { color: var(--marque-fonce); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--filet); vertical-align: top; }
+  th { color: var(--texte-2); font-weight: 600; }
+  .tableau { overflow-x: auto; }
+  .directions { display: grid; gap: 18px; }
+  @media (min-width: 1340px) { .directions { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .direction { border: 1px solid var(--filet); border-radius: 22px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+  .direction h3 { font-family: var(--display); font-weight: 800; font-size: 20px; }
+  .apercu { width: 100%; max-width: 390px; justify-self: center; height: 720px; border: 0; border-radius: 16px; background: var(--encre); }
+  .pour, .contre { font-size: 14px; }
+  .pour b { color: #166534; }
+  .contre b { color: #9A3412; }
+  .chiffres { display: flex; flex-wrap: wrap; gap: 14px 36px; }
+  .chiffres div { display: grid; }
+  .chiffres .chiffre { font-size: 32px; }
+  .chiffres span { font-size: 13px; color: var(--texte-2); }
+  ol.structure { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+  ol.structure small { color: var(--texte-2); }
+  .fait { color: var(--texte-2); font-size: 14px; }
+  a { color: var(--marque-fonce); }
+  .vues { justify-self: start; }
+  .vue-ordi { display: grid; gap: 34px; }
+  .direction-ordi { display: grid; gap: 10px; }
+  .direction-ordi-tete { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .direction-ordi h3 { font-family: var(--display); font-weight: 800; font-size: 22px; }
+  .direction-ordi p { font-size: 15px; color: var(--texte-2); max-width: 110ch; }
+  .ecran { position: relative; overflow: hidden; border-radius: 18px; border: 1px solid var(--filet); background: var(--encre); }
+  .ecran iframe { position: absolute; left: 0; top: 0; width: 1440px; height: 960px; border: 0; transform-origin: 0 0; }
+  [hidden] { display: none !important; }
+  ul.sources { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="tete">
+    <p class="rubrique" style="margin:0">Pilotage du chantier, mis à jour le 14/10/2026 au soir</p>
+    <h1>Refonte de la page AI Training</h1>
+    <p class="chapo">Une page plus courte, qui montre la gamme d'un regard et laisse un manager chiffrer son cas, puis renvoyer le lien à son responsable.</p>
+    <div class="etat"><span class="attend">En attente : le déplacement, le webinaire, les livres et la portée des -30 %</span><span>Direction A retenue, redessinée</span><span>Code du site : rien de touché</span></div>
+    <nav class="sommaire"><a href="#questions">Les prix</a><a href="#directions">La direction retenue</a><a href="#structure">La nouvelle page</a><a href="#decide">Ce qui est décidé</a><a href="#mesures">Mesures</a><a href="#incoherences">Les incohérences</a><a href="#documents">Les documents</a><a href="#sources">Les sources</a></nav>
+  </header>
+
+  <section class="bloc" id="questions">
+    <h2>Les prix : ce que tu as décidé, ce qu'il reste à valider</h2>
+
+    <h3>Tes réponses du 14/10</h3>
+    <ul class="liste">
+      <li><b>Durée</b> : des séances de 3 h (et non 3 h 30) ou des journées. La préférence va aux séances de 3 h, quitte à en faire plusieurs, pour avoir toute l'attention des participants.</li>
+      <li><b>Prix</b> : la grille proposée ci-dessous est validée (1 200 € la séance de 3 h à distance, 1 400 € en présentiel). Le prix par personne, mis en avant, « donne l'impression que c'est vraiment pas cher ».</li>
+      <li><b>Academy avec la formation</b> : -30 % pour chaque salarié du client qui réserve une formation, et pour ses entreprises partenaires (169 € HT au lieu de 242 €).</li>
+      <li><b>Remises de volume</b> : gardées (-5 % pour 2 séances, -10 % de 3 à 4, -15 % de 5 à 7, -20 % dès 8).</li>
+      <li><b>Groupes</b> : 10 à 15 personnes, c'est l'idéal pour un atelier. Majoration de 21 à 50 personnes, et au-delà de 50 la séance devient un webinaire, plus cher.</li>
+      <li><b>Parcours techniques</b> (MCP, automatisations, data et BI) : le double, parce qu'ils demandent beaucoup de personnalisation et de compréhension du projet. À partir de 3 000, 7 000 et 4 400 €.</li>
+      <li><b>Devises</b> : des prix fixés dans chaque devise, et un sélecteur de devise partout où un prix s'affiche (il est dans les trois maquettes).</li>
+      <li><b>Academy</b> : hors taxes pour les entreprises, soit 242 € HT, 208 £ HT et 340 $ (aucune TVA en dollars).</li>
+    </ul>
+
+    <div class="question">
+      <h3><b>1</b> La grille, à partir des prix des concurrents <small style="color:#166534">validée le 14/10</small></h3>
+      <p>Ce que pratique le marché pour une demi-journée en intra, hors taxes, prix publiés en octobre 2026 :</p>
+      <div class="tableau"><table>
+        <tr><th>Marché</th><th>Fourchette constatée</th><th>Exemples</th></tr>
+        <tr><td>France</td><td>de 900 à 2 000 € la demi-journée, de 1 500 à 3 000 € la journée</td><td>Usage de l'IA en entreprise 890 € (3 h 30, 6 à 12 personnes) ; Digibase dès 1 200 € ; Kactus dès 1 500 € (10 à 20 personnes) ; Nextstart 1 500 à 2 000 €</td></tr>
+        <tr><td>Royaume-Uni</td><td>de 980 à 1 950 £ la demi-journée chez les spécialistes</td><td>Coaley Peak 675 £ sur mesure ; Elansio dès 980 £ (20 personnes) ; Axion à Londres 1 200 £, 2 500 £ la journée ; Practical AI 3 500 £ en tout petit groupe</td></tr>
+        <tr><td>États-Unis</td><td>de 2 500 à 8 000 $ la demi-journée pour une équipe</td><td>Blueshore 999 $ (5 personnes au plus) ; les guides du marché donnent 3 000 à 8 000 $ jusqu'à 25 personnes</td></tr>
+      </table></div>
+      <p class="reco"><strong>Ma proposition</strong>, en milieu de marché et sous les offres comparables, ce qui laisse notre contenu (diagnostic, formulaire, briefs, enregistrement) faire la différence :</p>
+      <div class="tableau"><table>
+        <tr><th></th><th>Euros (pages françaises)</th><th>Livres</th><th>Dollars (pages anglaises)</th></tr>
+        <tr><td>Séance de 3 h, à distance</td><td><b>1 200 €</b></td><td><b>990 £</b></td><td><b>1 490 $</b></td></tr>
+        <tr><td>Séance de 3 h, en présentiel</td><td><b>1 400 €</b></td><td><b>1 190 £</b></td><td><b>1 790 $</b></td></tr>
+        <tr><td>Journée, à distance</td><td>2 100 €</td><td>1 790 £</td><td>2 690 $</td></tr>
+        <tr><td>Journée, en présentiel</td><td>2 500 €</td><td>2 150 £</td><td>3 190 $</td></tr>
+      </table></div>
+      <p class="fait">Pour 12 personnes, la séance de 3 h à distance revient à 100 € par personne. La journée coûte moins que deux séances, ce qui reste cohérent avec ta préférence pour les séances de 3 h : elles se vendent par la qualité de l'attention, pas par le prix.</p>
+    </div>
+
+    <div class="question">
+      <h3><b>2</b> Le déplacement, selon la destination</h3>
+      <p>Un aller-retour depuis Londres par destination, plus les nuits d'hôtel quand elles sont nécessaires. Deux séances de 3 h le même jour partagent le même déplacement, et avec un hôtel, plusieurs jours de suite ne font qu'un aller-retour.</p>
+      <div class="tableau"><table>
+        <tr><th>Destination</th><th>Aller-retour</th></tr>
+        <tr><td>Londres</td><td>compris</td></tr>
+        <tr><td>Royaume-Uni, hors Londres</td><td>250 € (220 £)</td></tr>
+        <tr><td>Paris</td><td>350 € (300 £)</td></tr>
+        <tr><td>France et pays voisins</td><td>550 € (480 £)</td></tr>
+        <tr><td>Reste de l'Europe</td><td>750 € (650 £)</td></tr>
+        <tr><td>Hors d'Europe</td><td>sur devis</td></tr>
+        <tr><td>Nuit d'hôtel</td><td>180 € (160 £)</td></tr>
+      </table></div>
+      <p class="reco"><strong>À valider</strong> : ce sont des ordres de grandeur (train, Eurostar, avion en Europe). Remplace-les par tes chiffres si tu en as.</p>
+    </div>
+
+    <div class="question">
+      <h3><b>3</b> Le prix du webinaire, au-delà de 50 personnes</h3>
+      <p>J'ai mis +15 % de 21 à 50 personnes et +50 % au-delà. Avec la séance à 1 200 €, un webinaire de 3 h pour 150 personnes revient à 1 800 €, soit 12 € par personne.</p>
+      <p class="reco"><strong>Ma recommandation :</strong> un forfait webinaire propre, par exemple 2 500 € jusqu'à 300 personnes et sur devis au-delà, plutôt qu'un pourcentage. Dis-moi le niveau que tu veux.</p>
+    </div>
+
+    <div class="question">
+      <h3><b>4</b> Les livres : pour quelles pages ?</h3>
+      <p>Le site n'a que des pages françaises et anglaises. J'ai compris : les pages françaises en euros, les pages anglaises en dollars, et le sélecteur pour passer en livres partout.</p>
+      <p class="reco"><strong>Ma recommandation :</strong> afficher les livres par défaut aux visiteurs des pages anglaises qui se trouvent au Royaume-Uni (fuseau horaire de Londres), les dollars aux autres. Confirme, ou dis-moi ce que tu voulais dire.</p>
+    </div>
+    <div class="question">
+      <h3><b>5</b> Les -30 % sur l'Academy : avec toute formation, ou seulement en présentiel ?</h3>
+      <p>Tu as dit « s'ils prennent une formation avec nous », puis « s'ils achètent une formation en présentiel ». Les maquettes appliquent les -30 % avec toute formation, à distance comprise. La remise remplace la remise d'équipe de l'Academy (au plus -25 %), elle ne s'y ajoute pas.</p>
+      <p class="reco"><strong>Ma recommandation :</strong> avec toute formation, c'est plus simple à dire et c'est l'argument qui fait ajouter l'Academy au devis. Pour les entreprises partenaires du client, la remise passe par un code à leur donner : à créer dans l'application de l'Academy.</p>
+    </div>
+  </section>
+
+  <section class="bloc" id="directions">
+    <h2>La direction retenue : la A, redessinée</h2>
+    <p>Ton choix du 14/10 : la A, parce que les prix se lisent sans rien toucher, mais pas avec quatre carrés. La deuxième version met en avant la séance de 3 h (ton format de prédilection), la journée à côté, le prix par personne en gros et le prix de la séance dessous, la journée dessinée de 8 h à 18 h, puis l'Academy avec son offre à -30 %. Le simulateur suit, avec le prix par personne en vedette et un bouton « Envoyer à mon responsable ».</p>
+    <div class="vues segment" role="group" aria-label="Taille d'écran"><button type="button" data-vue="ordi" aria-pressed="true">Sur ordinateur</button><button type="button" data-vue="tel" aria-pressed="false">Sur téléphone</button></div>
+    <div class="vue-ordi" id="vue-ordi">
+      <article class="direction-ordi">
+        <div class="direction-ordi-tete"><h3>A, deuxième version</h3><a href="direction-a.html">Ouvrir en grand</a></div>
+        <div class="ecran"><iframe data-src="direction-a.html#n=38&d=3h&m=distance&g=auto&a=0&c=EUR" title="Direction A sur ordinateur" loading="lazy"></iframe></div>
+      </article>
+    </div>
+    <div class="directions" id="vue-tel" hidden>
+      <article class="direction"><h3>Le haut de la section</h3><iframe class="apercu" data-src="direction-a.html#n=38&d=3h&m=distance&g=auto&a=0&c=EUR" title="Direction A sur téléphone"></iframe></article>
+      <article class="direction"><h3>Le simulateur, en présentiel avec l'Academy</h3><iframe class="apercu" data-src="direction-a.html#n=38&d=3h&m=site&g=auto&a=1&z=paris&h=1&c=EUR" title="Simulateur sur téléphone" data-defile="simulateur"></iframe></article>
+    </div>
+    <p class="fait">Écartées, gardées pour mémoire : <a href="_archive/direction-a-v1-quatre-cases.html">la A d'origine (quatre cases)</a>, <a href="direction-b.html">la B (la salle)</a>, <a href="direction-c.html">la C (la phrase)</a>. La frise avant, pendant, après de la C reste prévue comme section de la page.</p>
+  </section>
+
+  <section class="bloc" id="structure">
+    <h2>La nouvelle page : de 17 blocs à 10</h2>
+    <ol class="structure">
+      <li><b>Hero</b> : la promesse, les preuves sur le tableau à palettes (2 500+ formés, note et nombre de retours de l'API), les logos, les deux portes.</li>
+      <li><b>Les formats</b> : 3 h ou journée, à distance ou en présentiel, l'Academy en complément (direction à choisir).</li>
+      <li><b>Le simulateur</b>, pré-réglé par le choix du format. <small>Remplace le ruban du calculateur et la section des tarifs actuelle.</small></li>
+      <li><b>Ce qui est compris</b> : la frise avant, pendant, après (diagnostic, formulaire aux participants, calls et briefs écrits, contenu en avance, séance, enregistrement). <small>Remplace « Comment nous créons votre formation », qui racontait déjà ce chemin.</small></li>
+      <li><b>Ce que vos équipes savent faire après</b> : fusion des trois sections de bénéfices, avec un visuel dominant.</li>
+      <li><b>Par métier</b> : les cartes de départements, la finance en avant (notre premier lecteur).</li>
+      <li><b>La méthode</b> : CRAFT sur la grille suisse, et la sécurité des données présentée comme un argument, pas comme une note.</li>
+      <li><b>Les preuves</b> : logos et verbatims réunis, mot pour mot, servis par l'API.</li>
+      <li><b>Aller plus loin</b> : les parcours techniques et le MCP, repliés par défaut, au double de l'ancien prix, avec ce qu'ils demandent de personnalisation.</li>
+      <li><b>FAQ réécrite</b> sur la grille retenue, puis un <b>appel final propre à la formation</b>.</li>
+    </ol>
+    <p class="fait">Sortent de la page : la grille des 244 outils (un argument d'AI Solutions), le ruban du calculateur, le bloc de trois articles (un lien discret au plus). Le tout se construit sur une adresse de travail en noindex, la page actuelle restant en ligne jusqu'à ta validation.</p>
+  </section>
+
+  <section class="bloc" id="decide">
+    <h2>Ce qui est décidé</h2>
+    <ul class="liste">
+      <li><b>14/10/2026, la gamme</b> : deux durées (une séance de 3 h ou une journée), deux modes (à distance ou en présentiel, avec un déplacement selon le lieu et l'hôtel), l'Academy en option. La Découverte d'une heure et la Sensibilisation de deux heures disparaissent ; le one-to-one, l'équipe et le grand format ne sont plus des formats séparés. <small>Décision relayée par la session qui a écrit le brief.</small></li>
+      <li><b>14/10/2026, ce qui est compris</b>, quels que soient la durée et le mode : ta liste (call de diagnostic, personnalisation sur les cas du métier et ses outils, plusieurs calls de brief, briefs écrits, contenu accessible avant, enregistrement des séquences, formulaire à chaque participant), fusionnée avec ce que la page dit déjà (support interactif remis à chacun, transcription écrite, recommandations d'outils, animation par un praticien). Rien d'autre n'est ajouté.</li>
+      <li><b>Une seule grille de prix pour tout le site</b> : la page, le simulateur, le calculateur et l'accueil liront le même fichier, et la FAQ sera réécrite dessus.</li>
+    </ul>
+  </section>
+
+  <section class="bloc" id="mesures">
+    <h2>Mesures</h2>
+    <div class="chiffres">
+      <div><span class="chiffre">17</span><span>sections aujourd'hui</span></div>
+      <div><span class="chiffre">21 330 px</span><span>de hauteur à 1 440 px de large</span></div>
+      <div><span class="chiffre">33 832 px</span><span>de hauteur à 390 px</span></div>
+      <div><span class="chiffre">≈ 10 700 px</span><span>l'objectif à 1 440 px (la moitié)</span></div>
+    </div>
+    <p class="fait">Mesuré en production le 14/10/2026, page française, animations figées.</p>
+  </section>
+
+  <section class="bloc" id="incoherences">
+    <h2>Les incohérences que la refonte règle</h2>
+    <div class="tableau"><table>
+      <tr><th>Où</th><th>Ce qui est écrit aujourd'hui</th></tr>
+      <tr><td>La page (section des tarifs)</td><td>Découverte 1 h 700 €, Sensibilisation 2 h 1 200 €, Atelier 3 h 30 1 700 € ; sur site 950, 1 500 et 2 100 € ; remises de volume ; plénière +15 % et +30 %</td></tr>
+      <tr><td>Le calculateur et l'accueil</td><td>Demi-journée 1 500 €, journée 2 800 €, tarif dégressif dès 5 séances, déplacement unique de 300 à 700 €, convertis depuis la livre</td></tr>
+      <tr><td>La FAQ et la page B2B</td><td>Demi-journée, ateliers d'un à deux jours, « à partir de 900 € »</td></tr>
+      <tr><td>Le document de référence de la formation</td><td>La grille de la page, déplacement 350 € par jour</td></tr>
+      <tr><td>Le formulaire de contact</td><td>Pas de « Formation IA » dans les services, et le paramètre <code>?topic=</code> des liens n'est lu par aucun code</td></tr>
+      <tr><td>L'appel final</td><td>Texte générique sur « l'activité digitale »</td></tr>
+    </table></div>
+  </section>
+
+  <section class="bloc" id="documents">
+    <h2>Les documents du projet</h2>
+    <ul class="liste">
+      <li><a href="direction-a.html">Direction A, deuxième version</a> : la maquette retenue des formats et du simulateur.</li>
+      <li>Écartées : <a href="_archive/direction-a-v1-quatre-cases.html">la A d'origine</a>, <a href="direction-b.html">la B, la salle</a>, <a href="direction-c.html">la C, la phrase</a>.</li>
+      <li><code>commun/moteur.js</code> : le moteur de chiffrage des maquettes, modèle du futur moteur du site.</li>
+    </ul>
+  </section>
+  <section class="bloc" id="sources">
+    <h2>Les sources de l'étude des prix</h2>
+    <p class="fait">Pages commerciales des organismes et guides de prix publiés en ligne, relevés le 14/10/2026 : des ordres de grandeur, pas des devis.</p>
+    <ul class="sources">
+      <li><a href="https://usage-ia.fr/">Usage de l'IA en entreprise</a>, <a href="https://www.digibase-academy.fr/formations/formation-chat-gpt-ia/">Digibase Academy</a>, <a href="https://www.kactus.com/fr/activites/atelier-chatgpt-1">Kactus</a>, <a href="https://www.nextstart.ai/offre/formation-ia-entreprise/">Nextstart</a>, <a href="https://flowt.fr/blog/combien-coute-formation-ia-entreprise/">Flowt</a>, <a href="https://www.meteorconseil.fr/blog/formation-2/prix-formation-ia-entreprise-44">Meteor Conseil</a>, <a href="https://www.the-intelligence-academy.com/formations/tarif-formation-ia-entreprise">The Intelligence Academy</a></li>
+      <li><a href="https://www.coaleypeak.co.uk/training/locations/cheltenham">Coaley Peak</a>, <a href="https://elansio.com/ai-training-cost-uk.html">Elansio</a>, <a href="https://axionsolutionsltd.com/insights/cost-of-ai-training-london">Axion Solutions</a>, <a href="https://practical-ai-for-business.co.uk/ai-workshop-london">Practical AI</a>, <a href="https://www.theaiedge.co.uk/">The AI Edge</a>, <a href="https://logicroad.co.uk/blog/how-much-does-on-site-ai-training-cost-uk-2026">LogicRoad</a></li>
+      <li><a href="https://blueshore.ai/business-training/">Blueshore</a>, <a href="https://www.treetopgrowthstrategy.com/how-much-does-ai-training-cost-for-teams">Treetop Growth Strategy</a>, <a href="https://www.pertamapartners.com/insights/cost-per-employee-ai-training-budgeting">Pertama Partners</a>, <a href="https://www.svsb.ai/blog/workshop-pricing">SVSB</a></li>
+    </ul>
+  </section>
+</div>
+<script>
+(function () {
+  // Les aperçus sur ordinateur : une vraie page de 1 440 px de large, réduite à la largeur du bloc.
+  const ajuster = () => document.querySelectorAll('.ecran').forEach((e) => {
+    const k = e.clientWidth / 1440;
+    e.style.height = Math.round(960 * k) + 'px';
+    e.querySelector('iframe').style.transform = `scale(${k})`;
+  });
+  const charger = (racine) => racine.querySelectorAll('iframe[data-src]').forEach((f) => { if (f.src) return; f.src = f.dataset.src; if (f.dataset.defile) f.addEventListener('load', () => setTimeout(() => { try { const c = f.contentDocument; c.documentElement.style.scrollBehavior = 'auto'; c.getElementById(f.dataset.defile).scrollIntoView(); } catch (e) {} }, 400)); });
+  new ResizeObserver(ajuster).observe(document.getElementById('vue-ordi'));
+  charger(document.getElementById('vue-ordi'));
+  ajuster(); addEventListener('load', ajuster);
+  document.querySelector('.vues').addEventListener('click', (ev) => {
+    const b = ev.target.closest('button'); if (!b) return;
+    const ordi = b.dataset.vue === 'ordi';
+    document.getElementById('vue-ordi').hidden = !ordi;
+    document.getElementById('vue-tel').hidden = ordi;
+    document.querySelectorAll('.vues button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    charger(document.getElementById(ordi ? 'vue-ordi' : 'vue-tel'));
+    ajuster();
+  });
+})();
+</script>
+</body>
+</html>

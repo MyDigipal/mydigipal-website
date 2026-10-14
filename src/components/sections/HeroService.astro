@@ -48,6 +48,10 @@ interface Props {
    * La valeur est l'emplacement mesuré (`audit_placement`).
    */
   audit?: string;
+  /** Où mène « Calculer mon budget » quand la page a son propre simulateur (AI Training). */
+  lienBudget?: string;
+  /** Des chiffres fixes sous les boutons, quand une scène occupe le panneau (slot `panneau`). */
+  chiffres?: { chiffre: string; texte: string }[];
 }
 
 const {
@@ -65,7 +69,12 @@ const {
   serviceCalculateur,
   tableau = [],
   audit,
+  lienBudget,
+  chiffres = [],
 } = Astro.props;
+// Une scène animée à la place du panneau (AI Training, 14/10/2026) : elle remplace les chiffres.
+const aScene = Astro.slots.has('panneau');
+const budgetHref = lienBudget || `/${lang}/calculator${serviceCalculateur ? `?service=${serviceCalculateur}` : ''}`;
 
 // `color` et `testimonial` restent acceptés : toutes les pages portent le bleu du
 // logo (25/09/2026), et le verbatim est plus bas, dans sa section d'encre (30/09/2026).
@@ -81,7 +90,7 @@ const lbl = labels[lang] || labels.en;
 const resultats = tableau.length > 0 ? [] : metrics.slice(0, 3);
 const [tete, ...autres] = resultats;
 const points = resultats.length === 0 && tableau.length === 0 ? proofPoints.slice(0, 4) : [];
-const showPanel = tableau.length > 0 || resultats.length > 0 || points.length > 0;
+const showPanel = aScene || tableau.length > 0 || resultats.length > 0 || points.length > 0;
 ---
 
 <!-- Le hero des pages services, direction Encre (30/09/2026) : le texte à gauche sur
@@ -111,13 +120,13 @@ const showPanel = tableau.length > 0 || resultats.length > 0 || points.length > 
         {audit ? (
           <div class="pilules mt-3">
             <BoutonAudit lang={lang} emplacement={audit} adaptatif />
-            <a href={`/${lang}/calculator${serviceCalculateur ? `?service=${serviceCalculateur}` : ''}`} class="pilule pilule-contour">
+            <a href={budgetHref} class="pilule pilule-contour">
               {t(lang, 'cta.calculateBudget')}
             </a>
           </div>
         ) : (
           <div class="pilules mt-3">
-            <a href={`/${lang}/calculator${serviceCalculateur ? `?service=${serviceCalculateur}` : ''}`} class="pilule pilule-pleine">
+            <a href={budgetHref} class="pilule pilule-pleine">
               {t(lang, 'cta.calculateBudget')}
               <Icon name="arrow-right" size={18} class="pilule-fleche" />
             </a>
@@ -126,9 +135,15 @@ const showPanel = tableau.length > 0 || resultats.length > 0 || points.length > 
             </a>
           </div>
         )}
+        {chiffres.length > 0 && (
+          <dl class="hero-service-chiffres">
+            {chiffres.map((c) => <div><dt>{c.texte}</dt><dd>{c.chiffre}</dd></div>)}
+          </dl>
+        )}
       </div>
 
-      {showPanel && (
+      {aScene && <div class="hero-service-scene"><slot name="panneau" /></div>}
+      {showPanel && !aScene && (
         <div class="hero-service-panneau">
           {tableau.length > 0 && <TableauPalettes lang={lang} lignes={tableau.slice(0, 3)} tete auChargement />}
           {tete && (
@@ -178,6 +193,10 @@ const showPanel = tableau.length > 0 || resultats.length > 0 || points.length > 
 </section>
 
 <style>
+  .hero-service-chiffres { margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 14px 32px; }
+  .hero-service-chiffres div { display: flex; flex-direction: column-reverse; }
+  .hero-service-chiffres dd { margin: 0; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; font-size: 1.75rem; line-height: 1.1; color: var(--encre); }
+  .hero-service-chiffres dt { font-size: 0.875rem; color: #4B5B6B; }
   /* Le panneau d'encre. La lueur est fixe, elle donne une source à la lumière ; la
      plaque claire est une ombre portée sans flou, elle reste derrière le panneau. */
   .hero-service-panneau {
