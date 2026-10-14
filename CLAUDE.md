@@ -1069,6 +1069,12 @@ servent dans leur `bottom`. Un nouvel élément flottant fait de même, et ne me
 glissement donne une hauteur partielle. `Assistant.tsx` et la bulle de reprise de
 `BaseLayout.astro` lisent donc sa classe `translate-y-0` et sa hauteur.
 
+**Une zone qui porte son propre chiffrage se déclare par `data-sans-cta-flottant`** (14/10/2026,
+le simulateur d'AI Training) : tant qu'elle est à l'écran, `StickyCalculatorCTA` s'efface (classe
+`cta-efface`) et l'assistant tait sa question d'accroche (le visage et « Paul a répondu » restent).
+Le test se fait au défilement par `getBoundingClientRect`, pas par un IntersectionObserver, qui ne
+se déclenche pas dans un onglet caché et rendait la chose invérifiable.
+
 ## La page AI Training refaite (14/10/2026, EN LIGNE sur `/{lang}/services/ai-training`)
 
 Pilotage : `docs/ai-training-refonte/index.html` (questions de prix, maquettes, décisions de Paul).
@@ -1114,7 +1120,9 @@ l'ancienne page et ses sections propres ne sont plus rendues (« qu'on n'en ait 
   Réutilisés avec de nouvelles options sans effet ailleurs : `TrainingUseCases` (`fond`, `premiers`),
   `TrainingAgenda` (`fond`, `securiteForte`), `ServiceFAQ` (`contenu`, FAQ dans
   `data/formation/faq.ts`), `HeroService` et `FinalCTA` (`lienBudget`), `HeroService` (slot `panneau`
-  et `chiffres`), `SceneLabo` (`controles` : barre de progression, pause au clic, aller à un instant).
+  et `chiffres`), `SceneLabo` (`controles` : barre de progression, pause au clic, aller à un instant), `portraitMobile` : sous 768 px, la même scène en version verticale `?p=1`, 1080 x 1350,
+  seule celle de l'écran se charge). La scène `formation-sur-mesure` porte ce mode portrait
+  (`#stage.p`, objet de mise en page `L`) : à 390 px, le carré rendait ses noms à 6 px.
 - **Les avis** : l'export des 497 retours est dans `mydigipal-academy/atelier/retours/`.
   `scripts/avis-formation.py` en tire `data/formation/stats-avis.json` (animation 9,5/10 sur 494 notes,
   85 % de 9 ou 10, 12 entreprises) ; la note globale reste celle de l'API (9,4, arbitrage de Paul).
