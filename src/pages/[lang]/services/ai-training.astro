@@ -111,7 +111,7 @@ const finale = lang === 'fr'
   <ApresFormation lang={lang} />                       <!-- encre : ce qu'ils en font le lendemain -->
   <TrainingUseCases lang={lang} fond="blanc" premiers={['bar-chart']} />
   <PreuvesFormation lang={lang} note={faits.note} retours={faits.retours} />  <!-- encre -->
-  <TarifsFormation client:visible partie="academy"
+  <TarifsFormation client:load partie="academy"
     lang={lang}
     academyTtc={academyTtc}
     academyFaits={{ lecons: faits.lecons, heures: faits.heures, note: faits.note, retours: faits.retours }}
@@ -119,7 +119,7 @@ const finale = lang === 'fr'
     contactHref={`/${lang}/contact?topic=formation`}
     video={{ src: `/academy/videos/presentation-v4-${lang}.mp4`, poster: `/academy/videos/presentation-v4-${lang}.webp` }}
   />
-  <TarifsFormation client:visible partie="simulateur"
+  <TarifsFormation client:load partie="simulateur"
     lang={lang}
     academyTtc={academyTtc}
     academyFaits={{ lecons: faits.lecons, heures: faits.heures, note: faits.note, retours: faits.retours }}
