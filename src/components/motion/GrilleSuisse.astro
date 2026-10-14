@@ -95,7 +95,10 @@ const dernier = mots.length - 1;
   .gs-guide:nth-child(n + 5) {
     display: none;
   }
+  /* Le bloc bleu part décalé de 60 % vers la droite : sans cette coupe, la page défilait de
+     côté au téléphone tant que la scène n'avait pas joué (14/10/2026). */
   .gs-rangs {
+    overflow-x: clip;
     position: relative;
     display: grid;
     gap: var(--gout);

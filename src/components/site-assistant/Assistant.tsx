@@ -572,6 +572,24 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     return () => window.clearTimeout(t);
   }, []);
 
+  // Devant une zone qui porte son propre chiffrage (`data-sans-cta-flottant`, le simulateur
+  // d'AI Training), la question se tait : au téléphone, elle couvrait « Recevoir ce devis »
+  // (14/10/2026). Le visage reste, et « Paul a répondu » aussi. Même règle que le bouton
+  // « Calculer mon budget » (StickyCalculatorCTA).
+  const [devantZone, setDevantZone] = useState(false);
+  useEffect(() => {
+    const zones = Array.from(document.querySelectorAll('[data-sans-cta-flottant]'));
+    if (!zones.length) return;
+    const maj = () => setDevantZone(zones.some((z) => {
+      const r = z.getBoundingClientRect();
+      return r.top < window.innerHeight && r.bottom > 0;
+    }));
+    maj();
+    window.addEventListener('scroll', maj, { passive: true });
+    window.addEventListener('resize', maj);
+    return () => { window.removeEventListener('scroll', maj); window.removeEventListener('resize', maj); };
+  }, []);
+
   // ⚠️ Le bandeau cookies (`#cookie-consent-banner`, `fixed bottom-0 z-50`) recouvrait le
   // champ de saisie du panneau sur téléphone tant que le visiteur n'avait pas choisi (vu le
   // 29/09/2026). Le visage, l'invitation et le panneau se posent donc au-dessus de lui, et
@@ -1206,7 +1224,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
                 <a href={cheminContact(lang)} className="grid h-10 place-items-center rounded-full bg-slate-100 text-[14px] font-semibold text-slate-900 hover:bg-slate-200">{c.contacter}</a>
               </div>
             </div>
-          ) : (invite || nonLu) ? (
+          ) : ((invite && !devantZone) || nonLu) ? (
             // La phrase reste claire sur les pages sombres de l'Academy : c'est la même bulle
             // partout, et elle se détache mieux de la salle de nuit.
             <div className="flex items-center gap-1 rounded-2xl rounded-br-md border border-slate-200 bg-white py-2 pl-3.5 pr-1.5 shadow-lg">

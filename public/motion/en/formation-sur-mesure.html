@@ -82,6 +82,39 @@ html,body{margin:0;background:#000;overflow:hidden}
 #fils3{position:absolute;left:0;top:0;width:1080px;height:1080px;pointer-events:none;z-index:2}
 #fils3 path{fill:none;stroke:rgba(125,184,238,.5);stroke-width:2.5;stroke-linecap:round}
 #prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+/* La version verticale du téléphone (?p=1) : 1080 x 1350, tout en colonne, texte trois fois plus gros
+   à l'écran. Même histoire, mêmes temps ; seules les places et les tailles changent. */
+#stage.p{height:1350px}
+#stage.p #titre .k .ln{font-size:40px;margin-bottom:14px}
+#stage.p #titre .t .ln{font-size:70px}
+#stage.p #visio{left:64px;top:330px;width:952px;height:560px}
+#stage.p #visio .barre{height:70px;font-size:30px;padding:0 28px}
+#stage.p #visio .barre i{width:15px;height:15px}
+#stage.p .tuile{width:446px;height:215px}
+#stage.p #t0{left:20px!important;top:80px!important}#stage.p #t1{left:486px!important;top:80px!important}
+#stage.p #t2{left:20px!important;top:315px!important}#stage.p #t3{left:486px!important;top:315px!important}
+#stage.p .tuile .nom{font-size:30px;left:14px;bottom:14px;padding:6px 14px}
+#stage.p .tuile .av{width:100px;height:100px;margin:-50px 0 0 -50px;font-size:40px}
+#stage.p .note{left:64px;width:952px;padding:18px 28px}
+#stage.p .note small{font-size:28px}
+#stage.p .note p{font-size:46px}
+#stage.p #n0{top:930px!important}#stage.p #n1{top:1070px!important}#stage.p #n2{top:1210px!important}
+#stage.p #prog{left:64px;top:330px;width:952px;height:940px}
+#stage.p #prog .tete{height:220px}
+#stage.p #logo{left:60px;top:50px;width:330px;height:110px}
+#stage.p #prog .badge{right:50px;top:80px;font-size:28px;padding:10px 20px}
+#stage.p #prog .t1{left:60px;top:236px;font-size:60px}
+#stage.p #prog .t2{left:60px;top:312px;font-size:34px}
+#stage.p .ligne{left:50px;right:50px;height:92px;font-size:42px;gap:20px;padding:0 24px;border-radius:22px}
+#stage.p .ligne i{width:44px;height:44px}
+#stage.p #l0{top:390px!important}#stage.p #l1{top:496px!important}#stage.p #l2{top:602px!important}#stage.p #l3{top:708px!important}#stage.p #l4{top:814px!important}
+#stage.p .carte{top:860px}
+#stage.p #c0{left:64px!important}#stage.p #c1{left:390px!important}#stage.p #c2{left:716px!important}
+#stage.p .legende{top:1132px}
+#stage.p #lg0{left:64px!important}#stage.p #lg1{left:390px!important}#stage.p #lg2{left:716px!important}
+#stage.p .legende .mask .ln{font-size:46px}
+#stage.p .legende .s .ln{font-size:28px}
+#stage.p #poussiere,#stage.p #fils,#stage.p #fils3{height:1350px}
 </style>
 </head>
 <body>
@@ -129,10 +162,10 @@ html,body{margin:0;background:#000;overflow:hidden}
   <!-- Acte 1 : la visio et les demandes. -->
   <div id="visio">
     <div class="barre"><i></i><i></i><i></i><span data-txt="visio"></span><b data-txt="direct"></b></div>
-    <div class="tuile" style="left:18px;top:66px"><img src="/images/team/Team_Paul_Andre.webp" alt=""><div class="nom">Paul, MyDigipal</div><div class="anneau" id="a0"></div></div>
-    <div class="tuile" style="left:308px;top:66px"><div class="av" style="background:#7DB8EE">C</div><div class="nom" data-txt="r1"></div><div class="anneau" id="a1"></div></div>
-    <div class="tuile" style="left:18px;top:248px"><div class="av" style="background:#e8bd62">S</div><div class="nom" data-txt="r2"></div><div class="anneau" id="a2"></div></div>
-    <div class="tuile" style="left:308px;top:248px"><div class="av" style="background:#a9b8c8">M</div><div class="nom" data-txt="r3"></div><div class="anneau" id="a3"></div></div>
+    <div class="tuile" id="t0" style="left:18px;top:66px"><img src="/images/team/Team_Paul_Andre.webp" alt=""><div class="nom">Paul, MyDigipal</div><div class="anneau" id="a0"></div></div>
+    <div class="tuile" id="t1" style="left:308px;top:66px"><div class="av" style="background:#7DB8EE">C</div><div class="nom" data-txt="r1"></div><div class="anneau" id="a1"></div></div>
+    <div class="tuile" id="t2" style="left:18px;top:248px"><div class="av" style="background:#e8bd62">S</div><div class="nom" data-txt="r2"></div><div class="anneau" id="a2"></div></div>
+    <div class="tuile" id="t3" style="left:308px;top:248px"><div class="av" style="background:#a9b8c8">M</div><div class="nom" data-txt="r3"></div><div class="anneau" id="a3"></div></div>
   </div>
   <svg id="fils" viewBox="0 0 1080 1080"><path id="fa" pathLength="1"/><path id="fb" pathLength="1"/><path id="fc" pathLength="1"/></svg>
   <div class="note" id="n0" style="top:388px"><small data-txt="nk0"></small><p data-txt="n0"></p></div>
@@ -148,7 +181,8 @@ html,body{margin:0;background:#000;overflow:hidden}
 <div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
 
 <script>
-window.STAGE = { w: 1080, h: 1080 };
+var PORTRAIT = /[?&]p=1/.test(location.search);
+window.STAGE = { w: 1080, h: PORTRAIT ? 1350 : 1080 };
 window.DUREE = 19.4;
 
 (function () {
@@ -176,6 +210,23 @@ window.DUREE = 19.4;
     g0: 'En salle', gs0: 'dans vos locaux', g1: 'À distance', gs1: 'Teams, Zoom ou Meet', g2: 'En ligne', gs2: 'avec l’AI Academy'
   };
   document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+  // Les places de chaque format : le carré du hero sur ordinateur, la colonne du téléphone.
+  var L = PORTRAIT ? {
+    notes: [930, 1070, 1210], noteX: 64, progX: 64, progY: 330, rangs: [390, 496, 602], rangX: 50,
+    logo: { x: 124, y: 380, w: 330, h: 110 }, centre: [540, 700], visioSortie: -1100, progMonte: -10,
+    cartes: [64, 390, 716], fil3: { y0: 790, y1: 860, x: [214, 540, 866] },
+    chemins: ['M1016 517 C 1060 517, 1060 985, 1016 985', 'M1016 752 C 1060 752, 1060 1125, 1016 1125', 'M64 752 C 20 752, 20 1265, 64 1265']
+  } : {
+    notes: [388, 540, 692], noteX: 712, progX: 250, progY: 300, rangs: [290, 360, 430], rangX: 36,
+    logo: { x: 294, y: 344, w: 230, h: 82 }, centre: [540, 520], visioSortie: -640, progMonte: -78,
+    cartes: [60, 390, 720], fil3: { y0: 556, y1: 640, x: [210, 540, 870] },
+    chemins: ['M654 540 C 690 540, 680 440, 712 440', 'M654 722 C 690 722, 680 592, 712 592', 'M227 810 C 227 870, 640 870, 712 760']
+  };
+  if (PORTRAIT) {
+    document.getElementById('stage').classList.add('p');
+    var toile = document.getElementById('poussiere'); toile.height = 1350;
+    ['fils', 'fils3'].forEach(function (id) { document.getElementById(id).setAttribute('viewBox', '0 0 1080 1350'); });
+  }
   if (EN) document.documentElement.lang = 'en';
 
   /* ---------- Courbes ---------- */
@@ -210,7 +261,7 @@ window.DUREE = 19.4;
   var P = [];
   function graine(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   function echantillonner() {
-    var img = $('logoImg'), box = { x: 250 + 44, y: 300 + 44, w: 230, h: 82 };
+    var img = $('logoImg'), box = L.logo;
     var k = Math.min(box.w / (img.naturalWidth || 230), box.h / (img.naturalHeight || 82));
     var w = Math.round((img.naturalWidth || 230) * k), h = Math.round((img.naturalHeight || 82) * k);
     var off = document.createElement('canvas'); off.width = w; off.height = h;
@@ -222,11 +273,11 @@ window.DUREE = 19.4;
     pts = pts.slice(0, 1400);
     P = pts.map(function (p, i) {
       var a = r() * Math.PI * 2, rad = 260 + r() * 420;
-      return { x0: 540 + Math.cos(a) * rad, y0: 520 + Math.sin(a) * rad * 0.8, x1: p[0], y1: p[1], d: r() * 0.7, s: 1.2 + r() * 1.6, tour: (r() - 0.5) * 2.2 };
+      return { x0: L.centre[0] + Math.cos(a) * rad, y0: L.centre[1] + Math.sin(a) * rad * 0.8, x1: p[0], y1: p[1], d: r() * 0.7, s: 1.2 + r() * 1.6, tour: (r() - 0.5) * 2.2 };
     });
   }
   function poussiere(t) {
-    cx.clearRect(0, 0, 1080, 1080);
+    cx.clearRect(0, 0, 1080, 1350);
     if (t < 7.2 || t > 10.2) return;
     var fin = 1 - seg(t, 9.4, 10.0);
     cx.fillStyle = '#e8bd62';
@@ -243,7 +294,6 @@ window.DUREE = 19.4;
   }
 
   /* ---------- Le rendu ---------- */
-  var LIGNES = [{ top: 290 }, { top: 360 }, { top: 430 }];
   window.render = function (t) {
     titres(t);
     var boucle = S(seg(t, 18.4, 19.3));   // fermeture de boucle : tout descend et s'en va
@@ -251,16 +301,12 @@ window.DUREE = 19.4;
 
     // Acte 1 : la visio entre, les intervenants parlent tour à tour, leurs demandes s'écrivent.
     var vIn = A(seg(t, 0.4, 1.2)), vOut = A(seg(t, 6.3, 7.1));
-    pose($('visio'), vIn * (1 - vOut), 'translate(' + ((1 - vIn) * -60 - vOut * 640).toFixed(1) + 'px,0) scale(' + lerp(1, 0.9, vOut) + ')');
+    pose($('visio'), vIn * (1 - vOut), 'translate(' + ((1 - vIn) * -60 + vOut * L.visioSortie).toFixed(1) + 'px,0) scale(' + lerp(1, 0.9, vOut) + ')');
     // Paul ouvre, puis la directrice financière, le contrôleur de gestion, le responsable reporting.
     var parle = [[0.9, 1.6], [1.6, 3.0], [4.4, 5.8], [3.0, 4.4]];
     parle.forEach(function (p, i) { $('a' + i).style.opacity = Math.min(seg(t, p[0], p[0] + 0.2), 1 - seg(t, p[1], p[1] + 0.2)); });
     // Chaque fil part de qui parle et finit à sa demande ; aucun ne traverse une tuile.
-    var CHEMINS = [
-      'M654 540 C 690 540, 680 440, 712 440',
-      'M654 722 C 690 722, 680 592, 712 592',
-      'M227 810 C 227 870, 640 870, 712 760'
-    ];
+    var CHEMINS = L.chemins;
     ['fa', 'fb', 'fc'].forEach(function (id, i) {
       var el = $(id); el.setAttribute('d', CHEMINS[i]);
       var k = A(seg(t, 1.7 + i * 1.4, 2.3 + i * 1.4));
@@ -272,7 +318,7 @@ window.DUREE = 19.4;
       var n = $('n' + i);
       var arr = A(seg(t, 1.9 + i * 1.4, 2.6 + i * 1.4));
       var vol = A(seg(t, 6.9 + i * 0.55, 7.8 + i * 0.55));
-      var dx = (250 + 36) - 712, dy = (300 + LIGNES[i].top) - (388 + i * 152);
+      var dx = (L.progX + L.rangX) - L.noteX, dy = (L.progY + L.rangs[i]) - L.notes[i];
       var sc = lerp(1, 0.86, vol);
       pose(n, arr * (1 - seg(t, 7.7 + i * 0.55, 7.85 + i * 0.55)), 'translate(' + (dx * vol + (1 - arr) * 30).toFixed(1) + 'px,' + (dy * vol).toFixed(1) + 'px) scale(' + sc + ')');
     }
@@ -281,7 +327,7 @@ window.DUREE = 19.4;
     var pIn = A(seg(t, 6.5, 7.6)), reduit = A(seg(t, 12.0, 13.2));
     var prog = $('prog');
     prog.style.opacity = pIn;
-    prog.style.transform = 'translate(' + ((1 - pIn) * 260 + reduit * 0).toFixed(1) + 'px,' + (reduit * -78 + bas).toFixed(1) + 'px) rotateY(' + ((1 - pIn) * -28).toFixed(2) + 'deg) scale(' + lerp(1, 0.5, reduit) + ')';
+    prog.style.transform = 'translate(' + ((1 - pIn) * 260 + reduit * 0).toFixed(1) + 'px,' + (reduit * L.progMonte + bas).toFixed(1) + 'px) rotateY(' + ((1 - pIn) * -28).toFixed(2) + 'deg) scale(' + lerp(1, 0.5, reduit) + ')';
     for (var j = 0; j < 5; j++) {
       var l = $('l' + j);
       var k2 = j < 3 ? A(seg(t, 7.75 + j * 0.55, 8.1 + j * 0.55)) : A(seg(t, 9.3 + (j - 3) * 0.45, 9.9 + (j - 3) * 0.45));
@@ -293,12 +339,12 @@ window.DUREE = 19.4;
     poussiere(t);
 
     // Acte 3 : les trois cartes sortent de derrière le programme et se posent en éventail.
-    var cibles = [{ x: 60, r: 14 }, { x: 390, r: 0 }, { x: 720, r: -14 }];
+    var cibles = [{ x: L.cartes[0], r: 14 }, { x: L.cartes[1], r: 0 }, { x: L.cartes[2], r: -14 }];
     for (var c = 0; c < 3; c++) {
       var k3 = ressort(seg(t, 12.7 + c * 0.25, 14.0 + c * 0.25));
       var e3 = A(seg(t, 12.7 + c * 0.25, 13.6 + c * 0.25));
       var x = lerp(390, cibles[c].x, k3), y = lerp(-180, 0, e3);
-      pose($('c' + c), e3, 'translate(' + (x - [60, 390, 720][c]).toFixed(1) + 'px,' + (y + bas).toFixed(1) + 'px) rotateY(' + (cibles[c].r * k3).toFixed(2) + 'deg) scale(' + lerp(0.7, 1, e3) + ')');
+      pose($('c' + c), e3, 'translate(' + (x - L.cartes[c]).toFixed(1) + 'px,' + (y + bas).toFixed(1) + 'px) rotateY(' + (cibles[c].r * k3).toFixed(2) + 'deg) scale(' + lerp(0.7, 1, e3) + ')');
       var lgd = $('lg' + c);
       lgd.querySelectorAll('.ln').forEach(function (ln, q) {
         var e = A(seg(t, 13.8 + c * 0.3 + q * 0.13, 14.7 + c * 0.3 + q * 0.13));
@@ -307,8 +353,8 @@ window.DUREE = 19.4;
       });
     }
     ['f3a', 'f3b', 'f3c'].forEach(function (id, q) {
-      var x = [210, 540, 870][q];
-      $(id).setAttribute('d', 'M540 ' + (556 + bas) + ' C 540 ' + (600 + bas) + ', ' + x + ' ' + (590 + bas) + ', ' + x + ' ' + (640 + bas));
+      var x = L.fil3.x[q], y0 = L.fil3.y0 + bas, y1 = L.fil3.y1 + bas;
+      $(id).setAttribute('d', 'M540 ' + y0 + ' C 540 ' + (y0 + 44) + ', ' + x + ' ' + (y1 - 50) + ', ' + x + ' ' + y1);
       $(id).style.strokeDasharray = '1';
       $(id).style.strokeDashoffset = String(1 - A(seg(t, 13.2 + q * 0.2, 14.0 + q * 0.2)));
       $(id).style.opacity = 1 - boucle;

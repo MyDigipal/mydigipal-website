@@ -77,6 +77,7 @@ const isCalculatorPage = currentPath.includes('/calculator');
   if (stickyCTA) {
     let lastScrollY = 0;
     let ticking = false;
+    const zones = document.querySelectorAll('[data-sans-cta-flottant]');
 
     const updateCTA = () => {
       const scrollY = window.scrollY;
@@ -88,6 +89,15 @@ const isCalculatorPage = currentPath.includes('/calculator');
         stickyCTA.classList.add('translate-y-20', 'opacity-0');
         stickyCTA.classList.remove('translate-y-0', 'opacity-100');
       }
+
+      // Une zone qui porte son propre chiffrage (`data-sans-cta-flottant`, le simulateur d'AI
+      // Training) : le bouton s'efface tant qu'elle est à l'écran, il couvrait « Recevoir ce
+      // devis » au téléphone (14/10/2026).
+      const devantZone = Array.from(zones).some((z) => {
+        const r = z.getBoundingClientRect();
+        return r.top < window.innerHeight && r.bottom > 0;
+      });
+      stickyCTA.classList.toggle('cta-efface', devantZone);
 
       ticking = false;
     };
@@ -124,7 +134,9 @@ const isCalculatorPage = currentPath.includes('/calculator');
     }
   }
 
-  /* Panneau de l'assistant ouvert : le bouton s'efface, il couvrait le champ de saisie (29/09/2026). */
+  /* Panneau de l'assistant ouvert : le bouton s'efface, il couvrait le champ de saisie (29/09/2026).
+     Même chose devant une zone qui porte son propre chiffrage (classe posée par le script). */
+  #sticky-calculator-cta.cta-efface,
   :global(html[data-assistant-ouvert='on']) #sticky-calculator-cta {
     opacity: 0 !important;
     pointer-events: none;

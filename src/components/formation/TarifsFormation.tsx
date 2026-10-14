@@ -267,7 +267,7 @@ export default function TarifsFormation({ lang, partie, academyTtc, academyFaits
       )}
 
       {partie === 'simulateur' && (
-      <section className="section-brume tf-simulateur" id="simulateur">
+      <section className="section-brume tf-simulateur" id="simulateur" data-sans-cta-flottant="">
         <div className="container-custom">
           <header className="tf-sim-tete">
             <h2 className="titre-moyen text-encre">{t.sim.titre}</h2>

@@ -16,21 +16,27 @@ interface Props {
   nom: string;
   /** Titre accessible du cadre. */
   titre: string;
-  /** `carre` (1080 x 1080) ou `large` (16:9). */
-  format?: 'carre' | 'large';
+  /** `carre` (1080 x 1080), `large` (16:9) ou `portrait` (1080 x 1350, scène lue avec `?p=1`). */
+  format?: 'carre' | 'large' | 'portrait';
   /** Instant posé quand la scène n'est pas à l'écran (secondes). */
   repos?: number;
   /** Barre de progression, pause au clic, aller à un instant (règle de Paul du 13/10/2026). */
   controles?: boolean;
+  /** Au téléphone, la version verticale de la même scène (`?p=1`, 1080 x 1350) : le carré y serait illisible. */
+  portraitMobile?: boolean;
   class?: string;
 }
 
-const { lang, nom, titre, format = 'carre', repos = 13, controles = false, class: classe = '' } = Astro.props;
+const { lang, nom, titre, format = 'carre', repos = 13, controles = false, portraitMobile = false, class: classe = '' } = Astro.props;
 const url = `/motion/${lang === 'fr' ? '' : 'en/'}${nom}.html`;
+const variantes = portraitMobile
+  ? [{ src: url, format, classeVariante: 'scene-labo-ordi' }, { src: `${url}?p=1`, format: 'portrait', classeVariante: 'scene-labo-tel' }]
+  : [{ src: url, format, classeVariante: '' }];
 ---
 
-<figure class:list={['scene-labo', `scene-labo-${format}`, classe, { 'scene-labo-controles': controles }]} data-scene-labo>
-  <iframe src={url} title={titre} loading="lazy" data-repos={repos} tabindex="-1"></iframe>
+{variantes.map((v) => (
+<figure class:list={['scene-labo', `scene-labo-${v.format}`, v.classeVariante, classe, { 'scene-labo-controles': controles }]} data-scene-labo>
+  <iframe src={v.src} title={titre} loading="lazy" data-repos={repos} tabindex="-1"></iframe>
   {controles && (
     <>
       <button type="button" class="sl-calque" data-sl-calque aria-label={lang === 'fr' ? 'Mettre en pause ou reprendre' : 'Pause or resume'}></button>
@@ -38,6 +44,7 @@ const url = `/motion/${lang === 'fr' ? '' : 'en/'}${nom}.html`;
     </>
   )}
 </figure>
+))}
 
 <style>
   .scene-labo {
@@ -51,6 +58,9 @@ const url = `/motion/${lang === 'fr' ? '' : 'en/'}${nom}.html`;
   }
   .scene-labo-carre { aspect-ratio: 1 / 1; }
   .scene-labo-large { aspect-ratio: 16 / 9; }
+  .scene-labo-portrait { aspect-ratio: 1080 / 1350; }
+  .scene-labo-tel { display: none; }
+  @media (max-width: 767px) { .scene-labo-ordi { display: none; } .scene-labo-tel { display: block; } }
   .sl-calque { position: absolute; inset: 0; border: 0; background: transparent; cursor: pointer; z-index: 1; }
   .sl-barre { position: absolute; left: 16px; right: 16px; bottom: 12px; z-index: 2; opacity: 0; transition: opacity .25s; }
   .scene-labo-controles:hover .sl-barre, .scene-labo-controles[data-pause] .sl-barre, .sl-barre:focus-within { opacity: 1; }
