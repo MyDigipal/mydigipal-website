@@ -200,7 +200,7 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
 - **Mails et CRM** : depuis le 23/09/2026, l'envoi ne passe plus par n8n. La route
   `POST /api/site/devis` de l'application Academy (dépôt `mydigipal-academy`) écrit le
   devis dans `mydigipal.prospection.calculator_quotes`, crée le contact dans
-  `prospection.contacts` (source `calculator`, visible dans sales.mydigipal.com), envoie
+  `prospection.contacts` (source `calculator`, visible dans le Hub, app.mydigipal.com/sales/contacts), envoie
   le devis au prospect et le lead à Paul, puis annonce le lead dans l'espace Google Chat
   « Website Chat ». Les gabarits vivent dans `src/lib/site/devis-mails.ts` de ce dépôt-là.
   ⚠️ Les espaces INSÉCABLES comptent (montants, « 10 % ») : le portage a d'abord différé
