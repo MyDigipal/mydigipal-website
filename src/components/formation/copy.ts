@@ -104,7 +104,7 @@ export const COPY = {
       fermer: 'Fermer',
       erreurChamps: 'Indiquez votre nom, votre entreprise et une adresse e-mail valide.',
       erreur: "L'envoi n'a pas abouti. Réessayez, ou écrivez-nous depuis la page contact.",
-      ok: 'C’est parti : le devis arrive dans votre boîte, et Paul vous répond sous 24 h.',
+      ok: 'Votre demande est bien reçue : Paul vous répond sous 24 h.',
     },
   },
   en: {
@@ -204,7 +204,7 @@ export const COPY = {
       fermer: 'Close',
       erreurChamps: 'Please enter your name, your company and a valid email address.',
       erreur: 'Sending failed. Please try again, or write to us from the contact page.',
-      ok: 'Done: the quote is on its way to your inbox, and Paul will reply within 24 hours.',
+      ok: 'Your request is in: Paul will reply within 24 hours.',
     },
   },
 } satisfies Record<Lang, unknown>;

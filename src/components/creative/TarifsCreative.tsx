@@ -16,6 +16,7 @@ import { fixerOrigineMesure } from '@/components/calculator/tracking';
 import { usePanierSimulateur } from '@/lib/devis/usePanierSimulateur';
 import { envoyerDevis } from '@/lib/devis/envoi';
 import AutresServices from '@/components/devis/AutresServices';
+import Remerciement from '@/components/devis/Remerciement';
 import '../formation/tarifs.css';
 import './tarifs-creative.css';
 
@@ -83,7 +84,7 @@ const COPY = {
     form: {
       titre: 'Recevoir ce devis', texte: 'Nous vous l’envoyons par e-mail, et nous revenons vers vous sous 24 h pour en parler.',
       nom: 'Nom', email: 'E-mail professionnel', societe: 'Entreprise', message: 'Ce que nous devons savoir (facultatif)',
-      envoyer: 'Recevoir le devis', envoi: 'Envoi…', ok: 'C’est parti : le devis arrive dans votre boîte, et nous revenons vers vous sous 24 h.',
+      envoyer: 'Recevoir le devis', envoi: 'Envoi…', ok: 'Votre demande est bien reçue : nous revenons vers vous sous 24 h.',
       erreurChamps: 'Merci d’indiquer votre nom, votre entreprise et un e-mail valide.', erreur: 'L’envoi n’a pas abouti. Réessayez, ou écrivez-nous depuis la page contact.', fermer: 'Fermer',
     },
   },
@@ -134,7 +135,7 @@ const COPY = {
     form: {
       titre: 'Get this quote', texte: 'We email it to you, and get back to you within 24 hours to talk it through.',
       nom: 'Name', email: 'Work email', societe: 'Company', message: 'What we should know (optional)',
-      envoyer: 'Get the quote', envoi: 'Sending…', ok: 'Done: the quote is on its way to your inbox, and we will get back to you within 24 hours.',
+      envoyer: 'Get the quote', envoi: 'Sending…', ok: 'Your request is in: we will get back to you within 24 hours.',
       erreurChamps: 'Please give your name, your company and a valid email.', erreur: 'Sending failed. Try again, or write to us from the contact page.', fermer: 'Close',
     },
   },
@@ -398,9 +399,9 @@ function Formulaire({ lang, devise, devis, surFermer }: { lang: Lang; devise: De
     <div className="tf-voile" role="presentation" onClick={(e) => { if (e.target === e.currentTarget) surFermer(); }}>
       <div className="tf-fenetre" role="dialog" aria-modal="true" aria-labelledby="tc-form-titre">
         <button type="button" className="tf-fermer" aria-label={t.fermer} onClick={surFermer}>{Icone.fermer}</button>
-        <h3 id="tc-form-titre">{t.titre}</h3>
+        {etape !== 'ok' && <h3 id="tc-form-titre">{t.titre}</h3>}
         {etape === 'ok' ? (
-          <p className="tf-ok" role="status">{t.ok}</p>
+          <Remerciement lang={lang} prenom={champs.nom} suite={t.ok} />
         ) : (
           <form onSubmit={envoyer} noValidate>
             <p className="tf-form-texte">{t.texte}</p>

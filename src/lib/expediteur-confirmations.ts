@@ -13,15 +13,19 @@ export const EXPEDITEUR_CONFIRMATIONS = 'paul@mydigipal.com';
 
 type Formulaire = 'audit' | 'devis' | 'contact';
 
-/** Le texte de l'avertissement, en texte brut, adapté au formulaire. */
+/**
+ * Le texte de l'avertissement, en texte brut, adapté au formulaire. Paul, 21/10/2026 : « il faut
+ * leur dire de vérifier dans leurs spams tout de suite, parce que parfois on peut être passé
+ * dans les spams. Quel que soit le formulaire. » Donc tout de suite, pas « dans quelques minutes ».
+ */
 export function avertissementConfirmation(lang: 'fr' | 'en', formulaire: Formulaire): string {
   const a = EXPEDITEUR_CONFIRMATIONS;
   if (lang === 'fr') {
     const debut = formulaire === 'devis' ? `Votre devis vient de partir de ${a}.` : `Un email de confirmation vient de partir de ${a}.`;
     const fin = formulaire === 'audit' ? 'votre audit' : 'notre réponse';
-    return `${debut} Si vous ne le voyez pas d’ici quelques minutes, regardez dans vos courriers indésirables et marquez-le comme sûr : c’est de cette adresse que vous recevrez ${fin}.`;
+    return `${debut} Regardez tout de suite dans vos courriers indésirables : il arrive parfois là. S’il y est, marquez-le comme sûr, c’est de cette adresse que viendra ${fin}.`;
   }
   const debut = formulaire === 'devis' ? `Your quote has just been sent from ${a}.` : `A confirmation email has just been sent from ${a}.`;
   const fin = formulaire === 'audit' ? 'your audit' : 'our reply';
-  return `${debut} If you don’t see it within a few minutes, check your spam folder and mark it as safe: that is the address ${fin} will come from.`;
+  return `${debut} Check your spam folder right away: it sometimes lands there. If it does, mark it as safe, that is the address ${fin} will come from.`;
 }

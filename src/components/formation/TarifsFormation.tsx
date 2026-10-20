@@ -17,6 +17,7 @@ import { fixerOrigineMesure } from '@/components/calculator/tracking';
 import { usePanierSimulateur } from '@/lib/devis/usePanierSimulateur';
 import { envoyerDevis } from '@/lib/devis/envoi';
 import AutresServices from '@/components/devis/AutresServices';
+import Remerciement from '@/components/devis/Remerciement';
 import { COPY } from './copy';
 import './tarifs.css';
 
@@ -417,9 +418,9 @@ function Formulaire({ lang, etat, devis, surFermer }: { lang: Lang; etat: Etat; 
     <div className="tf-voile" role="presentation" onClick={(e) => { if (e.target === e.currentTarget) surFermer(); }}>
       <div className="tf-fenetre" role="dialog" aria-modal="true" aria-labelledby="tf-form-titre">
         <button type="button" className="tf-fermer" aria-label={t.fermer} onClick={surFermer}>{Icone.fermer}</button>
-        <h3 id="tf-form-titre">{t.titre}</h3>
+        {etape !== 'ok' && <h3 id="tf-form-titre">{t.titre}</h3>}
         {etape === 'ok' ? (
-          <p className="tf-ok" role="status">{t.ok}</p>
+          <Remerciement lang={lang} prenom={champs.nom} suite={t.ok} />
         ) : (
           <form onSubmit={envoyer} noValidate>
             <p className="tf-form-texte">{t.texte}</p>
