@@ -1201,7 +1201,11 @@ décident ; beaucoup de créas, vite, bien faites. Les landing pages n'y sont PA
   Événements : `creative_simulator_change`, `creative_quote_open`, `creative_quote_share` ; l'envoi
   pousse `calculator_form_submit` (origine `creative`).
 - **Scènes** : cinq essais du labo `crea-*` (lot 10), copiés par `python scripts/scenes-creative.py`
-  dans `public/motion/` et `/en/`. Seule `crea-formats` a sa version verticale (`?p=1`).
+  dans `public/motion/` et `/en/`. Toutes ont leur version verticale (`?p=1`, 21/10/2026, aucun texte
+  sous 30 px), posée par `SceneLabo portraitMobile`. La frise de `crea-revue` porte « Un exemple, sur une
+  matinée » (heures gardées).
+- **Après l'envoi** (tous les formulaires du site, 21/10/2026) : remercier, puis « regardez tout de suite
+  dans vos courriers indésirables » (`lib/expediteur-confirmations.ts`, `devis/Remerciement.tsx`).
 - **Réalisations** : Servion oui, ControlAI JAMAIS (Paul) ; sinon la marque fictive Atelier Rivière
   (`creative/BanniereMini.astro`). Vidéos Servion réencodées dans `public/videos/creative/`.
 
