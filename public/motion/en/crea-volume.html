@@ -62,6 +62,31 @@ html,body{margin:0;background:#000;overflow:hidden}
 #compte .eco{display:inline-block;margin-top:20px;padding:10px 20px;border-radius:999px;background:#fdf3dc;color:#8a6512;font-size:26px;font-weight:800}
 #compte .detail{margin-top:20px;font-family:Inter,sans-serif;font-size:21px;font-weight:600;color:#5b6b7c;line-height:1.5}
 #prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+
+/* Vertical 1080 x 1350 (?p=1), pour le téléphone : la scène y est affichée à 36 %, donc aucun
+   texte sous 30 px. Le système se replie en bandeau à l'acte 2, les paliers s'empilent en barres
+   horizontales (une ligne par palier, la longueur suit le prix). */
+#stage.p{height:1350px}
+#stage.p #titre{left:56px;top:56px}
+#stage.p #titre .k .ln{font-size:40px;margin-bottom:14px}
+#stage.p #titre .t .ln{font-size:72px}
+#stage.p #systeme{border-radius:34px}
+#stage.p #systeme .tete{left:40px;top:30px;font-size:44px}
+#stage.p #systeme .r{font-size:30px}
+#stage.p #aa{font-size:110px}
+#stage.p .past{width:56px;height:56px}
+#stage.p .prix1{font-size:120px}
+#stage.p .prix1 small{font-size:34px;margin-top:2px}
+#stage.p .marche .lb{right:auto;top:0;bottom:auto;width:220px;text-align:left;font-size:32px;line-height:58px}
+#stage.p .marche .barre{right:auto;top:0;bottom:auto;height:58px;border-radius:4px 14px 14px 4px;transform-origin:0 50%}
+#stage.p .marche .px{right:auto;top:0;bottom:auto;text-align:left;font-size:50px;line-height:58px}
+#stage.p #compte{width:880px;padding:48px 44px}
+#stage.p #compte .q{font-size:34px;line-height:1.3;text-wrap:balance}
+#stage.p #compte .tot{margin-top:14px}
+#stage.p #compte .tot b{font-size:150px}
+#stage.p #compte .tot s{font-size:46px}
+#stage.p #compte .eco{margin-top:26px;padding:14px 28px;font-size:40px}
+#stage.p #compte .detail{margin-top:26px;font-size:30px;line-height:1.45;text-wrap:balance}
 </style>
 </head>
 <body>
@@ -101,7 +126,8 @@ html,body{margin:0;background:#000;overflow:hidden}
 <div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
 
 <script>
-window.STAGE = { w: 1080, h: 1080 };
+var PORTRAIT = /[?&]p=1/.test(location.search);
+window.STAGE = { w: 1080, h: PORTRAIT ? 1350 : 1080 };
 window.DUREE = 17;
 
 (function () {
@@ -130,6 +156,7 @@ window.DUREE = 17;
   if (EN) document.documentElement.lang = 'en';
   document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
   document.getElementById('regles').innerHTML = TXT.r;
+  if (PORTRAIT) document.getElementById('stage').classList.add('p');
 
   function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
   function seg(t, a, b) { return c01((t - a) / (b - a)); }
@@ -144,10 +171,48 @@ window.DUREE = 17;
   var $ = function (id) { return document.getElementById(id); };
   function pose(el, x, y, o, extra) { el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)' + (extra || ''); el.style.opacity = o; }
 
+  // Les places. Le carré garde exactement ses valeurs ; le vertical empile : titre, système,
+  // jeux, paliers. Le système y est une carte pleine largeur qui se replie en bandeau à l'acte 2.
+  var L = PORTRAIT ? {
+    sys: { x: 56, y: 340, w: 968, h: 616, hReplie: 330 }, sysSortie: 1200,
+    source: { x: 56 + 620, y: 340 + 260 },
+    gros: { x: 724, y: 1000 }, grosSc: 2, vers: [5.7, 6.3],
+    grille: function (n) { return { x: 56 + (n % 6) * 163, y: 705 + Math.floor(n / 6) * 118 }; },
+    prix1: { x: 56, y: 992 },
+    marches: { x: 56, y: 960, pas: 86, lbW: 236, max: 540 },
+    conv: { x: 465, y: 640 },
+    compte: { x: 56, y: 540 }
+  } : {
+    sys: { x: 60, y: 300 }, sysSortie: 600,
+    source: { x: 60 + 220, y: 300 + 250 },
+    gros: { x: 600, y: 360 }, grosSc: 2.2, vers: [5.8, 6.5],
+    grille: function (n) { return { x: 548 + (n % 3) * 162, y: 300 + Math.floor(n / 3) * 112 }; },
+    prix1: { x: 600, y: 690 },
+    conv: { x: 540 - 75, y: 560 },
+    compte: { x: 190, y: 380 }
+  };
+  // En vertical, le contenu du système est remis en page : en haut ce qui reste visible une fois
+  // replié (titre, typographie, couleurs, gabarit), en dessous les règles.
+  if (PORTRAIT) {
+    var sysEl = $('systeme'), R = sysEl.querySelectorAll('.r');
+    sysEl.style.width = L.sys.w + 'px'; sysEl.style.height = L.sys.h + 'px';
+    [[40, 120], [300, 120], [40, 342], [620, 36]].forEach(function (p, q) { R[q].style.left = p[0] + 'px'; R[q].style.top = p[1] + 'px'; });
+    $('aa').style.left = '40px'; $('aa').style.top = '160px';
+    sysEl.querySelectorAll('.past').forEach(function (el, q) { el.style.left = (300 + q * 72) + 'px'; el.style.top = '178px'; });
+    var g = $('gab').style; g.left = '620px'; g.top = '84px'; g.transformOrigin = '0 0'; g.transform = 'scale(1.35)';
+    var rg = $('regles').style; rg.left = '40px'; rg.top = '390px'; rg.width = '560px'; rg.fontSize = '32px'; rg.lineHeight = '1.45';
+  }
+
   // Les lignes de construction : douze colonnes et quelques horizontales, qui se tracent.
   var svg = $('grilleSvg'), LIGNES = [];
-  for (var i = 0; i <= 12; i++) LIGNES.push([20 + i * 33.3, 0, 20 + i * 33.3, 450]);
-  [70, 200, 240].forEach(function (y) { LIGNES.push([0, y, 440, y]); });
+  if (PORTRAIT) {
+    svg.setAttribute('width', L.sys.w); svg.setAttribute('height', L.sys.h);
+    for (var i = 0; i <= 12; i++) LIGNES.push([24 + i * 76.67, 0, 24 + i * 76.67, L.sys.h]);
+    [100, 326, 384].forEach(function (y) { LIGNES.push([0, y, L.sys.w, y]); });
+  } else {
+    for (var i = 0; i <= 12; i++) LIGNES.push([20 + i * 33.3, 0, 20 + i * 33.3, 450]);
+    [70, 200, 240].forEach(function (y) { LIGNES.push([0, y, 440, y]); });
+  }
   LIGNES.forEach(function (l) { var e = document.createElementNS('http://www.w3.org/2000/svg', 'line'); e.setAttribute('x1', l[0]); e.setAttribute('y1', l[1]); e.setAttribute('x2', l[2]); e.setAttribute('y2', l[3]); e.setAttribute('pathLength', '1'); e.style.strokeDasharray = '1'; svg.appendChild(e); });
 
   // Douze jeux, chacun trois formats ; une teinte par message.
@@ -163,12 +228,20 @@ window.DUREE = 17;
   var SORTIES = [3.6]; var pas = 0.62;
   for (var k = 1; k < 12; k++) { SORTIES.push((k === 1 ? 6.4 : SORTIES[k - 1] + pas)); pas = Math.max(0.24, pas * 0.86); }
   // Les places : le premier jeu en grand à droite (acte 1), puis la grille de 3 x 4 (acte 2).
-  function placeGrille(n) { return { x: 548 + (n % 3) * 162, y: 300 + Math.floor(n / 3) * 112 }; }
+  var placeGrille = L.grille;
 
   // L'escalier des paliers.
   var SEUILS = [1, 3, 6, 11], MARCHES = [];
   PAL.forEach(function (p, i) {
     var m = document.createElement('div'); m.className = 'marche';
+    if (PORTRAIT) {
+      // Une ligne par palier : le seuil, une barre dont la longueur suit le prix, le prix au bout.
+      var M = L.marches, lg = Math.round(M.max * p / PAL[0]);
+      m.style.left = M.x + 'px'; m.style.top = (M.y + i * M.pas) + 'px'; m.style.width = L.sys.w + 'px'; m.style.height = '58px';
+      m.innerHTML = '<div class="lb">' + TXT.paliers[i] + '</div><div class="barre" style="left:' + M.lbW + 'px;width:' + lg + 'px"></div><div class="px" style="left:' + (M.lbW + lg + 22) + 'px">' + px(p) + '</div>';
+      $('marches').appendChild(m); MARCHES.push(m);
+      return;
+    }
     var h = 40 + (p / PAL[0]) * 90;
     m.style.left = (60 + i * 245) + 'px'; m.style.top = '790px'; m.style.height = '190px';
     m.innerHTML = '<div class="px" style="bottom:' + (h + 46) + 'px">' + px(p) + '</div><div class="barre" style="bottom:40px;height:' + h + 'px"></div><div class="lb" style="bottom:0">' + TXT.paliers[i] + '</div>';
@@ -193,7 +266,9 @@ window.DUREE = 17;
     // Le système : il entre, ses lignes se tracent, puis il se range à gauche.
     var sIn = A(seg(t, 0.4, 1.2));
     var fin = S(seg(t, 12.2, 12.9));
-    pose($('systeme'), 60 - (1 - sIn) * 60 - fin * 600, 300 + bas, sIn * fond);
+    pose($('systeme'), L.sys.x - (1 - sIn) * 60 - fin * L.sysSortie, L.sys.y + bas, sIn * fond);
+    // En vertical, le système se replie en bandeau quand les jeux suivants commencent.
+    if (PORTRAIT) $('systeme').style.height = lerp(L.sys.h, L.sys.hReplie, A(seg(t, 5.5, 6.1))).toFixed(1) + 'px';
     svg.querySelectorAll('line').forEach(function (l, q) { l.style.strokeDashoffset = String(1 - A(seg(t, 0.9 + q * 0.06, 1.7 + q * 0.06))); });
     $('systeme').querySelectorAll('.r, #aa, .past, #gab, #regles, .tete').forEach(function (el, q) {
       var k = A(seg(t, 1.2 + q * 0.09, 1.7 + q * 0.09)); el.style.opacity = k;
@@ -202,28 +277,39 @@ window.DUREE = 17;
     $('gab').querySelectorAll('b').forEach(function (b) { b.style.opacity = 0.5 + 0.5 * Math.sin(t * 5); });
 
     // Les jeux : chacun sort du gabarit et va à sa place.
-    var source = { x: 60 + 220, y: 300 + 250 };
+    var source = L.source;
     JEUX.forEach(function (el, n) {
       var s0 = SORTIES[n];
       var k = A(seg(t, s0, s0 + (n === 0 ? 0.9 : 0.55)));
       var cible = placeGrille(n), sc = 1;
       // Le premier jeu se montre d'abord en grand, puis rejoint la grille avec les autres.
       if (n === 0) {
-        var gros = { x: 600, y: 360 }, vers = A(seg(t, 5.8, 6.5));
+        var gros = L.gros, vers = A(seg(t, L.vers[0], L.vers[1]));
         cible = { x: lerp(gros.x, cible.x, vers), y: lerp(gros.y, cible.y, vers) };
-        sc = lerp(2.2, 1, vers);
+        sc = lerp(L.grosSc, 1, vers);
       }
       // Acte 3 : tous les jeux convergent dans le compte.
       var conv = A(seg(t, 12.3 + n * 0.03, 13.1 + n * 0.03));
-      var x = lerp(lerp(source.x, cible.x, k), 540 - 75, conv), y = lerp(lerp(source.y, cible.y, k), 560, conv);
+      var x = lerp(lerp(source.x, cible.x, k), L.conv.x, conv), y = lerp(lerp(source.y, cible.y, k), L.conv.y, conv);
       pose(el, x, y + bas, (k > 0 ? 1 : 0) * (1 - seg(t, 12.9 + n * 0.03, 13.2 + n * 0.03)) * fond, ' scale(' + (sc * lerp(lerp(0.4, 1, k), 0.3, conv)).toFixed(3) + ')');
       el.style.transformOrigin = '0 0';
     });
 
     // Le prix du premier jeu, puis il descend avec le palier.
-    var p1 = A(seg(t, 4.4, 5.0)) * (1 - S(seg(t, 5.8, 6.2)));
     $('p1').textContent = px(PAL[0]);
-    pose($('prix1'), 600, 690 + bas, p1 * fond);
+    if (PORTRAIT) {
+      // En vertical, le prix passe par-dessus les paliers (en arc, dans la zone encore vide) et
+      // va se poser sur le premier, où il se fond dans le prix de la ligne.
+      var M = L.marches, va = A(seg(t, 5.85, 6.35));
+      var cx = M.x + M.lbW + M.max + 22, cy = M.y - 2;
+      var p1v = A(seg(t, 4.4, 5.0)) * (1 - seg(t, 6.35, 6.5));
+      $('prix1').style.transformOrigin = '0 0';
+      $('prix1').querySelector('small').style.opacity = 1 - seg(t, 5.8, 6.05);
+      pose($('prix1'), lerp(L.prix1.x, cx, va), lerp(L.prix1.y, cy, va) - Math.sin(Math.PI * va) * 120 + bas, p1v * fond, ' scale(' + lerp(1, 50 / 120, va).toFixed(3) + ')');
+    } else {
+      var p1 = A(seg(t, 4.4, 5.0)) * (1 - S(seg(t, 5.8, 6.2)));
+      pose($('prix1'), 600, 690 + bas, p1 * fond);
+    }
 
     // L'escalier : il entre avec l'acte 2, chaque marche s'allume quand on franchit son seuil.
     var nSortis = 0; SORTIES.forEach(function (s0) { if (t >= s0 + 0.3) nSortis++; });
@@ -234,12 +320,14 @@ window.DUREE = 17;
       m.style.transform = 'translateY(' + ((1 - ki) * 30 + mOut * 220 + bas) + 'px)';
       var actif = t > 6.2 && nSortis >= SEUILS[i] && (i === 3 || nSortis < SEUILS[i + 1]);
       m.classList.toggle('on', actif);
-      m.querySelector('.barre').style.transform = 'scaleY(' + ki.toFixed(3) + ')';
+      // En vertical, le prix du premier palier est celui qui vient de descendre s'y poser.
+      if (PORTRAIT && i === 0) m.querySelector('.px').style.opacity = seg(t, 6.35, 6.5);
+      m.querySelector('.barre').style.transform = (PORTRAIT ? 'scaleX(' : 'scaleY(') + ki.toFixed(3) + ')';
     });
 
     // Le compte.
     var cIn = A(seg(t, 13.0, 13.8));
-    pose($('compte'), 190, 380 + (1 - cIn) * 50 + bas, cIn * fond);
+    pose($('compte'), L.compte.x, L.compte.y + (1 - cIn) * 50 + bas, cIn * fond);
     var tot = Math.round(lerp(12 * PAL[0], 12 * PAL[3], A(seg(t, 13.6, 14.8))) / 10) * 10;
     $('totB').textContent = px(tot);
     $('totS').textContent = px(12 * PAL[0]);

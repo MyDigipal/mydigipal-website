@@ -106,6 +106,68 @@ html,body{margin:0;background:#000;overflow:hidden}
 #toast b{display:block;font-size:24px;font-weight:800;letter-spacing:-.01em}
 #toast span{font-family:Inter,sans-serif;font-size:19px;font-weight:600;color:#a9b8c8}
 #prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+
+/* Version verticale 1080 x 1350 (?p=1), pour le téléphone : aucun texte de la scène sous 30 px.
+   La charte devient un bandeau, les trois outils s'empilent dessous ; à la relecture, la liste passe
+   à droite de la bannière ; le Hub et sa notification s'empilent. Le carré ne lit aucune de ces règles. */
+#stage.p{height:1350px}
+#stage.p #titre .k .ln{font-size:40px;margin-bottom:14px}
+#stage.p #titre .t .ln{font-size:72px}
+#stage.p #fils,#stage.p #filRep{height:1350px}
+#stage.p #kit{width:1000px;height:310px;padding:0}
+#stage.p #kit > *{position:absolute;margin:0}
+#stage.p #kit h3{left:36px;top:30px;font-size:40px}
+#stage.p #kit .marque{right:36px;top:24px;height:68px;padding:0 30px;font-size:30px;letter-spacing:.16em}
+#stage.p #kit .r{font-size:30px;top:128px}
+#stage.p #kit [data-txt=couleurs]{left:36px}
+#stage.p #kit [data-txt=typo]{left:384px}
+#stage.p #kit [data-txt=photos]{left:620px}
+#stage.p #kit .pastilles{left:36px;top:180px}
+#stage.p #kit .pastilles i{width:60px;height:60px}
+#stage.p #kit .aa{left:384px;top:176px;font-size:80px}
+#stage.p #kit .photos{left:620px;top:180px}
+#stage.p .outil{width:900px;height:186px}
+#stage.p .outil .gl{left:28px;top:34px;width:72px;height:72px}
+#stage.p .outil .gl svg{width:36px;height:36px}
+#stage.p .outil .nom{left:124px;top:22px;font-size:40px}
+#stage.p .outil .role{left:124px;top:78px;font-size:32px}
+#stage.p .outil .etat{left:124px;top:126px;font-size:30px}
+#stage.p .outil .etat svg{width:22px;height:16px}
+#stage.p .tuile{width:154px;height:154px}
+#stage.p #o0 .tuile{width:250px}
+#stage.p .tuile canvas{width:100%;height:100%}
+#stage.p .tuile.v{right:50px;width:94px;height:154px}
+#stage.p .tuile .tx{left:16px;top:36px}
+#stage.p .tuile .caret{height:28px}
+#stage.p #relu{width:1000px}
+#stage.p #relu .tete{position:absolute;left:0;top:-203px;margin:0}
+#stage.p #relu .av{width:84px;height:84px}
+#stage.p #relu .av svg{width:46px;height:46px}
+#stage.p #relu .qui{font-size:40px}
+#stage.p #relu .quoi{font-size:30px}
+#stage.p .pt{margin-left:540px;width:460px;box-sizing:border-box;height:78px;margin-bottom:14px;font-size:30px;gap:16px;padding:0 20px}
+#stage.p .pt .c{width:40px;height:40px}
+#stage.p .pt .c:after{left:12px;top:12px;width:14px;height:8px}
+#stage.p #repere{width:56px;height:56px;font-size:30px}
+#stage.p #tampon{font-size:30px;padding:12px 24px}
+#stage.p #hub{width:1000px;height:640px}
+#stage.p #hub .barre{height:64px;font-size:30px;padding:0 26px}
+#stage.p #hub .barre i{width:14px;height:14px}
+#stage.p #hub .h1{left:34px;top:94px;font-size:46px}
+#stage.p #hub .h2{left:34px;top:158px;font-size:30px}
+#stage.p #hub .round{right:34px;top:100px;font-size:30px;padding:10px 22px}
+#stage.p .var{top:230px;transform:scale(1.0963);transform-origin:0 0}
+#stage.p #va1{left:352px !important}
+#stage.p #va2{left:670px !important}
+#stage.p .vl{font-size:30px;font-weight:600;color:#5b6b7c;white-space:nowrap;top:546px !important}
+#stage.p #vl0{left:34px !important}
+#stage.p #vl1{left:352px !important}
+#stage.p #vl2{left:670px !important}
+#stage.p #toast{width:820px;box-sizing:border-box;padding:24px 28px;gap:20px}
+#stage.p #toast .cl{width:64px;height:64px}
+#stage.p #toast .cl svg{width:32px;height:32px}
+#stage.p #toast b{font-size:34px}
+#stage.p #toast span{font-size:30px}
 </style>
 </head>
 <body>
@@ -176,7 +238,8 @@ html,body{margin:0;background:#000;overflow:hidden}
 <div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
 
 <script>
-window.STAGE = { w: 1080, h: 1080 };
+var PORTRAIT = /[?&]p=1/.test(location.search);
+window.STAGE = { w: 1080, h: PORTRAIT ? 1350 : 1080 };
 window.DUREE = 19.6;
 
 (function () {
@@ -210,6 +273,11 @@ window.DUREE = 19.6;
     toast: 'Une nouvelle version à relire', toast2: 'Atelier Rivière · à l’instant'
   };
   if (EN) document.documentElement.lang = 'en';
+  if (PORTRAIT) {
+    document.getElementById('stage').classList.add('p');
+    document.getElementById('fils').setAttribute('viewBox', '0 0 1080 1350');
+    document.getElementById('filRep').setAttribute('viewBox', '0 0 1080 1350');
+  }
   document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
   document.getElementById('glClaude').setAttribute('d', 'm4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z');
   document.getElementById('glGemini').setAttribute('d', 'M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81');
@@ -277,9 +345,24 @@ window.DUREE = 19.6;
   }
 
   /* ---------- Places ---------- */
-  var KIT = { x: 60, y: 330 }, OUT = [330, 530, 730], OX = 500;
-  var BN = { x: 90, y: 330 }, RELU = { x: 600, y: 330 }, HUB = { x: 60, y: 320 };
-  var titreBn = { x: BN.x + 37, y: BN.y + 232 }, lampeBn = { x: BN.x + 256, y: BN.y, w: 166 };
+  // L porte tout ce qui change entre le carré et le vertical ; le carré garde ses valeurs d'origine.
+  // ow : largeur d'un outil ; tw0 : largeur de la tuile de Claude ; ts : côté des tuiles image ;
+  // bnK : échelle de la bannière pendant la relecture ; yPt : milieu du troisième point de la liste.
+  var L = PORTRAIT ? {
+    kit: { x: 40, y: 340 }, kitOut: 1100, out: [690, 898, 1106], ox: 140, ow: 900, toolOut: 1000,
+    fil: function (i) { var y1 = L.out[i] + 93; return 'M90 650 L90 ' + (y1 - 48) + ' Q90 ' + y1 + ' 138 ' + y1; },
+    tw0: 250, ts: 154, tx: 16, ty: 36, tapeF: 30, miniX: 24, miniHaloX: -8,
+    bn: { x: 40, y: 590 }, bnK: 520 / 460, bnT: [7.0, 7.6], reluT: [12.45, 13.05], relu: { x: 40, y: 673 }, reluOut: 1100, yPt: 673 + 2 * 92 + 39, frX: 580,
+    tampon: { x: 94, y: 1146 }, hub: { x: 40, y: 400 }, slot: { dx: 34, dy: 230, k: 296 / 460 }, toast: { x: 220, y: 1090 }
+  } : {
+    kit: { x: 60, y: 330 }, kitOut: 520, out: [330, 530, 730], ox: 500, ow: 520, toolOut: 640,
+    fil: function (i) { var y0 = L.kit.y + 120 + i * 170, y1 = L.out[i] + 85; return 'M440 ' + y0 + ' C 470 ' + y0 + ', 470 ' + y1 + ', 500 ' + y1; },
+    tw0: 138, ts: 138, tx: 14, ty: 30, tapeF: 20, miniX: 18, miniHaloX: -14,
+    bn: { x: 90, y: 330 }, bnK: 1, bnT: [6.7, 7.4], reluT: [12.9, 13.5], relu: { x: 600, y: 330 }, reluOut: 520, yPt: 330 + 100 + 2 * 80 + 33, frX: 600,
+    tampon: { x: 210, y: 816 }, hub: { x: 60, y: 320 }, slot: { dx: 40, dy: 196, k: 270 / 460 }, toast: { x: 580, y: 860 }
+  };
+  var KIT = L.kit, OUT = L.out, OX = L.ox;
+  var BN = L.bn, RELU = L.relu, HUB = L.hub, K = L.bnK, TF = L.ts / 138;
 
   var TITRES = [[0.3, 6.0], [6.6, 12.8], [13.4, 19.0]];
   function titres(t) {
@@ -298,12 +381,12 @@ window.DUREE = 19.6;
 
     // Acte 1 : la charte, puis les trois outils qu'elle nourrit.
     var kIn = A(seg(t, 0.4, 1.2)), kOut = S(seg(t, 6.3, 7.0));
-    pose($('kit'), KIT.x - (1 - kIn) * 60 - kOut * 520, KIT.y, kIn);
+    pose($('kit'), KIT.x - (1 - kIn) * 60 - kOut * L.kitOut, KIT.y, kIn);
     for (var i = 0; i < 3; i++) {
       var oIn = A(seg(t, 0.9 + i * 0.2, 1.7 + i * 0.2)), oOut = S(seg(t, 6.4 + i * 0.08, 7.1 + i * 0.08));
-      pose($('o' + i), OX + (1 - oIn) * 80 + oOut * 640, OUT[i], oIn);
-      var p = $('p' + i), y0 = KIT.y + 120 + i * 170, y1 = OUT[i] + 85;
-      p.setAttribute('d', 'M440 ' + y0 + ' C 470 ' + y0 + ', 470 ' + y1 + ', 500 ' + y1);
+      pose($('o' + i), OX + (1 - oIn) * 80 + oOut * L.toolOut, OUT[i], oIn);
+      var p = $('p' + i);
+      p.setAttribute('d', L.fil(i));
       var f = A(seg(t, 1.6 + i * 0.25, 2.2 + i * 0.25));
       p.style.strokeDasharray = '1'; p.style.strokeDashoffset = String(1 - f);
       p.style.opacity = 1 - kOut;
@@ -318,7 +401,7 @@ window.DUREE = 19.6;
     var a1 = msg[0].slice(0, n), a2 = msg[1].slice(0, Math.max(0, n - msg[0].length));
     var curseur = (t < 3.9 || Math.floor(t * 2.4) % 2 === 0) && t < 6.3 ? '<span class="caret"></span>' : '';
     $('tape').innerHTML = a1 + (a2 || n > msg[0].length ? '<br>' + a2 : '') + curseur;
-    $('tape').style.fontSize = '20px';
+    $('tape').style.fontSize = L.tapeF + 'px';
     // Nano Banana : l'image sort du bruit.
     dessinerBruit(A(seg(t, 3.6, 5.2)));
     // Higgsfield : la lampe se balance, la barre de lecture avance.
@@ -326,32 +409,32 @@ window.DUREE = 19.6;
     var bal = t > 4.8 ? Math.sin(tv * 2.6) * 9 : 0;
     $('miniLampe').style.transform = 'translate(18px,' + (t > 4.8 ? 0 : -80) * (1 - A(seg(t, 4.8, 5.4))) + 'px) rotate(' + bal.toFixed(2) + 'deg)';
     $('miniLampe').style.transformOrigin = '23px 0';
-    $('miniLampe').style.transform = 'translate(18px,' + (-80 * (1 - ressort(seg(t, 4.8, 5.8)))).toFixed(1) + 'px) rotate(' + bal.toFixed(2) + 'deg)';
-    pose($('miniHalo'), -14, -6, seg(t, 5.4, 5.6) * (0.8 + 0.2 * Math.sin(tv * 3)));
+    $('miniLampe').style.transform = 'translate(' + L.miniX + 'px,' + (-80 * (1 - ressort(seg(t, 4.8, 5.8)))).toFixed(1) + 'px) rotate(' + bal.toFixed(2) + 'deg)';
+    pose($('miniHalo'), L.miniHaloX, -6, seg(t, 5.4, 5.6) * (0.8 + 0.2 * Math.sin(tv * 3)));
     $('miniPb').style.transform = 'scaleX(' + seg(t, 4.8, 6.3).toFixed(3) + ')';
     // Les états « Texte, Image, Vidéo » s'allument quand chaque outil a fini.
     [[3.9], [5.2], [6.0]].forEach(function (q, j) { var el = document.querySelector('#o' + j + ' .etat'); el.style.opacity = A(seg(t, q[0], q[0] + .3)); el.innerHTML = '<svg width="16" height="12" viewBox="0 0 16 12" style="margin-right:8px"><path d="M1.5 6.5l4 4 9-9" stroke="#e8bd62" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' + TXT['e' + j]; });
 
     // Acte 2 : la bannière s'assemble avec ce que les outils ont produit, puis se fait relire.
-    var bnIn = A(seg(t, 6.7, 7.4));
+    var bnIn = A(seg(t, L.bnT[0], L.bnT[1]));
     var vers = A(seg(t, 13.3, 14.3));                  // acte 3 : la bannière part dans le Hub
-    var hubSlot = { x: HUB.x + 40, y: HUB.y + 196, k: 270 / 460 };
-    var bx0 = lerp(BN.x, hubSlot.x, vers), by0 = lerp(BN.y, hubSlot.y, vers), sc = lerp(1, hubSlot.k, vers);
+    var hubSlot = { x: HUB.x + L.slot.dx, y: HUB.y + L.slot.dy, k: L.slot.k };
+    var bx0 = lerp(BN.x, hubSlot.x, vers), by0 = lerp(BN.y, hubSlot.y, vers), sc = lerp(K, hubSlot.k, vers);
     $('bn').style.transformOrigin = '0 0';
     pose($('bn'), bx0 - (1 - bnIn) * 40, by0 + bas, bnIn * fond, ' scale(' + sc.toFixed(4) + ')');
     $('bn').style.borderRadius = lerp(18, 16 / hubSlot.k, vers) + 'px';
     // Le titre de Claude vole de sa tuile à la bannière.
     var vt = A(seg(t, 7.0, 8.0));
-    var srcT = { x: OX + 520 - 16 - 138 + 14, y: OUT[0] + 16 + 30 };
+    var srcT = { x: OX + L.ow - 16 - L.tw0 + L.tx, y: OUT[0] + 16 + L.ty };
     var dstT = { x: bx0 + 37 * sc, y: by0 + 232 * sc };
-    var tz = lerp(20 / 40, 1, vt) * sc;
+    var tz = lerp(L.tapeF / 40, 1, vt) * sc;
     var vTitre = $('volTitre'); vTitre.style.transformOrigin = '0 0';
     pose(vTitre, lerp(srcT.x + (1 - seg(t, 6.4, 7.0)) * 0, dstT.x, vt), lerp(srcT.y, dstT.y, vt) + bas, (t > 6.95 ? 1 : 0) * fond, ' scale(' + tz.toFixed(4) + ')');
     // L'image de Nano Banana : la lampe vole de sa tuile à la bannière, puis grandit à la correction.
     var vl = A(seg(t, 7.2, 8.2));
     var corr = A(seg(t, 10.2, 11.0));
     var lw = lerp(166, 200, corr);
-    var srcL = { x: OX + 520 - 16 - 138 + 66, y: OUT[1] + 16 - 6, s: 52 / 166 };
+    var srcL = { x: OX + L.ow - 16 - L.ts + 66 * TF, y: OUT[1] + 16 - 6 * TF, s: 52 * TF / 166 };
     var dstL = { x: bx0 + (lerp(256, 236, corr)) * sc, y: by0, s: lw / 166 * sc };
     var lz = lerp(srcL.s, dstL.s, vl);
     var vLampe = $('volLampe');
@@ -368,8 +451,8 @@ window.DUREE = 19.6;
     });
 
     // La relecture : chaque point se coche ; le troisième pose un repère sur la lampe.
-    var rIn = A(seg(t, 8.0, 8.7)), rOut = S(seg(t, 12.9, 13.5));
-    pose($('relu'), RELU.x + (1 - rIn) * 60 + rOut * 520, RELU.y, rIn);
+    var rIn = A(seg(t, 8.0, 8.7)), rOut = S(seg(t, L.reluT[0], L.reluT[1]));
+    pose($('relu'), RELU.x + (1 - rIn) * 60 + rOut * L.reluOut, RELU.y, rIn);
     var coches = [8.9, 9.4, 11.0, 11.5];
     for (var c = 0; c < 4; c++) {
       var pt2 = $('pt' + c), k2 = A(seg(t, 8.5 + c * 0.12, 9.0 + c * 0.12));
@@ -380,15 +463,16 @@ window.DUREE = 19.6;
     var bloque = seg(t, 9.7, 9.9) * (1 - seg(t, 11.0, 11.2));
     $('pt2').style.boxShadow = 'inset 0 0 0 ' + (1 + 2 * bloque) + 'px rgba(232,189,98,' + (0.08 + 0.9 * bloque) + ')';
     var rep = ressort(seg(t, 9.9, 10.6)) * (1 - seg(t, 11.2, 11.5));
-    var lx = BN.x + lerp(256, 236, corr) + lw / 2, ly = BN.y + lw * 1.6 * (90 / 160);
-    pose($('repere'), lx - 23, ly - 23, Math.min(1, rep * 2), ' scale(' + rep.toFixed(3) + ')');
-    var yPt = RELU.y + 100 + 2 * 80 + 33 + (1 - rIn) * 0;
-    $('fr').setAttribute('d', 'M' + RELU.x + ' ' + yPt + ' C ' + (RELU.x - 40) + ' ' + yPt + ', ' + (lx + 60) + ' ' + ly + ', ' + (lx + 24) + ' ' + ly);
+    var lx = BN.x + (lerp(256, 236, corr) + lw / 2) * K, ly = BN.y + lw * 1.6 * (90 / 160) * K;
+    var rr = PORTRAIT ? 28 : 23;
+    pose($('repere'), lx - rr, ly - rr, Math.min(1, rep * 2), ' scale(' + rep.toFixed(3) + ')');
+    var yPt = L.yPt;
+    $('fr').setAttribute('d', 'M' + L.frX + ' ' + yPt + ' C ' + (L.frX - 40) + ' ' + yPt + ', ' + (lx + 60 * K) + ' ' + ly + ', ' + (lx + 24 * K) + ' ' + ly);
     $('fr').style.strokeDashoffset = String(1 - A(seg(t, 9.8, 10.3)));
     $('fr').style.opacity = 1 - seg(t, 11.1, 11.4);
     // Le tampon de l'équipe, sous la bannière.
     var tp = ressort(seg(t, 11.8, 12.5)) * (1 - S(seg(t, 13.0, 13.4)));
-    pose($('tampon'), BN.x + 120, BN.y + 486, Math.min(1, tp * 2), ' scale(' + tp.toFixed(3) + ')');
+    pose($('tampon'), L.tampon.x, L.tampon.y, Math.min(1, tp * 2), ' scale(' + tp.toFixed(3) + ')');
 
     // Acte 3 : le Hub s'ouvre derrière, la bannière prend sa place, les deux autres concepts sont là.
     var hIn = A(seg(t, 13.1, 14.0));
@@ -399,7 +483,7 @@ window.DUREE = 19.6;
       $(id).style.opacity = k; $(id).style.marginTop = ((1 - k) * 14) + 'px';
     });
     var to = A(seg(t, 15.2, 15.9));
-    pose($('toast'), 580 + (1 - to) * 120, 860 + bas, to * fond);
+    pose($('toast'), L.toast.x + (1 - to) * 120, L.toast.y + bas, to * fond);
   };
 
   window.PRET = Promise.all([

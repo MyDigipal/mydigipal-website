@@ -79,6 +79,52 @@ html,body{margin:0;background:#000;overflow:hidden}
 .arret b{display:block;font-size:22px;font-weight:800;letter-spacing:-.01em;color:#6f8aa5;white-space:nowrap}
 .arret span{display:block;font-family:Inter,sans-serif;font-size:17px;font-weight:600;color:#4d6a86;margin-top:2px}
 .arret.on b{color:#f4f7fa}.arret.on span{color:#7DB8EE}
+/* La frise est un exemple, pas une promesse de délai : on le dit à côté d'elle. */
+#exemple{position:absolute;left:0;top:-28px;font-family:Inter,sans-serif;font-size:17px;font-weight:600;color:#7DB8EE}
+
+/* Version verticale (?p=1, 1080 x 1350) : lisible à 390 px de large, donc aucun texte qui porte le sens
+   sous 30 px. La fenêtre du Hub se réorganise : la bannière et ses vignettes en haut, la version et les
+   boutons à droite, les commentaires sur toute la largeur en dessous. La frise passe à 32 et 30 px. */
+#stage.p{height:1350px}
+#stage.p #titre .k .ln{font-size:40px;margin-bottom:14px}
+#stage.p #titre .t .ln{font-size:72px}
+#stage.p #vue{top:304px;height:820px}
+#stage.p #monde{height:820px}
+#stage.p #hub{left:0;top:0;height:798px}
+#stage.p #hub .barre{height:58px;font-size:22px}
+#stage.p .h1{top:80px;font-size:30px}
+#stage.p .puce{font-size:30px;padding:8px 20px}
+#stage.p #statut{top:72px;right:24px}
+#stage.p #round{right:auto;left:524px;top:204px}
+#stage.p .vig{transform-origin:0 0}
+#stage.p #ban{left:150px;top:150px;transform:scale(.9);transform-origin:0 0}
+#stage.p #travail{left:150px;top:150px;width:342px;height:342px;gap:18px;z-index:4;background:rgba(11,27,43,.93)}
+#stage.p #travail b{font-size:32px}
+#stage.p #travail span{font-size:30px;line-height:1.25;padding:0 22px}
+#stage.p #travail .jauge{width:250px;height:10px}
+#stage.p #version{left:524px;top:150px;font-size:30px}
+#stage.p .pin{width:50px;height:50px;font-size:28px}
+#stage.p #panneau{left:24px;top:516px;width:952px}
+#stage.p #panneau h4{display:none}
+#stage.p .com{height:124px;margin-bottom:14px;padding:16px 20px}
+#stage.p .com .qui{font-size:30px;gap:12px}
+#stage.p .com .qui i{width:40px;height:40px;font-size:24px}
+#stage.p .com .txt{margin-top:8px;font-size:36px}
+#stage.p .com .res{right:20px;top:16px;font-size:30px;padding:4px 16px}
+#stage.p .btn{height:68px;font-size:30px}
+#stage.p #bChg{left:524px;top:346px;width:452px}
+#stage.p #bOk{left:524px;top:426px;width:452px}
+#stage.p #approuve{left:524px;top:346px;width:452px;height:148px;font-size:30px;gap:16px;text-align:left;line-height:1.3;padding:0 24px;box-sizing:border-box}
+#stage.p #approuve svg{width:30px;height:22px;flex:none}
+#stage.p #curseur{width:38px;height:50px}
+#stage.p #frise{left:40px;top:1200px;width:1000px;height:112px}
+#stage.p #frise .rail{left:76px;right:74px;top:13px}
+#stage.p #frise .plein{left:76px;top:13px;width:850px}
+#stage.p .arret{width:210px;margin-left:-105px}
+#stage.p .arret i{width:28px;height:28px;margin-bottom:10px}
+#stage.p .arret b{font-size:32px;line-height:1.15}
+#stage.p .arret span{font-size:30px;line-height:1.15;margin-top:2px}
+#stage.p #exemple{left:22px;top:-56px;font-size:30px}
 #prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
 </style>
 </head>
@@ -125,12 +171,13 @@ html,body{margin:0;background:#000;overflow:hidden}
     </div>
   </div></div>
 
-  <div id="frise"><div class="rail"></div><div class="plein" id="plein"></div></div>
+  <div id="frise"><div id="exemple"><div class="mask"><span class="ln" data-txt="ex"></span></div></div><div class="rail"></div><div class="plein" id="plein"></div></div>
 </div>
 <div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
 
 <script>
-window.STAGE = { w: 1080, h: 1080 };
+var PORTRAIT = /[?&]p=1/.test(location.search);
+window.STAGE = { w: 1080, h: PORTRAIT ? 1350 : 1080 };
 window.DUREE = 20;
 
 (function () {
@@ -143,6 +190,7 @@ window.DUREE = 20;
     h1: 'Atelier Rivière · LinkedIn banners', sous: 'Autumn collection', l1: 'Light,', l2: 'made by hand.', cta: 'Discover',
     c1: 'Bigger product?', c2: '“made by hand” in gold?',
     trav1: 'Version 2 on its way', trav2: 'Our agent applies your notes, a creative checks them',
+    ex: 'An example, over one morning',
     arrets: [['Request', '9:10'], ['V1', '10:05'], ['Your notes', '10:20'], ['V2', '11:00'], ['Approved', '11:05'], ['Live', '11:30']]
   } : {
     k0: '1 · Vous commentez', t0a: 'Un clic sur l’image,', t0b: '<span class="o">un commentaire</span>.',
@@ -151,10 +199,37 @@ window.DUREE = 20;
     h1: 'Atelier Rivière · Bannières LinkedIn', sous: 'Collection automne', l1: 'La lumière,', l2: 'faite main.', cta: 'Découvrir',
     c1: 'Le produit, plus grand ?', c2: '« faite main » en doré ?',
     trav1: 'Version 2 en cours', trav2: 'Notre agent applique vos retours, un créatif relit',
+    ex: 'Un exemple, sur une matinée',
     arrets: [['Demande', '9 h 10'], ['V1', '10 h 05'], ['Vos retours', '10 h 20'], ['V2', '11 h 00'], ['Validée', '11 h 05'], ['En ligne', '11 h 30']]
   };
   if (EN) document.documentElement.lang = 'en';
   document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+  if (PORTRAIT) document.getElementById('stage').classList.add('p');
+
+  /* La mise en page : le carré garde ses valeurs d'origine. Curseur et repères dans les coordonnées
+     de la fenêtre du Hub, caméra dans celles du monde (vc : le centre de la vue). */
+  var L = PORTRAIT ? (function () {
+    var ban = { x: 150, y: 150, s: .9 };
+    var p1 = [ban.x + 288 * ban.s, ban.y + 124 * 1.6 * .55 * ban.s], p2 = [ban.x + 241 * ban.s, ban.y + 255 * ban.s];
+    var chg = [750, 380], ok = [750, 460], repos = [980, 830], sortie = [1060, 830];
+    return {
+      hub: [40, 20], vc: [540, 410], ban: ban, pinR: 25, coche: 24,
+      vig: { s: .748, tops: [150, 268.6, 387.3] },
+      frise: { x0: 76, pas: 170 },
+      CAM: [[0, 540, 410, 1], [1.7, 540, 410, 1], [2.5, 470, 490, 1.25], [5.9, 470, 490, 1.25], [6.6, 760, 440, 1.38], [6.95, 760, 440, 1.38],
+        [7.8, 540, 410, 1], [13.7, 540, 410, 1], [14.4, 760, 500, 1.38], [15.2, 760, 500, 1.38], [16.0, 540, 410, 1]],
+      CUR: [[0, repos[0], repos[1]], [1.4, repos[0], repos[1]], [2.2, p1[0] - 8, p1[1] - 25], [3.9, p1[0] - 8, p1[1] - 25], [4.5, p2[0] - 3, p2[1] - 13], [5.9, p2[0] - 3, p2[1] - 13],
+        [6.55, chg[0], chg[1]], [7.2, chg[0], chg[1]], [7.9, sortie[0], sortie[1]], [13.6, sortie[0], sortie[1]], [14.6, ok[0], ok[1]], [15.4, ok[0], ok[1]], [16.2, sortie[0], sortie[1]]]
+    };
+  })() : {
+    hub: [40, 20], vc: [540, 330], ban: { x: 190, y: 130, s: 1 }, pinR: 19, coche: 18, vig: null,
+    frise: { x0: 12, pas: 912 / 5 },
+    CAM: [[0, 540, 330, 1], [1.7, 540, 330, 1], [2.5, 660, 310, 1.25], [5.9, 660, 310, 1.25], [6.6, 830, 560, 1.38], [6.95, 830, 560, 1.38],
+      [7.8, 540, 330, 1], [13.7, 540, 330, 1], [14.4, 830, 560, 1.38], [15.2, 830, 560, 1.38], [16.0, 540, 330, 1]],
+    CUR: [[0, 980, 640], [1.4, 980, 640], [2.2, 470, 214], [3.9, 470, 214], [4.5, 428, 372], [5.9, 428, 372], [6.55, 690, 528], [7.2, 690, 528], [7.9, 1060, 680],
+      [13.6, 1060, 680], [14.6, 884, 528], [15.4, 884, 528], [16.2, 1060, 680]]
+  };
+  if (L.vig) ['vg0', 'vg1', 'vg2'].forEach(function (id, i) { var v = document.getElementById(id); v.style.top = L.vig.tops[i] + 'px'; v.style.transform = 'scale(' + L.vig.s + ')'; });
 
   function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
   function seg(t, a, b) { return c01((t - a) / (b - a)); }
@@ -186,24 +261,22 @@ window.DUREE = 20;
   var ARR = [0.5, 0.9, 6.7, 10.6, 14.75, 16.3];
   TXT.arrets.forEach(function (a, i) {
     var d = document.createElement('div'); d.className = 'arret'; d.id = 'ar' + i;
-    d.style.left = (12 + i * 912 / 5) + 'px';
+    d.style.left = (L.frise.x0 + i * L.frise.pas) + 'px';
     d.innerHTML = '<i></i><b>' + a[0] + '</b><span>' + a[1] + '</span>';
     $('frise').appendChild(d);
   });
 
   /* La caméra : un point du monde à mettre au centre de la vue, et un zoom (1,4 au plus). */
-  var CAM = [[0, 540, 330, 1], [1.7, 540, 330, 1], [2.5, 660, 310, 1.25], [5.9, 660, 310, 1.25], [6.6, 830, 560, 1.38], [6.95, 830, 560, 1.38],
-    [7.8, 540, 330, 1], [13.7, 540, 330, 1], [14.4, 830, 560, 1.38], [15.2, 830, 560, 1.38], [16.0, 540, 330, 1]];
+  var CAM = L.CAM;
   function camera(t) {
     for (var i = CAM.length - 1; i >= 0; i--) if (t >= CAM[i][0]) break;
     var a = CAM[Math.max(0, i)], b = CAM[Math.min(CAM.length - 1, i + 1)];
     var k = a === b ? 0 : D(seg(t, a[0], b[0]));
     var px = lerp(a[1], b[1], k), py = lerp(a[2], b[2], k), s = lerp(a[3], b[3], k);
-    $('monde').style.transform = 'translate(' + (540 - px * s).toFixed(1) + 'px,' + (330 - py * s).toFixed(1) + 'px) scale(' + s.toFixed(4) + ')';
+    $('monde').style.transform = 'translate(' + (L.vc[0] - px * s).toFixed(1) + 'px,' + (L.vc[1] - py * s).toFixed(1) + 'px) scale(' + s.toFixed(4) + ')';
   }
   /* Le curseur, dans les coordonnées de la fenêtre du Hub. */
-  var CUR = [[0, 980, 640], [1.4, 980, 640], [2.2, 470, 214], [3.9, 470, 214], [4.5, 428, 372], [5.9, 428, 372], [6.55, 690, 528], [7.2, 690, 528], [7.9, 1060, 680],
-    [13.6, 1060, 680], [14.6, 884, 528], [15.4, 884, 528], [16.2, 1060, 680]];
+  var CUR = L.CUR;
   var CLICS = [2.3, 4.6, 6.7, 14.7];
   function curseur(t) {
     for (var i = CUR.length - 1; i >= 0; i--) if (t >= CUR[i][0]) break;
@@ -232,14 +305,14 @@ window.DUREE = 20;
     titres(t);
     var boucle = S(seg(t, 19.4, 20)), fond = 1 - boucle;
     var hIn = A(seg(t, 0.3, 1.1));
-    pose($('hub'), 40, 20 + (1 - hIn) * 60 + boucle * 60, hIn * fond);
+    pose($('hub'), L.hub[0], L.hub[1] + (1 - hIn) * 60 + boucle * 60, hIn * fond);
     camera(t);
     curseur(t);
 
     // La bannière : la V2 grandit la lampe et dore « faite main ».
     var v2 = A(seg(t, 10.2, 10.9));
     var lw = lerp(124, 160, v2), lx = lerp(226, 200, v2);
-    var L = $('bLampe').firstChild; L.setAttribute('width', lw); L.setAttribute('height', lw * 1.6);
+    var lp = $('bLampe').firstChild; lp.setAttribute('width', lw); lp.setAttribute('height', lw * 1.6);
     pose($('bLampe'), lx, 0, 1);
     var hr = lw * 1.25;
     $('bHalo').style.width = $('bHalo').style.height = (2 * hr) + 'px';
@@ -254,13 +327,14 @@ window.DUREE = 20;
 
     // Les deux repères et leurs commentaires.
     var resolu = seg(t, 10.9, 11.1);
-    [[2.3, 190 + lx + lw / 2 - 19, 130 + lw * 1.6 * .55 - 19, 'tx1', TXT.c1, 2.6, 3.7, 'com1', 'res1', 'pin1', 11.2],
-     [4.6, 190 + 222, 130 + 236, 'tx2', TXT.c2, 4.9, 5.9, 'com2', 'res2', 'pin2', 11.45]].forEach(function (c) {
+    var bn = L.ban, R = L.pinR;
+    [[2.3, bn.x + (lx + lw / 2) * bn.s - R, bn.y + lw * 1.6 * .55 * bn.s - R, 'tx1', TXT.c1, 2.6, 3.7, 'com1', 'res1', 'pin1', 11.2],
+     [4.6, bn.x + 241 * bn.s - R, bn.y + 255 * bn.s - R, 'tx2', TXT.c2, 4.9, 5.9, 'com2', 'res2', 'pin2', 11.45]].forEach(function (c) {
       var pin = ressort(seg(t, c[0], c[0] + .6));
       pose($(c[9]), c[1], c[2], Math.min(1, pin * 2) * (1 - seg(t, 13.0, 13.4)), ' scale(' + pin.toFixed(3) + ')');
       $(c[9]).classList.toggle('ok', t > c[10]);
       $(c[9]).textContent = t > c[10] ? '' : c[9].slice(-1);
-      if (t > c[10]) $(c[9]).innerHTML = '<svg width="18" height="14" viewBox="0 0 16 12"><path d="M1.5 6.5l4 4 9-9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      if (t > c[10]) $(c[9]).innerHTML = '<svg width="' + L.coche + '" height="' + (L.coche * 14 / 18) + '" viewBox="0 0 16 12"><path d="M1.5 6.5l4 4 9-9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
       var ci = A(seg(t, c[0] + .15, c[0] + .55));
       $(c[7]).style.opacity = ci; $(c[7]).style.transform = 'translateY(' + ((1 - ci) * 12) + 'px)';
       ecrire($(c[3]), c[4], c[5], c[6], t);
@@ -279,7 +353,7 @@ window.DUREE = 20;
     var ap = A(seg(t, 14.8, 15.3));
     $('bChg').style.opacity = 1 - ap; $('bOk').style.opacity = 1 - ap;
     $('approuve').style.opacity = ap; $('approuve').style.transform = 'translateY(' + ((1 - ap) * 10) + 'px)';
-    $('approuveTx').textContent = t > 16.3 ? 'Approved · Live on LinkedIn' : 'Approved';
+    $('approuveTx').innerHTML = t > 16.3 ? (PORTRAIT ? 'Approved<br>Live on LinkedIn' : 'Approved · Live on LinkedIn') : 'Approved';
 
     // La frise.
     var dernier = 0; ARR.forEach(function (a, i) { if (t >= a) dernier = i; $('ar' + i).classList.toggle('on', t >= a); });
@@ -287,6 +361,8 @@ window.DUREE = 20;
     for (var i = 0; i < 5; i++) { if (t >= ARR[i] && t < ARR[i + 1]) avance = (i + A(seg(t, ARR[i + 1] - .6, ARR[i + 1]))) / 5; }
     $('plein').style.transform = 'scaleX(' + avance.toFixed(4) + ')';
     $('frise').style.opacity = A(seg(t, 0.4, 1.0)) * fond;
+    // L'étiquette « exemple » monte avec la frise et reste jusqu'à la fin.
+    $('exemple').querySelector('.ln').style.transform = 'translateY(' + ((1 - A(seg(t, 0.6, 1.5))) * 140).toFixed(2) + '%)';
   };
 
   window.PRET = Promise.all([

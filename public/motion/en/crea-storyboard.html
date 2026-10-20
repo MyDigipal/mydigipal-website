@@ -55,6 +55,29 @@ html,body{margin:0;background:#000;overflow:hidden}
 #tete{position:absolute;top:-14px;width:4px;height:170px;border-radius:4px;background:#e8bd62;z-index:5}
 #tete:before{content:'';position:absolute;left:-8px;top:-6px;width:20px;height:14px;border-radius:4px;background:#e8bd62}
 .vlab{position:absolute;top:154px;font-family:Inter,sans-serif;font-size:18px;font-weight:600;color:#a9b8c8;white-space:nowrap}
+
+/* Vertical 1080 x 1350 (?p=1), pour le téléphone : la scène y est affichée à 36 %, donc aucun texte
+   sous 30 px. La planche passe en trois rangées (le dessin à gauche, le texte à droite), le lecteur
+   et la pellicule prennent toute la largeur (échelle 1,2, leurs textes relevés d'autant). */
+#stage.p{height:1350px}
+#stage.p #titre .k .ln{font-size:40px;margin-bottom:14px}
+#stage.p #titre .t .ln{font-size:72px}
+#stage.p #planche{height:930px}
+#stage.p #planche .tete{top:36px;font-size:30px}
+#stage.p #valide,#stage.p #pdf{top:26px;padding:12px 24px;font-size:30px}
+#stage.p #pdf{gap:12px}
+#stage.p #pdf svg{width:28px;height:28px}
+#stage.p .case{width:880px;padding-left:430px;box-sizing:border-box;min-height:225px}
+#stage.p .case .cadre{position:absolute;left:0;top:0;transform:scale(1.4706);transform-origin:0 0}
+#stage.p .case .num{margin-top:4px;font-size:40px}
+#stage.p .case .num span{font-size:30px;margin-left:12px}
+#stage.p .case .txt{margin-top:10px;font-size:31px;line-height:1.32}
+#stage.p .case .ecran{margin-top:14px;font-size:30px;padding:10px 16px;line-height:1.3}
+#stage.p #lecteur,#stage.p #pellicule{transform-origin:0 0}
+#stage.p #vLogo{font-size:25px}
+#stage.p #vTemps{font-size:25px}
+#stage.p #vCta{font-size:25px;padding:15px 30px}
+#stage.p .vlab{font-size:25px;top:156px}
 #prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
 </style>
 </head>
@@ -86,7 +109,8 @@ html,body{margin:0;background:#000;overflow:hidden}
 <div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
 
 <script>
-window.STAGE = { w: 1080, h: 1080 };
+var PORTRAIT = /[?&]p=1/.test(location.search);
+window.STAGE = { w: 1080, h: PORTRAIT ? 1350 : 1080 };
 window.DUREE = 18;
 
 (function () {
@@ -96,7 +120,7 @@ window.DUREE = 18;
     k0: '1 · The storyboard', t0a: 'Three scenes,', t0b: '<span class="o">agreed before we produce</span>.',
     k1: '2 · The motion design', t1a: 'Every frame', t1b: '<span class="o">becomes a shot</span>.',
     k2: '3 · Or the storyboard alone', t2a: 'For your own team,', t2b: '<span class="o">ready to produce</span>.',
-    tete: 'Atelier Rivière · 15-second video · storyboard', valide: 'Approved', pdf: 'Storyboard, PDF',
+    tete: 'Atelier Rivière · 15-second video · storyboard', teteP: 'Atelier Rivière · 15-second video', valide: 'Approved', pdf: 'Storyboard, PDF',
     c: [['Scene 1', '0 to 4 s', 'A dark room. The lamp comes down on its cord.', ''],
         ['Scene 2', '4 to 9 s', 'The light comes on and fills the frame.', ''],
         ['Scene 3', '9 to 15 s', 'The message, then the button.', 'On screen: “Light, made by hand.”']],
@@ -105,7 +129,7 @@ window.DUREE = 18;
     k0: '1 · Le storyboard', t0a: 'Trois scènes,', t0b: '<span class="o">validées avant de produire</span>.',
     k1: '2 · Le motion design', t1a: 'Chaque case', t1b: '<span class="o">devient un plan</span>.',
     k2: '3 · Ou le storyboard seul', t2a: 'Pour votre équipe,', t2b: '<span class="o">prêt à produire</span>.',
-    tete: 'Atelier Rivière · vidéo de 15 s · storyboard', valide: 'Validé', pdf: 'Storyboard, PDF',
+    tete: 'Atelier Rivière · vidéo de 15 s · storyboard', teteP: 'Atelier Rivière · vidéo de 15 s', valide: 'Validé', pdf: 'Storyboard, PDF',
     c: [['Scène 1', '0 à 4 s', 'Une pièce sombre. La lampe descend de son cordon.', ''],
         ['Scène 2', '4 à 9 s', 'La lumière s’allume et remplit l’image.', ''],
         ['Scène 3', '9 à 15 s', 'Le message, puis le bouton.', 'À l’écran : « La lumière, faite main. »']],
@@ -114,6 +138,22 @@ window.DUREE = 18;
   if (EN) document.documentElement.lang = 'en';
   document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
   document.getElementById('vl1').textContent = TXT.l1; document.getElementById('vl2').textContent = TXT.l2; document.getElementById('vCta').textContent = TXT.cta;
+  // En vertical, l'en-tête de la planche perd « storyboard » pour laisser la place à la pastille.
+  if (PORTRAIT) { document.getElementById('stage').classList.add('p'); document.querySelector('#planche .tete').textContent = TXT.teteP; }
+
+  /* Les places : le carré garde exactement ses valeurs d'origine. */
+  var L = PORTRAIT ? {
+    planche: { x: 60, y: 350, sortie: 1100 }, cases: [{ x: 40, y: 108 }, { x: 40, y: 368 }, { x: 40, y: 628 }],
+    lecteur: { x: 60, y: 350, s: 1.2, sortie: 1000 }, pellicule: { x: 60, y: 975 }, temps: { x: 632, y: 398 },
+    // En vertical, la planche passe là où se posent le lecteur et la pellicule : elle part plus tôt
+    // et revient plus tard, pour que les deux ne se croisent jamais.
+    pOut: [6.1, 6.8], lIn: [6.85, 7.65], pRet: [13.05, 13.9]
+  } : {
+    planche: { x: 60, y: 330, sortie: 900 }, cases: [{ x: 40 }, { x: 344 }, { x: 648 }],
+    lecteur: { x: 140, y: 296, s: 1, sortie: 900 }, pellicule: { x: 140, y: 790 }, temps: { x: 690, y: 410 },
+    pOut: [6.3, 7.1], lIn: [6.7, 7.5], pRet: [12.9, 13.8]
+  };
+  var ECH = L.lecteur.s === 1 ? '' : ' scale(' + L.lecteur.s + ')';
 
   function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
   function seg(t, a, b) { return c01((t - a) / (b - a)); }
@@ -142,7 +182,7 @@ window.DUREE = 18;
   ];
   var planche = $('planche'), CASES = [];
   TXT.c.forEach(function (c, i) {
-    var d = document.createElement('div'); d.className = 'case'; d.style.left = (40 + i * 304) + 'px';
+    var d = document.createElement('div'); d.className = 'case'; d.style.left = L.cases[i].x + 'px'; if (L.cases[i].y !== undefined) d.style.top = L.cases[i].y + 'px';
     d.innerHTML = '<div class="cadre"><div class="abs couleur" style="inset:0;width:272px;height:153px"></div><svg class="trait" viewBox="0 0 272 153">' + TRAITS[i] + '</svg></div>' +
       '<div class="num">' + c[0] + '<span>' + c[1] + '</span></div><div class="txt">' + c[2] + '</div>' + (c[3] ? '<div class="ecran">' + c[3] + '</div>' : '');
     planche.appendChild(d); CASES.push(d);
@@ -195,9 +235,9 @@ window.DUREE = 18;
 
     // La planche : elle entre, ses cases se dessinent, elle est validée ; elle sort par le bas
     // pendant le motion design, puis revient seule à l'acte 3.
-    var pIn = A(seg(t, 0.4, 1.2)), pOut = S(seg(t, 6.3, 7.1)), pRet = A(seg(t, 12.9, 13.8));
-    var py = 330 + (1 - pIn) * 60 + pOut * 900 - pRet * 900 * (pOut > 0 ? 1 : 0);
-    pose(planche, 60, py + bas, (pIn * (1 - pOut) + pRet) * fond);
+    var pIn = A(seg(t, 0.4, 1.2)), pOut = S(seg(t, L.pOut[0], L.pOut[1])), pRet = A(seg(t, L.pRet[0], L.pRet[1]));
+    var py = L.planche.y + (1 - pIn) * 60 + pOut * L.planche.sortie - pRet * L.planche.sortie * (pOut > 0 ? 1 : 0);
+    pose(planche, L.planche.x, py + bas, (pIn * (1 - pOut) + pRet) * fond);
     CASES.forEach(function (c, i) {
       var k = A(seg(t, 0.9 + i * 0.3, 1.5 + i * 0.3));
       c.style.opacity = k;
@@ -213,18 +253,18 @@ window.DUREE = 18;
     $('pdf').style.opacity = Math.min(1, pd * 2); $('pdf').style.transform = 'scale(' + pd.toFixed(3) + ')';
 
     // Le lecteur et la pellicule.
-    var lIn = A(seg(t, 6.7, 7.5)), lOut = S(seg(t, 12.5, 13.1));
-    pose($('lecteur'), 140, 296 - lOut * 900 + (1 - lIn) * 40, lIn);
-    pose($('pellicule'), 140, 790 + (1 - lIn) * 120 + lOut * 400, lIn * (1 - lOut));
+    var lIn = A(seg(t, L.lIn[0], L.lIn[1])), lOut = S(seg(t, 12.5, 13.1));
+    pose($('lecteur'), L.lecteur.x, L.lecteur.y - lOut * L.lecteur.sortie + (1 - lIn) * 40, lIn, ECH);
+    pose($('pellicule'), L.pellicule.x, L.pellicule.y + (1 - lIn) * 120 + lOut * 400, lIn * (1 - lOut), ECH);
     VIGS.forEach(function (g, i) { g.style.opacity = A(seg(t, 6.9 + i * 0.15, 7.4 + i * 0.15)); });
     // La tête de lecture traverse les trois plans ; le lecteur joue le plan sous elle.
     var lect = seg(t, 7.5, 12.3), vt = lect * 15;
     $('tete').style.left = (lect * 800 - 2) + 'px';
     var p = plan(vt, 800);
-    var L = $('vLampe');
-    L.innerHTML = lampe(p.lw, null, -900).replace('fill="#d8cfc0"', 'fill="' + (p.lum > .5 ? '#ffe3a6' : '#d8cfc0') + '"');
-    L.style.transformOrigin = (p.lw / 2) + 'px 0';
-    L.style.transform = 'translate(' + p.lx + 'px,' + p.ly + 'px) rotate(' + p.bal.toFixed(2) + 'deg)';
+    var VL = $('vLampe');
+    VL.innerHTML = lampe(p.lw, null, -900).replace('fill="#d8cfc0"', 'fill="' + (p.lum > .5 ? '#ffe3a6' : '#d8cfc0') + '"');
+    VL.style.transformOrigin = (p.lw / 2) + 'px 0';
+    VL.style.transform ='translate(' + p.lx + 'px,' + p.ly + 'px) rotate(' + p.bal.toFixed(2) + 'deg)';
     var hr = p.lw * 1.3;
     $('vHalo').style.width = $('vHalo').style.height = (2 * hr) + 'px';
     pose($('vHalo'), p.lx + p.lw / 2 - hr, p.ly + p.lw * 1.1 - hr, p.glow);
@@ -233,7 +273,7 @@ window.DUREE = 18;
     pose($('vCta'), 44, 352 + (1 - p.cta) * 16, p.cta);
     pose($('vLogo'), 44, 36, 0.9);
     $('vTemps').textContent = '0:' + String(Math.floor(vt)).padStart(2, '0') + ' / 0:15';
-    pose($('vTemps'), 690, 410, 1);
+    pose($('vTemps'), L.temps.x, L.temps.y, 1);
   };
 
   window.PRET = Promise.all([document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"')]);
