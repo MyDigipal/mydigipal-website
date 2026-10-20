@@ -36,25 +36,34 @@ const content = {
 const t = { ...content[lang], ...(title ? { title } : {}), ...(subtitle ? { subtitle } : {}) };
 ---
 
-<!-- La fin de page commune, direction Encre (30/09/2026) : un panneau de bleu plein
-     posé sur la brume. Le bleu du logo y apparaît une fois en surface, et la bande
-     de brume dessous sépare l'appel de l'encre du pied de page. Les deux mêmes portes
-     que partout sur le site. -->
+<!-- La fin de page commune. Jusqu'au 20/10/2026, un panneau de bleu plein ; Paul l'a
+     trouvé « dégueulasse ». Elle reprend maintenant la porte « Nous contacter » de
+     l'accueil, qu'il a validée : une carte blanche sur la brume, le visage de celui qui
+     répond, le titre de la page, et les deux mêmes portes que partout sur le site. Le bleu
+     ne reste qu'au bouton principal. La bande de brume sépare l'appel de l'encre du pied
+     de page. -->
 <section class="final-cta section-brume py-16 lg:py-24">
   <div class="container-custom">
-    <div class="final-cta-panneau grid justify-items-start gap-5 lg:gap-6">
-      <h2 class="titre-moyen text-white lg:max-w-[16ch]">
-        {t.title}
-      </h2>
-      <p class="chapo final-cta-texte max-w-[52ch]">
-        {t.subtitle}
-      </p>
-      <div class="pilules mt-3">
-        <a href={lienBudget || `/${lang}/calculator`} class="pilule pilule-blanche">
+    <div class="fin-carte">
+      <img
+        class="fin-photo"
+        src="/images/team/visages/paul-andre.avif"
+        alt="Paul André"
+        width="320"
+        height="400"
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="fin-texte">
+        <h2 class="titre-moyen fin-titre">{t.title}</h2>
+        <p class="fin-chapo">{t.subtitle}</p>
+      </div>
+      <div class="pilules fin-portes">
+        <a href={lienBudget || `/${lang}/calculator`} class="pilule pilule-pleine">
           {t.primaryButton}
           <Icon name="arrow-right" size={18} class="pilule-fleche" />
         </a>
-        <a href={`/${lang}/contact`} class="pilule pilule-claire">
+        <a href={`/${lang}/contact`} class="pilule pilule-contour">
           {t.secondaryButton}
         </a>
       </div>
@@ -63,32 +72,67 @@ const t = { ...content[lang], ...(title ? { title } : {}), ...(subtitle ? { subt
 </section>
 
 <style>
-  .final-cta-panneau {
+  /* Sur téléphone, la carte prend toute la largeur de l'écran (les deux pilules doivent
+     tenir côte à côte jusqu'à 360 px) ; la photo et le titre partagent la première ligne,
+     le texte et les portes passent dessous sur toute la largeur. */
+  .fin-carte {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 1.25rem 1rem;
     margin-inline: -1rem;
-    padding: 56px 1rem;
-    border-radius: 28px;
-    color: #fff;
-    background:
-      radial-gradient(60% 80% at 100% 0%, rgb(125 184 238 / 0.24), transparent 62%),
-      var(--color-marque);
-    box-shadow: 0 32px 64px -28px rgb(21 90 147 / 0.60);
+    padding: 1.75rem 1rem;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 1px 0 rgb(15 23 42 / 0.04), 0 24px 48px -32px rgb(15 23 42 / 0.25);
   }
-  .final-cta-panneau :focus-visible {
-    outline-color: #fff;
+  .fin-photo {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 12px;
   }
-  .final-cta-texte {
-    color: rgb(255 255 255 / 0.92);
+  .fin-texte {
+    display: contents;
+  }
+  .fin-titre {
+    margin: 0;
+  }
+  .fin-chapo {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #4B5B6B;
+    max-width: 52ch;
+  }
+  .fin-portes {
+    grid-column: 1 / -1;
   }
   @media (min-width: 640px) {
-    .final-cta-panneau {
+    .fin-carte {
       margin-inline: 0;
-      padding: 64px 48px;
-      border-radius: var(--rayon-scene);
+      padding: 2.25rem;
+      gap: 1.5rem;
     }
   }
   @media (min-width: 1024px) {
-    .final-cta-panneau {
-      padding: 96px 88px;
+    .fin-carte {
+      grid-template-columns: 7rem minmax(0, 1fr) auto;
+      gap: 2.5rem;
+      padding: 2.75rem 3rem;
+    }
+    .fin-texte {
+      display: grid;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+    .fin-chapo {
+      grid-column: auto;
+    }
+    .fin-portes {
+      grid-column: auto;
     }
   }
 </style>

@@ -61,6 +61,10 @@ export const GET: APIRoute = async () => {
           const slug = s.id.replace('en/', '');
           return `- [${s.data.title}](${site}/en/services/${slug}) : ${resume(s.data.description)}`;
         })
+        .concat(
+          // Route statique sans fiche MDX (20/10/2026).
+          `- [Creative design](${site}/en/services/creative-design) : ad banners (LinkedIn, Google, Display), document ads and 15 to 30-second videos, produced with AI and checked by our creatives.`,
+        )
         .sort();
       blocs.push(`## Services\n\n${lignes.join('\n')}`);
     }

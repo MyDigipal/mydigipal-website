@@ -78,6 +78,13 @@ const agence: Service[] = fr
         preuve: cas('symbl-ai'),
       },
       {
+        id: 'creative-design',
+        nom: 'Creative design',
+        court: 'Bannières et vidéos publicitaires : beaucoup de créas, vite, et bien faites.',
+        texte: 'Nos outils d’IA produisent une première version dans votre charte, nos créatifs la relisent et la corrigent, puis vous la commentez dans votre Hub. Quatre tours de retours sont compris.',
+        compris: ['Jeux de bannières LinkedIn, Google et Display', 'Document ads LinkedIn', 'Vidéos de 15 à 30 secondes', 'Déclinaisons dans d’autres langues', 'Quatre tours de retours par création'],
+      },
+      {
         id: 'automotive',
         nom: 'Automobile',
         court: 'Des campagnes pour les concessions et les groupes : Google Ads, réseaux sociaux et votre stock de véhicules en publicité.',
@@ -125,6 +132,13 @@ const agence: Service[] = fr
         texte: 'On LinkedIn, targeting by company, job title and industry; on Meta, vehicle and product catalogues. We can create the visuals too.',
         compris: ['LinkedIn Ads: account targeting, lead gen forms', 'Meta: Facebook and Instagram', 'TikTok Ads and YouTube', 'Visual creation as an option', 'Media spend is paid directly to the platforms'],
         preuve: cas('symbl-ai'),
+      },
+      {
+        id: 'creative-design',
+        nom: 'Creative design',
+        court: 'Ad banners and videos: lots of creatives, fast, and well made.',
+        texte: 'Our AI tools produce a first version on brand, our creatives check and fix it, then you comment on it in your Hub. Four rounds of feedback are included.',
+        compris: ['LinkedIn, Google and Display banner sets', 'LinkedIn document ads', '15 to 30-second videos', 'Versions in other languages', 'Four rounds of feedback per creative'],
       },
       {
         id: 'automotive',
@@ -200,7 +214,7 @@ const ia: Service[] = fr
     ];
 
 // Le lien de chaque service, et ceux que le calculateur chiffre.
-const CALCULATEUR = new Set(['seo', 'google-ads', 'paid-social', 'tracking-reporting', 'ai-training', 'ai-solutions']);
+const CALCULATEUR = new Set(['seo', 'google-ads', 'paid-social', 'creative-design', 'tracking-reporting', 'ai-training', 'ai-solutions']);
 const LIENS: Record<string, string> = { academy: `/${lang}/academy`, automotive: `/${lang}/automotive` };
 for (const s of [...agence, ...ia]) {
   s.lien = LIENS[s.id] ?? `/${lang}/services/${s.id}`;

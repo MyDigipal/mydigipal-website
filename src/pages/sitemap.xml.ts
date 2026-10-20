@@ -90,6 +90,8 @@ export const GET: APIRoute = async () => {
 
   // Services index
   addBilingualPage('/services', 0.9, 'weekly');
+  // Creative design (20/10/2026) : route statique, sans fiche dans la collection des services.
+  addBilingualPage('/services/creative-design', 0.8, 'monthly');
 
   // AI Services hub
   addBilingualPage('/ai', 0.9, 'weekly');
