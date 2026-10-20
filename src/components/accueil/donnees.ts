@@ -274,6 +274,9 @@ export function lignePrix(d: ServiceDomain, lang: Lang): LignePrix {
     if (d === 'ai-training') {
       return { principal: fr ? `${montant(p.once, lang)} la séance de 3 h` : `${montant(p.once, lang)} per 3-hour session` };
     }
+    if (d === 'creative-design') {
+      return { principal: fr ? `dès ${montant(p.once, lang)} le jeu de bannières` : `from ${montant(p.once, lang)} per banner set` };
+    }
     return { principal: fr ? `dès ${montant(p.once, lang)}` : `from ${montant(p.once, lang)}` };
   }
   return { principal: fr ? 'selon vos outils' : 'depends on your stack' };

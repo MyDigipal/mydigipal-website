@@ -18,23 +18,20 @@ import type { Currency, ServiceDomain } from '../calculator/types';
 import { CURRENCY_CONFIGS, DURATION_CONFIG } from '../calculator/data';
 import type { ContactType } from '../calculator/data/emailing-services';
 import { guidedQuestions } from '../calculator/guided-data';
-import { track, trackBudget, trackChannel, trackDomain, trackService, trackStep, trackAbandon } from '../calculator/tracking';
-import { metaIds, provenance } from '../academy/track';
+import { fixerOrigineMesure, track, trackBudget, trackChannel, trackDomain, trackService, trackStep, trackAbandon } from '../calculator/tracking';
 import {
-  AI_CUSTOM_FIELDS, BUDGET_STEPS, CONTACT_VOLUMES, DEFAULT_BUDGET, DEFAULT_CONTACT_VOLUME, DOMAIN_ORDER, QUESTION_INDEX,
-  buildPayload, channelsOf, decodePlan, devis, domainDesc, domainName, emptyState, guidedProposal, inOrder, money, optionsFor, perLabel,
-  questionsFor, sequence, t, unitContactPrice, visibleQuestions,
-  type Contact, type DomainQuote, type Lang, type Question, type QuoteState
+  AI_CUSTOM_FIELDS, BUDGET_STEPS, CONTACT_VOLUMES, DEFAULT_BUDGET, DEFAULT_CONTACT_VOLUME, DOMAIN_ORDER, QUESTION_INDEX, DEFAUTS,
+  affiche, channelsOf, decodePlan, devis, devisePlan, domainDesc, domainName, emptyState, guidedProposal, inOrder, money, optionsFor, perLabel,
+  questionsFor, reponse, sequence, t, unitContactPrice, visibleQuestions,
+  type Answers, type Champ, type Contact, type DomainQuote, type Lang, type Option, type Origine, type Question, type QuoteState
 } from './engine';
+import { avecServices, ecouterPanier, ecrirePanier, lirePanier, viderPanier } from '@/lib/devis/panier';
+import { envoyerDevis } from '@/lib/devis/envoi';
 import { info, restKey, termsFor, type Info } from './content';
 import { VIDEOS } from './videos';
 
-// Depuis le 23/09/2026, la demande de devis ne passe plus par n8n : notre serveur
-// (l'application Academy, qui porte déjà le chat du site) enregistre le devis dans le
-// CRM, envoie les deux courriels et annonce le lead dans Google Chat. L'ancien webhook
-// `https://n8n.mydigipal.com/webhook/calculateur-marketing` reste en place, inutilisé,
-// le temps de vérifier que rien ne manque.
-const WEBHOOK = 'https://academy.mydigipal.com/api/site/devis';
+// L'envoi passe par `lib/devis/envoi.ts`, le même pour tous les devis du site (20/10/2026) :
+// la route `/api/site/devis` de l'application Academy (CRM, deux courriels, bulle Chat).
 const AUTO_ADVANCE_MS = 280;
 
 interface Props {
@@ -43,6 +40,16 @@ interface Props {
   showEmptyVideoSlots?: boolean;
   /** Page de test : n'envoie rien, montre le contenu de l'envoi dans la console. */
   dryRun?: boolean;
+  /**
+   * L'extrait du calculateur sur une page de service (20/10/2026) : le parcours commence par
+   * les questions de ces services, propose ensuite d'en ajouter d'autres, et rejoint le même
+   * devis que le calculateur (le panier de `lib/devis/panier.ts`).
+   */
+  focus?: ServiceDomain[];
+  /** Des réponses posées d'avance par la page (Dynamic Ads : le réseau Meta). */
+  preset?: Answers;
+  /** D'où vient le devis : le mail de Paul, la bulle Chat et GA4 le reçoivent. */
+  origine?: Origine;
 }
 
 const L = (lang: Lang, fr: string, en: string) => (lang === 'fr' ? fr : en);
@@ -201,9 +208,18 @@ const GUIDED_TITLES: Record<string, { fr: string; en: string; subFr: string; sub
   monthlyBudget: { fr: 'Votre budget mensuel, média compris ?', en: 'Your monthly budget, media included?', subFr: 'À la louche. Tout reste modifiable ensuite.', subEn: 'Roughly. Everything can be adjusted afterwards.' }
 };
 
-export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun = false }: Props) {
+export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun = false, focus, preset, origine }: Props) {
   const tracking = !dryRun;
-  const [st, setSt] = useState<QuoteState>(emptyState);
+  const extrait = !!focus?.length;
+  const moi = useId();
+  const origineDevis: Origine = origine ?? { id: 'calculator', libelle: lang === 'fr' ? 'le calculateur' : 'the calculator' };
+  // Sur une page de service, le devis s'ouvre sur ce service ; au navigateur, il reprend le
+  // panier du visiteur (le même devis d'une page à l'autre).
+  const [st, setSt] = useState<QuoteState>(() => (extrait ? { ...emptyState(), domains: inOrder(focus!), answers: { ...(preset ?? {}) } } : emptyState()));
+  // Le devis n'entre dans le panier qu'au premier geste du visiteur : lire une page ne doit pas
+  // y ajouter son service.
+  const touche = useRef(false);
+  const pret = useRef(false);
   const [i, setI] = useState(0);
   const [draft, setDraft] = useState<ServiceDomain[]>([]);
   const [currency, setCurrency] = useState<Currency>(lang === 'en' ? 'USD' : 'EUR');
@@ -218,33 +234,43 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   const [honeypot, setHoneypot] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [formError, setFormError] = useState('');
+  const [essai, setEssai] = useState(false);
   const mountedAt = useRef(Date.now());
   const rootRef = useRef<HTMLDivElement>(null);
   const advanceTimer = useRef<number | null>(null);
   const hideTimer = useRef<number | null>(null);
 
-  const seq = useMemo(() => sequence(st), [st]);
+  const seq = useMemo(() => sequence(st, focus), [st, focus]);
   const cur = guided ? `g-${guided.step}` : seq[Math.min(i, seq.length - 1)];
-  const quote = useMemo(() => devis(st), [st]);
+  // Tous les montants du devis sont dans la devise choisie (prix fixés de la formation et de la
+  // créa, grilles en euros converties) : on les affiche avec `fmt`, sans conversion.
+  const quote = useMemo(() => devis(st, currency), [st, currency]);
   const onRecap = !guided && seq[Math.min(i, seq.length - 1)] === 'recap';
   useEffect(() => {
     const w = window as unknown as { __mdpDevis?: string | null };
     const e = (v: number) => money(v, 'EUR', 'fr');
-    const resume = onRecap && quote.domains.length
-      ? `${quote.domains.map((d) => domainName(d.domain, 'fr')).join(', ')} : ${e(quote.monthly)}/mois${quote.oneOff ? ` + ${e(quote.oneOff)} de mise en place` : ''}${quote.media ? ` + ${e(quote.media)} de média par mois` : ''}, ${st.duration} mois`
+    const qe = devis(st, 'EUR');
+    const resume = onRecap && qe.domains.length
+      ? `${qe.domains.map((d) => domainName(d.domain, 'fr')).join(', ')} : ${e(qe.monthly)}/mois${qe.oneOff ? ` + ${e(qe.oneOff)} de mise en place` : ''}${qe.media ? ` + ${e(qe.media)} de média par mois` : ''}, ${st.duration} mois`
       : null;
     if (w.__mdpDevis === resume) return;
     w.__mdpDevis = resume;
     window.dispatchEvent(new CustomEvent('mdp-assistant:devis', { detail: { resume } }));
   }, [onRecap, quote, st.duration]);
-  const fmt = useCallback((eur: number) => money(eur, currency, lang), [currency, lang]);
+  /** Un montant du devis, déjà dans la devise. */
+  const fmt = useCallback((v: number) => affiche(v, currency, lang), [currency, lang]);
+  /** Un prix des grilles en euros (options, budget média), converti. */
+  const fmtG = useCallback((eur: number) => money(eur, currency, lang), [currency, lang]);
   // Composant stable (mémorisé) : sans ça, chaque rendu du bloc refermerait la bulle ouverte.
   const H = useMemo(() => function HintBound({ k, children, className, tone }: { k?: string; children: React.ReactNode; className?: string; tone?: 'light' | 'dark' }) {
     return <Hint k={k} lang={lang} currency={currency} className={className} tone={tone}>{children}</Hint>;
   }, [lang, currency]);
 
   // --- suivi du funnel (mêmes events qu'avant : la version 75 du conteneur GTM reste valable)
-  useEffect(() => { if (tracking) trackStep('landed', { calculator_version: 'v6' }); }, [tracking]);
+  useEffect(() => {
+    fixerOrigineMesure(origineDevis.id);
+    if (tracking) trackStep('landed', { calculator_version: 'v6' });
+  }, [tracking]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!tracking || guided) return;
     if (cur === 'recap') trackStep('lead_form', { calculator_cta_source: proposalBudget ? 'v6_guided' : 'v6_recap', calculator_total: quote.totalFees, currency });
@@ -281,12 +307,12 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   const scheduleNext = useCallback((fromStep: string) => {
     if (advanceTimer.current) window.clearTimeout(advanceTimer.current);
     advanceTimer.current = window.setTimeout(() => {
-      const sq = sequence(stRef.current);
+      const sq = sequence(stRef.current, focus);
       const k = sq.indexOf(fromStep);
       setI(k >= 0 ? Math.min(k + 1, sq.length - 1) : sq.length - 1);
       setHoverKey(null);
     }, AUTO_ADVANCE_MS);
-  }, []);
+  }, [focus]);
 
   // --- actions ----------------------------------------------------------------------------
   const togglePick = (d: ServiceDomain) => {
@@ -298,12 +324,14 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     });
   };
   const startFromPick = () => {
+    touche.current = true;
     const domains = inOrder(draft);
     setSt((s) => ({ ...s, domains, discuss: Object.fromEntries(Object.entries(s.discuss).filter(([d]) => domains.includes(d as ServiceDomain))) }));
     setProposalBudget(null);
     go(1);
   };
   const setAnswer = (q: Question, value: string | number | null) => {
+    touche.current = true;
     setSt((s) => ({ ...s, answers: { ...s.answers, [q.id]: value }, discuss: { ...s.discuss, [q.domain]: false } }));
     if (tracking && q.kind === 'level' && q.service) {
       const opt = optionsFor(q, st.answers).find((o) => o.value === value);
@@ -312,8 +340,12 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     // Pas d'avance automatique (retours d'Alexandre et de Jordan, 22/09) : on laisse comparer
     // les prix, et le même bouton fait avancer à toutes les questions.
   };
-  const setRaw = (id: string, value: number | Record<string, string>) => setSt((s) => ({ ...s, answers: { ...s.answers, [id]: value } }));
+  const setRaw = (id: string, value: number | string | Record<string, string>) => {
+    touche.current = true;
+    setSt((s) => ({ ...s, answers: { ...s.answers, [id]: value } }));
+  };
   const toggleMulti = (q: Question, value: string) => {
+    touche.current = true;
     setSt((s) => {
       const arr = Array.isArray(s.answers[q.id]) ? [...(s.answers[q.id] as string[])] : [];
       const k = arr.indexOf(value);
@@ -323,18 +355,37 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     });
   };
   const skipDomain = (d: ServiceDomain) => {
-    const after = st.domains.slice(st.domains.indexOf(d) + 1).find((x) => !st.discuss[x]);
+    touche.current = true;
     const next: QuoteState = { ...st, discuss: { ...st.discuss, [d]: true } };
     setSt(next);
-    const sq = sequence(next);
-    go(after ? sq.indexOf(questionsFor(after)[0].id) : sq.indexOf('duration'));
+    // L'écran qui suivait les questions de ce service dans le parcours d'avant.
+    const sq = sequence(next, focus);
+    const avant = seq.slice(i + 1).find((x) => sq.includes(x) && !(QUESTION_INDEX[x]?.domain === d));
+    go(avant ? sq.indexOf(avant) : sq.indexOf('recap'));
   };
   const editDomain = (d: ServiceDomain) => {
+    touche.current = true;
     const next: QuoteState = { ...st, discuss: { ...st.discuss, [d]: false } };
     setSt(next);
-    go(sequence(next).indexOf(questionsFor(d)[0].id));
+    go(sequence(next, focus).indexOf(questionsFor(d)[0].id));
+  };
+  /** « Ajouter un service » : le choix des services du calculateur, ou l'écran d'ajout d'un extrait. */
+  const ajouterService = () => {
+    if (extrait) { go(sequence(st, focus).indexOf('ajout')); return; }
+    setDraft(st.domains);
+    go(0);
+  };
+  /** Sur l'écran d'ajout d'un extrait : ajoute ou retire un service du devis, sans quitter la page. */
+  const basculerService = (d: ServiceDomain) => {
+    touche.current = true;
+    setSt((s) => {
+      const on = s.domains.includes(d);
+      if (tracking) trackDomain(d, !on, s.domains.length + (on ? -1 : 1));
+      return on ? { ...s, domains: s.domains.filter((x) => x !== d) } : avecServices(s, [d]);
+    });
   };
   const setDuration = (m: number, advance: boolean) => {
+    touche.current = true;
     setSt((s) => ({ ...s, duration: m }));
     if (advance) scheduleNext('duration');
   };
@@ -354,32 +405,68 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   const appliquerPlan = useCallback((code: string, budget?: number) => {
     const plan = decodePlan(code);
     if (!plan) return;
-    setSt(plan);
-    setDraft(plan.domains);
+    touche.current = true;
+    const devisePlanifiee = devisePlan(code);
+    if (devisePlanifiee) setCurrency(devisePlanifiee);
+    const st2 = extrait ? avecServices(plan, focus!) : plan;
+    setSt(st2);
+    setDraft(st2.domains);
     setProposalBudget(budget && Number.isFinite(budget) ? budget : null);
     setGuided(null);
-    go(sequence(plan).indexOf('recap'));
-  }, [go]);
+    go(sequence(st2, focus).indexOf('recap'));
+  }, [go, extrait, focus]);
   useEffect(() => {
+    // 1. Un plan dans l'adresse (assistant du site, « Revoir mon devis » d'un mail) : il prime.
+    const m = /[#&]plan=([A-Za-z0-9_-]+)(?:&b=(\d+))?/.exec(window.location.hash);
+    // 2. Sinon le panier du visiteur : le devis qu'il compose d'une page à l'autre.
+    const panier = m ? null : lirePanier();
     // `?service=seo` : les boutons « Calculer mon budget » des pages services cochent le service.
     // Plusieurs services séparés par des virgules (`?service=seo,google-ads`) depuis la page
     // d'accueil, dont la porte du calculateur laisse cocher plusieurs puces (24/09/2026).
-    const services = (new URLSearchParams(window.location.search).get('service') || '')
+    const services = extrait ? [] : (new URLSearchParams(window.location.search).get('service') || '')
       .split(',')
       .filter((s): s is ServiceDomain => (DOMAIN_ORDER as string[]).includes(s));
-    if (services.length) setDraft((d) => (d.length ? d : DOMAIN_ORDER.filter((x) => services.includes(x))));
-    const m = /[#&]plan=([A-Za-z0-9_-]+)(?:&b=(\d+))?/.exec(window.location.hash);
     if (m) {
       appliquerPlan(m[1], m[2] ? Number(m[2]) : undefined);
       history.replaceState(null, '', window.location.pathname + window.location.search);
+    } else if (panier) {
+      setCurrency(panier.devise);
+      if (extrait) {
+        // L'extrait garde le service de sa page en tête, et rejoint le reste du devis.
+        setSt(avecServices(panier.st, focus!, preset));
+      } else if (panier.st.domains.length) {
+        setSt(panier.st);
+        setDraft(panier.st.domains);
+        // `#ajouter` (le lien « Ajouter un service » des simulateurs), ou un service demandé qui
+        // n'est pas encore dans le devis : le choix des services, devis gardé. Sinon, le devis.
+        const nouveau = services.some((d) => !panier.st.domains.includes(d));
+        if (/^#ajouter/.test(window.location.hash) || nouveau) {
+          go(0);
+          if (/^#ajouter/.test(window.location.hash)) history.replaceState(null, '', window.location.pathname + window.location.search);
+        } else go(sequence(panier.st).indexOf('recap'));
+      }
     }
+    if (services.length) setDraft((d) => inOrder([...new Set([...(panier?.st.domains ?? d), ...services])]));
+    pret.current = true;
     const surPlan = (e: Event) => {
       const d = (e as CustomEvent<{ plan?: string; budget?: number }>).detail;
       if (d?.plan) appliquerPlan(d.plan, d.budget);
     };
     window.addEventListener('mdp-assistant:plan', surPlan);
-    return () => window.removeEventListener('mdp-assistant:plan', surPlan);
-  }, [appliquerPlan]);
+    // Un autre îlot de la page a changé le devis (un simulateur, un autre extrait).
+    const arret = ecouterPanier(moi, (p) => {
+      if (!p) { setSt(extrait ? { ...emptyState(), domains: inOrder(focus!), answers: { ...(preset ?? {}) } } : emptyState()); return; }
+      setCurrency(p.devise);
+      setSt(extrait ? avecServices(p.st, focus!, preset) : p.st);
+    });
+    return () => { window.removeEventListener('mdp-assistant:plan', surPlan); arret(); };
+  }, [appliquerPlan]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Le devis rejoint le panier dès le premier geste du visiteur, et à chaque changement ensuite.
+  useEffect(() => {
+    if (!pret.current || !touche.current) return;
+    ecrirePanier(st, currency, moi);
+  }, [st, currency, moi]);
   const answerGuided = (field: 'industry' | 'goals' | 'monthlyBudget', value: string) => {
     const g = { ...(guided as Guided), [field]: value };
     setGuided(g);
@@ -391,11 +478,15 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       setDraft(p.state.domains);
       setProposalBudget(p.budget);
       setGuided(null);
-      setI(sequence(p.state).indexOf('recap'));
+      touche.current = true;
+      setI(sequence(p.state, focus).indexOf('recap'));
     }, AUTO_ADVANCE_MS);
   };
   const restart = () => {
-    setSt(emptyState()); setDraft([]); setProposalBudget(null); setGuided(null); setStatus('idle'); go(0);
+    viderPanier(moi);
+    touche.current = false;
+    setSt(extrait ? { ...emptyState(), domains: inOrder(focus!), answers: { ...(preset ?? {}) } } : emptyState());
+    setDraft([]); setProposalBudget(null); setGuided(null); setStatus('idle'); go(0);
   };
 
   const submit = async () => {
@@ -406,46 +497,15 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       setFormError(L(lang, 'Indiquez votre nom, votre entreprise et une adresse email valide.', 'Please enter your name, your company and a valid email address.'));
       return;
     }
-    const auditLines = ([
-      [L(lang, 'Site', 'Website'), audit.website],
-      [L(lang, 'Clients', 'Customers'), audit.clients],
-      [L(lang, 'Ce qui marche, ce qui coince', 'What works, what gets stuck'), audit.works],
-      [L(lang, 'Priorité à trois mois', 'Three-month priority'), audit.priority]
-    ] as const).filter(([, v]) => v.trim()).map(([k, v]) => `${k} : ${v.trim()}`);
-    const payload = {
-      ...buildPayload(st, { name: contact.name.trim(), email: contact.email.trim(), company: contact.company.trim(), message: auditLines.join('\n') }, lang, currency),
-      auditRequest: { website: audit.website.trim(), clients: audit.clients.trim(), whatWorks: audit.works.trim(), priority: audit.priority.trim() },
-      guidedRecommendation: proposalBudget ? { selectedDomains: st.domains, estimatedMonthly: proposalBudget } : null
-    };
-    payload.metadata.usedGuidedMode = !!proposalBudget;
-    // D'où vient la personne (annonce, source, page d'entrée) : Paul le lit dans son mail.
-    payload.metadata.provenance = provenance();
-    // fbp, fbc et consentement pour l'envoi serveur Meta de l'app (28/09/2026).
-    (payload as unknown as { meta_ids: ReturnType<typeof metaIds> }).meta_ids = metaIds();
-    if (dryRun) {
-      // eslint-disable-next-line no-console
-      console.info('[calculateur v6, mode test] envoi non effectué', payload);
-      setStatus('sent');
-      return;
-    }
     setStatus('sending');
     try {
-      const res = await fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, mode: 'cors', body: JSON.stringify(payload) });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      // Les identifiants hachés renvoyés par l'app (28/09/2026) : la balise GA4
-      // les transmet en données fournies par l'utilisateur. Rien en clair.
-      const reponse = await res.json().catch(() => ({}));
+      const r = await envoyerDevis({
+        st, devise: currency, lang, origine: origineDevis, formulaire: extrait ? 'service_quote' : 'calculator',
+        contact: { name: contact.name, email: contact.email, company: contact.company },
+        audit, budgetGuide: proposalBudget, essai: dryRun
+      });
+      setEssai(!!r.essai);
       setStatus('sent');
-      if (tracking) {
-        trackStep('submitted');
-        track('calculator_form_submit', {
-          form_name: 'calculator', form_location: window.location.pathname, calculator_total: quote.totalFees,
-          used_guided_mode: !!proposalBudget, selected_domains: st.domains.join(','), currency,
-          ...(reponse?.user_data ? { user_data: reponse.user_data } : {}),
-          // L'identifiant partagé avec l'envoi serveur Meta : la balise le passe en eventID.
-          ...(reponse?.event_id ? { event_id: reponse.event_id } : {})
-        });
-      }
     } catch {
       // Plus de faux succès : avant, un échec affichait « demande enregistrée » et le lead était perdu.
       setStatus('error');
@@ -494,15 +554,62 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   );
   const Price = ({ amount, once }: { amount?: number; once?: boolean }) => (amount == null ? null : (
     <span className="shrink-0 text-right text-sm font-semibold tabular-nums text-slate-900">
-      {fmt(amount)}<span className="block text-[11.5px] font-medium text-slate-500">{once ? L(lang, 'une fois', 'one-off') : L(lang, '/mois', '/mo')}</span>
+      {fmtG(amount)}<span className="block text-[11.5px] font-medium text-slate-500">{once ? L(lang, 'une fois', 'one-off') : L(lang, '/mois', '/mo')}</span>
     </span>
   ));
+  /** Le prix d'une option : fixé dans la devise (formation, créa), ou tiré d'une grille en euros. */
+  const OptionPrice = ({ o }: { o: Option }) => (o.prixDevise ? (
+    <span className="shrink-0 text-right text-sm font-semibold tabular-nums text-slate-900">
+      {fmt(o.prixDevise[currency])}{o.unite && <span className="block text-[11.5px] font-medium text-slate-500">{t(o.unite, lang)}</span>}
+    </span>
+  ) : <Price amount={o.price} once={o.oneOff} />);
   const inputClass = 'rounded-xl border border-slate-300 bg-white px-3 text-[15px] font-normal text-slate-900';
   const amountText = (amount: number, per: DomainQuote['lines'][number]['per']) => (per === 'quote' ? L(lang, 'Sur devis', 'On quote') : `${fmt(amount)}${perLabel(per, lang)}`);
   const domainSummary = (dq: DomainQuote) => {
     if (dq.discuss || dq.empty) return L(lang, 'À discuter', 'To discuss');
     const parts = [dq.monthly ? `${fmt(dq.monthly)}${perLabel('month', lang)}` : '', dq.oneOff ? `${fmt(dq.oneOff)}${perLabel('once', lang)}` : ''].filter(Boolean);
     return parts.length ? parts.join(' + ') : L(lang, 'Sur devis', 'On quote');
+  };
+
+  /** Un réglage d'écran à compteurs : un nombre avec - et +, ou un choix en segments. */
+  const renderChamp = (f: Champ) => {
+    const v = reponse(st.answers, f.id);
+    if (f.kind === 'segment') {
+      return (
+        <div key={f.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 p-4">
+          <span className="text-[14.5px] font-semibold text-slate-900">{t(f.label, lang)}</span>
+          <span className="inline-flex flex-wrap rounded-xl bg-slate-100 p-1" role="radiogroup" aria-label={t(f.label, lang)}>
+            {(f.options ?? []).map((o) => (
+              <button key={o.value} type="button" role="radio" aria-checked={v === o.value} onClick={() => setRaw(f.id, o.value)}
+                className={`rounded-lg px-3 py-1.5 text-[13.5px] font-semibold ${v === o.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}>{t(o.label, lang)}</button>
+            ))}
+          </span>
+        </div>
+      );
+    }
+    const n = Math.round(Number(v) || 0);
+    const min = f.min ?? 0;
+    const max = f.max ?? 99;
+    const borne = (x: number) => Math.max(min, Math.min(max, x));
+    const btn = 'grid h-10 w-10 shrink-0 place-items-center rounded-full border border-slate-300 bg-white text-lg font-semibold text-slate-900 transition-colors hover:border-marque disabled:opacity-30';
+    return (
+      <div key={f.id} className="rounded-2xl border border-slate-200 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <label htmlFor={`${moi}-${f.id}`} className="text-[14.5px] font-semibold text-slate-900">{t(f.label, lang)}</label>
+          <span className="flex items-center gap-2">
+            <button type="button" className={btn} aria-label={L(lang, 'Un de moins', 'One less')} disabled={n <= min} onClick={() => setRaw(f.id, borne(n - 1))}>−</button>
+            <input id={`${moi}-${f.id}`} type="number" inputMode="numeric" min={min} max={max} value={n}
+              onChange={(e) => { const x = parseInt(e.target.value, 10); if (!Number.isNaN(x)) setRaw(f.id, borne(x)); }}
+              className="h-10 w-16 rounded-xl border border-slate-300 bg-white text-center text-[15px] font-semibold tabular-nums text-slate-900" />
+            <button type="button" className={btn} aria-label={L(lang, 'Un de plus', 'One more')} disabled={n >= max} onClick={() => setRaw(f.id, borne(n + 1))}>+</button>
+          </span>
+        </div>
+        {max > 60 && (
+          <input type="range" min={min} max={200} value={Math.min(200, n)} aria-label={t(f.label, lang)} className="mt-4 w-full accent-marque"
+            onChange={(e) => setRaw(f.id, Number(e.target.value))} />
+        )}
+      </div>
+    );
   };
 
   const renderQuestion = (q: Question) => {
@@ -514,12 +621,12 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       const n = q.domain === 'paid-social' ? Math.max(channelsOf(st.answers).length, 1) : 1;
       return (
         <div className="rounded-2xl border border-slate-200 p-4">
-          <p className="font-display text-[26px] font-extrabold tabular-nums text-slate-900" data-info="media">{fmt(b)}<span className="ml-1 text-sm font-medium text-slate-500">{L(lang, '/mois', '/mo')}</span></p>
+          <p className="font-display text-[26px] font-extrabold tabular-nums text-slate-900" data-info="media">{fmtG(b)}<span className="ml-1 text-sm font-medium text-slate-500">{L(lang, '/mois', '/mo')}</span></p>
           <input type="range" min={0} max={BUDGET_STEPS.length - 1} step={1} value={idx} aria-label={t(q.title, lang)} className="mt-4 w-full accent-marque"
             onChange={(e) => setRaw(q.id, BUDGET_STEPS[Number(e.target.value)])}
             onPointerUp={() => tracking && trackBudget(q.domain, BUDGET_STEPS[idx], currency)}
             onKeyUp={() => tracking && trackBudget(q.domain, BUDGET_STEPS[idx], currency)} />
-          <div className="mt-1 flex justify-between text-xs text-slate-500"><span>{fmt(BUDGET_STEPS[0])}</span><span>{fmt(BUDGET_STEPS[BUDGET_STEPS.length - 1])}</span></div>
+          <div className="mt-1 flex justify-between text-xs text-slate-500"><span>{fmtG(BUDGET_STEPS[0])}</span><span>{fmtG(BUDGET_STEPS[BUDGET_STEPS.length - 1])}</span></div>
           <p className="mt-3 border-t border-slate-200 pt-3 text-[13.5px] text-slate-600" data-info="fee">
             {L(lang, 'Nos honoraires de gestion : ', 'Our management fee: ')}<strong className="text-slate-900">{fmt(dq?.fee ?? 0)}{L(lang, '/mois', '/mo')}</strong>
             {n > 1 && <span className="text-slate-500"> ({L(lang, `${n} réseaux`, `${n} networks`)})</span>}
@@ -539,7 +646,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
             onChange={(e) => setRaw(q.id, CONTACT_VOLUMES[Number(e.target.value)])} />
           <div className="mt-1 flex justify-between text-xs text-slate-500"><span>{CONTACT_VOLUMES[0]}</span><span>{CONTACT_VOLUMES[CONTACT_VOLUMES.length - 1].toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB')}</span></div>
           <p className="mt-3 border-t border-slate-200 pt-3 text-[13.5px] text-slate-600">
-            {L(lang, 'Prix unitaire : ', 'Unit price: ')}<strong className="text-slate-900">{fmt(unit)}</strong>{L(lang, ', total : ', ', total: ')}<strong className="text-slate-900">{fmt(Math.round(unit * v))}</strong>{L(lang, ' une fois', ' one-off')}
+            {L(lang, 'Prix unitaire : ', 'Unit price: ')}<strong className="text-slate-900">{fmtG(unit)}</strong>{L(lang, ', total : ', ', total: ')}<strong className="text-slate-900">{fmtG(Math.round(unit * v))}</strong>{L(lang, ' une fois', ' one-off')}
           </p>
         </div>
       );
@@ -569,6 +676,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         </div>
       );
     }
+    if (q.kind === 'compteurs') return <div className="grid gap-3">{(q.fields ?? []).map((f) => renderChamp(f))}</div>;
     if (q.kind === 'channels') {
       const sel = channelsOf(st.answers);
       return (
@@ -587,7 +695,8 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     }
     const multi = q.kind === 'multi';
     const opts = optionsFor(q, st.answers);
-    const selected = multi ? (Array.isArray(a) ? a : []) : a;
+    // Une question qui a une réponse par défaut (formation, créa) la montre cochée.
+    const selected = multi ? (Array.isArray(a) ? a : []) : q.kind === 'level' ? a : reponse(st.answers, q.id);
     return (
       <div className="grid gap-2 lg:grid-cols-2">
         {q.kind === 'level' && (
@@ -606,8 +715,8 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
                 {o.desc && t(o.desc, lang) && <span className="mt-0.5 block text-[12.5px] leading-snug text-slate-500">{t(o.desc, lang)}</span>}
               </span>
               {o.unitFrom != null
-                ? <span className="shrink-0 text-right text-[12.5px] text-slate-500">{L(lang, 'dès', 'from')}<span className="block text-sm font-semibold tabular-nums text-slate-900">{fmt(o.unitFrom)}</span></span>
-                : <Price amount={o.price} once={o.oneOff} />}
+                ? <span className="shrink-0 text-right text-[12.5px] text-slate-500">{L(lang, 'dès', 'from')}<span className="block text-sm font-semibold tabular-nums text-slate-900">{fmtG(o.unitFrom)}</span></span>
+                : <OptionPrice o={o} />}
             </button>
           );
         })}
@@ -676,7 +785,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         <h3 className="font-display text-2xl font-extrabold tracking-[-0.025em] text-slate-900">{L(lang, 'Merci, votre devis est en route', 'Thank you, your quote is on its way')}</h3>
         <p className="mt-2 max-w-prose text-slate-600">{L(lang, 'Vous le recevez par email dans quelques minutes. Un expert vous rappelle sous 24 à 48 h pour l’ajuster avec vous.', 'It will reach your inbox in a few minutes. An expert will get back to you within 24 to 48 hours to fine-tune it with you.')}</p>
         <p className="mt-4 max-w-prose rounded-xl bg-slate-100 px-4 py-3 text-[15px] text-slate-800">{avertissementConfirmation(lang === 'fr' ? 'fr' : 'en', 'devis')}</p>
-        {dryRun && <p className="mt-4 rounded-xl bg-yellow-50 px-4 py-3 text-sm text-yellow-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
+        {(dryRun || essai) && <p className="mt-4 rounded-xl bg-yellow-50 px-4 py-3 text-sm text-yellow-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
       </div>
     );
   } else if (guided) {
@@ -730,6 +839,34 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       </>
     );
     actions = <button type="button" className={primaryBtn} disabled={!draft.length} onClick={startFromPick}>{L(lang, 'Continuer', 'Continue')}{draft.length ? ` (${draft.length})` : ''}<IconNext /></button>;
+  } else if (cur === 'ajout') {
+    // L'extrait d'une page de service (20/10/2026) : le devis de la page est prêt, on propose
+    // d'y ajouter d'autres services sans changer de page. Tout part dans un seul devis.
+    const nomsFocus = (focus ?? []).map((d) => domainName(d, lang)).join(L(lang, ' et ', ' and '));
+    body = (
+      <>
+        {kicker(L(lang, `Votre devis ${nomsFocus} est prêt`, `Your ${nomsFocus} quote is ready`))}
+        {title(L(lang, 'Ajouter un autre service ?', 'Add another service?'))}
+        <p className="mb-4 mt-1.5 text-sm text-slate-500">{L(lang, 'Facultatif. Tout part dans un seul devis, avec un seul interlocuteur.', 'Optional. Everything goes into one quote, with one point of contact.')}</p>
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+          {DOMAIN_ORDER.map((d) => {
+            const fixe = !!focus?.includes(d);
+            const on = st.domains.includes(d);
+            return (
+              <button key={d} type="button" role="checkbox" aria-checked={on} aria-disabled={fixe} data-info={`dom:${d}`} onClick={() => { if (!fixe) basculerService(d); }}
+                className={`relative rounded-2xl border p-3.5 text-left transition-colors ${on ? 'border-marque bg-marque-doux ring-1 ring-marque' : 'border-slate-200 bg-white hover:border-slate-300'} ${fixe ? 'cursor-default' : ''}`}>
+                <span className={`absolute right-2.5 top-2.5 grid h-[18px] w-[18px] place-items-center rounded-full border-[1.5px] ${on ? 'border-marque bg-marque text-white' : 'border-slate-300'}`}>{on && <IconCheck />}</span>
+                <span className="block pr-6 text-[14.5px] font-semibold leading-snug text-slate-900">{domainName(d, lang)}</span>
+                <span className="mt-1 line-clamp-2 block text-[12.5px] leading-snug text-slate-500">{fixe ? L(lang, 'Le service de cette page', 'This page’s service') : domainDesc(d, lang)}</span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-5 flex flex-wrap items-center justify-end gap-2 text-sm text-slate-500">{L(lang, 'Prix en', 'Prices in')} <CurrencySwitch /></div>
+      </>
+    );
+    const ajoutes = st.domains.filter((d) => !focus?.includes(d)).length;
+    actions = <button type="button" className={primaryBtn} onClick={() => go(i + 1)}>{ajoutes ? L(lang, 'Continuer', 'Continue') : L(lang, 'Voir mon devis', 'See my quote')}<IconNext /></button>;
   } else if (cur === 'duration') {
     body = (
       <>
@@ -743,7 +880,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
               <Mark checked={st.duration === o.months} />
               <span className="min-w-0 flex-1"><span className="block text-[14.5px] font-semibold">{o.months} {L(lang, 'mois', 'months')}</span>
                 <span className="mt-0.5 block text-[12.5px] text-slate-500">{o.discount ? L(lang, `Remise de ${o.discount} % sur les honoraires mensuels`, `${o.discount}% off monthly fees`) : L(lang, 'Sans remise', 'No discount')}</span></span>
-              <Price amount={devis({ ...st, duration: o.months }).monthly} />
+              <span className="shrink-0 text-right text-sm font-semibold tabular-nums text-slate-900">{fmt(devis({ ...st, duration: o.months }, currency).monthly)}<span className="block text-[11.5px] font-medium text-slate-500">{L(lang, '/mois', '/mo')}</span></span>
             </button>
           ))}
         </div>
@@ -756,7 +893,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     const q = QUESTION_INDEX[cur];
     const list = visibleQuestions(q.domain, st.answers);
     const k = list.findIndex((x) => x.id === cur);
-    const answered = st.answers[cur] !== undefined;
+    const answered = st.answers[cur] !== undefined || DEFAUTS[cur] !== undefined;
     const auto = q.kind === 'level' || q.kind === 'choice';
     body = (
       <>
@@ -798,7 +935,17 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
       { key: 'priority', q: L(lang, 'Votre priorité pour les trois prochains mois ?', 'Your priority for the next three months?'), ph: L(lang, 'Ex. : 20 rendez-vous qualifiés par mois', 'E.g. 20 qualified meetings a month') }
     ];
 
-    const monthlyCard = (
+    // Un devis sans honoraires mensuels (une formation, une demande créative) : le montant
+    // ponctuel passe en grand, sans durée d'engagement qui ne s'appliquerait à rien.
+    const ponctuel = quote.beforeDiscount <= 0 && quote.oneOff > 0;
+    const ponctuelCard = (
+      <div {...rise(1)} className={`rounded-3xl bg-marque p-6 text-white sm:p-8 ${rise(1).className}`}>
+        <p className="text-sm font-medium text-white/80">{L(lang, 'Votre devis, hors taxes', 'Your quote, excluding VAT')}</p>
+        <p className="mt-2 font-display text-5xl font-extrabold leading-none tabular-nums sm:text-6xl"><CountUp value={quote.oneOff} format={fmt} /></p>
+        <p className="mt-2 text-sm text-white/80">{L(lang, 'Une seule fois', 'One-off')}{quote.domains.some((d) => d.lines.some((l) => l.per === 'quote')) ? L(lang, ', plus ce qui est chiffré à la demande', ', plus what is quoted on request') : ''}</p>
+      </div>
+    );
+    const monthlyCard = ponctuel ? ponctuelCard : (
       <div {...rise(1)} className={`rounded-3xl bg-marque p-6 text-white sm:p-8 ${rise(1).className}`}>
         <p className="text-sm font-medium text-white/80"><H k="g:monthly" tone="dark">{L(lang, 'Nos honoraires, par mois', 'Our fees, per month')}</H></p>
         <p className="mt-2 font-display text-5xl font-extrabold leading-none tabular-nums sm:text-6xl"><CountUp value={quote.monthly} format={fmt} /></p>
@@ -830,7 +977,10 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
             {!(dq.discuss || dq.empty) && (
               <ul className="mt-2.5 space-y-1.5 text-[13.5px] text-slate-600">
                 {dq.lines.map((l) => (
-                  <li key={l.label.fr} className="flex justify-between gap-3"><H k={l.info}>{t(l.label, lang)}</H><span className="whitespace-nowrap tabular-nums">{amountText(l.amount, l.per)}</span></li>
+                  <li key={l.label.fr} className="flex justify-between gap-3">
+                    <span className="min-w-0"><H k={l.info}>{t(l.label, lang)}</H>{l.detail && t(l.detail, lang) && <span className="block text-[12px] leading-snug text-slate-500">{t(l.detail, lang)}</span>}</span>
+                    <span className="whitespace-nowrap tabular-nums">{amountText(l.amount, l.per)}</span>
+                  </li>
                 ))}
               </ul>
             )}
@@ -848,7 +998,7 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
         <p className="mt-4 max-w-2xl rounded-xl bg-white/10 px-4 py-3 text-[15px] text-white">{avertissementConfirmation(lang === 'fr' ? 'fr' : 'en', 'devis')}</p>
         {/* Pas de prise de rendez-vous (Paul, 25/09/2026) : le formulaire de contact. */}
         <a href={`/${lang}/contact`} className="mt-6 inline-flex h-12 items-center rounded-full bg-white px-6 text-[15px] font-semibold text-slate-900">{L(lang, 'Nous contacter', 'Contact us')}</a>
-        {dryRun && <p className="mt-5 rounded-xl bg-yellow-50 px-4 py-3 text-sm text-yellow-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
+        {(dryRun || essai) && <p className="mt-5 rounded-xl bg-yellow-50 px-4 py-3 text-sm text-yellow-800">{L(lang, 'Page de test : rien n’a été envoyé. Le contenu de l’envoi est dans la console du navigateur.', 'Test page: nothing was sent. The payload is in the browser console.')}</p>}
       </div>
     ) : (
       <div className="rounded-3xl border border-marque/15 bg-marque-doux/70 p-5 sm:p-8">
@@ -919,22 +1069,31 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
           <div {...rise(0)}>
             <p className="text-[13px] font-semibold text-slate-500">{proposalBudget ? L(lang, 'Notre proposition', 'Our proposal') : L(lang, 'C’est prêt', 'All set')}</p>
             <h2 className="mt-1 font-display text-3xl font-extrabold tracking-[-0.03em] text-slate-900 sm:text-[42px] sm:leading-[1.05]">
-              {proposalBudget ? L(lang, `Pour environ ${fmt(proposalBudget)} par mois`, `For about ${fmt(proposalBudget)} a month`) : L(lang, 'Votre devis est prêt', 'Your quote is ready')}
+              {proposalBudget ? L(lang, `Pour environ ${fmtG(proposalBudget)} par mois`, `For about ${fmtG(proposalBudget)} a month`) : L(lang, 'Votre devis est prêt', 'Your quote is ready')}
             </h2>
             <p className="mt-2 text-slate-600">
-              {L(lang, `${nb} service${nb > 1 ? 's' : ''}, engagement de ${st.duration} mois. Tout reste modifiable, et chaque terme souligné a sa définition.`, `${nb} service${nb > 1 ? 's' : ''}, ${st.duration}-month commitment. Everything can still change, and each underlined term has its definition.`)}
-              {proposalBudget ? <> <button type="button" onClick={restart} className="font-semibold text-marque underline underline-offset-2">{L(lang, 'Repartir de zéro', 'Start over')}</button></> : null}
+              {quote.beforeDiscount > 0
+                ? L(lang, `${nb} service${nb > 1 ? 's' : ''}, engagement de ${st.duration} mois. Tout reste modifiable, et chaque terme souligné a sa définition.`, `${nb} service${nb > 1 ? 's' : ''}, ${st.duration}-month commitment. Everything can still change, and each underlined term has its definition.`)
+                : L(lang, `${nb} service${nb > 1 ? 's' : ''}. Tout reste modifiable, et chaque terme souligné a sa définition.`, `${nb} service${nb > 1 ? 's' : ''}. Everything can still change, and each underlined term has its definition.`)}
             </p>
+            {status !== 'sent' && (
+              <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+                <button type="button" onClick={ajouterService} className="font-semibold text-marque underline underline-offset-2">{L(lang, '+ Ajouter un service', '+ Add a service')}</button>
+                <button type="button" onClick={restart} className="font-semibold text-slate-600 underline underline-offset-2">{L(lang, 'Repartir de zéro', 'Start over')}</button>
+              </p>
+            )}
           </div>
 
-          <section className="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
+          <section className={`grid gap-4 ${ponctuel && !quote.media ? '' : 'lg:grid-cols-[1.3fr_1fr]'}`}>
             {monthlyCard}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-              {tile(2, 'g:once', L(lang, 'Mise en place', 'Set-up'), fmt(quote.oneOff), L(lang, 'Une seule fois, au démarrage', 'Once, at the start'))}
-              {tile(3, 'media', L(lang, 'Budget média', 'Media budget'), `${fmt(quote.media)}${perLabel('month', lang)}`, L(lang, 'En plus, dépensé sur les plateformes', 'On top, spent on the platforms'))}
-            </div>
+            {!(ponctuel && !quote.media) && (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                {!ponctuel && tile(2, 'g:once', L(lang, 'Mise en place', 'Set-up'), fmt(quote.oneOff), L(lang, 'Une seule fois, au démarrage', 'Once, at the start'))}
+                {tile(3, 'media', L(lang, 'Budget média', 'Media budget'), `${fmt(quote.media)}${perLabel('month', lang)}`, L(lang, 'En plus, dépensé sur les plateformes', 'On top, spent on the platforms'))}
+              </div>
+            )}
           </section>
-          <div {...rise(4)}>{totalLine}</div>
+          {!ponctuel && <div {...rise(4)}>{totalLine}</div>}
           <section {...rise(5)}>
             <h3 className="mb-4 font-display text-2xl font-extrabold tracking-[-0.025em] text-slate-900">{L(lang, 'Le détail, service par service', 'Service by service')}</h3>
             {serviceCards}
@@ -981,11 +1140,14 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
                 <>
                   <div className="flex items-baseline gap-3">
                     <span className="text-[13px] text-slate-500">{L(lang, 'Votre estimation', 'Your estimate')}{quote.discountPct ? <em className="ml-1 font-semibold not-italic text-green-700">-{quote.discountPct}&nbsp;%</em> : null}</span>
-                    <strong className="font-display text-[23px] font-extrabold tabular-nums text-slate-900">{fmt(quote.monthly)}<span className="ml-0.5 text-[13px] font-medium text-slate-500">{L(lang, '/mois', '/mo')}</span></strong>
+                    {quote.beforeDiscount <= 0 && quote.oneOff > 0
+                      ? <strong className="font-display text-[23px] font-extrabold tabular-nums text-slate-900">{fmt(quote.oneOff)}<span className="ml-1 text-[13px] font-medium text-slate-500">{L(lang, 'une fois', 'one-off')}</span></strong>
+                      : <strong className="font-display text-[23px] font-extrabold tabular-nums text-slate-900">{fmt(quote.monthly)}<span className="ml-0.5 text-[13px] font-medium text-slate-500">{L(lang, '/mois', '/mo')}</span></strong>}
                   </div>
-                  {(quote.oneOff > 0 || quote.media > 0 || talk > 0) && (
+                  {((quote.oneOff > 0 && quote.beforeDiscount > 0) || quote.media > 0 || talk > 0 || (extrait && quote.domains.length > 1)) && (
                     <p className="mt-0.5 flex flex-wrap gap-x-3 text-[12.5px] leading-snug text-slate-500">
-                      {quote.oneOff > 0 && <span>+ {fmt(quote.oneOff)} <H k="g:once">{L(lang, 'de mise en place', 'set-up')}</H></span>}
+                      {extrait && quote.domains.length > 1 && <span>{L(lang, `${quote.domains.length} services dans votre devis`, `${quote.domains.length} services in your quote`)}</span>}
+                      {quote.oneOff > 0 && quote.beforeDiscount > 0 && <span>+ {fmt(quote.oneOff)} <H k="g:once">{L(lang, 'de mise en place', 'set-up')}</H></span>}
                       {quote.media > 0 && <span><H k="media">{L(lang, 'budget média', 'media budget')}</H> {fmt(quote.media)}{L(lang, '/mois en plus', '/mo on top')}</span>}
                       {talk > 0 && <span>{L(lang, `${talk} à discuter`, `${talk} to discuss`)}</span>}
                     </p>

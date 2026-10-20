@@ -14,7 +14,8 @@
     "tina:build": "tinacms build",
     "check:seo": "node scripts/check-seo.mjs",
     "test:formation": "node --test src/lib/formation/moteur.test.ts",
-    "test:creative": "node --test src/lib/creative/moteur.test.ts"
+    "test:creative": "node --test src/lib/creative/moteur.test.ts",
+    "test:devis": "esbuild src/lib/devis/devis.test.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/devis.test.mjs --log-level=warning && node node_modules/.cache/devis.test.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.4",

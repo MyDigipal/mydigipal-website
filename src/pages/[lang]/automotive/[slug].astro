@@ -6,7 +6,8 @@ import { getCollection } from 'astro:content';
 // Sections
 import HeroService from '@/components/sections/HeroService.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
-import RubanCalculateur from '@/components/sections/RubanCalculateur.astro';
+import ExtraitDevis from '@/components/sections/ExtraitDevis.astro';
+import { EXTRAITS } from '@/lib/devis/extraits';
 import CaseStudyCarousel from '@/components/sections/CaseStudyCarousel.astro';
 import CarteVerre from '@/components/motion/CarteVerre.astro';
 import BoucleRemarketing from '@/components/motion/BoucleRemarketing.astro';
@@ -55,6 +56,9 @@ export async function getStaticPaths() {
 
 const { lang, slug } = Astro.params as { lang: Language; slug: string };
 const { page } = Astro.props;
+// L'extrait du calculateur de la page (20/10/2026) : les boutons « Calculer mon budget » y mènent.
+const cleDevis = `automotive:${slug}`;
+const lienDevis = EXTRAITS[cleDevis] ? '#devis' : undefined;
 
 const {
   title,
@@ -153,6 +157,7 @@ const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust u
     heroLogos={heroLogos}
     titreLogos={titresLogos[lang]}
     serviceCalculateur={calculatorServiceId}
+    lienBudget={lienDevis}
     audit={`hero-automotive-${slug}`}
   />
 
@@ -263,9 +268,9 @@ const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust u
     <AutomotiveBenchmarks lang={lang} benchmarks={benchmarks} />
   )}
 
-  <!-- Le ruban vers le calculateur, le service de la page déjà coché (blanc). Il remplace
-       l'appel en dégradé du milieu de page (AutomotiveMidCTA). -->
-  <RubanCalculateur lang={lang} service={calculatorServiceId} />
+  <!-- L'extrait du calculateur (20/10/2026), à la place du ruban : le devis de la page, et la
+       possibilité d'y ajouter d'autres services (blanc). -->
+  <ExtraitDevis lang={lang} cle={cleDevis} />
 
   <!-- L'équipe (brume). -->
   {team && team.length > 0 && (
@@ -282,5 +287,5 @@ const titresLogos = { fr: 'Ils nous confient leurs campagnes', en: 'They trust u
     <AutomotiveFAQ lang={lang} faq={faq} />
   )}
 
-  <FinalCTA lang={lang} color={color} />
+  <FinalCTA lang={lang} color={color} lienBudget={lienDevis} />
 </PageLayout>

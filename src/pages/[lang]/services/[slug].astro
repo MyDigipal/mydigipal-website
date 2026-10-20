@@ -87,7 +87,8 @@ import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
 
 // Case Study Carousel
 import CaseStudyCarousel from '@/components/sections/CaseStudyCarousel.astro';
-import RubanCalculateur from '@/components/sections/RubanCalculateur.astro';
+import ExtraitDevis from '@/components/sections/ExtraitDevis.astro';
+import { EXTRAITS } from '@/lib/devis/extraits';
 
 // Social proof
 
@@ -119,6 +120,9 @@ export async function getStaticPaths() {
 
 const { lang, slug } = Astro.params as { lang: Language; slug: string };
 const { service } = Astro.props;
+// L'extrait du calculateur de la page (20/10/2026) : les boutons « Calculer mon budget » y mènent.
+const cleDevis = `service:${slug}`;
+const lienDevis = EXTRAITS[cleDevis] ? '#devis' : undefined;
 
 const {
   title,
@@ -287,6 +291,7 @@ const breadcrumbItems = [
     testimonial={testimonial}
     heroLogos={heroLogos}
     serviceCalculateur={calculatorServiceId}
+    lienBudget={lienDevis}
     tableau={tableauHero}
   />
 
@@ -411,9 +416,9 @@ const breadcrumbItems = [
     </>
   )}
 
-  <!-- Le ruban vers le calculateur, le service de la page déjà coché (30/09/2026). Rien
-       pour un service que le calculateur ne connaît pas (B2B ABM a son propre appel). -->
-  <RubanCalculateur lang={lang} service={calculatorServiceId} />
+  <!-- L'extrait du calculateur (20/10/2026), à la place du ruban qui y renvoyait : le devis
+       de la page, et la possibilité d'y ajouter d'autres services. Blanc, comme le ruban. -->
+  <ExtraitDevis lang={lang} cle={cleDevis} />
 
   <!-- SEO : les résultats de deux études de cas, sur la brume (le verbatim qui suit est
        sur l'encre). -->
@@ -530,7 +535,7 @@ const breadcrumbItems = [
   )}
   <!-- Final CTA (skip for B2B ABM which has its own) -->
   {!isB2BABMService && (
-    <FinalCTA lang={lang} color={color} />
+    <FinalCTA lang={lang} color={color} lienBudget={lienDevis} />
   )}
 
 </PageLayout>

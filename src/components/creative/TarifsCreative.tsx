@@ -11,7 +11,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { DEVISES, SYMBOLE } from '@/lib/formation/grille';
 import { GRILLE_CREA, PALIERS, type Canal, type Devise, type Video } from '@/lib/creative/grille';
 import { chiffrer, depuisAdresse, etatDefaut, MAX, montant, nomCanal, versAdresse, type EtatCrea, type Lang } from '@/lib/creative/moteur';
-import { metaIds, provenance } from '@/components/academy/track';
+import { etatCrea, reponsesCrea, type QuoteState } from '@/components/calculator-v6/engine';
+import { fixerOrigineMesure } from '@/components/calculator/tracking';
+import { usePanierSimulateur } from '@/lib/devis/usePanierSimulateur';
+import { envoyerDevis } from '@/lib/devis/envoi';
+import AutresServices from '@/components/devis/AutresServices';
 import '../formation/tarifs.css';
 import './tarifs-creative.css';
 
@@ -21,7 +25,7 @@ interface Props {
   contactHref: string;
 }
 
-const WEBHOOK = 'https://academy.mydigipal.com/api/site/devis';
+// Le devis part par `lib/devis/envoi.ts`, comme tous les devis du site (20/10/2026).
 const EVENEMENT = 'mdp-creative:etat';
 
 function pousser(event: string, params: Record<string, unknown> = {}) {
@@ -172,13 +176,23 @@ export default function TarifsCreative({ lang, partie, contactHref }: Props) {
   const etatRef = useRef(etat);
   etatRef.current = etat;
   const r = useMemo(() => chiffrer(etat, lang), [etat, lang]);
+  // Le devis unique : seul l'îlot du simulateur le lit et l'écrit. La page chiffre une demande
+  // ponctuelle (`cr-rythme` reste à « une fois » sauf choix fait sur le calculateur).
+  const panier = usePanierSimulateur('creative-design', partie === 'simulateur');
   const M = (v: number) => montant(v, lang, etat.devise);
 
   // Au navigateur : l'état d'un lien partagé, sinon les livres aux anglophones du Royaume-Uni.
   useEffect(() => {
+    if (partie === 'simulateur') fixerOrigineMesure('creative');
     const depuis = depuisAdresse(window.location.hash, etatDefaut(lang));
+    // Sans lien partagé, le devis d'une visite précédente (ou composé sur le calculateur).
+    const repris = depuis || partie !== 'simulateur' ? null : panier.reprise();
     if (depuis) setEtat(depuis);
-    else if (lang === 'en') {
+    else if (repris) {
+      const e = etatCrea(repris.st.answers, repris.devise);
+      setEtat(e);
+      window.dispatchEvent(new CustomEvent(EVENEMENT, { detail: { etat: e, de: partie } }));
+    } else if (lang === 'en') {
       try { if (Intl.DateTimeFormat().resolvedOptions().timeZone === 'Europe/London') setEtat((e) => ({ ...e, devise: 'GBP' })); } catch { /* dollars */ }
     }
   }, [lang]);
@@ -197,7 +211,8 @@ export default function TarifsCreative({ lang, partie, contactHref }: Props) {
   useEffect(() => {
     if (!touche || partie !== 'simulateur') return;
     history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${versAdresse(etat)}`);
-  }, [etat, touche, partie]);
+    panier.synchroniser(reponsesCrea(etat), etat.devise);
+  }, [etat, touche, partie]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!touche || partie !== 'simulateur') return;
@@ -319,6 +334,7 @@ export default function TarifsCreative({ lang, partie, contactHref }: Props) {
                 ) : <p className="tf-mention">{t.sim.vide}</p>}
                 {r.economie > 0 && <p className="tf-reco">{t.sim.economie(M(r.economie))}</p>}
                 <p className="tf-mention">{t.sim.tours} {t.mention}</p>
+                <AutresServices lang={lang} autres={panier.autres} devise={d} avantDePartir={() => panier.synchroniser(reponsesCrea(etat), etat.devise)} />
                 <div className="pilules">
                   <button type="button" className="pilule pilule-pleine" disabled={r.total <= 0} onClick={() => { setFormulaire(true); pousser('creative_quote_open', { currency: d }); }}>{t.sim.recevoir}</button>
                   <button type="button" className="pilule pilule-claire" onClick={partager}>{Icone.lien}<span className="tf-long">{t.sim.partager}</span><span className="tf-court">{t.sim.partagerCourt}</span></button>
@@ -331,13 +347,13 @@ export default function TarifsCreative({ lang, partie, contactHref }: Props) {
         </section>
       )}
 
-      {formulaire && <Formulaire lang={lang} etat={etat} surFermer={() => setFormulaire(false)} lienPartage={lienPartage} />}
+      {formulaire && <Formulaire lang={lang} devise={etat.devise} devis={() => panier.complet(reponsesCrea(etat))} surFermer={() => setFormulaire(false)} />}
     </>
   );
 }
 
-/** Recevoir le chiffrage : poste sur la route des devis de l'application, branche « creative ». */
-function Formulaire({ lang, etat, surFermer, lienPartage }: { lang: Lang; etat: EtatCrea; surFermer: () => void; lienPartage: () => string }) {
+/** Recevoir le chiffrage : le devis complet du visiteur (créa comprise) part comme tous les devis du site. */
+function Formulaire({ lang, devise, devis, surFermer }: { lang: Lang; devise: Devise; devis: () => QuoteState; surFermer: () => void }) {
   const t = COPY[lang].form;
   const [champs, setChamps] = useState({ nom: '', email: '', societe: '', message: '', piege: '' });
   const [etape, setEtape] = useState<'saisie' | 'envoi' | 'ok' | 'erreur'>('saisie');
@@ -357,42 +373,14 @@ function Formulaire({ lang, etat, surFermer, lienPartage }: { lang: Lang; etat: 
     setErreur('');
     if (champs.piege.trim() || Date.now() - ouvertA.current < 2500) return;
     if (!champs.nom.trim() || !champs.societe.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(champs.email.trim())) { setErreur(t.erreurChamps); return; }
-    const r = chiffrer(etat, lang);
-    const enEuros = chiffrer({ ...etat, devise: 'EUR' }, 'fr');
-    const M = (v: number) => montant(v, lang, etat.devise);
-    const payload = {
-      contact: { name: champs.nom.trim(), email: champs.email.trim(), company: champs.societe.trim(), message: champs.message.trim() },
-      language: lang,
-      currency: etat.devise,
-      selectedDomains: ['creative-design'],
-      metadata: { lang, source: 'creative-simulator', planUrl: lienPartage(), provenance: provenance() },
-      meta_ids: metaIds(),
-      creative: {
-        etat,
-        lignes: r.lignes.map((l) => ({ libelle: l.libelle, detail: l.detail, montant: M(l.montant) })),
-        total: M(r.total),
-        economie: r.economie > 0 ? M(r.economie) : '',
-        totalEur: Math.round(enEuros.total),
-      },
-    };
-    if (/[?&]envoi=test/.test(window.location.search)) {
-      // eslint-disable-next-line no-console
-      console.info('[simulateur créa, mode test] envoi non effectué', payload);
-      setEtape('ok');
-      return;
-    }
     setEtape('envoi');
     try {
-      const res = await fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, mode: 'cors', body: JSON.stringify(payload) });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const reponse = await res.json().catch(() => ({}));
-      setEtape('ok');
-      pousser('creative_quote_submit', {
-        form_name: 'creative_simulator', form_location: window.location.pathname, creative_total: Math.round(enEuros.total), currency: etat.devise,
-        creative_sets: tranche(etat.jeux), creative_channel: etat.canal, creative_videos: etat.videos,
-        ...(reponse?.user_data ? { user_data: reponse.user_data } : {}),
-        ...(reponse?.event_id ? { event_id: reponse.event_id } : {}),
+      await envoyerDevis({
+        st: devis(), devise, lang, formulaire: 'creative_simulator',
+        origine: { id: 'creative', libelle: lang === 'fr' ? 'la page Creative design' : 'the Creative design page' },
+        contact: { name: champs.nom, email: champs.email, company: champs.societe, message: champs.message }
       });
+      setEtape('ok');
     } catch {
       setEtape('erreur');
       setErreur(t.erreur);

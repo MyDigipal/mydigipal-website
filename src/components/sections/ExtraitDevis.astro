@@ -1,0 +1,50 @@
+---
+/**
+ * L'extrait du calculateur sur une page de service (20/10/2026), à la place du ruban qui
+ * renvoyait vers le calculateur. Demande de Paul : « le calculateur, c'est le truc global, mais
+ * chaque page peut avoir un extrait », avec « une petite option pour rajouter d'autres
+ * services », et tout centralisé.
+ *
+ * C'est le calculateur lui-même (`CalculatorV6` avec `focus`) : mêmes questions, mêmes prix,
+ * même envoi et même mesure. Il commence par le service de la page, propose d'en ajouter, et
+ * rejoint le devis que le visiteur compose ailleurs sur le site (`lib/devis/panier.ts`).
+ * L'ancre `#devis` reçoit les boutons « Calculer mon budget » de la page.
+ */
+import type { Language } from '@/i18n/config';
+import CalculatorV6 from '@/components/calculator-v6/CalculatorV6';
+import { EXTRAITS } from '@/lib/devis/extraits';
+
+interface Props {
+  lang: Language;
+  /** La clé de `EXTRAITS` : `service:google-ads`, `automotive:dynamic-ads`... */
+  cle: string;
+  fond?: 'blanc' | 'brume';
+}
+
+const { lang, cle, fond = 'blanc' } = Astro.props;
+const x = EXTRAITS[cle];
+const fr = lang === 'fr';
+---
+
+{x && (
+  <section id="devis" class:list={[`section-${fond}`, 'extrait-devis py-16 lg:py-24']} data-sans-cta-flottant="">
+    <div class="container-custom">
+      <header class="mb-8 grid max-w-[760px] gap-4 lg:mb-10">
+        <h2 class="titre-moyen text-encre">{fr ? `Chiffrez ${x.nom.fr} pour votre cas` : `Price ${x.nom.en} for your case`}</h2>
+        <p class="chapo">
+          {fr
+            ? 'Quelques questions, et le prix se calcule sous vos yeux. Vous pouvez ajouter d’autres services : tout part dans un seul devis, que vous recevez par mail.'
+            : 'A few questions, and the price builds up as you go. You can add other services: everything goes into one quote, which we email to you.'}
+        </p>
+      </header>
+      <CalculatorV6 client:visible lang={lang} focus={x.focus} preset={x.preset} origine={{ id: cle, libelle: fr ? x.page.fr : x.page.en }} />
+    </div>
+  </section>
+)}
+
+<style>
+  /* L'en-tête collé du site couvre le haut de la section quand on y arrive par l'ancre. */
+  .extrait-devis {
+    scroll-margin-top: 72px;
+  }
+</style>

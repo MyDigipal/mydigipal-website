@@ -12,7 +12,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { GRILLE, DEVISES, SYMBOLE, type Devise, type Duree, type Mode, type PrixAcademy, type Zone } from '@/lib/formation/grille';
 import { academyHT, chiffrer, depuisAdresse, etatDefaut, montant, recommandation, versAdresse, type Etat, type Lang } from '@/lib/formation/moteur';
-import { metaIds, provenance } from '@/components/academy/track';
+import { etatFormation, fixerPrixAcademy, reponsesFormation, type QuoteState } from '@/components/calculator-v6/engine';
+import { fixerOrigineMesure } from '@/components/calculator/tracking';
+import { usePanierSimulateur } from '@/lib/devis/usePanierSimulateur';
+import { envoyerDevis } from '@/lib/devis/envoi';
+import AutresServices from '@/components/devis/AutresServices';
 import { COPY } from './copy';
 import './tarifs.css';
 
@@ -28,7 +32,8 @@ interface Props {
   video: { src: string; poster: string };
 }
 
-const WEBHOOK = 'https://academy.mydigipal.com/api/site/devis';
+// Le devis part par `lib/devis/envoi.ts`, comme tous les devis du site (20/10/2026) : il
+// rejoint le devis que le visiteur compose ailleurs (calculateur, extraits des pages).
 const ZONES: Zone[] = ['londres', 'uk', 'paris', 'france', 'europe', 'monde'];
 
 function pousser(event: string, params: Record<string, unknown> = {}) {
@@ -89,14 +94,24 @@ export default function TarifsFormation({ lang, partie, academyTtc, academyFaits
   const joursRef = useRef<Record<string, HTMLDivElement | null>>({});
 
   const r = useMemo(() => chiffrer(etat, academyTtc, lang), [etat, academyTtc, lang]);
+  // Le devis unique : seul l'îlot du simulateur le lit et l'écrit.
+  const panier = usePanierSimulateur('ai-training', partie === 'simulateur');
   const reco = useMemo(() => recommandation(etat, academyTtc, lang), [etat, academyTtc, lang]);
   const M = (v: number | null) => montant(v, lang, etat.devise);
 
   // Au navigateur : l'état d'un lien partagé, la devise du visiteur, le droit au mouvement.
   useEffect(() => {
+    fixerPrixAcademy(academyTtc);
+    if (partie === 'simulateur') fixerOrigineMesure('formation');
     const depuis = depuisAdresse(window.location.hash, etatDefaut(lang));
+    // Sans lien partagé, le devis d'une visite précédente (ou composé sur le calculateur).
+    const repris = depuis || partie !== 'simulateur' ? null : panier.reprise();
     if (depuis) setEtat(depuis);
-    else if (lang === 'en') {
+    else if (repris) {
+      const e = etatFormation(repris.st.answers, repris.devise);
+      setEtat(e);
+      window.dispatchEvent(new CustomEvent(EVENEMENT, { detail: { etat: e, de: partie } }));
+    } else if (lang === 'en') {
       // Les livres aux visiteurs anglophones qui sont au Royaume-Uni (décision de Paul du 14/10/2026).
       try {
         if (Intl.DateTimeFormat().resolvedOptions().timeZone === 'Europe/London') setEtat((e) => ({ ...e, devise: 'GBP' }));
@@ -141,7 +156,8 @@ export default function TarifsFormation({ lang, partie, academyTtc, academyFaits
   useEffect(() => {
     if (!touche || partie !== 'simulateur') return;
     history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${versAdresse(etat)}`);
-  }, [etat, touche, partie]);
+    panier.synchroniser(reponsesFormation(etat), etat.devise);
+  }, [etat, touche, partie]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // La mesure des réglages, une fois le geste terminé (pas à chaque cran du curseur).
   useEffect(() => {
@@ -336,6 +352,7 @@ export default function TarifsFormation({ lang, partie, academyTtc, academyFaits
               <div className="tf-total"><span>{t.sim.total}</span><span className="chiffre">{M(r.total)}{r.surDevis ? t.sim.plusDeplacement : ''}</span></div>
               <p className="tf-mention">{t.sim.mention}</p>
               {reco && <p className="tf-reco">{reco}</p>}
+              <AutresServices lang={lang} autres={panier.autres} devise={etat.devise} avantDePartir={() => panier.synchroniser(reponsesFormation(etat), etat.devise)} />
               <div className="pilules">
                 <button type="button" className="pilule pilule-pleine" onClick={() => { setFormulaire(true); pousser('training_quote_open', { currency: etat.devise }); }}>{t.sim.recevoir}</button>
                 <button type="button" className="pilule pilule-claire" onClick={partager}>{Icone.lien}<span className="tf-long">{t.sim.partager}</span><span className="tf-court">{t.sim.partagerCourt}</span></button>
@@ -349,13 +366,13 @@ export default function TarifsFormation({ lang, partie, academyTtc, academyFaits
 
       )}
 
-      {formulaire && <Formulaire lang={lang} etat={etat} academyTtc={academyTtc} surFermer={() => setFormulaire(false)} lienPartage={lienPartage} />}
+      {formulaire && <Formulaire lang={lang} etat={etat} devis={() => panier.complet(reponsesFormation(etat))} surFermer={() => setFormulaire(false)} />}
     </>
   );
 }
 
-/** Recevoir le chiffrage : poste sur la route des devis de l'application, branche formation. */
-function Formulaire({ lang, etat, academyTtc, surFermer, lienPartage }: { lang: Lang; etat: Etat; academyTtc: PrixAcademy; surFermer: () => void; lienPartage: () => string }) {
+/** Recevoir le chiffrage : le devis complet du visiteur (formation comprise) part comme tous les devis du site. */
+function Formulaire({ lang, etat, devis, surFermer }: { lang: Lang; etat: Etat; devis: () => QuoteState; surFermer: () => void }) {
   const t = COPY[lang].form;
   const [champs, setChamps] = useState({ nom: '', email: '', societe: '', message: '', piege: '' });
   const [etape, setEtape] = useState<'saisie' | 'envoi' | 'ok' | 'erreur'>('saisie');
@@ -375,45 +392,14 @@ function Formulaire({ lang, etat, academyTtc, surFermer, lienPartage }: { lang: 
     setErreur('');
     if (champs.piege.trim() || Date.now() - ouvertA.current < 2500) return;
     if (!champs.nom.trim() || !champs.societe.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(champs.email.trim())) { setErreur(t.erreurChamps); return; }
-    const r = chiffrer(etat, academyTtc, lang);
-    const enEuros = chiffrer({ ...etat, devise: 'EUR' }, academyTtc, 'fr');
-    const M = (v: number | null) => montant(v, lang, etat.devise);
-    const payload = {
-      contact: { name: champs.nom.trim(), email: champs.email.trim(), company: champs.societe.trim(), message: champs.message.trim() },
-      language: lang,
-      currency: etat.devise,
-      selectedDomains: ['ai-training'],
-      metadata: { lang, source: 'formation-simulator', planUrl: lienPartage(), provenance: provenance() },
-      meta_ids: metaIds(),
-      formation: {
-        etat,
-        seances: r.seances,
-        groupes: r.groupes,
-        lignes: r.lignes.map((l) => ({ libelle: l.libelle, detail: l.detail, montant: M(l.montant) })),
-        total: M(r.total),
-        parPersonne: M(r.parPersonne),
-        surDevis: r.surDevis,
-        totalEur: Math.round(enEuros.total),
-      },
-    };
-    if (/[?&]envoi=test/.test(window.location.search)) {
-      // eslint-disable-next-line no-console
-      console.info('[simulateur formation, mode test] envoi non effectué', payload);
-      setEtape('ok');
-      return;
-    }
     setEtape('envoi');
     try {
-      const res = await fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, mode: 'cors', body: JSON.stringify(payload) });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const reponse = await res.json().catch(() => ({}));
-      setEtape('ok');
-      pousser('training_quote_submit', {
-        form_name: 'training_simulator', form_location: window.location.pathname, training_total: Math.round(enEuros.total), currency: etat.devise,
-        training_duration: etat.duree, training_mode: etat.mode, training_headcount_band: tranche(etat.n), training_academy: etat.academy,
-        ...(reponse?.user_data ? { user_data: reponse.user_data } : {}),
-        ...(reponse?.event_id ? { event_id: reponse.event_id } : {}),
+      await envoyerDevis({
+        st: devis(), devise: etat.devise, lang, formulaire: 'training_simulator',
+        origine: { id: 'formation', libelle: lang === 'fr' ? 'la page AI Training' : 'the AI Training page' },
+        contact: { name: champs.nom, email: champs.email, company: champs.societe, message: champs.message }
       });
+      setEtape('ok');
     } catch {
       setEtape('erreur');
       setErreur(t.erreur);

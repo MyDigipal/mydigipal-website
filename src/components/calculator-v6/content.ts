@@ -13,7 +13,6 @@ import {
   MANAGEMENT_FEE_CONFIG,
   trackingAuditOption,
   trackingServices,
-  aiTrainingPricing,
   halfDayFeatures,
   fullDayAdditionalFeatures,
   socialChannels
@@ -21,7 +20,10 @@ import {
 import { channelDescriptions } from '../calculator/data/channel-descriptions';
 import type { Currency, ServiceDomain } from '../calculator/types';
 import { CONTACT_PRICING_CONFIG } from '../calculator/data/emailing-services';
-import { CMS_ADDON_PRICE, SERVICE_SHORT, TRAVEL_COST, domainName, domainDesc, money, perLabel, questionsFor, stripEmoji, t, type Lang } from './engine';
+import { CMS_ADDON_PRICE, SERVICE_SHORT, affiche, domainName, domainDesc, money, perLabel, prixAcademy, questionsFor, stripEmoji, t, type Lang } from './engine';
+import { GRILLE } from '../../lib/formation/grille';
+import { academyHT } from '../../lib/formation/moteur';
+import { GRILLE_CREA } from '../../lib/creative/grille';
 
 export interface Info { kick?: string; title: string; meta?: string; text?: string; list?: string[]; note?: string; video?: string }
 
@@ -31,7 +33,7 @@ const cleanAll = (l?: string[]) => (l ?? []).map(clean).filter(Boolean);
 
 /** Le service principal d'un domaine, dont on montre le contenu au niveau du domaine. */
 const MAIN: Partial<Record<ServiceDomain, string>> = {
-  'seo': 'seo-monthly', 'emailing': 'email-management-package', 'ai-content': 'ai-content-blog', 'ai-solutions': 'ai-workflow', 'creative-design': 'creative-packs'
+  'seo': 'seo-monthly', 'emailing': 'email-management-package', 'ai-content': 'ai-content-blog', 'ai-solutions': 'ai-workflow'
 };
 
 function serviceOf(id: string) {
@@ -89,6 +91,11 @@ export function info(key: string | null | undefined, lang: Lang, currency: Curre
     if (d === 'google-ads') out.list = [L(lang, 'Campagnes Search, Display et YouTube', 'Search, Display and YouTube campaigns'), L(lang, 'Optimisation, suivi, ajustements et reporting compris dans la gestion', 'Optimisation, tracking, adjustments and reporting included in management'), L(lang, 'Le budget média s’ajoute et n’est pas inclus', 'The media budget comes on top and is not included')];
     if (d === 'paid-social') out.list = [socialChannels.map((c) => (lang === 'fr' ? c.nameFr : c.name)).join(', '), L(lang, 'Création de visuels et catalogue produits en option', 'Visual creation and product catalogue as options'), L(lang, 'Le budget média s’ajoute et n’est pas inclus', 'The media budget comes on top and is not included')];
     if (d === 'ai-training') out.list = cleanAll(halfDayFeatures[lang]).slice(0, 4);
+    if (d === 'creative-design') out.list = [
+      L(lang, 'Bannières LinkedIn, Google et Display, document ads, vidéos de 15 à 30 s', 'LinkedIn, Google and Display banners, document ads, 15 to 30-second videos'),
+      L(lang, 'Produites avec l’IA, relues par nos créatifs, dans votre charte', 'Made with AI, checked by our creatives, on brand'),
+      L(lang, `${GRILLE_CREA.tours} tours de retours compris, commentés dans votre Hub`, `${GRILLE_CREA.tours} rounds of feedback included, commented in your Hub`)
+    ];
     if (d === 'tracking-reporting') { out.list = [trackingAuditOption, ...trackingServices].map((s) => clean((lang === 'fr' ? s.titleFr : s.title).replace(/^[A-Z]\.\s*/, ''))); }
     return out;
   }
@@ -187,17 +194,46 @@ export function info(key: string | null | undefined, lang: Lang, currency: Curre
     video: 'ai-solutions'
   };
   if (type === 'train') {
-    const p = aiTrainingPricing;
+    // Les prix de la grille de la formation, fixés dans chaque devise (jamais convertis).
+    const g = GRILLE.durees;
+    const f = (v: number) => affiche(v, currency, lang);
     const kick = domainName('ai-training', lang);
-    if (a === 'half') return { kick, title: L(lang, 'Séance de 3 h', '3-hour session'), meta: `${money(p.single.halfDay.price, currency, lang)}${L(lang, ' la session', ' per session')}`, list: cleanAll(halfDayFeatures[lang]).slice(0, 5), video: 'ai-training' };
-    if (a === 'full') return { kick, title: L(lang, 'Journée complète', 'Full day'), meta: `${money(p.single.fullDay.price, currency, lang)}${L(lang, ' la session', ' per session')}`, text: L(lang, 'Le contenu de la séance de 3 h, et en plus :', 'Everything in the 3-hour session, plus:'), list: cleanAll(fullDayAdditionalFeatures[lang]).slice(0, 5), video: 'ai-training' };
-    if (a === 'sessions') return { kick, title: L(lang, 'Tarif dégressif', 'Volume pricing'), list: [
-      `${L(lang, '1 session : ', '1 session: ')}${money(p.single.halfDay.price, currency, lang)} / ${money(p.single.fullDay.price, currency, lang)}`,
-      `${L(lang, 'À partir de 5 sessions : ', 'From 5 sessions: ')}${money(p.bulk.halfDay.price, currency, lang)} / ${money(p.bulk.fullDay.price, currency, lang)}${L(lang, ' la session', ' per session')}`
-    ], note: L(lang, 'Séance de 3 h / journée complète.', '3-hour session / full day.') };
-    if (a === 'remote') return { kick, title: L(lang, 'À distance', 'Remote'), text: L(lang, 'En visio, sans frais de déplacement.', 'By video call, no travel costs.') };
-    if (a === 'onsite') return { kick, title: L(lang, 'Dans vos locaux', 'At your office'), text: `${L(lang, 'Frais de déplacement de ', 'Travel costs of ')}${money(TRAVEL_COST, currency, lang)}${L(lang, ' en plus.', ' on top.')}` };
+    if (a === 'half') return { kick, title: L(lang, 'Séance de 3 h', '3-hour session'), meta: `${f(g['3h'].distance[currency])}${L(lang, ' à distance, ', ' remote, ')}${f(g['3h'].site[currency])}${L(lang, ' en présentiel', ' on-site')}`, list: cleanAll(halfDayFeatures[lang]).slice(0, 5), video: 'ai-training' };
+    if (a === 'full') return { kick, title: L(lang, 'Journée complète', 'Full day'), meta: `${f(g.jour.distance[currency])}${L(lang, ' à distance, ', ' remote, ')}${f(g.jour.site[currency])}${L(lang, ' en présentiel', ' on-site')}`, text: L(lang, 'Le contenu de la séance de 3 h, et en plus :', 'Everything in the 3-hour session, plus:'), list: cleanAll(fullDayAdditionalFeatures[lang]).slice(0, 5), video: 'ai-training' };
+    if (a === 'remote') return { kick, title: L(lang, 'À distance', 'Remote'), text: L(lang, 'En visio, sans frais de déplacement. Les mêmes exercices, sur les fichiers de votre équipe.', 'By video call, no travel costs. The same exercises, on your team’s own files.') };
+    if (a === 'onsite' || a === 'zone' || a === 'deplacement') return { kick, title: L(lang, 'Dans vos locaux', 'At your office'), text: L(lang, 'Nous partons de Londres. Un aller-retour par destination, et une nuit d’hôtel quand la formation dure plusieurs jours.', 'We travel from London. One return trip per destination, and a hotel night when the training runs over several days.'), list: [`${L(lang, 'Nuit d’hôtel : ', 'Hotel night: ')}${f(GRILLE.deplacement.hotel[currency])}`, L(lang, 'Hors d’Europe : chiffré à la demande', 'Outside Europe: quoted on request')] };
+    if (a === 'academy') {
+      const p = prixAcademy();
+      return { kick, title: 'MyDigipal AI Academy', meta: `${f(academyHT(p, currency, 1, true))} ${L(lang, 'HT par personne avec une formation', 'excl. VAT per person with a training')}`, text: L(lang, 'La formation en ligne, pour que chaque participant continue après la séance, avec l’outil de son choix.', 'The online course, so every participant keeps going after the session, with the tool of their choice.'), video: 'ai-training' };
+    }
+    if (a === 'seances' || a === 'majoration' || a === 'remise') return { kick, title: L(lang, 'Groupes et remises', 'Groups and discounts'), list: [
+      L(lang, 'Des groupes de 10 à 15 : chacun travaille sur ses propres fichiers', 'Groups of 10 to 15: everyone works on their own files'),
+      L(lang, 'De 21 à 50 personnes dans une séance : +15 %', '21 to 50 people in one session: +15%'),
+      L(lang, 'Au-delà de 50 : un format webinaire, +50 %', 'Over 50: a webinar format, +50%'),
+      L(lang, 'Remise de volume : -5 % dès 2 séances, jusqu’à -20 % dès 8', 'Volume discount: 5% off from 2 sessions, up to 20% off from 8')
+    ] };
   }
+  if (type === 'crea') {
+    const kick = domainName('creative-design', lang);
+    const f = (v: number) => affiche(v, currency, lang);
+    if (a === 'rythme') return { kick, title: L(lang, 'Une fois, ou chaque mois', 'Once, or every month'), text: L(lang, 'Une demande se chiffre une fois. Si vous voulez de nouvelles créas tous les mois, le même volume est renouvelé chaque mois, au même prix.', 'A request is priced once. If you want new creatives every month, the same volume is renewed monthly, at the same price.') };
+    return {
+      kick, title: L(lang, 'Ce que comprend une créa', 'What a creative includes'),
+      text: L(lang, 'Nos outils d’IA produisent une première version dans votre charte, nos créatifs la relisent et la corrigent, puis vous la commentez dans votre Hub.', 'Our AI tools produce a first version on brand, our creatives check and fix it, then you comment on it in your Hub.'),
+      list: [
+        `${L(lang, 'Jeu de bannières LinkedIn : dès ', 'LinkedIn banner set: from ')}${f(GRILLE_CREA.jeux.li[GRILLE_CREA.jeux.li.length - 1].prix[currency])}`,
+        `${L(lang, 'Vidéo de 15 à 20 s : dès ', '15 to 20-second video: from ')}${f(GRILLE_CREA.videos.v20[GRILLE_CREA.videos.v20.length - 1].prix[currency])}`,
+        L(lang, `${GRILLE_CREA.tours} tours de retours compris sur chaque jeu et chaque vidéo`, `${GRILLE_CREA.tours} rounds of feedback included on every set and every video`),
+        L(lang, 'Le prix par jeu baisse avec le nombre de jeux de la même demande', 'The price per set drops with the number of sets in the same request')
+      ],
+      video: 'creative-design'
+    };
+  }
+  if (type === 'ajout') return {
+    title: L(lang, 'Un seul devis pour tout', 'One quote for everything'),
+    text: L(lang, 'Ajoutez les services dont vous avez besoin : ils rejoignent ce devis, que vous pouvez aussi rouvrir et compléter sur le calculateur.', 'Add the services you need: they join this quote, which you can also reopen and complete on the calculator.'),
+    list: [L(lang, 'Un seul envoi, un seul interlocuteur', 'One request, one point of contact'), L(lang, 'Le devis vous suit d’une page à l’autre', 'The quote follows you from page to page'), L(lang, 'Un expert vous rappelle sous 24 à 48 h', 'An expert gets back to you within 24 to 48 hours')]
+  };
   return null;
 }
 
@@ -211,6 +247,8 @@ export function restKey(step: string): string {
   if (step === 'ps-channels') return 'dom:paid-social';
   if (step === 'trk-items') return 'dom:tracking-reporting';
   if (step.startsWith('tr-')) return 'dom:ai-training';
+  if (step.startsWith('cr-')) return step === 'cr-rythme' ? 'crea:rythme' : 'crea:jeux';
+  if (step === 'ajout') return 'ajout';
   if (step === 'seo-cms') return 'cms';
   if (step === 'em-contacts' || step === 'em-volume') return 'contacts';
   if (step === 'ai-custom' || step === 'ai-custom-form') return 'aicustom';
@@ -226,7 +264,8 @@ export function termsFor(step: string, lang: Lang): { key: string; label: string
   ];
   if (step === 'ps-channels') return [{ key: 'dom:paid-social', label: L(lang, 'Quel réseau choisir ?', 'Which network should I pick?') }];
   if (step === 'trk-items') return [{ key: 'dom:tracking-reporting', label: L(lang, 'Pourquoi le tracking d’abord ?', 'Why tracking first?') }];
-  if (step.startsWith('tr-')) return [{ key: 'dom:ai-training', label: L(lang, 'Le contenu de la formation', 'What the training covers') }];
+  if (step.startsWith('tr-')) return [{ key: 'dom:ai-training', label: L(lang, 'Le contenu de la formation', 'What the training covers') }, ...(step === 'tr-n' ? [{ key: 'train:seances', label: L(lang, 'Groupes et remises', 'Groups and discounts') }] : [])];
+  if (step.startsWith('cr-')) return [{ key: 'crea:jeux', label: L(lang, 'Ce que comprend une créa', 'What a creative includes') }];
   if (step === 'duration') return [{ key: 'duration', label: L(lang, 'Pourquoi une remise ?', 'Why a discount?') }];
   if (step === 'seo-cms') return [{ key: 'cms', label: L(lang, 'C’est quoi, un CMS ?', 'What is a CMS?') }];
   if (step === 'em-contacts' || step === 'em-volume') return [{ key: 'contacts', label: L(lang, 'Comment ça marche ?', 'How does it work?') }];

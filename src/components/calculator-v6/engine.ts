@@ -27,12 +27,20 @@ import {
 import { CONTACT_PRICING_CONFIG, getContactTotalPrice, getContactUnitPrice, type ContactType } from '../calculator/data/emailing-services';
 import { generateRecommendation, budgetOptionToValue } from '../calculator/guided-data';
 import type { Currency, ServiceDomain } from '../calculator/types';
+// Le devis unique (20/10/2026, Paul : « le calculateur, c'est le truc global, mais chaque page
+// peut avoir un extrait »). La formation et la créa ont leurs propres grilles, à prix FIXÉS par
+// devise : le calculateur les chiffre avec leurs moteurs au lieu de garder une copie simplifiée.
+import { GRILLE, ACADEMY_REPLI, type PrixAcademy, type Zone } from '../../lib/formation/grille';
+import { academyHT, chiffrer as chiffrerFormation, ZONES as ZONES_FORMATION, type Etat as EtatFormation } from '../../lib/formation/moteur';
+import { GRILLE_CREA, type Canal, type Video } from '../../lib/creative/grille';
+import { chiffrer as chiffrerCrea, MAX as MAX_CREA, nomCanal, type EtatCrea } from '../../lib/creative/moteur';
 
 export type Lang = 'fr' | 'en';
 export type Txt = { fr: string; en: string };
 export const t = (x: Txt | undefined, lang: Lang): string => (x ? x[lang] : '');
 
 export const DOMAIN_ORDER = Object.keys(domainConfigs) as ServiceDomain[];
+export const DURATION_CONFIG_MOIS: number[] = DURATION_CONFIG.options.map((o) => o.months);
 
 /** Le curseur de budget avance par paliers : sur un curseur linéaire de 500 à 50 000,
  * tout ce qui se joue entre 500 et 5 000 tenait dans le premier dixième. */
@@ -49,8 +57,16 @@ export const AI_CUSTOM_FIELDS = aiSolutionsQuestions;
 /** L'acquisition de contacts a ses propres questions (type puis volume), pas un niveau. */
 const EXCLUDED_SERVICES = new Set(['email-contacts-package']);
 
-export type QuestionKind = 'level' | 'budget' | 'channels' | 'choice' | 'multi' | 'volume' | 'form';
-export interface Option { value: string | number; label: Txt; desc?: Txt; price?: number; oneOff?: boolean; info?: string; /** Prix unitaire le plus bas (contacts). */ unitFrom?: number }
+export type QuestionKind = 'level' | 'budget' | 'channels' | 'choice' | 'multi' | 'volume' | 'form' | 'compteurs';
+export interface Option {
+  value: string | number; label: Txt; desc?: Txt; price?: number; oneOff?: boolean; info?: string; /** Prix unitaire le plus bas (contacts). */ unitFrom?: number;
+  /** Un prix FIXÉ dans chaque devise (formation, créa) : affiché tel quel, jamais converti. */
+  prixDevise?: Record<Currency, number>;
+  /** Ce que couvre le prix affiché (« la séance », « par personne »), à la place de « une fois ». */
+  unite?: Txt;
+}
+/** Un réglage d'un écran à compteurs : un nombre (avec - et +) ou un choix en segments. */
+export interface Champ { id: string; kind: 'nombre' | 'segment'; label: Txt; min?: number; max?: number; options?: { value: string; label: Txt }[] }
 export interface Question {
   id: string;
   domain: ServiceDomain;
@@ -60,7 +76,68 @@ export interface Question {
   service?: string;
   /** Question posée seulement si la condition est vraie (ex. le volume de contacts). */
   when?: (a: Answers) => boolean;
+  /** Les réglages d'un écran à compteurs (`kind: 'compteurs'`). */
+  fields?: Champ[];
 }
+
+// --- la formation et la créa, avec leurs propres moteurs -------------------------------------
+
+/**
+ * Les réponses par défaut de la formation et de la créa : ce sont celles des simulateurs des
+ * pages AI Training et Creative design, si bien que le prix s'affiche dès que le service est
+ * choisi, et qu'un écran à compteurs n'a rien d'obligatoire.
+ */
+export const DEFAUTS: Answers = {
+  'tr-format': 'half', 'tr-n': 12, 'tr-mode': 'remote', 'tr-zone': 'paris', 'tr-academy': 'no',
+  'cr-jeux': 3, 'cr-canal': 'li', 'cr-videos': 1, 'cr-duree': 'v20', 'cr-langues': 0, 'cr-docs': 0, 'cr-sb': 0, 'cr-rythme': 'once'
+};
+/** Une réponse, ou sa valeur par défaut. */
+export const reponse = (a: Answers, id: string) => (a[id] !== undefined && a[id] !== null ? a[id] : DEFAUTS[id]);
+const nombre = (a: Answers, id: string, max: number) => Math.max(0, Math.min(max, Math.round(Number(reponse(a, id)) || 0)));
+
+/** Le prix public de l'Academy : l'instantané, ou le prix lu dans l'API par la page AI Training. */
+let PRIX_ACADEMY: PrixAcademy = ACADEMY_REPLI;
+export function fixerPrixAcademy(p: PrixAcademy) { PRIX_ACADEMY = p; }
+export const prixAcademy = () => PRIX_ACADEMY;
+
+export function etatFormation(a: Answers, devise: Currency): EtatFormation {
+  const g = a['tr-groupes'];
+  return {
+    n: Math.max(1, nombre(a, 'tr-n', 2000)),
+    duree: reponse(a, 'tr-format') === 'full' ? 'jour' : '3h',
+    mode: reponse(a, 'tr-mode') === 'onsite' ? 'site' : 'distance',
+    zone: (String(reponse(a, 'tr-zone')) in ZONES_FORMATION ? reponse(a, 'tr-zone') : 'paris') as Zone,
+    hotel: a['tr-hotel'] === 'yes',
+    groupes: g === 'pleniere' ? 'pleniere' : typeof g === 'number' ? g : 'auto',
+    academy: reponse(a, 'tr-academy') === 'yes',
+    devise
+  };
+}
+/** Le chemin inverse : le simulateur de la page AI Training écrit ses réglages dans le devis. */
+export function reponsesFormation(e: EtatFormation): Answers {
+  return {
+    'tr-n': e.n, 'tr-format': e.duree === 'jour' ? 'full' : 'half', 'tr-mode': e.mode === 'site' ? 'onsite' : 'remote', 'tr-zone': e.zone,
+    'tr-hotel': e.hotel ? 'yes' : 'no', 'tr-groupes': e.groupes, 'tr-academy': e.academy ? 'yes' : 'no'
+  };
+}
+export function etatCrea(a: Answers, devise: Currency): EtatCrea {
+  const k = reponse(a, 'cr-canal');
+  return {
+    jeux: nombre(a, 'cr-jeux', MAX_CREA.jeux),
+    canal: (k === 'pm' || k === 'both' ? k : 'li') as Canal,
+    videos: nombre(a, 'cr-videos', MAX_CREA.videos),
+    duree: (reponse(a, 'cr-duree') === 'v30' ? 'v30' : 'v20') as Video,
+    langues: nombre(a, 'cr-langues', MAX_CREA.langues),
+    docs: nombre(a, 'cr-docs', MAX_CREA.docs),
+    storyboards: nombre(a, 'cr-sb', MAX_CREA.storyboards),
+    devise
+  };
+}
+export function reponsesCrea(e: EtatCrea): Answers {
+  return { 'cr-jeux': e.jeux, 'cr-canal': e.canal, 'cr-videos': e.videos, 'cr-duree': e.duree, 'cr-langues': e.langues, 'cr-docs': e.docs, 'cr-sb': e.storyboards };
+}
+/** Une demande créative chiffrée une fois, ou chaque mois (le même volume, tous les mois). */
+export const creaMensuelle = (a: Answers) => reponse(a, 'cr-rythme') === 'month';
 
 const LEVEL_TITLES: Record<string, Txt> = {
   'seo-audit': { fr: 'Un audit SEO pour démarrer ?', en: 'Start with an SEO audit?' },
@@ -127,11 +204,46 @@ export function questionsFor(domain: ServiceDomain): Question[] {
     ];
   }
   if (domain === 'ai-training') {
+    // Les questions du simulateur de la page AI Training, dans l'ordre où elles décident du prix.
     return [
-      { id: 'tr-format', domain, kind: 'choice', title: { fr: 'Quel format ?', en: 'Which format?' } },
-      { id: 'tr-sessions', domain, kind: 'choice', title: { fr: 'Combien de sessions ?', en: 'How many sessions?' },
-        help: { fr: 'Tarif dégressif à partir de 5 sessions.', en: 'Lower rate from 5 sessions.' } },
-      { id: 'tr-mode', domain, kind: 'choice', title: { fr: 'Où ?', en: 'Where?' } }
+      { id: 'tr-format', domain, kind: 'choice', title: { fr: 'Quel format ?', en: 'Which format?' },
+        help: { fr: 'Le prix d’une séance, pour un groupe jusqu’à 20 personnes.', en: 'The price of one session, for a group of up to 20 people.' } },
+      { id: 'tr-n', domain, kind: 'compteurs', title: { fr: 'Combien de personnes à former ?', en: 'How many people to train?' },
+        help: { fr: 'Des groupes de 15 au plus : au-delà, on vous propose plusieurs séances, avec une remise de volume.', en: 'Groups of 15 at most: beyond that, we suggest several sessions, with a volume discount.' },
+        fields: [{ id: 'tr-n', kind: 'nombre', label: { fr: 'Personnes', en: 'People' }, min: 1, max: 2000 }] },
+      { id: 'tr-mode', domain, kind: 'choice', title: { fr: 'À distance ou dans vos locaux ?', en: 'Remote or at your office?' } },
+      { id: 'tr-zone', domain, kind: 'choice', title: { fr: 'Où se passe la formation ?', en: 'Where does the training take place?' },
+        help: { fr: 'Nous partons de Londres : un aller-retour par destination.', en: 'We travel from London: one return trip per destination.' },
+        when: (a) => reponse(a, 'tr-mode') === 'onsite' },
+      { id: 'tr-academy', domain, kind: 'choice', title: { fr: 'L’AI Academy en plus, pour continuer en ligne ?', en: 'Add the AI Academy, to keep going online?' },
+        help: { fr: 'La formation en ligne pour chaque participant, à -30 % avec une formation.', en: 'The online course for every participant, 30% off with a training.' } }
+    ];
+  }
+  if (domain === 'creative-design') {
+    // Les réglages du simulateur de la page Creative design, regroupés en trois écrans.
+    const canal = (['li', 'pm', 'both'] as Canal[]).map((k) => ({ value: k, label: { fr: nomCanal(k, 'fr'), en: nomCanal(k, 'en') } }));
+    return [
+      { id: 'cr-jeux', domain, kind: 'compteurs', title: { fr: 'Combien de jeux de bannières ?', en: 'How many banner sets?' },
+        help: { fr: 'Un jeu par message, dans toutes les tailles du canal. Le prix par jeu baisse avec le nombre.', en: 'One set per message, in every size of the channel. The price per set drops with the number.' },
+        fields: [
+          { id: 'cr-jeux', kind: 'nombre', label: { fr: 'Jeux de bannières', en: 'Banner sets' }, min: 0, max: MAX_CREA.jeux },
+          { id: 'cr-canal', kind: 'segment', label: { fr: 'Canal', en: 'Channel' }, options: canal }
+        ] },
+      { id: 'cr-videos', domain, kind: 'compteurs', title: { fr: 'Des vidéos ?', en: 'Any videos?' },
+        help: { fr: 'Script et motion design, livrées en 16:9, 1:1 et 9:16.', en: 'Script and motion design, delivered in 16:9, 1:1 and 9:16.' },
+        fields: [
+          { id: 'cr-videos', kind: 'nombre', label: { fr: 'Vidéos', en: 'Videos' }, min: 0, max: MAX_CREA.videos },
+          { id: 'cr-duree', kind: 'segment', label: { fr: 'Durée', en: 'Length' }, options: [{ value: 'v20', label: { fr: '15 à 20 s', en: '15 to 20 s' } }, { value: 'v30', label: { fr: '20 à 30 s', en: '20 to 30 s' } }] }
+        ] },
+      { id: 'cr-extras', domain, kind: 'compteurs', title: { fr: 'D’autres langues, des document ads ?', en: 'Other languages, document ads?' },
+        help: { fr: 'Facultatif. Une langue en plus coûte 30 % du prix de chaque jeu.', en: 'Optional. An extra language costs 30% of each set’s price.' },
+        fields: [
+          { id: 'cr-langues', kind: 'nombre', label: { fr: 'Langues en plus', en: 'Extra languages' }, min: 0, max: MAX_CREA.langues },
+          { id: 'cr-docs', kind: 'nombre', label: { fr: 'Document ads', en: 'Document ads' }, min: 0, max: MAX_CREA.docs },
+          { id: 'cr-sb', kind: 'nombre', label: { fr: 'Storyboards seuls', en: 'Storyboards only' }, min: 0, max: MAX_CREA.storyboards }
+        ] },
+      { id: 'cr-rythme', domain, kind: 'choice', title: { fr: 'Une seule fois, ou chaque mois ?', en: 'Just once, or every month?' },
+        help: { fr: 'Chaque mois : le même volume de créas, renouvelé tous les mois.', en: 'Every month: the same volume of creatives, renewed every month.' } }
     ];
   }
   if (domain === 'seo') {
@@ -176,6 +288,13 @@ export function questionsFor(domain: ServiceDomain): Question[] {
 export const QUESTION_INDEX: Record<string, Question> = Object.fromEntries(
   DOMAIN_ORDER.flatMap((d) => questionsFor(d).map((q) => [q.id, q]))
 );
+/** Toutes les réponses qu'un devis peut porter : les questions, les réglages des écrans à
+ *  compteurs, et deux réglages que seul le simulateur de la page AI Training expose. */
+export const ANSWER_KEYS = new Set<string>([
+  ...Object.keys(QUESTION_INDEX),
+  ...Object.values(QUESTION_INDEX).flatMap((q) => (q.fields ?? []).map((f) => f.id)),
+  'tr-hotel', 'tr-groupes'
+]);
 
 /** Options d'une question à choix. Les prix de la formation dépendent du format déjà choisi. */
 export function optionsFor(q: Question, answers: Answers): Option[] {
@@ -190,26 +309,45 @@ export function optionsFor(q: Question, answers: Answers): Option[] {
       info: `lvl:${q.service}:${i}`
     }));
   }
+  // La formation : les prix de la grille, fixés dans chaque devise.
+  const laSeance: Txt = { fr: 'la séance', en: 'per session' };
   if (q.id === 'tr-format') {
+    const mode = reponse(answers, 'tr-mode') === 'onsite' ? 'site' : 'distance';
     return [
-      { value: 'half', label: { fr: 'Séance de 3 h', en: '3-hour session' }, desc: { fr: 'Notre format de prédilection', en: 'Our preferred format' }, price: aiTrainingPricing.single.halfDay.price, oneOff: true, info: 'train:half' },
-      { value: 'full', label: { fr: 'Journée complète', en: 'Full day' }, desc: { fr: 'Pour aller au fond', en: 'To go deep' }, price: aiTrainingPricing.single.fullDay.price, oneOff: true, info: 'train:full' }
+      { value: 'half', label: { fr: 'Séance de 3 h', en: '3-hour session' }, desc: { fr: 'Notre format de prédilection', en: 'Our preferred format' }, prixDevise: GRILLE.durees['3h'][mode], unite: laSeance, info: 'train:half' },
+      { value: 'full', label: { fr: 'Journée complète', en: 'Full day' }, desc: { fr: 'Pour aller au fond', en: 'To go deep' }, prixDevise: GRILLE.durees.jour[mode], unite: laSeance, info: 'train:full' }
     ];
   }
-  if (q.id === 'tr-sessions') {
-    const unit = (n: number) => {
-      const tier = n >= 5 ? aiTrainingPricing.bulk : aiTrainingPricing.single;
-      return answers['tr-format'] === 'full' ? tier.fullDay.price : tier.halfDay.price;
-    };
-    return [1, 5, 10].map((n) => ({
-      value: n, label: { fr: `${n} session${n > 1 ? 's' : ''}`, en: `${n} session${n > 1 ? 's' : ''}` },
-      price: answers['tr-format'] ? unit(n) * n : undefined, oneOff: true, info: 'train:sessions'
-    }));
-  }
   if (q.id === 'tr-mode') {
+    const d = reponse(answers, 'tr-format') === 'full' ? 'jour' : '3h';
     return [
-      { value: 'remote', label: { fr: 'À distance', en: 'Remote' }, desc: { fr: 'En visio', en: 'Video call' }, info: 'train:remote' },
-      { value: 'onsite', label: { fr: 'Dans vos locaux', en: 'At your office' }, desc: { fr: 'Frais de déplacement', en: 'Travel costs' }, price: TRAVEL_COST, oneOff: true, info: 'train:onsite' }
+      { value: 'remote', label: { fr: 'À distance', en: 'Remote' }, desc: { fr: 'En visio, sans déplacement', en: 'By video call, no travel' }, prixDevise: GRILLE.durees[d].distance, unite: laSeance, info: 'train:remote' },
+      { value: 'onsite', label: { fr: 'Dans vos locaux', en: 'At your office' }, desc: { fr: 'Plus le déplacement, selon la destination', en: 'Plus travel, depending on the destination' }, prixDevise: GRILLE.durees[d].site, unite: laSeance, info: 'train:onsite' }
+    ];
+  }
+  if (q.id === 'tr-zone') {
+    return (Object.keys(ZONES_FORMATION) as Zone[]).map((z) => {
+      const trajet = GRILLE.deplacement.zones[z];
+      return {
+        value: z, label: ZONES_FORMATION[z],
+        desc: trajet == null ? { fr: 'Déplacement chiffré à la demande', en: 'Travel quoted on request' } : trajet.EUR === 0 ? { fr: 'Déplacement compris', en: 'Travel included' } : { fr: 'Un aller-retour', en: 'One return trip' },
+        ...(trajet && trajet.EUR > 0 ? { prixDevise: trajet, unite: { fr: 'le trajet', en: 'per trip' } } : {}),
+        info: 'train:zone'
+      };
+    });
+  }
+  if (q.id === 'tr-academy') {
+    const n = Math.max(1, nombre(answers, 'tr-n', 2000));
+    const unitaire = { EUR: academyHT(PRIX_ACADEMY, 'EUR', n, true), GBP: academyHT(PRIX_ACADEMY, 'GBP', n, true), USD: academyHT(PRIX_ACADEMY, 'USD', n, true) };
+    return [
+      { value: 'no', label: { fr: 'Non merci', en: 'No thanks' }, info: 'train:academy' },
+      { value: 'yes', label: { fr: 'Oui, pour chaque participant', en: 'Yes, for every participant' }, desc: { fr: 'Accès complet à la formation en ligne, hors taxes', en: 'Full access to the online course, excl. VAT' }, prixDevise: unitaire, unite: { fr: 'par personne', en: 'per person' }, info: 'train:academy' }
+    ];
+  }
+  if (q.id === 'cr-rythme') {
+    return [
+      { value: 'once', label: { fr: 'Une seule fois', en: 'Just once' }, desc: { fr: 'Une demande, livrée et terminée', en: 'One request, delivered and done' }, info: 'crea:rythme' },
+      { value: 'month', label: { fr: 'Chaque mois', en: 'Every month' }, desc: { fr: 'Le même volume, renouvelé tous les mois', en: 'The same volume, renewed every month' }, info: 'crea:rythme' }
     ];
   }
   if (q.id === 'seo-cms') {
@@ -259,9 +397,11 @@ export interface QuoteState {
 export const emptyState = (): QuoteState => ({ domains: [], answers: {}, discuss: {}, duration: 4 });
 
 export type Per = 'month' | 'once' | 'media' | 'quote';
-export interface Line { label: Txt; amount: number; per: Per; info?: string; service?: string; level?: Txt; kind: 'fee' | 'media' | 'service' }
+export interface Line { label: Txt; amount: number; per: Per; info?: string; service?: string; level?: Txt; kind: 'fee' | 'media' | 'service'; /** Le détail du calcul (formation, créa). */ detail?: Txt }
 export interface DomainQuote { domain: ServiceDomain; discuss: boolean; lines: Line[]; monthly: number; oneOff: number; fee: number; media: number; empty: boolean }
 export interface Quote {
+  /** La devise de TOUS les montants ci-dessous. */
+  currency: Currency;
   domains: DomainQuote[];
   servicesMonthly: number;
   feesMonthly: number;
@@ -277,9 +417,37 @@ export interface Quote {
 const budgetOf = (a: Answers, id: string) => (typeof a[id] === 'number' ? (a[id] as number) : DEFAULT_BUDGET);
 export const channelsOf = (a: Answers) => (Array.isArray(a['ps-channels']) ? (a['ps-channels'] as string[]) : []);
 
-/** Le seul calcul de prix. Montants en EUR ; la conversion de devise se fait à l'affichage. */
-export function devis(st: QuoteState): Quote {
+/** Les lignes de la formation, telles que les chiffre le simulateur de la page AI Training. */
+function lignesFormation(a: Answers, currency: Currency): Line[] {
+  const fr = chiffrerFormation(etatFormation(a, currency), PRIX_ACADEMY, 'fr');
+  const en = chiffrerFormation(etatFormation(a, currency), PRIX_ACADEMY, 'en');
+  return fr.lignes.map((l, k) => ({
+    kind: 'service', service: 'ai-training', info: `train:${l.cle}`,
+    label: { fr: l.libelle, en: en.lignes[k].libelle }, detail: { fr: l.detail, en: en.lignes[k].detail },
+    amount: l.montant ?? 0, per: l.montant == null ? 'quote' : 'once'
+  }));
+}
+/** Les lignes de la créa, telles que les chiffre le simulateur de la page Creative design. */
+function lignesCrea(a: Answers, currency: Currency): Line[] {
+  const fr = chiffrerCrea(etatCrea(a, currency), 'fr');
+  const en = chiffrerCrea(etatCrea(a, currency), 'en');
+  const per: Per = creaMensuelle(a) ? 'month' : 'once';
+  return fr.lignes.map((l, k) => ({
+    kind: 'service', service: 'creative', info: `crea:${l.cle}`,
+    label: { fr: l.libelle, en: en.lignes[k].libelle }, detail: { fr: l.detail, en: en.lignes[k].detail },
+    amount: l.montant, per
+  }));
+}
+
+/**
+ * Le seul calcul de prix. Tous les montants sortent dans `currency` : les grilles en euros du
+ * calculateur sont converties ligne par ligne (`convertPrice`, prix ronds), la formation et la
+ * créa sont chiffrées directement dans la devise, à leurs prix fixés. Les totaux additionnent
+ * les lignes affichées, donc l'écran, le mail et la mesure tombent toujours juste.
+ */
+export function devis(st: QuoteState, currency: Currency = 'EUR'): Quote {
   const a = st.answers;
+  const cv = (eur: number) => convertPrice(eur, currency);
   const out: DomainQuote[] = [];
   let servicesMonthly = 0, feesMonthly = 0, oneOff = 0, media = 0;
 
@@ -290,10 +458,10 @@ export function devis(st: QuoteState): Quote {
     if (d === 'google-ads' || d === 'paid-social') {
       const budget = budgetOf(a, d === 'google-ads' ? 'ga-budget' : 'ps-budget');
       const n = d === 'paid-social' ? Math.max(channelsOf(a).length, 1) : 1;
-      fee = calculateManagementFee(d, budget, n).fee;
-      med = budget;
+      fee = cv(calculateManagementFee(d, budget, n).fee);
+      med = cv(budget);
       lines.push({ kind: 'fee', label: n > 1 ? { fr: `Gestion des campagnes, ${n} réseaux`, en: `Campaign management, ${n} networks` } : { fr: 'Gestion des campagnes', en: 'Campaign management' }, amount: fee, per: 'month', info: 'fee' });
-      lines.push({ kind: 'media', label: { fr: 'Budget média (non inclus)', en: 'Media budget (not included)' }, amount: budget, per: 'media', info: 'media' });
+      lines.push({ kind: 'media', label: { fr: 'Budget média (non inclus)', en: 'Media budget (not included)' }, amount: med, per: 'media', info: 'media' });
     }
     for (const q of questionsFor(d)) {
       if (q.kind !== 'level') continue;
@@ -305,23 +473,13 @@ export function devis(st: QuoteState): Quote {
       const once = !!(level.isOneOff || service.isOneOff);
       lines.push({ kind: 'service', service: q.service, level: { fr: level.name, en: level.nameEn || level.name },
         label: { fr: `${SERVICE_SHORT[q.service!].fr}, ${level.name}`, en: `${SERVICE_SHORT[q.service!].en}, ${level.nameEn || level.name}` },
-        amount: level.price, per: once ? 'once' : 'month', info: `lvl:${q.service}:${v}` });
+        amount: cv(level.price), per: once ? 'once' : 'month', info: `lvl:${q.service}:${v}` });
     }
-    if (d === 'ai-training' && a['tr-format'] && typeof a['tr-sessions'] === 'number' && a['tr-mode']) {
-      const n = a['tr-sessions'] as number;
-      const tier = n >= 5 ? aiTrainingPricing.bulk : aiTrainingPricing.single;
-      const full = a['tr-format'] === 'full';
-      // Le présentiel coûte plus cher par séance (grille unique), en plus du déplacement.
-      const ecart = a['tr-mode'] === 'onsite' ? (full ? aiTrainingPricing.surcoutPresentiel.fullDay : aiTrainingPricing.surcoutPresentiel.halfDay) * (n >= 5 ? tier.halfDay.price / aiTrainingPricing.single.halfDay.price : 1) : 0;
-      const unit = (full ? tier.fullDay.price : tier.halfDay.price) + ecart;
-      lines.push({ kind: 'service', service: 'ai-training', label: { fr: `${full ? 'Journée complète' : 'Séance de 3 h'} x ${n}`, en: `${full ? 'Full day' : '3-hour session'} x ${n}` },
-        level: { fr: `${full ? 'Journée complète' : 'Séance de 3 h'} x ${n}${a['tr-mode'] === 'onsite' ? ' (présentiel)' : ''}`, en: `${full ? 'Full day' : '3-hour session'} x ${n}${a['tr-mode'] === 'onsite' ? ' (on-site)' : ''}` },
-        amount: unit * n, per: 'once', info: `train:${a['tr-format']}` });
-      if (a['tr-mode'] === 'onsite') lines.push({ kind: 'service', service: 'travel', label: { fr: 'Déplacement', en: 'Travel' }, amount: TRAVEL_COST, per: 'once', info: 'train:onsite' });
-    }
+    if (d === 'ai-training') lines.push(...lignesFormation(a, currency));
+    if (d === 'creative-design') lines.push(...lignesCrea(a, currency));
     if (d === 'seo' && a['seo-cms'] === 'yes' && typeof a['seo-monthly'] === 'number') {
       lines.push({ kind: 'service', service: 'cms', label: { fr: 'Publication automatique dans votre CMS', en: 'Automatic CMS publishing' }, level: { fr: 'Option', en: 'Add-on' },
-        amount: CMS_ADDON_PRICE, per: 'month', info: 'cms' });
+        amount: cv(CMS_ADDON_PRICE), per: 'month', info: 'cms' });
     }
     if (d === 'emailing' && typeof a['em-contacts'] === 'string' && a['em-contacts'] !== 'none') {
       const type = a['em-contacts'] as ContactType;
@@ -329,7 +487,7 @@ export function devis(st: QuoteState): Quote {
       const lbl = CONTACT_PRICING_CONFIG.labels[type];
       lines.push({ kind: 'service', service: 'contacts', label: { fr: `${stripEmoji(lbl.fr)}, ${volume.toLocaleString('fr-FR')} contacts`, en: `${stripEmoji(lbl.en)}, ${volume.toLocaleString('en-GB')} contacts` },
         level: { fr: `${stripEmoji(lbl.fr)}, ${volume} contacts`, en: `${stripEmoji(lbl.en)}, ${volume} contacts` },
-        amount: getContactTotalPrice(type, volume), per: 'once', info: `cnt:${type}` });
+        amount: cv(getContactTotalPrice(type, volume)), per: 'once', info: `cnt:${type}` });
     }
     if (d === 'ai-solutions' && a['ai-custom'] === 'yes') {
       lines.push({ kind: 'service', service: 'ai-custom', label: { fr: 'Projet IA sur mesure', en: 'Custom AI project' }, level: { fr: 'Sur devis', en: 'Custom quote' },
@@ -339,7 +497,7 @@ export function devis(st: QuoteState): Quote {
       const all = [trackingAuditOption, ...trackingServices];
       for (const id of (Array.isArray(a['trk-items']) ? (a['trk-items'] as string[]) : [])) {
         const s = all.find((x) => x.id === id);
-        if (s) lines.push({ kind: 'service', service: s.id, label: { fr: s.titleFr.replace(/^[A-Z]\.\s*/, ''), en: s.title.replace(/^[A-Z]\.\s*/, '') }, amount: s.price, per: 'once', info: `trk:${s.id}` });
+        if (s) lines.push({ kind: 'service', service: s.id, label: { fr: s.titleFr.replace(/^[A-Z]\.\s*/, ''), en: s.title.replace(/^[A-Z]\.\s*/, '') }, amount: cv(s.price), per: 'once', info: `trk:${s.id}` });
       }
     }
     const monthly = lines.filter((l) => l.per === 'month').reduce((s, l) => s + l.amount, 0);
@@ -355,14 +513,28 @@ export function devis(st: QuoteState): Quote {
   const discountPct = DURATION_CONFIG.options.find((o) => o.months === st.duration)?.discount ?? 0;
   const discount = beforeDiscount * discountPct / 100;
   const monthly = beforeDiscount - discount;
-  return { domains: out, servicesMonthly, feesMonthly, beforeDiscount, discountPct, discount, monthly, oneOff, media, totalFees: monthly * st.duration + oneOff };
+  return { currency, domains: out, servicesMonthly, feesMonthly, beforeDiscount, discountPct, discount, monthly, oneOff, media, totalFees: monthly * st.duration + oneOff };
 }
 
-/** Parcours B : l'ordre des écrans. */
-export function sequence(st: QuoteState): string[] {
-  const s = ['pick'];
-  for (const d of st.domains) if (!st.discuss[d]) for (const q of visibleQuestions(d, st.answers)) s.push(q.id);
-  s.push('duration', 'recap');
+/**
+ * L'ordre des écrans. Sur le calculateur : le choix des services, leurs questions, la durée
+ * (seulement s'il y a des honoraires mensuels à engager), le devis. Sur une page de service
+ * (`focus`, l'extrait du calculateur) : les questions du service de la page d'abord, puis
+ * « Ajouter un service ? », les questions des services ajoutés, la durée, le devis.
+ */
+export function sequence(st: QuoteState, focus?: ServiceDomain[]): string[] {
+  const actifs = st.domains.filter((d) => !st.discuss[d]);
+  const s: string[] = [];
+  if (focus?.length) {
+    for (const d of inOrder(focus)) if (actifs.includes(d)) for (const q of visibleQuestions(d, st.answers)) s.push(q.id);
+    s.push('ajout');
+    for (const d of actifs) if (!focus.includes(d)) for (const q of visibleQuestions(d, st.answers)) s.push(q.id);
+  } else {
+    s.push('pick');
+    for (const d of actifs) for (const q of visibleQuestions(d, st.answers)) s.push(q.id);
+  }
+  if (devis(st).beforeDiscount > 0) s.push('duration');
+  s.push('recap');
   return s;
 }
 
@@ -447,7 +619,9 @@ export function prixDeDepart(d: ServiceDomain): { monthly?: number; once?: numbe
     if (s.isOneOff || niveau?.isOneOff) once = once === undefined ? p : Math.min(once, p);
     else monthly = monthly === undefined ? p : Math.min(monthly, p);
   }
-  if (d === 'ai-training') once = aiTrainingPricing.single.halfDay.price;
+  if (d === 'ai-training') once = GRILLE.durees['3h'].distance.EUR;
+  // La créa se chiffre à la demande : son prix d'entrée est celui d'un jeu de bannières LinkedIn.
+  if (d === 'creative-design') return { once: GRILLE_CREA.jeux.li[0].prix.EUR };
   if (d === 'google-ads' || d === 'paid-social') {
     const paliers = MANAGEMENT_FEE_CONFIG[d === 'google-ads' ? 'googleAds' : 'paidSocial'];
     return { monthly, once, fee: paliers[0].value, feeMax: paliers[0].maxBudget, pct: paliers[1].value };
@@ -470,8 +644,18 @@ const depuisB64 = (code: string) => {
   return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
 };
 
-export function encodePlan(st: QuoteState): string {
-  return versB64(JSON.stringify({ d: st.domains, a: st.answers, u: st.duration }));
+export function encodePlan(st: QuoteState, currency?: Currency): string {
+  return versB64(JSON.stringify({ d: st.domains, a: st.answers, u: st.duration, ...(currency ? { c: currency } : {}) }));
+}
+
+/** La devise enregistrée dans un plan (les liens « Revoir mon devis » des mails la portent). */
+export function devisePlan(code: string): Currency | null {
+  try {
+    const c = (JSON.parse(depuisB64(code)) as { c?: unknown }).c;
+    return c === 'EUR' || c === 'GBP' || c === 'USD' ? c : null;
+  } catch {
+    return null;
+  }
 }
 
 export function decodePlan(code: string): QuoteState | null {
@@ -480,7 +664,7 @@ export function decodePlan(code: string): QuoteState | null {
     const domains = inOrder((Array.isArray(o.d) ? o.d : []).filter((x): x is ServiceDomain => DOMAIN_ORDER.includes(x as ServiceDomain)));
     if (!domains.length) return null;
     const answers: Answers = {};
-    for (const [k, v] of Object.entries(o.a ?? {})) if (QUESTION_INDEX[k]) answers[k] = v as Answers[string];
+    for (const [k, v] of Object.entries(o.a ?? {})) if (ANSWER_KEYS.has(k)) answers[k] = v as Answers[string];
     const duration = DURATION_CONFIG.options.some((x) => x.months === o.u) ? (o.u as number) : 4;
     return { domains, answers, discuss: {}, duration };
   } catch {
@@ -490,22 +674,44 @@ export function decodePlan(code: string): QuoteState | null {
 
 // --- affichage des montants ----------------------------------------------------------
 
-/** Règle d'arrondi MyDigipal : aucune décimale à partir de 10, une entre 1 et 10, deux sous 1. */
-export function money(eur: number, currency: Currency, lang: Lang): string {
-  const v = currency === 'EUR' ? eur : convertPrice(eur, currency);
-  const digits = v >= 10 || Number.isInteger(v) ? 0 : v >= 1 ? 1 : 2;
+/**
+ * Un montant DÉJÀ dans sa devise, à la règle d'arrondi MyDigipal : aucune décimale à partir de
+ * 10, une entre 1 et 10, deux sous 1, et jamais de décimale ajoutée à un entier.
+ */
+export function affiche(v: number, currency: Currency, lang: Lang): string {
+  const a = Math.abs(v);
+  const digits = a >= 10 || Number.isInteger(v) ? 0 : a >= 1 ? 1 : 2;
   const n = v.toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: digits, maximumFractionDigits: digits });
   const sym = CURRENCY_CONFIGS[currency].symbol;
-  return lang === 'fr' ? `${n} ${sym}` : `${sym}${n}`;
+  return lang === 'fr' ? `${n} ${sym}` : `${sym}${n}`;
+}
+/** Un prix des grilles du calculateur (en euros), converti dans la devise puis affiché. */
+export function money(eur: number, currency: Currency, lang: Lang): string {
+  return affiche(currency === 'EUR' ? eur : convertPrice(eur, currency), currency, lang);
 }
 export const perLabel = (per: Per, lang: Lang) => (per === 'quote' ? '' : per === 'once' ? (lang === 'fr' ? ' une fois' : ' one-off') : lang === 'fr' ? '/mois' : '/mo');
 
-// --- l'envoi : même format qu'avant, le workflow n8n n'a pas à changer -------------------
+// --- l'envoi : un seul format pour tous les devis du site --------------------------------
 
 export interface Contact { name: string; email: string; company: string; phone?: string; message?: string }
 
-export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, currency: Currency) {
-  const q = devis(st);
+/**
+ * D'où vient un devis (20/10/2026) : le calculateur, l'extrait d'une page de service, ou le
+ * simulateur d'une page (formation, créa). Paul le lit dans son mail et dans la bulle Chat, GA4
+ * le reçoit en `calculator_origin`.
+ */
+export interface Origine {
+  /** `calculator`, `service:google-ads`, `automotive:dynamic-ads`, `formation`, `creative`... */
+  id: string;
+  /** Le nom de la page, en clair, pour le mail de Paul (« la page Dynamic Ads »). */
+  libelle: string;
+  page?: string;
+}
+
+export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, currency: Currency, origine?: Origine) {
+  // Paul lit ses devis en euros ; le prospect voit les montants de son écran, dans sa devise.
+  const q = devis(st, 'EUR');
+  const qd = devis(st, currency);
   const selections: Record<string, number> = {};
   for (const [k, v] of Object.entries(st.answers)) if (QUESTION_INDEX[k]?.kind === 'level' && typeof v === 'number') selections[k] = v;
   const contactType = typeof st.answers['em-contacts'] === 'string' && st.answers['em-contacts'] !== 'none' && st.domains.includes('emailing') ? (st.answers['em-contacts'] as ContactType) : null;
@@ -513,6 +719,13 @@ export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, curre
   const aiCustom = st.domains.includes('ai-solutions') && st.answers['ai-custom'] === 'yes'
     ? ((st.answers['ai-custom-form'] as Record<string, string> | undefined) ?? {}) : null;
   const trk = Array.isArray(st.answers['trk-items']) ? (st.answers['trk-items'] as string[]) : [];
+  // Les lignes de la formation et de la créa portent leur propre libellé (« 2 séances de 3 h à
+  // distance ») : le nom générique du service ne dirait rien.
+  const nomLigne = (l: Line) => (l.service === 'ai-training' || l.service === 'creative') ? t(l.label, lang)
+    : l.service === 'contacts' ? (lang === 'fr' ? 'Acquisition de contacts' : 'Contact acquisition')
+    : l.service === 'cms' ? (lang === 'fr' ? 'Publication CMS automatique' : 'Auto CMS Publishing')
+    : l.service === 'ai-custom' ? (lang === 'fr' ? 'Solution IA sur-mesure (devis)' : 'Custom AI Solution (quote)')
+    : l.service && SERVICE_SHORT[l.service] ? t(SERVICE_SHORT[l.service], lang) : t(l.label, lang);
   const departmentBreakdown = q.domains.map((dq) => {
     const isTracking = dq.domain === 'tracking-reporting';
     return {
@@ -521,12 +734,8 @@ export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, curre
       icon: domainConfigs[dq.domain].icon,
       isNotSure: dq.discuss,
       services: dq.lines.filter((l) => l.kind === 'service').map((l) => ({
-        name: l.service === 'ai-training' ? domainName('ai-training', lang)
-          : l.service === 'contacts' ? (lang === 'fr' ? 'Acquisition de contacts' : 'Contact acquisition')
-          : l.service === 'cms' ? (lang === 'fr' ? 'Publication CMS automatique' : 'Auto CMS Publishing')
-          : l.service === 'ai-custom' ? (lang === 'fr' ? 'Solution IA sur-mesure (devis)' : 'Custom AI Solution (quote)')
-          : l.service && SERVICE_SHORT[l.service] ? t(SERVICE_SHORT[l.service], lang) : t(l.label, lang),
-        level: l.level ? t(l.level, lang) : '',
+        name: nomLigne(l),
+        level: l.level ? t(l.level, lang) : l.detail ? t(l.detail, lang) : '',
         price: l.amount,
         isOneOff: l.per === 'once'
       })),
@@ -537,6 +746,7 @@ export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, curre
     };
   });
   const has = (d: ServiceDomain) => st.domains.includes(d);
+  const f = (v: number) => affiche(v, currency, lang);
   return {
     report_type: 'quote',
     contact,
@@ -546,7 +756,10 @@ export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, curre
     selections,
     adBudgets: has('google-ads') || has('paid-social') ? { 'google-ads': budgetOf(st.answers, 'ga-budget'), 'paid-social': budgetOf(st.answers, 'ps-budget') } : null,
     selectedSocialChannels: has('paid-social') ? channelsOf(st.answers) : null,
-    aiTraining: has('ai-training') ? { format: st.answers['tr-format'] === 'full' ? 'full-day' : 'half-day', sessions: st.answers['tr-sessions'], inPerson: st.answers['tr-mode'] === 'onsite' } : null,
+    // Les réglages complets de la formation et de la créa, pour le CRM. Jamais sous les clés
+    // `formation` ou `creative` : la route les lirait comme un envoi des anciens simulateurs.
+    aiTraining: has('ai-training') ? etatFormation(st.answers, currency) : null,
+    creativeRequest: has('creative-design') ? { ...etatCrea(st.answers, currency), rythme: creaMensuelle(st.answers) ? 'month' : 'once' } : null,
     aiSolutions: aiCustom,
     contactAcquisition: contactType ? { type: contactType, volume: typeof st.answers['em-volume'] === 'number' ? st.answers['em-volume'] : DEFAULT_CONTACT_VOLUME } : null,
     cmsAddon: has('seo') && st.answers['seo-cms'] === 'yes' && typeof st.answers['seo-monthly'] === 'number',
@@ -563,7 +776,7 @@ export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, curre
       grandTotalWithoutBudget: q.totalFees,
       grandTotalWithBudget: q.totalFees + q.media * st.duration,
       grandTotal: q.totalFees,
-      hasCustomQuote: false
+      hasCustomQuote: q.domains.some((d) => d.lines.some((l) => l.per === 'quote'))
     },
     duration: st.duration,
     trackingSelections: Object.fromEntries(trk.filter((id) => id !== 'tracking-audit').map((id) => [id, true])),
@@ -573,23 +786,24 @@ export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, curre
     currency,
     // Ce que le prospect a vu, déjà mis en forme dans SA devise et avec la règle d'arrondi
     // (22/09/2026) : le mail n'a plus à refaire les conversions, il montre les chiffres de l'écran.
-    // Les montants en euros restent dans `pricing` et `departmentBreakdown`, pour Paul et le Sheet.
+    // Les montants en euros restent dans `pricing` et `departmentBreakdown`, pour Paul.
     display: {
       currency,
-      monthly: money(q.monthly, currency, lang),
-      beforeDiscount: money(q.beforeDiscount, currency, lang),
-      discount: q.discount ? money(q.discount, currency, lang) : '',
-      oneOff: q.oneOff ? money(q.oneOff, currency, lang) : '',
-      media: q.media ? money(q.media, currency, lang) : '',
-      totalFees: money(q.totalFees, currency, lang),
+      monthly: f(qd.monthly),
+      beforeDiscount: f(qd.beforeDiscount),
+      discount: qd.discount ? f(qd.discount) : '',
+      oneOff: qd.oneOff ? f(qd.oneOff) : '',
+      media: qd.media ? f(qd.media) : '',
+      totalFees: f(qd.totalFees),
       perMonth: perLabel('month', lang),
-      domains: q.domains.map((dq) => ({
+      domains: qd.domains.map((dq) => ({
         name: domainName(dq.domain, lang),
         discuss: dq.discuss || dq.empty,
         lines: dq.discuss ? [] : dq.lines.map((l) => ({
           label: t(l.label, lang),
           level: l.level ? t(l.level, lang) : '',
-          amount: l.per === 'quote' ? (lang === 'fr' ? 'Sur devis' : 'On quote') : `${money(l.amount, currency, lang)}${perLabel(l.per, lang)}`,
+          detail: l.detail ? t(l.detail, lang) : '',
+          amount: l.per === 'quote' ? (lang === 'fr' ? 'Sur devis' : 'On quote') : `${f(l.amount)}${perLabel(l.per, lang)}`,
           kind: l.kind
         }))
       }))
@@ -600,8 +814,9 @@ export function buildPayload(st: QuoteState, contact: Contact, lang: Lang, curre
       usedGuidedMode: false,
       callPreference: false,
       lang,
+      origine: origine ?? { id: 'calculator', libelle: lang === 'fr' ? 'le calculateur' : 'the calculator' },
       // Le devis rouvert tel quel dans le calculateur : bouton « Revoir mon devis » du mail.
-      planUrl: `https://mydigipal.com/${lang}/calculator#plan=${encodePlan(st)}`,
+      planUrl: `https://mydigipal.com/${lang}/calculator#plan=${encodePlan(st, currency)}`,
       provenance: {} as Record<string, string>
     }
   };

@@ -28,13 +28,23 @@ export type FunnelStep = typeof FUNNEL_STEPS[number];
 let maxDepth = 0;
 let lastStep: FunnelStep = 'landed';
 
+/**
+ * D'ou vient le devis (20/10/2026) : le calculateur, l'extrait d'une page de service
+ * (`service:google-ads`), le simulateur de la formation ou de la creation. Joint a chaque
+ * evenement, pour lire le funnel page par page dans GA4 (`calculator_origin`).
+ */
+let origine = 'calculator';
+export function fixerOrigineMesure(id: string): void {
+  origine = id;
+}
+
 function push(event: string, payload: Payload = {}): void {
   if (typeof window === 'undefined') return;
   const w = window as unknown as { dataLayer?: unknown[] };
   // On cree le dataLayer s'il n'existe pas encore : sans ca, un event emis avant
   // le chargement de GTM etait purement et simplement perdu.
   w.dataLayer = w.dataLayer || [];
-  w.dataLayer.push({ event, ...payload });
+  w.dataLayer.push({ event, calculator_origin: origine, ...payload });
 }
 
 /** Event generique du calculateur. */
