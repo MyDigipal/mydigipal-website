@@ -227,6 +227,45 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   Depuis le 25/09/2026, l'assistant a le style du site : bleu du logo (`marque`) au lieu de
   `primary-*`, boutons en pilule, « EN » / « FR » au lieu du drapeau, comme l'en-tête.
 
+## 3 ter. Le devis unique (20/10/2026, EN LIGNE)
+
+Demande de Paul : « le calculateur, c'est le truc global, mais chaque page peut avoir un extrait
+de ce calculateur, et que tout soit centralisé au niveau du tracking ». Un seul devis par
+visiteur, quelle que soit la page où il le compose.
+- **Le moteur** (`calculator-v6/engine.ts`) : `devis(st, currency)` sort TOUS ses montants dans
+  la devise demandée (défaut EUR). Les grilles en euros sont converties ligne par ligne
+  (`convertPrice`, prix ronds) ; **la formation et la créa sont chiffrées par leurs propres
+  moteurs** (`lib/formation`, `lib/creative`), à leurs prix fixés par devise. Leurs réponses
+  vivent dans `answers` (`tr-*`, `cr-*`, valeurs par défaut dans `DEFAUTS`, lecture par
+  `reponse()`), avec un nouveau type d'écran `compteurs` (`fields`). La créa se chiffre « une
+  fois » ou « chaque mois » (`cr-rythme`). `affiche()` met en forme un montant déjà dans sa
+  devise, `money()` convertit un prix des grilles. La durée d'engagement n'est demandée que s'il
+  y a des honoraires mensuels. Tests : `npm run test:devis` (esbuild + node:test, 10 cas : les
+  totaux du calculateur égalent ceux des simulateurs dans les trois devises).
+- **Le panier** (`lib/devis/panier.ts`) : `localStorage` `mdp_devis_v1` (30 jours), événement
+  `mdp-panier` entre îlots, rien écrit avant le premier geste du visiteur. Le calculateur rouvre
+  le panier sur le devis (`#ajouter` : sur le choix des services) ; un `#plan=` l'emporte.
+- **L'extrait** (`sections/ExtraitDevis.astro`, `#devis`) remplace le ruban (supprimé) sur les
+  pages de service et automobile : `CalculatorV6` avec `focus`, `preset` et `origine`, réglés dans
+  `lib/devis/extraits.ts` (B2B ABM : Paid Social, LinkedIn coché ; Dynamic Ads : Meta et le
+  catalogue). Parcours : les questions du service, « Ajouter un autre service ? » (`ajout`), les
+  services ajoutés, la durée, le devis. Les boutons « Calculer mon budget » de la page y mènent.
+- **Les simulateurs** formation et créa gardent leur interface, écrivent dans le panier
+  (`usePanierSimulateur`), montrent les autres services du devis (`devis/AutresServices.tsx`) et
+  envoient par le même chemin.
+- **L'envoi** (`lib/devis/envoi.ts`) : `buildPayload` + origine, route `/api/site/devis`, mail
+  général de l'application (devis ponctuel, détail des lignes, « Nouveau devis depuis la page X »).
+  ⚠️ Jamais de clé `formation` ni `creative` dans le corps : la route les prendrait pour un envoi
+  des anciens simulateurs (gardés pour les pages en cache).
+- **La mesure** : tous les devis poussent `calculator_form_submit` (GA4, Meta, Reddit, LinkedIn,
+  ChatGPT Ads l'écoutent) avec `calculator_origin` (`calculator`, `service:google-ads`,
+  `automotive:dynamic-ads`, `formation`, `creative`) et `form_name` (`calculator`,
+  `service_quote`, `training_simulator`, `creative_simulator`). Tous les événements `calculator_*`
+  portent l'origine (`fixerOrigineMesure`). `calculator_total` est dans la devise envoyée avec
+  lui. GTM version 105 (balises 111, 168, 169, 173 ; variables 250 et 251), dimension GA4
+  `calculator_origin`. `training_quote_submit` et `creative_quote_submit` n'existent plus.
+- `?envoi=test` dans l'adresse : aucun envoi, le contenu va dans la console (toutes les pages).
+
 ## 3 bis. Ce qui reste de la v5 (le reste est supprimé)
 
 L'ancien calculateur a été supprimé le 23/09/2026 (commit `dcb146d`, 6 035 lignes) :
@@ -1105,11 +1144,11 @@ l'ancienne page et ses sections propres ne sont plus rendues (« qu'on n'en ait 
   lisible : un lien partagé ou une proposition commerciale rouvre la page pré-réglée.
 - **L'îlot** `components/formation/TarifsFormation.tsx` (`client:load`) : les deux formats (prix PAR
   PERSONNE en vedette, Paul : « ça donne l'impression que c'est vraiment pas cher »), l'Academy, le
-  simulateur, la fenêtre du devis. `?envoi=test` n'envoie rien (charge utile dans la console). Le devis
-  part sur `POST academy.mydigipal.com/api/site/devis` avec un bloc `formation` et
-  `metadata.source = 'formation-simulator'`. Mesure : `training_simulator_change`,
-  `training_format_select`, `training_quote_share`, `training_quote_open`, `training_quote_submit`
-  (avec `user_data` et `event_id`, comme le calculateur).
+  simulateur, la fenêtre du devis. `?envoi=test` n'envoie rien (charge utile dans la console). Depuis
+  le 20/10/2026 le devis part par le devis unique (section 3 ter) : le simulateur écrit ses réglages
+  dans le panier et l'envoi est celui du calculateur (`calculator_form_submit`, origine `formation`).
+  Mesure des réglages : `training_simulator_change`, `training_format_select`, `training_quote_share`,
+  `training_quote_open`.
 - **Deuxième version (14/10 au soir, retours de Paul : « pas assez d'animation, pas assez détaillé »)** :
   le simulateur n'est plus collé aux prix. Trois îlots `TarifsFormation` (`partie` = `formats`,
   `academy`, `simulateur`) partagent l'état par l'événement `mdp-formation:etat`. Ordre : hero (scène),
@@ -1151,16 +1190,16 @@ décident ; beaucoup de créas, vite, bien faites. Les landing pages n'y sont PA
 - **Une grille** : `src/lib/creative/grille.ts`, celle du document « Creative pricing and request » du
   Hub Exaforce en dollars, euros et livres RONDS fixés par devise ; paliers écrits en toutes lettres.
   Moteur et tests : `lib/creative/moteur.ts`, `npm run test:creative` (les six exemples Exaforce).
-- **Calculateur** : domaine `creative-design`, trois forfaits mensuels CALCULÉS depuis la grille
-  (`calculator/data/creative-design-services.ts`) ; le bloc « Création de Visuels » de Paid Social
-  prend les mêmes forfaits (360, 760, 1 560 € ; 400, 800, 1 500 € avant).
+- **Calculateur** : depuis le devis unique (section 3 ter), le domaine `creative-design` pose les
+  questions du simulateur (jeux, canal, vidéos, langues, une fois ou chaque mois). Les forfaits
+  mensuels de `calculator/data/creative-design-services.ts` ne servent plus qu'au bloc « Création
+  de Visuels » de Paid Social (360, 760, 1 560 €).
 - **Simulateur** : `components/creative/TarifsCreative.tsx` (deux îlots, prix et simulateur, état
   partagé par `mdp-creative:etat`, adresse `#devis&j=...&c=EUR`, `?envoi=test` n'envoie rien),
   styles de `formation/tarifs.css`. Le devis part sur `/api/site/devis` avec un bloc `creative`
-  (branche `creative-mails.ts` de l'application, 20/10). Événements : `creative_simulator_change`,
-  `creative_quote_open`, `creative_quote_share`, `creative_quote_submit`. ⚠️ Aucun déclencheur GTM
-  n'écoute ni `creative_quote_submit` ni `training_quote_submit` (relevé le 20/10/2026, workspace 115) :
-  ces devis ne remontent comme conversion nulle part ; à régler avec la centralisation des devis.
+  (branche `creative-mails.ts` de l'application, 20/10), puis par le devis unique le soir même.
+  Événements : `creative_simulator_change`, `creative_quote_open`, `creative_quote_share` ; l'envoi
+  pousse `calculator_form_submit` (origine `creative`).
 - **Scènes** : cinq essais du labo `crea-*` (lot 10), copiés par `python scripts/scenes-creative.py`
   dans `public/motion/` et `/en/`. Seule `crea-formats` a sa version verticale (`?p=1`).
 - **Réalisations** : Servion oui, ControlAI JAMAIS (Paul) ; sinon la marque fictive Atelier Rivière
