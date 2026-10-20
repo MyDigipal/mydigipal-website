@@ -1,0 +1,95 @@
+---
+/**
+ * Page Creative design : comment avance une demande (20/10/2026). Les huit étapes et la règle
+ * des quatre tours de retours viennent du document « Creative pricing and request » du Hub
+ * Exaforce. Paul : « dès qu'ils nous demandent une bannière, on la crée, on la leur monte, ils
+ * font des commentaires, c'est envoyé en review ; ça ne dure pas des heures ». Visuel dominant :
+ * la scène `crea-revue`, la revue filmée dans le Hub.
+ */
+import type { Language } from '@/i18n/config';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+
+const T = {
+  fr: {
+    titre: 'Vous commentez sur l’image. Nous ajustons dans la foulée.',
+    chapo: 'Tout se passe dans votre Hub, l’espace client de MyDigipal : vos demandes, nos versions, vos commentaires posés directement sur la bannière, et votre validation.',
+    etapes: [
+      ['Vous demandez', 'Depuis votre Hub, ou par un simple commentaire.'],
+      ['Nous chiffrons', 'Un devis clair, prix de volume appliqué.'],
+      ['Nous proposons des pistes', 'Deux ou trois directions, sur votre marque.'],
+      ['La version 1 arrive', 'Produite avec notre agent, vérifiée par notre équipe.'],
+      ['Vous commentez', 'Directement sur l’image, dans le Hub.'],
+      ['Vous validez', 'Rien ne part sans votre accord.'],
+      ['Nous mettons en ligne', 'Notre équipe publie sur chaque canal.'],
+      ['Tout est rangé', 'Chaque fichier, dans votre dossier Drive.'],
+    ],
+    toursTitre: '4 tours de retours compris',
+    tours: 'Sur chaque jeu de bannières et chaque vidéo. Un tour, c’est une révision complète : rassemblez les remarques de votre équipe dans le même tour. Au-delà, on en parle, au cas par cas.',
+    scene: 'La revue d’une bannière dans le Hub',
+  },
+  en: {
+    titre: 'You comment on the image. We adjust right after.',
+    chapo: 'Everything happens in your Hub, the MyDigipal client space: your requests, our versions, your comments placed right on the banner, and your approval.',
+    etapes: [
+      ['You ask', 'From your Hub, or with a simple comment.'],
+      ['We price it', 'A clear quote, volume price applied.'],
+      ['We suggest directions', 'Two or three, built on your brand.'],
+      ['Version 1 arrives', 'Produced with our agent, checked by our team.'],
+      ['You comment', 'Right on the image, in the Hub.'],
+      ['You approve', 'Nothing goes live without your go-ahead.'],
+      ['We put it live', 'Our team publishes it on each channel.'],
+      ['Everything is filed', 'Every file, in your Drive folder.'],
+    ],
+    toursTitre: '4 rounds of feedback included',
+    tours: 'On every banner set and every video. A round is a full revision: gather your team’s comments into the same round. Beyond that, we talk about it, case by case.',
+    scene: 'Reviewing a banner in the Hub',
+  },
+}[lang];
+---
+
+<section class="section-encre section-monte pa">
+  <div class="container-custom">
+    <header class="pa-tete">
+      <h2 class="titre-moyen">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+    </header>
+    <div class="pa-grille">
+      <div class="pa-scene">
+        <SceneLabo lang={lang} nom="crea-revue" format="carre" repos={17} controles titre={T.scene} />
+      </div>
+      <div class="pa-droite">
+        <ol class="pa-etapes">
+          {T.etapes.map(([n, d]) => <li><strong>{n}</strong><span>{d}</span></li>)}
+        </ol>
+        <div class="pa-tours">
+          <p class="pa-tours-titre">{T.toursTitre}</p>
+          <p>{T.tours}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pa { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .pa { padding: 128px 0 136px; } }
+  .pa-tete { display: grid; gap: 18px; max-width: 820px; margin-bottom: 44px; }
+  .pa-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; align-items: start; }
+  @media (min-width: 1024px) { .pa-grille { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 56px; } .pa-scene { position: sticky; top: 96px; } }
+  .pa-droite { display: grid; gap: 24px; }
+  .pa-etapes { list-style: none; margin: 0; padding: 0; display: grid; }
+  .pa-etapes li { position: relative; display: grid; gap: 2px; padding: 12px 0 12px 26px; }
+  .pa-etapes li:before { content: ''; position: absolute; left: 4px; top: 20px; width: 9px; height: 9px; border-radius: 99px; background: var(--color-marque); box-shadow: 0 0 0 4px rgb(29 113 184 / 0.25); }
+  .pa-etapes li:after { content: ''; position: absolute; left: 8px; top: 34px; bottom: -14px; width: 1.5px; background: var(--filet-sombre); }
+  .pa-etapes li:last-child:after { display: none; }
+  .pa-etapes strong { color: #fff; font-weight: 700; font-size: 17px; }
+  .pa-etapes span { color: var(--texte-sombre-2); font-size: 15px; }
+  .pa-tours { border-radius: 22px; padding: 20px 22px; background: rgb(232 189 98 / 0.1); border: 1px solid rgb(232 189 98 / 0.3); }
+  .pa-tours p { margin: 0; color: var(--texte-sombre); font-size: 15px; line-height: 1.55; }
+  .pa-tours .pa-tours-titre { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -0.02em; color: #e8bd62; margin-bottom: 6px; }
+</style>

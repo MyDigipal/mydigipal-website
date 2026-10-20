@@ -31,7 +31,7 @@ const cleanAll = (l?: string[]) => (l ?? []).map(clean).filter(Boolean);
 
 /** Le service principal d'un domaine, dont on montre le contenu au niveau du domaine. */
 const MAIN: Partial<Record<ServiceDomain, string>> = {
-  'seo': 'seo-monthly', 'emailing': 'email-management-package', 'ai-content': 'ai-content-blog', 'ai-solutions': 'ai-workflow'
+  'seo': 'seo-monthly', 'emailing': 'email-management-package', 'ai-content': 'ai-content-blog', 'ai-solutions': 'ai-workflow', 'creative-design': 'creative-packs'
 };
 
 function serviceOf(id: string) {

@@ -72,7 +72,8 @@ const LEVEL_TITLES: Record<string, Txt> = {
   'ai-content-social': { fr: 'Du contenu social et des landing pages ?', en: 'Social content and landing pages?' },
   'ai-chatbot': { fr: 'Un chatbot IA ?', en: 'An AI chatbot?' },
   'ai-workflow': { fr: 'Des tâches automatisées ?', en: 'Automated workflows?' },
-  'ai-maintenance': { fr: 'Un suivi une fois en place ?', en: 'Ongoing maintenance?' }
+  'ai-maintenance': { fr: 'Un suivi une fois en place ?', en: 'Ongoing maintenance?' },
+  'creative-packs': { fr: 'Combien de créas chaque mois ?', en: 'How many ads every month?' }
 };
 
 /** Nom court d'un service, pour les lignes du devis. */
@@ -86,7 +87,8 @@ export const SERVICE_SHORT: Record<string, Txt> = {
   'ai-content-social': { fr: 'Contenu social et landing pages', en: 'Social content and landing pages' },
   'ai-chatbot': { fr: 'Chatbot IA', en: 'AI chatbot' },
   'ai-workflow': { fr: 'Workflows automatisés', en: 'Automated workflows' },
-  'ai-maintenance': { fr: 'Maintenance IA', en: 'AI maintenance' }
+  'ai-maintenance': { fr: 'Maintenance IA', en: 'AI maintenance' },
+  'creative-packs': { fr: 'Production créative', en: 'Creative production' }
 };
 
 export const DOMAIN_SHORT: Record<ServiceDomain, Txt> = {
@@ -97,7 +99,8 @@ export const DOMAIN_SHORT: Record<ServiceDomain, Txt> = {
   'emailing': { fr: 'Emailing', en: 'Email' },
   'ai-solutions': { fr: 'Solutions IA', en: 'AI Solutions' },
   'ai-content': { fr: 'Contenu IA', en: 'AI Content' },
-  'tracking-reporting': { fr: 'Tracking', en: 'Tracking' }
+  'tracking-reporting': { fr: 'Tracking', en: 'Tracking' },
+  'creative-design': { fr: 'Creative design', en: 'Creative design' }
 };
 
 export const domainName = (d: ServiceDomain, lang: Lang) => (lang === 'fr' ? domainConfigs[d].nameFr : domainConfigs[d].name);

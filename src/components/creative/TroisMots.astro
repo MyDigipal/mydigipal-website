@@ -1,0 +1,113 @@
+---
+/**
+ * Page Creative design : les trois mots qui fixent le prix (bannière, jeu de bannières,
+ * concept), repris du document « Creative pricing and request » du Hub Exaforce. Visuel
+ * dominant : un concept et les deux jeux qui en sortent, avec les vraies tailles de chaque
+ * canal, dessinés sur la marque fictive Atelier Rivière (`BanniereMini`).
+ */
+import type { Language } from '@/i18n/config';
+import BanniereMini from './BanniereMini.astro';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+
+const T = {
+  fr: {
+    titre: 'Vous commandez des jeux, pas des images',
+    chapo: 'Un message doit exister dans toutes les tailles de son canal. Nous facturons donc le jeu complet, jamais une taille de plus.',
+    mots: [
+      ['Concept', 'L’idée : un message et son visuel. Un concept peut devenir un jeu LinkedIn, un jeu Google, une vidéo, ou les trois.'],
+      ['Jeu de bannières', 'Un message dans toutes les tailles dont un canal a besoin : trois images pour LinkedIn, ou les images Google avec vos logos et les tailles Display. C’est ce que nous chiffrons.'],
+      ['Bannière', 'Une image dans une taille, par exemple le carré LinkedIn de 1080 x 1080. Elle n’est jamais facturée seule.'],
+    ],
+    concept: 'Concept',
+    jeuLi: 'Jeu LinkedIn · 3 images',
+    jeuG: 'Jeu Google · Performance Max et Display',
+  },
+  en: {
+    titre: 'You order sets, not single images',
+    chapo: 'A message has to exist in every size its channel uses. So we price the full set, never one size more.',
+    mots: [
+      ['Concept', 'The idea: one message and its visual. A concept can become a LinkedIn set, a Google set, a video, or all three.'],
+      ['Banner set', 'One message in every size a channel needs: three images for LinkedIn, or the Google images with your logos and the Display sizes. This is what we price.'],
+      ['Banner', 'One image in one size, for example the LinkedIn square, 1080 x 1080. It is never priced on its own.'],
+    ],
+    concept: 'Concept',
+    jeuLi: 'LinkedIn set · 3 images',
+    jeuG: 'Google set · Performance Max and Display',
+  },
+}[lang];
+const message = lang === 'fr' ? '« La lumière, faite main. »' : '“Light, made by hand.”';
+---
+
+<section class="section-brume tm">
+  <div class="container-custom tm-grille">
+    <div class="tm-texte">
+      <h2 class="titre-moyen text-encre">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+      <dl class="tm-mots">
+        {T.mots.map(([mot, def], i) => (
+          <div class:list={['tm-mot', { 'tm-mot-fort': i === 1 }]}><dt>{mot}</dt><dd>{def}</dd></div>
+        ))}
+      </dl>
+    </div>
+
+    <div class="tm-schema">
+      <div class="tm-zoom">
+        <div class="tm-concept"><span>{T.concept}</span><b>{message}</b></div>
+        <div class="tm-branches" aria-hidden="true"><i></i><i></i></div>
+        <div class="tm-jeu">
+          <p>{T.jeuLi}</p>
+          <div class="tm-rang">
+            <BanniereMini lang={lang} largeur={124} hauteur={124} mise="carre" />
+            <BanniereMini lang={lang} largeur={99} hauteur={124} mise="vertical" />
+            <BanniereMini lang={lang} largeur={237} hauteur={124} mise="paysage" />
+          </div>
+        </div>
+        <div class="tm-jeu">
+          <p>{T.jeuG}</p>
+          <div class="tm-rang">
+            <BanniereMini lang={lang} largeur={237} hauteur={124} mise="paysage" />
+            <BanniereMini lang={lang} largeur={124} hauteur={124} mise="carre" />
+            <BanniereMini lang={lang} largeur={99} hauteur={124} mise="vertical" />
+          </div>
+          <div class="tm-rang">
+            <BanniereMini lang={lang} largeur={149} hauteur={124} mise="pave" />
+            <BanniereMini lang={lang} largeur={318} hauteur={39} mise="bandeau" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tm { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .tm { padding: 120px 0 128px; } }
+  .tm-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 44px; align-items: center; }
+  @media (min-width: 1024px) { .tm-grille { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 64px; } }
+  .tm-texte { display: grid; gap: 18px; }
+  .tm-mots { margin: 10px 0 0; display: grid; gap: 10px; }
+  .tm-mot { border-radius: 18px; padding: 16px 18px; background: #fff; box-shadow: 0 1px 2px rgb(15 23 42 / 0.04); }
+  .tm-mot dt { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; font-size: 19px; color: var(--encre); }
+  .tm-mot dd { margin: 4px 0 0; color: #4B5B6B; font-size: 15px; line-height: 1.5; }
+  .tm-mot-fort { background: var(--encre); }
+  .tm-mot-fort dt { color: #fff; font-size: 22px; }
+  .tm-mot-fort dd { color: var(--texte-sombre); }
+
+  .tm-schema { display: flex; justify-content: center; }
+  .tm-zoom { width: 520px; display: grid; gap: 0; }
+  @media (max-width: 600px) { .tm-zoom { zoom: 0.64; } }
+  .tm-concept { justify-self: center; border-radius: 20px; background: var(--encre); color: #fff; padding: 18px 26px; display: grid; gap: 4px; text-align: center; box-shadow: 0 30px 60px -36px rgb(11 27 43 / 0.7); }
+  .tm-concept span { font-size: 13px; font-weight: 600; color: var(--marque-clair); }
+  .tm-concept b { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; font-size: 24px; }
+  .tm-branches { position: relative; height: 40px; }
+  .tm-branches i { position: absolute; top: 0; height: 40px; border: 2px solid rgb(29 113 184 / 0.4); border-bottom: 0; }
+  .tm-branches i:first-child { left: 25%; right: 50%; border-right: 0; border-radius: 14px 0 0 0; }
+  .tm-branches i:last-child { left: 50%; right: 25%; border-left: 2px solid rgb(29 113 184 / 0.4); border-radius: 0 14px 0 0; }
+  .tm-jeu { border-radius: 22px; background: #fff; padding: 16px; display: grid; gap: 12px; margin-bottom: 14px; }
+  .tm-jeu p { margin: 0; font-size: 14px; font-weight: 700; color: var(--encre); }
+  .tm-rang { display: flex; gap: 12px; align-items: flex-end; }
+</style>

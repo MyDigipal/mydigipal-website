@@ -1,0 +1,104 @@
+---
+/**
+ * Page Creative design : des réalisations (20/10/2026). Décision de Paul : Servion peut se
+ * montrer, ControlAI non ; pour le reste, nos propres exemples sur une marque fictive.
+ * Les trois vidéos Servion sont celles qu'il a validées le 08/10/2026 (Demand Gen et
+ * Performance Max), réencodées pour le web dans `public/videos/creative/`. Elles ne jouent
+ * qu'à l'écran, muettes (elles n'ont pas de son), et jamais sous mouvement réduit.
+ */
+import type { Language } from '@/i18n/config';
+import BanniereMini from './BanniereMini.astro';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+
+const T = {
+  fr: {
+    titre: 'Ce que ça donne',
+    chapo: 'Des vidéos en ligne pour Servion sur Google, et des bannières faites pour l’exemple.',
+    videos: [
+      { nom: 'servion-carte', texte: 'Servion · Demand Gen, l’offre en trois temps' },
+      { nom: 'servion-palettes', texte: 'Servion · Demand Gen, trois chiffres' },
+      { nom: 'servion-chemin', texte: 'Servion · Performance Max, 60 jours en une frise' },
+    ],
+    fictif: 'Atelier Rivière est une marque fictive : nous l’avons créée pour montrer notre travail sans exposer celui de nos clients. Un concept, trois teintes, dans les tailles LinkedIn.',
+  },
+  en: {
+    titre: 'What it looks like',
+    chapo: 'Videos running for Servion on Google, and banners made for the example.',
+    videos: [
+      { nom: 'servion-carte', texte: 'Servion · Demand Gen, the offer in three steps' },
+      { nom: 'servion-palettes', texte: 'Servion · Demand Gen, three numbers' },
+      { nom: 'servion-chemin', texte: 'Servion · Performance Max, 60 days on one timeline' },
+    ],
+    fictif: 'Atelier Rivière is a made-up brand: we created it to show our work without exposing our clients’. One concept, three colourways, in the LinkedIn sizes.',
+  },
+}[lang];
+---
+
+<section class="section-blanc re">
+  <div class="container-custom">
+    <header class="re-tete">
+      <h2 class="titre-moyen text-encre">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+    </header>
+
+    <div class="re-videos">
+      {T.videos.map((v, i) => (
+        <figure class:list={['re-video', { 're-video-grande': i === 0 }]}>
+          <video src={`/videos/creative/${v.nom}.mp4`} poster={`/videos/creative/${v.nom}.webp`} muted loop playsinline preload="none" data-re-video></video>
+          <figcaption>{v.texte}</figcaption>
+        </figure>
+      ))}
+    </div>
+
+    <div class="re-fictif">
+      <div class="re-planche">
+        <div class="re-zoom">
+          <BanniereMini lang={lang} largeur={200} hauteur={200} mise="carre" />
+          <BanniereMini lang={lang} largeur={200} hauteur={200} mise="carre" teinte="foret" />
+          <BanniereMini lang={lang} largeur={160} hauteur={200} mise="vertical" teinte="or" />
+          <BanniereMini lang={lang} largeur={383} hauteur={200} mise="paysage" teinte="foret" />
+        </div>
+      </div>
+      <p>{T.fictif}</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Les vidéos ne jouent qu'à l'écran ; jamais sous mouvement réduit ni avec ?fige=1.
+  const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]fige=1/.test(window.location.search);
+  const videos = document.querySelectorAll<HTMLVideoElement>('[data-re-video]');
+  if (!reduit && 'IntersectionObserver' in window) {
+    const obs = new IntersectionObserver((entrees) => {
+      entrees.forEach((e) => {
+        const v = e.target as HTMLVideoElement;
+        if (e.isIntersecting) v.play().catch(() => {});
+        else v.pause();
+      });
+    }, { threshold: 0.4 });
+    videos.forEach((v) => obs.observe(v));
+  }
+</script>
+
+<style>
+  .re { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .re { padding: 120px 0 128px; } }
+  .re-tete { display: grid; gap: 18px; max-width: 760px; margin-bottom: 40px; }
+  .re-videos { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  @media (min-width: 768px) { .re-videos { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .re-video-grande { grid-column: 1 / -1; } }
+  @media (min-width: 1024px) { .re-videos { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); grid-template-rows: auto auto; } .re-video-grande { grid-column: 1; grid-row: 1 / span 2; } }
+  .re-video { margin: 0; display: grid; gap: 10px; align-content: start; }
+  .re-video video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 18px; background: #100F33; box-shadow: 0 30px 60px -36px rgb(11 27 43 / 0.6); }
+  .re-video figcaption { font-size: 14px; color: #4B5B6B; }
+  .re-fictif { margin-top: 56px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: center; }
+  @media (min-width: 1024px) { .re-fictif { grid-template-columns: auto minmax(0, 1fr); gap: 40px; } }
+  .re-planche { border-radius: 26px; background: var(--brume); padding: 24px; overflow: hidden; }
+  .re-zoom { display: grid; grid-template-columns: 200px 200px 160px; gap: 14px; align-items: end; width: max-content; }
+  .re-zoom > :global(:last-child) { grid-column: 1 / span 2; }
+  @media (max-width: 680px) { .re-zoom { zoom: 0.5; } }
+  .re-fictif p { margin: 0; color: #4B5B6B; font-size: 15px; max-width: 46ch; }
+</style>

@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>L'IA produit, nos créatifs décident</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@500;600&display=block" rel="stylesheet">
+<style>
+/* Page Creative design (demande de Paul du 20/10/2026) : « on utilise à fond l'IA, couplée à
+   l'intelligence et à la créativité des humains ». Trois actes, sur la marque fictive Atelier Rivière :
+   1. la charte du client entre dans trois outils : Claude écrit le message, Nano Banana crée
+      l'image (elle se précise depuis le bruit), Higgsfield anime la vidéo ;
+   2. ce que les outils ont produit vole dans la bannière, puis la direction artistique la relit
+      point par point. Un point ne passe pas (le produit trop petit) : le repère se pose sur la lampe,
+      relié au point de la liste, et la correction se fait sous nos yeux ;
+   3. la bannière relue part dans le Hub du client, à côté de ses deux variantes.
+   Les marques de Claude et de Google (Nano Banana) sont celles de simple-icons, en usage nominatif ;
+   Higgsfield n'a pas de marque libre : son nom seul, avec une icône neutre. render(t) est pur. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(900px 700px at 85% -10%,rgba(29,113,184,.30),rgba(8,19,31,0) 65%),radial-gradient(700px 600px at 0% 110%,rgba(232,189,98,.08),rgba(8,19,31,0) 60%)}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(140%);white-space:nowrap}
+#titre{position:absolute;left:72px;top:64px;z-index:9}
+.titre-acte{position:absolute;left:0;top:0}
+#titre .k .ln{font-size:30px;font-weight:700;color:#7DB8EE;letter-spacing:.01em;margin-bottom:12px}
+#titre .t .ln{font-size:60px;font-weight:800;letter-spacing:-.035em;line-height:1.04}
+#titre .t .ln .o{color:#e8bd62}
+.abs{position:absolute;left:0;top:0}
+
+/* La charte */
+#kit{width:380px;height:580px;border-radius:28px;background:#0d2135;box-shadow:0 60px 120px -50px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.08);padding:28px 30px;box-sizing:border-box}
+#kit h3{margin:0 0 18px;font-size:30px;font-weight:800;letter-spacing:-.02em}
+#kit .r{font-family:Inter,sans-serif;font-size:20px;font-weight:600;color:#7DB8EE;margin:20px 0 10px}
+#kit .marque{height:64px;border-radius:14px;background:#f1e9dc;color:#1d2a24;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;font-weight:600;letter-spacing:.2em;font-size:20px}
+#kit .pastilles{display:flex;gap:14px}
+#kit .pastilles i{width:52px;height:52px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.15)}
+#kit .aa{font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1}
+#kit .photos{display:flex;gap:14px}
+#kit .photos div{width:146px;height:104px;border-radius:12px;background:#f1e9dc;position:relative;overflow:hidden}
+#fils{position:absolute;left:0;top:0;width:1080px;height:1080px;pointer-events:none;z-index:2}
+#fils path{fill:none;stroke:rgba(125,184,238,.55);stroke-width:2.5;stroke-linecap:round}
+#fils circle{fill:#e8bd62}
+
+/* Les trois outils */
+.outil{width:520px;height:170px;border-radius:26px;background:#0d2135;box-shadow:0 50px 100px -45px rgba(0,0,0,.95),inset 0 0 0 1px rgba(255,255,255,.08);z-index:3}
+.outil .gl{position:absolute;left:26px;top:30px;width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.08);display:grid;place-items:center}
+.outil .gl svg{width:32px;height:32px;fill:#f4f7fa}
+.outil .nom{position:absolute;left:106px;top:28px;font-size:32px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.outil .role{position:absolute;left:106px;top:74px;font-family:Inter,sans-serif;font-size:22px;font-weight:600;color:#a9b8c8;white-space:nowrap}
+.outil .etat{position:absolute;left:106px;top:118px;font-family:Inter,sans-serif;font-size:19px;font-weight:600;color:#e8bd62;white-space:nowrap}
+.tuile{position:absolute;right:16px;top:16px;width:138px;height:138px;border-radius:16px;background:#f1e9dc;overflow:hidden}
+.tuile .tx{position:absolute;left:14px;top:30px;font-size:24px;font-weight:800;letter-spacing:-.03em;line-height:1.05;color:#1d2a24;white-space:nowrap}
+.tuile .caret{display:inline-block;width:3px;height:22px;background:#1D71B8;vertical-align:-3px;margin-left:2px}
+.tuile canvas{position:absolute;inset:0}
+.tuile.v{left:auto;right:44px;width:82px;height:138px}
+.tuile .pb{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(29,42,36,.15)}
+.tuile .pb i{display:block;height:100%;background:#1D71B8;transform-origin:0 50%}
+
+/* La bannière, assemblée */
+#bn{width:460px;height:460px;border-radius:18px;background:#f1e9dc;overflow:hidden;box-shadow:0 60px 120px -50px rgba(0,0,0,.95);z-index:4}
+#bn > *{position:absolute;left:0;top:0;transform-origin:0 0}
+.halo{border-radius:50%;background:radial-gradient(closest-side,rgba(246,196,98,.75),rgba(246,196,98,.25) 55%,rgba(246,196,98,0))}
+#bn .logo{font-family:Inter,sans-serif;font-weight:600;letter-spacing:.18em;color:#1d2a24;font-size:16px;white-space:nowrap}
+#bn .sous{font-family:Inter,sans-serif;font-weight:600;color:#7a6a52;font-size:19px;white-space:nowrap}
+.tl{font-weight:800;letter-spacing:-.035em;line-height:1.02;color:#1d2a24;white-space:nowrap;font-size:40px}
+#bn .cta{font-family:Inter,sans-serif;font-weight:600;color:#f1e9dc;background:#1d2a24;border-radius:999px;font-size:18px;padding:10px 20px;line-height:1;white-space:nowrap}
+#volTitre{z-index:6}
+#volLampe{z-index:6;transform-origin:0 0}
+#volVideo{z-index:6}
+
+/* La relecture */
+#relu{width:440px;z-index:3}
+#relu .tete{display:flex;align-items:center;gap:18px;margin-bottom:26px}
+#relu .av{width:74px;height:74px;border-radius:50%;background:linear-gradient(160deg,#7DB8EE,#1D71B8);display:grid;place-items:center}
+#relu .av svg{width:40px;height:40px;fill:#08131f}
+#relu .qui{font-size:30px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+#relu .quoi{font-family:Inter,sans-serif;font-size:21px;font-weight:600;color:#a9b8c8;white-space:nowrap}
+.pt{position:relative;height:66px;margin-bottom:14px;border-radius:18px;background:#0d2135;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);display:flex;align-items:center;gap:16px;padding:0 20px;font-size:25px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.pt .c{flex:none;width:34px;height:34px;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(255,255,255,.25);position:relative}
+.pt .c:after{content:'';position:absolute;left:10px;top:9px;width:12px;height:7px;border-left:3px solid #fff;border-bottom:3px solid #fff;transform:rotate(-45deg);opacity:var(--ok,0)}
+.pt .c b{position:absolute;inset:0;border-radius:50%;background:#1D71B8;opacity:var(--ok,0);z-index:-0}
+.pt .c.x b{background:#e8bd62}
+#repere{width:46px;height:46px;border-radius:50%;background:#e8bd62;box-shadow:0 0 0 8px rgba(232,189,98,.25);z-index:7;display:grid;place-items:center;font-size:24px;font-weight:800;color:#08131f}
+#filRep{position:absolute;left:0;top:0;width:1080px;height:1080px;pointer-events:none;z-index:6}
+#filRep path{fill:none;stroke:#e8bd62;stroke-width:3;stroke-linecap:round;stroke-dasharray:1}
+#tampon{z-index:8;font-family:Inter,sans-serif;font-size:21px;font-weight:600;padding:10px 18px;border-radius:999px;background:#1D71B8;color:#fff;white-space:nowrap}
+
+/* Le Hub */
+#hub{width:960px;height:600px;border-radius:28px;background:#f4f7fa;color:#0b1b2b;box-shadow:0 70px 140px -60px rgba(0,0,0,.95);z-index:2;overflow:hidden;font-family:Inter,sans-serif}
+#hub .barre{height:56px;background:#e8eef4;display:flex;align-items:center;gap:10px;padding:0 22px;font-size:19px;font-weight:600;color:#5b6b7c}
+#hub .barre i{width:12px;height:12px;border-radius:50%;background:#c9d4df}
+#hub .barre span{margin-left:12px}
+#hub .h1{position:absolute;left:40px;top:86px;font-family:'Plus Jakarta Sans';font-size:34px;font-weight:800;letter-spacing:-.02em;color:#0b1b2b;white-space:nowrap}
+#hub .h2{position:absolute;left:40px;top:136px;font-size:21px;font-weight:600;color:#5b6b7c;white-space:nowrap}
+#hub .round{position:absolute;right:40px;top:92px;padding:9px 18px;border-radius:999px;background:#e6f0fa;color:#1D71B8;font-size:20px;font-weight:600}
+.var{position:absolute;top:196px;width:270px;height:270px;border-radius:16px;overflow:hidden}
+.var .tl{font-size:24px}
+.var .vl{position:absolute;left:0;top:282px;font-size:20px;font-weight:600;color:#5b6b7c;white-space:nowrap}
+#toast{z-index:9;width:420px;padding:20px 24px;border-radius:20px;background:#0d2135;box-shadow:0 40px 80px -30px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.1);display:flex;gap:16px;align-items:center}
+#toast .cl{flex:none;width:52px;height:52px;border-radius:50%;background:#1D71B8;display:grid;place-items:center}
+#toast .cl svg{width:26px;height:26px;fill:#fff}
+#toast b{display:block;font-size:24px;font-weight:800;letter-spacing:-.01em}
+#toast span{font-family:Inter,sans-serif;font-size:19px;font-weight:600;color:#a9b8c8}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="titre">
+    <div class="titre-acte" id="ta0"><div class="mask k"><span class="ln" data-txt="k0"></span></div><div class="mask t"><span class="ln" data-txt="t0a"></span></div><div class="mask t"><span class="ln" data-txt="t0b"></span></div></div>
+    <div class="titre-acte" id="ta1"><div class="mask k"><span class="ln" data-txt="k1"></span></div><div class="mask t"><span class="ln" data-txt="t1a"></span></div><div class="mask t"><span class="ln" data-txt="t1b"></span></div></div>
+    <div class="titre-acte" id="ta2"><div class="mask k"><span class="ln" data-txt="k2"></span></div><div class="mask t"><span class="ln" data-txt="t2a"></span></div><div class="mask t"><span class="ln" data-txt="t2b"></span></div></div>
+  </div>
+
+  <!-- Acte 3 : le Hub, derrière tout le reste. -->
+  <div class="abs" id="hub">
+    <div class="barre"><i></i><i></i><i></i><span>app.mydigipal.com</span></div>
+    <div class="h1">Atelier Rivière</div>
+    <div class="h2" data-txt="hub2"></div>
+    <div class="round">Round 1 · V1</div>
+    <div class="var" id="va1" style="left:345px;background:#24443a"><div class="halo abs" style="width:200px;height:200px;transform:translate(120px,-30px);opacity:.8"></div><div class="abs" id="lv1"></div><div class="tl abs" style="color:#f1e9dc;transform:translate(22px,150px)" data-txt="va1"></div></div>
+    <div class="var" id="va2" style="left:650px;background:#f2c46d"><div class="abs" id="lv2"></div><div class="tl abs" style="transform:translate(22px,150px)" data-txt="va2"></div></div>
+    <div class="vl abs" id="vl0" style="left:40px;top:478px" data-txt="vl0"></div>
+    <div class="vl abs" id="vl1" style="left:345px;top:478px" data-txt="vl1"></div>
+    <div class="vl abs" id="vl2" style="left:650px;top:478px" data-txt="vl2"></div>
+  </div>
+
+  <svg id="fils" viewBox="0 0 1080 1080"><path id="p0" pathLength="1"/><path id="p1" pathLength="1"/><path id="p2" pathLength="1"/><circle id="d0" r="7"/><circle id="d1" r="7"/><circle id="d2" r="7"/></svg>
+
+  <div class="abs" id="kit">
+    <h3 data-txt="kit"></h3>
+    <div class="marque">ATELIER RIVIÈRE</div>
+    <div class="r" data-txt="couleurs"></div>
+    <div class="pastilles"><i style="background:#f1e9dc"></i><i style="background:#24443a"></i><i style="background:#1d2a24"></i><i style="background:#f2c46d"></i></div>
+    <div class="r" data-txt="typo"></div>
+    <div class="aa">Aa</div>
+    <div class="r" data-txt="photos"></div>
+    <div class="photos"><div id="ph1"></div><div id="ph2" style="background:#24443a"></div></div>
+  </div>
+
+  <div class="abs outil" id="o0"><div class="gl"><svg viewBox="0 0 24 24"><path id="glClaude"/></svg></div><div class="nom">Claude</div><div class="role" data-txt="r0"></div><div class="etat" data-txt="e0"></div>
+    <div class="tuile"><div class="tx" id="tape"></div></div></div>
+  <div class="abs outil" id="o1"><div class="gl"><svg viewBox="0 0 24 24"><path id="glGemini"/></svg></div><div class="nom">Nano Banana</div><div class="role" data-txt="r1"></div><div class="etat" data-txt="e1"></div>
+    <div class="tuile"><canvas id="bruit" width="138" height="138"></canvas></div></div>
+  <div class="abs outil" id="o2"><div class="gl"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></div><div class="nom">Higgsfield</div><div class="role" data-txt="r2"></div><div class="etat" data-txt="e2"></div>
+    <div class="tuile v" id="mini"><div class="halo abs" id="miniHalo" style="width:110px;height:110px"></div><div class="abs" id="miniLampe"></div><div class="pb"><i id="miniPb"></i></div></div></div>
+
+  <!-- La bannière assemblée, et ce qui y vole. -->
+  <div class="abs" id="bn">
+    <div class="halo" id="bnHalo"></div>
+    <div class="logo" id="bnLogo" style="transform:translate(37px,37px)">ATELIER RIVIÈRE</div>
+    <div class="sous" id="bnSous" style="transform:translate(37px,200px)" data-txt="sous"></div>
+    <div class="cta" id="bnCta" style="transform:translate(37px,370px)" data-txt="cta"></div>
+  </div>
+  <div class="abs tl" id="volTitre"><div data-txt="l1"></div><div data-txt="l2"></div></div>
+  <div class="abs" id="volLampe"></div>
+
+  <div class="abs" id="relu">
+    <div class="tete"><div class="av"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.2"/><path d="M3.5 21c.8-4.6 4.3-7 8.5-7s7.7 2.4 8.5 7z"/></svg></div><div><div class="qui" data-txt="qui"></div><div class="quoi" data-txt="quoi"></div></div></div>
+    <div class="pt" id="pt0"><span class="c"><b></b></span><span data-txt="c0"></span></div>
+    <div class="pt" id="pt1"><span class="c"><b></b></span><span data-txt="c1"></span></div>
+    <div class="pt" id="pt2"><span class="c x" id="c2"><b></b></span><span data-txt="c2"></span></div>
+    <div class="pt" id="pt3"><span class="c"><b></b></span><span data-txt="c3"></span></div>
+  </div>
+  <svg id="filRep" viewBox="0 0 1080 1080"><path id="fr" pathLength="1"/></svg>
+  <div class="abs" id="repere">1</div>
+  <div class="abs" id="tampon" data-txt="tampon"></div>
+
+  <div class="abs" id="toast"><div class="cl"><svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/></svg></div><div><b data-txt="toast"></b><span data-txt="toast2"></span></div></div>
+</div>
+<div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
+
+<script>
+window.STAGE = { w: 1080, h: 1080 };
+window.DUREE = 19.6;
+
+(function () {
+  'use strict';
+  var EN = /\/en\//.test(location.pathname) || /[?&]lang=en/.test(location.search);
+  var TXT = EN ? {
+    k0: '1 · AI produces', t0a: 'The best tools,', t0b: '<span class="o">on your brand</span>.',
+    k1: '2 · Our creatives decide', t1a: 'Every file,', t1b: '<span class="o">checked by a human</span>.',
+    k2: '3 · You receive', t2a: 'Fast.', t2b: 'And <span class="o">done right</span>.',
+    kit: 'Your brand kit', couleurs: 'Colours', typo: 'Typeface', photos: 'Photos',
+    r0: 'writes your copy', r1: 'creates your images', r2: 'animates your videos', e0: 'Copy', e1: 'Image', e2: 'Video',
+    sous: 'Autumn collection', l1: 'Light,', l2: 'made by hand.', cta: 'Discover',
+    qui: 'Art direction', quoi: 'checks every file',
+    c0: 'True to your brand', c1: 'Readable when small', c2: 'The product, bigger', c3: 'No typos, right sizes',
+    tampon: 'Checked by our team',
+    hub2: 'LinkedIn banners · 3 concepts', va1: 'Every piece,<br>signed.', va2: 'Made in<br>Lyon.',
+    vl0: 'Concept 1', vl1: 'Concept 2', vl2: 'Concept 3',
+    toast: 'A new version to review', toast2: 'Atelier Rivière · just now'
+  } : {
+    k0: '1 · L’IA produit', t0a: 'Les meilleurs outils,', t0b: '<span class="o">à votre marque</span>.',
+    k1: '2 · Nos créatifs décident', t1a: 'Chaque fichier,', t1b: '<span class="o">relu par un humain</span>.',
+    k2: '3 · Vous recevez', t2a: 'Vite.', t2b: 'Et <span class="o">bien fait</span>.',
+    kit: 'Votre charte', couleurs: 'Couleurs', typo: 'Typographie', photos: 'Photos',
+    r0: 'écrit vos messages', r1: 'crée vos images', r2: 'anime vos vidéos', e0: 'Texte', e1: 'Image', e2: 'Vidéo',
+    sous: 'Collection automne', l1: 'La lumière,', l2: 'faite main.', cta: 'Découvrir',
+    qui: 'Direction artistique', quoi: 'relit chaque fichier',
+    c0: 'Fidèle à votre charte', c1: 'Lisible en petit', c2: 'Le produit, plus grand', c3: 'Zéro faute, bons formats',
+    tampon: 'Relue par notre équipe',
+    hub2: 'Bannières LinkedIn · 3 concepts', va1: 'Chaque pièce,<br>signée.', va2: 'Fait main<br>à Lyon.',
+    vl0: 'Concept 1', vl1: 'Concept 2', vl2: 'Concept 3',
+    toast: 'Une nouvelle version à relire', toast2: 'Atelier Rivière · à l’instant'
+  };
+  if (EN) document.documentElement.lang = 'en';
+  document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+  document.getElementById('glClaude').setAttribute('d', 'm4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z');
+  document.getElementById('glGemini').setAttribute('d', 'M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81');
+
+  /* ---------- Courbes ---------- */
+  function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return c01((t - a) / (b - a)); }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function bez(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    return function (x) { var t = x; for (var i = 0; i < 8; i++) { var d = (3 * ax * t + 2 * bx) * t + cx, e = ((ax * t + bx) * t + cx) * t - x; if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } t = c01(t); return ((ay * t + by) * t + cy) * t; };
+  }
+  var A = bez(0.15, 1, 0.32, 1);
+  var S = bez(0.333, 0, 0.667, 0);
+  function ressort(x) { if (x <= 0) return 0; if (x >= 1) return 1; var z = 0.5, w = 10; var wd = w * Math.sqrt(1 - z * z); var e = Math.exp(-z * w * x); return 1 - e * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x)); }
+  var $ = function (id) { return document.getElementById(id); };
+  function pose(el, x, y, o, extra) { el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)' + (extra || ''); el.style.opacity = o; }
+
+  /* La lampe, la même partout (la bannière, la tuile de Nano Banana, la vidéo, les vignettes). */
+  function lampe(w, haut) {
+    return '<svg width="' + w + '" height="' + (w * 1.6) + '" viewBox="0 0 100 160" style="overflow:visible"><line x1="50" y1="' + (haut === undefined ? -600 : haut) + '" x2="50" y2="62" stroke="#1d2a24" stroke-width="1.6"/>' +
+      '<rect x="44" y="58" width="12" height="8" rx="2" fill="#1d2a24"/><path d="M6,108 C6,80 27,64 50,64 C73,64 94,80 94,108 Z" fill="#24443a"/>' +
+      '<path d="M18,84 C26,72 37,68 48,68" stroke="#3e6658" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="108" rx="44" ry="5" fill="#183128"/>' +
+      '<circle cx="50" cy="111" r="8" fill="#ffe3a6"/></svg>';
+  }
+  // Hors de la bannière, le cordon s'arrête au bord haut : il ne traverse pas le titre.
+  $('volLampe').innerHTML = lampe(166, 0);
+  $('miniLampe').innerHTML = lampe(46);
+  $('lv1').innerHTML = lampe(100); $('lv1').style.transform = 'translate(150px,0)';
+  $('lv2').innerHTML = lampe(100); $('lv2').style.transform = 'translate(150px,0)';
+  $('ph1').innerHTML = '<div style="position:absolute;transform:translate(52px,-6px)">' + lampe(44) + '</div>';
+  $('ph2').innerHTML = '<div style="position:absolute;transform:translate(52px,-6px)">' + lampe(44) + '</div>';
+  document.querySelectorAll('#lv1 svg path, #ph2 svg path').forEach(function (p) { if (p.getAttribute('fill') === '#24443a') p.setAttribute('fill', '#f2c46d'); });
+
+  /* ---------- L'image de Nano Banana : la même image, nette ou dans le bruit. ---------- */
+  var nette = document.createElement('canvas'); nette.width = 138; nette.height = 138;
+  var bruit = $('bruit'), bx = bruit.getContext('2d');
+  function graine(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  var GR = []; (function () { var r = graine(2010); for (var i = 0; i < 138 * 138; i++) GR.push(r()); })();
+  function preparerImage() {
+    var c = nette.getContext('2d');
+    c.fillStyle = '#f1e9dc'; c.fillRect(0, 0, 138, 138);
+    var g = c.createRadialGradient(92, 64, 2, 92, 64, 70); g.addColorStop(0, 'rgba(246,196,98,.85)'); g.addColorStop(1, 'rgba(246,196,98,0)');
+    c.fillStyle = g; c.fillRect(0, 0, 138, 138);
+    var img = new Image();
+    return new Promise(function (ok) {
+      img.onload = function () { c.drawImage(img, 66, -6, 52, 83); ok(); };
+      img.onerror = ok;
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(lampe(52).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" '));
+    });
+  }
+  function dessinerBruit(p) {
+    // p = 0 : du bruit ; p = 1 : l'image nette. Entre les deux, des blocs qui rapetissent.
+    var bloc = Math.max(1, Math.round(lerp(23, 1, Math.pow(p, .7))));
+    bx.imageSmoothingEnabled = false;
+    var w = Math.ceil(138 / bloc);
+    bx.clearRect(0, 0, 138, 138);
+    bx.drawImage(nette, 0, 0, w, w);
+    bx.drawImage(bruit, 0, 0, w, w, 0, 0, 138, 138);
+    if (p < 1) {
+      var d = bx.getImageData(0, 0, 138, 138), a = d.data, amp = (1 - p) * 255;
+      for (var i = 0; i < 138 * 138; i++) { var n = (GR[i] - .5) * amp; a[i * 4] += n; a[i * 4 + 1] += n; a[i * 4 + 2] += n; }
+      bx.putImageData(d, 0, 0);
+    }
+  }
+
+  /* ---------- Places ---------- */
+  var KIT = { x: 60, y: 330 }, OUT = [330, 530, 730], OX = 500;
+  var BN = { x: 90, y: 330 }, RELU = { x: 600, y: 330 }, HUB = { x: 60, y: 320 };
+  var titreBn = { x: BN.x + 37, y: BN.y + 232 }, lampeBn = { x: BN.x + 256, y: BN.y, w: 166 };
+
+  var TITRES = [[0.3, 6.0], [6.6, 12.8], [13.4, 19.0]];
+  function titres(t) {
+    TITRES.forEach(function (p, i) {
+      $('ta' + i).querySelectorAll('.ln').forEach(function (ln, j) {
+        var e = A(seg(t, p[0] + j * 0.13, p[0] + j * 0.13 + 0.95));
+        var s = S(seg(t, p[1] + j * 0.06, p[1] + j * 0.06 + 0.4));
+        ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+      });
+    });
+  }
+
+  window.render = function (t) {
+    titres(t);
+    var boucle = S(seg(t, 19.0, 19.6)), bas = boucle * 60, fond = 1 - boucle;
+
+    // Acte 1 : la charte, puis les trois outils qu'elle nourrit.
+    var kIn = A(seg(t, 0.4, 1.2)), kOut = S(seg(t, 6.3, 7.0));
+    pose($('kit'), KIT.x - (1 - kIn) * 60 - kOut * 520, KIT.y, kIn);
+    for (var i = 0; i < 3; i++) {
+      var oIn = A(seg(t, 0.9 + i * 0.2, 1.7 + i * 0.2)), oOut = S(seg(t, 6.4 + i * 0.08, 7.1 + i * 0.08));
+      pose($('o' + i), OX + (1 - oIn) * 80 + oOut * 640, OUT[i], oIn);
+      var p = $('p' + i), y0 = KIT.y + 120 + i * 170, y1 = OUT[i] + 85;
+      p.setAttribute('d', 'M440 ' + y0 + ' C 470 ' + y0 + ', 470 ' + y1 + ', 500 ' + y1);
+      var f = A(seg(t, 1.6 + i * 0.25, 2.2 + i * 0.25));
+      p.style.strokeDasharray = '1'; p.style.strokeDashoffset = String(1 - f);
+      p.style.opacity = 1 - kOut;
+      // Un point d'or porte la charte jusqu'à l'outil, au moment où il se met au travail.
+      var q = seg(t, 2.0 + i * 1.15, 2.6 + i * 1.15), d = $('d' + i);
+      var pt = p.getPointAtLength(q * p.getTotalLength());
+      d.setAttribute('cx', pt.x); d.setAttribute('cy', pt.y);
+      d.style.opacity = q > 0 && q < 1 ? 1 : 0;
+    }
+    // Claude écrit le message, lettre par lettre.
+    var msg = [TXT.l1, TXT.l2], n = Math.floor(seg(t, 2.6, 3.9) * (msg[0].length + msg[1].length));
+    var a1 = msg[0].slice(0, n), a2 = msg[1].slice(0, Math.max(0, n - msg[0].length));
+    var curseur = (t < 3.9 || Math.floor(t * 2.4) % 2 === 0) && t < 6.3 ? '<span class="caret"></span>' : '';
+    $('tape').innerHTML = a1 + (a2 || n > msg[0].length ? '<br>' + a2 : '') + curseur;
+    $('tape').style.fontSize = '20px';
+    // Nano Banana : l'image sort du bruit.
+    dessinerBruit(A(seg(t, 3.6, 5.2)));
+    // Higgsfield : la lampe se balance, la barre de lecture avance.
+    var tv = Math.max(0, t - 4.8);
+    var bal = t > 4.8 ? Math.sin(tv * 2.6) * 9 : 0;
+    $('miniLampe').style.transform = 'translate(18px,' + (t > 4.8 ? 0 : -80) * (1 - A(seg(t, 4.8, 5.4))) + 'px) rotate(' + bal.toFixed(2) + 'deg)';
+    $('miniLampe').style.transformOrigin = '23px 0';
+    $('miniLampe').style.transform = 'translate(18px,' + (-80 * (1 - ressort(seg(t, 4.8, 5.8)))).toFixed(1) + 'px) rotate(' + bal.toFixed(2) + 'deg)';
+    pose($('miniHalo'), -14, -6, seg(t, 5.4, 5.6) * (0.8 + 0.2 * Math.sin(tv * 3)));
+    $('miniPb').style.transform = 'scaleX(' + seg(t, 4.8, 6.3).toFixed(3) + ')';
+    // Les états « Texte, Image, Vidéo » s'allument quand chaque outil a fini.
+    [[3.9], [5.2], [6.0]].forEach(function (q, j) { var el = document.querySelector('#o' + j + ' .etat'); el.style.opacity = A(seg(t, q[0], q[0] + .3)); el.innerHTML = '<svg width="16" height="12" viewBox="0 0 16 12" style="margin-right:8px"><path d="M1.5 6.5l4 4 9-9" stroke="#e8bd62" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' + TXT['e' + j]; });
+
+    // Acte 2 : la bannière s'assemble avec ce que les outils ont produit, puis se fait relire.
+    var bnIn = A(seg(t, 6.7, 7.4));
+    var vers = A(seg(t, 13.3, 14.3));                  // acte 3 : la bannière part dans le Hub
+    var hubSlot = { x: HUB.x + 40, y: HUB.y + 196, k: 270 / 460 };
+    var bx0 = lerp(BN.x, hubSlot.x, vers), by0 = lerp(BN.y, hubSlot.y, vers), sc = lerp(1, hubSlot.k, vers);
+    $('bn').style.transformOrigin = '0 0';
+    pose($('bn'), bx0 - (1 - bnIn) * 40, by0 + bas, bnIn * fond, ' scale(' + sc.toFixed(4) + ')');
+    $('bn').style.borderRadius = lerp(18, 16 / hubSlot.k, vers) + 'px';
+    // Le titre de Claude vole de sa tuile à la bannière.
+    var vt = A(seg(t, 7.0, 8.0));
+    var srcT = { x: OX + 520 - 16 - 138 + 14, y: OUT[0] + 16 + 30 };
+    var dstT = { x: bx0 + 37 * sc, y: by0 + 232 * sc };
+    var tz = lerp(20 / 40, 1, vt) * sc;
+    var vTitre = $('volTitre'); vTitre.style.transformOrigin = '0 0';
+    pose(vTitre, lerp(srcT.x + (1 - seg(t, 6.4, 7.0)) * 0, dstT.x, vt), lerp(srcT.y, dstT.y, vt) + bas, (t > 6.95 ? 1 : 0) * fond, ' scale(' + tz.toFixed(4) + ')');
+    // L'image de Nano Banana : la lampe vole de sa tuile à la bannière, puis grandit à la correction.
+    var vl = A(seg(t, 7.2, 8.2));
+    var corr = A(seg(t, 10.2, 11.0));
+    var lw = lerp(166, 200, corr);
+    var srcL = { x: OX + 520 - 16 - 138 + 66, y: OUT[1] + 16 - 6, s: 52 / 166 };
+    var dstL = { x: bx0 + (lerp(256, 236, corr)) * sc, y: by0, s: lw / 166 * sc };
+    var lz = lerp(srcL.s, dstL.s, vl);
+    var vLampe = $('volLampe');
+    pose(vLampe, lerp(srcL.x, dstL.x, vl), lerp(srcL.y, dstL.y, vl) + bas, (t > 7.15 ? 1 : 0) * fond, ' scale(' + lz.toFixed(4) + ')');
+    // Le halo de la bannière suit la lampe.
+    var hr = lw * 1.25;
+    $('bnHalo').style.width = (2 * hr) + 'px'; $('bnHalo').style.height = (2 * hr) + 'px';
+    pose($('bnHalo'), lerp(256, 236, corr) + lw / 2 - hr, lw * 1.6 * (111 / 160) - hr, seg(t, 8.0, 8.5));
+    ['bnLogo', 'bnSous', 'bnCta'].forEach(function (id, j) {
+      var k = A(seg(t, 7.8 + j * 0.15, 8.3 + j * 0.15)), el = $(id);
+      el.style.opacity = k;
+      var base = [[37, 37], [37, 200], [37, 370]][j];
+      el.style.transform = 'translate(' + base[0] + 'px,' + (base[1] + (1 - k) * 10) + 'px)';
+    });
+
+    // La relecture : chaque point se coche ; le troisième pose un repère sur la lampe.
+    var rIn = A(seg(t, 8.0, 8.7)), rOut = S(seg(t, 12.9, 13.5));
+    pose($('relu'), RELU.x + (1 - rIn) * 60 + rOut * 520, RELU.y, rIn);
+    var coches = [8.9, 9.4, 11.0, 11.5];
+    for (var c = 0; c < 4; c++) {
+      var pt2 = $('pt' + c), k2 = A(seg(t, 8.5 + c * 0.12, 9.0 + c * 0.12));
+      pt2.style.opacity = k2; pt2.style.transform = 'translateY(' + ((1 - k2) * 12) + 'px)';
+      pt2.style.setProperty('--ok', seg(t, coches[c], coches[c] + 0.2));
+    }
+    // Le point 3 bloque d'abord : contour or et repère, puis la correction, puis la coche.
+    var bloque = seg(t, 9.7, 9.9) * (1 - seg(t, 11.0, 11.2));
+    $('pt2').style.boxShadow = 'inset 0 0 0 ' + (1 + 2 * bloque) + 'px rgba(232,189,98,' + (0.08 + 0.9 * bloque) + ')';
+    var rep = ressort(seg(t, 9.9, 10.6)) * (1 - seg(t, 11.2, 11.5));
+    var lx = BN.x + lerp(256, 236, corr) + lw / 2, ly = BN.y + lw * 1.6 * (90 / 160);
+    pose($('repere'), lx - 23, ly - 23, Math.min(1, rep * 2), ' scale(' + rep.toFixed(3) + ')');
+    var yPt = RELU.y + 100 + 2 * 80 + 33 + (1 - rIn) * 0;
+    $('fr').setAttribute('d', 'M' + RELU.x + ' ' + yPt + ' C ' + (RELU.x - 40) + ' ' + yPt + ', ' + (lx + 60) + ' ' + ly + ', ' + (lx + 24) + ' ' + ly);
+    $('fr').style.strokeDashoffset = String(1 - A(seg(t, 9.8, 10.3)));
+    $('fr').style.opacity = 1 - seg(t, 11.1, 11.4);
+    // Le tampon de l'équipe, sous la bannière.
+    var tp = ressort(seg(t, 11.8, 12.5)) * (1 - S(seg(t, 13.0, 13.4)));
+    pose($('tampon'), BN.x + 120, BN.y + 486, Math.min(1, tp * 2), ' scale(' + tp.toFixed(3) + ')');
+
+    // Acte 3 : le Hub s'ouvre derrière, la bannière prend sa place, les deux autres concepts sont là.
+    var hIn = A(seg(t, 13.1, 14.0));
+    pose($('hub'), HUB.x, HUB.y + (1 - hIn) * 80 + bas, hIn * fond, ' scale(' + lerp(.94, 1, hIn).toFixed(4) + ')');
+    $('hub').style.transformOrigin = '50% 0';
+    ['va1', 'va2', 'vl0', 'vl1', 'vl2'].forEach(function (id, j) {
+      var k = A(seg(t, 14.0 + j * 0.12, 14.6 + j * 0.12));
+      $(id).style.opacity = k; $(id).style.marginTop = ((1 - k) * 14) + 'px';
+    });
+    var to = A(seg(t, 15.2, 15.9));
+    pose($('toast'), 580 + (1 - to) * 120, 860 + bas, to * fond);
+  };
+
+  window.PRET = Promise.all([
+    document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"'), preparerImage()
+  ]);
+  window.render(0);
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

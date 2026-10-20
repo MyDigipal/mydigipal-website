@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vous commentez, on ajuste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@500;600&display=block" rel="stylesheet">
+<style>
+/* Page Creative design (Paul, 20/10/2026) : « dès qu'ils nous demandent une bannière, on la crée,
+   on la leur monte, ils font des commentaires, c'est envoyé en review. Ça ne dure pas des heures. »
+   La revue dans le Hub, filmée avec une caméra qui tient (l'essai demo-interface, favori de Paul) :
+   1. le client clique sur l'image et laisse deux commentaires, puis demande des changements ;
+   2. l'agent applique les retours, un créatif relit, la V2 arrive : la lampe grandit, « faite main »
+      passe en or, les deux commentaires sont résolus ;
+   3. le client approuve, l'équipe met en ligne. Sous la fenêtre, la frise de la journée avance.
+   Les libellés de l'interface du Hub restent en anglais, comme dans le vrai Hub. render(t) est pur. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(900px 700px at 85% -10%,rgba(29,113,184,.30),rgba(8,19,31,0) 65%),radial-gradient(700px 600px at 0% 110%,rgba(232,189,98,.08),rgba(8,19,31,0) 60%)}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(140%);white-space:nowrap}
+#titre{position:absolute;left:72px;top:64px;z-index:9}
+.titre-acte{position:absolute;left:0;top:0}
+#titre .k .ln{font-size:30px;font-weight:700;color:#7DB8EE;letter-spacing:.01em;margin-bottom:12px}
+#titre .t .ln{font-size:60px;font-weight:800;letter-spacing:-.035em;line-height:1.04}
+#titre .t .ln .o{color:#e8bd62}
+.abs{position:absolute;left:0;top:0}
+
+#vue{position:absolute;left:0;top:270px;width:1080px;height:660px;overflow:hidden}
+#monde{position:absolute;left:0;top:0;width:1080px;height:660px;transform-origin:0 0}
+#hub{left:40px;top:20px;width:1000px;height:620px;border-radius:28px;background:#f4f7fa;color:#0b1b2b;box-shadow:0 70px 140px -60px rgba(0,0,0,.95);overflow:hidden;font-family:Inter,sans-serif}
+#hub .barre{height:52px;background:#e8eef4;display:flex;align-items:center;gap:10px;padding:0 22px;font-size:18px;font-weight:600;color:#5b6b7c}
+#hub .barre i{width:12px;height:12px;border-radius:50%;background:#c9d4df}
+#hub .barre span{margin-left:12px}
+.h1{left:24px;top:72px;font-family:'Plus Jakarta Sans';font-size:28px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.puce{top:74px;padding:8px 16px;border-radius:999px;font-size:18px;font-weight:600;white-space:nowrap}
+#round{right:24px;left:auto;background:#e6f0fa;color:#1D71B8}
+#statut{left:auto;right:150px;background:#e8eef4;color:#5b6b7c}
+.vig{left:24px;width:140px;height:140px;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 0 1px #dde5ed}
+.vig.on{box-shadow:0 0 0 3px #1D71B8}
+#ban{left:190px;top:130px;width:380px;height:380px;border-radius:14px;background:#f1e9dc;overflow:hidden;box-shadow:0 20px 40px -24px rgba(11,27,43,.5)}
+#ban > *{position:absolute;left:0;top:0;transform-origin:0 0}
+.halo{border-radius:50%;background:radial-gradient(closest-side,rgba(246,196,98,.75),rgba(246,196,98,.25) 55%,rgba(246,196,98,0))}
+.blogo{font-family:Inter,sans-serif;font-weight:600;letter-spacing:.18em;color:#1d2a24;font-size:13px;white-space:nowrap}
+.bsous{font-family:Inter,sans-serif;font-weight:600;color:#7a6a52;font-size:16px;white-space:nowrap}
+.tl{font-family:'Plus Jakarta Sans';font-weight:800;letter-spacing:-.035em;line-height:1.02;color:#1d2a24;white-space:nowrap;font-size:34px}
+.bcta{font-family:Inter,sans-serif;font-weight:600;color:#f1e9dc;background:#1d2a24;border-radius:999px;font-size:15px;padding:8px 16px;line-height:1;white-space:nowrap}
+#travail{left:190px;top:130px;width:380px;height:380px;border-radius:14px;background:rgba(11,27,43,.78);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center}
+#travail b{font-family:'Plus Jakarta Sans';font-size:26px;font-weight:800}
+#travail span{font-size:18px;font-weight:600;color:#c9d6e2;line-height:1.35;padding:0 34px}
+#travail .jauge{width:240px;height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
+#travail .jauge i{display:block;height:100%;background:#e8bd62;transform-origin:0 50%}
+#version{left:190px;top:524px;font-size:18px;font-weight:600;color:#5b6b7c;white-space:nowrap}
+.pin{width:38px;height:38px;border-radius:50%;background:#e8bd62;color:#0b1b2b;font-family:'Plus Jakarta Sans';font-size:20px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 6px rgba(232,189,98,.3);z-index:3}
+.pin.ok{background:#127a4a;color:#fff;box-shadow:0 0 0 6px rgba(18,122,74,.22)}
+#panneau{left:594px;top:130px;width:382px}
+#panneau h4{margin:0 0 14px;font-family:'Plus Jakarta Sans';font-size:22px;font-weight:800}
+.com{position:relative;height:104px;margin-bottom:14px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 1px #dde5ed;padding:14px 16px;box-sizing:border-box}
+.com .qui{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600;color:#5b6b7c;white-space:nowrap}
+.com .qui i{flex:none;width:28px;height:28px;border-radius:50%;background:#e8bd62;color:#0b1b2b;font-style:normal;font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px;display:grid;place-items:center}
+.com .txt{margin-top:10px;font-size:21px;font-weight:600;color:#0b1b2b;white-space:nowrap}
+.com .res{position:absolute;right:14px;top:14px;padding:4px 12px;border-radius:999px;background:#e8f6ee;color:#127a4a;font-size:15px;font-weight:600}
+.btn{top:500px;height:56px;border-radius:14px;display:grid;place-items:center;font-size:19px;font-weight:600;white-space:nowrap}
+#bChg{left:594px;width:186px;background:#fff;color:#0b1b2b;box-shadow:inset 0 0 0 2px #cfd9e3}
+#bOk{left:792px;width:184px;background:#1D71B8;color:#fff}
+#approuve{left:594px;top:500px;width:382px;height:56px;border-radius:14px;background:#e8f6ee;color:#127a4a;display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;font-weight:600}
+#curseur{z-index:6;width:30px;height:40px}
+#onde{width:60px;height:60px;border-radius:50%;border:3px solid #1D71B8;z-index:5}
+
+#frise{position:absolute;left:72px;top:960px;width:936px;height:100px}
+#frise .rail{position:absolute;left:12px;right:12px;top:11px;height:3px;background:#1f3a55}
+#frise .plein{position:absolute;left:12px;top:11px;height:3px;background:#1D71B8;transform-origin:0 50%;width:912px}
+.arret{position:absolute;top:0;width:150px;margin-left:-75px;text-align:center}
+.arret i{display:block;width:24px;height:24px;margin:0 auto 10px;border-radius:50%;background:#08131f;box-shadow:inset 0 0 0 3px #1f3a55}
+.arret.on i{background:#1D71B8;box-shadow:inset 0 0 0 3px #1D71B8}
+.arret b{display:block;font-size:22px;font-weight:800;letter-spacing:-.01em;color:#6f8aa5;white-space:nowrap}
+.arret span{display:block;font-family:Inter,sans-serif;font-size:17px;font-weight:600;color:#4d6a86;margin-top:2px}
+.arret.on b{color:#f4f7fa}.arret.on span{color:#7DB8EE}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="titre">
+    <div class="titre-acte" id="ta0"><div class="mask k"><span class="ln" data-txt="k0"></span></div><div class="mask t"><span class="ln" data-txt="t0a"></span></div><div class="mask t"><span class="ln" data-txt="t0b"></span></div></div>
+    <div class="titre-acte" id="ta1"><div class="mask k"><span class="ln" data-txt="k1"></span></div><div class="mask t"><span class="ln" data-txt="t1a"></span></div><div class="mask t"><span class="ln" data-txt="t1b"></span></div></div>
+    <div class="titre-acte" id="ta2"><div class="mask k"><span class="ln" data-txt="k2"></span></div><div class="mask t"><span class="ln" data-txt="t2a"></span></div><div class="mask t"><span class="ln" data-txt="t2b"></span></div></div>
+  </div>
+
+  <div id="vue"><div id="monde">
+    <div class="abs" id="hub">
+      <div class="barre"><i></i><i></i><i></i><span>app.mydigipal.com</span></div>
+      <div class="abs h1" data-txt="h1"></div>
+      <div class="abs puce" id="statut"></div>
+      <div class="abs puce" id="round">Round 1</div>
+      <div class="abs vig on" id="vg0" style="top:130px"></div>
+      <div class="abs vig" id="vg1" style="top:284px;background:#24443a"></div>
+      <div class="abs vig" id="vg2" style="top:438px;background:#f2c46d"></div>
+      <div class="abs" id="ban">
+        <div class="halo" id="bHalo"></div><div id="bLampe"></div>
+        <div class="blogo" style="transform:translate(30px,30px)">ATELIER RIVIÈRE</div>
+        <div class="bsous" style="transform:translate(30px,170px)" data-txt="sous"></div>
+        <div class="tl" id="bl1" style="transform:translate(30px,196px)" data-txt="l1"></div>
+        <div class="tl" id="bl2" style="transform:translate(30px,231px)" data-txt="l2"></div>
+        <div class="bcta" style="transform:translate(30px,306px)" data-txt="cta"></div>
+      </div>
+      <div class="abs" id="travail"><b data-txt="trav1"></b><div class="jauge"><i id="jauge"></i></div><span data-txt="trav2"></span></div>
+      <div class="abs" id="version"></div>
+      <div class="abs pin" id="pin1">1</div>
+      <div class="abs pin" id="pin2">2</div>
+      <div class="abs" id="panneau">
+        <h4>Comments</h4>
+        <div class="com" id="com1"><div class="qui"><i>1</i>Claire · Atelier Rivière</div><div class="txt" id="tx1"></div><div class="res" id="res1">Resolved</div></div>
+        <div class="com" id="com2"><div class="qui"><i>2</i>Claire · Atelier Rivière</div><div class="txt" id="tx2"></div><div class="res" id="res2">Resolved</div></div>
+      </div>
+      <div class="abs btn" id="bChg">Needs changes</div>
+      <div class="abs btn" id="bOk">Approve</div>
+      <div class="abs" id="approuve"><svg width="22" height="16" viewBox="0 0 16 12"><path d="M1.5 6.5l4 4 9-9" stroke="#127a4a" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="approuveTx">Approved</span></div>
+      <div class="abs" id="onde"></div>
+      <svg class="abs" id="curseur" viewBox="0 0 30 40"><path d="M2 2 L2 32 L10 25 L15.5 37 L21 34.5 L15.5 23 L26 23 Z" fill="#0b1b2b" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>
+    </div>
+  </div></div>
+
+  <div id="frise"><div class="rail"></div><div class="plein" id="plein"></div></div>
+</div>
+<div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
+
+<script>
+window.STAGE = { w: 1080, h: 1080 };
+window.DUREE = 20;
+
+(function () {
+  'use strict';
+  var EN = /\/en\//.test(location.pathname) || /[?&]lang=en/.test(location.search);
+  var TXT = EN ? {
+    k0: '1 · You comment', t0a: 'Click the image,', t0b: '<span class="o">leave a note</span>.',
+    k1: '2 · We adjust', t1a: 'Version 2', t1b: '<span class="o">right after</span>.',
+    k2: '3 · You approve', t2a: 'One click,', t2b: '<span class="o">we publish</span>.',
+    h1: 'Atelier Rivière · LinkedIn banners', sous: 'Autumn collection', l1: 'Light,', l2: 'made by hand.', cta: 'Discover',
+    c1: 'Bigger product?', c2: '“made by hand” in gold?',
+    trav1: 'Version 2 on its way', trav2: 'Our agent applies your notes, a creative checks them',
+    arrets: [['Request', '9:10'], ['V1', '10:05'], ['Your notes', '10:20'], ['V2', '11:00'], ['Approved', '11:05'], ['Live', '11:30']]
+  } : {
+    k0: '1 · Vous commentez', t0a: 'Un clic sur l’image,', t0b: '<span class="o">un commentaire</span>.',
+    k1: '2 · On ajuste', t1a: 'La version 2', t1b: '<span class="o">dans la foulée</span>.',
+    k2: '3 · Vous validez', t2a: 'Un clic,', t2b: '<span class="o">on publie</span>.',
+    h1: 'Atelier Rivière · Bannières LinkedIn', sous: 'Collection automne', l1: 'La lumière,', l2: 'faite main.', cta: 'Découvrir',
+    c1: 'Le produit, plus grand ?', c2: '« faite main » en doré ?',
+    trav1: 'Version 2 en cours', trav2: 'Notre agent applique vos retours, un créatif relit',
+    arrets: [['Demande', '9 h 10'], ['V1', '10 h 05'], ['Vos retours', '10 h 20'], ['V2', '11 h 00'], ['Validée', '11 h 05'], ['En ligne', '11 h 30']]
+  };
+  if (EN) document.documentElement.lang = 'en';
+  document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+
+  function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return c01((t - a) / (b - a)); }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function bez(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    return function (x) { var t = x; for (var i = 0; i < 8; i++) { var d = (3 * ax * t + 2 * bx) * t + cx, e = ((ax * t + bx) * t + cx) * t - x; if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } t = c01(t); return ((ay * t + by) * t + cy) * t; };
+  }
+  var A = bez(0.15, 1, 0.32, 1);
+  var S = bez(0.333, 0, 0.667, 0);
+  var D = bez(0.45, 0, 0.2, 1);               // les gestes du curseur et de la caméra
+  function ressort(x) { if (x <= 0) return 0; if (x >= 1) return 1; var z = 0.5, w = 10; var wd = w * Math.sqrt(1 - z * z); var e = Math.exp(-z * w * x); return 1 - e * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x)); }
+  var $ = function (id) { return document.getElementById(id); };
+  function pose(el, x, y, o, extra) { el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)' + (extra || ''); el.style.opacity = o; }
+
+  function lampe(w, couleur) {
+    return '<svg width="' + w + '" height="' + (w * 1.6) + '" viewBox="0 0 100 160" style="overflow:visible"><line x1="50" y1="-600" x2="50" y2="62" stroke="#1d2a24" stroke-width="1.6"/>' +
+      '<rect x="44" y="58" width="12" height="8" rx="2" fill="#1d2a24"/><path d="M6,108 C6,80 27,64 50,64 C73,64 94,80 94,108 Z" fill="' + (couleur || '#24443a') + '"/>' +
+      '<path d="M18,84 C26,72 37,68 48,68" stroke="rgba(255,255,255,.18)" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="108" rx="44" ry="5" fill="#183128"/>' +
+      '<circle cx="50" cy="111" r="8" fill="#ffe3a6"/></svg>';
+  }
+  $('bLampe').innerHTML = lampe(100);
+  $('bLampe').firstChild.setAttribute('width', 100);
+  ['vg0', 'vg1', 'vg2'].forEach(function (id, i) {
+    $(id).innerHTML = '<div style="position:absolute;inset:0;background:' + ['#f1e9dc', '#24443a', '#f2c46d'][i] + '"></div><div style="position:absolute;transform:translate(72px,0)">' + lampe(52, i === 1 ? '#f2c46d' : '#24443a') + '</div>';
+  });
+
+  /* La frise de la journée. */
+  var ARR = [0.5, 0.9, 6.7, 10.6, 14.75, 16.3];
+  TXT.arrets.forEach(function (a, i) {
+    var d = document.createElement('div'); d.className = 'arret'; d.id = 'ar' + i;
+    d.style.left = (12 + i * 912 / 5) + 'px';
+    d.innerHTML = '<i></i><b>' + a[0] + '</b><span>' + a[1] + '</span>';
+    $('frise').appendChild(d);
+  });
+
+  /* La caméra : un point du monde à mettre au centre de la vue, et un zoom (1,4 au plus). */
+  var CAM = [[0, 540, 330, 1], [1.7, 540, 330, 1], [2.5, 660, 310, 1.25], [5.9, 660, 310, 1.25], [6.6, 830, 560, 1.38], [6.95, 830, 560, 1.38],
+    [7.8, 540, 330, 1], [13.7, 540, 330, 1], [14.4, 830, 560, 1.38], [15.2, 830, 560, 1.38], [16.0, 540, 330, 1]];
+  function camera(t) {
+    for (var i = CAM.length - 1; i >= 0; i--) if (t >= CAM[i][0]) break;
+    var a = CAM[Math.max(0, i)], b = CAM[Math.min(CAM.length - 1, i + 1)];
+    var k = a === b ? 0 : D(seg(t, a[0], b[0]));
+    var px = lerp(a[1], b[1], k), py = lerp(a[2], b[2], k), s = lerp(a[3], b[3], k);
+    $('monde').style.transform = 'translate(' + (540 - px * s).toFixed(1) + 'px,' + (330 - py * s).toFixed(1) + 'px) scale(' + s.toFixed(4) + ')';
+  }
+  /* Le curseur, dans les coordonnées de la fenêtre du Hub. */
+  var CUR = [[0, 980, 640], [1.4, 980, 640], [2.2, 470, 214], [3.9, 470, 214], [4.5, 428, 372], [5.9, 428, 372], [6.55, 690, 528], [7.2, 690, 528], [7.9, 1060, 680],
+    [13.6, 1060, 680], [14.6, 884, 528], [15.4, 884, 528], [16.2, 1060, 680]];
+  var CLICS = [2.3, 4.6, 6.7, 14.7];
+  function curseur(t) {
+    for (var i = CUR.length - 1; i >= 0; i--) if (t >= CUR[i][0]) break;
+    var a = CUR[Math.max(0, i)], b = CUR[Math.min(CUR.length - 1, i + 1)];
+    var k = a === b ? 0 : D(seg(t, a[0], b[0]));
+    var x = lerp(a[1], b[1], k), y = lerp(a[2], b[2], k), presse = 1;
+    var onde = 0, ox = x, oy = y;
+    CLICS.forEach(function (c) { var q = seg(t, c - .08, c + .12); if (q > 0 && q < 1) presse = 1 - .15 * Math.sin(q * Math.PI); var w = seg(t, c, c + .55); if (w > 0 && w < 1) { onde = w; } });
+    pose($('curseur'), x, y, 1, ' scale(' + presse + ')');
+    pose($('onde'), ox - 30, oy - 30, onde > 0 ? (1 - onde) : 0, ' scale(' + lerp(.3, 1.4, onde).toFixed(3) + ')');
+  }
+  function ecrire(el, txt, a, b, t) { var n = Math.round(seg(t, a, b) * txt.length); el.textContent = txt.slice(0, n); }
+
+  var TITRES = [[0.3, 6.6], [7.2, 13.4], [14.0, 19.4]];
+  function titres(t) {
+    TITRES.forEach(function (p, i) {
+      $('ta' + i).querySelectorAll('.ln').forEach(function (ln, j) {
+        var e = A(seg(t, p[0] + j * 0.13, p[0] + j * 0.13 + 0.95));
+        var s = S(seg(t, p[1] + j * 0.06, p[1] + j * 0.06 + 0.4));
+        ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+      });
+    });
+  }
+
+  window.render = function (t) {
+    titres(t);
+    var boucle = S(seg(t, 19.4, 20)), fond = 1 - boucle;
+    var hIn = A(seg(t, 0.3, 1.1));
+    pose($('hub'), 40, 20 + (1 - hIn) * 60 + boucle * 60, hIn * fond);
+    camera(t);
+    curseur(t);
+
+    // La bannière : la V2 grandit la lampe et dore « faite main ».
+    var v2 = A(seg(t, 10.2, 10.9));
+    var lw = lerp(124, 160, v2), lx = lerp(226, 200, v2);
+    var L = $('bLampe').firstChild; L.setAttribute('width', lw); L.setAttribute('height', lw * 1.6);
+    pose($('bLampe'), lx, 0, 1);
+    var hr = lw * 1.25;
+    $('bHalo').style.width = $('bHalo').style.height = (2 * hr) + 'px';
+    pose($('bHalo'), lx + lw / 2 - hr, lw * 1.6 * (111 / 160) - hr, 1);
+    $('bl2').style.color = v2 > .5 ? '#a8862f' : '#1d2a24';
+    $('version').textContent = (v2 > .5 ? 'V2' : 'V1') + ' · 1080 × 1080';
+    $('round').textContent = v2 > .5 ? 'Round 2' : 'Round 1';
+    // L'agent travaille, sous les yeux du client.
+    var tr = seg(t, 7.9, 8.4) * (1 - seg(t, 10.1, 10.4));
+    $('travail').style.opacity = tr;
+    $('jauge').style.transform = 'scaleX(' + A(seg(t, 8.2, 10.1)).toFixed(3) + ')';
+
+    // Les deux repères et leurs commentaires.
+    var resolu = seg(t, 10.9, 11.1);
+    [[2.3, 190 + lx + lw / 2 - 19, 130 + lw * 1.6 * .55 - 19, 'tx1', TXT.c1, 2.6, 3.7, 'com1', 'res1', 'pin1', 11.2],
+     [4.6, 190 + 222, 130 + 236, 'tx2', TXT.c2, 4.9, 5.9, 'com2', 'res2', 'pin2', 11.45]].forEach(function (c) {
+      var pin = ressort(seg(t, c[0], c[0] + .6));
+      pose($(c[9]), c[1], c[2], Math.min(1, pin * 2) * (1 - seg(t, 13.0, 13.4)), ' scale(' + pin.toFixed(3) + ')');
+      $(c[9]).classList.toggle('ok', t > c[10]);
+      $(c[9]).textContent = t > c[10] ? '' : c[9].slice(-1);
+      if (t > c[10]) $(c[9]).innerHTML = '<svg width="18" height="14" viewBox="0 0 16 12"><path d="M1.5 6.5l4 4 9-9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      var ci = A(seg(t, c[0] + .15, c[0] + .55));
+      $(c[7]).style.opacity = ci; $(c[7]).style.transform = 'translateY(' + ((1 - ci) * 12) + 'px)';
+      ecrire($(c[3]), c[4], c[5], c[6], t);
+      var r = ressort(seg(t, c[10], c[10] + .5));
+      $(c[8]).style.opacity = Math.min(1, r * 2); $(c[8]).style.transform = 'scale(' + r.toFixed(3) + ')';
+    });
+
+    // Statut, boutons, approbation.
+    var chg = t >= 6.7, ok = t >= 14.7;
+    var st = $('statut');
+    if (ok) { st.textContent = 'Approved'; st.style.background = '#e8f6ee'; st.style.color = '#127a4a'; }
+    else if (v2 > .5) { st.textContent = 'In review'; st.style.background = '#e6f0fa'; st.style.color = '#1D71B8'; }
+    else if (chg) { st.textContent = 'Needs changes'; st.style.background = '#fdf3dc'; st.style.color = '#8a6512'; }
+    else { st.textContent = 'In review'; st.style.background = '#e6f0fa'; st.style.color = '#1D71B8'; }
+    $('bChg').style.boxShadow = 'inset 0 0 0 ' + (chg && t < 7.4 ? 3 : 2) + 'px ' + (chg && t < 7.4 ? '#8a6512' : '#cfd9e3');
+    var ap = A(seg(t, 14.8, 15.3));
+    $('bChg').style.opacity = 1 - ap; $('bOk').style.opacity = 1 - ap;
+    $('approuve').style.opacity = ap; $('approuve').style.transform = 'translateY(' + ((1 - ap) * 10) + 'px)';
+    $('approuveTx').textContent = t > 16.3 ? 'Approved · Live on LinkedIn' : 'Approved';
+
+    // La frise.
+    var dernier = 0; ARR.forEach(function (a, i) { if (t >= a) dernier = i; $('ar' + i).classList.toggle('on', t >= a); });
+    var avance = dernier / 5;
+    for (var i = 0; i < 5; i++) { if (t >= ARR[i] && t < ARR[i + 1]) avance = (i + A(seg(t, ARR[i + 1] - .6, ARR[i + 1]))) / 5; }
+    $('plein').style.transform = 'scaleX(' + avance.toFixed(4) + ')';
+    $('frise').style.opacity = A(seg(t, 0.4, 1.0)) * fond;
+  };
+
+  window.PRET = Promise.all([
+    document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"')
+  ]);
+  window.render(0);
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

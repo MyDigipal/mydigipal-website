@@ -1,0 +1,101 @@
+---
+/**
+ * La page Creative design (chantier ouvert le 20/10/2026, pilotage : docs/creative-design/).
+ * Bannières, document ads et vidéos, produits avec l'IA et relus par nos créatifs. Les landing
+ * pages n'y sont pas (décision de Paul : une page à part viendra).
+ *
+ * EN NOINDEX tant que Paul ne l'a pas validée : ni sitemap, ni menu, ni page d'index des services.
+ *
+ * Le rythme des fonds (jamais deux sections d'encre collées) :
+ * hero (blanc, scène crea-formats) · l'IA et nos créatifs (encre) · les trois mots (brume) ·
+ * ce qu'on produit (blanc) · comment avance une demande (encre) · réalisations (blanc) ·
+ * les prix (encre) · le simulateur (brume) · questions (blanc) · appel final.
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import ServiceSchema from '@/components/seo/ServiceSchema.astro';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
+import { type Language } from '@/i18n/config';
+import { GRILLE_CREA } from '@/lib/creative/grille';
+import { montant } from '@/lib/creative/moteur';
+import { faqCreative } from '@/data/creative/faq';
+
+import HeroService from '@/components/sections/HeroService.astro';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
+import IaHumains from '@/components/creative/IaHumains.astro';
+import TroisMots from '@/components/creative/TroisMots.astro';
+import CeQuOnProduit from '@/components/creative/CeQuOnProduit.astro';
+import Parcours from '@/components/creative/Parcours.astro';
+import Realisations from '@/components/creative/Realisations.astro';
+import PrixCreative from '@/components/creative/PrixCreative.astro';
+import TarifsCreative from '@/components/creative/TarifsCreative.tsx';
+import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'fr' } }, { params: { lang: 'en' } }];
+}
+
+const { lang } = Astro.params as { lang: Language };
+const dv = lang === 'fr' ? 'EUR' : 'USD';
+const prixJeu = montant(GRILLE_CREA.jeux.li[0].prix[dv], lang, dv);
+
+const P = {
+  fr: {
+    titre: 'Creative design',
+    seoTitre: 'Bannières et vidéos publicitaires par l’IA',
+    seoDescription: `Bannières LinkedIn, Google et Display, vidéos de 15 à 30 s : produites avec l’IA, relues par nos créatifs, dans votre charte. Dès ${prixJeu} le jeu de bannières.`,
+    badge: 'Creative design',
+    headline: 'Beaucoup de créas. Vite. Et bien faites.',
+    sous: 'L’IA produit, nos créatifs décident.',
+    description: 'Bannières LinkedIn, Performance Max et Display, document ads, vidéos de 15 à 30 secondes : nous produisons vos publicités avec les meilleurs outils d’IA, dans votre charte, et chaque fichier est relu par un humain avant de vous arriver.',
+    chiffres: [{ chiffre: prixJeu, texte: 'le jeu de bannières LinkedIn' }, { chiffre: '4', texte: 'tours de retours compris' }],
+    scene: 'Un message décliné dans tous les formats',
+    finTitre: 'Une campagne à lancer ?',
+    finTexte: 'Chiffrez votre demande en une minute avec le simulateur, ou écrivez-nous : nous vous proposons des pistes sur votre marque.',
+  },
+  en: {
+    titre: 'Creative design',
+    seoTitre: 'Ad banners and videos, made fast with AI',
+    seoDescription: `LinkedIn, Google and Display banners and 15 to 30-second videos, made with AI and checked by our creatives, on brand. From ${prixJeu} per banner set.`,
+    badge: 'Creative design',
+    headline: 'Lots of ads. Fast. And done right.',
+    sous: 'AI produces, our creatives decide.',
+    description: 'LinkedIn, Performance Max and Display banners, document ads, 15 to 30-second videos: we produce your ads with the best AI tools, on brand, and a human checks every file before it reaches you.',
+    chiffres: [{ chiffre: prixJeu, texte: 'per LinkedIn banner set' }, { chiffre: '4', texte: 'rounds of feedback included' }],
+    scene: 'One message in every format',
+    finTitre: 'A campaign to launch?',
+    finTexte: 'Price your request in a minute with the simulator, or write to us: we will suggest directions on your brand.',
+  },
+}[lang];
+const url = `/${lang}/services/creative-design`;
+---
+
+<PageLayout lang={lang} title={P.seoTitre} description={P.seoDescription} noindex>
+  <ServiceSchema name={P.titre} description={P.seoDescription} url={`https://mydigipal.com${url}`} lang={lang} />
+  <BreadcrumbSchema items={[
+    { name: lang === 'fr' ? 'Accueil' : 'Home', url: `/${lang}` },
+    { name: 'Services', url: `/${lang}/services` },
+    { name: P.titre, url },
+  ]} />
+  <HeroService
+    lang={lang}
+    badge={P.badge}
+    headline={P.headline}
+    subheadline={P.sous}
+    description={P.description}
+    chiffres={P.chiffres}
+    lienBudget="#simulateur"
+  >
+    <SceneLabo slot="panneau" lang={lang} nom="crea-formats" format="carre" repos={16.2} controles portraitMobile titre={P.scene} />
+  </HeroService>
+
+  <IaHumains lang={lang} />
+  <TroisMots lang={lang} />
+  <CeQuOnProduit lang={lang} />
+  <Parcours lang={lang} />
+  <Realisations lang={lang} />
+  <PrixCreative lang={lang} />
+  <TarifsCreative client:load lang={lang} partie="simulateur" contactHref={`/${lang}/contact`} />
+  <ServiceFAQ lang={lang} service="creative-design" contenu={faqCreative(lang)} />
+  <FinalCTA lang={lang} title={P.finTitre} subtitle={P.finTexte} lienBudget="#simulateur" />
+</PageLayout>

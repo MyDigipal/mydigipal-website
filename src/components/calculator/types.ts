@@ -1,6 +1,6 @@
 // Calculator Types
 
-export type ServiceDomain = 'seo' | 'google-ads' | 'paid-social' | 'ai-training' | 'emailing' | 'ai-solutions' | 'ai-content' | 'tracking-reporting';
+export type ServiceDomain = 'seo' | 'google-ads' | 'paid-social' | 'ai-training' | 'emailing' | 'ai-solutions' | 'ai-content' | 'tracking-reporting' | 'creative-design';
 
 // Currency support
 export type Currency = 'EUR' | 'USD' | 'GBP';

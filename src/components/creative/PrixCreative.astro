@@ -1,0 +1,51 @@
+---
+/**
+ * Page Creative design : les prix (20/10/2026). La grille vient de `lib/creative/grille.ts`,
+ * rendue par l'îlot `TarifsCreative` (sélecteur de devise). Visuel dominant : la scène
+ * `crea-volume`, qui explique pourquoi le prix par jeu baisse.
+ */
+import type { Language } from '@/i18n/config';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
+import TarifsCreative from './TarifsCreative.tsx';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+
+const T = {
+  fr: {
+    titre: 'Les prix, sans surprise',
+    chapo: 'Le premier jeu pose le système visuel de votre marque ; les suivants le réutilisent. C’est pourquoi le prix de chaque jeu baisse avec le nombre de jeux de la même demande.',
+    scene: 'Pourquoi le prix par jeu baisse avec le volume',
+  },
+  en: {
+    titre: 'Prices, with no surprise',
+    chapo: 'The first set builds your brand’s visual system; the next ones reuse it. That is why each set costs less as the number of sets in the same request grows.',
+    scene: 'Why the price per set drops with volume',
+  },
+}[lang];
+---
+
+<section class="section-encre section-monte pc" id="prix">
+  <div class="container-custom">
+    <header class="pc-tete">
+      <h2 class="titre-moyen">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+    </header>
+    <div class="pc-grille">
+      <TarifsCreative client:load lang={lang} partie="prix" contactHref={`/${lang}/contact`} />
+      <div class="pc-scene">
+        <SceneLabo lang={lang} nom="crea-volume" format="carre" repos={15.6} controles titre={T.scene} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pc { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .pc { padding: 128px 0 136px; } }
+  .pc-tete { display: grid; gap: 18px; max-width: 820px; margin-bottom: 44px; }
+  .pc-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: start; }
+  @media (min-width: 1024px) { .pc-grille { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; } .pc-scene { position: sticky; top: 96px; } }
+</style>

@@ -1,0 +1,115 @@
+---
+/**
+ * Page Creative design : ce qu'on produit (20/10/2026). Les formats sont ceux du document
+ * « Creative pricing and request » du Hub Exaforce. Les landing pages n'y sont pas : décision de
+ * Paul du 20/10, elles auront leur propre page. Visuel dominant : la scène `crea-storyboard`.
+ */
+import type { Language } from '@/i18n/config';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+
+const T = {
+  fr: {
+    titre: 'Ce que nous produisons',
+    chapo: 'Les formats des campagnes que nous pilotons tous les jours, pour LinkedIn, Google et YouTube. Pour chaque campagne, nous vous conseillons ceux qui comptent.',
+    bannieres: [
+      { nom: 'Jeu de bannières LinkedIn', tailles: ['1080 x 1080', '1200 x 627', '720 x 900'], pour: 'Annonces image, reciblage, campagnes Thought Leader' },
+      { nom: 'Jeu de bannières Google', tailles: ['1200 x 628', '1200 x 1200', '960 x 1200', 'logos', '300 x 250', '728 x 90', '160 x 600', '320 x 50'], pour: 'Performance Max, Demand Gen, Display' },
+      { nom: 'Document ad', tailles: ['5 à 8 pages', '1080 x 1080', 'PDF'], pour: 'Document ads LinkedIn, études de cas, rapports' },
+    ],
+    pour: 'Pour',
+    videoTitre: 'Les vidéos, du storyboard au motion design',
+    videoTexte: 'Nous écrivons le script et le storyboard, vous les validez, puis nous animons la vidéo à partir de votre marque. Chaque vidéo est livrée dans les trois formats des plateformes.',
+    videos: [
+      ['Vidéo de 15 à 20 secondes', 'Un message, pour LinkedIn, YouTube et Performance Max.'],
+      ['Vidéo de 20 à 30 secondes', 'Le temps d’une démonstration ou d’une preuve chiffrée.'],
+      ['Storyboard seul', 'Scènes, script et textes à l’écran, pour que votre équipe produise.'],
+    ],
+    formats: 'Livrées en 16:9, 1:1 et 9:16',
+    scene: 'Du storyboard à la vidéo',
+  },
+  en: {
+    titre: 'What we produce',
+    chapo: 'The formats of the campaigns we run every day, for LinkedIn, Google and YouTube. For each campaign, we recommend the ones that matter.',
+    bannieres: [
+      { nom: 'LinkedIn banner set', tailles: ['1080 x 1080', '1200 x 627', '720 x 900'], pour: 'Single image ads, retargeting, Thought Leader campaigns' },
+      { nom: 'Google banner set', tailles: ['1200 x 628', '1200 x 1200', '960 x 1200', 'logos', '300 x 250', '728 x 90', '160 x 600', '320 x 50'], pour: 'Performance Max, Demand Gen, Display' },
+      { nom: 'Document ad', tailles: ['5 to 8 pages', '1080 x 1080', 'PDF'], pour: 'LinkedIn document ads, case studies, reports' },
+    ],
+    pour: 'For',
+    videoTitre: 'Videos, from storyboard to motion design',
+    videoTexte: 'We write the script and the storyboard, you approve them, then we animate the video from your brand. Every video is delivered in the three platform formats.',
+    videos: [
+      ['15 to 20-second video', 'One message, for LinkedIn, YouTube and Performance Max.'],
+      ['20 to 30-second video', 'Time for a demo or a proof point.'],
+      ['Storyboard only', 'Scenes, script and on-screen text, for your team to produce.'],
+    ],
+    formats: 'Delivered in 16:9, 1:1 and 9:16',
+    scene: 'From storyboard to video',
+  },
+}[lang];
+---
+
+<section class="section-blanc cp">
+  <div class="container-custom">
+    <header class="cp-tete">
+      <h2 class="titre-moyen text-encre">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+    </header>
+
+    <ul class="cp-bannieres">
+      {T.bannieres.map((b) => (
+        <li>
+          <h3>{b.nom}</h3>
+          <div class="cp-tailles">{b.tailles.map((t) => <span>{t}</span>)}</div>
+          <p><span>{T.pour}</span> {b.pour}</p>
+        </li>
+      ))}
+    </ul>
+
+    <div class="cp-video">
+      <div class="cp-scene">
+        <SceneLabo lang={lang} nom="crea-storyboard" format="carre" repos={11.2} controles titre={T.scene} />
+      </div>
+      <div class="cp-video-texte">
+        <h3>{T.videoTitre}</h3>
+        <p>{T.videoTexte}</p>
+        <dl>
+          {T.videos.map(([n, d]) => <div><dt>{n}</dt><dd>{d}</dd></div>)}
+        </dl>
+        <p class="cp-formats"><span>16:9</span><span>1:1</span><span>9:16</span>{T.formats}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cp { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .cp { padding: 120px 0 128px; } }
+  .cp-tete { display: grid; gap: 18px; max-width: 780px; margin-bottom: 40px; }
+  .cp-bannieres { list-style: none; margin: 0; padding: 0; display: grid; }
+  .cp-bannieres li { display: grid; gap: 10px; padding: 22px 0; border-top: 1px solid var(--filet); }
+  .cp-bannieres li:last-child { border-bottom: 1px solid var(--filet); }
+  @media (min-width: 1024px) { .cp-bannieres li { grid-template-columns: 280px minmax(0, 1fr) 300px; align-items: center; gap: 28px; } }
+  .cp-bannieres h3 { margin: 0; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; font-size: 20px; color: var(--encre); }
+  .cp-tailles { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cp-tailles span { font-size: 13px; font-weight: 600; color: var(--color-marque); background: var(--marque-doux, #e6f0fa); border-radius: 999px; padding: 5px 11px; white-space: nowrap; }
+  .cp-bannieres p { margin: 0; font-size: 15px; color: #4B5B6B; }
+  .cp-bannieres p span { font-weight: 700; color: var(--encre); }
+
+  .cp-video { margin-top: 64px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; align-items: center; }
+  @media (min-width: 1024px) { .cp-video { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 64px; } }
+  .cp-video-texte { display: grid; gap: 16px; }
+  .cp-video-texte h3 { margin: 0; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(26px, 2.6vw, 34px); line-height: 1.1; color: var(--encre); }
+  .cp-video-texte > p { margin: 0; color: #4B5B6B; font-size: 17px; }
+  .cp-video-texte dl { margin: 4px 0 0; display: grid; }
+  .cp-video-texte dl div { padding: 14px 0; border-top: 1px solid var(--filet); }
+  .cp-video-texte dt { font-weight: 700; color: var(--encre); }
+  .cp-video-texte dd { margin: 2px 0 0; color: #4B5B6B; font-size: 15px; }
+  .cp-formats { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; font-size: 14px; color: #4B5B6B; }
+  .cp-formats span { font-weight: 700; color: #fff; background: var(--encre); border-radius: 8px; padding: 4px 9px; font-size: 13px; }
+</style>

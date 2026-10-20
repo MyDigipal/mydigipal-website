@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plus vous commandez, moins chaque jeu coûte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@500;600&display=block" rel="stylesheet">
+<style>
+/* Page Creative design, section des prix (Paul, 20/10/2026) : pourquoi le prix par jeu baisse.
+   1. le premier jeu pose le système visuel de la marque (grille, typographie, couleurs, gabarit),
+      ses lignes de construction se tracent, puis le premier jeu en sort ;
+   2. les jeux suivants sont tirés du même système, de plus en plus vite ; sous eux, l'escalier
+      des paliers s'allume au moment où l'on franchit chaque seuil ;
+   3. les douze jeux se rangent dans un seul compte : le total, et ce qu'on a économisé.
+   Prix de la grille du 20/10/2026 : euros sur la page française, dollars sur l'anglaise.
+   render(t) est pur ; Plus Jakarta Sans pour les titres, Inter pour les étiquettes. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(900px 700px at 85% -10%,rgba(29,113,184,.30),rgba(8,19,31,0) 65%),radial-gradient(700px 600px at 0% 110%,rgba(232,189,98,.08),rgba(8,19,31,0) 60%)}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(140%);white-space:nowrap}
+#titre{position:absolute;left:72px;top:64px;z-index:9}
+.titre-acte{position:absolute;left:0;top:0}
+#titre .k .ln{font-size:30px;font-weight:700;color:#7DB8EE;letter-spacing:.01em;margin-bottom:12px}
+#titre .t .ln{font-size:60px;font-weight:800;letter-spacing:-.035em;line-height:1.04}
+#titre .t .ln .o{color:#e8bd62}
+.abs{position:absolute;left:0;top:0}
+
+#systeme{width:440px;height:450px;border-radius:26px;background:#0d2135;box-shadow:0 50px 100px -45px rgba(0,0,0,.95),inset 0 0 0 1px rgba(255,255,255,.08);overflow:hidden;transform-origin:0 0;z-index:3}
+#systeme .tete{position:absolute;left:28px;top:24px;font-size:26px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+#systeme .r{position:absolute;font-family:Inter,sans-serif;font-size:19px;font-weight:600;color:#7DB8EE;white-space:nowrap}
+#grilleSvg{position:absolute;left:0;top:0}
+#grilleSvg line{stroke:rgba(125,184,238,.35);stroke-width:1.5}
+.past{position:absolute;width:44px;height:44px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.15)}
+#aa{left:28px;top:118px;font-size:72px;font-weight:800;letter-spacing:-.04em;line-height:1}
+#gab{position:absolute;left:220px;top:250px;width:190px;height:170px;border-radius:12px;background:#f1e9dc;overflow:hidden}
+#gab i{position:absolute;display:block;border-radius:4px;background:#1d2a24}
+#gab b{position:absolute;display:block;border:2px dashed #1D71B8;border-radius:6px}
+
+.jeu{position:absolute;width:150px;height:100px;z-index:4}
+.jeu i{position:absolute;border-radius:6px;overflow:hidden}
+.jeu i:after{content:'';position:absolute;left:14%;right:30%;bottom:22%;height:12%;border-radius:2px;background:currentColor;opacity:.85}
+.jeu i:before{content:'';position:absolute;right:12%;top:0;width:26%;height:46%;border-radius:0 0 50% 50% / 0 0 60% 60%;background:currentColor;opacity:.9}
+.prix1{z-index:5;font-size:84px;font-weight:800;letter-spacing:-.04em;color:#e8bd62;white-space:nowrap}
+.prix1 small{display:block;font-family:Inter,sans-serif;font-size:22px;font-weight:600;color:#a9b8c8;letter-spacing:0;margin-top:4px}
+
+.marche{position:absolute;width:225px;z-index:3}
+.marche .barre{position:absolute;left:0;right:0;bottom:0;border-radius:14px 14px 4px 4px;background:#13304b;transform-origin:50% 100%}
+.marche.on .barre{background:#1D71B8}
+.marche .px{position:absolute;left:0;right:0;text-align:center;font-size:34px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.marche .lb{position:absolute;left:0;right:0;text-align:center;font-family:Inter,sans-serif;font-size:21px;font-weight:600;color:#a9b8c8;white-space:nowrap}
+.marche.on .lb{color:#f4f7fa}
+
+#compte{z-index:6;width:700px;padding:40px 44px;border-radius:30px;background:#f4f7fa;color:#0b1b2b;box-shadow:0 70px 140px -60px rgba(0,0,0,.95)}
+#compte .q{font-family:Inter,sans-serif;font-size:24px;font-weight:600;color:#5b6b7c}
+#compte .tot{display:flex;align-items:baseline;gap:22px;margin-top:8px}
+#compte .tot b{font-size:110px;font-weight:800;letter-spacing:-.05em;line-height:1}
+#compte .tot s{font-family:Inter,sans-serif;font-size:34px;font-weight:600;color:#8a97a5}
+#compte .eco{display:inline-block;margin-top:20px;padding:10px 20px;border-radius:999px;background:#fdf3dc;color:#8a6512;font-size:26px;font-weight:800}
+#compte .detail{margin-top:20px;font-family:Inter,sans-serif;font-size:21px;font-weight:600;color:#5b6b7c;line-height:1.5}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="titre">
+    <div class="titre-acte" id="ta0"><div class="mask k"><span class="ln" data-txt="k0"></span></div><div class="mask t"><span class="ln" data-txt="t0a"></span></div><div class="mask t"><span class="ln" data-txt="t0b"></span></div></div>
+    <div class="titre-acte" id="ta1"><div class="mask k"><span class="ln" data-txt="k1"></span></div><div class="mask t"><span class="ln" data-txt="t1a"></span></div><div class="mask t"><span class="ln" data-txt="t1b"></span></div></div>
+    <div class="titre-acte" id="ta2"><div class="mask k"><span class="ln" data-txt="k2"></span></div><div class="mask t"><span class="ln" data-txt="t2a"></span></div><div class="mask t"><span class="ln" data-txt="t2b"></span></div></div>
+  </div>
+
+  <div class="abs" id="systeme">
+    <svg id="grilleSvg" width="440" height="450"></svg>
+    <div class="tete" data-txt="sys"></div>
+    <div class="r" style="left:28px;top:84px" data-txt="typo"></div>
+    <div class="abs" id="aa">Aa</div>
+    <div class="r" style="left:220px;top:84px" data-txt="couleurs"></div>
+    <div class="past" style="left:220px;top:122px;background:#f1e9dc"></div><div class="past" style="left:274px;top:122px;background:#24443a"></div>
+    <div class="past" style="left:328px;top:122px;background:#1d2a24"></div><div class="past" style="left:382px;top:122px;background:#f2c46d"></div>
+    <div class="r" style="left:28px;top:214px" data-txt="regles"></div>
+    <div class="r" style="left:220px;top:214px" data-txt="gabarit"></div>
+    <div id="gab"><b style="left:110px;top:-2px;width:66px;height:72px"></b><i style="left:14px;top:96px;width:120px;height:14px"></i><i style="left:14px;top:116px;width:86px;height:14px"></i><i style="left:14px;top:144px;width:52px;height:14px;border-radius:99px"></i><b style="left:10px;top:90px;width:132px;height:46px"></b></div>
+    <div class="abs" id="regles" style="left:28px;top:252px;width:170px;font-family:Inter,sans-serif;font-size:18px;font-weight:600;color:#c9d6e2;line-height:1.55"></div>
+  </div>
+
+  <div id="jeux"></div>
+  <div class="abs prix1" id="prix1"><span id="p1"></span><small data-txt="parjeu"></small></div>
+  <div id="marches"></div>
+
+  <div class="abs" id="compte">
+    <div class="q" data-txt="q"></div>
+    <div class="tot"><b id="totB"></b><s id="totS"></s></div>
+    <div class="eco" id="eco"></div>
+    <div class="detail" data-txt="detail"></div>
+  </div>
+</div>
+<div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
+
+<script>
+window.STAGE = { w: 1080, h: 1080 };
+window.DUREE = 17;
+
+(function () {
+  'use strict';
+  var EN = /\/en\//.test(location.pathname) || /[?&]lang=en/.test(location.search);
+  // Les paliers LinkedIn de la grille du 20/10/2026 (src/lib/creative/grille.ts du site).
+  var PAL = EN ? [120, 100, 90, 80] : [110, 90, 80, 70];
+  function px(v) { return EN ? '$' + v.toLocaleString('en-GB') : v.toLocaleString('fr-FR').replace(/\s/g, ' ') + ' €'; }
+  var TXT = EN ? {
+    k0: '1 · The first set', t0a: 'We build', t0b: '<span class="o">your visual system</span>.',
+    k1: '2 · The next ones reuse it', t1a: 'The more you order,', t1b: '<span class="o">the less each set costs</span>.',
+    k2: '3 · The total', t2a: '12 banner sets,', t2b: '<span class="o">' + px(12 * (PAL[0] - PAL[3])) + ' less</span>.',
+    sys: 'Your visual system', typo: 'Type', couleurs: 'Colours', regles: 'Rules', gabarit: 'Layout',
+    r: 'Logo top left<br>Product on the right<br>One message<br>One button',
+    parjeu: 'per LinkedIn set', paliers: ['1 to 2', '3 to 5', '6 to 10', '11 and more'],
+    q: '12 LinkedIn banner sets, in one request', detail: 'Every set: square, landscape and vertical, 4 rounds of feedback included.'
+  } : {
+    k0: '1 · Le premier jeu', t0a: 'On pose', t0b: '<span class="o">votre système visuel</span>.',
+    k1: '2 · Les suivants le réutilisent', t1a: 'Plus vous commandez,', t1b: '<span class="o">moins chaque jeu coûte</span>.',
+    k2: '3 · Le compte', t2a: '12 jeux de bannières,', t2b: '<span class="o">' + px(12 * (PAL[0] - PAL[3])) + ' de moins</span>.',
+    sys: 'Votre système visuel', typo: 'Typographie', couleurs: 'Couleurs', regles: 'Règles', gabarit: 'Gabarit',
+    r: 'Logo en haut à gauche<br>Produit à droite<br>Un seul message<br>Un bouton',
+    parjeu: 'le jeu LinkedIn', paliers: ['1 à 2', '3 à 5', '6 à 10', '11 et plus'],
+    q: '12 jeux de bannières LinkedIn, dans la même demande', detail: 'Chaque jeu : carré, paysage et vertical, 4 tours de retours compris.'
+  };
+  if (EN) document.documentElement.lang = 'en';
+  document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+  document.getElementById('regles').innerHTML = TXT.r;
+
+  function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return c01((t - a) / (b - a)); }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function bez(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    return function (x) { var t = x; for (var i = 0; i < 8; i++) { var d = (3 * ax * t + 2 * bx) * t + cx, e = ((ax * t + bx) * t + cx) * t - x; if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } t = c01(t); return ((ay * t + by) * t + cy) * t; };
+  }
+  var A = bez(0.15, 1, 0.32, 1);
+  var S = bez(0.333, 0, 0.667, 0);
+  function ressort(x) { if (x <= 0) return 0; if (x >= 1) return 1; var z = 0.5, w = 10; var wd = w * Math.sqrt(1 - z * z); var e = Math.exp(-z * w * x); return 1 - e * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x)); }
+  var $ = function (id) { return document.getElementById(id); };
+  function pose(el, x, y, o, extra) { el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)' + (extra || ''); el.style.opacity = o; }
+
+  // Les lignes de construction : douze colonnes et quelques horizontales, qui se tracent.
+  var svg = $('grilleSvg'), LIGNES = [];
+  for (var i = 0; i <= 12; i++) LIGNES.push([20 + i * 33.3, 0, 20 + i * 33.3, 450]);
+  [70, 200, 240].forEach(function (y) { LIGNES.push([0, y, 440, y]); });
+  LIGNES.forEach(function (l) { var e = document.createElementNS('http://www.w3.org/2000/svg', 'line'); e.setAttribute('x1', l[0]); e.setAttribute('y1', l[1]); e.setAttribute('x2', l[2]); e.setAttribute('y2', l[3]); e.setAttribute('pathLength', '1'); e.style.strokeDasharray = '1'; svg.appendChild(e); });
+
+  // Douze jeux, chacun trois formats ; une teinte par message.
+  var TEINTES = [['#f1e9dc', '#24443a'], ['#24443a', '#f2c46d'], ['#f2c46d', '#1d2a24'], ['#e7dccb', '#7a5b3a'], ['#1d2a24', '#f1e9dc'], ['#dfe9e4', '#24443a']];
+  var JEUX = [];
+  for (var j = 0; j < 12; j++) {
+    var d = document.createElement('div'); d.className = 'jeu';
+    var tt = TEINTES[j % TEINTES.length];
+    d.innerHTML = '<i style="left:0;top:14px;width:62px;height:62px;background:' + tt[0] + ';color:' + tt[1] + '"></i><i style="left:68px;top:6px;width:50px;height:62px;background:' + tt[0] + ';color:' + tt[1] + '"></i><i style="left:68px;top:74px;width:82px;height:26px;background:' + tt[0] + ';color:' + tt[1] + '"></i>';
+    $('jeux').appendChild(d); JEUX.push(d);
+  }
+  // Le moment où chaque jeu sort du système : le premier lentement, puis de plus en plus vite.
+  var SORTIES = [3.6]; var pas = 0.62;
+  for (var k = 1; k < 12; k++) { SORTIES.push((k === 1 ? 6.4 : SORTIES[k - 1] + pas)); pas = Math.max(0.24, pas * 0.86); }
+  // Les places : le premier jeu en grand à droite (acte 1), puis la grille de 3 x 4 (acte 2).
+  function placeGrille(n) { return { x: 548 + (n % 3) * 162, y: 300 + Math.floor(n / 3) * 112 }; }
+
+  // L'escalier des paliers.
+  var SEUILS = [1, 3, 6, 11], MARCHES = [];
+  PAL.forEach(function (p, i) {
+    var m = document.createElement('div'); m.className = 'marche';
+    var h = 40 + (p / PAL[0]) * 90;
+    m.style.left = (60 + i * 245) + 'px'; m.style.top = '790px'; m.style.height = '190px';
+    m.innerHTML = '<div class="px" style="bottom:' + (h + 46) + 'px">' + px(p) + '</div><div class="barre" style="bottom:40px;height:' + h + 'px"></div><div class="lb" style="bottom:0">' + TXT.paliers[i] + '</div>';
+    $('marches').appendChild(m); MARCHES.push(m);
+  });
+
+  var TITRES = [[0.3, 5.6], [6.1, 12.0], [12.6, 16.4]];
+  function titres(t) {
+    TITRES.forEach(function (p, i) {
+      $('ta' + i).querySelectorAll('.ln').forEach(function (ln, q) {
+        var e = A(seg(t, p[0] + q * 0.13, p[0] + q * 0.13 + 0.95));
+        var s = S(seg(t, p[1] + q * 0.06, p[1] + q * 0.06 + 0.4));
+        ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+      });
+    });
+  }
+
+  window.render = function (t) {
+    titres(t);
+    var boucle = S(seg(t, 16.4, 17)), bas = boucle * 60, fond = 1 - boucle;
+
+    // Le système : il entre, ses lignes se tracent, puis il se range à gauche.
+    var sIn = A(seg(t, 0.4, 1.2));
+    var fin = S(seg(t, 12.2, 12.9));
+    pose($('systeme'), 60 - (1 - sIn) * 60 - fin * 600, 300 + bas, sIn * fond);
+    svg.querySelectorAll('line').forEach(function (l, q) { l.style.strokeDashoffset = String(1 - A(seg(t, 0.9 + q * 0.06, 1.7 + q * 0.06))); });
+    $('systeme').querySelectorAll('.r, #aa, .past, #gab, #regles, .tete').forEach(function (el, q) {
+      var k = A(seg(t, 1.2 + q * 0.09, 1.7 + q * 0.09)); el.style.opacity = k;
+    });
+    // Le gabarit : ses zones en pointillés montrent ce qui se remplit à chaque message.
+    $('gab').querySelectorAll('b').forEach(function (b) { b.style.opacity = 0.5 + 0.5 * Math.sin(t * 5); });
+
+    // Les jeux : chacun sort du gabarit et va à sa place.
+    var source = { x: 60 + 220, y: 300 + 250 };
+    JEUX.forEach(function (el, n) {
+      var s0 = SORTIES[n];
+      var k = A(seg(t, s0, s0 + (n === 0 ? 0.9 : 0.55)));
+      var cible = placeGrille(n), sc = 1;
+      // Le premier jeu se montre d'abord en grand, puis rejoint la grille avec les autres.
+      if (n === 0) {
+        var gros = { x: 600, y: 360 }, vers = A(seg(t, 5.8, 6.5));
+        cible = { x: lerp(gros.x, cible.x, vers), y: lerp(gros.y, cible.y, vers) };
+        sc = lerp(2.2, 1, vers);
+      }
+      // Acte 3 : tous les jeux convergent dans le compte.
+      var conv = A(seg(t, 12.3 + n * 0.03, 13.1 + n * 0.03));
+      var x = lerp(lerp(source.x, cible.x, k), 540 - 75, conv), y = lerp(lerp(source.y, cible.y, k), 560, conv);
+      pose(el, x, y + bas, (k > 0 ? 1 : 0) * (1 - seg(t, 12.9 + n * 0.03, 13.2 + n * 0.03)) * fond, ' scale(' + (sc * lerp(lerp(0.4, 1, k), 0.3, conv)).toFixed(3) + ')');
+      el.style.transformOrigin = '0 0';
+    });
+
+    // Le prix du premier jeu, puis il descend avec le palier.
+    var p1 = A(seg(t, 4.4, 5.0)) * (1 - S(seg(t, 5.8, 6.2)));
+    $('p1').textContent = px(PAL[0]);
+    pose($('prix1'), 600, 690 + bas, p1 * fond);
+
+    // L'escalier : il entre avec l'acte 2, chaque marche s'allume quand on franchit son seuil.
+    var nSortis = 0; SORTIES.forEach(function (s0) { if (t >= s0 + 0.3) nSortis++; });
+    var mIn = A(seg(t, 6.0, 6.7)), mOut = S(seg(t, 12.1, 12.7));
+    MARCHES.forEach(function (m, i) {
+      var ki = A(seg(t, 6.0 + i * 0.1, 6.7 + i * 0.1));
+      m.style.opacity = ki * (1 - mOut) * fond;
+      m.style.transform = 'translateY(' + ((1 - ki) * 30 + mOut * 220 + bas) + 'px)';
+      var actif = t > 6.2 && nSortis >= SEUILS[i] && (i === 3 || nSortis < SEUILS[i + 1]);
+      m.classList.toggle('on', actif);
+      m.querySelector('.barre').style.transform = 'scaleY(' + ki.toFixed(3) + ')';
+    });
+
+    // Le compte.
+    var cIn = A(seg(t, 13.0, 13.8));
+    pose($('compte'), 190, 380 + (1 - cIn) * 50 + bas, cIn * fond);
+    var tot = Math.round(lerp(12 * PAL[0], 12 * PAL[3], A(seg(t, 13.6, 14.8))) / 10) * 10;
+    $('totB').textContent = px(tot);
+    $('totS').textContent = px(12 * PAL[0]);
+    $('totS').style.opacity = seg(t, 14.4, 14.8);
+    var e = ressort(seg(t, 14.8, 15.4));
+    $('eco').textContent = '-' + px(12 * (PAL[0] - PAL[3]));
+    $('eco').style.opacity = Math.min(1, e * 2); $('eco').style.transform = 'scale(' + e.toFixed(3) + ')';
+  };
+
+  window.PRET = Promise.all([document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"')]);
+  window.render(0);
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

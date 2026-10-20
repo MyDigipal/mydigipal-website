@@ -433,7 +433,8 @@ function buildReasoning(
     'ai-content': { en: 'AI Content', fr: 'Contenu IA' },
     'ai-solutions': { en: 'AI Solutions', fr: 'Solutions IA' },
     'ai-training': { en: 'AI Training', fr: 'Formation IA' },
-    'tracking-reporting': { en: 'Tracking & Reporting', fr: 'Tracking & Reporting' }
+    'tracking-reporting': { en: 'Tracking & Reporting', fr: 'Tracking & Reporting' },
+    'creative-design': { en: 'Creative design', fr: 'Creative design' }
   };
 
   const industryLabels: Record<string, { en: string; fr: string }> = {

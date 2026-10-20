@@ -1,0 +1,91 @@
+---
+/**
+ * Page Creative design : l'IA produit, nos créatifs décident (20/10/2026). Le message central
+ * voulu par Paul : on se sert à fond des derniers outils d'IA, et chaque fichier passe par un
+ * humain. Visuel dominant : la scène `crea-ia-humains` du labo.
+ *
+ * Les marques de Claude et de Google viennent de `academy-tools/logos.ts` (simple-icons, usage
+ * nominatif) ; Higgsfield n'a pas de marque libre : son nom seul, avec une icône neutre.
+ */
+import type { Language } from '@/i18n/config';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
+import { MARQUES } from '@/components/academy-tools/logos';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+
+const T = {
+  fr: {
+    titre: 'L’IA produit. Nos créatifs décident.',
+    chapo: 'Nous travaillons avec les meilleurs outils d’IA du moment, nourris de votre charte. Ils nous font gagner des heures ; ce sont nos créatifs qui choisissent, corrigent et relisent chaque fichier avant qu’il vous arrive.',
+    outils: [
+      { cle: 'claude', nom: 'Claude', texte: 'écrit vos messages et les décline, dans votre ton' },
+      { cle: 'gemini', nom: 'Nano Banana', texte: 'crée et retouche les images, dans votre charte' },
+      { cle: '', nom: 'Higgsfield', texte: 'anime vos visuels pour en faire des vidéos' },
+    ],
+    humain: 'Nos créatifs',
+    humainTexte: 'tiennent la direction artistique, corrigent ce qui ne va pas et relisent tout : la charte, la lisibilité en petit, l’orthographe, chaque format.',
+    scene: 'Comment l’IA et nos créatifs produisent vos bannières',
+  },
+  en: {
+    titre: 'AI produces. Our creatives decide.',
+    chapo: 'We work with the best AI tools available, fed with your brand guidelines. They save us hours; our creatives choose, fix and check every file before it reaches you.',
+    outils: [
+      { cle: 'claude', nom: 'Claude', texte: 'writes your copy and its variations, in your tone' },
+      { cle: 'gemini', nom: 'Nano Banana', texte: 'creates and retouches the images, on brand' },
+      { cle: '', nom: 'Higgsfield', texte: 'animates your visuals into videos' },
+    ],
+    humain: 'Our creatives',
+    humainTexte: 'own the art direction, fix what is not right and check everything: the brand, readability at small sizes, spelling, every format.',
+    scene: 'How AI and our creatives produce your banners',
+  },
+}[lang];
+---
+
+<section class="section-encre section-monte ih">
+  <div class="container-custom ih-grille">
+    <div class="ih-texte">
+      <h2 class="titre-moyen">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+      <ul class="ih-outils">
+        {T.outils.map((o) => {
+          const m = o.cle ? MARQUES[o.cle] : null;
+          return (
+            <li>
+              <span class="ih-glyphe" aria-hidden="true">
+                {m ? <svg viewBox={m.viewBox}><path d={m.trace} fill="currentColor" /></svg>
+                   : <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>}
+              </span>
+              <span><strong>{o.nom}</strong> {o.texte}</span>
+            </li>
+          );
+        })}
+        <li class="ih-humain">
+          <span class="ih-glyphe" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.2" fill="currentColor" /><path d="M3.5 21c.8-4.6 4.3-7 8.5-7s7.7 2.4 8.5 7z" fill="currentColor" /></svg></span>
+          <span><strong>{T.humain}</strong> {T.humainTexte}</span>
+        </li>
+      </ul>
+    </div>
+    <div class="ih-scene">
+      <SceneLabo lang={lang} nom="crea-ia-humains" format="carre" repos={12.4} controles titre={T.scene} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .ih { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .ih { padding: 128px 0 136px; } }
+  .ih-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: center; }
+  @media (min-width: 1024px) { .ih-grille { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 64px; } }
+  .ih-texte { display: grid; gap: 20px; }
+  .ih-outils { list-style: none; margin: 12px 0 0; padding: 0; display: grid; }
+  .ih-outils li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; align-items: start; padding: 16px 0; border-top: 1px solid var(--filet-sombre); color: var(--texte-sombre-2); font-size: 16px; line-height: 1.5; }
+  .ih-outils li:last-child { border-bottom: 1px solid var(--filet-sombre); }
+  .ih-outils strong { color: #fff; font-weight: 700; }
+  .ih-glyphe { width: 40px; height: 40px; border-radius: 999px; background: rgb(255 255 255 / 0.08); color: #fff; display: grid; place-items: center; }
+  .ih-glyphe svg { width: 20px; height: 20px; }
+  .ih-humain .ih-glyphe { background: var(--color-marque); }
+  .ih-humain strong { color: var(--marque-clair); }
+</style>

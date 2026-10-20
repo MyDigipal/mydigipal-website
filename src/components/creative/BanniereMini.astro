@@ -1,0 +1,67 @@
+---
+/**
+ * Une bannière de la marque fictive Atelier Rivière, à n'importe quelle taille (page Creative
+ * design, 20/10/2026). Mêmes mises en page que la scène `crea-formats` du labo : x en fraction
+ * de la largeur, y en fraction de la hauteur, tailles en fraction du petit côté. Une marque à
+ * nous, inventée pour l'exemple : aucun client ne se reconnaît dans ces visuels.
+ */
+interface Props {
+  largeur: number;
+  hauteur: number;
+  mise: 'carre' | 'vertical' | 'paysage' | 'pave' | 'bandeau';
+  /** La teinte : la crème de la marque, la forêt, ou l'or. */
+  teinte?: 'creme' | 'foret' | 'or';
+  lang: 'fr' | 'en';
+  class?: string;
+}
+const { largeur: w, hauteur: h, mise, teinte = 'creme', lang, class: classe = '' } = Astro.props;
+
+const MISES = {
+  carre: { lx: .56, lw: .36, gx: .08, gy: .08, gf: .034, sx: .08, sy: .44, sf: .042, tx: .08, ty: .51, tf: .088, cx: .08, cy: .80, cf: .040, une: false },
+  vertical: { lx: .30, lw: .40, gx: .08, gy: .05, gf: .034, sx: .08, sy: .52, sf: .042, tx: .08, ty: .575, tf: .095, cx: .08, cy: .845, cf: .042, une: false },
+  paysage: { lx: .69, lw: .32, gx: .05, gy: .12, gf: .060, sx: .05, sy: .30, sf: .064, tx: .05, ty: .40, tf: .140, cx: .05, cy: .76, cf: .060, une: false },
+  pave: { lx: .62, lw: .34, gx: .07, gy: .09, gf: .048, sx: .07, sy: .30, sf: .056, tx: .07, ty: .41, tf: .110, cx: .07, cy: .77, cf: .056, une: false },
+  bandeau: { lx: .025, lw: .52, gx: .845, gy: .43, gf: .090, sx: 2, sy: 2, sf: .1, tx: .105, ty: .26, tf: .400, cx: .655, cy: .29, cf: .200, une: true },
+}[mise];
+const COUL = {
+  creme: { fond: '#f1e9dc', encre: '#1d2a24', sous: '#7a6a52', abat: '#24443a', cta: '#1d2a24', ctaTexte: '#f1e9dc' },
+  foret: { fond: '#24443a', encre: '#f1e9dc', sous: '#c9d6c9', abat: '#f2c46d', cta: '#f1e9dc', ctaTexte: '#1d2a24' },
+  or: { fond: '#f2c46d', encre: '#1d2a24', sous: '#5c4a2a', abat: '#24443a', cta: '#1d2a24', ctaTexte: '#f2c46d' },
+}[teinte];
+const TX = lang === 'fr'
+  ? { sous: 'Collection automne', l1: 'La lumière,', l2: 'faite main.', cta: 'Découvrir' }
+  : { sous: 'Autumn collection', l1: 'Light,', l2: 'made by hand.', cta: 'Discover' };
+
+const u = Math.min(w, h);
+const lw = MISES.lw * u, lh = lw * 1.6, lx = MISES.lx * w;
+const hr = lw * 1.25;
+const px = (v: number) => `${Math.round(v * 10) / 10}px`;
+const tf = MISES.tf * u;
+---
+
+<div class:list={['bm', classe]} style={`width:${px(w)};height:${px(h)};background:${COUL.fond};border-radius:${px(Math.max(3, u * .035))}`} aria-hidden="true">
+  <i class="bm-halo" style={`left:${px(lx + lw / 2 - hr)};top:${px(lh * (111 / 160) - hr)};width:${px(2 * hr)};height:${px(2 * hr)}`}></i>
+  <svg class="bm-lampe" style={`left:${px(lx)};top:0`} width={lw} height={lh} viewBox="0 0 100 160">
+    <line x1="50" y1="0" x2="50" y2="62" stroke={COUL.encre} stroke-width="1.6" />
+    <rect x="44" y="58" width="12" height="8" rx="2" fill={COUL.encre} />
+    <path d="M6,108 C6,80 27,64 50,64 C73,64 94,80 94,108 Z" fill={COUL.abat} />
+    <ellipse cx="50" cy="108" rx="44" ry="5" fill="rgba(0,0,0,.25)" />
+    <circle cx="50" cy="111" r="8" fill="#ffe3a6" />
+  </svg>
+  <span class="bm-logo" style={`left:${px(MISES.gx * w)};top:${px(MISES.gy * h)};font-size:${px(MISES.gf * u)};color:${COUL.encre}`}>ATELIER RIVIÈRE</span>
+  {!MISES.une && <span class="bm-sous" style={`left:${px(MISES.sx * w)};top:${px(MISES.sy * h)};font-size:${px(MISES.sf * u)};color:${COUL.sous}`}>{TX.sous}</span>}
+  <span class="bm-titre" style={`left:${px(MISES.tx * w)};top:${px(MISES.ty * h)};font-size:${px(tf)};color:${COUL.encre}`}>
+    {MISES.une ? `${TX.l1} ${TX.l2}` : <>{TX.l1}<br />{TX.l2}</>}
+  </span>
+  <span class="bm-cta" style={`left:${px(MISES.cx * w)};top:${px(MISES.cy * h)};font-size:${px(MISES.cf * u)};padding:${px(MISES.cf * u * .55)} ${px(MISES.cf * u * 1.1)};background:${COUL.cta};color:${COUL.ctaTexte}`}>{TX.cta}</span>
+</div>
+
+<style>
+  .bm { position: relative; overflow: hidden; flex: none; box-shadow: 0 18px 40px -24px rgb(11 27 43 / 0.55); }
+  .bm > * { position: absolute; }
+  .bm-halo { border-radius: 50%; background: radial-gradient(closest-side, rgb(246 196 98 / 0.75), rgb(246 196 98 / 0.25) 55%, rgb(246 196 98 / 0)); }
+  .bm-logo { font-family: Inter, sans-serif; font-weight: 600; letter-spacing: .18em; white-space: nowrap; line-height: 1; }
+  .bm-sous { font-family: Inter, sans-serif; font-weight: 600; white-space: nowrap; line-height: 1; }
+  .bm-titre { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; white-space: nowrap; }
+  .bm-cta { font-family: Inter, sans-serif; font-weight: 600; border-radius: 999px; line-height: 1; white-space: nowrap; }
+</style>

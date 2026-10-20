@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Un message, tous les formats</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@500;600&display=block" rel="stylesheet">
+<style>
+/* Page Creative design, hero (demande de Paul du 20/10/2026). Ce qu'est un « jeu de bannières »,
+   en trois actes, sur une marque fictive à nous (Atelier Rivière, luminaires) :
+   1. le concept : une bannière LinkedIn se construit, la lampe descend et s'allume ;
+   2. le jeu : la même bannière se recompose dans chaque format LinkedIn, puis Google et Display.
+      Chaque format naît de la première et y reprend ses éléments, remis en page ;
+   3. la vidéo : trois de ces formats deviennent des vidéos (1:1, 16:9, 9:16), la lampe se balance
+      et le texte passe à son deuxième plan. Les autres formats sortent par la gauche.
+   Les tailles s'écrivent SOUS chaque format, jamais dessus. render(t) est pur ; titres en
+   Plus Jakarta Sans, Inter pour les petites étiquettes. Carré 1080, vertical 1080 x 1350 (?p=1). */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#stage.p{height:1350px}
+#lueur{position:absolute;inset:0;background:radial-gradient(900px 700px at 85% -10%,rgba(29,113,184,.30),rgba(8,19,31,0) 65%),radial-gradient(700px 600px at 0% 110%,rgba(232,189,98,.08),rgba(8,19,31,0) 60%)}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(140%);white-space:nowrap}
+#titre{position:absolute;left:72px;top:64px;z-index:9}
+.titre-acte{position:absolute;left:0;top:0}
+#titre .k .ln{font-size:30px;font-weight:700;color:#7DB8EE;letter-spacing:.01em;margin-bottom:12px}
+#titre .t .ln{font-size:60px;font-weight:800;letter-spacing:-.035em;line-height:1.04}
+#titre .t .ln .o{color:#e8bd62}
+#stage.p #titre .k .ln{font-size:40px;margin-bottom:14px}
+#stage.p #titre .t .ln{font-size:72px}
+
+/* Une bannière : tout y est placé en JavaScript, en proportion de sa taille. */
+.bn{position:absolute;left:0;top:0;overflow:hidden;background:#f1e9dc;transform-origin:0 0;box-shadow:0 40px 80px -40px rgba(0,0,0,.9);z-index:3}
+.bn > *{position:absolute;left:0;top:0;transform-origin:0 0}
+.bn .halo{border-radius:50%;background:radial-gradient(closest-side,rgba(246,196,98,.75),rgba(246,196,98,.25) 55%,rgba(246,196,98,0))}
+.bn svg{overflow:visible}
+.bn .logo{font-family:Inter,sans-serif;font-weight:600;letter-spacing:.18em;color:#1d2a24;white-space:nowrap}
+.bn .sous{font-family:Inter,sans-serif;font-weight:600;color:#7a6a52;white-space:nowrap}
+.bn .tl{font-weight:800;letter-spacing:-.035em;line-height:1;color:#1d2a24;white-space:nowrap}
+.bn .cta{font-family:Inter,sans-serif;font-weight:600;color:#f1e9dc;background:#1d2a24;border-radius:999px;white-space:nowrap;line-height:1}
+.bn .pb{left:0;bottom:0;top:auto;height:6px;width:100%;background:rgba(29,42,36,.15)}
+.bn .pb i{display:block;height:100%;width:100%;background:#1D71B8;transform-origin:0 50%}
+.bn.tel{box-shadow:0 0 0 8px #0d1b29,0 0 0 9px rgba(255,255,255,.12),0 60px 100px -40px rgba(0,0,0,.95)}
+
+.taille{position:absolute;font-family:Inter,sans-serif;font-size:22px;font-weight:600;color:#7DB8EE;white-space:nowrap;z-index:4}
+.kick{position:absolute;font-size:24px;font-weight:700;color:#f4f7fa;white-space:nowrap;z-index:4}
+.kick b{color:#e8bd62;font-weight:700}
+#stage.p .taille{font-size:30px}
+#stage.p .kick{font-size:32px}
+#fil1{position:absolute;left:0;top:0;pointer-events:none;z-index:4}
+#fil1 path{fill:none;stroke:#7DB8EE;stroke-width:2.5;stroke-linecap:round}
+.etiq{position:absolute;z-index:4;white-space:nowrap}
+.etiq .a{font-size:40px;font-weight:800;letter-spacing:-.02em}
+.etiq .b{font-family:Inter,sans-serif;font-size:26px;font-weight:600;color:#7DB8EE;margin-top:6px}
+#stage.p .etiq .a{font-size:52px}
+#stage.p .etiq .b{font-size:34px}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="titre">
+    <div class="titre-acte" id="ta0"><div class="mask k"><span class="ln" data-txt="k0"></span></div><div class="mask t"><span class="ln" data-txt="t0a"></span></div><div class="mask t"><span class="ln" data-txt="t0b"></span></div></div>
+    <div class="titre-acte" id="ta1"><div class="mask k"><span class="ln" data-txt="k1"></span></div><div class="mask t"><span class="ln" data-txt="t1a"></span></div><div class="mask t"><span class="ln" data-txt="t1b"></span></div></div>
+    <div class="titre-acte" id="ta2"><div class="mask k"><span class="ln" data-txt="k2"></span></div><div class="mask t"><span class="ln" data-txt="t2a"></span></div><div class="mask t"><span class="ln" data-txt="t2b"></span></div></div>
+  </div>
+  <svg id="fil1" width="1080" height="1350"><path id="f1" pathLength="1"/></svg>
+  <div class="etiq" id="e1"><div class="mask"><span class="ln a" data-txt="e1a"></span></div><div class="mask"><span class="ln b">1080 × 1080</span></div></div>
+  <div class="kick" id="kk1"></div>
+  <div class="kick" id="kk2"></div>
+  <div id="cadres"></div>
+</div>
+<div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
+
+<script>
+var PORTRAIT = /[?&]p=1/.test(location.search);
+window.STAGE = { w: 1080, h: PORTRAIT ? 1350 : 1080 };
+window.DUREE = 18.2;
+
+(function () {
+  'use strict';
+  var EN = /\/en\//.test(location.pathname) || /[?&]lang=en/.test(location.search);
+  var TXT = EN ? {
+    k0: '1 · The concept', t0a: 'One message,', t0b: 'one <span class="o">image</span>.',
+    k1: '2 · The banner set', t1a: 'Every format,', t1b: '<span class="o">at no extra cost</span>.',
+    k2: '3 · The video', t2a: 'The same concept,', t2b: '<span class="o">in motion</span>.',
+    e1a: 'LinkedIn', kk1: 'LinkedIn set <b>· 3 formats</b>', kk2: 'Google set <b>· Performance Max and Display</b>',
+    sous: 'Autumn collection', l1: 'Light,', l2: 'made by hand.', m1: 'Every piece,', m2: 'signed in Lyon.', cta: 'Discover',
+    v0: '1:1 · LinkedIn', v1: '9:16 · Shorts, Reels', v3: '16:9 · YouTube'
+  } : {
+    k0: '1 · Le concept', t0a: 'Un message,', t0b: 'une <span class="o">image</span>.',
+    k1: '2 · Le jeu de bannières', t1a: 'Tous les formats,', t1b: '<span class="o">sans supplément</span>.',
+    k2: '3 · La vidéo', t2a: 'Le même concept,', t2b: '<span class="o">qui bouge</span>.',
+    e1a: 'LinkedIn', kk1: 'Jeu LinkedIn <b>· 3 formats</b>', kk2: 'Jeu Google <b>· Performance Max et Display</b>',
+    sous: 'Collection automne', l1: 'La lumière,', l2: 'faite main.', m1: 'Chaque pièce,', m2: 'signée à Lyon.', cta: 'Découvrir',
+    v0: '1:1 · LinkedIn', v1: '9:16 · Shorts, Reels', v3: '16:9 · YouTube'
+  };
+  if (EN) document.documentElement.lang = 'en';
+  document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+  document.getElementById('kk1').innerHTML = TXT.kk1;
+  document.getElementById('kk2').innerHTML = TXT.kk2;
+  if (PORTRAIT) { document.getElementById('stage').classList.add('p'); }
+
+  /* ---------- Courbes ---------- */
+  function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return c01((t - a) / (b - a)); }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function bez(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    return function (x) { var t = x; for (var i = 0; i < 8; i++) { var d = (3 * ax * t + 2 * bx) * t + cx, e = ((ax * t + bx) * t + cx) * t - x; if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } t = c01(t); return ((ay * t + by) * t + cy) * t; };
+  }
+  var A = bez(0.15, 1, 0.32, 1);
+  var S = bez(0.333, 0, 0.667, 0);
+  function ressort(x) { if (x <= 0) return 0; if (x >= 1) return 1; var z = 0.5, w = 10; var wd = w * Math.sqrt(1 - z * z); var e = Math.exp(-z * w * x); return 1 - e * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x)); }
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---------- Les mises en page d'une bannière ----------
+     x en fraction de la largeur, y en fraction de la hauteur, tailles en fraction de u = min(l, h).
+     lampe : abscisse et largeur de la lampe (sa hauteur vaut 1,6 fois sa largeur, cordon compris). */
+  var MISES = {
+    carre:    { lx: .56, lw: .36, gx: .08, gy: .08, gf: .034, sx: .08, sy: .44, sf: .042, tx: .08, ty: .51, tf: .088, cx: .08, cy: .80, cf: .040, une: 0 },
+    vertical: { lx: .30, lw: .40, gx: .08, gy: .05, gf: .034, sx: .08, sy: .52, sf: .042, tx: .08, ty: .575, tf: .095, cx: .08, cy: .845, cf: .042, une: 0 },
+    paysage:  { lx: .69, lw: .32, gx: .05, gy: .12, gf: .060, sx: .05, sy: .30, sf: .064, tx: .05, ty: .40, tf: .140, cx: .05, cy: .76, cf: .060, une: 0 },
+    pave:     { lx: .62, lw: .34, gx: .07, gy: .09, gf: .048, sx: .07, sy: .30, sf: .056, tx: .07, ty: .41, tf: .110, cx: .07, cy: .77, cf: .056, une: 0 },
+    bandeau:  { lx: .025, lw: .52, gx: .845, gy: .43, gf: .090, sx: 2, sy: 2, sf: .1, tx: .105, ty: .26, tf: .400, cx: .655, cy: .29, cf: .200, une: 1 },
+    video:    { lx: .46, lw: .44, gx: .10, gy: .035, gf: .050, sx: .10, sy: .50, sf: .052, tx: .10, ty: .555, tf: .118, cx: .10, cy: .80, cf: .056, une: 0 }
+  };
+  function melange(a, b, k) { var o = {}; for (var p in a) o[p] = lerp(a[p], b[p], k); o.une = k < .5 ? a.une : b.une; return o; }
+
+  var LAMPE = '<svg viewBox="0 0 100 160"><line x1="50" y1="-400" x2="50" y2="62" stroke="#1d2a24" stroke-width="1.6"/>' +
+    '<rect x="44" y="58" width="12" height="8" rx="2" fill="#1d2a24"/>' +
+    '<path d="M6,108 C6,80 27,64 50,64 C73,64 94,80 94,108 Z" fill="#24443a"/>' +
+    '<path d="M18,84 C26,72 37,68 48,68" stroke="#3e6658" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+    '<ellipse cx="50" cy="108" rx="44" ry="5" fill="#183128"/>' +
+    '<circle class="ampoule" cx="50" cy="111" r="8" fill="#d8cfc0"/></svg>';
+
+  function creerBanniere(id) {
+    var b = document.createElement('div'); b.className = 'bn'; b.id = id;
+    b.innerHTML = '<div class="halo"></div><div class="lampe">' + LAMPE + '</div><div class="logo">ATELIER RIVIÈRE</div>' +
+      '<div class="sous"></div><div class="tl l1"></div><div class="tl l2"></div><div class="tl m1"></div><div class="tl m2"></div><div class="cta"></div><div class="pb"><i></i></div>';
+    b.querySelector('.sous').textContent = TXT.sous;
+    b.querySelector('.l1').textContent = TXT.l1; b.querySelector('.l2').textContent = TXT.l2;
+    b.querySelector('.m1').textContent = TXT.m1; b.querySelector('.m2').textContent = TXT.m2;
+    b.querySelector('.cta').textContent = TXT.cta;
+    $('cadres').appendChild(b);
+    return {
+      el: b, halo: b.querySelector('.halo'), lampe: b.querySelector('.lampe'), svg: b.querySelector('svg'), amp: b.querySelector('.ampoule'),
+      logo: b.querySelector('.logo'), sous: b.querySelector('.sous'), l1: b.querySelector('.l1'), l2: b.querySelector('.l2'),
+      m1: b.querySelector('.m1'), m2: b.querySelector('.m2'), cta: b.querySelector('.cta'), pb: b.querySelector('.pb'), pbi: b.querySelector('.pb i')
+    };
+  }
+
+  /* Pose une bannière : rectangle, mise en page, et l'état de chaque élément (0 à 1). */
+  function poser(B, r, m, e) {
+    var w = r.w, h = r.h, u = Math.min(w, h);
+    var s = B.el.style;
+    s.width = w + 'px'; s.height = h + 'px';
+    s.transform = 'translate(' + r.x.toFixed(1) + 'px,' + r.y.toFixed(1) + 'px)';
+    s.opacity = e.cadre;
+    s.borderRadius = Math.max(4, u * .035) + 'px';
+    // La lampe descend de son cordon, puis se balance autour de son point d'attache.
+    var lw = m.lw * u, lh = lw * 1.6, lx = m.lx * w;
+    var chute = (1 - e.lampe) * -(lh + 20);
+    B.svg.setAttribute('width', lw); B.svg.setAttribute('height', lh);
+    B.lampe.style.transform = 'translate(' + lx.toFixed(1) + 'px,' + chute.toFixed(1) + 'px) rotate(' + (e.balance || 0).toFixed(2) + 'deg)';
+    B.lampe.style.transformOrigin = (lw / 2) + 'px 0px';
+    var lum = e.lumiere;
+    B.amp.setAttribute('fill', lum > .5 ? '#ffe3a6' : '#d8cfc0');
+    var hr = lw * 1.25, hx = lx + lw / 2 - hr, hy = lh * (111 / 160) - hr + chute;
+    B.halo.style.width = (2 * hr) + 'px'; B.halo.style.height = (2 * hr) + 'px';
+    B.halo.style.transform = 'translate(' + hx.toFixed(1) + 'px,' + hy.toFixed(1) + 'px)';
+    B.halo.style.opacity = lum * (e.souffle || 1);
+    function texte(n, x, y, f, k, dy) {
+      n.style.fontSize = (f * u) + 'px';
+      n.style.opacity = k;
+      n.style.transform = 'translate(' + (x * w).toFixed(1) + 'px,' + (y * h + (1 - k) * f * u * .5 + (dy || 0) * f * u).toFixed(1) + 'px)';
+    }
+    texte(B.logo, m.gx, m.gy, m.gf, e.logo);
+    texte(B.sous, m.sx, m.sy, m.sf, e.sous);
+    // Le titre : deux lignes, ou une seule dans le bandeau. Le deuxième plan de la vidéo (m1, m2)
+    // monte quand le premier sort par le haut.
+    var tf = m.tf, lg = tf * u * 1.02 / h;
+    var p2 = e.plan2 || 0, sortie = e.sortie1 || 0;
+    if (m.une) {
+      B.l1.textContent = TXT.l1 + ' ' + TXT.l2;
+      texte(B.l1, m.tx, m.ty, tf, e.l1 * (1 - sortie), -sortie);
+      texte(B.l2, m.tx, m.ty, tf, 0);
+    } else {
+      B.l1.textContent = TXT.l1;
+      texte(B.l1, m.tx, m.ty, tf, e.l1 * (1 - sortie), -sortie * .8);
+      texte(B.l2, m.tx, m.ty + lg, tf, e.l2 * (1 - sortie), -sortie * .8);
+    }
+    texte(B.m1, m.tx, m.ty, tf, p2 * (e.l1 > 0 ? 1 : 0));
+    texte(B.m2, m.tx, m.ty + lg, tf, c01(p2 * 1.3 - .3) * (e.l2 > 0 ? 1 : 0));
+    var cf = m.cf * u;
+    B.cta.style.padding = (cf * .55) + 'px ' + (cf * 1.1) + 'px';
+    texte(B.cta, m.cx, m.cy, m.cf, e.cta);
+    B.pb.style.opacity = e.video ? 1 : 0;
+    B.pb.style.height = Math.max(4, u * .012) + 'px';
+    B.pbi.style.transform = 'scaleX(' + (e.progres || 0).toFixed(3) + ')';
+  }
+
+  /* ---------- Les huit formats ---------- */
+  var F = [
+    { id: 'f0', mise: 'carre', taille: '1080 × 1080', rang: 1 },
+    { id: 'f1', mise: 'vertical', taille: '720 × 900', rang: 1 },
+    { id: 'f2', mise: 'paysage', taille: '1200 × 627', rang: 1 },
+    { id: 'f3', mise: 'paysage', taille: '1200 × 628', rang: 2 },
+    { id: 'f4', mise: 'carre', taille: '1200 × 1200', rang: 2 },
+    { id: 'f5', mise: 'vertical', taille: '960 × 1200', rang: 2 },
+    { id: 'f6', mise: 'pave', taille: '300 × 250', rang: 2 },
+    { id: 'f7', mise: 'bandeau', taille: '728 × 90', rang: 3 }
+  ];
+  // Les places : acte 1 (la bannière seule), le mur des formats, les trois vidéos.
+  var L = PORTRAIT ? {
+    seule: { x: 240, y: 420, w: 600, h: 600 }, etiq: { x: 240, y: 1060 }, fil: 'M540 1020 L540 1050',
+    mur: [{ x: 40, y: 400, w: 290, h: 290 }, { x: 350, y: 400, w: 232, h: 290 }, { x: 602, y: 400, w: 438, h: 229 },
+      { x: 40, y: 800, w: 400, h: 209 }, { x: 460, y: 800, w: 209, h: 209 }, { x: 689, y: 800, w: 167, h: 209 }, { x: 876, y: 800, w: 164, h: 137 },
+      { x: 40, y: 1080, w: 800, h: 99 }],
+    tailleDy: 12, kk1: { x: 40, y: 344 }, kk2: { x: 40, y: 744 },
+    videos: { f0: { x: 40, y: 800, w: 340, h: 340 }, f3: { x: 40, y: 400, w: 600, h: 338 }, f1: { x: 680, y: 400, w: 360, h: 640 } },
+    vtx: { f0: [40, 1156], f3: [40, 752], f1: [680, 1056] }, sortieX: -1300
+  } : {
+    seule: { x: 290, y: 330, w: 500, h: 500 }, etiq: { x: 832, y: 470 }, fil: 'M790 580 C 812 580, 806 540, 826 540',
+    mur: [{ x: 60, y: 318, w: 230, h: 230 }, { x: 316, y: 318, w: 184, h: 230 }, { x: 526, y: 318, w: 440, h: 230 },
+      { x: 60, y: 634, w: 363, h: 190 }, { x: 447, y: 634, w: 190, h: 190 }, { x: 661, y: 634, w: 152, h: 190 }, { x: 837, y: 634, w: 166, h: 138 },
+      { x: 60, y: 870, w: 520, h: 64 }],
+    tailleDy: 8, kk1: { x: 60, y: 276 }, kk2: { x: 60, y: 592 },
+    videos: { f0: { x: 60, y: 610, w: 250, h: 250 }, f3: { x: 60, y: 318, w: 420, h: 236 }, f1: { x: 560, y: 296, w: 380, h: 676 } },
+    vtx: { f0: [60, 872], f3: [60, 566], f1: [560, 988] }, sortieX: -1200
+  };
+  if (PORTRAIT) $('fil1').setAttribute('height', 1350);
+  var B = F.map(function (f) { return creerBanniere(f.id); });
+  B[1].el.classList.add('tel');
+  B[1].el.classList.remove('tel');
+  var T = F.map(function (f) { var d = document.createElement('div'); d.className = 'taille'; d.textContent = f.taille; $('stage').appendChild(d); return d; });
+  var V = ['f0', 'f1', 'f3'].map(function (k) { var d = document.createElement('div'); d.className = 'taille'; d.textContent = TXT['v' + k.slice(1)]; $('stage').appendChild(d); return { k: k, el: d }; });
+
+  /* ---------- Titres ---------- */
+  var TITRES = [[0.3, 5.7], [6.1, 11.7], [12.3, 17.5]];
+  function titres(t) {
+    TITRES.forEach(function (p, i) {
+      $('ta' + i).querySelectorAll('.ln').forEach(function (ln, j) {
+        var e = A(seg(t, p[0] + j * 0.13, p[0] + j * 0.13 + 0.95));
+        var s = S(seg(t, p[1] + j * 0.06, p[1] + j * 0.06 + 0.4));
+        ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+      });
+    });
+  }
+  function rect(a, b, k) { return { x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) }; }
+
+  /* ---------- Le rendu ---------- */
+  window.render = function (t) {
+    titres(t);
+    var boucle = S(seg(t, 17.5, 18.1)), bas = boucle * 60, fond = 1 - boucle;
+
+    // Acte 1 : la bannière se construit.
+    var construit = {
+      cadre: A(seg(t, 0.5, 1.2)), lampe: ressort(seg(t, 1.1, 2.4)), lumiere: seg(t, 2.25, 2.45),
+      logo: A(seg(t, 2.6, 3.1)), sous: A(seg(t, 2.85, 3.35)), l1: A(seg(t, 3.05, 3.6)), l2: A(seg(t, 3.25, 3.8)), cta: A(seg(t, 3.55, 4.1))
+    };
+    // L'ampoule hésite avant de s'allumer, comme une vraie.
+    if (t > 2.25 && t < 2.6) construit.lumiere = (Math.sin(t * 90) > -.2) ? 1 : .35;
+
+    // L'étiquette de l'acte 1, reliée à la bannière par un trait.
+    var eIn = A(seg(t, 3.9, 4.6)), eOut = S(seg(t, 5.7, 6.1));
+    $('f1').setAttribute('d', L.fil);
+    $('f1').style.strokeDasharray = '1';
+    $('f1').style.strokeDashoffset = String(1 - eIn);
+    $('f1').style.opacity = 1 - eOut;
+    $('e1').style.left = L.etiq.x + 'px'; $('e1').style.top = L.etiq.y + 'px';
+    $('e1').querySelectorAll('.ln').forEach(function (ln, j) {
+      var e = A(seg(t, 4.1 + j * .12, 4.9 + j * .12)), s = S(seg(t, 5.7, 6.1));
+      ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+    });
+
+    // Acte 2 : chaque format naît de la première bannière et va à sa place ; acte 3 : trois
+    // deviennent des vidéos, les autres sortent par la gauche.
+    var debuts = [6.0, 6.25, 6.5, 8.4, 8.62, 8.84, 9.06, 9.28];
+    var vid = A(seg(t, 12.35, 13.35));
+    var tv = t - 13.35;
+    F.forEach(function (f, i) {
+      var k = A(seg(t, debuts[i], debuts[i] + 1.0));
+      var r = rect(L.seule, L.mur[i], k);
+      var m = melange(MISES.carre, MISES[f.mise], i === 0 ? k : 1);
+      var e = {
+        cadre: i === 0 ? construit.cadre : seg(t, debuts[i], debuts[i] + 0.25), lampe: i === 0 ? construit.lampe : 1, lumiere: i === 0 ? construit.lumiere : 1,
+        logo: i === 0 ? construit.logo : 1, sous: i === 0 ? construit.sous : (f.mise === 'bandeau' ? 0 : 1), l1: i === 0 ? construit.l1 : 1, l2: i === 0 ? construit.l2 : 1, cta: i === 0 ? construit.cta : 1
+      };
+      // La mise en page de chaque format se pose pendant le vol (sauf la première, déjà faite).
+      if (i > 0) m = melange(MISES.carre, MISES[f.mise], k);
+      var estVideo = V.some(function (v) { return v.k === f.id; });
+      if (estVideo) {
+        var cible = L.videos[f.id];
+        r = rect(r, cible, vid);
+        if (f.id === 'f1') { m = melange(m, MISES.video, vid); B[i].el.classList.toggle('tel', vid > .5); }
+        if (tv > 0) {
+          e.video = 1;
+          e.progres = c01(tv / 4.3);
+          e.balance = Math.sin(tv * 2.2) * 7 * Math.exp(-tv * 0.12);
+          e.souffle = 0.85 + 0.15 * Math.sin(tv * 3.1);
+          e.sortie1 = S(seg(tv, 1.7, 2.1));
+          e.plan2 = A(seg(tv, 2.0, 2.7));
+        }
+      } else {
+        var sx = S(seg(t, 11.7 + L.mur[i].x / 3600, 12.45 + L.mur[i].x / 3600)) * L.sortieX;
+        r = { x: r.x + sx, y: r.y, w: r.w, h: r.h };
+      }
+      r.y += bas;
+      e.cadre *= fond;
+      poser(B[i], r, m, e);
+      // La taille s'écrit sous le format, une fois posé.
+      var ti = A(seg(t, debuts[i] + 0.8, debuts[i] + 1.3));
+      var tsx = S(seg(t, 11.7 + L.mur[i].x / 3600, 12.45 + L.mur[i].x / 3600)) * L.sortieX;
+      var p = L.mur[i];
+      T[i].style.left = (p.x + tsx) + 'px';
+      T[i].style.top = (p.y + p.h + L.tailleDy + (1 - ti) * 10 + bas) + 'px';
+      T[i].style.opacity = ti * fond;
+    });
+    // Les rubriques des deux jeux.
+    [['kk1', 6.1, L.kk1], ['kk2', 8.3, L.kk2]].forEach(function (q) {
+      var k = A(seg(t, q[1], q[1] + 0.6)), sx = S(seg(t, 11.7, 12.45)) * L.sortieX;
+      var el = $(q[0]); el.style.left = (q[2].x + sx) + 'px'; el.style.top = (q[2].y + (1 - k) * 14 + bas) + 'px'; el.style.opacity = k * fond;
+    });
+    // Les étiquettes des vidéos.
+    V.forEach(function (v, j) {
+      var k = A(seg(t, 13.2 + j * .15, 13.8 + j * .15)), p = L.vtx[v.k];
+      v.el.style.left = p[0] + 'px'; v.el.style.top = (p[1] + (1 - k) * 10 + bas) + 'px'; v.el.style.opacity = k * fond;
+    });
+  };
+
+  window.PRET = Promise.all([
+    document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"')
+  ]);
+  window.render(0);
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

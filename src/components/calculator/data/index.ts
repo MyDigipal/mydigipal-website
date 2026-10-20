@@ -6,6 +6,7 @@ import { emailingServices } from './emailing-services';
 import { aiTrainingConfig, aiTrainingPricing, halfDayFeatures, fullDayAdditionalFeatures } from './ai-training-services';
 import { aiSolutionsConfig, aiSolutionsQuestions, aiSolutionsUseCases, aiSolutionsServices } from './ai-solutions-questions';
 import { aiContentServices } from './ai-content-services';
+import { creativeDesignServices } from './creative-design-services';
 import {
   trackingReportingConfig,
   trackingAuditOption,
@@ -107,6 +108,18 @@ export const domainConfigs: Record<ServiceDomain, DomainConfig> = {
     color: '#06b6d4',
     colorClass: 'cyan',
     services: [] // Special handling - shown as separate section
+  },
+  // Creative design (20/10/2026) : trois forfaits mensuels tirés de la grille de la page.
+  'creative-design': {
+    id: 'creative-design',
+    name: 'Creative design',
+    nameFr: 'Creative design',
+    icon: 'palette',
+    description: 'Ad banners and videos, made with AI and checked by our creatives',
+    descriptionFr: 'Bannières et vidéos publicitaires, produites avec l’IA et relues par nos créatifs',
+    color: '#1D71B8',
+    colorClass: 'blue',
+    services: creativeDesignServices
   }
 };
 

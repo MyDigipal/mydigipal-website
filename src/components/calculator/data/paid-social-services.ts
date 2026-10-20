@@ -1,4 +1,5 @@
 import type { ServiceItem } from '../types';
+import { niveauxCrea } from './creative-design-services';
 
 // REFONTE : Structure par canaux + Feed/Catalogue
 // Avant : Audit + Setup + Visuels (même pour tous les canaux)
@@ -73,70 +74,8 @@ export const paidSocialServices: ServiceItem[] = [
         conclusion: 'Creatives that convert, not just look good.'
       }
     },
-    levels: [
-      {
-        name: 'Essentiel',
-        nameEn: 'Essential',
-        price: 400,
-        features: [
-          '5 visuels statiques/mois',
-          'Formats adaptés par plateforme',
-          '1 round de révisions',
-          'Livraison fichiers sources'
-        ],
-        featuresEn: [
-          '5 static visuals/month',
-          'Platform-adapted formats',
-          '1 round of revisions',
-          'Source files delivery'
-        ],
-        recommended: 'Besoins ponctuels',
-        recommendedEn: 'Occasional needs'
-      },
-      {
-        name: 'Avancé',
-        nameEn: 'Advanced',
-        price: 800,
-        features: [
-          '10 visuels + 2 vidéos/mois',
-          'Direction artistique',
-          'Déclinaisons multi-formats',
-          'Tests créatifs A/B',
-          '2 rounds de révisions'
-        ],
-        featuresEn: [
-          '10 visuals + 2 videos/month',
-          'Art direction',
-          'Multi-format variations',
-          'A/B creative tests',
-          '2 rounds of revisions'
-        ],
-        recommended: 'Campagnes régulières',
-        recommendedEn: 'Regular campaigns',
-        popular: true
-      },
-      {
-        name: 'Premium',
-        nameEn: 'Premium',
-        price: 1500,
-        features: [
-          '20 visuels + 5 vidéos/mois',
-          'UGC-style + motion design',
-          'Direction artistique complète',
-          'Refresh mensuel automatique',
-          'Révisions illimitées'
-        ],
-        featuresEn: [
-          '20 visuals + 5 videos/month',
-          'UGC-style + motion design',
-          'Complete art direction',
-          'Automatic monthly refresh',
-          'Unlimited revisions'
-        ],
-        recommended: 'Volume important, tests continus',
-        recommendedEn: 'High volume, continuous testing'
-      }
-    ]
+    // Les forfaits de la grille Creative design (20/10/2026) : 400, 800 et 1 500 € avant.
+    levels: niveauxCrea
   },
   {
     id: 'social-feed-catalogue',
