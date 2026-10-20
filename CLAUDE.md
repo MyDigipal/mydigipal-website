@@ -861,8 +861,10 @@ Direction A « Encre » retenue par Paul. Ce que toutes les pages partagent, dan
   (une par haut de page, plus aucune au-dessus des titres de section : 53 retirées) ; `.pilules` et
   `.pilule` + `-pleine` / `-contour` / `-blanche` / `-claire`, côte à côte jusqu'à 360 px.
 - **Composants refaits** : `HeroService` (panneau d'encre des résultats, trois au plus, champ `client`
-  facultatif ; logos entre deux filets par `ui/BandeauLogos.astro`), `FinalCTA` (panneau bleu sur la
-  brume), `ServiceFAQ` (`<details>`, deux colonnes, sans numéros, placée AVANT l'appel final),
+  facultatif ; logos entre deux filets par `ui/BandeauLogos.astro`), `FinalCTA` (depuis le
+  20/10/2026, plus de panneau bleu, que Paul a trouvé « dégueulasse » : une carte blanche sur la brume
+  avec le visage de Paul, comme la porte « Nous contacter » de l'accueil ; pleine largeur sous 640 px
+  pour que les deux pilules tiennent à 360 px), `ServiceFAQ` (`<details>`, deux colonnes, sans numéros, placée AVANT l'appel final),
   `TestimonialSpotlight` (section d'encre qui monte), `CaseStudyCarousel` (plus un carrousel : une
   ligne par étude, chiffres LUS dans `case-studies`, le build s'arrête sur une étude introuvable),
   `TrustedBy` (bande immobile, plus de « 50+ »), `PageHero`, pied de page en `bg-encre`.
@@ -1138,10 +1140,12 @@ l'ancienne page et ses sections propres ne sont plus rendues (« qu'on n'en ait 
 - **Contact** : « Formation IA » / « AI Training » dans les puces, cochée par `?topic=formation`,
   `mcp`, `parcours-technique` ou `technical-track`.
 
-## La page Creative design (20/10/2026, en NOINDEX jusqu'à la validation de Paul)
+## La page Creative design (EN LIGNE et indexée depuis le 20/10/2026, validée par Paul)
 
-`/{lang}/services/creative-design` (route statique `services/creative-design.astro`, pas de fiche MDX,
-donc ni sitemap, ni menu, ni index des services). Pilotage : `docs/creative-design/pilotage.html`.
+`/{lang}/services/creative-design` (route statique `services/creative-design.astro`, pas de fiche MDX :
+son entrée du sitemap et de `llms.txt` est écrite à la main dans `sitemap.xml.ts` et `llms.txt.ts`).
+Elle est dans le menu Services et le pied de page (après Paid Social), dans l'index des services
+(la grille comble sa dernière rangée selon le nombre de cartes) et dans « Ce qu'on fait » de l'accueil. Pilotage : `docs/creative-design/pilotage.html`.
 Message voulu par Paul : l'IA à fond (Claude, Nano Banana, Higgsfield) et des humains qui relisent et
 décident ; beaucoup de créas, vite, bien faites. Les landing pages n'y sont PAS (page à part plus tard).
 - **Une grille** : `src/lib/creative/grille.ts`, celle du document « Creative pricing and request » du
@@ -1154,7 +1158,9 @@ décident ; beaucoup de créas, vite, bien faites. Les landing pages n'y sont PA
   partagé par `mdp-creative:etat`, adresse `#devis&j=...&c=EUR`, `?envoi=test` n'envoie rien),
   styles de `formation/tarifs.css`. Le devis part sur `/api/site/devis` avec un bloc `creative`
   (branche `creative-mails.ts` de l'application, 20/10). Événements : `creative_simulator_change`,
-  `creative_quote_open`, `creative_quote_share`, `creative_quote_submit` (aucune balise GTM encore).
+  `creative_quote_open`, `creative_quote_share`, `creative_quote_submit`. ⚠️ Aucun déclencheur GTM
+  n'écoute ni `creative_quote_submit` ni `training_quote_submit` (relevé le 20/10/2026, workspace 115) :
+  ces devis ne remontent comme conversion nulle part ; à régler avec la centralisation des devis.
 - **Scènes** : cinq essais du labo `crea-*` (lot 10), copiés par `python scripts/scenes-creative.py`
   dans `public/motion/` et `/en/`. Seule `crea-formats` a sa version verticale (`?p=1`).
 - **Réalisations** : Servion oui, ControlAI JAMAIS (Paul) ; sinon la marque fictive Atelier Rivière
