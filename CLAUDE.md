@@ -1138,6 +1138,28 @@ l'ancienne page et ses sections propres ne sont plus rendues (« qu'on n'en ait 
 - **Contact** : « Formation IA » / « AI Training » dans les puces, cochée par `?topic=formation`,
   `mcp`, `parcours-technique` ou `technical-track`.
 
+## La page Creative design (20/10/2026, en NOINDEX jusqu'à la validation de Paul)
+
+`/{lang}/services/creative-design` (route statique `services/creative-design.astro`, pas de fiche MDX,
+donc ni sitemap, ni menu, ni index des services). Pilotage : `docs/creative-design/pilotage.html`.
+Message voulu par Paul : l'IA à fond (Claude, Nano Banana, Higgsfield) et des humains qui relisent et
+décident ; beaucoup de créas, vite, bien faites. Les landing pages n'y sont PAS (page à part plus tard).
+- **Une grille** : `src/lib/creative/grille.ts`, celle du document « Creative pricing and request » du
+  Hub Exaforce en dollars, euros et livres RONDS fixés par devise ; paliers écrits en toutes lettres.
+  Moteur et tests : `lib/creative/moteur.ts`, `npm run test:creative` (les six exemples Exaforce).
+- **Calculateur** : domaine `creative-design`, trois forfaits mensuels CALCULÉS depuis la grille
+  (`calculator/data/creative-design-services.ts`) ; le bloc « Création de Visuels » de Paid Social
+  prend les mêmes forfaits (360, 760, 1 560 € ; 400, 800, 1 500 € avant).
+- **Simulateur** : `components/creative/TarifsCreative.tsx` (deux îlots, prix et simulateur, état
+  partagé par `mdp-creative:etat`, adresse `#devis&j=...&c=EUR`, `?envoi=test` n'envoie rien),
+  styles de `formation/tarifs.css`. Le devis part sur `/api/site/devis` avec un bloc `creative`
+  (branche `creative-mails.ts` de l'application, 20/10). Événements : `creative_simulator_change`,
+  `creative_quote_open`, `creative_quote_share`, `creative_quote_submit` (aucune balise GTM encore).
+- **Scènes** : cinq essais du labo `crea-*` (lot 10), copiés par `python scripts/scenes-creative.py`
+  dans `public/motion/` et `/en/`. Seule `crea-formats` a sa version verticale (`?p=1`).
+- **Réalisations** : Servion oui, ControlAI JAMAIS (Paul) ; sinon la marque fictive Atelier Rivière
+  (`creative/BanniereMini.astro`). Vidéos Servion réencodées dans `public/videos/creative/`.
+
 ## Chantier à venir : les pages IA (demande de Paul du 25/08/2026)
 
 Paul veut vendre l'Academy en priorité, puis « refaire un petit peu » les autres pages IA.
