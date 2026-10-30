@@ -94,5 +94,5 @@ export const GRILLE = {
 
 /** Les prix publics TTC de l'Academy (méthode), en unités majeures, lus dans l'API. */
 export type PrixAcademy = ParDevise;
-/** Le repli de l'instantané du 14/10/2026, si l'API ne répond pas au build. chiffre-libre */
-export const ACADEMY_REPLI: PrixAcademy = { EUR: 290, GBP: 250, USD: 340 };
+/** Le repli de la grille du 30/10/2026, si l'API ne répond pas au build. chiffre-libre */
+export const ACADEMY_REPLI: PrixAcademy = { EUR: 199, GBP: 169, USD: 229 };

@@ -53,8 +53,8 @@ test('20 personnes en présentiel à Paris, avec hôtel et Academy', () => {
   const r = c({ n: 20, mode: 'site', zone: 'paris', hotel: true, academy: true });
   // 2 séances de 10 : 2 x 1 400 = 2 800, -5 % = 2 660
   // une journée sur place : 1 aller-retour 350 + 1 nuit 180 = 530
-  // Academy : 290 TTC / 1,2 = 241,67 HT, -30 % = 169,17, x 20 = 3 383,33
-  proche(r.total, 2660 + 530 + (290 / 1.2) * 0.7 * 20);
+  // Academy : 199 TTC / 1,2 = 165,83 HT, -30 % = 116,08, x 20 = 2 321,67
+  proche(r.total, 2660 + 530 + (199 / 1.2) * 0.7 * 20);
   assert.equal(r.lignes.map((l) => l.cle).join(','), 'seances,remise,deplacement,academy');
 });
 

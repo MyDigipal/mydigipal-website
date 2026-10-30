@@ -658,10 +658,10 @@ son côté avec ses scores de qualité.
   par l'API d'administration, jamais depuis `MyDigipal Admin/AI training/contenu/`
   qui est périmé. Les quatre parcours outils portent `auChoix` et comptent pour un
   seul module dans les totaux (`nombreSuivi`, `minutesDe`).
-- **La grille : 290 € la méthode, 250 € les automatisations, 440 € les deux**
-  (100 € d'économie sur 540, depuis le 13/09). Ces montants viennent de
+- **La grille : 199 € la méthode, 169 € les automatisations, 299 € les deux**
+  (69 € d'économie sur 368, depuis le 30/10/2026). Ces montants viennent de
   `data.lot.prix` servi par l'app ; la page ne les additionne plus, parce que
-  l'addition afficherait 540 au-dessus d'un bouton qui mène à une caisse à 440.
+  l'addition afficherait 368 au-dessus d'un bouton qui mène à une caisse à 299.
 - **Un seul appel flottant sous lg** (`AppelFlottant.tsx`) : « Commencer », et rien
   d'autre. La pastille de l'accès gratuit qui se posait au-dessus a été retirée le
   13/09 ; l'accès gratuit reste proposé dans le hero, le retournement et les tarifs.
