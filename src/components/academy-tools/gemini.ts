@@ -406,7 +406,7 @@ const FR: CopyOutil = {
   },
   tarifs: {
     kicker: 'Les tarifs',
-    titre: "Une formation, deux mois d'accès",
+    titre: "Une formation, 90 jours d'accès",
     texte:
       "Le parcours complet, votre outil compris, l'assistant qui répond pendant que vous apprenez, et l'attestation à la fin. Rien n'est facturé au mois.",
     apres: 'Vous pourrez ajouter les automatisations plus tard, sans repayer ce que vous avez déjà.',
@@ -601,7 +601,7 @@ const EN: CopyOutil = {
   },
   tarifs: {
     kicker: 'Pricing',
-    titre: 'One course, two months of access',
+    titre: 'One course, 90 days of access',
     texte:
       'The full path, your tool included, the assistant that answers while you learn, and the certificate at the end. Nothing is billed monthly.',
     apres: 'You can add the automations later, without paying twice for what you already have.',

@@ -81,7 +81,7 @@ export const GET: APIRoute = async () => {
   ]);
   blocs.push(`## AI Academy
 
-Formation IA en ligne, trente jours, pour les equipes marketing.
+Formation IA en ligne, 90 jours d'acces, pour les equipes marketing.
 
 - [AI Academy](${site}/en/academy) : la formation en ligne, en anglais.
 - [AI Academy](${site}/fr/academy) : la formation en ligne, en francais.

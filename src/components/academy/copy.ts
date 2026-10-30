@@ -786,7 +786,7 @@ const FR = {
 
   configurateur: {
     titre: 'Tarifs',
-    sousTitre: 'Un mois d’accès. L’assistant IA est compris.',
+    sousTitre: '90 jours d’accès. L’assistant IA est compris.',
     formuleRub: 'Ce que vous prenez',
     avanceeNom: 'La méthode avancée',
     avanceeLigne: (n: number) =>
@@ -1615,7 +1615,7 @@ const EN: Jour30Copy = {
 
   configurateur: {
     titre: 'Pricing',
-    sousTitre: 'One month of access. The AI assistant is included.',
+    sousTitre: '90 days of access. The AI assistant is included.',
     formuleRub: 'What you take',
     avanceeNom: 'The advanced method',
     avanceeLigne: (n: number) =>
