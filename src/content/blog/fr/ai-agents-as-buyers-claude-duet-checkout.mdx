@@ -1,0 +1,116 @@
+---
+title: "Votre prochain client sera peut-être un agent IA"
+description: "Claude Duet peut acheter pour son utilisateur après validation, et Clarity voit plus de paiements dans les sessions d'agents. Ce qu'il faut corriger et mesurer."
+author: "MyDigipal Team"
+date: 2026-11-05
+image: "/images/Blog Thumbnails/ai-agents-as-buyers-claude-duet-checkout-fr.jpg"
+category: "ai"
+industry: "general"
+tags: ["Agents IA", "Claude Duet", "Commerce agentique", "Microsoft Clarity", "GA4"]
+featured: false
+draft: true
+video: "/videos/blog/ai-agents-as-buyers-claude-duet-checkout-fr.mp4"
+videoPoster: "/images/Blog Thumbnails/ai-agents-as-buyers-claude-duet-checkout-fr-video.jpg"
+seo:
+  title: "Quand un agent IA achète sur votre site"
+  description: "Des agents IA comme Claude Duet achètent pour leurs utilisateurs. Ce qu'un site marchand ou B2B doit revoir, et comment repérer ces visites dans GA4 et Clarity."
+faqs:
+  - question: "Claude Duet peut-il acheter sans mon accord ?"
+    answer: "Non. Selon Anthropic, Duet vous fait d'abord confirmer l'article, puis Link, le portefeuille de Stripe, vous demande de valider la dépense. Le paiement passe par une carte à usage unique, limitée à ce marchand et à ce montant, et votre vrai numéro de carte n'est jamais transmis."
+  - question: "Les visites d'agents IA apparaissent-elles dans GA4 ?"
+    answer: "Certaines oui, d'autres non. GA4 exclut automatiquement les robots connus de la liste de l'IAB, sans dire combien il en a retiré. Un agent qui navigue dans un vrai navigateur peut être compté, le plus souvent sans référent, donc dans le trafic direct. Les journaux du serveur restent la source la plus fiable."
+  - question: "Claude Duet est-il disponible en France ?"
+    answer: "Pas encore. Anthropic l'a lancé le 21 octobre 2026 en aperçu de recherche, sur liste d'attente, en commençant par les abonnés américains des formules Pro, Max et Ultra."
+---
+
+Le 21 octobre, Anthropic a ouvert la liste d'attente de Claude Duet, une application où Claude travaille seul pour vous et peut acheter pour votre entreprise dès que vous dites oui. Huit jours plus tard, Microsoft Clarity publiait une étude sur plus de 5,2 millions de sessions impliquant des agents IA. L'événement Checkout y apparaît dans 25,21 % des sessions, contre 14,65 % des sessions humaines.
+
+Un logiciel qui achète pour quelqu'un sait-il lire votre site et aller jusqu'au paiement ?
+
+<div class="mdpl-takeaways">
+  <p class="mdpl-takeaways__title">À retenir</p>
+  <ul>
+    <li>Claude Duet n'achète qu'après validation, avec une carte virtuelle à usage unique.</li>
+    <li>Clarity relève l'événement Checkout dans 25,21 % des sessions d'agents, contre 14,65 % chez les humains.</li>
+    <li>Des fiches lisibles, un tunnel court et des formulaires clairs comptent plus qu'un nouveau protocole.</li>
+    <li>GA4 n'isole pas ces visites, à vous de les repérer.</li>
+  </ul>
+</div>
+
+## Ce que fait vraiment Duet
+
+Duet est un aperçu de recherche, accessible sur liste d'attente aux abonnés américains des formules Pro, Max et Ultra. Il navigue depuis une machine virtuelle et continue donc de travailler téléphone éteint.
+
+Le volet achat est plus étroit que ne le laissent croire les gros titres. Duet peut acheter pour votre entreprise avec Link, le portefeuille de Stripe, et commander sur les boutiques qui acceptent Shop Pay. Selon Anthropic, vous confirmez d'abord l'article, Link vous fait valider la dépense, puis le paiement passe par une carte à usage unique limitée à ce marchand et à ce montant.
+
+Anthropic reconnaît que les démarches personnelles, comme réserver des billets, marchent moins bien, et que Duet ne peut pas encore vous montrer son navigateur.
+
+Deux détails intéressent les propriétaires de sites. Selon Anthropic, le navigateur de Duet envoie un en-tête User-Agent distinct, et l'entreprise publiera les adresses IP depuis lesquelles il navigue. Avant le lancement, plusieurs grands sites ont aussi pu refuser ses visites, et certains l'ont fait.
+
+## Lire le chiffre de Clarity avec prudence
+
+Le chiffre de 25,21 % vient du billet publié par Clarity le 29 octobre. L'étude porte sur 230 511 projets Clarity entre le 13 août et le 9 septembre 2026, avec des agents des écosystèmes OpenAI, Google et Anthropic.
+
+Trois réserves avant de le citer en réunion.
+
+D'abord, selon Microsoft, une session d'agent peut inclure une reprise en main humaine que Clarity ne sait pas encore isoler. Rien ne prouve donc que l'agent a cliqué seul.
+
+Ensuite, l'étude ne définit pas l'événement Checkout. Ce peut être un clic, une page vue ou une commande finalisée.
+
+Enfin, selon PPC Land, les volumes publiés supposent une base d'environ 1,22 million de sessions et non de 5,2 millions, un écart que Microsoft n'explique pas.
+
+Les agents ajoutent moins souvent au panier que les humains (2,33 % contre 3,31 %) et cliquent bien moins sur des liens sortants (14,28 % contre 26,99 %). Ils cherchent davantage, prennent rendez-vous dans 8,42 % des sessions et envoient un formulaire dans 19,85 %. Notre lecture est qu'un agent arrive avec une tâche déjà décidée et va droit à l'étape qui la termine.
+
+<div class="mdpl-stats">
+  <div class="mdpl-stat"><div class="mdpl-stat__value">25,21 %</div><div class="mdpl-stat__label">des sessions d'agents avec un événement Checkout (Clarity, oct. 2026)</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">14,65 %</div><div class="mdpl-stat__label">des sessions humaines avec le même événement</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">+88 %</div><div class="mdpl-stat__label">de sessions d'agents en trois semaines, selon Microsoft</div></div>
+</div>
+
+## Ce qu'un site marchand doit revoir
+
+Un agent lit votre page comme du texte et se sert des mêmes boutons qu'une personne. Ce qui le bloque agace en général déjà vos clients.
+
+**Mettez les informations dans le texte.** Prix, stock, frais de port, délai de livraison et retours doivent se lire sur la fiche produit. Dans une image, une infobulle ou une fenêtre qui s'ouvre au paiement, l'agent risque de les manquer. Les données structurées produit, avec prix et disponibilité, aident pour la même raison.
+
+**Raccourcissez le tunnel.** Commande sans compte, total visible avant le paiement, portefeuilles courants. Duet paie avec Link ou Shop Pay, et une boutique qui n'accepte la carte que par un formulaire maison ajoute de la friction pour rien.
+
+**Revoyez vos règles anti-robots.** Beaucoup de sites bloquent tout automate au pare-feu ou derrière un CAPTCHA. C'était logique quand chaque robot aspirait du contenu. Certaines de ces visites portent désormais un acheteur à la carte validée, alors décidez sciemment quels agents vous laissez entrer, et sur quelles pages.
+
+**Nommez vos boutons.** Un « Ajouter au panier » sur un vrai bouton se manipule mieux qu'une icône dans un bloc stylé.
+
+<div class="mdpl-cta">
+  <p class="mdpl-cta__eyebrow">L'IA pour votre équipe</p>
+  <p class="mdpl-cta__title">Testez votre site comme un agent le voit</p>
+  <p class="mdpl-cta__body">Nous formons les équipes marketing à tester leur site avec un agent et à choisir quoi corriger en premier.</p>
+  <div class="mdpl-cta__actions">
+    <a class="mdpl-cta__btn mdpl-cta__btn--primary" href="/fr/services/ai-training">Formation IA</a>
+    <a class="mdpl-cta__btn mdpl-cta__btn--ghost" href="/fr/contact">Réserver un appel</a>
+  </div>
+</div>
+
+## Ce qu'un site B2B doit revoir
+
+Beaucoup de sites B2B vendent par une demande de démo, un formulaire de devis ou un lien d'agenda. Chez les agents, Clarity classe justement l'envoi de formulaire et la prise de rendez-vous parmi les actions fréquentes.
+
+Imaginez une acheteuse qui demande à son agent de présélectionner des fournisseurs et de caler deux appels. Si votre page tarifs affiche « contactez-nous » au lieu d'une fourchette, l'agent risque de passer à un concurrent qui donne des chiffres. Si votre formulaire de démo compte douze champs et des listes déroulantes sans libellé, il échouera sans doute là où une personne aurait râlé avant de finir.
+
+Donnez une fourchette de prix, en texte clair. Gardez des formulaires courts, aux champs nommés. Proposez une prise de rendez-vous avec des créneaux visibles plutôt qu'un « nous revenons vers vous ». Nous avions décrit ce mouvement dans notre article sur [les achats B2B pilotés par des algorithmes](/fr/blog/business-to-algorithm-commerce-ai-driven-b2b-procurement), qui reposait alors sur des prévisions et non sur des sessions réelles.
+
+## Repérer les agents dans Clarity et GA4
+
+**Dans Clarity**, Microsoft annonce que son tableau de bord Agent Activity est disponible pour les projets qui reçoivent du trafic d'agents, et les Smart Events permettent de comparer sessions d'agents et sessions humaines sur les mêmes actions. Ne le confondez pas avec le canal AIPlatform, qui compte les personnes ayant cliqué sur un lien dans ChatGPT, Claude ou Gemini.
+
+**Dans GA4**, c'est plus flou. Google exclut automatiquement les robots connus de la liste de l'IAB, et vous ne pouvez ni couper ce filtre ni savoir combien de visites il a retirées. Les agents qui utilisent un vrai navigateur et exécutent vos balises peuvent tout de même être comptés, probablement sans référent, donc en trafic direct. Le canal AI Assistant présenté dans notre [guide sur le trafic IA dans GA4](/fr/blog/ga4-ai-assistant-channel-measure-chatgpt-gemini-traffic) compte les personnes qui cliquent depuis la réponse d'un assistant, une population différente.
+
+Pour l'instant, nous recommandons de lire le User-Agent dans les journaux du serveur ou du CDN, puisqu'Anthropic dit que Duet en envoie un distinct. Faites-le remonter dans GA4 en dimension personnalisée via Google Tag Manager pour isoler ces sessions. Surveillez aussi le trafic direct qui convertit sur un parcours très court, signe d'un acheteur décidé, humain ou non. Notre [équipe tracking et reporting](/fr/services/tracking-reporting) met cela en place lors d'un audit.
+
+## Notre position
+
+Ne refaites pas votre site pour les agents ce trimestre. Duet reste réservé aux États-Unis, et les données de Clarity tiennent dans une seule étude de quatre semaines dont la base n'est pas expliquée.
+
+Presque toutes ces corrections servent pourtant aussi vos visiteurs humains, qui convertissent mieux sur une page qui affiche le prix et demande peu. Les agents rendent seulement plus visible le coût de l'attente.
+
+Le test le plus utile de la semaine ne coûte rien. Confiez à un agent une vraie tâche sur votre site, du type « commande ce produit en taille M » ou « réserve une démo mardi », et regardez où il s'arrête. Là où il bloque, un client humain perd sans doute patience lui aussi.
+
+**Sources :** [Anthropic, Claude Duet](https://claude.com/resources/articles/claude-duet) - [Anthropic, sécurité de Duet](https://claude.com/resources/articles/claude-duet-safety-privacy-and-security) - [Microsoft Clarity, étude du 29 octobre](https://clarity.microsoft.com/blog/agentic-analytics-what-agents-do-on-websites/) - [PPC Land](https://ppc.land/checkout-appears-in-25-of-ai-agent-sessions-vs-15-for-humans-clarity-finds/) - [Google, robots connus dans GA4](https://support.google.com/analytics/answer/9888366)

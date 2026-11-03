@@ -1,0 +1,38 @@
+# Publication programmée des articles du blog (2 par semaine depuis novembre 2026).
+# Chaque matin, passe en draft: false les articles du calendrier dont la date est arrivée
+# (src/data/blog/calendrier-publication.json), puis pousse le commit : Render reconstruit le site.
+name: Publier les articles programmés
+
+on:
+  schedule:
+    - cron: "15 6 * * *" # 6 h 15 UTC, soit 6 h 15 (GMT) ou 7 h 15 (BST) à Londres
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publier-articles
+  cancel-in-progress: false
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Passer les articles du jour en ligne
+        run: node scripts/publier-articles-programmes.mjs
+      - name: Pousser si quelque chose a changé
+        run: |
+          if git diff --quiet; then
+            echo "Rien à publier."
+            exit 0
+          fi
+          git config user.name "mydigipal-blog-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/content/blog
+          git commit -m "Blog : publication programmée du $(TZ=Europe/London date +%d/%m/%Y)"
+          git push

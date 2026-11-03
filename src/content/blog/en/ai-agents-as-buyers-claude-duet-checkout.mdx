@@ -1,0 +1,116 @@
+---
+title: "Your next customer might be an AI agent"
+description: "Claude Duet can now buy for its user once they approve, and Clarity sees checkout more often in agent sessions. What to fix on your site and how to measure it."
+author: "MyDigipal Team"
+date: 2026-11-05
+image: "/images/Blog Thumbnails/ai-agents-as-buyers-claude-duet-checkout-en.jpg"
+category: "ai"
+industry: "general"
+tags: ["AI Agents", "Claude Duet", "Agentic Commerce", "Microsoft Clarity", "GA4"]
+featured: false
+draft: true
+video: "/videos/blog/ai-agents-as-buyers-claude-duet-checkout-en.mp4"
+videoPoster: "/images/Blog Thumbnails/ai-agents-as-buyers-claude-duet-checkout-en-video.jpg"
+seo:
+  title: "AI agents that buy: what your site must fix"
+  description: "AI agents such as Claude Duet now shop for their users. What an online store or a B2B site should change, and how to spot agent visits in GA4 and Clarity."
+faqs:
+  - question: "Can Claude Duet buy something without my approval?"
+    answer: "No. According to Anthropic, Duet confirms the item with you, then Link from Stripe asks you to approve the spend. It pays with a one-time card limited to that merchant and amount, so your real card number is never shared."
+  - question: "Will AI agent visits show up in Google Analytics 4?"
+    answer: "Some will and some will not. GA4 automatically drops traffic from known bots on the IAB list, and you cannot see how much it removed. Agents that browse in a real browser may still be counted, usually without a referrer, so look for them in Direct traffic and in your server logs."
+  - question: "Is Claude Duet available outside the United States?"
+    answer: "Not yet. Anthropic launched it on 21 October 2026 as a research preview with a waitlist, starting with US subscribers on the Pro, Max and Ultra plans."
+---
+
+On 21 October, Anthropic opened a waitlist for Claude Duet, an app where Claude works for you and can buy things for your business once you say yes. Eight days later, Microsoft Clarity published what it saw in more than 5.2 million sessions involving AI agents. The Checkout event showed up in 25.21% of those sessions, against 14.65% of human sessions.
+
+If part of your traffic is now software acting for a buyer, can that software read your site and finish the purchase?
+
+<div class="mdpl-takeaways">
+  <p class="mdpl-takeaways__title">Key takeaways</p>
+  <ul>
+    <li>Claude Duet buys only after its user approves, with a one-time virtual card.</li>
+    <li>Clarity logs a Checkout event in 25.21% of agent sessions versus 14.65% for humans, with caveats.</li>
+    <li>Plain product data, an open checkout and clear forms matter more than any new protocol.</li>
+    <li>GA4 will not label these visits for you, so plan your own way of spotting them.</li>
+  </ul>
+</div>
+
+## What Duet actually does
+
+Duet is a research preview, open through a waitlist to US subscribers on the Pro, Max and Ultra plans. It browses with its own browser on a virtual machine, so it keeps working when your phone is off.
+
+The shopping part is narrower than the headlines suggest. Duet can buy for your business through Link, the Stripe wallet, and check out on stores that use Shop Pay. Anthropic says it confirms the item with you first, then Link asks you to approve the spend, and payment goes through a one-time card limited to that merchant and amount.
+
+Anthropic admits that personal errands like booking tickets are less reliable, and that Duet cannot yet show you its browser.
+
+Two details matter for site owners. Anthropic says the Duet browser sends a distinct User-Agent header, and that the company will publish the IP addresses it browses from. Before launch it also let several large websites opt out, and some did.
+
+## Read the Clarity number carefully
+
+The 25.21% figure comes from Clarity's own blog post of 29 October. The study covers 230,511 Clarity projects between 13 August and 9 September 2026, with agents from the OpenAI, Google and Anthropic ecosystems.
+
+Three caveats before you quote it in a meeting.
+
+First, Microsoft says an agent session may include a human handoff that Clarity cannot yet separate. The figure describes sessions where an agent was involved, which does not prove the agent clicked the button alone.
+
+Second, the study does not define the Checkout event. It could be a click, a page view or a completed order.
+
+Third, according to PPC Land, the published counts imply a base of about 1.22 million sessions rather than 5.2 million, a gap Microsoft does not explain.
+
+The rest of the table is more telling. Agents trigger add to cart less often than humans (2.33% versus 3.31%) and click outbound links far less (14.28% versus 26.99%). They search more, book appointments in 8.42% of sessions and submit forms in 19.85%. Our reading is that an agent arrives with the task already decided and goes straight to the step that completes it.
+
+<div class="mdpl-stats">
+  <div class="mdpl-stat"><div class="mdpl-stat__value">25.21%</div><div class="mdpl-stat__label">of agent sessions with a Checkout event (Clarity, Oct 2026)</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">14.65%</div><div class="mdpl-stat__label">of human sessions with the same event</div></div>
+  <div class="mdpl-stat"><div class="mdpl-stat__value">+88%</div><div class="mdpl-stat__label">agent session volume in three weeks, per Microsoft</div></div>
+</div>
+
+## What an online store should change
+
+An agent reads your page as text and uses the same buttons as a person. What blocks it usually annoys your customers already.
+
+**Put the facts in the text.** Price, stock, shipping cost, delivery time and returns should be readable on the product page. In an image, a hover tooltip or a checkout popup, an agent may miss them. Product structured data with price and availability helps for the same reason.
+
+**Keep checkout short.** Guest checkout, a visible total before payment, and standard wallets. Duet pays with Link or Shop Pay, so a store that only takes cards through a custom form adds friction for no gain.
+
+**Check your bot rules before you need them.** Many sites block anything automated at the firewall or behind a CAPTCHA. That made sense when every bot was a scraper. Some of those visits now carry a buyer with an approved card, so decide on purpose which agents you let in, and on which pages.
+
+**Label your buttons.** "Add to basket" on a real button element is easier to act on than an icon inside a styled div.
+
+<div class="mdpl-cta">
+  <p class="mdpl-cta__eyebrow">AI for your team</p>
+  <p class="mdpl-cta__title">Test your site the way an agent sees it</p>
+  <p class="mdpl-cta__body">We train marketing teams to run their own agent tests, read the results and decide what to fix first.</p>
+  <div class="mdpl-cta__actions">
+    <a class="mdpl-cta__btn mdpl-cta__btn--primary" href="/en/services/ai-training">AI training</a>
+    <a class="mdpl-cta__btn mdpl-cta__btn--ghost" href="/en/contact">Book a call</a>
+  </div>
+</div>
+
+## What a B2B site should change
+
+Many B2B sites never use a basket. They sell through a demo request, a quote form or a calendar link. Clarity ranks form submission and appointment booking high among agent actions.
+
+Picture a procurement manager who asks an agent to shortlist suppliers and book two calls. If your pricing page says "contact us" instead of a range, the agent may move on to a competitor that shows numbers. If your demo form has twelve fields and unlabelled dropdowns, it will probably fail where a person would grumble and finish.
+
+Give a price range, or at least the pricing logic, in plain text. Keep forms short, with labelled fields. Offer a booking page with visible slots rather than "we will get back to you". We covered the wider shift in our piece on [B2B buying driven by algorithms](/en/blog/business-to-algorithm-commerce-ai-driven-b2b-procurement), and the data now comes from real sessions rather than forecasts.
+
+## How to spot agents in Clarity and GA4
+
+**In Clarity**, Microsoft says its Agent Activity Dashboard is now generally available for projects with agentic traffic, and Smart Events let you compare agent and human sessions on the same actions. Do not confuse it with the AIPlatform channel, which counts people who clicked a link inside ChatGPT, Claude or Gemini.
+
+**In GA4**, the picture is blurrier. Google automatically excludes known bots from the IAB list, and you can neither switch that off nor see how much it removed. Agents that use a real browser and run your tags may still be counted, probably without a referrer, so in Direct. The AI Assistant channel we described in our [guide to GA4's AI traffic](/en/blog/ga4-ai-assistant-channel-measure-chatgpt-gemini-traffic) counts people who click a link in an assistant answer, which is a different population.
+
+For now we recommend reading the User-Agent in your server or CDN logs, since Anthropic says Duet sends a distinct one. Pass it to GA4 as a custom dimension through Google Tag Manager so you can segment those sessions. And watch Direct traffic that converts on an unusually short path, which is how a decided buyer behaves, human or not. Our [tracking and reporting team](/en/services/tracking-reporting) sets this up as part of an audit.
+
+## Our position
+
+Do not rebuild your site for agents this quarter. Duet is US only and gated by a waitlist, and the Clarity data is a single study over four weeks, with a denominator nobody has explained yet.
+
+But almost every fix above also helps your human visitors, who have always converted better on pages that show the price and ask for little. Agents simply make the cost of skipping those fixes easier to see.
+
+The cheapest test you can run this week costs nothing. Give an agent a real task on your own site, such as "order this product in size M" or "book a demo for Tuesday", and watch where it stops. Wherever it gets stuck, a human customer is probably losing patience too.
+
+**Sources:** [Anthropic, Introducing Claude Duet](https://claude.com/resources/articles/claude-duet) - [Anthropic, Claude Duet safety, privacy and security](https://claude.com/resources/articles/claude-duet-safety-privacy-and-security) - [Microsoft Clarity, What AI agents do on websites](https://clarity.microsoft.com/blog/agentic-analytics-what-agents-do-on-websites/) - [PPC Land on the Clarity study](https://ppc.land/checkout-appears-in-25-of-ai-agent-sessions-vs-15-for-humans-clarity-finds/) - [Google, known bot traffic exclusion in GA4](https://support.google.com/analytics/answer/9888366)

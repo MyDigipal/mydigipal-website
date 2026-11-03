@@ -442,26 +442,28 @@ const categoryLabels: Record<string, Record<string, string>> = {
     font-weight: 800;
     letter-spacing: -0.02em;
   }
-  .article-texte :global(p) {
+  /* Les blocs de l'article (.mdpl-*, global.css) gardent leurs propres couleurs : ces règles ne
+     visent que le texte courant (bloc d'appel à l'action illisible, vu par Paul le 03/11/2026). */
+  .article-texte :global(p:not(:where([class*="mdpl-"], [class*="mdpl-"] *))) {
     @apply text-slate-600 leading-relaxed mb-5;
   }
   .article-texte :global(ul),
   .article-texte :global(ol) {
     @apply my-5 pl-6;
   }
-  .article-texte :global(li) {
+  .article-texte :global(li:not(:where([class*="mdpl-"], [class*="mdpl-"] *))) {
     @apply text-slate-600 mb-2;
   }
   .article-texte :global(li::marker) {
     color: var(--color-marque);
   }
-  .article-texte :global(a) {
+  .article-texte :global(a:not(:where([class*="mdpl-"], [class*="mdpl-"] *))) {
     @apply text-marque underline underline-offset-2;
   }
-  .article-texte :global(strong) {
+  .article-texte :global(strong:not(:where([class*="mdpl-"], [class*="mdpl-"] *))) {
     @apply text-encre font-semibold;
   }
-  .article-texte :global(blockquote) {
+  .article-texte :global(blockquote:not(:where([class*="mdpl-"], [class*="mdpl-"] *))) {
     @apply border-l-4 border-marque pl-6 text-slate-700 my-8;
     font-style: normal;
   }
