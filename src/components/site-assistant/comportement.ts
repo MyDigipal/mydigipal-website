@@ -174,7 +174,16 @@ export function suivreComportement(debut: number): Suivi {
   window.addEventListener('mdp-devise', surDevise);
 
   const lire = (): Comportement => {
-    const etape = document.querySelector('main h2')?.textContent;
+    // L'étape du calculateur : le titre le plus proche au-dessus des cases (le premier `h2` de la page
+    // est celui de la FAQ, vu au test du 03/11/2026).
+    let etape: string | undefined;
+    for (let el = document.querySelector('[role="checkbox"]')?.parentElement; el && el !== document.body; el = el.parentElement) {
+      const h = el.querySelector('h1, h2, h3');
+      if (h?.textContent) {
+        etape = h.textContent;
+        break;
+      }
+    }
     const c: Comportement = {
       secondes: Math.round((Date.now() - debut) / 1000),
       defilement,
