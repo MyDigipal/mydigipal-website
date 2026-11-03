@@ -24,6 +24,7 @@
 // chemin, où seul Paul répond.
 
 import type { Lang } from '../calculator-v6/engine';
+import type { Comportement } from './comportement';
 
 const BASE = 'https://academy.mydigipal.com/api/academy/public/question';
 
@@ -107,7 +108,17 @@ export interface RetourMessage {
 export async function envoyerMessage(
   fil: Fil,
   ctx: Contexte,
-  m: { question: string; email?: string; devis?: string; website: string; faq?: string[] }
+  m: {
+    question: string;
+    email?: string;
+    devis?: string;
+    website: string;
+    faq?: string[];
+    /** Ce que le visiteur a fait sur la page pendant sa visite (03/11/2026). */
+    comportement?: Comportement;
+    /** La question d'ouverture de l'IA, signée, quand ce message y répond : elle devient le premier message. */
+    ouverture?: { question: string; signature: string };
+  }
 ): Promise<RetourMessage> {
   const res = await poster('', {
     ...ctx.provenance,
@@ -123,6 +134,8 @@ export async function envoyerMessage(
     fil_id: fil.id,
     jeton: fil.jeton,
     website: m.website,
+    comportement: m.comportement,
+    ouverture: m.ouverture,
     ia: true,
   });
   if (!res) return { ok: false, status: 0 };
@@ -141,5 +154,38 @@ export async function lireFil(
     return { messages: Array.isArray(j.messages) ? j.messages : [], etat: j.etat, ecrit: j.ecrit, non_lus: j.non_lus };
   } catch {
     return null;
+  }
+}
+
+export interface Ouverture {
+  question: string;
+  reponses: string[];
+  signature: string;
+}
+
+/**
+ * La question par laquelle l'assistant ouvre la conversation (03/11/2026), écrite par l'IA
+ * pour ce visiteur. Quatre secondes au plus : au-delà, ou si l'IA ne peut pas répondre, null,
+ * et le panneau garde sa phrase d'invitation habituelle.
+ */
+export async function demanderOuverture(ctx: Contexte, comportement: Comportement, calcul: boolean): Promise<Ouverture | null> {
+  const arret = new AbortController();
+  const minuteur = window.setTimeout(() => arret.abort(), 4000);
+  try {
+    const res = await fetch(`${BASE}/ouverture`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ language: ctx.language, surface: ctx.surface, page: ctx.page, devise: ctx.devise, comportement, calcul }),
+      signal: arret.signal,
+    });
+    if (!res.ok) return null;
+    const j = (await res.json()) as Partial<Ouverture>;
+    return typeof j.question === 'string' && Array.isArray(j.reponses) && typeof j.signature === 'string'
+      ? { question: j.question, reponses: j.reponses.filter((x): x is string => typeof x === 'string').slice(0, 3), signature: j.signature }
+      : null;
+  } catch {
+    return null;
+  } finally {
+    window.clearTimeout(minuteur);
   }
 }

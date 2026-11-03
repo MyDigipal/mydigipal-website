@@ -43,8 +43,10 @@ import type { Currency, ServiceDomain } from '../calculator/types';
 import { ENDPOINT, SYMBOLE, type Devise, type Jour30Data } from '../academy/data';
 import { provenance, trackQuestion } from '../academy/track';
 import {
-  MAX_CARACTERES, envoyerMessage, envoyerReponse, lireFil, noterFaq, ouvrirFil, type Contexte, type EtatIa, type Fil, type MessageFil,
+  MAX_CARACTERES, demanderOuverture, envoyerMessage, envoyerReponse, lireFil, noterFaq, ouvrirFil, type Contexte, type EtatIa, type Fil, type MessageFil,
+  type Ouverture,
 } from './api';
+import { suivreComportement, type Suivi, type Surface } from './comportement';
 import { garderConversation, lireConversation } from '../academy-v2/conversation-cookie';
 import { rendreLeTitre, signalerReponse } from '../academy-v2/notif-visiteur';
 import { categoriesVente, faqVente, questionCopy, type QuestionFaq } from '../academy-v2/question-copy';
@@ -119,6 +121,16 @@ const CLE_INVITE = 'mdp_assistant_invite';
 const CLE_DEVIS = 'mdp_assistant_devis_vu';
 /** L'ouverture automatique sur la page de vente de l'Academy, une fois par visite. */
 const CLE_AUTO = 'mdp_assistant_auto';
+/**
+ * La question d'ouverture écrite par l'IA (Paul, 03/11/2026 : « qu'il ne l'interrompe vraiment pas,
+ * mais qu'il le questionne »), une fois par visite, tout le site confondu. Elle remplace
+ * l'ouverture automatique du panneau sur la page de vente.
+ */
+const CLE_OUVERTURE = 'mdp_assistant_ouverture';
+/** Le reste du site après la page de vente de l'Academy (ordre voulu par Paul). */
+const OUVERTURE_SITE = false;
+/** Jamais sur les études de cas ni sur le blog (Paul, 03/11/2026) : ils gardent leur phrase. */
+const SANS_OUVERTURE = ['case', 'cases', 'blog', 'blogs'];
 /** Le lien qui rouvre le panneau, depuis la bulle de reprise et les courriels. */
 const ANCRE_REPRISE = '#une-question';
 /** Les pages de la vente de l'Academy, même règle que l'application (`estPageAcademy`). */
@@ -390,6 +402,11 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   /** `true` : l'envoi a échoué ; un texte : ce qu'il faut dire (message trop long). */
   const [erreur, setErreur] = useState<boolean | string>(false);
   const [devisCourant, setDevisCourant] = useState<string | null>(null);
+  /** La carte de la question d'ouverture : l'IA écrit, puis la question et ses réponses à toucher. */
+  const [carteQ, setCarteQ] = useState<null | 'ecrit' | (Ouverture & { deplie: boolean })>(null);
+  /** La question d'ouverture en attente : elle part avec le premier message, signée, et devient le premier message du fil. */
+  const ouvertureRef = useRef<Ouverture | null>(null);
+  const suiviRef = useRef<Suivi | null>(null);
   const ouvertRef = useRef(false);
   ouvertRef.current = ouvert;
   const fondRef = useRef<HTMLDivElement>(null);
@@ -473,7 +490,7 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
 
   // --- ouverture --------------------------------------------------------------------------
   // `source` : d'où vient l'ouverture, lu par la mesure de l'Academy (`question_source`).
-  const ouvrir = useCallback((mode: 'normal' | 'guide' | 'devis' = 'normal', source: 'pastille' | 'bulle' | 'reponse' | 'auto' | 'reprise' = 'pastille') => {
+  const ouvrir = useCallback((mode: 'normal' | 'guide' | 'devis' = 'normal', source: 'pastille' | 'bulle' | 'reponse' | 'auto' | 'reprise' | 'ouverture' = 'pastille') => {
     setInvite(false);
     setGrand(false);
     setNonLu(false);
@@ -506,46 +523,64 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   const ouvrirRef = useRef(ouvrir);
   ouvrirRef.current = ouvrir;
 
-  // Page de vente de l'Academy : le panneau s'ouvre seul sur ordinateur, une fois par visite,
-  // trois secondes après l'arrivée de la grille de tarifs à l'écran ou au bout d'une minute
-  // (Paul, 16/09/2026). Sur téléphone, « j'ai peur que ça prenne trop de place » : c'est la
-  // phrase d'invitation qui s'affiche, et le panneau ne s'ouvre qu'au toucher.
-  // ⚠️ `hover: hover` et jamais la largeur d'écran : c'est le pouce qu'on protège.
+  // Ce que le visiteur fait pendant sa visite : relevé dans l'onglet, jamais envoyé seul (`comportement.ts`).
+  useEffect(() => {
+    suiviRef.current = suivreComportement(debut.current);
+    return () => suiviRef.current?.arreter();
+  }, []);
+
+  // La question d'ouverture (03/11/2026). Elle remplace l'ouverture automatique du panneau sur
+  // la page de vente (16/09/2026), qui coupait la lecture : au bon moment (`pret`), l'IA écrit
+  // une question pour ce visiteur, posée dans une carte à côté du visage. Sur ordinateur, la
+  // carte est dépliée ; sur téléphone (pas de survol), elle tient en deux lignes et se déplie
+  // au toucher. Panne, budget atteint ou plus de quatre secondes : la phrase habituelle.
+  // Une conversation déjà commencée (cookie `mdp_conversation`) n'en reçoit pas : c'est
+  // « Reprendre la conversation » qui s'affiche.
   // ⚠️ `setTimeout` et non `requestAnimationFrame` : un onglet en arrière-plan ne joue pas rAF.
   useEffect(() => {
-    if (!academy) return;
-    // Arrivé par la bulle de reprise d'une autre page ou par un courriel : on ouvre tout de suite.
-    if (window.location.hash === ANCRE_REPRISE) {
+    if (academy && window.location.hash === ANCRE_REPRISE) {
+      // Arrivé par la bulle de reprise d'une autre page ou par un courriel : on ouvre tout de suite.
       ouvrirRef.current('normal', 'reprise');
       return;
     }
-    const cible = document.getElementById('tarifs');
-    if (!cible || lire(CLE_AUTO, false)) return;
-    let fait = false;
-    let apres = 0;
-    const declencher = () => {
-      if (fait) return;
-      fait = true;
-      apres = window.setTimeout(() => {
-        if (ouvertRef.current || lire(CLE_AUTO, false)) return;
-        ecrire(CLE_AUTO, true);
-        if (typeof window.matchMedia === 'function' && window.matchMedia('(hover: hover)').matches) ouvrirRef.current('normal', 'auto');
-        else if (!lire(CLE_INVITE, false)) setInvite(true);
-      }, 3000);
+    if (!academy && !OUVERTURE_SITE) return;
+    if (lire(CLE_OUVERTURE, false) || lire(CLE_AUTO, false)) return;
+    const surface: Surface = surCalculateur ? 'calcul' : academy ? 'academy' : 'site';
+    let fini = false;
+    let t = 0;
+    const tour = async () => {
+      if (fini) return;
+      const f = ficheRef.current;
+      const deja = !!sRef.current.fil || sRef.current.items.length > 0;
+      if ((f && SANS_OUVERTURE.includes(f.k)) || deja || lire(CLE_INVITE, false)) return;
+      if (ouvertRef.current || !suiviRef.current?.pret(surface)) {
+        t = window.setTimeout(() => void tour(), 1000);
+        return;
+      }
+      fini = true;
+      ecrire(CLE_OUVERTURE, true);
+      ecrire(CLE_AUTO, true);
+      setInvite(false);
+      setCarteQ('ecrit');
+      const o = await demanderOuverture(ctx(), suiviRef.current.lire(), surface === 'calcul');
+      if (ouvertRef.current || sRef.current.fil) return setCarteQ(null);
+      if (!o) {
+        setCarteQ(null);
+        if (!lire(CLE_INVITE, false)) setInvite(true);
+        return;
+      }
+      ouvertureRef.current = o;
+      pousser('site_assistant_ouverture', { assistant_page: window.location.pathname });
+      const souris = typeof window.matchMedia === 'function' && window.matchMedia('(hover: hover)').matches;
+      // Le calculateur : la première réponse lance le parcours guidé, la seconde ouvre la conversation.
+      setCarteQ({ ...o, reponses: surface === 'calcul' ? [c.ouvertureOnYVa, c.ouvertureAvant] : o.reponses, deplie: souris });
     };
-    const minute = window.setTimeout(declencher, 60_000);
-    let io: IntersectionObserver | null = null;
-    if (typeof IntersectionObserver !== 'undefined') {
-      io = new IntersectionObserver((entrees) => {
-        if (entrees.some((e) => e.isIntersecting)) declencher();
-      }, { rootMargin: '0px 0px -30% 0px' });
-      io.observe(cible);
-    }
+    t = window.setTimeout(() => void tour(), 1000);
     return () => {
-      window.clearTimeout(minute);
-      window.clearTimeout(apres);
-      io?.disconnect();
+      fini = true;
+      window.clearTimeout(t);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [academy]);
 
   // Le calculateur : « Aidez-moi à choisir » ouvre l'assistant, la page de résultat lui passe le devis.
@@ -568,7 +603,12 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   // et tant que la personne ne l'a pas fermée pendant sa visite. Sur téléphone comme sur ordinateur.
   useEffect(() => {
     if (lire(CLE_INVITE, false) || sRef.current.items.length) return;
-    const t = window.setTimeout(() => { if (!ouvertRef.current && !lire(CLE_INVITE, false)) setInvite(true); }, 10000);
+    const t = window.setTimeout(() => {
+      // Là où l'IA posera sa question d'ouverture, l'invitation attend (elle revient si l'IA ne répond pas).
+      const f = ficheRef.current;
+      const ouvertureAVenir = (academy || (OUVERTURE_SITE && !(f && SANS_OUVERTURE.includes(f.k)))) && !lire(CLE_OUVERTURE, false);
+      if (!ouvertRef.current && !lire(CLE_INVITE, false) && !ouvertureAVenir) setInvite(true);
+    }, 10000);
     return () => window.clearTimeout(t);
   }, []);
 
@@ -914,7 +954,21 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     const st = plan ? decodePlan(plan.plan) : null;
     // Mode Academy : les questions de la FAQ déjà lues partent avec le message, Paul les lit dans la bulle.
     const lues = academy ? categories.flatMap((k) => k.questions).filter((q) => (sRef.current.lues ?? []).includes(q.id)).map((q) => q.q) : undefined;
-    const r = fil ? await envoyerMessage(fil, ctx(), { question, email, devis: devisCourant ?? (st ? resumeDevis(st) : undefined), website: piege, faq: lues }) : null;
+    const o = premier ? ouvertureRef.current : null;
+    // La question d'ouverture sera le premier message du fil : on ne la recompte pas à l'arrivée.
+    if (o) maj((x) => ({ ...x, srv: Math.max(x.srv ?? 0, 1) }));
+    const r = fil
+      ? await envoyerMessage(fil, ctx(), {
+          question,
+          email,
+          devis: devisCourant ?? (st ? resumeDevis(st) : undefined),
+          website: piege,
+          faq: lues,
+          comportement: suiviRef.current?.lire(),
+          ouverture: o ? { question: o.question, signature: o.signature } : undefined,
+        })
+      : null;
+    if (r?.ok) ouvertureRef.current = null;
     setEnvoi(false);
     if (!r?.ok) {
       // Le message n'est pas parti : il revient dans le champ, et l'état de l'IA (conversation
@@ -946,6 +1000,30 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
         ...(email ? [{ k: 'bot', texte: `${c.emailRecu}\n\n${c.emailSpam}` } as Item] : []),
       ],
     }));
+  };
+
+  /**
+   * Le visiteur répond à la question d'ouverture : le panneau s'ouvre avec la question de l'IA en
+   * premier message, puis sa réponse part comme un message écrit. Sans réponse (« Ou écrivez… »),
+   * le champ prend le focus. Au calculateur, la première réponse lance le parcours guidé.
+   */
+  const repondreOuverture = (choix: string | null, k: number) => {
+    const o = ouvertureRef.current;
+    setCarteQ(null);
+    if (!o) return;
+    if (surCalculateur && k === 0) {
+      ouvertureRef.current = null;
+      ouvrir('guide', 'ouverture');
+      return;
+    }
+    setInvite(false);
+    setNonLu(false);
+    setOuvert(true);
+    rendreLeTitre();
+    pousser('site_assistant_open', { assistant_mode: 'ouverture', assistant_page: window.location.pathname, question_source: 'ouverture' });
+    maj((x) => ({ ...x, items: [...x.items, { k: 'ia', texte: o.question }], etape: 'libre', page: chemin }));
+    if (choix) void envoyer(choix);
+    else window.setTimeout(() => champRef.current?.focus(), 50);
   };
 
   // --- rendu ------------------------------------------------------------------------------
@@ -1224,6 +1302,49 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
                 <a href={cheminContact(lang)} className="grid h-10 place-items-center rounded-full bg-slate-100 text-[14px] font-semibold text-slate-900 hover:bg-slate-200">{c.contacter}</a>
               </div>
             </div>
+          ) : carteQ && !nonLu && !devantZone ? (
+            carteQ === 'ecrit' ? (
+              <div className={`rounded-2xl rounded-br-md px-4 py-3 shadow-xl ${academy ? 'border border-filet-nuit bg-salle-2' : 'border border-slate-200 bg-white'}`}>
+                <p className={`m-0 font-ac-mono text-[11px] uppercase tracking-[.06em] ${academy ? 'text-brume-nuit' : 'text-slate-400'}`}>{c.ouvertureQui}</p>
+                <span aria-label={c.ecrit} className="mt-2 inline-flex gap-1">
+                  {[0, 1, 2].map((i) => <span key={i} className={`h-1.5 w-1.5 animate-pulse rounded-full ${academy ? 'bg-brume-nuit' : 'bg-slate-400'}`} style={{ animationDelay: `${i * 150}ms` }} />)}
+                </span>
+              </div>
+            ) : (
+              <div
+                role={carteQ.deplie ? undefined : 'button'}
+                tabIndex={carteQ.deplie ? undefined : 0}
+                onClick={carteQ.deplie ? undefined : () => setCarteQ({ ...carteQ, deplie: true })}
+                onKeyDown={carteQ.deplie ? undefined : (e) => { if (e.key === 'Enter' || e.key === ' ') setCarteQ({ ...carteQ, deplie: true }); }}
+                className={`w-[min(360px,calc(100vw-2rem))] rounded-2xl rounded-br-md p-4 shadow-xl ${carteQ.deplie ? '' : 'cursor-pointer'} ${academy ? 'border border-filet-nuit bg-salle-2' : 'border border-slate-200 bg-white'}`}>
+                <div className="flex items-start gap-2">
+                  <p className={`m-0 flex-1 font-ac-mono text-[11px] uppercase tracking-[.06em] ${academy ? 'text-brume-nuit' : 'text-slate-400'}`}>{c.ouvertureQui}</p>
+                  <button type="button" aria-label={c.fermer}
+                    onClick={(e) => { e.stopPropagation(); setCarteQ(null); ouvertureRef.current = null; ecrire(CLE_INVITE, true); }}
+                    className={`-mr-1.5 -mt-1.5 grid h-8 w-8 shrink-0 place-items-center rounded-full ${academy ? 'text-brume-nuit hover:bg-salle-3 hover:text-ivoire' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700'}`}>
+                    <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+                  </button>
+                </div>
+                <p className={`m-0 mt-1 text-[15.5px] font-semibold leading-snug ${carteQ.deplie ? '' : 'line-clamp-2'} ${academy ? 'text-ivoire' : 'text-slate-900'}`}>{nb(carteQ.question)}</p>
+                {carteQ.deplie && (
+                  <>
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {carteQ.reponses.map((rep, k) => (
+                        <button key={rep} type="button"
+                          onClick={(e) => { e.stopPropagation(); repondreOuverture(surCalculateur && k === 1 ? null : rep, k); }}
+                          className={`min-h-9 rounded-full border px-3 text-left text-[14px] font-medium transition-colors ${academy ? 'border-or text-or hover:bg-or hover:text-salle' : 'border-marque text-marque hover:bg-marque hover:text-white'}`}>
+                          {rep}
+                        </button>
+                      ))}
+                    </div>
+                    <button type="button" onClick={() => repondreOuverture(null, -1)}
+                      className={`mt-2.5 w-full border-t pt-2.5 text-left text-[14px] ${academy ? 'border-filet-nuit text-brume-nuit hover:text-ivoire' : 'border-slate-100 text-slate-500 hover:text-slate-800'}`}>
+                      {c.ouvertureEcrire}
+                    </button>
+                  </>
+                )}
+              </div>
+            )
           ) : ((invite && !devantZone) || nonLu) ? (
             // La phrase reste claire sur les pages sombres de l'Academy : c'est la même bulle
             // partout, et elle se détache mieux de la salle de nuit.
