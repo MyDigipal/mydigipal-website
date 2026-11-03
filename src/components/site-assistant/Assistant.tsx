@@ -127,8 +127,8 @@ const CLE_AUTO = 'mdp_assistant_auto';
  * l'ouverture automatique du panneau sur la page de vente.
  */
 const CLE_OUVERTURE = 'mdp_assistant_ouverture';
-/** Le reste du site après la page de vente de l'Academy (ordre voulu par Paul). */
-const OUVERTURE_SITE = false;
+/** Le reste du site après la page de vente de l'Academy (ordre voulu par Paul), ouvert le 03/11/2026 avec le budget doublé. */
+const OUVERTURE_SITE = true;
 /** Jamais sur les études de cas ni sur le blog (Paul, 03/11/2026) : ils gardent leur phrase. */
 const SANS_OUVERTURE = ['case', 'cases', 'blog', 'blogs'];
 /** Le lien qui rouvre le panneau, depuis la bulle de reprise et les courriels. */
@@ -406,6 +406,8 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   const [carteQ, setCarteQ] = useState<null | 'ecrit' | (Ouverture & { deplie: boolean })>(null);
   /** La question d'ouverture en attente : elle part avec le premier message, signée, et devient le premier message du fil. */
   const ouvertureRef = useRef<Ouverture | null>(null);
+  /** Les services décochés dans un plan du parcours guidé, par plan (maquette du 03/11/2026). */
+  const [retires, setRetires] = useState<Record<string, string[]>>({});
   const suiviRef = useRef<Suivi | null>(null);
   const ouvertRef = useRef(false);
   ouvertRef.current = ouvert;
@@ -1033,28 +1035,56 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
   );
 
   const carte = (plan: string, budget: number) => {
-    const st = decodePlan(plan);
-    if (!st) return null;
+    const complet = decodePlan(plan);
+    if (!complet) return null;
+    // Chaque service se décoche, et le total suit (maquette validée par Paul le 03/11/2026).
+    const sans = retires[plan] ?? [];
+    const st = { ...complet, domains: complet.domains.filter((d) => !sans.includes(d)) };
     const q = devis(st);
+    const lignes = devis(complet).domains;
+    const basculer = (d: string) =>
+      setRetires((x) => ({ ...x, [plan]: sans.includes(d) ? sans.filter((y) => y !== d) : [...sans, d] }));
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-3.5">
-        <ul className="space-y-1.5 text-[13.5px]">
-          {q.domains.map((dq) => (
-            <li key={dq.domain} className="flex justify-between gap-3">
-              <span className="text-slate-700">{domainName(dq.domain, lang)}</span>
-              <span className="whitespace-nowrap font-semibold tabular-nums text-slate-900">
-                {dq.empty || dq.discuss ? c.aDefinir : dq.monthly > 0 ? `${m(dq.monthly)}${c.parMois}` : dq.oneOff > 0 ? `${m(dq.oneOff)}${c.uneFois}` : c.aDefinir}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-3 space-y-1 border-t border-slate-100 pt-3 text-[13.5px]">
+        <table className="w-full border-collapse text-[13.5px]">
+          <thead>
+            <tr className="text-[11px] uppercase tracking-[.05em] text-slate-400">
+              <th className="pb-1.5 text-left font-medium">{c.service}</th>
+              <th className="pb-1.5 text-right font-medium">{c.parMoisCourt}</th>
+              <th className="pb-1.5 text-right font-medium">{c.uneFoisCourt}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lignes.map((dq) => {
+              const off = sans.includes(dq.domain);
+              const flou = dq.empty || dq.discuss;
+              return (
+                <tr key={dq.domain} onClick={() => basculer(dq.domain)} className="cursor-pointer border-t border-slate-100 hover:bg-slate-50">
+                  <td className="py-2 pr-2">
+                    <label className="flex cursor-pointer items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                      <input type="checkbox" checked={!off} onChange={() => basculer(dq.domain)} className="h-4 w-4 accent-[#1D71B8]" />
+                      <span className={off ? 'text-slate-400 line-through' : 'text-slate-800'}>{domainName(dq.domain, lang)}</span>
+                    </label>
+                  </td>
+                  <td className={`whitespace-nowrap py-2 text-right tabular-nums ${off ? 'text-slate-400 line-through' : 'font-semibold text-slate-900'}`}>
+                    {flou ? c.aDefinir : dq.monthly > 0 ? m(dq.monthly) : '-'}
+                  </td>
+                  <td className={`whitespace-nowrap py-2 pl-2 text-right tabular-nums ${off ? 'text-slate-400 line-through' : 'text-slate-700'}`}>
+                    {flou ? '' : dq.oneOff > 0 ? m(dq.oneOff) : '-'}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <div className="mt-2 space-y-1 border-t border-slate-200 pt-2.5 text-[13.5px]">
           <p className="flex justify-between gap-3"><span className="font-semibold text-slate-900">{c.honoraires}</span><span className="font-display text-base font-extrabold tabular-nums text-slate-900">{m(q.monthly)}{c.parMois}</span></p>
           {q.oneOff > 0 && <p className="flex justify-between gap-3 text-slate-600"><span>{c.miseEnPlace}</span><span className="tabular-nums">{m(q.oneOff)}{c.uneFois}</span></p>}
           {q.media > 0 && <p className="flex justify-between gap-3 text-slate-600"><span>{c.media}</span><span className="tabular-nums">{m(q.media)}{c.parMois}</span></p>}
         </div>
+        <p className="mt-2 text-[12px] text-slate-400">{c.decocher}</p>
         <div className="mt-3 grid gap-2">
-          <button type="button" onClick={() => ouvrirDevis(plan, budget)} className="h-10 rounded-full bg-marque text-[14px] font-semibold text-white transition-colors hover:bg-marque-fonce">{c.voirDevis}</button>
+          <button type="button" disabled={!st.domains.length} onClick={() => ouvrirDevis(encodePlan(st), budget)} className="h-10 rounded-full bg-marque text-[14px] font-semibold text-white transition-colors hover:bg-marque-fonce disabled:opacity-40">{c.voirDevis}</button>
           <button type="button" onClick={() => versLibre()} className="h-10 rounded-xl bg-slate-100 text-[14px] font-semibold text-slate-900 transition-colors hover:bg-slate-200">{c.parlerPaul}</button>
         </div>
       </div>
@@ -1188,9 +1218,15 @@ export default function Assistant({ lang, surelever }: AssistantProps) {
     }
     if (e === 'industry' || e === 'goals' || e === 'monthlyBudget') {
       const ids = e === 'monthlyBudget' ? ['budget-1500', 'budget-3500', 'budget-7500', 'budget-15000'] : (guidedQuestions.find((q) => q.id === e)?.options ?? []).map((o) => o.id);
+      // Des tuiles, deux par ligne, plutôt que des puces (Paul, 03/11/2026 : « un tableau où la personne peut cliquer dessus »).
       return (
-        <div className="flex flex-wrap gap-2">
-          {ids.map((id) => <button key={id} type="button" className={th.puce} onClick={() => repondre(e, id)}>{libelle(e, id, lang)}</button>)}
+        <div className="grid grid-cols-2 gap-2">
+          {ids.map((id) => (
+            <button key={id} type="button" onClick={() => repondre(e, id)}
+              className={`min-h-14 rounded-xl border px-3 py-2.5 text-left text-[14.5px] font-medium leading-snug transition duration-150 hover:-translate-y-px ${academy ? 'border-filet-nuit text-ivoire hover:border-or hover:bg-salle-3' : 'border-slate-200 bg-white text-slate-900 hover:border-marque hover:bg-marque-doux'}`}>
+              {libelle(e, id, lang)}
+            </button>
+          ))}
         </div>
       );
     }
