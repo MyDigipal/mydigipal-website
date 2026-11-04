@@ -70,6 +70,7 @@ export const aiContentServices: ServiceItem[] = [
         conclusion: 'Our AI tools move fast, our team checks every fact and every link.'
       }
     },
+    // Prix fixés par Paul le 04/11/2026 : 500, 800 et 1 000 € (4, 8 et 16 articles par mois).
     levels: [
       {
         name: '4 articles',
@@ -93,7 +94,7 @@ export const aiContentServices: ServiceItem[] = [
       {
         name: '8 articles',
         nameEn: '8 articles',
-        price: 900,
+        price: 800,
         features: [
           '8 articles/mois (1 400 à 1 900 mots par article)',
           'Stratégie éditoriale mensuelle',
@@ -111,18 +112,18 @@ export const aiContentServices: ServiceItem[] = [
         popular: true
       },
       {
-        name: '16+ articles',
-        nameEn: '16+ articles',
-        price: 1600,
+        name: '16 articles',
+        nameEn: '16 articles',
+        price: 1000,
         features: [
-          '16+ articles/mois',
+          '16 articles/mois (1 400 à 1 900 mots par article)',
           'Stratégie éditoriale complète',
           'Calendrier de publication',
           'Publication CMS incluse',
           'Reporting performance mensuel'
         ],
         featuresEn: [
-          '16+ articles/month',
+          '16 articles/month (1,400 to 1,900 words each)',
           'Complete editorial strategy',
           'Publication calendar',
           'CMS publishing included',
