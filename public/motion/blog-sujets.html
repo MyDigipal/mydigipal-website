@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Des sujets choisis dans les données</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@500;600&display=block" rel="stylesheet">
+<style>
+/* Page « Blog et contenu IA » (04/11/2026). Comment naissent les sujets du mois, exemple générique sur des
+   articles consacrés à l'IA : 1. quatre sources s'allument et déposent leurs idées dans le Hub ;
+   2. les filtres passent et écartent ce qui ne sert pas le site (hors cible, un sujet déjà
+   traité, rien à faire monter) ; 3. le client garde quatre sujets d'un clic, le cinquième part en
+   réserve. Libellés de l'interface du Hub en anglais, comme dans le vrai Hub. render(t) est pur. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(900px 700px at 85% -10%,rgba(29,113,184,.30),rgba(8,19,31,0) 65%),radial-gradient(700px 600px at 0% 110%,rgba(232,189,98,.08),rgba(8,19,31,0) 60%)}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(140%);white-space:nowrap}
+#titre{position:absolute;left:72px;top:64px;z-index:9}
+.titre-acte{position:absolute;left:0;top:0}
+#titre .k .ln{font-size:30px;font-weight:700;color:#7DB8EE;letter-spacing:.01em;margin-bottom:12px}
+#titre .t .ln{font-size:60px;font-weight:800;letter-spacing:-.035em;line-height:1.04}
+#titre .t .ln .o{color:#e8bd62}
+.abs{position:absolute;left:0;top:0}
+
+.src{position:absolute;width:330px;height:118px;border-radius:20px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1.5px #1f3a55;display:grid;grid-template-columns:52px 1fr;gap:16px;align-items:center;padding:0 20px;box-sizing:border-box}
+.src.on{background:rgba(29,113,184,.16);box-shadow:inset 0 0 0 2px #1D71B8}
+.ico{width:52px;height:52px;border-radius:14px;background:rgba(125,184,238,.12);display:grid;place-items:center}
+.ico svg{width:28px;height:28px;stroke:#7DB8EE;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.src.on .ico{background:#1D71B8}.src.on .ico svg{stroke:#fff}
+.src b{display:block;font-size:25px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.src span{display:block;font-family:Inter,sans-serif;font-size:16.5px;font-weight:600;color:#8fa9c2;margin-top:4px;white-space:nowrap}
+
+#hub{position:absolute;left:440px;top:290px;width:580px;height:740px;border-radius:26px;background:#f4f7fa;color:#0b1b2b;box-shadow:0 70px 140px -60px rgba(0,0,0,.95);overflow:hidden;font-family:Inter,sans-serif}
+#hub .barre{height:50px;background:#e8eef4;display:flex;align-items:center;gap:10px;padding:0 20px;font-size:17px;font-weight:600;color:#5b6b7c}
+#hub .barre i{width:12px;height:12px;border-radius:50%;background:#c9d4df}
+#hub .barre span{margin-left:10px}
+#hTitre{left:24px;top:70px;font-family:'Plus Jakarta Sans';font-size:26px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+#compte{left:auto;right:24px;top:70px;padding:6px 14px;border-radius:999px;background:#e6f0fa;color:#1D71B8;font-size:17px;font-weight:600;white-space:nowrap}
+#compte.plein{background:#fbf1d9;color:#8a6512}
+.row{position:absolute;left:16px;width:548px;height:72px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 1px #dde5ed;overflow:hidden;box-sizing:border-box}
+.row .mini{position:absolute;left:14px;top:20px;width:32px;height:32px;border-radius:9px;background:#e6f0fa;display:grid;place-items:center}
+.row .mini svg{width:18px;height:18px;stroke:#1D71B8;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.row .tx{position:absolute;left:60px;top:23px;font-size:20px;font-weight:600;white-space:nowrap;color:#0b1b2b}
+.row .barre-raye{position:absolute;left:58px;top:36px;height:2px;background:#8a98a6;transform-origin:0 50%;transform:scaleX(0)}
+.row .motif{position:absolute;right:14px;top:19px;padding:5px 12px;border-radius:999px;background:#f1ece8;color:#8a5a4a;font-size:16px;font-weight:600;white-space:nowrap}
+.row .garde{position:absolute;right:14px;top:16px;height:40px;padding:0 14px;border-radius:999px;box-shadow:inset 0 0 0 2px #cfd9e3;color:#0b1b2b;font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;white-space:nowrap;box-sizing:border-box}
+.row .garde svg{width:16px;height:12px}
+.row .garde.on{background:#e8bd62;box-shadow:none;color:#0b1b2b}
+.row .reserve{position:absolute;right:14px;top:19px;padding:5px 12px;border-radius:999px;background:#e8eef4;color:#5b6b7c;font-size:16px;font-weight:600;white-space:nowrap}
+.row.gardee{box-shadow:inset 0 0 0 2px #e8bd62}
+#scan{left:0;width:580px;height:4px;background:linear-gradient(90deg,rgba(29,113,184,0),#1D71B8,rgba(29,113,184,0));box-shadow:0 0 22px 6px rgba(29,113,184,.35)}
+#curseur{z-index:6;width:30px;height:40px}
+#onde{width:60px;height:60px;border-radius:50%;border:3px solid #1D71B8;z-index:5}
+
+/* Version verticale (?p=1, 1080 x 1350) : les sources en grille de deux, le Hub sur toute la largeur. */
+#stage.p{height:1350px}
+#stage.p #titre .k .ln{font-size:40px;margin-bottom:14px}
+#stage.p #titre .t .ln{font-size:72px}
+#stage.p .src{width:476px;height:120px;grid-template-columns:56px 1fr}
+#stage.p .ico{width:56px;height:56px}
+#stage.p .src b{font-size:32px}
+#stage.p .src span{display:none}
+#stage.p #hub{left:40px;top:594px;width:1000px;height:746px}
+#stage.p #hub .barre{height:54px;font-size:22px}
+#stage.p #hTitre{top:76px;font-size:34px}
+#stage.p #compte{top:74px;font-size:30px;padding:6px 18px}
+#stage.p .row{left:20px;width:960px;height:72px}
+#stage.p .row .mini{left:16px;top:14px;width:44px;height:44px}
+#stage.p .row .mini svg{width:24px;height:24px}
+#stage.p .row .tx{left:78px;top:17px;font-size:31px}
+#stage.p .row .barre-raye{left:76px;top:37px}
+#stage.p .row .motif,#stage.p .row .reserve{right:18px;top:14px;font-size:30px;padding:4px 16px}
+#stage.p .row .garde{right:18px;top:10px;height:52px;font-size:30px;padding:0 18px}
+#stage.p .row .garde svg{width:22px;height:16px}
+#stage.p #scan{width:1000px}
+#stage.p #curseur{width:38px;height:50px}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="titre">
+    <div class="titre-acte" id="ta0"><div class="mask k"><span class="ln" data-txt="k0"></span></div><div class="mask t"><span class="ln" data-txt="t0a"></span></div><div class="mask t"><span class="ln" data-txt="t0b"></span></div></div>
+    <div class="titre-acte" id="ta1"><div class="mask k"><span class="ln" data-txt="k1"></span></div><div class="mask t"><span class="ln" data-txt="t1a"></span></div><div class="mask t"><span class="ln" data-txt="t1b"></span></div></div>
+    <div class="titre-acte" id="ta2"><div class="mask k"><span class="ln" data-txt="k2"></span></div><div class="mask t"><span class="ln" data-txt="t2a"></span></div><div class="mask t"><span class="ln" data-txt="t2b"></span></div></div>
+  </div>
+  <div id="sources"></div>
+  <div id="hub">
+    <div class="barre"><i></i><i></i><i></i><span>app.mydigipal.com</span></div>
+    <div class="abs" id="hTitre" data-txt="hub"></div>
+    <div class="abs" id="compte"></div>
+    <div id="rows"></div>
+    <div class="abs" id="scan"></div>
+  </div>
+  <div class="abs" id="onde"></div>
+  <svg class="abs" id="curseur" viewBox="0 0 30 40"><path d="M2 2 L2 32 L10 25 L15.5 37 L21 34.5 L15.5 23 L26 23 Z" fill="#0b1b2b" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>
+</div>
+<div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
+
+<script>
+var PORTRAIT = /[?&]p=1/.test(location.search);
+window.STAGE = { w: 1080, h: PORTRAIT ? 1350 : 1080 };
+window.DUREE = 20;
+
+(function () {
+  'use strict';
+  var EN = /\/en\//.test(location.pathname) || /[?&]lang=en/.test(location.search);
+  var TXT = EN ? {
+    k0: '1 · Four sources', t0a: 'Ideas from', t0b: '<span class="o">real searches</span>.',
+    k1: '2 · The filters', t1a: 'What does not', t1b: '<span class="o">serve the site</span> goes.',
+    k2: '3 · You pick', t2a: 'Four topics,', t2b: '<span class="o">one click each</span>.',
+    hub: 'Topics this month',
+    sources: [['Ahrefs', 'Searches on the rise'], ['Search Console', 'Where the site almost ranks'], ['The news', 'Recalls, shows, seasons'], ['AI answers', 'The gaps in what they say']],
+    rows: ['AI agents: where to start', 'Rumours about the next model', 'Copilot or ChatGPT for a small firm?', 'The AI Act for small businesses', 'What is generative AI?', 'This month’s AI news, sorted', 'A history of artificial intelligence', 'Writing prompts: the guide'],
+    motifs: ['Off target', 'Already on the site', 'Nothing to lift'],
+    garde: 'Keep', garde2: 'Kept', reserve: 'Saved for later', retenus: ' kept'
+  } : {
+    k0: '1 · Quatre sources', t0a: 'Des idées tirées', t0b: '<span class="o">des vraies recherches</span>.',
+    k1: '2 · Les filtres', t1a: 'Ce qui ne sert pas', t1b: '<span class="o">le site</span> sort.',
+    k2: '3 · Votre choix', t2a: 'Quatre sujets,', t2b: '<span class="o">d’un clic</span>.',
+    hub: 'Sujets du mois',
+    sources: [['Ahrefs', 'Les recherches qui montent'], ['Search Console', 'Ce que le site rate de peu'], ['L’actualité', 'Rappels, salons, saisons'], ['Les réponses des IA', 'Les trous de leurs réponses']],
+    rows: ['Agents IA : par où commencer', 'Les rumeurs du prochain modèle', 'Copilot ou ChatGPT pour une PME ?', 'L’AI Act expliqué aux PME', 'Qu’est-ce que l’IA générative ?', 'Les annonces IA du mois, triées', 'L’histoire de l’intelligence artificielle', 'Écrire ses prompts : le guide'],
+    motifs: ['Hors de votre cible', 'Déjà sur le site', 'Rien à faire monter'],
+    garde: 'Je le garde', garde2: 'Gardé', reserve: 'En réserve', retenus: ' retenus'
+  };
+  if (EN) document.documentElement.lang = 'en';
+  document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+  if (PORTRAIT) document.getElementById('stage').classList.add('p');
+  var $ = function (id) { return document.getElementById(id); };
+
+  var ICONES = [
+    '<svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',
+    '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 15l3-3 3 2 4-5"/></svg>',
+    '<svg viewBox="0 0 24 24"><path d="M4 4h12v16H6a2 2 0 0 1-2-2Z"/><path d="M16 8h4v10a2 2 0 0 1-2 2"/><path d="M8 8h4M8 12h4M8 16h4"/></svg>',
+    '<svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8Z"/></svg>'
+  ];
+  var COCHE = '<svg viewBox="0 0 16 12"><path d="M1.5 6.5l4 4 9-9" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  /* Chaque idée : sa source, son sort (garder, écarter avec un motif, réserve). */
+  var IDEES = [
+    { src: 0, sort: 'garde' }, { src: 2, sort: 'ecarte', motif: 0 }, { src: 1, sort: 'garde' }, { src: 3, sort: 'garde' },
+    { src: 1, sort: 'ecarte', motif: 1 }, { src: 2, sort: 'garde' }, { src: 0, sort: 'ecarte', motif: 2 }, { src: 3, sort: 'reserve' }
+  ];
+  var L = PORTRAIT ? {
+    src: [[56, 312], [548, 312], [56, 446], [548, 446]], hub: [40, 594], rowTop: 118, rowH: 72, rowGap: 6, rowX: 20, gardeX: 960 - 18
+  } : {
+    src: [[72, 290], [72, 430], [72, 570], [72, 710]], hub: [440, 290], rowTop: 122, rowH: 72, rowGap: 6, rowX: 16, gardeX: 548 - 14
+  };
+
+  TXT.sources.forEach(function (s, i) {
+    var d = document.createElement('div'); d.className = 'src'; d.id = 'sr' + i;
+    d.style.left = L.src[i][0] + 'px'; d.style.top = L.src[i][1] + 'px';
+    d.innerHTML = '<div class="ico">' + ICONES[i] + '</div><div><b>' + s[0] + '</b><span>' + s[1] + '</span></div>';
+    $('sources').appendChild(d);
+  });
+  IDEES.forEach(function (idee, i) {
+    var r = document.createElement('div'); r.className = 'row'; r.id = 'rw' + i;
+    var droite = idee.sort === 'ecarte' ? '<div class="motif" id="mo' + i + '">' + TXT.motifs[idee.motif] + '</div>'
+      : idee.sort === 'reserve' ? '<div class="reserve" id="re' + i + '">' + TXT.reserve + '</div>'
+      : '<div class="garde" id="ga' + i + '">' + COCHE + '<span>' + TXT.garde + '</span></div>';
+    r.innerHTML = '<div class="mini">' + ICONES[idee.src] + '</div><div class="tx">' + TXT.rows[i] + '</div><div class="barre-raye" id="br' + i + '"></div>' + droite;
+    $('rows').appendChild(r);
+  });
+  // Largeur des barres qui rayent : celle du texte.
+  function mesurer() { IDEES.forEach(function (idee, i) { $('br' + i).style.width = ($('rw' + i).querySelector('.tx').offsetWidth + 4) + 'px'; }); }
+
+  function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return c01((t - a) / (b - a)); }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function bez(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    return function (x) { var t = x; for (var i = 0; i < 8; i++) { var d = (3 * ax * t + 2 * bx) * t + cx, e = ((ax * t + bx) * t + cx) * t - x; if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } t = c01(t); return ((ay * t + by) * t + cy) * t; };
+  }
+  var A = bez(0.15, 1, 0.32, 1);
+  var S = bez(0.333, 0, 0.667, 0);
+  var D = bez(0.45, 0, 0.2, 1);
+  function ressort(x) { if (x <= 0) return 0; if (x >= 1) return 1; var z = 0.5, w = 10; var wd = w * Math.sqrt(1 - z * z); var e = Math.exp(-z * w * x); return 1 - e * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x)); }
+  function pose(el, x, y, o, extra) { el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)' + (extra || ''); el.style.opacity = o; }
+
+  /* Le calendrier. */
+  var SRC_ON = [1.3, 2.9, 4.5, 6.1];                    // chaque source s'allume
+  function arrivee(i) { var s = IDEES[i].src, n = 0; for (var j = 0; j < i; j++) if (IDEES[j].src === s) n++; return SRC_ON[s] + 0.35 + n * 0.55; }
+  var SCAN = [9.2, 11.0];                               // la barre des filtres descend
+  var REPLI = [11.9, 12.8];                             // les idées écartées se replient
+  var CLICS = [15.0, 15.8, 16.6, 17.4];                 // le client garde quatre sujets
+  var GARDES = [0, 2, 3, 5];
+  var TITRES = [[0.3, 8.4], [8.8, 13.6], [14.0, 19.3]];
+
+  function titres(t) {
+    TITRES.forEach(function (p, i) {
+      $('ta' + i).querySelectorAll('.ln').forEach(function (ln, j) {
+        var e = A(seg(t, p[0] + j * 0.13, p[0] + j * 0.13 + 0.95));
+        var s = S(seg(t, p[1] + j * 0.06, p[1] + j * 0.06 + 0.4));
+        ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+      });
+    });
+  }
+  function hauteur(i, t) { return IDEES[i].sort === 'ecarte' ? 1 - D(seg(t, REPLI[0], REPLI[1])) : 1; }
+  function yRang(i, t) { var y = L.rowTop; for (var j = 0; j < i; j++) y += (L.rowH + L.rowGap) * hauteur(j, t); return y; }
+  /* Le curseur, dans les coordonnées de la scène : il clique sur « Je le garde » des quatre sujets. */
+  function cible(n, t) { var i = GARDES[n], r = $('rw' + i), g = $('ga' + i); return [L.hub[0] + L.rowX + L.gardeX - g.offsetWidth * 0.55, L.hub[1] + yRang(i, t) + L.rowH * 0.5]; }
+
+  window.render = function (t) {
+    if (!mesurer.fait) { mesurer(); mesurer.fait = true; }
+    titres(t);
+    var fin = S(seg(t, 19.3, 19.95)), fond = 1 - fin;
+
+    TXT.sources.forEach(function (s, i) {
+      var e = A(seg(t, 0.4 + i * 0.12, 1.2 + i * 0.12));
+      var on = t >= SRC_ON[i] && t < SRC_ON[i] + 1.3;
+      var sr = $('sr' + i); sr.classList.toggle('on', on);
+      pose(sr, L.src[i][0] * 0, 0, e * fond * (t > 8.6 && !PORTRAIT ? 0.55 + 0.45 * (1 - seg(t, 8.6, 9.2)) : 1), ' translateY(' + ((1 - e) * 24).toFixed(1) + 'px)');
+      sr.style.left = L.src[i][0] + 'px'; sr.style.top = L.src[i][1] + 'px';
+    });
+    var hIn = A(seg(t, 0.5, 1.3));
+    pose($('hub'), 0, (1 - hIn) * 50 + fin * 50, hIn * fond);
+    $('hub').style.left = L.hub[0] + 'px'; $('hub').style.top = L.hub[1] + 'px';
+
+    var gardes = 0;
+    IDEES.forEach(function (idee, i) {
+      var r = $('rw' + i), a = arrivee(i);
+      var e = A(seg(t, a, a + 0.6));
+      var h = hauteur(i, t);
+      r.style.top = yRang(i, t) + 'px';
+      r.style.height = (L.rowH * h) + 'px';
+      r.style.opacity = (e * Math.min(1, h * 1.6)).toFixed(3);
+      r.style.transform = 'translateX(' + ((1 - e) * -80).toFixed(1) + 'px)';
+      // Les filtres : la barre passe, la ligne se raye et dit pourquoi elle sort.
+      var passage = SCAN[0] + (SCAN[1] - SCAN[0]) * (i + 0.5) / IDEES.length;
+      if (idee.sort === 'ecarte') {
+        var k = A(seg(t, passage, passage + 0.45));
+        $('br' + i).style.transform = 'scaleX(' + k.toFixed(3) + ')';
+        r.querySelector('.tx').style.color = k > 0.5 ? '#8a98a6' : '#0b1b2b';
+        $('mo' + i).style.opacity = k; $('mo' + i).style.transform = 'translateX(' + ((1 - k) * 16) + 'px)';
+      }
+      if (idee.sort === 'reserve') {
+        var rv = A(seg(t, 18.0, 18.5));
+        $('re' + i).style.opacity = rv;
+        r.style.opacity = (e * (1 - 0.35 * rv)).toFixed(3);
+      }
+      if (idee.sort === 'garde') {
+        var n = GARDES.indexOf(i), c = CLICS[n];
+        var vis = A(seg(t, 14.2, 14.7));
+        var g = $('ga' + i), on = t >= c;
+        g.style.opacity = vis;
+        g.classList.toggle('on', on);
+        g.querySelector('span').textContent = on ? TXT.garde2 : TXT.garde;
+        g.querySelector('svg').style.display = on ? 'block' : 'none';
+        r.classList.toggle('gardee', on);
+        var pr = 1 - 0.12 * Math.sin(Math.PI * seg(t, c - 0.05, c + 0.2));
+        g.style.transform = 'scale(' + pr.toFixed(3) + ')';
+        if (on) gardes++;
+      }
+    });
+    var sc = seg(t, SCAN[0], SCAN[1]);
+    var yScan = L.rowTop + sc * (IDEES.length * (L.rowH + L.rowGap));
+    pose($('scan'), 0, yScan, (t > SCAN[0] - 0.2 && t < SCAN[1] + 0.3) ? 1 - seg(t, SCAN[1], SCAN[1] + 0.3) : 0);
+
+    var cpt = $('compte');
+    cpt.textContent = t < 14.2 ? IDEES.length + (EN ? ' ideas' : ' idées') : gardes + ' / 4' + TXT.retenus;
+    cpt.classList.toggle('plein', gardes === 4);
+
+    // Le curseur entre au troisième acte.
+    var cu = $('curseur'), x, y, o = A(seg(t, 14.2, 14.6)) * (1 - seg(t, 18.4, 18.8));
+    if (t < CLICS[0]) { var p0 = cible(0, t); var k0 = D(seg(t, 14.2, CLICS[0] - 0.1)); x = lerp(PORTRAIT ? 1000 : 1060, p0[0], k0); y = lerp(PORTRAIT ? 1300 : 1040, p0[1], k0); }
+    else {
+      var n2 = 0; for (var m = 0; m < CLICS.length; m++) if (t >= CLICS[m]) n2 = m;
+      var pA = cible(n2, t);
+      if (n2 < CLICS.length - 1) { var pB = cible(n2 + 1, t); var kk = D(seg(t, CLICS[n2] + 0.2, CLICS[n2 + 1] - 0.1)); x = lerp(pA[0], pB[0], kk); y = lerp(pA[1], pB[1], kk); }
+      else { var kf = D(seg(t, 17.7, 18.6)); x = lerp(pA[0], PORTRAIT ? 1060 : 1060, kf); y = lerp(pA[1], PORTRAIT ? 1320 : 1060, kf); }
+    }
+    var presse = 1, onde = 0;
+    CLICS.forEach(function (c) { var q = seg(t, c - 0.08, c + 0.12); if (q > 0 && q < 1) presse = 1 - 0.15 * Math.sin(q * Math.PI); var w = seg(t, c, c + 0.55); if (w > 0 && w < 1) onde = w; });
+    pose(cu, x, y, o, ' scale(' + presse + ')');
+    pose($('onde'), x - 30, y - 30, onde > 0 ? (1 - onde) * o : 0, ' scale(' + lerp(0.3, 1.4, onde).toFixed(3) + ')');
+  };
+
+  window.PRET = Promise.all([
+    document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"')
+  ]).then(function () { mesurer(); mesurer.fait = true; });
+  window.render(0);
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

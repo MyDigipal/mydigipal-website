@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chaque retour devient une règle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@500;600&display=block" rel="stylesheet">
+<style>
+/* Page « Blog et contenu IA » (04/11/2026), exemple générique sur un blog consacré à l'IA : 1. le client sélectionne un passage dans le Hub et commente, nous
+   répondons et corrigeons ; 2. la remarque quitte le fil et rejoint ses règles de rédaction ;
+   3. le mois suivant, l'article s'écrit et la règle s'applique d'elle-même. Libellés de l'interface
+   du Hub en anglais, comme dans le vrai Hub. render(t) est pur. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(900px 700px at 85% -10%,rgba(29,113,184,.30),rgba(8,19,31,0) 65%),radial-gradient(700px 600px at 0% 110%,rgba(232,189,98,.08),rgba(8,19,31,0) 60%)}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(140%);white-space:nowrap}
+#titre{position:absolute;left:72px;top:64px;z-index:9}
+.titre-acte{position:absolute;left:0;top:0}
+#titre .k .ln{font-size:30px;font-weight:700;color:#7DB8EE;letter-spacing:.01em;margin-bottom:12px}
+#titre .t .ln{font-size:60px;font-weight:800;letter-spacing:-.035em;line-height:1.04}
+#titre .t .ln .o{color:#e8bd62}
+.abs{position:absolute;left:0;top:0}
+
+#hub{position:absolute;left:72px;top:296px;width:600px;height:600px;border-radius:26px;background:#f4f7fa;color:#0b1b2b;box-shadow:0 70px 140px -60px rgba(0,0,0,.95);overflow:hidden;font-family:Inter,sans-serif}
+#hub .barre{height:50px;background:#e8eef4;display:flex;align-items:center;gap:10px;padding:0 20px;font-size:17px;font-weight:600;color:#5b6b7c}
+#hub .barre i{width:12px;height:12px;border-radius:50%;background:#c9d4df}
+#hub .barre span{margin-left:10px}
+.vue{position:absolute;left:0;top:50px;right:0;bottom:0;padding:20px 24px}
+.vtete{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.vtete b{font-family:'Plus Jakarta Sans';font-size:22px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.statut{padding:5px 12px;border-radius:999px;background:#e6f0fa;color:#1D71B8;font-size:16px;font-weight:600;white-space:nowrap}
+.para{position:relative;margin-top:18px;font-size:23px;line-height:1.55;font-weight:500;color:#0b1b2b;min-height:98px}
+.para .hl{position:relative}
+.para .hl i{position:absolute;left:-2px;top:2px;bottom:0;right:-2px;background:rgba(232,189,98,.42);border-radius:4px;transform-origin:0 50%;z-index:-1}
+.para .hl.v2 i{background:rgba(18,122,74,.16)}
+.couche{position:absolute;left:0;top:0;right:0}
+.com{position:relative;margin-top:14px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 1px #dde5ed;padding:12px 14px}
+.com.rep{margin-left:28px;background:#eef3f8}
+.qui{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:#5b6b7c;white-space:nowrap}
+.av{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;background:#6F655E}
+.av.mdp{background:#1D71B8}
+.com p{margin:6px 0 0;font-size:18px;font-weight:600;line-height:1.38;color:#0b1b2b;min-height:25px}
+.res{position:absolute;right:12px;top:10px;padding:3px 10px;border-radius:999px;background:#e8f6ee;color:#127a4a;font-size:14px;font-weight:600}
+#applique{left:72px;top:930px;display:flex;align-items:center;gap:12px;padding:12px 20px;border-radius:999px;background:rgba(232,189,98,.16);color:#e8bd62;font-family:Inter,sans-serif;font-size:22px;font-weight:600;white-space:nowrap}
+#applique svg{width:20px;height:15px}
+.curseur-texte{display:inline-block;width:2px;height:1.05em;background:#1D71B8;vertical-align:-3px;margin-left:1px}
+
+#regles{position:absolute;left:700px;top:290px;width:310px;border-radius:26px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1.5px #1f3a55;padding:22px 22px 10px;box-sizing:border-box}
+#regles h4{margin:0 0 6px;font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.regle{position:relative;padding:14px 0;border-top:1px solid #1f3a55;overflow:hidden}
+.regle span{display:block;font-family:Inter,sans-serif;font-size:18px;font-weight:600;line-height:1.38;color:#dce6ef}
+.regle em{display:block;font-style:normal;font-family:Inter,sans-serif;font-size:15px;font-weight:600;color:#6f8aa5;margin-top:6px}
+.regle.neuve span{color:#e8bd62}
+#vol{position:absolute;left:0;top:0;border-radius:14px;background:#fff;color:#0b1b2b;font-family:Inter,sans-serif;font-size:18px;font-weight:600;line-height:1.38;padding:12px 14px;box-sizing:border-box;box-shadow:0 30px 60px -20px rgba(0,0,0,.8);transform-origin:0 0;z-index:8}
+
+/* Version verticale (?p=1, 1080 x 1350) : le Hub en haut, les règles en dessous, sur toute la largeur. */
+#stage.p{height:1350px}
+#stage.p #titre .k .ln{font-size:40px;margin-bottom:14px}
+#stage.p #titre .t .ln{font-size:72px}
+#stage.p #hub{left:40px;top:316px;width:1000px;height:640px}
+#stage.p #hub .barre{height:54px;font-size:22px}
+#stage.p .vue{top:54px;padding:22px 28px}
+#stage.p .vtete b{font-size:32px}
+#stage.p .statut{font-size:28px;padding:4px 16px}
+#stage.p .para{font-size:32px;line-height:1.45;min-height:140px}
+#stage.p .com{padding:14px 18px}
+#stage.p .qui{font-size:28px;gap:10px}
+#stage.p .av{width:36px;height:36px;font-size:16px}
+#stage.p .com p{font-size:30px;min-height:42px}
+#stage.p .res{font-size:26px;padding:3px 14px;top:12px}
+#stage.p #applique{left:68px;top:860px;font-size:32px;padding:12px 24px;background:#0b1b2b;z-index:5}
+#stage.p #applique svg{width:26px;height:20px}
+#stage.p #regles{left:40px;top:990px;width:1000px;padding:20px 28px 6px}
+#stage.p #regles h4{font-size:32px}
+#stage.p .regle{display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:12px 0}
+#stage.p .regle span{font-size:30px;line-height:1.25}
+#stage.p .regle em{font-size:28px;margin:0;white-space:nowrap}
+#stage.p #vol{font-size:30px}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="titre">
+    <div class="titre-acte" id="ta0"><div class="mask k"><span class="ln" data-txt="k0"></span></div><div class="mask t"><span class="ln" data-txt="t0a"></span></div><div class="mask t"><span class="ln" data-txt="t0b"></span></div></div>
+    <div class="titre-acte" id="ta1"><div class="mask k"><span class="ln" data-txt="k1"></span></div><div class="mask t"><span class="ln" data-txt="t1a"></span></div><div class="mask t"><span class="ln" data-txt="t1b"></span></div></div>
+    <div class="titre-acte" id="ta2"><div class="mask k"><span class="ln" data-txt="k2"></span></div><div class="mask t"><span class="ln" data-txt="t2a"></span></div><div class="mask t"><span class="ln" data-txt="t2b"></span></div></div>
+  </div>
+
+  <div id="hub">
+    <div class="barre"><i></i><i></i><i></i><span>app.mydigipal.com</span></div>
+    <div class="vue" id="v1">
+      <div class="vtete"><b data-txt="art1"></b><span class="statut" id="st1">In review</span></div>
+      <div class="para"><div class="couche" id="pA"></div><div class="couche" id="pB"></div></div>
+      <div class="com" id="c1"><div class="qui"><span class="av">C</span><span data-txt="claire"></span></div><p id="c1t"></p><span class="res" id="r1">Resolved</span></div>
+      <div class="com rep" id="c2"><div class="qui"><span class="av mdp">MD</span>MyDigipal</div><p id="c2t"></p></div>
+    </div>
+    <div class="vue" id="v2">
+      <div class="vtete"><b data-txt="art2"></b><span class="statut">Draft</span></div>
+      <div class="para" id="p2"></div>
+    </div>
+  </div>
+  <div class="abs" id="applique"><svg viewBox="0 0 16 12"><path d="M1.5 6.5l4 4 9-9" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-txt="applique"></span></div>
+
+  <div id="regles"><h4 data-txt="regles"></h4><div id="liste"></div></div>
+  <div id="vol"></div>
+</div>
+<div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span><span style="font-family:Inter;font-weight:500">a</span></div>
+
+<script>
+var PORTRAIT = /[?&]p=1/.test(location.search);
+window.STAGE = { w: 1080, h: PORTRAIT ? 1350 : 1080 };
+window.DUREE = 20;
+
+(function () {
+  'use strict';
+  var EN = /\/en\//.test(location.pathname) || /[?&]lang=en/.test(location.search);
+  var TXT = EN ? {
+    k0: '1 · You review', t0a: 'Select a passage,', t0b: '<span class="o">leave a note</span>.',
+    k1: '2 · We keep it', t1a: 'Your note', t1b: '<span class="o">becomes a rule</span>.',
+    k2: '3 · Next month', t2a: 'The rule', t2b: '<span class="o">applies itself</span>.',
+    art1: 'Blog 3 · AI for quotes', art2: 'Blog 4 · Meeting notes with AI',
+    pA: 'To draft your quotes, <span class="hl"><i id="hlA"></i>ChatGPT is the tool you need.</span>',
+    pB: 'To draft your quotes, <span class="hl v2"><i></i>ChatGPT or Claude will do: it depends on the tools you already use.</span>',
+    c1: 'Never push a single tool: compare at least two.',
+    c2: 'Fixed in the article and the video, and added to your rules.',
+    p2: 'To summarise your meetings, two options hold up: Copilot on Microsoft 365, Gemini on Google Workspace.',
+    p2regle: 'two options',
+    applique: 'Rule applied, no comment needed',
+    regles: 'Your writing rules', claire: 'Claire · Marketing',
+    liste: [['Examples from small firms, not big groups', 'October'], ['Spell out “generative AI” the first time', 'November'], ['Never a single tool recommended: always compare', 'November']]
+  } : {
+    k0: '1 · Vous relisez', t0a: 'Un passage,', t0b: '<span class="o">un commentaire</span>.',
+    k1: '2 · Nous retenons', t1a: 'Votre remarque', t1b: '<span class="o">devient une règle</span>.',
+    k2: '3 · Le mois suivant', t2a: 'La règle', t2b: '<span class="o">s’applique seule</span>.',
+    art1: 'Blog 3 · L’IA pour vos devis', art2: 'Blog 4 · Résumer ses réunions',
+    pA: 'Pour rédiger vos devis, <span class="hl"><i id="hlA"></i>ChatGPT est l’outil qu’il vous faut.</span>',
+    pB: 'Pour rédiger vos devis, <span class="hl v2"><i></i>ChatGPT ou Claude font l’affaire : tout dépend des outils que vous utilisez déjà.</span>',
+    c1: 'Ne jamais pousser un seul outil : en comparer au moins deux.',
+    c2: 'Corrigé dans l’article et la vidéo, et noté dans vos règles.',
+    p2: 'Pour résumer vos réunions, deux options tiennent la route : Copilot sous Microsoft 365, Gemini sous Google Workspace.',
+    p2regle: 'deux options',
+    applique: 'Règle appliquée, sans commentaire',
+    regles: 'Vos règles de rédaction', claire: 'Claire · Marketing',
+    liste: [['Des exemples de PME, pas de grands groupes', 'Octobre'], ['« IA générative » en toutes lettres la première fois', 'Novembre'], ['Jamais un seul outil recommandé : toujours comparer', 'Novembre']]
+  };
+  if (EN) document.documentElement.lang = 'en';
+  document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+  if (PORTRAIT) document.getElementById('stage').classList.add('p');
+  var $ = function (id) { return document.getElementById(id); };
+  $('pA').innerHTML = TXT.pA; $('pB').innerHTML = TXT.pB;
+  TXT.liste.forEach(function (r, i) {
+    var d = document.createElement('div'); d.className = 'regle' + (i === 2 ? ' neuve' : ''); d.id = 'rg' + i;
+    d.innerHTML = '<span>' + r[0] + '</span><em>' + r[1] + '</em>';
+    $('liste').appendChild(d);
+  });
+  $('vol').textContent = TXT.c1;
+
+  function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return c01((t - a) / (b - a)); }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function bez(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    return function (x) { var t = x; for (var i = 0; i < 8; i++) { var d = (3 * ax * t + 2 * bx) * t + cx, e = ((ax * t + bx) * t + cx) * t - x; if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } t = c01(t); return ((ay * t + by) * t + cy) * t; };
+  }
+  var A = bez(0.15, 1, 0.32, 1);
+  var S = bez(0.333, 0, 0.667, 0);
+  var D = bez(0.45, 0, 0.2, 1);
+  function ressort(x) { if (x <= 0) return 0; if (x >= 1) return 1; var z = 0.5, w = 10; var wd = w * Math.sqrt(1 - z * z); var e = Math.exp(-z * w * x); return 1 - e * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x)); }
+  function montre(el, e, s, dy) { el.style.opacity = (e * (1 - s)).toFixed(3); el.style.transform = 'translateY(' + (((1 - e) * dy) - s * dy).toFixed(1) + 'px)'; }
+  function ecrire(el, txt, a, b, t, curseur) {
+    var n = Math.round(seg(t, a, b) * txt.length);
+    el.innerHTML = txt.slice(0, n).replace(/&/g, '&amp;').replace(/</g, '&lt;') + (curseur && t > a - 0.3 && t < b + 0.4 ? '<span class="curseur-texte"></span>' : '');
+  }
+  /* La position d'un élément dans la scène, sans les transformations (mesurée hors animation). */
+  function position(el) { var x = 0, y = 0; while (el && el.id !== 'stage') { x += el.offsetLeft; y += el.offsetTop; el = el.offsetParent; } return [x, y]; }
+
+  var TITRES = [[0.3, 6.6], [7.0, 12.6], [13.0, 19.3]];
+  function titres(t) {
+    TITRES.forEach(function (p, i) {
+      $('ta' + i).querySelectorAll('.ln').forEach(function (ln, j) {
+        var e = A(seg(t, p[0] + j * 0.13, p[0] + j * 0.13 + 0.95));
+        var s = S(seg(t, p[1] + j * 0.06, p[1] + j * 0.06 + 0.4));
+        ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+      });
+    });
+  }
+  var I_REGLE = TXT.p2.indexOf(TXT.p2regle);
+  var T2 = [13.8, 17.2];                                         // l'article du mois suivant s'écrit
+  var T_REGLE = lerp(T2[0], T2[1], I_REGLE / TXT.p2.length);     // le moment où la règle s'applique
+
+  window.render = function (t) {
+    titres(t);
+    var fin = S(seg(t, 19.3, 19.95)), fond = 1 - fin;
+    montre($('hub'), A(seg(t, 0.4, 1.1)), fin, 50);
+    montre($('regles'), A(seg(t, 0.6, 1.3)), fin, 50);
+
+    // Acte 1 : sélection, commentaire, réponse, correction.
+    var v1 = 1 - S(seg(t, 12.7, 13.1));
+    $('v1').style.opacity = v1;
+    $('hlA').style.transform = 'scaleX(' + A(seg(t, 1.3, 2.3)).toFixed(3) + ')';
+    var corrige = A(seg(t, 6.0, 6.6));
+    $('pA').style.opacity = 1 - corrige; $('pB').style.opacity = corrige;
+    montre($('c1'), A(seg(t, 2.5, 3.0)), 0, 14);
+    ecrire($('c1t'), TXT.c1, 2.9, 4.5, t, true);
+    montre($('c2'), A(seg(t, 4.8, 5.3)), 0, 14);
+    ecrire($('c2t'), TXT.c2, 5.1, 6.1, t, true);
+    var rs = ressort(seg(t, 6.4, 6.9));
+    $('r1').style.opacity = Math.min(1, rs * 2); $('r1').style.transform = 'scale(' + rs.toFixed(3) + ')';
+    $('st1').textContent = t >= 6.4 ? 'Approved' : 'In review';
+    $('st1').style.background = t >= 6.4 ? '#e8f6ee' : '#e6f0fa'; $('st1').style.color = t >= 6.4 ? '#127a4a' : '#1D71B8';
+
+    // Acte 2 : la remarque quitte le fil et rejoint les règles.
+    [0, 1].forEach(function (i) { montre($('rg' + i), A(seg(t, 0.9 + i * 0.15, 1.5 + i * 0.15)), 0, 10); });
+    var rg2 = $('rg2'), arrive = A(seg(t, 8.4, 8.9));
+    rg2.style.opacity = arrive;
+    var vol = $('vol'), k = D(seg(t, 7.4, 8.6));
+    var de = position($('c1t')), vers = position(rg2.querySelector('span'));
+    var lDe = $('c1t').offsetWidth + 28, lVers = rg2.querySelector('span').offsetWidth + 28;
+    if (t >= 7.3 && t < 8.75) {
+      vol.style.width = lerp(lDe, lVers, k) + 'px';
+      vol.style.opacity = 1 - seg(t, 8.5, 8.75);
+      vol.style.transform = 'translate(' + lerp(de[0] - 14, vers[0] - 14, k).toFixed(1) + 'px,' + lerp(de[1] - 12, vers[1] - 12, k).toFixed(1) + 'px) scale(' + (1 + 0.08 * Math.sin(Math.PI * k)).toFixed(3) + ')';
+      vol.style.background = k > 0.6 ? '#fbf1d9' : '#fff';
+    } else vol.style.opacity = 0;
+    // La règle neuve brille à son arrivée, puis quand elle s'applique au mois suivant.
+    var brille = Math.max(Math.sin(Math.PI * seg(t, 8.6, 10.2)), Math.sin(Math.PI * seg(t, T_REGLE, T_REGLE + 1.6)));
+    rg2.style.background = 'rgba(232,189,98,' + (0.16 * brille).toFixed(3) + ')';
+    rg2.style.boxShadow = 'inset 0 0 0 ' + (2 * brille).toFixed(2) + 'px rgba(232,189,98,.7)';
+    rg2.style.borderRadius = '12px';
+    rg2.style.paddingLeft = rg2.style.paddingRight = (PORTRAIT ? 0 : 0) + 'px';
+
+    // Acte 3 : l'article suivant s'écrit, la règle s'applique sans commentaire.
+    $('v2').style.opacity = A(seg(t, 13.1, 13.6));
+    ecrire($('p2'), TXT.p2, T2[0], T2[1], t, true);
+    if (t > T_REGLE + 0.3) { var hl = A(seg(t, T_REGLE + 0.3, T_REGLE + 0.8)); var q = $('p2').innerHTML; $('p2').innerHTML = q.replace(TXT.p2regle, '<span style="background:rgba(232,189,98,' + (0.45 * hl).toFixed(3) + ');border-radius:4px;padding:0 2px">' + TXT.p2regle + '</span>'); }
+    var ap = ressort(seg(t, T_REGLE + 0.3, T_REGLE + 0.9));
+    $('applique').style.opacity = Math.min(1, ap * 2) * fond;
+    $('applique').style.transform = 'scale(' + ap.toFixed(3) + ')';
+    $('applique').style.transformOrigin = '0 50%';
+  };
+
+  window.PRET = Promise.all([
+    document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"'), document.fonts.load('500 20px "Inter"')
+  ]);
+  window.render(0);
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

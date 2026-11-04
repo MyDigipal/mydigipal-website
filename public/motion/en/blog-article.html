@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Un article construit pas à pas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@500;600&display=block" rel="stylesheet">
+<style>
+/* Page « Blog et contenu IA » (04/11/2026). Un article d'exemple sur l'AI Act, construit en trois
+   actes : 1. le dossier de faits, chaque chiffre rapproché de sa source ; 2. le guide qui s'écrit bloc
+   par bloc pendant que le compteur de mots entre dans la zone visée (1 400 à 1 900) ; 3. le SEO dans
+   l'article : le résultat Google avec ses longueurs comptées, puis les liens vers le site, testés un à
+   un. Les trois faits sont exacts et vérifiables (règlement européen 2024/1689) ; le site est générique. render(t) est pur. */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(900px 700px at 85% -10%,rgba(29,113,184,.30),rgba(8,19,31,0) 65%),radial-gradient(700px 600px at 0% 110%,rgba(232,189,98,.08),rgba(8,19,31,0) 60%)}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(140%);white-space:nowrap}
+#titre{position:absolute;left:72px;top:64px;z-index:9}
+.titre-acte{position:absolute;left:0;top:0}
+#titre .k .ln{font-size:30px;font-weight:700;color:#7DB8EE;letter-spacing:.01em;margin-bottom:12px}
+#titre .t .ln{font-size:60px;font-weight:800;letter-spacing:-.035em;line-height:1.04}
+#titre .t .ln .o{color:#e8bd62}
+.abs{position:absolute;left:0;top:0}
+.carte{position:absolute;border-radius:26px;background:#f4f7fa;color:#0b1b2b;box-shadow:0 70px 140px -60px rgba(0,0,0,.95);overflow:hidden;font-family:Inter,sans-serif;box-sizing:border-box}
+.entete{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid #dde5ed;font-size:18px;font-weight:600;color:#5b6b7c;white-space:nowrap}
+.entete b{color:#0b1b2b;font-weight:700}
+
+/* Acte 1 : le dossier de faits. */
+#dossier{left:90px;top:320px;width:900px}
+.fait{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:start;padding:22px 24px;border-bottom:1px solid #e3e9ef}
+.fait:last-child{border-bottom:0}
+.fait span{font-size:24px;font-weight:600;line-height:1.35;color:#0b1b2b}
+.fait i{font-style:normal;display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:#e8f6ee;color:#127a4a;font-size:18px;font-weight:600;white-space:nowrap}
+.fait i svg{width:16px;height:12px}
+
+/* Acte 2 : le guide et le compteur de mots. */
+#page{left:90px;top:290px;width:540px;height:750px;padding:26px 28px}
+.bloc{position:relative;padding:12px 0;border-bottom:1px dashed #dbe3ea}
+.bloc:last-child{border-bottom:0}
+.bloc b{display:block;font-size:18px;font-weight:700;color:#0b1b2b;white-space:nowrap}
+.bloc.titre b{font-family:'Plus Jakarta Sans';font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1.12;white-space:normal}
+.bloc.sign b{font-size:16px;font-weight:600;color:#5b6b7c}
+.sk{height:8px;border-radius:4px;background:#e1e8ef;margin-top:8px}
+.sk.h2{height:11px;background:#c9d9ea}
+.grille{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:8px}
+.grille i{height:12px;background:#e1e8ef;border-radius:2px}
+.grille i:nth-child(-n+4){background:#c9d9ea}
+#mots{left:680px;top:320px;width:330px}
+#mots .n{font-size:84px;font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+#mots .u{font-family:Inter,sans-serif;font-size:24px;font-weight:600;color:#7DB8EE;margin-top:8px}
+#jauge{position:relative;margin-top:34px;height:14px;border-radius:99px;background:#1f3a55}
+#zone{position:absolute;top:-6px;height:26px;border-radius:8px;background:rgba(232,189,98,.22);box-shadow:inset 0 0 0 2px rgba(232,189,98,.6)}
+#rempli{position:absolute;left:0;top:0;height:14px;border-radius:99px;background:#1D71B8;transform-origin:0 50%;width:100%}
+#zoneTx{font-family:Inter,sans-serif;font-size:20px;font-weight:600;color:#e8bd62;margin-top:22px}
+#ia{font-family:Inter,sans-serif;font-size:20px;font-weight:600;color:#c9d6e2;margin-top:44px;line-height:1.4;padding-top:24px;border-top:1px solid #1f3a55}
+
+/* Acte 3 : le résultat Google et les liens. */
+#serp{left:90px;top:310px;width:900px;padding:24px 28px;border-radius:22px}
+#serp .u{font-size:17px;color:#4d5156;white-space:nowrap}
+#serp .tt{font-size:30px;color:#1a0dab;margin-top:6px;line-height:1.25;font-family:Arial,sans-serif}
+#serp .d{font-size:20px;color:#4d5156;margin-top:6px;line-height:1.4;font-family:Arial,sans-serif}
+#compteurs{left:90px;top:560px;display:flex;gap:12px;flex-wrap:wrap;width:900px}
+.cpt{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:rgba(18,122,74,.18);color:#7fd6a8;font-family:Inter,sans-serif;font-size:19px;font-weight:600;white-space:nowrap}
+.cpt svg{width:16px;height:12px}
+#liens{left:90px;top:636px;width:900px;padding:8px 0}
+#liensT{padding:14px 24px 6px;font-family:'Plus Jakarta Sans';font-size:22px;font-weight:800;color:#0b1b2b}
+.lien{display:flex;justify-content:space-between;align-items:center;padding:0 24px;height:46px;font-size:20px;font-weight:600;color:#1D71B8;white-space:nowrap}
+.lien+.lien{border-top:1px solid #e3e9ef}
+.lien i{font-style:normal;display:flex;align-items:center;gap:8px;padding:4px 12px;border-radius:999px;font-size:17px;font-weight:600;background:#e8eef4;color:#5b6b7c}
+.lien i.ok{background:#e8f6ee;color:#127a4a}
+.lien i svg{width:15px;height:11px}
+
+/* Version verticale (?p=1, 1080 x 1350). */
+#stage.p{height:1350px}
+#stage.p #titre .k .ln{font-size:40px;margin-bottom:14px}
+#stage.p #titre .t .ln{font-size:72px}
+#stage.p .entete{font-size:30px;padding:18px 26px}
+#stage.p #dossier{left:40px;top:330px;width:1000px}
+#stage.p .fait{grid-template-columns:1fr;gap:14px;padding:26px 28px}
+#stage.p .fait span{font-size:34px}
+#stage.p .fait i{font-size:30px;justify-self:start}
+#stage.p .fait i svg{width:22px;height:16px}
+#stage.p #page{left:40px;top:320px;width:1000px;height:740px;padding:22px 30px}
+#stage.p .bloc{padding:11px 0}
+#stage.p .bloc b{font-size:31px}
+#stage.p .bloc.titre b{font-size:40px}
+#stage.p .bloc.sign b{font-size:30px}
+#stage.p .bloc .sk:not(.h2){display:none}
+#stage.p .bloc .sk.h2+.sk.h2{display:none}
+#stage.p #mots{left:40px;top:1090px;width:1000px}
+#stage.p #mots .n{font-size:84px;display:inline-block}
+#stage.p #mots .u{display:inline-block;font-size:34px;margin-left:16px}
+#stage.p #jauge{margin-top:24px}
+#stage.p #zoneTx{font-size:30px;margin-top:20px}
+#stage.p #ia{display:none}
+#stage.p #serp{left:40px;top:330px;width:1000px;padding:26px 30px}
+#stage.p #serp .u{font-size:26px}
+#stage.p #serp .tt{font-size:42px}
+#stage.p #serp .d{font-size:31px}
+#stage.p #compteurs{left:40px;top:760px;width:1000px}
+#stage.p .cpt{font-size:30px;padding:8px 18px}
+#stage.p .cpt svg{width:22px;height:16px}
+#stage.p #liens{left:40px;top:890px;width:1000px}
+#stage.p #liensT{font-size:32px;padding:14px 28px 4px}
+#stage.p .lien{height:52px;font-size:31px;padding:0 28px}
+#stage.p .lien i{font-size:28px}
+#stage.p .lien i svg{width:20px;height:15px}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="titre">
+    <div class="titre-acte" id="ta0"><div class="mask k"><span class="ln" data-txt="k0"></span></div><div class="mask t"><span class="ln" data-txt="t0a"></span></div><div class="mask t"><span class="ln" data-txt="t0b"></span></div></div>
+    <div class="titre-acte" id="ta1"><div class="mask k"><span class="ln" data-txt="k1"></span></div><div class="mask t"><span class="ln" data-txt="t1a"></span></div><div class="mask t"><span class="ln" data-txt="t1b"></span></div></div>
+    <div class="titre-acte" id="ta2"><div class="mask k"><span class="ln" data-txt="k2"></span></div><div class="mask t"><span class="ln" data-txt="t2a"></span></div><div class="mask t"><span class="ln" data-txt="t2b"></span></div></div>
+  </div>
+
+  <div class="carte" id="dossier"><div class="entete"><span><b data-txt="dossierT"></b></span><span data-txt="dossierS"></span></div><div id="faits"></div></div>
+
+  <div class="carte" id="page"><div id="blocs"></div></div>
+  <div class="abs" id="mots"><div class="n" id="motsN">0</div><div class="u" data-txt="mots"></div><div id="jauge"><div id="zone"></div><div id="rempli"></div></div><div id="zoneTx" data-txt="zone"></div><div id="ia" data-txt="ia"></div></div>
+
+  <div class="carte" id="serp"><div class="u" data-txt="url"></div><div class="tt" data-txt="stitre"></div><div class="d" data-txt="sdesc"></div></div>
+  <div class="abs" id="compteurs"></div>
+  <div class="carte" id="liens"><div id="liensT" data-txt="liensT"></div><div id="liensL"></div></div>
+</div>
+<div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
+
+<script>
+var PORTRAIT = /[?&]p=1/.test(location.search);
+window.STAGE = { w: 1080, h: PORTRAIT ? 1350 : 1080 };
+window.DUREE = 20;
+
+(function () {
+  'use strict';
+  var EN = /\/en\//.test(location.pathname) || /[?&]lang=en/.test(location.search);
+  var N = ' ';
+  var TXT = EN ? {
+    k0: '1 · Facts first', t0a: 'Every number', t0b: '<span class="o">has a source</span>.',
+    k1: '2 · The writing', t1a: 'A full guide,', t1b: '<span class="o">not a quick post</span>.',
+    k2: '3 · The SEO', t2a: 'Built in,', t2b: '<span class="o">not added later</span>.',
+    dossierT: 'Fact file', dossierS: 'AI Act article',
+    faits: [['The AI Act entered into force on 1 August 2024.', 'Official Journal of the EU'],
+            ['Its bans on certain AI uses have applied since 2 February 2025.', 'European Commission'],
+            ['Most of its other obligations apply from 2 August 2026.', 'Source cited']],
+    blocs: [['titre', 'The AI Act: what the law changes for a small business'], ['sign', 'Signed, dated, updated'], ['Key points in 3 lines', 3], ['Clickable contents', 1],
+            ['Six parts that answer', 'h2'], ['A comparison table', 'grille'], ['A checklist', 2], ['FAQ: real questions', 2], ['Official sources', 1]],
+    mots: 'words', zone: 'Target: 1,400 to 1,900 words', ia: 'Written with our AI tools from the fact file, then read by the team.',
+    url: 'www.your-site.com › blog › ai-act-small-business', stitre: 'The AI Act: what changes for a small business',
+    sdesc: 'The AI Act in plain words: the key dates, the AI uses now banned, what your business should check today, and the official sources.',
+    cptT: 'Title', cptD: 'Description', car: ' characters', donnees: 'Article and FAQ data',
+    liensT: '7 links to the site, all tested', test: 'Tested', attente: 'Checking',
+    liens: ['The service page', 'The quote request', 'A case study', 'The training page', 'A related article', 'The FAQ', 'The contact page']
+  } : {
+    k0: '1 · Les faits d’abord', t0a: 'Chaque chiffre', t0b: '<span class="o">a sa source</span>.',
+    k1: '2 · La rédaction', t1a: 'Un guide complet,', t1b: '<span class="o">pas un billet</span>.',
+    k2: '3 · Le SEO', t2a: 'Construit dedans,', t2b: '<span class="o">pas ajouté après</span>.',
+    dossierT: 'Dossier de faits', dossierS: 'Article AI Act',
+    faits: [['L’AI Act est entré en vigueur le 1er août 2024.', 'Journal officiel de l’UE'],
+            ['Ses interdictions de certains usages de l’IA s’appliquent depuis le 2 février 2025.', 'Commission européenne'],
+            ['La plupart de ses autres obligations s’appliquent à partir du 2 août 2026.', 'Source citée']],
+    blocs: [['titre', 'AI Act : ce que la loi change pour une PME'], ['sign', 'Signé, daté, mis à jour'], ['L’essentiel en 3 points', 3], ['Sommaire cliquable', 1],
+            ['Six parties qui répondent', 'h2'], ['Un tableau qui compare', 'grille'], ['Une checklist', 2], ['FAQ : les vraies questions', 2], ['Les sources officielles', 1]],
+    mots: 'mots', zone: 'Visé : 1' + N + '400 à 1' + N + '900 mots', ia: 'Écrit avec nos outils d’IA à partir du dossier de faits, puis relu par l’équipe.',
+    url: 'www.votre-site.fr › blog › ai-act-pme', stitre: 'AI Act : ce que la loi change pour une PME',
+    sdesc: 'L’AI Act sans jargon : les dates à retenir, les usages de l’IA interdits, ce que votre entreprise doit vérifier dès maintenant et les sources officielles.',
+    cptT: 'Titre', cptD: 'Description', car: ' caractères', donnees: 'Données Article et FAQ',
+    liensT: '7 liens vers le site, tous testés', test: 'Testé', attente: 'À tester',
+    liens: ['La page du service', 'La demande de devis', 'Une étude de cas', 'La page formation', 'Un article voisin', 'La FAQ', 'La page contact']
+  };
+  if (EN) document.documentElement.lang = 'en';
+  document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+  if (PORTRAIT) document.getElementById('stage').classList.add('p');
+  var $ = function (id) { return document.getElementById(id); };
+  var COCHE = '<svg viewBox="0 0 16 12"><path d="M1.5 6.5l4 4 9-9" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  TXT.faits.forEach(function (f, i) {
+    var d = document.createElement('div'); d.className = 'fait'; d.id = 'fa' + i;
+    d.innerHTML = '<span>' + f[0] + '</span><i id="fc' + i + '">' + COCHE + f[1] + '</i>';
+    $('faits').appendChild(d);
+  });
+  TXT.blocs.forEach(function (b, i) {
+    var d = document.createElement('div'); d.className = 'bloc'; d.id = 'bl' + i;
+    if (b[0] === 'titre') { d.classList.add('titre'); d.innerHTML = '<b>' + b[1] + '</b>'; }
+    else if (b[0] === 'sign') { d.classList.add('sign'); d.innerHTML = '<b>' + b[1] + '</b>'; }
+    else {
+      var h = '<b>' + b[0] + '</b>';
+      if (b[1] === 'h2') h += '<div class="sk h2" style="width:78%"></div><div class="sk h2" style="width:64%"></div>';
+      else if (b[1] === 'grille') h += '<div class="grille">' + new Array(13).join('<i></i>') + '</div>';
+      else for (var k = 0; k < b[1]; k++) h += '<div class="sk" style="width:' + [86, 70, 58][k] + '%"></div>';
+      d.innerHTML = h;
+    }
+    $('blocs').appendChild(d);
+  });
+  var LT = TXT.stitre.length, LD = TXT.sdesc.length;
+  $('compteurs').innerHTML = '<div class="cpt" id="cp0">' + COCHE + '<span>' + TXT.cptT + ' · ' + LT + TXT.car + '</span></div>' +
+    '<div class="cpt" id="cp1">' + COCHE + '<span>' + TXT.cptD + ' · ' + LD + TXT.car + '</span></div>' +
+    '<div class="cpt" id="cp2">' + COCHE + '<span>' + TXT.donnees + '</span></div>';
+  TXT.liens.forEach(function (l, i) {
+    var d = document.createElement('div'); d.className = 'lien'; d.id = 'li' + i;
+    d.innerHTML = '<span>' + l + '</span><i id="lt' + i + '">' + COCHE + '<span></span></i>';
+    $('liensL').appendChild(d);
+  });
+  // La zone visée sur la jauge (échelle de 0 à 2 200 mots).
+  var MAX = 2200, CIBLE = 1650;
+  $('zone').style.left = (1400 / MAX * 100) + '%'; $('zone').style.width = (500 / MAX * 100) + '%';
+
+  function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return c01((t - a) / (b - a)); }
+  function bez(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    return function (x) { var t = x; for (var i = 0; i < 8; i++) { var d = (3 * ax * t + 2 * bx) * t + cx, e = ((ax * t + bx) * t + cx) * t - x; if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } t = c01(t); return ((ay * t + by) * t + cy) * t; };
+  }
+  var A = bez(0.15, 1, 0.32, 1);
+  var S = bez(0.333, 0, 0.667, 0);
+  function ressort(x) { if (x <= 0) return 0; if (x >= 1) return 1; var z = 0.5, w = 10; var wd = w * Math.sqrt(1 - z * z); var e = Math.exp(-z * w * x); return 1 - e * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x)); }
+  function montre(el, e, s, dy) { el.style.opacity = (e * (1 - s)).toFixed(3); el.style.transform = 'translateY(' + (((1 - e) * dy) - s * dy).toFixed(1) + 'px)'; }
+  function nombre(n) { var s = String(Math.round(n)); return s.length > 3 ? s.slice(0, -3) + (EN ? ',' : N) + s.slice(-3) : s; }
+
+  var TITRES = [[0.3, 6.2], [6.6, 12.9], [13.3, 19.3]];
+  function titres(t) {
+    TITRES.forEach(function (p, i) {
+      $('ta' + i).querySelectorAll('.ln').forEach(function (ln, j) {
+        var e = A(seg(t, p[0] + j * 0.13, p[0] + j * 0.13 + 0.95));
+        var s = S(seg(t, p[1] + j * 0.06, p[1] + j * 0.06 + 0.4));
+        ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+      });
+    });
+  }
+
+  window.render = function (t) {
+    titres(t);
+    var fin = S(seg(t, 19.3, 19.95));
+
+    // Acte 1 : les faits s'écrivent, puis chacun reçoit sa source.
+    montre($('dossier'), A(seg(t, 0.5, 1.2)), S(seg(t, 6.2, 6.6)), 40);
+    TXT.faits.forEach(function (f, i) {
+      var a = 1.2 + i * 1.5;
+      montre($('fa' + i), A(seg(t, a, a + 0.5)), 0, 14);
+      var c = ressort(seg(t, a + 0.75, a + 1.25));
+      $('fc' + i).style.opacity = Math.min(1, c * 2); $('fc' + i).style.transform = 'scale(' + c.toFixed(3) + ')';
+    });
+
+    // Acte 2 : le guide se construit bloc par bloc, le compteur entre dans la zone.
+    montre($('page'), A(seg(t, 6.6, 7.3)), S(seg(t, 12.9, 13.3)), 40);
+    montre($('mots'), A(seg(t, 6.8, 7.5)), S(seg(t, 12.9, 13.3)), 30);
+    TXT.blocs.forEach(function (b, i) { var a = 7.1 + i * 0.55; montre($('bl' + i), A(seg(t, a, a + 0.5)), 0, 12); });
+    var m = CIBLE * A(seg(t, 7.2, 12.2));
+    $('motsN').textContent = nombre(m);
+    $('rempli').style.transform = 'scaleX(' + (m / MAX).toFixed(4) + ')';
+    var dans = m >= 1400;
+    $('motsN').style.color = dans ? '#e8bd62' : '#f4f7fa';
+    $('zone').style.background = dans ? 'rgba(232,189,98,.42)' : 'rgba(232,189,98,.22)';
+
+    // Acte 3 : le résultat Google, ses longueurs, puis les liens testés un à un.
+    var sortie3 = fin;
+    montre($('serp'), A(seg(t, 13.4, 14.1)), sortie3, 40);
+    [0, 1, 2].forEach(function (i) { var c = ressort(seg(t, 14.4 + i * 0.4, 14.9 + i * 0.4)); var el = $('cp' + i); el.style.opacity = Math.min(1, c * 2) * (1 - sortie3); el.style.transform = 'scale(' + c.toFixed(3) + ')'; });
+    montre($('liens'), A(seg(t, 15.4, 16.0)), sortie3, 30);
+    TXT.liens.forEach(function (l, i) {
+      var a = 16.0 + i * 0.36, ok = t >= a;
+      var el = $('lt' + i); el.classList.toggle('ok', ok);
+      el.querySelector('svg').style.display = ok ? 'block' : 'none';
+      el.querySelector('span').textContent = ok ? TXT.test : TXT.attente;
+      var p = 1 + 0.18 * Math.sin(Math.PI * seg(t, a, a + 0.3));
+      el.style.transform = 'scale(' + p.toFixed(3) + ')';
+    });
+    $('titre').style.opacity = 1;
+  };
+
+  window.PRET = Promise.all([
+    document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"')
+  ]);
+  window.render(0);
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

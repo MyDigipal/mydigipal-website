@@ -1,0 +1,86 @@
+---
+/**
+ * Page AI Content (04/11/2026) : chaque article arrive avec sa vidéo. Les quatre vidéos sont
+ * celles des articles de Servion de novembre 2026 (en anglais, musique seule), réencodées pour le
+ * web sans piste son dans `public/videos/contenu/` (affiche à la neuvième seconde). Servion peut
+ * se montrer (décision de Paul pour Creative design) ; rien d'un autre client sur cette page.
+ * Comme sur Creative design : elles ne jouent qu'à l'écran, muettes, jamais sous mouvement réduit.
+ */
+import type { Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+
+const T = {
+  fr: {
+    titre: 'Chaque article arrive avec sa vidéo',
+    chapo: 'Une vidéo de 30 à 40 secondes qui résume l’article, à vos couleurs, montée avec nos outils d’IA. Elle se place en haut de l’article et repart telle quelle sur vos réseaux. La vignette est comprise.',
+    videos: [
+      { nom: 'servion-banking-ai', texte: 'Servion · L’IA agentique dans la banque' },
+      { nom: 'servion-journey-orchestration', texte: 'Servion · L’orchestration des parcours clients' },
+      { nom: 'servion-voice-ai-pricing', texte: 'Servion · Le prix de l’IA vocale' },
+      { nom: 'servion-zendesk-amazon-connect', texte: 'Servion · Zendesk sur Amazon Connect' },
+    ],
+    note: 'Des vidéos d’articles en ligne pour Servion, en anglais. Quand le texte change à la relecture, la vidéo est refaite pour rester fidèle à l’article publié.',
+  },
+  en: {
+    titre: 'Every article comes with its video',
+    chapo: 'A 30 to 40-second video that sums up the article, in your colours, made with our AI tools. It sits at the top of the article and goes out as is on your social channels. The thumbnail is included.',
+    videos: [
+      { nom: 'servion-banking-ai', texte: 'Servion · Agentic AI in banking' },
+      { nom: 'servion-journey-orchestration', texte: 'Servion · Customer journey orchestration' },
+      { nom: 'servion-voice-ai-pricing', texte: 'Servion · Voice AI pricing' },
+      { nom: 'servion-zendesk-amazon-connect', texte: 'Servion · Zendesk on Amazon Connect' },
+    ],
+    note: 'Article videos live for Servion. When the text changes at review, the video is remade to match the published article.',
+  },
+}[lang];
+---
+
+<section class="section-encre section-monte va">
+  <div class="container-custom">
+    <header class="va-tete">
+      <h2 class="titre-moyen">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+    </header>
+    <div class="va-videos">
+      {T.videos.map((v, i) => (
+        <figure class:list={['va-video', { 'va-video-grande': i === 0 }]}>
+          <video src={`/videos/contenu/${v.nom}.mp4`} poster={`/videos/contenu/${v.nom}.webp`} muted loop playsinline preload="none" data-va-video aria-label={v.texte}></video>
+          <figcaption>{v.texte}</figcaption>
+        </figure>
+      ))}
+    </div>
+    <p class="va-note">{T.note}</p>
+  </div>
+</section>
+
+<script>
+  // Les vidéos ne jouent qu'à l'écran ; jamais sous mouvement réduit ni avec ?fige=1.
+  const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]fige=1/.test(window.location.search);
+  const videos = document.querySelectorAll<HTMLVideoElement>('[data-va-video]');
+  if (!reduit && 'IntersectionObserver' in window) {
+    const obs = new IntersectionObserver((entrees) => {
+      entrees.forEach((e) => {
+        const v = e.target as HTMLVideoElement;
+        if (e.isIntersecting) v.play().catch(() => {});
+        else v.pause();
+      });
+    }, { threshold: 0.4 });
+    videos.forEach((v) => obs.observe(v));
+  }
+</script>
+
+<style>
+  .va { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .va { padding: 128px 0 136px; } }
+  .va-tete { display: grid; gap: 18px; max-width: 820px; margin-bottom: 44px; }
+  .va-videos { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  @media (min-width: 768px) { .va-videos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 18px; } .va-video-grande { grid-column: 1 / -1; } }
+  .va-video { margin: 0; display: grid; gap: 10px; align-content: start; }
+  .va-video video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 18px; background: #100F33; box-shadow: 0 30px 60px -36px rgb(0 0 0 / 0.8); }
+  .va-video figcaption { font-size: 14px; color: var(--texte-sombre-2); }
+  .va-note { margin: 28px 0 0; color: var(--texte-sombre-2); font-size: 15px; max-width: 70ch; }
+</style>

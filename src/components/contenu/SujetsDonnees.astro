@@ -1,0 +1,86 @@
+---
+/**
+ * Page AI Content (blog et contenu IA, 04/11/2026) : d'où viennent les sujets du mois.
+ * Quatre sources croisées par nos outils d'IA, des filtres, puis le choix du client dans le Hub.
+ * Visuel dominant : la scène `blog-sujets` du labo (exemple générique, des articles sur l'IA).
+ *
+ * La marque de la Search Console vient de `logos-outils.ts` ; Ahrefs n'a pas de marque libre :
+ * son nom seul, avec une icône neutre (même règle que `ui/Marque.astro`).
+ */
+import type { Language } from '@/i18n/config';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
+import Marque from '@/components/ui/Marque.astro';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+
+const T = {
+  fr: {
+    titre: 'Des sujets tirés des données, pas d’une intuition',
+    chapo: 'Chaque mois, nos outils d’IA croisent quatre sources. Nous écartons ce qui ne sert pas votre site, et vous gardez vos quatre sujets d’un clic dans le Hub. Les autres restent en réserve.',
+    sources: [
+      { nom: 'Ahrefs', marque: '', icone: 'tendance', texte: 'les recherches qui montent dans votre secteur, avec leur volume' },
+      { nom: 'Search Console', marque: 'Search Console', icone: '', texte: 'les recherches où votre site apparaît sans être assez cliqué' },
+      { nom: 'L’actualité', marque: '', icone: 'journal', texte: 'nouvelles règles, annonces et saisons de votre marché' },
+      { nom: 'Les réponses des IA', marque: '', icone: 'etincelle', texte: 'ce que ChatGPT et les résumés de Google répondent, et ce qu’ils oublient' },
+    ],
+    scene: 'Comment naissent les sujets du mois',
+  },
+  en: {
+    titre: 'Topics drawn from data, not from a hunch',
+    chapo: 'Every month, our AI tools cross four sources. We drop what does not serve your site, and you keep your four topics in one click in the Hub. The rest are saved for later.',
+    sources: [
+      { nom: 'Ahrefs', marque: '', icone: 'tendance', texte: 'the searches rising in your sector, with their volume' },
+      { nom: 'Search Console', marque: 'Search Console', icone: '', texte: 'the searches where your site shows up but is not clicked enough' },
+      { nom: 'The news', marque: '', icone: 'journal', texte: 'new rules, announcements and the seasons of your market' },
+      { nom: 'AI answers', marque: '', icone: 'etincelle', texte: 'what ChatGPT and Google’s AI summaries say, and what they miss' },
+    ],
+    scene: 'How the topics of the month are found',
+  },
+}[lang];
+
+const ICONES: Record<string, string> = {
+  tendance: '<path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>',
+  journal: '<path d="M4 4h12v16H6a2 2 0 0 1-2-2Z"/><path d="M16 8h4v10a2 2 0 0 1-2 2"/><path d="M8 8h4M8 12h4M8 16h4"/>',
+  etincelle: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8Z"/>',
+};
+---
+
+<section class="section-encre section-monte sd">
+  <div class="container-custom sd-grille">
+    <div class="sd-texte">
+      <h2 class="titre-moyen">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+      <ul class="sd-sources">
+        {T.sources.map((s) => (
+          <li>
+            <span class="sd-glyphe" aria-hidden="true">
+              {s.marque ? <Marque nom={s.marque} taille={20} />
+                : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={ICONES[s.icone]} />}
+            </span>
+            <span><strong>{s.nom}</strong> {s.texte}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="sd-scene">
+      <SceneLabo lang={lang} nom="blog-sujets" format="carre" repos={18.6} controles portraitMobile titre={T.scene} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .sd { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .sd { padding: 128px 0 136px; } }
+  .sd-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: center; }
+  @media (min-width: 1024px) { .sd-grille { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 64px; } }
+  .sd-texte { display: grid; gap: 20px; }
+  .sd-sources { list-style: none; margin: 12px 0 0; padding: 0; display: grid; }
+  .sd-sources li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; align-items: start; padding: 16px 0; border-top: 1px solid var(--filet-sombre); color: var(--texte-sombre-2); font-size: 16px; line-height: 1.5; }
+  .sd-sources li:last-child { border-bottom: 1px solid var(--filet-sombre); }
+  .sd-sources strong { color: #fff; font-weight: 700; }
+  .sd-glyphe { width: 40px; height: 40px; border-radius: 999px; background: rgb(255 255 255 / 0.92); color: var(--color-marque); display: grid; place-items: center; }
+  .sd-glyphe svg { width: 20px; height: 20px; }
+</style>

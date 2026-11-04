@@ -9,66 +9,65 @@ export const aiContentServices: ServiceItem[] = [
     id: 'ai-content-blog',
     title: 'A. Articles de Blog SEO',
     titleEn: 'A. SEO Blog Articles',
-    description: 'Articles optimisés SEO de 1500-3000 mots, produits avec notre système IA et validés par un expert humain.',
-    descriptionEn: 'SEO-optimized articles of 1500-3000 words, produced with our AI system and validated by a human expert.',
+    description: 'Des guides de 1 400 à 1 900 mots avec leur vidéo, écrits avec nos outils d\'IA et vérifiés par l\'équipe, de la recherche des sujets à la publication.',
+    descriptionEn: '1,400 to 1,900-word guides with their own video, written with our AI tools and checked by the team, from topic research to publishing.',
     icon: '📝',
     hasAddon: true,
+    // Aligné le 04/11/2026 sur la page AI Content (le circuit du mois de notre offre blog).
     detailedInfo: {
-      title: 'Articles SEO - C\'est quoi exactement ?',
+      title: 'Les articles de blog, c\'est quoi exactement ?',
       content: {
-        intro: 'Du contenu de qualité produit à l\'échelle grâce à notre pipeline IA propriétaire, avec validation humaine systématique.',
+        intro: 'Le circuit complet du mois : vous intervenez deux fois, pour choisir les sujets et pour relire.',
         sections: [
           {
-            title: 'Notre process en 4 étapes',
+            title: 'Le circuit du mois',
             items: [
-              '1. Brand Voice Training : analyse de 10+ contenus existants pour capturer votre ton',
-              '2. Stratégie data-driven : intégration Ahrefs + Search Console pour identifier les opportunités',
-              '3. Génération IA : articles structurés (H1-H6, meta, FAQ, liens internes)',
-              '4. Validation humaine : relecture, fact-checking, optimisation finale'
+              'Les sujets : Ahrefs, la Search Console, l\'actualité et les réponses des IA, puis votre choix dans le Hub',
+              'La préparation : les premiers résultats de Google et un dossier de faits sourcés',
+              'La rédaction : un guide de 1 400 à 1 900 mots, avec tableau, FAQ et sources',
+              'Notre relecture, puis la vôtre dans le Hub ; chaque remarque devient une règle',
+              'La publication, puis le suivi des positions'
             ]
           },
           {
             title: 'Chaque article inclut',
             items: [
-              'Meta title (max 60 caractères) + meta description (max 155)',
-              'Structure H1 + 4-7 H2 optimisés',
-              'Mot-clé principal + ~5 mots-clés secondaires',
-              '8-12 liens internes',
-              'Section FAQ pour les featured snippets',
-              'Densité de mots-clés naturelle (1-2%)'
+              'Le titre et la description pour Google, au caractère près',
+              'Les données structurées (article et FAQ)',
+              '6 à 8 liens vers vos pages, tous testés',
+              'Une vidéo de 30 à 40 secondes et une vignette'
             ]
           }
         ],
-        conclusion: 'Formé sur VOTRE voix de marque. Pas du ChatGPT générique.'
+        conclusion: 'Nos outils d\'IA vont vite, notre équipe vérifie chaque fait et chaque lien.'
       }
     },
     detailedInfoEn: {
-      title: 'SEO Articles - What exactly is it?',
+      title: 'Blog articles: what exactly is it?',
       content: {
-        intro: 'Quality content produced at scale through our proprietary AI pipeline, with systematic human validation.',
+        intro: 'The full monthly loop: you step in twice, to pick the topics and to review.',
         sections: [
           {
-            title: 'Our 4-step process',
+            title: 'Your month, end to end',
             items: [
-              '1. Brand Voice Training: analysis of 10+ existing pieces of content to capture your tone',
-              '2. Data-driven strategy: Ahrefs + Search Console integration to identify opportunities',
-              '3. AI generation: structured articles (H1-H6, meta, FAQ, internal links)',
-              '4. Human validation: proofreading, fact-checking, final optimization'
+              'Topics: Ahrefs, Search Console, the news and AI answers, then your pick in the Hub',
+              'Research: the top Google results and a file of sourced facts',
+              'Writing: a 1,400 to 1,900-word guide, with a table, an FAQ and sources',
+              'Our review, then yours in the Hub; every note becomes a rule',
+              'Publishing, then rank tracking'
             ]
           },
           {
             title: 'Each article includes',
             items: [
-              'Meta title (max 60 characters) + meta description (max 155)',
-              'H1 structure + 4-7 optimized H2',
-              'Primary keyword + ~5 secondary keywords',
-              '8-12 internal links',
-              'FAQ section for featured snippets',
-              'Natural keyword density (1-2%)'
+              'Title and description for Google, to the character',
+              'Structured data (article and FAQ)',
+              '6 to 8 links to your pages, all tested',
+              'A 30 to 40-second video and a thumbnail'
             ]
           }
         ],
-        conclusion: 'Trained on YOUR brand voice. Not generic ChatGPT.'
+        conclusion: 'Our AI tools move fast, our team checks every fact and every link.'
       }
     },
     levels: [
@@ -77,16 +76,16 @@ export const aiContentServices: ServiceItem[] = [
         nameEn: '4 articles',
         price: 500,
         features: [
-          '4 articles/mois (1500-2000 mots)',
-          'Optimisés SEO + LLMO',
-          'Brand voice training inclus',
-          'Livrés en document (Google Docs, Word)'
+          '4 articles/mois (1 400 à 1 900 mots)',
+          'Une vidéo et une vignette par article',
+          'Sujets, SEO et relecture dans le Hub',
+          'Publication et suivi des positions'
         ],
         featuresEn: [
-          '4 articles/month (1500-2000 words)',
-          'SEO + LLMO optimized',
-          'Brand voice training included',
-          'Delivered as document (Google Docs, Word)'
+          '4 articles/month (1,400 to 1,900 words)',
+          'A video and a thumbnail per article',
+          'Topics, SEO and review in the Hub',
+          'Publishing and rank tracking'
         ],
         recommended: 'Démarrage ou complément SEO',
         recommendedEn: 'Getting started or SEO complement'

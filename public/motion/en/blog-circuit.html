@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Le circuit du mois</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@500;600&display=block" rel="stylesheet">
+<style>
+/* Page « Blog et contenu IA » (04/11/2026), d'après notre façon de faire chez nos clients (générique).
+   Le mois sur un anneau : neuf arrêts, dont deux où le client intervient (en or). Un point fait le
+   tour, le centre dit ce qui se passe à chaque arrêt, et le compteur en bas compte les interventions
+   du client : deux. Le tour se referme sur le premier arrêt : le suivi nourrit les sujets du mois
+   suivant. render(t) est pur. Version verticale avec ?p=1 (aucun texte qui porte le sens sous 30 px). */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(900px 700px at 85% -10%,rgba(29,113,184,.30),rgba(8,19,31,0) 65%),radial-gradient(700px 600px at 0% 110%,rgba(232,189,98,.08),rgba(8,19,31,0) 60%)}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(140%);white-space:nowrap}
+#titre{position:absolute;left:72px;top:64px;z-index:9}
+.titre-acte{position:absolute;left:0;top:0}
+#titre .k .ln{font-size:30px;font-weight:700;color:#7DB8EE;letter-spacing:.01em;margin-bottom:12px}
+#titre .t .ln{font-size:60px;font-weight:800;letter-spacing:-.035em;line-height:1.04}
+#titre .t .ln .o{color:#e8bd62}
+.abs{position:absolute;left:0;top:0}
+
+#anneau{position:absolute;left:0;top:0;width:1080px;height:1080px;overflow:visible}
+.stop{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#08131f;box-shadow:inset 0 0 0 3px #2a4a68;z-index:3}
+.stop.vu{background:#1D71B8;box-shadow:inset 0 0 0 3px #1D71B8}
+.stop.vous{width:40px;height:40px;margin:-20px 0 0 -20px;background:#08131f;box-shadow:inset 0 0 0 3px #8a6f35;display:grid;place-items:center}
+.stop.vous svg{width:20px;height:20px;fill:#8a6f35}
+.stop.vous.vu{background:#e8bd62;box-shadow:0 0 0 8px rgba(232,189,98,.22)}
+.stop.vous.vu svg{fill:#0b1b2b}
+.lab{position:absolute;font-size:26px;font-weight:700;letter-spacing:-.01em;color:#6f8aa5;white-space:nowrap;z-index:3}
+.lab.vu{color:#f4f7fa}
+.lab.vous{color:#a8864a}
+.lab.vous.vu{color:#e8bd62}
+#mobile{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#fff;box-shadow:0 0 0 6px rgba(125,184,238,.35),0 0 28px 6px rgba(125,184,238,.55);z-index:4}
+
+#centre{position:absolute;width:430px;height:300px;margin:-150px 0 0 -215px}
+.pane{position:absolute;left:0;top:0;width:430px;height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px}
+.pane b{font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.pane span{font-family:Inter,sans-serif;font-size:25px;font-weight:600;line-height:1.32;color:#c9d6e2}
+.pane i{font-style:normal;font-family:Inter,sans-serif;font-size:20px;font-weight:600;padding:6px 16px;border-radius:999px;background:rgba(125,184,238,.14);color:#9fcaf2;white-space:nowrap}
+.pane.vous b{color:#e8bd62}
+.pane.vous i{background:rgba(232,189,98,.16);color:#e8bd62}
+
+#compteur{position:absolute;left:72px;top:984px;display:flex;align-items:center;gap:18px}
+#compteur span{font-family:Inter,sans-serif;font-size:22px;font-weight:600;color:#7DB8EE;white-space:nowrap}
+.slot{width:40px;height:40px;border-radius:50%;box-shadow:inset 0 0 0 3px #3a3424;display:grid;place-items:center}
+.slot svg{width:20px;height:20px;fill:#e8bd62;opacity:0}
+.slot.on{background:#e8bd62;box-shadow:0 0 0 6px rgba(232,189,98,.2)}
+.slot.on svg{fill:#0b1b2b;opacity:1}
+
+/* Version verticale (?p=1, 1080 x 1350). */
+#stage.p{height:1350px}
+#stage.p #titre .k .ln{font-size:40px;margin-bottom:14px}
+#stage.p #titre .t .ln{font-size:72px}
+#stage.p #anneau{height:1350px}
+#stage.p .lab{font-size:32px;line-height:1.1}
+#stage.p .stop{width:30px;height:30px;margin:-15px 0 0 -15px}
+#stage.p .stop.vous{width:48px;height:48px;margin:-24px 0 0 -24px}
+#stage.p .stop.vous svg{width:24px;height:24px}
+#stage.p #centre{width:440px;height:340px;margin:-170px 0 0 -220px}
+#stage.p .pane{width:440px;height:340px;gap:16px}
+#stage.p .pane b{font-size:52px}
+#stage.p .pane span{font-size:31px;line-height:1.28}
+#stage.p .pane i{font-size:30px;padding:6px 18px}
+#stage.p #compteur{left:56px;top:1232px;gap:20px}
+#stage.p #compteur span{font-size:32px}
+#stage.p .slot{width:52px;height:52px}
+#stage.p .slot svg{width:26px;height:26px}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="titre">
+    <div class="titre-acte" id="ta0"><div class="mask k"><span class="ln" data-txt="k0"></span></div><div class="mask t"><span class="ln" data-txt="t0a"></span></div><div class="mask t"><span class="ln" data-txt="t0b"></span></div></div>
+    <div class="titre-acte" id="ta1"><div class="mask k"><span class="ln" data-txt="k1"></span></div><div class="mask t"><span class="ln" data-txt="t1a"></span></div><div class="mask t"><span class="ln" data-txt="t1b"></span></div></div>
+  </div>
+  <svg id="anneau" viewBox="0 0 1080 1080">
+    <circle id="rail" fill="none" stroke="#1f3a55" stroke-width="4"/>
+    <circle id="plein" fill="none" stroke="#1D71B8" stroke-width="7" stroke-linecap="round"/>
+  </svg>
+  <div id="arrets"></div>
+  <div id="mobile"></div>
+  <div id="centre"></div>
+  <div id="compteur"><span data-txt="cpt"></span><div class="slot" id="s0"></div><div class="slot" id="s1"></div></div>
+</div>
+<div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span></div>
+
+<script>
+var PORTRAIT = /[?&]p=1/.test(location.search);
+window.STAGE = { w: 1080, h: PORTRAIT ? 1350 : 1080 };
+window.DUREE = 20;
+
+(function () {
+  'use strict';
+  var EN = /\/en\//.test(location.pathname) || /[?&]lang=en/.test(location.search);
+  var N = ' ';
+  var TXT = EN ? {
+    k0: 'Your month, end to end', t0a: 'You step in', t0b: '<span class="o">twice</span>.',
+    k1: 'And the month after', t1a: 'Tracking picks', t1b: '<span class="o">the next topics</span>.',
+    cpt: 'Your part this month',
+    arrets: ['Topics', 'Your pick', 'Research', 'Writing', 'SEO', 'Video', 'Our review', 'Your|review', 'Publishing'],
+    panes: [
+      ['Topics', 'Ahrefs, Search Console, the news and what AI answers say.', 'Our AI tools, then the team'],
+      ['You pick', 'Four topics, in one click in the Hub.', 'You'],
+      ['Research', 'The top Google results, then a file of sourced facts.', 'The team checks every fact'],
+      ['Writing', 'A 1,400 to 1,900-word guide, rooted in your market.', 'Written with our AI tools'],
+      ['SEO', 'Title, description, structured data, 6 to 8 tested links.', 'Checked to the character'],
+      ['Video', '30 to 40 seconds and a thumbnail, for every article.', 'Made with our AI tools'],
+      ['Our review', 'Every fact, every link and your rules, one by one.', 'Done by the team'],
+      ['You review', 'Just once, commenting right on the text.', 'You'],
+      ['Publishing', 'One article a week, then rank tracking.', 'We publish'],
+      ['Next month', 'What climbs and what stalls shapes the next topics.', 'The loop starts again']
+    ]
+  } : {
+    k0: 'Le circuit du mois', t0a: 'Vous intervenez', t0b: '<span class="o">deux fois</span>.',
+    k1: 'Et le mois suivant', t1a: 'Le suivi choisit', t1b: '<span class="o">les prochains sujets</span>.',
+    cpt: 'Vos interventions ce mois-ci',
+    arrets: ['Sujets', 'Votre choix', 'Préparation', 'Rédaction', 'SEO', 'Vidéo', 'Relecture', 'Votre|relecture', 'Publication'],
+    panes: [
+      ['Les sujets', 'Ahrefs, la Search Console, l’actualité et les réponses des IA.', 'Nos outils d’IA, puis l’équipe'],
+      ['Vous choisissez', 'Quatre sujets, d’un clic dans le Hub.', 'Vous'],
+      ['La préparation', 'Les premiers résultats de Google, puis un dossier de faits sourcés.', 'L’équipe vérifie chaque fait'],
+      ['La rédaction', 'Un guide de 1' + N + '400 à 1' + N + '900 mots, ancré chez vous.', 'Écrit avec nos outils d’IA'],
+      ['Le SEO', 'Titre, description, données structurées, 6 à 8 liens testés.', 'Contrôlé au caractère près'],
+      ['La vidéo', '30 à 40 secondes et une vignette, pour chaque article.', 'Montée avec nos outils d’IA'],
+      ['Notre relecture', 'Chaque fait, chaque lien et vos règles, un par un.', 'Faite par l’équipe'],
+      ['Vous relisez', 'Une seule fois, en commentant sur le texte.', 'Vous'],
+      ['La publication', 'Un article par semaine, puis le suivi des positions.', 'Nous publions'],
+      ['Le mois suivant', 'Ce qui monte et ce qui stagne oriente les prochains sujets.', 'Le tour recommence']
+    ]
+  };
+  if (EN) document.documentElement.lang = 'en';
+  document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+  if (PORTRAIT) document.getElementById('stage').classList.add('p');
+
+  var $ = function (id) { return document.getElementById(id); };
+  var C = PORTRAIT ? { x: 540, y: 790, r: 285, ecart: 44 } : { x: 540, y: 640, r: 270, ecart: 36 };
+  var VOUS = [1, 7];
+  var NB = 9, PAS = 40;
+  var PERSONNE = '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.4"/><path d="M3.5 21.5c.8-4.8 4.3-7.3 8.5-7.3s7.7 2.5 8.5 7.3z"/></svg>';
+
+  function rad(a) { return a * Math.PI / 180; }
+  function pt(a, r) { return [C.x + r * Math.cos(rad(a)), C.y + r * Math.sin(rad(a))]; }
+
+  if (PORTRAIT) $('anneau').setAttribute('viewBox', '0 0 1080 1350');
+  $('rail').setAttribute('cx', C.x); $('rail').setAttribute('cy', C.y); $('rail').setAttribute('r', C.r);
+  $('plein').setAttribute('cx', C.x); $('plein').setAttribute('cy', C.y); $('plein').setAttribute('r', C.r);
+  // Le tracé part du haut et tourne dans le sens des aiguilles d'une montre.
+  $('plein').setAttribute('transform', 'rotate(-90 ' + C.x + ' ' + C.y + ')');
+  $('rail').setAttribute('transform', 'rotate(-90 ' + C.x + ' ' + C.y + ')');
+  var CIRC = 2 * Math.PI * C.r;
+  $('rail').setAttribute('stroke-dasharray', CIRC + ' ' + CIRC);
+  $('plein').setAttribute('stroke-dasharray', CIRC + ' ' + CIRC);
+
+  /* Les arrêts et leurs libellés, placés à l'extérieur de l'anneau selon leur angle. */
+  for (var i = 0; i < NB; i++) {
+    var a = -90 + i * PAS, p = pt(a, C.r), q = pt(a, C.r + C.ecart + (VOUS.indexOf(i) >= 0 ? 8 : 0));
+    var s = document.createElement('div'); s.className = 'stop' + (VOUS.indexOf(i) >= 0 ? ' vous' : ''); s.id = 'st' + i;
+    s.style.left = p[0] + 'px'; s.style.top = p[1] + 'px';
+    if (VOUS.indexOf(i) >= 0) s.innerHTML = PERSONNE;
+    $('arrets').appendChild(s);
+    var l = document.createElement('div'); l.className = 'lab' + (VOUS.indexOf(i) >= 0 ? ' vous' : ''); l.id = 'lb' + i;
+    l.innerHTML = TXT.arrets[i].replace('|', PORTRAIT ? '<br>' : ' ');
+    var cx = Math.cos(rad(a)), cy = Math.sin(rad(a));
+    var tx = cx > 0.3 ? '0' : cx < -0.3 ? '-100%' : '-50%';
+    var ty = cy > 0.3 ? '0' : cy < -0.3 ? '-100%' : '-50%';
+    l.style.textAlign = cx > 0.3 ? 'left' : cx < -0.3 ? 'right' : 'center';
+    l.style.left = q[0] + 'px'; l.style.top = q[1] + 'px';
+    l.dataset.base = 'translate(' + tx + ',' + ty + ')';
+    $('arrets').appendChild(l);
+  }
+  /* Le centre : un panneau par arrêt, plus celui du mois suivant. */
+  $('centre').style.left = C.x + 'px'; $('centre').style.top = C.y + 'px';
+  TXT.panes.forEach(function (p, i) {
+    var d = document.createElement('div'); d.className = 'pane' + (VOUS.indexOf(i) >= 0 ? ' vous' : ''); d.id = 'pn' + i;
+    d.innerHTML = '<b>' + p[0] + '</b><span>' + p[1] + '</span><i>' + p[2] + '</i>';
+    $('centre').appendChild(d);
+  });
+  $('s0').innerHTML = PERSONNE; $('s1').innerHTML = PERSONNE;
+
+  function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return c01((t - a) / (b - a)); }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function bez(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    return function (x) { var t = x; for (var i = 0; i < 8; i++) { var d = (3 * ax * t + 2 * bx) * t + cx, e = ((ax * t + bx) * t + cx) * t - x; if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } t = c01(t); return ((ay * t + by) * t + cy) * t; };
+  }
+  var A = bez(0.15, 1, 0.32, 1);
+  var S = bez(0.333, 0, 0.667, 0);
+  var D = bez(0.45, 0, 0.2, 1);
+  function ressort(x) { if (x <= 0) return 0; if (x >= 1) return 1; var z = 0.5, w = 10; var wd = w * Math.sqrt(1 - z * z); var e = Math.exp(-z * w * x); return 1 - e * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x)); }
+
+  /* Le calendrier : le point arrive à l'arrêt i à T[i] ; le dernier trajet referme l'anneau. */
+  var T = []; for (var k = 0; k < NB; k++) T.push(2.0 + k * 1.45);
+  var FIN = 15.6;           // le point revient en haut (360°)
+  var TITRES = [[0.3, 14.7], [15.2, 19.3]];
+
+  function titres(t) {
+    TITRES.forEach(function (p, i) {
+      $('ta' + i).querySelectorAll('.ln').forEach(function (ln, j) {
+        var e = A(seg(t, p[0] + j * 0.13, p[0] + j * 0.13 + 0.95));
+        var s = S(seg(t, p[1] + j * 0.06, p[1] + j * 0.06 + 0.4));
+        ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+      });
+    });
+  }
+  /* L'angle parcouru (0 en haut, 360 pour un tour complet). */
+  function angle(t) {
+    if (t < T[0] - 0.7) return 0;
+    for (var i = 0; i < NB; i++) {
+      if (t < T[i]) { var de = i === 0 ? 0 : (i - 1) * PAS; return lerp(de, i * PAS, D(seg(t, T[i] - 0.7, T[i]))); }
+    }
+    if (t < FIN - 1.1) return (NB - 1) * PAS;
+    return lerp((NB - 1) * PAS, 360, D(seg(t, FIN - 1.1, FIN)));
+  }
+  function actif(t) {
+    if (t >= FIN - 0.3) return NB;            // le mois suivant
+    for (var i = NB - 1; i >= 0; i--) if (t >= T[i] - 0.25) return i;
+    return -1;
+  }
+
+  window.render = function (t) {
+    titres(t);
+    var fin = S(seg(t, 19.3, 19.95)), fond = 1 - fin;
+    var entree = A(seg(t, 0.4, 1.8));
+    $('rail').setAttribute('stroke-dashoffset', (CIRC * (1 - entree)).toFixed(1));
+    $('anneau').style.opacity = fond;
+    var ang = angle(t);
+    $('plein').setAttribute('stroke-dashoffset', (CIRC * (1 - ang / 360)).toFixed(1));
+    var m = pt(ang - 90, C.r);
+    $('mobile').style.left = m[0] + 'px'; $('mobile').style.top = m[1] + 'px';
+    $('mobile').style.opacity = A(seg(t, 1.2, 1.7)) * fond;
+
+    for (var i = 0; i < NB; i++) {
+      var apparait = ressort(seg(t, 0.6 + i * 0.09, 1.2 + i * 0.09));
+      var vu = t >= T[i] - 0.05 && t < 19.3;
+      // Au tour suivant, le premier arrêt se rallume avant le retour en haut.
+      if (i === 0 && t >= FIN - 0.05 && t < 19.3) vu = true;
+      var st = $('st' + i), lb = $('lb' + i);
+      st.classList.toggle('vu', vu);
+      lb.classList.toggle('vu', vu);
+      var pulse = 1 + 0.25 * Math.sin(Math.PI * seg(t, T[i] - 0.05, T[i] + 0.45));
+      if (i === 0 && t > FIN - 0.4) pulse = 1 + 0.25 * Math.sin(Math.PI * seg(t, FIN - 0.05, FIN + 0.45));
+      st.style.transform = 'scale(' + (apparait * pulse).toFixed(3) + ')';
+      st.style.opacity = Math.min(1, apparait * 2) * fond;
+      var la = A(seg(t, 0.8 + i * 0.09, 1.5 + i * 0.09));
+      lb.style.opacity = la * fond;
+      lb.style.transform = lb.dataset.base + ' translateY(' + ((1 - la) * 10).toFixed(1) + 'px)';
+    }
+
+    var ac = actif(t);
+    for (var j = 0; j <= NB; j++) {
+      var debut = j === NB ? FIN - 0.3 : T[j] - 0.25;
+      var sortie = j === NB ? 19.3 : (j === NB - 1 ? FIN - 0.45 : T[j + 1] - 0.55);
+      var e = A(seg(t, debut, debut + 0.5)), s = S(seg(t, sortie, sortie + 0.3));
+      var pn = $('pn' + j);
+      pn.style.opacity = (j === ac || (t >= sortie && t < sortie + 0.3)) ? (e * (1 - s)).toFixed(3) : 0;
+      pn.style.transform = 'translateY(' + ((1 - e) * 22 - s * 14).toFixed(1) + 'px)';
+    }
+
+    // Le compteur des interventions du client.
+    $('compteur').style.opacity = A(seg(t, 1.0, 1.8)) * fond;
+    [0, 1].forEach(function (n) {
+      var on = t >= T[VOUS[n]] - 0.05 && t < 19.3;
+      var sl = $('s' + n);
+      sl.classList.toggle('on', on);
+      var r = ressort(seg(t, T[VOUS[n]] - 0.05, T[VOUS[n]] + 0.5));
+      sl.style.transform = 'scale(' + (on ? (0.6 + 0.4 * r).toFixed(3) : 1) + ')';
+    });
+  };
+
+  window.PRET = Promise.all([
+    document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"')
+  ]);
+  window.render(0);
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+---
+/**
+ * La page AI Content : le blog et le contenu produits avec l'IA (refaite le 04/11/2026, branche
+ * `contenu-blog`, sur le modèle de Creative design). Elle remplace l'ancienne page générée par
+ * `[slug].astro` à la même adresse ; la fiche MDX reste pour le sitemap, llms.txt et les cartes.
+ *
+ * Le contenu vient de notre façon de faire chez nos clients (le circuit du mois, sept étapes, la
+ * relecture dans le Hub), rendu générique sur demande de Paul : aucun client nommé, sauf Servion
+ * pour ses vidéos d'articles, comme sur Creative design. Les exemples des scènes sont des articles
+ * sur l'IA. Le prix vient du calculateur (`ai-content-blog`), jamais écrit ici.
+ *
+ * Le rythme des fonds (jamais deux sections d'encre collées) :
+ * hero (blanc, scène blog-circuit) · les sujets (encre) · l'article (brume) · les vidéos (encre) ·
+ * la relecture (blanc) · publication et suivi (encre) · le devis (brume) · questions (blanc) ·
+ * appel final.
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import ServiceSchema from '@/components/seo/ServiceSchema.astro';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
+import { type Language } from '@/i18n/config';
+import { faqContenu, prixBlog } from '@/data/contenu/faq';
+
+import HeroService from '@/components/sections/HeroService.astro';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
+import SujetsDonnees from '@/components/contenu/SujetsDonnees.astro';
+import ArticleConstruit from '@/components/contenu/ArticleConstruit.astro';
+import VideosArticles from '@/components/contenu/VideosArticles.astro';
+import RelectureRegles from '@/components/contenu/RelectureRegles.astro';
+import PublieSuivi from '@/components/contenu/PublieSuivi.astro';
+import ExtraitDevis from '@/components/sections/ExtraitDevis.astro';
+import ServiceFAQ from '@/components/sections/ServiceFAQ.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'fr' } }, { params: { lang: 'en' } }];
+}
+
+const { lang } = Astro.params as { lang: Language };
+const { quatre } = prixBlog(lang);
+
+const P = {
+  fr: {
+    titre: 'AI Content',
+    seoTitre: 'Articles de blog SEO, écrits avec l’IA',
+    seoDescription: `Quatre articles de blog par mois, avec leur vidéo : sujets tirés de vos données, faits sourcés, SEO intégré, relecture dans le Hub. Dès ${quatre} par mois.`,
+    badge: 'AI Content',
+    headline: 'Un article par semaine. Écrit, vérifié, publié.',
+    sous: 'Nos outils d’IA vont vite. Notre équipe vérifie tout.',
+    description: 'Nous trouvons les sujets dans vos données, écrivons des guides complets avec leur vidéo, vérifions chaque fait et chaque lien, puis publions sur votre site. Vous intervenez deux fois par mois : pour choisir les sujets, et pour relire.',
+    chiffres: [{ chiffre: quatre, texte: 'par mois pour 4 articles' }, { chiffre: '30 à 40 s', texte: 'de vidéo avec chaque article' }],
+    scene: 'Le circuit du mois : vous intervenez deux fois',
+    finTitre: 'Un blog qui travaille pour vous ?',
+    finTexte: 'Chiffrez vos articles en une minute, ou écrivez-nous : nous regardons vos données et vous proposons de premiers sujets.',
+  },
+  en: {
+    titre: 'AI Content',
+    seoTitre: 'SEO blog articles, written with AI and checked',
+    seoDescription: `Four blog articles a month, each with its video: topics drawn from your data, sourced facts, SEO built in, review in the Hub and publishing. From ${quatre} a month.`,
+    badge: 'AI Content',
+    headline: 'One article a week. Written, checked, published.',
+    sous: 'Our AI tools move fast. Our team checks everything.',
+    description: 'We find topics in your data, write complete guides with their own video, check every fact and every link, then publish on your site. You step in twice a month: to pick the topics, and to review.',
+    chiffres: [{ chiffre: quatre, texte: 'a month for 4 articles' }, { chiffre: '30 to 40 s', texte: 'of video with every article' }],
+    scene: 'Your month, end to end: you step in twice',
+    finTitre: 'A blog that works for you?',
+    finTexte: 'Price your articles in a minute, or write to us: we will look at your data and suggest first topics.',
+  },
+}[lang];
+const url = `/${lang}/services/ai-content`;
+---
+
+<PageLayout lang={lang} title={P.seoTitre} description={P.seoDescription}>
+  <ServiceSchema name={P.titre} description={P.seoDescription} url={`https://mydigipal.com${url}`} lang={lang} />
+  <BreadcrumbSchema items={[
+    { name: lang === 'fr' ? 'Accueil' : 'Home', url: `/${lang}` },
+    { name: 'Services', url: `/${lang}/services` },
+    { name: P.titre, url },
+  ]} />
+  <HeroService
+    lang={lang}
+    badge={P.badge}
+    headline={P.headline}
+    subheadline={P.sous}
+    description={P.description}
+    chiffres={P.chiffres}
+    lienBudget="#devis"
+  >
+    <SceneLabo slot="panneau" lang={lang} nom="blog-circuit" format="carre" repos={12.7} controles portraitMobile titre={P.scene} />
+  </HeroService>
+
+  <SujetsDonnees lang={lang} />
+  <ArticleConstruit lang={lang} />
+  <VideosArticles lang={lang} />
+  <RelectureRegles lang={lang} />
+  <PublieSuivi lang={lang} />
+  <ExtraitDevis lang={lang} cle="service:ai-content" fond="brume" />
+  <ServiceFAQ lang={lang} service="ai-content" contenu={faqContenu(lang)} />
+  <FinalCTA lang={lang} title={P.finTitre} subtitle={P.finTexte} lienBudget="#devis" />
+</PageLayout>

@@ -105,6 +105,8 @@ export async function getStaticPaths() {
         const slug = service.id.replace(`${lang}/`, '').replace('.mdx', '');
         // AI Training a sa propre page depuis la refonte du 14/10/2026 (`ai-training.astro`).
         if (slug === 'ai-training') continue;
+        // AI Content aussi, depuis la page du blog et du contenu IA (04/11/2026, `ai-content.astro`).
+        if (slug === 'ai-content') continue;
         paths.push({
           params: { lang, slug },
           props: { service },
