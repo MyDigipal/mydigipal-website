@@ -9,7 +9,7 @@ export const aiContentServices: ServiceItem[] = [
     id: 'ai-content-blog',
     title: 'A. Articles de Blog SEO',
     titleEn: 'A. SEO Blog Articles',
-    description: 'Des guides de 1 400 à 1 900 mots avec leur vidéo, écrits avec nos outils d\'IA et vérifiés par l\'équipe, de la recherche des sujets à la publication.',
+    description: 'Des guides de 1 400 à 1 900 mots avec leur vidéo, écrits avec nos outils d\'IA et vérifiés par l\'équipe, de la recherche des sujets à la publication.',
     descriptionEn: '1,400 to 1,900-word guides with their own video, written with our AI tools and checked by the team, from topic research to publishing.',
     icon: '📝',
     hasAddon: true,
@@ -24,7 +24,7 @@ export const aiContentServices: ServiceItem[] = [
             items: [
               'Les sujets : Ahrefs, la Search Console, l\'actualité et les réponses des IA, puis votre choix dans le Hub',
               'La préparation : les premiers résultats de Google et un dossier de faits sourcés',
-              'La rédaction : un guide de 1 400 à 1 900 mots, avec tableau, FAQ et sources',
+              'La rédaction : un guide de 1 400 à 1 900 mots, avec tableau, FAQ et sources',
               'Notre relecture, puis la vôtre dans le Hub ; chaque remarque devient une règle',
               'La publication, puis le suivi des positions'
             ]
@@ -76,13 +76,13 @@ export const aiContentServices: ServiceItem[] = [
         nameEn: '4 articles',
         price: 500,
         features: [
-          '4 articles/mois (1 400 à 1 900 mots)',
+          '4 articles/mois (1 400 à 1 900 mots par article)',
           'Une vidéo et une vignette par article',
           'Sujets, SEO et relecture dans le Hub',
           'Publication et suivi des positions'
         ],
         featuresEn: [
-          '4 articles/month (1,400 to 1,900 words)',
+          '4 articles/month (1,400 to 1,900 words each)',
           'A video and a thumbnail per article',
           'Topics, SEO and review in the Hub',
           'Publishing and rank tracking'
@@ -95,13 +95,13 @@ export const aiContentServices: ServiceItem[] = [
         nameEn: '8 articles',
         price: 900,
         features: [
-          '8 articles/mois (1500-3000 mots)',
+          '8 articles/mois (1 400 à 1 900 mots par article)',
           'Stratégie éditoriale mensuelle',
           'Recherche mots-clés Ahrefs incluse',
           'Publication CMS optionnelle (+100€)'
         ],
         featuresEn: [
-          '8 articles/month (1500-3000 words)',
+          '8 articles/month (1,400 to 1,900 words each)',
           'Monthly editorial strategy',
           'Ahrefs keyword research included',
           'Optional CMS publishing (+€100)'

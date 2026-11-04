@@ -234,6 +234,16 @@ window.DUREE = 20;
     });
   }
 
+  /* Centre un groupe de cartes empilées dans la zone sous le titre (mesuré une fois les polices là). */
+  var ZONE = PORTRAIT ? [310, 1330] : [270, 1050];
+  function centrer(ids, ecart) {
+    var h = ids.reduce(function (s, id) { return s + $(id).offsetHeight; }, 0) + ecart * (ids.length - 1);
+    var y = Math.round(ZONE[0] + (ZONE[1] - ZONE[0] - h) / 2);
+    ids.forEach(function (id) { $(id).style.top = y + 'px'; y += $(id).offsetHeight + ecart; });
+  }
+  function placer() { centrer(['dossier'], 0); centrer(['serp', 'compteurs', 'liens'], PORTRAIT ? 28 : 22); }
+  placer();
+
   window.render = function (t) {
     titres(t);
     var fin = S(seg(t, 19.3, 19.95));
@@ -276,7 +286,7 @@ window.DUREE = 20;
 
   window.PRET = Promise.all([
     document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"')
-  ]);
+  ]).then(placer);
   window.render(0);
 })();
 </script>

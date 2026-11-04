@@ -34,9 +34,8 @@ html,body{margin:0;background:#000;overflow:hidden}
 .vtete b{font-family:'Plus Jakarta Sans';font-size:22px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
 .statut{padding:5px 12px;border-radius:999px;background:#e6f0fa;color:#1D71B8;font-size:16px;font-weight:600;white-space:nowrap}
 .para{position:relative;margin-top:18px;font-size:23px;line-height:1.55;font-weight:500;color:#0b1b2b;min-height:98px}
-.para .hl{position:relative}
-.para .hl i{position:absolute;left:-2px;top:2px;bottom:0;right:-2px;background:rgba(232,189,98,.42);border-radius:4px;transform-origin:0 50%;z-index:-1}
-.para .hl.v2 i{background:rgba(18,122,74,.16)}
+.para .hl{background-image:linear-gradient(rgba(232,189,98,.42),rgba(232,189,98,.42));background-repeat:no-repeat;background-position:0 0;background-size:0% 100%;border-radius:4px}
+.para .hl.v2{background-image:none;background-color:rgba(18,122,74,.16)}
 .couche{position:absolute;left:0;top:0;right:0}
 .com{position:relative;margin-top:14px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 1px #dde5ed;padding:12px 14px}
 .com.rep{margin-left:28px;background:#eef3f8}
@@ -125,8 +124,8 @@ window.DUREE = 20;
     k1: '2 · We keep it', t1a: 'Your note', t1b: '<span class="o">becomes a rule</span>.',
     k2: '3 · Next month', t2a: 'The rule', t2b: '<span class="o">applies itself</span>.',
     art1: 'Blog 3 · AI for quotes', art2: 'Blog 4 · Meeting notes with AI',
-    pA: 'To draft your quotes, <span class="hl"><i id="hlA"></i>ChatGPT is the tool you need.</span>',
-    pB: 'To draft your quotes, <span class="hl v2"><i></i>ChatGPT or Claude will do: it depends on the tools you already use.</span>',
+    pA: 'To draft your quotes, <span class="hl" id="hlA">ChatGPT is the tool you need.</span>',
+    pB: 'To draft your quotes, <span class="hl v2">ChatGPT or Claude will do: it depends on the tools you already use.</span>',
     c1: 'Never push a single tool: compare at least two.',
     c2: 'Fixed in the article and the video, and added to your rules.',
     p2: 'To summarise your meetings, two options hold up: Copilot on Microsoft 365, Gemini on Google Workspace.',
@@ -139,8 +138,8 @@ window.DUREE = 20;
     k1: '2 · Nous retenons', t1a: 'Votre remarque', t1b: '<span class="o">devient une règle</span>.',
     k2: '3 · Le mois suivant', t2a: 'La règle', t2b: '<span class="o">s’applique seule</span>.',
     art1: 'Blog 3 · L’IA pour vos devis', art2: 'Blog 4 · Résumer ses réunions',
-    pA: 'Pour rédiger vos devis, <span class="hl"><i id="hlA"></i>ChatGPT est l’outil qu’il vous faut.</span>',
-    pB: 'Pour rédiger vos devis, <span class="hl v2"><i></i>ChatGPT ou Claude font l’affaire : tout dépend des outils que vous utilisez déjà.</span>',
+    pA: 'Pour rédiger vos devis, <span class="hl" id="hlA">ChatGPT est l’outil qu’il vous faut.</span>',
+    pB: 'Pour rédiger vos devis, <span class="hl v2">ChatGPT ou Claude font l’affaire : tout dépend des outils que vous utilisez déjà.</span>',
     c1: 'Ne jamais pousser un seul outil : en comparer au moins deux.',
     c2: 'Corrigé dans l’article et la vidéo, et noté dans vos règles.',
     p2: 'Pour résumer vos réunions, deux options tiennent la route : Copilot sous Microsoft 365, Gemini sous Google Workspace.',
@@ -203,7 +202,7 @@ window.DUREE = 20;
     // Acte 1 : sélection, commentaire, réponse, correction.
     var v1 = 1 - S(seg(t, 12.7, 13.1));
     $('v1').style.opacity = v1;
-    $('hlA').style.transform = 'scaleX(' + A(seg(t, 1.3, 2.3)).toFixed(3) + ')';
+    $('hlA').style.backgroundSize = (A(seg(t, 1.3, 2.3)) * 100).toFixed(2) + '% 100%';
     var corrige = A(seg(t, 6.0, 6.6));
     $('pA').style.opacity = 1 - corrige; $('pB').style.opacity = corrige;
     montre($('c1'), A(seg(t, 2.5, 3.0)), 0, 14);

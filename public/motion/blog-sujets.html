@@ -212,13 +212,13 @@ window.DUREE = 20;
     var fin = S(seg(t, 19.3, 19.95)), fond = 1 - fin;
 
     TXT.sources.forEach(function (s, i) {
-      var e = A(seg(t, 0.4 + i * 0.12, 1.2 + i * 0.12));
+      var e = 1;
       var on = t >= SRC_ON[i] && t < SRC_ON[i] + 1.3;
       var sr = $('sr' + i); sr.classList.toggle('on', on);
       pose(sr, L.src[i][0] * 0, 0, e * fond * (t > 8.6 && !PORTRAIT ? 0.55 + 0.45 * (1 - seg(t, 8.6, 9.2)) : 1), ' translateY(' + ((1 - e) * 24).toFixed(1) + 'px)');
       sr.style.left = L.src[i][0] + 'px'; sr.style.top = L.src[i][1] + 'px';
     });
-    var hIn = A(seg(t, 0.5, 1.3));
+    var hIn = 1;
     pose($('hub'), 0, (1 - hIn) * 50 + fin * 50, hIn * fond);
     $('hub').style.left = L.hub[0] + 'px'; $('hub').style.top = L.hub[1] + 'px';
 
