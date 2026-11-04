@@ -1,8 +1,11 @@
 ---
 /**
- * La page AI Content : le blog et le contenu produits avec l'IA (refaite le 04/11/2026, branche
- * `contenu-blog`, sur le modèle de Creative design). Elle remplace l'ancienne page générée par
- * `[slug].astro` à la même adresse ; la fiche MDX reste pour le sitemap, llms.txt et les cartes.
+ * La page GEO / AEO (adresse historique `ai-content`) : être cité par les IA. Refaite le 04/11/2026,
+ * branche `contenu-blog`, sur le modèle de Creative design ; repositionnée le soir même en GEO par
+ * Paul (« soyez référencé sur les large language models »). Le contenu (le blog) en fait la
+ * majorité, le travail sur le site lui-même (technique et contenu) vient en complément.
+ * Elle remplace l'ancienne page générée par `[slug].astro` à la même adresse ; la fiche MDX reste
+ * pour le sitemap, llms.txt et les cartes.
  *
  * Le contenu vient de notre façon de faire chez nos clients (le circuit du mois, sept étapes, la
  * relecture dans le Hub), rendu générique sur demande de Paul : aucun client nommé, sauf Servion
@@ -10,9 +13,9 @@
  * sur l'IA. Le prix vient du calculateur (`ai-content-blog`), jamais écrit ici.
  *
  * Le rythme des fonds (jamais deux sections d'encre collées) :
- * hero (blanc, scène blog-circuit) · les sujets (encre) · l'article (brume) · les vidéos (encre) ·
- * la relecture (blanc) · publication et suivi (encre) · le devis (brume) · questions (blanc) ·
- * appel final.
+ * hero (blanc, scène geo-reponse) · le circuit du mois (brume, blog-circuit) · les sujets (encre) ·
+ * l'article (brume) · les vidéos (encre) · la relecture (blanc) · publication et suivi (encre) ·
+ * le site que les IA savent lire (blanc) · le devis (brume) · questions (blanc) · appel final.
  */
 import PageLayout from '@/layouts/PageLayout.astro';
 import ServiceSchema from '@/components/seo/ServiceSchema.astro';
@@ -22,6 +25,8 @@ import { faqContenu, prixBlog } from '@/data/contenu/faq';
 
 import HeroService from '@/components/sections/HeroService.astro';
 import SceneLabo from '@/components/motion/SceneLabo.astro';
+import CircuitMois from '@/components/contenu/CircuitMois.astro';
+import SiteLisible from '@/components/contenu/SiteLisible.astro';
 import SujetsDonnees from '@/components/contenu/SujetsDonnees.astro';
 import ArticleConstruit from '@/components/contenu/ArticleConstruit.astro';
 import VideosArticles from '@/components/contenu/VideosArticles.astro';
@@ -40,28 +45,28 @@ const { quatre } = prixBlog(lang);
 
 const P = {
   fr: {
-    titre: 'AI Content',
-    seoTitre: 'Articles de blog SEO, écrits avec l’IA',
-    seoDescription: `Quatre articles de blog par mois, avec leur vidéo : sujets tirés de vos données, faits sourcés, SEO intégré, relecture dans le Hub. Dès ${quatre} par mois.`,
-    badge: 'AI Content',
-    headline: 'Un article par semaine. Écrit, vérifié, publié.',
-    sous: 'Nos outils d’IA vont vite. Notre équipe vérifie tout.',
-    description: 'Nous trouvons les sujets dans vos données, écrivons des guides complets avec leur vidéo, vérifions chaque fait et chaque lien, puis publions sur votre site. Vous intervenez deux fois par mois : pour choisir les sujets, et pour relire.',
+    titre: 'GEO / AEO',
+    seoTitre: 'GEO : être cité par ChatGPT, Claude et Google',
+    seoDescription: `GEO et AEO : des articles qui répondent aux questions de vos clients et un site que les IA savent lire, pour être cité dans leurs réponses. Dès ${quatre} par mois.`,
+    badge: 'GEO / AEO',
+    headline: 'Soyez cité par ChatGPT, Claude et Google.',
+    sous: 'Des contenus et un site que les IA lisent, comprennent et citent.',
+    description: 'Vos clients posent leurs questions à ChatGPT, Claude ou Perplexity avant de chercher sur Google. Chaque semaine, nous publions l’article qui y répond, avec sa vidéo, et nous rendons votre site lisible par les IA. Vous intervenez deux fois par mois : pour choisir les sujets, et pour relire.',
     chiffres: [{ chiffre: quatre, texte: 'par mois pour 4 articles' }, { chiffre: '30 à 40 s', texte: 'de vidéo avec chaque article' }],
-    scene: 'Le circuit du mois : vous intervenez deux fois',
+    scene: 'Une question posée à une IA, et votre site parmi ses sources',
     finTitre: 'Un blog qui travaille pour vous ?',
     finTexte: 'Chiffrez vos articles en une minute, ou écrivez-nous : nous regardons vos données et vous proposons de premiers sujets.',
   },
   en: {
-    titre: 'AI Content',
-    seoTitre: 'SEO blog articles, written with AI and checked',
-    seoDescription: `Four blog articles a month, each with its video: topics drawn from your data, sourced facts, SEO built in, review in the Hub and publishing. From ${quatre} a month.`,
-    badge: 'AI Content',
-    headline: 'One article a week. Written, checked, published.',
-    sous: 'Our AI tools move fast. Our team checks everything.',
-    description: 'We find topics in your data, write complete guides with their own video, check every fact and every link, then publish on your site. You step in twice a month: to pick the topics, and to review.',
+    titre: 'GEO / AEO',
+    seoTitre: 'GEO: get cited by ChatGPT, Claude and Google',
+    seoDescription: `GEO and AEO: articles that answer your customers' questions and a site AI can read, so ChatGPT, Claude and Google start citing you. From ${quatre} a month.`,
+    badge: 'GEO / AEO',
+    headline: 'Get cited by ChatGPT, Claude and Google.',
+    sous: 'Content and a site that AI can read, understand and cite.',
+    description: 'Your customers ask ChatGPT, Claude or Perplexity before they search Google. Every week, we publish the article that answers them, with its video, and we make your site readable by AI. You step in twice a month: to pick the topics, and to review.',
     chiffres: [{ chiffre: quatre, texte: 'a month for 4 articles' }, { chiffre: '30 to 40 s', texte: 'of video with every article' }],
-    scene: 'Your month, end to end: you step in twice',
+    scene: 'A question asked to an AI, and your site among its sources',
     finTitre: 'A blog that works for you?',
     finTexte: 'Price your articles in a minute, or write to us: we will look at your data and suggest first topics.',
   },
@@ -85,14 +90,16 @@ const url = `/${lang}/services/ai-content`;
     chiffres={P.chiffres}
     lienBudget="#devis"
   >
-    <SceneLabo slot="panneau" lang={lang} nom="blog-circuit" format="carre" repos={12.7} controles portraitMobile titre={P.scene} />
+    <SceneLabo slot="panneau" lang={lang} nom="geo-reponse" format="carre" repos={18.4} controles portraitMobile titre={P.scene} />
   </HeroService>
 
+  <CircuitMois lang={lang} />
   <SujetsDonnees lang={lang} />
   <ArticleConstruit lang={lang} />
   <VideosArticles lang={lang} />
   <RelectureRegles lang={lang} />
   <PublieSuivi lang={lang} />
+  <SiteLisible lang={lang} />
   <ExtraitDevis lang={lang} cle="service:ai-content" fond="brume" />
   <ServiceFAQ lang={lang} service="ai-content" contenu={faqContenu(lang)} />
   <FinalCTA lang={lang} title={P.finTitre} subtitle={P.finTexte} lienBudget="#devis" />

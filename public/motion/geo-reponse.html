@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cité par les IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@500;600&display=block" rel="stylesheet">
+<style>
+/* Page GEO / AEO (04/11/2026), haut de page. Ce qu'est le GEO, en deux actes :
+   1. un client pose une question à un assistant IA ; la réponse s'écrit et cite trois sources,
+      dont deux pages de votre site (en or) ;
+   2. pourquoi ces pages : la page citée, et les cinq choses qui la rendent citable s'allument une
+      à une (réponse dès la première phrase, tableau, FAQ balisée, sources datées, site ouvert aux
+      robots des IA avec llms.txt).
+   Exemple générique sur l'IA, aucun client. render(t) est pur. Version verticale avec ?p=1
+   (aucun texte qui porte le sens sous 30 px). */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#08131f;font-family:'Plus Jakarta Sans',sans-serif;color:#f4f7fa;-webkit-font-smoothing:antialiased}
+#lueur{position:absolute;inset:0;background:radial-gradient(900px 700px at 85% -10%,rgba(29,113,184,.30),rgba(8,19,31,0) 65%),radial-gradient(700px 600px at 0% 110%,rgba(232,189,98,.08),rgba(8,19,31,0) 60%)}
+.mask{overflow:hidden;padding:.06em 0 .2em;margin-bottom:-.14em}
+.ln{display:block;transform:translateY(140%);white-space:nowrap}
+#titre{position:absolute;left:72px;top:64px;z-index:9}
+.titre-acte{position:absolute;left:0;top:0}
+#titre .k .ln{font-size:30px;font-weight:700;color:#7DB8EE;letter-spacing:.01em;margin-bottom:12px}
+#titre .t .ln{font-size:60px;font-weight:800;letter-spacing:-.035em;line-height:1.04}
+#titre .t .ln .o{color:#e8bd62}
+
+/* Acte 1 : l'assistant. */
+#fenetre{position:absolute;left:72px;top:300px;width:936px;border-radius:28px;background:#0f2134;box-shadow:inset 0 0 0 2px #1f3a55,0 40px 80px -40px rgba(0,0,0,.8);display:flex;flex-direction:column;gap:26px;padding:0 0 34px}
+#barre{display:flex;align-items:center;gap:14px;padding:20px 30px;border-bottom:2px solid #1a3149;font-family:Inter,sans-serif;font-size:20px;font-weight:600;color:#9fb3c8}
+#barre svg{width:26px;height:26px;fill:#7DB8EE}
+#question{align-self:flex-end;margin:0 30px;max-width:640px;padding:16px 24px;border-radius:22px 22px 6px 22px;background:#1D71B8;font-family:Inter,sans-serif;font-size:25px;font-weight:600;line-height:1.35;color:#fff}
+#question .c{opacity:0}
+#points{margin:0 30px;display:flex;gap:8px;height:0;overflow:visible}
+#points i{width:12px;height:12px;border-radius:50%;background:#7DB8EE}
+#reponse{margin:0 30px;font-family:Inter,sans-serif;font-size:25px;font-weight:500;line-height:1.5;color:#dbe6f0}
+#reponse .m{opacity:0}
+.m{white-space:nowrap}
+.cit{display:inline-grid;place-items:center;min-width:30px;height:30px;padding:0 6px;margin:0 2px 0 8px;border-radius:9px;background:#21405f;color:#b9d4ee;font-size:18px;font-weight:600;vertical-align:2px}
+.cit.or{background:#e8bd62;color:#0b1b2b}
+#sources{margin:0 30px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.src{border-radius:18px;padding:16px 18px;background:#132a40;box-shadow:inset 0 0 0 2px #1f3a55;display:grid;gap:6px;align-content:start}
+.src .d{display:flex;align-items:center;gap:10px;font-family:Inter,sans-serif;font-size:21px;font-weight:600;color:#e6eef6;white-space:nowrap}
+.src .d b{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:#21405f;color:#b9d4ee;font-size:16px}
+.src .x{font-family:Inter,sans-serif;font-size:18px;font-weight:500;line-height:1.35;color:#8ea6bd}
+.src.or{background:#2a2617;box-shadow:inset 0 0 0 2px #e8bd62,0 0 0 6px rgba(232,189,98,.14)}
+.src.or .d b{background:#e8bd62;color:#0b1b2b}
+.src.or .x{color:#e9d6a8}
+#bilan{margin:0 30px;display:flex;align-items:center;gap:14px;font-size:26px;font-weight:800;letter-spacing:-.01em;color:#e8bd62}
+#bilan svg{width:30px;height:30px;fill:#e8bd62}
+
+/* Acte 2 : la page citée et ce qui la rend citable. */
+#page{position:absolute;left:72px;top:300px;width:470px;border-radius:24px;background:#f6f8fb;color:#0b1b2b;padding:0 0 26px;box-shadow:0 40px 80px -40px rgba(0,0,0,.8);display:flex;flex-direction:column;gap:16px}
+#url{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid #dde4ec;font-family:Inter,sans-serif;font-size:18px;font-weight:600;color:#55687c;border-radius:24px 24px 0 0}
+#url svg{width:18px;height:18px;fill:#55687c}
+#llms{margin-left:auto;padding:4px 12px;border-radius:999px;background:#e8bd62;color:#0b1b2b;font-size:16px;font-weight:600;opacity:0}
+.zone{margin:0 18px;padding:10px 12px;border-radius:14px;transition:none}
+.zone.on{background:rgba(232,189,98,.18);box-shadow:inset 0 0 0 3px #e8bd62}
+#h1{margin:4px 30px 0;font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+#chapo{font-family:Inter,sans-serif;font-size:19px;font-weight:600;line-height:1.4;color:#24384c}
+.tab{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:6px}
+.tab span{height:20px;border-radius:5px;background:#dfe6ee}
+.tab span.h{background:#1D71B8;opacity:.75}
+.faq{display:grid;gap:8px}
+.faq span{display:flex;align-items:center;gap:10px}
+.faq span:before{content:'+';font-family:Inter,sans-serif;font-weight:600;font-size:20px;color:#1D71B8;width:14px}
+.faq span i{height:16px;border-radius:5px;background:#dfe6ee;flex:1}
+.faq span:nth-child(2) i{flex:.7}
+#srcl{font-family:Inter,sans-serif;font-size:16px;font-weight:600;color:#55687c;line-height:1.35}
+#raisons{position:absolute;left:590px;top:300px;width:418px;list-style:none;margin:0;padding:0;display:grid;gap:22px}
+#raisons li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px;align-items:start;opacity:0}
+#raisons li u{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#e8bd62;text-decoration:none}
+#raisons li u svg{width:22px;height:22px;fill:none;stroke:#0b1b2b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+#raisons li b{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.2;padding-top:6px}
+
+/* Version verticale (?p=1, 1080 x 1350). */
+#stage.p{height:1350px}
+#stage.p #titre .k .ln{font-size:40px;margin-bottom:14px}
+#stage.p #titre .t .ln{font-size:70px}
+#stage.p #fenetre{top:340px;gap:30px}
+#stage.p #barre{font-size:30px;padding:22px 30px}
+#stage.p #barre svg{width:34px;height:34px}
+#stage.p #question{font-size:32px;max-width:780px}
+#stage.p #reponse{font-size:32px;line-height:1.45}
+#stage.p .cit{height:38px;min-width:38px;font-size:24px;border-radius:10px}
+#stage.p .src{padding:16px}
+#stage.p .src .d{font-size:30px;flex-direction:column;align-items:flex-start;gap:10px}
+#stage.p .src .d b{width:38px;height:38px;font-size:24px}
+#stage.p .src .x{display:none}
+#stage.p #bilan{font-size:34px}
+#stage.p #bilan svg{width:38px;height:38px}
+#stage.p #page{top:340px;left:72px;width:936px;gap:14px}
+#stage.p #url{font-size:30px}
+#stage.p #url svg{width:28px;height:28px}
+#stage.p #llms{font-size:30px}
+#stage.p #h1{font-size:40px}
+#stage.p #chapo{font-size:30px}
+#stage.p .tab span{height:22px}
+#stage.p .faq span i{height:18px}
+#stage.p #srcl{font-size:30px}
+#stage.p #raisons{left:72px;top:960px;width:936px;gap:20px}
+#stage.p #raisons li{grid-template-columns:48px minmax(0,1fr);gap:14px}
+#stage.p #raisons li u{width:48px;height:48px}
+#stage.p #raisons li b{font-size:32px;line-height:1.15;padding-top:4px}
+#prechargeur{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="lueur"></div>
+  <div id="titre">
+    <div class="titre-acte" id="ta0"><div class="mask k"><span class="ln" data-txt="k0"></span></div><div class="mask t"><span class="ln" data-txt="t0a"></span></div><div class="mask t"><span class="ln" data-txt="t0b"></span></div></div>
+    <div class="titre-acte" id="ta1"><div class="mask k"><span class="ln" data-txt="k1"></span></div><div class="mask t"><span class="ln" data-txt="t1a"></span></div><div class="mask t"><span class="ln" data-txt="t1b"></span></div></div>
+  </div>
+
+  <div id="fenetre">
+    <div id="barre"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7z"/></svg><span data-txt="assistant"></span></div>
+    <div id="question"></div>
+    <div id="points"><i></i><i></i><i></i></div>
+    <div id="reponse"></div>
+    <div id="sources">
+      <div class="src" id="sr1"><div class="d"><b>1</b><span data-txt="d1"></span></div><div class="x" data-txt="x1"></div></div>
+      <div class="src" id="sr2"><div class="d"><b>2</b><span data-txt="d2"></span></div><div class="x" data-txt="x2"></div></div>
+      <div class="src" id="sr3"><div class="d"><b>3</b><span data-txt="d3"></span></div><div class="x" data-txt="x3"></div></div>
+    </div>
+    <div id="bilan"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17.1l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z"/></svg><span data-txt="bilan"></span></div>
+  </div>
+
+  <div id="page">
+    <div id="url" class="zone-url"><svg viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3h1.5v11h-13V10zm2 0h6V7a3 3 0 0 0-6 0z"/></svg><span data-txt="d1"></span><em id="llms" style="font-style:normal">llms.txt</em></div>
+    <div id="h1" data-txt="x1"></div>
+    <div class="zone" id="z0"><div id="chapo" data-txt="chapo"></div></div>
+    <div class="zone" id="z1"><div class="tab"><span class="h"></span><span class="h"></span><span class="h"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+    <div class="zone" id="z2"><div class="faq"><span><i></i></span><span><i></i></span><span><i></i></span></div></div>
+    <div class="zone" id="z3"><div id="srcl" data-txt="srcl"></div></div>
+  </div>
+  <ol id="raisons"></ol>
+</div>
+<div id="prechargeur"><span style="font-family:'Plus Jakarta Sans';font-weight:800">a</span><span style="font-family:'Plus Jakarta Sans';font-weight:700">a</span><span style="font-family:Inter;font-weight:600">a</span><span style="font-family:Inter;font-weight:500">a</span></div>
+
+<script>
+var PORTRAIT = /[?&]p=1/.test(location.search);
+window.STAGE = { w: 1080, h: PORTRAIT ? 1350 : 1080 };
+window.DUREE = 20;
+
+(function () {
+  'use strict';
+  var EN = /\/en\//.test(location.pathname) || /[?&]lang=en/.test(location.search);
+  var N = ' ';
+  var TXT = EN ? {
+    k0: 'One question, one answer', t0a: 'The AI cites its sources.', t0b: '<span class="o">Your site</span> is one of them.',
+    k1: 'Why your pages', t1a: 'What makes them', t1b: '<span class="o">worth citing</span>.',
+    assistant: 'AI assistant',
+    question: 'Which AI tool should we use for customer service?',
+    reponse: 'Start with integrations: the tool has to read your CRM and your ticket history [1]. Then compare the cost per conversation, not just the subscription [2]. And under the AI Act, customers must know they are talking to an AI [3].',
+    d1: 'your-site.com', x1: 'Choosing an AI tool for customer service',
+    d2: 'your-site.com', x2: 'The real cost of an AI agent',
+    d3: 'eur-lex.europa.eu', x3: 'Regulation (EU) 2024/1689, the AI Act',
+    bilan: '2 sources out of 3: your site',
+    chapo: 'Start with integrations: the tool has to read your CRM.',
+    srcl: 'Sources: AI Act, 2024/1689 · updated 4 Nov 2026',
+    raisons: ['The answer in the first sentence', 'A table that compares', 'An FAQ marked up for AI', 'Dated, sourced facts', 'A site open to AI crawlers']
+  } : {
+    k0: 'Une question, une réponse', t0a: 'L’IA cite ses sources.', t0b: '<span class="o">Votre site</span> en fait partie.',
+    k1: 'Pourquoi vos pages', t1a: 'Ce qui les rend', t1b: '<span class="o">citables</span>.',
+    assistant: 'Assistant IA',
+    question: 'Quel outil d’IA choisir pour notre service client' + N + '?',
+    reponse: 'Commencez par les intégrations' + N + ': l’outil doit lire votre CRM et l’historique de vos tickets [1]. Comparez ensuite le coût par conversation, pas seulement l’abonnement [2]. Et avec l’AI Act, le client doit savoir qu’il parle à une IA [3].',
+    d1: 'votre-site.fr', x1: 'Choisir un outil d’IA pour son service client',
+    d2: 'votre-site.fr', x2: 'Le vrai coût d’un agent IA',
+    d3: 'eur-lex.europa.eu', x3: 'Règlement (UE) 2024/1689, l’AI Act',
+    bilan: '2 sources sur 3' + N + ': votre site',
+    chapo: 'Commencez par les intégrations' + N + ': l’outil doit lire votre CRM.',
+    srcl: 'Sources' + N + ': AI Act, 2024/1689 · mis à jour le 4' + N + 'nov. 2026',
+    raisons: ['La réponse dès la première phrase', 'Un tableau qui compare', 'Une FAQ balisée pour les' + N + 'IA', 'Des faits datés et sourcés', 'Un site ouvert aux robots des' + N + 'IA']
+  };
+  if (EN) document.documentElement.lang = 'en';
+  document.querySelectorAll('[data-txt]').forEach(function (n) { n.innerHTML = TXT[n.getAttribute('data-txt')]; });
+  if (PORTRAIT) document.getElementById('stage').classList.add('p');
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* La question, caractère par caractère ; la réponse, mot par mot, avec ses renvois. */
+  $('question').innerHTML = Array.from(TXT.question).map(function (c) { return '<span class="c">' + (c === ' ' ? ' ' : c) + '</span>'; }).join('');
+  var CAR = $('question').querySelectorAll('.c');
+  /* Un renvoi reste collé au mot qui le précède (jamais seul en début de ligne). */
+  var jetons = [];
+  TXT.reponse.split(' ').forEach(function (m) {
+    var r = /^\[(\d)\](.*)$/.exec(m);
+    if (r && jetons.length) jetons[jetons.length - 1] += '<b class="cit" id="c' + r[1] + '">' + r[1] + '</b>' + r[2];
+    else jetons.push(m);
+  });
+  $('reponse').innerHTML = jetons.map(function (m) { return '<span class="m">' + m + '</span>'; }).join(' ');
+  var MOTS = $('reponse').querySelectorAll('.m');
+  var COCHE = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  TXT.raisons.forEach(function (r, i) {
+    var li = document.createElement('li'); li.id = 'r' + i;
+    li.innerHTML = '<u>' + COCHE + '</u><b>' + r + '</b>';
+    $('raisons').appendChild(li);
+  });
+
+  function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function seg(t, a, b) { return c01((t - a) / (b - a)); }
+  function bez(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    return function (x) { var t = x; for (var i = 0; i < 8; i++) { var d = (3 * ax * t + 2 * bx) * t + cx, e = ((ax * t + bx) * t + cx) * t - x; if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } t = c01(t); return ((ay * t + by) * t + cy) * t; };
+  }
+  var A = bez(0.15, 1, 0.32, 1);
+  var S = bez(0.333, 0, 0.667, 0);
+  function ressort(x) { if (x <= 0) return 0; if (x >= 1) return 1; var z = 0.5, w = 10; var wd = w * Math.sqrt(1 - z * z); var e = Math.exp(-z * w * x); return 1 - e * (Math.cos(wd * x) + (z * w / wd) * Math.sin(wd * x)); }
+
+  /* Centre la fenêtre, puis la page, dans la hauteur libre sous le titre (mesuré, polices chargées). */
+  var ZONE = PORTRAIT ? [330, 1310] : [290, 1040];
+  function placer() {
+    var h = $('fenetre').offsetHeight;
+    $('fenetre').style.top = Math.round(ZONE[0] + (ZONE[1] - ZONE[0] - h) / 2) + 'px';
+    if (PORTRAIT) {
+      var hp = $('page').offsetHeight, hr = $('raisons').offsetHeight, ecart = 40;
+      var y = Math.round(ZONE[0] + (ZONE[1] - ZONE[0] - hp - ecart - hr) / 2);
+      $('page').style.top = y + 'px'; $('raisons').style.top = (y + hp + ecart) + 'px';
+    } else {
+      var hp2 = $('page').offsetHeight, hr2 = $('raisons').offsetHeight;
+      $('page').style.top = Math.round(ZONE[0] + (ZONE[1] - ZONE[0] - hp2) / 2) + 'px';
+      $('raisons').style.top = Math.round(ZONE[0] + (ZONE[1] - ZONE[0] - hr2) / 2) + 'px';
+    }
+  }
+  placer();
+
+  var TITRES = [[0.3, 9.0], [9.6, 19.3]];
+  function titres(t) {
+    TITRES.forEach(function (p, i) {
+      $('ta' + i).querySelectorAll('.ln').forEach(function (ln, j) {
+        var e = A(seg(t, p[0] + j * 0.13, p[0] + j * 0.13 + 0.95));
+        var s = S(seg(t, p[1] + j * 0.06, p[1] + j * 0.06 + 0.4));
+        ln.style.transform = 'translateY(' + ((1 - e) * 140 - s * 140).toFixed(2) + '%)';
+      });
+    });
+  }
+  /* Les cinq raisons : à R[i], la ligne entre et sa zone de la page s'allume. */
+  var R = [11.0, 12.2, 13.4, 14.6, 15.8];
+
+  window.render = function (t) {
+    titres(t);
+    var fin = S(seg(t, 19.3, 19.95)), fond = 1 - fin;
+
+    /* Acte 1. */
+    var fe = A(seg(t, 0.6, 1.5)), fs = S(seg(t, 9.0, 9.5));
+    $('fenetre').style.opacity = (fe * (1 - fs)).toFixed(3);
+    $('fenetre').style.transform = 'translateY(' + ((1 - fe) * 40 - fs * 30).toFixed(1) + 'px)';
+    var nq = Math.round(seg(t, 1.5, 2.9) * CAR.length);
+    CAR.forEach(function (c, i) { c.style.opacity = i < nq ? 1 : 0; });
+    $('question').style.opacity = t >= 1.45 ? 1 : 0;
+    var dots = t >= 3.0 && t < 3.6;
+    $('points').style.opacity = dots ? 1 : 0;
+    $('points').querySelectorAll('i').forEach(function (d, i) { d.style.transform = 'translateY(' + (dots ? -6 * Math.max(0, Math.sin((t * 9) - i * 0.9)) : 0).toFixed(1) + 'px)'; });
+    var nm = seg(t, 3.6, 6.8) * MOTS.length;
+    MOTS.forEach(function (m, i) { m.style.opacity = c01(nm - i).toFixed(2); });
+    [1, 2, 3].forEach(function (k, i) {
+      var e = A(seg(t, 6.9 + i * 0.15, 7.6 + i * 0.15));
+      var s = $('sr' + k);
+      s.style.opacity = e.toFixed(3);
+      s.style.transform = 'translateY(' + ((1 - e) * 24).toFixed(1) + 'px)';
+      var or = k < 3 && t >= 7.9 + i * 0.25;
+      s.classList.toggle('or', or);
+      $('c' + k).classList.toggle('or', or);
+      if (k < 3) { var r = ressort(seg(t, 7.9 + i * 0.25, 8.5 + i * 0.25)); s.style.transform += ' scale(' + (or ? (0.94 + 0.06 * r).toFixed(3) : 1) + ')'; }
+    });
+    var b = A(seg(t, 8.4, 9.0));
+    $('bilan').style.opacity = b.toFixed(3);
+    $('bilan').style.transform = 'translateX(' + ((1 - b) * -16).toFixed(1) + 'px)';
+
+    /* Acte 2. */
+    var pe = A(seg(t, 9.8, 10.7));
+    $('page').style.opacity = (pe * fond).toFixed(3);
+    $('page').style.transform = 'translateY(' + ((1 - pe) * 40).toFixed(1) + 'px)';
+    R.forEach(function (d, i) {
+      var e = A(seg(t, d, d + 0.6)), on = t >= d + 0.1 && t < 19.3;
+      var li = $('r' + i);
+      li.style.opacity = (e * fond).toFixed(3);
+      li.style.transform = 'translateX(' + ((1 - e) * 22).toFixed(1) + 'px)';
+      li.querySelector('u').style.transform = 'scale(' + ressort(seg(t, d, d + 0.6)).toFixed(3) + ')';
+      if (i < 4) $('z' + i).classList.toggle('on', on);
+    });
+    var ll = ressort(seg(t, R[4] + 0.1, R[4] + 0.7));
+    $('llms').style.opacity = c01(ll * 2).toFixed(2);
+    $('llms').style.transform = 'scale(' + ll.toFixed(3) + ')';
+  };
+
+  window.PRET = Promise.all([
+    document.fonts.load('800 40px "Plus Jakarta Sans"'), document.fonts.load('700 40px "Plus Jakarta Sans"'), document.fonts.load('600 20px "Inter"'), document.fonts.load('500 20px "Inter"')
+  ]).then(placer);
+  window.render(0);
+})();
+</script>
+<script src="/motion/lecteur.js"></script>
+</body>
+</html>

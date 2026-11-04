@@ -1,7 +1,7 @@
 """Copie les scènes de la page AI Content (blog et contenu IA) du labo motion dans le site.
 
 Même mécanique que `scenes-creative.py` : les scènes vivent dans
-`_shared/motion-lib/labo/essais/blog-*.html`, choisissent leur langue d'après leur adresse
+`_shared/motion-lib/labo/essais/` (`geo-reponse` et `blog-*`), choisissent leur langue d'après leur adresse
 (`/en/` dans le chemin) et leur format d'après `?p=1`. Ce script les pose dans `public/motion/`
 et `public/motion/en/`, avec le lecteur du site à la place de celui du labo.
 À relancer après toute retouche d'une scène au labo.
@@ -16,7 +16,7 @@ from pathlib import Path
 
 SITE = Path(__file__).resolve().parents[1]
 LABO = SITE.parent / '_shared' / 'motion-lib' / 'labo' / 'essais'
-SCENES = ['blog-circuit', 'blog-sujets', 'blog-article', 'blog-regle']
+SCENES = ['geo-reponse', 'blog-circuit', 'blog-sujets', 'blog-article', 'blog-regle']
 
 
 def main() -> None:

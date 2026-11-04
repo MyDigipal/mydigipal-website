@@ -430,7 +430,7 @@ function buildReasoning(
     'google-ads': { en: 'Google Ads', fr: 'Google Ads' },
     'paid-social': { en: 'Paid Social', fr: 'Paid Social' },
     'emailing': { en: 'Email Marketing', fr: 'Email Marketing' },
-    'ai-content': { en: 'AI Content', fr: 'Contenu IA' },
+    'ai-content': { en: 'GEO / AEO', fr: 'GEO / AEO' },
     'ai-solutions': { en: 'AI Solutions', fr: 'Solutions IA' },
     'ai-training': { en: 'AI Training', fr: 'Formation IA' },
     'tracking-reporting': { en: 'Tracking & Reporting', fr: 'Tracking & Reporting' },

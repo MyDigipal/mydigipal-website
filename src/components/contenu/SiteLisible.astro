@@ -1,0 +1,112 @@
+---
+/**
+ * Page GEO / AEO (04/11/2026) : le volet « site », à côté du contenu (Paul : « on peut aussi
+ * parler de tous nos services où on fait des optimisations de site d'un point de vue technique
+ * et d'un point de vue du contenu »). Ce qui est listé est ce que nous faisons réellement chez nos
+ * clients B2B : llms.txt, robots.txt qui nomme les robots des assistants, données structurées de
+ * l'entreprise, FAQ balisées, titres et descriptions, H1, liens cassés, pages orphelines, trafic
+ * venu des IA isolé dans GA4. Aucun client nommé, aucun prix : ce travail se chiffre après audit.
+ *
+ * Visuel dominant : les deux fichiers qu'une IA lit en premier, robots.txt et llms.txt, écrits
+ * pour un site d'exemple, qui apparaissent ligne à ligne.
+ */
+import type { Language } from '@/i18n/config';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+
+const T = {
+  fr: {
+    titre: 'Un site que les IA savent lire',
+    chapo: 'Le contenu fait l’essentiel. Mais une IA ne cite que ce qu’elle peut lire et comprendre : nous reprenons aussi le site lui-même, côté technique et côté contenu.',
+    domaine: 'votre-site.fr',
+    llms: ['# Votre entreprise', '> Ce que vous faites, pour qui, en une phrase.', '## Services', '- [Votre offre](/offre) : ce qu’elle apporte', '- [Le guide du mois](/blog/guide) : la question à laquelle il répond'],
+    groupes: [
+      { titre: 'Pour les assistants IA', points: ['Un fichier llms.txt qui présente vos pages clés', 'Un robots.txt qui nomme leurs robots et les laisse entrer', 'Les données structurées de votre entreprise', 'Des FAQ balisées sur les pages qui vendent'] },
+      { titre: 'Pour Google', points: ['Titres et descriptions réécrits, page par page', 'Un seul H1 par page, des intertitres qui répondent', 'Liens cassés réparés, pages orphelines reliées', 'Pages vides sorties de l’index'] },
+      { titre: 'Pour mesurer', points: ['Le trafic venu de ChatGPT, Perplexity et des autres assistants, isolé dans GA4', 'Un nouveau passage d’Ahrefs pour vérifier ce qui a changé'] },
+    ],
+    note: 'Ce travail sur le site se chiffre selon sa taille, après un premier passage. Il peut aussi faire partie d’un',
+    lien: 'accompagnement SEO',
+  },
+  en: {
+    titre: 'A site AI can read',
+    chapo: 'Content does most of the work. But an AI only cites what it can read and understand, so we also fix the site itself, on the technical side and the content side.',
+    domaine: 'your-site.com',
+    llms: ['# Your company', '> What you do, and for whom, in one sentence.', '## Services', '- [Your offer](/offer): what it brings', '- [This month’s guide](/blog/guide): the question it answers'],
+    groupes: [
+      { titre: 'For AI assistants', points: ['An llms.txt file that presents your key pages', 'A robots.txt that names their crawlers and lets them in', 'Structured data about your company', 'Marked-up FAQs on the pages that sell'] },
+      { titre: 'For Google', points: ['Titles and descriptions rewritten, page by page', 'One H1 per page, headings that answer', 'Broken links fixed, orphan pages linked', 'Empty pages taken out of the index'] },
+      { titre: 'To measure', points: ['Traffic from ChatGPT, Perplexity and other assistants, split out in GA4', 'A fresh Ahrefs crawl to check what changed'] },
+    ],
+    note: 'This site work is priced by size, after a first pass. It can also be part of an',
+    lien: 'SEO engagement',
+  },
+}[lang];
+
+const robots = ['User-agent: GPTBot', 'User-agent: ClaudeBot', 'User-agent: PerplexityBot', 'User-agent: Google-Extended', 'Allow: /', '', `Sitemap: https://${T.domaine}/sitemap.xml`];
+---
+
+<section class="section-blanc sl">
+  <div class="container-custom">
+    <header class="sl-tete">
+      <h2 class="titre-moyen text-encre">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+    </header>
+    <div class="sl-grille">
+      <div class="sl-fichiers" aria-hidden="true">
+        <figure class="sl-fichier">
+          <figcaption><span>{T.domaine}/</span>robots.txt</figcaption>
+          <pre>{robots.map((l, i) => (
+            <span class:list={['sl-l', { 'sl-c': l.startsWith('User-agent') }]} data-reveal style={`--i:${i}`}>{l || ' '}</span>
+          ))}</pre>
+        </figure>
+        <figure class="sl-fichier sl-or">
+          <figcaption><span>{T.domaine}/</span>llms.txt</figcaption>
+          <pre>{T.llms.map((l, i) => (
+            <span class:list={['sl-l', { 'sl-h': l.startsWith('#') }]} data-reveal style={`--i:${i + 4}`}>{l}</span>
+          ))}</pre>
+        </figure>
+      </div>
+      <div class="sl-groupes">
+        {T.groupes.map((g, i) => (
+          <div class="sl-groupe" data-reveal style={`--i:${i}`}>
+            <h3>{g.titre}</h3>
+            <ul>
+              {g.points.map((p) => (
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>{p}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        <p class="sl-note">{T.note} <a href={`/${lang}/services/seo`}>{T.lien}</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sl { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .sl { padding: 120px 0 128px; } }
+  .sl-tete { display: grid; gap: 18px; max-width: 820px; margin-bottom: 44px; }
+  .sl-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: start; }
+  @media (min-width: 1024px) { .sl-grille { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; } .sl-fichiers { position: sticky; top: 96px; } }
+  .sl-fichiers { display: grid; gap: 18px; }
+  .sl-fichier { margin: 0; border-radius: 20px; background: var(--encre); box-shadow: 0 30px 60px -36px rgb(8 19 31 / 0.6); overflow: hidden; }
+  .sl-fichier figcaption { padding: 12px 20px; font: 600 13px/1.2 'Inter', sans-serif; color: #fff; background: #12263a; border-bottom: 1px solid #1f3a55; }
+  .sl-fichier figcaption span { color: #7d93a8; }
+  .sl-or figcaption { color: #e8bd62; }
+  .sl-fichier pre { margin: 0; padding: 18px 20px 20px; font: 500 14px/1.65 ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; color: #c9d6e2; white-space: pre-wrap; overflow-wrap: anywhere; display: grid; }
+  .sl-l { display: block; min-height: 1.65em; }
+  .sl-c { color: #9fcaf2; }
+  .sl-h { color: #e8bd62; font-weight: 700; }
+  .sl-groupes { display: grid; gap: 30px; }
+  .sl-groupe h3 { margin: 0 0 12px; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; font-size: 22px; color: var(--encre); }
+  .sl-groupe ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .sl-groupe li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; color: #33475b; font-size: 16px; line-height: 1.5; }
+  .sl-groupe li svg { width: 20px; height: 20px; margin-top: 2px; fill: none; stroke: var(--color-marque); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .sl-note { margin: 0; padding-top: 20px; border-top: 1px solid #dbe3ea; color: #4B5B6B; font-size: 15px; line-height: 1.55; }
+  .sl-note a { color: var(--color-marque); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+</style>
