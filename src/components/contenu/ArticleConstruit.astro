@@ -1,0 +1,77 @@
+---
+/**
+ * Page AI Content (04/11/2026) : la préparation, la rédaction et le SEO d'un article.
+ * Visuel dominant : la scène `blog-article` (un article d'exemple sur l'AI Act, faits exacts),
+ * à gauche ; à droite, les trois temps en une phrase chacun.
+ */
+import type { Language } from '@/i18n/config';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+const N = ' ';
+
+const T = {
+  fr: {
+    titre: 'Un guide qui répond mieux que ceux déjà en tête',
+    chapo: 'Avant d’écrire une ligne, nous lisons les premiers résultats de Google et réunissons les faits avec leurs sources. Le référencement est fixé en amont, pas ajouté à la fin.',
+    temps: [
+      ['La préparation', 'Les premiers résultats de Google, ce qu’ils couvrent et ce qu’ils oublient, puis un dossier de faits sourcés. Rien n’est inventé, ni chiffre ni citation.'],
+      ['La rédaction', `Un guide de 1${N}400 à 1${N}900 mots : l’essentiel en tête, un sommaire, des parties qui répondent, un tableau, une FAQ et les sources. Un format pensé pour être lu, et repris par Google et les assistants IA.`],
+      ['Le SEO dedans', 'Le titre et la description comptés au caractère près, les données structurées, et 6 à 8 liens vers vos pages, tous testés avant l’envoi.'],
+    ],
+    ia: 'Nos outils d’IA écrivent à partir du dossier de faits ; l’équipe vérifie chaque chiffre et chaque lien.',
+    scene: 'Un article construit pas à pas : les faits, la rédaction, le SEO',
+  },
+  en: {
+    titre: 'A guide that answers better than the ones already on top',
+    chapo: 'Before writing a line, we read the top Google results and gather the facts with their sources. The SEO is set up front, not added at the end.',
+    temps: [
+      ['The research', 'The top Google results, what they cover and what they miss, then a file of sourced facts. Nothing is made up, no number and no quote.'],
+      ['The writing', 'A 1,400 to 1,900-word guide: the key points first, a table of contents, sections that answer, a table, an FAQ and the sources. A format built to be read, and picked up by Google and AI assistants.'],
+      ['The SEO, built in', 'Title and description counted to the character, structured data, and 6 to 8 links to your pages, all tested before delivery.'],
+    ],
+    ia: 'Our AI tools write from the fact file; the team checks every number and every link.',
+    scene: 'An article built step by step: facts, writing, SEO',
+  },
+}[lang];
+---
+
+<section class="section-brume ac">
+  <div class="container-custom">
+    <header class="ac-tete">
+      <h2 class="titre-moyen text-encre">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+    </header>
+    <div class="ac-grille">
+      <div class="ac-scene">
+        <SceneLabo lang={lang} nom="blog-article" format="carre" repos={18.8} controles portraitMobile titre={T.scene} />
+      </div>
+      <div class="ac-droite">
+        <dl class="ac-temps">
+          {T.temps.map(([titre, texte], i) => (
+            <div class="ac-un" data-reveal style={`--i:${i}`}><dt>{titre}</dt><dd>{texte}</dd></div>
+          ))}
+        </dl>
+        <p class="ac-ia">{T.ia}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ac { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .ac { padding: 120px 0 128px; } }
+  .ac-tete { display: grid; gap: 18px; max-width: 820px; margin-bottom: 44px; }
+  .ac-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; align-items: start; }
+  @media (min-width: 1024px) { .ac-grille { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 56px; } .ac-scene { position: sticky; top: 96px; } }
+  .ac-droite { display: grid; gap: 22px; }
+  .ac-temps { margin: 0; display: grid; gap: 0; }
+  .ac-un { padding: 22px 0; border-top: 1px solid #dbe3ea; }
+  .ac-un:last-child { border-bottom: 1px solid #dbe3ea; }
+  .ac-un dt { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; font-size: 22px; color: var(--encre); }
+  .ac-un dd { margin: 6px 0 0; color: #4B5B6B; font-size: 16px; line-height: 1.55; }
+  .ac-ia { margin: 0; color: #4B5B6B; font-size: 15px; line-height: 1.5; max-width: 46ch; }
+</style>

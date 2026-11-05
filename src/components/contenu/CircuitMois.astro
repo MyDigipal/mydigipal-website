@@ -1,0 +1,78 @@
+---
+/**
+ * Page GEO / AEO (04/11/2026) : le circuit du mois, juste sous le haut de page. Le contenu fait
+ * l'essentiel de l'offre (Paul) : quatre guides par mois, et le client intervient deux fois.
+ * Visuel dominant : la scène `blog-circuit` du labo, qui était dans le haut de page avant que le
+ * haut de page ne passe au GEO (scène `geo-reponse`).
+ */
+import type { Language } from '@/i18n/config';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+
+const T = {
+  fr: {
+    titre: 'Un article par semaine. Écrit, vérifié, publié.',
+    chapo: 'Le cœur du travail, c’est le contenu : quatre guides par mois qui répondent aux questions que vos clients posent à Google et aux IA.',
+    temps: [
+      ['Vous choisissez les sujets', 'Quatre sujets parmi ceux que nous proposons, d’un clic dans le Hub.'],
+      ['Vous relisez', 'Une seule fois, en commentant directement sur le texte.'],
+      ['Tout le reste, c’est nous', 'Préparation, rédaction, SEO, vidéo, relecture, publication et suivi.'],
+    ],
+    scene: 'Le circuit du mois : vous intervenez deux fois',
+  },
+  en: {
+    titre: 'One article a week. Written, checked, published.',
+    chapo: 'The heart of the work is content: four guides a month that answer the questions your customers ask Google and AI.',
+    temps: [
+      ['You pick the topics', 'Four topics from the ones we suggest, in one click in the Hub.'],
+      ['You review', 'Just once, commenting right on the text.'],
+      ['Everything else is on us', 'Research, writing, SEO, video, review, publishing and tracking.'],
+    ],
+    scene: 'Your month, end to end: you step in twice',
+  },
+}[lang];
+---
+
+<section class="section-brume cm">
+  <div class="container-custom">
+    <div class="cm-grille">
+      <div class="cm-texte">
+        <h2 class="titre-moyen text-encre">{T.titre}</h2>
+        <p class="chapo">{T.chapo}</p>
+        <dl class="cm-temps">
+          {T.temps.map(([titre, texte], i) => (
+            <div class:list={['cm-un', { 'cm-vous': i < 2 }]} data-reveal style={`--i:${i}`}>
+              <dt>
+                {i < 2 && <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.4" /><path d="M3.5 21.5c.8-4.8 4.3-7.3 8.5-7.3s7.7 2.5 8.5 7.3z" /></svg>}
+                {titre}
+              </dt>
+              <dd>{texte}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <div class="cm-scene">
+        <SceneLabo lang={lang} nom="blog-circuit" format="carre" repos={12.7} controles portraitMobile titre={T.scene} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cm { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .cm { padding: 120px 0 128px; } }
+  .cm-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; align-items: center; }
+  @media (min-width: 1024px) { .cm-grille { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 56px; } }
+  .cm-texte { display: grid; gap: 18px; }
+  .cm-temps { margin: 12px 0 0; display: grid; gap: 0; }
+  .cm-un { padding: 18px 0; border-top: 1px solid #dbe3ea; }
+  .cm-un:last-child { border-bottom: 1px solid #dbe3ea; }
+  .cm-un dt { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; font-size: 20px; color: var(--encre); }
+  .cm-un dt svg { width: 22px; height: 22px; padding: 5px; box-sizing: content-box; border-radius: 99px; background: #e8bd62; fill: var(--encre); flex: none; }
+  .cm-un dd { margin: 6px 0 0; color: #4B5B6B; font-size: 16px; line-height: 1.55; }
+  .cm-vous dd { padding-left: 42px; }
+</style>

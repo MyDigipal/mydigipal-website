@@ -25,7 +25,7 @@ export const EXTRAITS: Record<string, Extrait> = {
   'service:emailing': { focus: ['emailing'], nom: { fr: 'vos campagnes email', en: 'your email campaigns' }, page: { fr: 'la page Emailing', en: 'the Emailing page' } },
   'service:tracking-reporting': { focus: ['tracking-reporting'], nom: { fr: 'votre tracking', en: 'your tracking' }, page: { fr: 'la page Tracking et reporting', en: 'the Tracking and reporting page' } },
   'service:ai-solutions': { focus: ['ai-solutions'], nom: { fr: 'vos automatisations', en: 'your automations' }, page: { fr: 'la page AI Solutions', en: 'the AI Solutions page' } },
-  'service:ai-content': { focus: ['ai-content'], nom: { fr: 'votre contenu IA', en: 'your AI content' }, page: { fr: 'la page AI Content', en: 'the AI Content page' } },
+  'service:ai-content': { focus: ['ai-content'], nom: { fr: 'vos articles', en: 'your articles' }, page: { fr: 'la page GEO / AEO', en: 'the GEO / AEO page' } },
   // L'ABM se mène surtout sur LinkedIn : le devis part de la publicité sociale, LinkedIn coché.
   'service:b2b-abm': { focus: ['paid-social'], preset: { 'ps-channels': ['linkedin'] }, nom: { fr: 'votre programme ABM', en: 'your ABM programme' }, page: { fr: 'la page B2B et ABM', en: 'the B2B and ABM page' } },
   'automotive:google-ads': { focus: ['google-ads'], nom: { fr: 'Google Ads pour vos concessions', en: 'Google Ads for your dealerships' }, page: { fr: 'la page automobile Google Ads', en: 'the automotive Google Ads page' } },

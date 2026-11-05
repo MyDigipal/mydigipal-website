@@ -175,7 +175,7 @@ export const DOMAIN_SHORT: Record<ServiceDomain, Txt> = {
   'ai-training': { fr: 'Formation IA', en: 'AI Training' },
   'emailing': { fr: 'Emailing', en: 'Email' },
   'ai-solutions': { fr: 'Solutions IA', en: 'AI Solutions' },
-  'ai-content': { fr: 'Contenu IA', en: 'AI Content' },
+  'ai-content': { fr: 'GEO / AEO', en: 'GEO / AEO' },
   'tracking-reporting': { fr: 'Tracking', en: 'Tracking' },
   'creative-design': { fr: 'Creative design', en: 'Creative design' }
 };

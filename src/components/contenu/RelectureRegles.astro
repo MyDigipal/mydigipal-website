@@ -1,0 +1,79 @@
+---
+/**
+ * Page AI Content (04/11/2026) : notre relecture, puis celle du client dans le Hub, une seule
+ * fois ; chaque remarque devient une règle de rédaction. Visuel dominant : la scène `blog-regle`
+ * (exemple générique, un blog consacré à l'IA).
+ */
+import type { Language } from '@/i18n/config';
+import SceneLabo from '@/components/motion/SceneLabo.astro';
+
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+
+const T = {
+  fr: {
+    titre: 'Vous relisez une fois. Nous retenons tout.',
+    chapo: 'L’article vous arrive contrôlé. Vous le lisez dans le Hub tel qu’il sera publié, et vous commentez directement sur le texte. Chaque remarque rejoint vos règles de rédaction et s’applique à tous les articles suivants.',
+    controlesTitre: 'Avant de vous l’envoyer, nous vérifions',
+    controles: [
+      'Chaque fait, rapproché de sa source',
+      'Chaque lien, testé une dernière fois',
+      'Le titre et la description, au caractère près',
+      'Vos règles de rédaction, une par une',
+      'Les formules creuses et l’orthographe',
+    ],
+    scene: 'Une remarque du client qui devient une règle de rédaction',
+  },
+  en: {
+    titre: 'You review once. We remember everything.',
+    chapo: 'The article reaches you already checked. You read it in the Hub as it will be published, and comment right on the text. Every note joins your writing rules and applies to every article that follows.',
+    controlesTitre: 'Before it reaches you, we check',
+    controles: [
+      'Every fact, against its source',
+      'Every link, tested one last time',
+      'The title and description, to the character',
+      'Your writing rules, one by one',
+      'Empty phrases and spelling',
+    ],
+    scene: 'A client note that becomes a writing rule',
+  },
+}[lang];
+---
+
+<section class="section-blanc rr">
+  <div class="container-custom rr-grille">
+    <div class="rr-texte">
+      <h2 class="titre-moyen text-encre">{T.titre}</h2>
+      <p class="chapo">{T.chapo}</p>
+      <div class="rr-controles">
+        <p class="rr-ct">{T.controlesTitre}</p>
+        <ul>
+          {T.controles.map((c, i) => (
+            <li data-reveal style={`--i:${i}`}>
+              <svg viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 6.5l4 4 9-9" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <span>{c}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+    <div class="rr-scene">
+      <SceneLabo lang={lang} nom="blog-regle" format="carre" repos={18.6} controles portraitMobile titre={T.scene} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .rr { padding: 88px 0 96px; }
+  @media (min-width: 1024px) { .rr { padding: 120px 0 128px; } }
+  .rr-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: center; }
+  @media (min-width: 1024px) { .rr-grille { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 64px; } }
+  .rr-texte { display: grid; gap: 20px; }
+  .rr-controles { margin-top: 8px; border-radius: 22px; background: var(--brume); padding: 22px 24px; }
+  .rr-ct { margin: 0 0 10px; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; font-size: 19px; color: var(--encre); }
+  .rr-controles ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .rr-controles li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 12px; align-items: start; color: #34485c; font-size: 15.5px; line-height: 1.45; }
+  .rr-controles svg { width: 16px; height: 12px; margin-top: 5px; color: var(--color-marque); }
+</style>

@@ -89,8 +89,9 @@ export const domainConfigs: Record<ServiceDomain, DomainConfig> = {
   },
   'ai-content': {
     id: 'ai-content',
-    name: 'AI Content',
-    nameFr: 'Contenu IA',
+    // Renommé GEO / AEO le 04/11/2026 avec la page ; l'identifiant ai-content ne change pas.
+    name: 'GEO / AEO',
+    nameFr: 'GEO / AEO',
     icon: '✍️',
     description: 'AI-powered SEO blog articles, social content and landing pages',
     descriptionFr: 'Articles de blog SEO, contenu social et landing pages propulsés par l\'IA',
