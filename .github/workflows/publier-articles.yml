@@ -4,8 +4,13 @@
 name: Publier les articles programmés
 
 on:
+  # GitHub retarde ses déclenchements programmés de plusieurs heures, ou les saute (vu le 04/11/2026 :
+  # parti à 14 h 30 au lieu de 6 h 15 ; le 05/11 : rien à 9 h 45). Le script ne publie que ce qui est dû
+  # et ne pousse rien sinon, donc les deux passages de rattrapage sont sans risque de doublon.
   schedule:
     - cron: "15 6 * * *" # 6 h 15 UTC, soit 6 h 15 (GMT) ou 7 h 15 (BST) à Londres
+    - cron: "45 9 * * *" # rattrapage
+    - cron: "45 13 * * *" # rattrapage
   workflow_dispatch:
 
 permissions:
