@@ -206,6 +206,20 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   ⚠️ Les espaces INSÉCABLES comptent (montants, « 10 % ») : le portage a d'abord différé
   là-dessus, invisible à l'œil. `scripts/n8n-calculateur/` reste dans le site pour rejouer
   l'ancien workflow en cas de retour arrière, et son Google Sheet n'est plus alimenté.
+- **Le conseiller IA (05/11/2026, direction A choisie par Paul)** : `/{lang}/calculator` s'ouvre sur
+  une conversation (`Conseiller.tsx`, monté par `CalculateurConseille.tsx`). L'IA pose deux ou trois
+  questions, choisit les services et répond aux questions du calculateur ; **le moteur `devis()`
+  chiffre, le modèle n'écrit jamais un montant**. Serveur : `POST
+  academy.mydigipal.com/api/academy/public/question/composer` (`calculateur-ia.ts`, sortie structurée,
+  même budget et même interrupteur que le chat), qui lit `/calculateur-catalogue.json` généré par
+  `lib/devis/catalogue-ia.ts` (services, questions, réponses permises, aucun prix) : un service ajouté
+  au calculateur est connu du conseiller au déploiement suivant. « Recevoir ce devis » passe le plan
+  au `CalculatorV6` caché par `mdp-assistant:plan`, avec `origine: conseiller` (mail de Paul, GA4) et
+  l'audit prérempli par ce que le visiteur a dit. Un visiteur qui arrive avec une intention (`#plan=`,
+  `?service=`, panier non vide, `#ajouter`) voit directement le calculateur classique ; IA
+  indisponible (503) : le conseiller le dit et propose le calculateur. Mesure : `calculator_advisor_message`,
+  `calculator_advisor_plan` (dataLayer, pas encore relayés par GTM). Maquette :
+  https://claude.ai/artifact/2steZLd6kxCNzGazuEJqGB.
 - **Anciennes adresses** : l'ancien calculateur est supprimé (section 3 bis) ;
   `/{lang}/calculator-v6` renvoie vers `/calculator` en gardant l'ancre.
 - **Assistant du site** (`src/components/site-assistant/`) : il connaît la page où il s'ouvre.
@@ -218,7 +232,10 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   page automobile n'est plus demandé. Au bout de **dix secondes**, une question d'une ligne
   s'affiche au-dessus du visage, elle aussi tirée de la page (« Vous voulez un prix pour Google
   Ads ? », « Faire comme GWI chez vous ? ») ; un clic ouvre le panneau. La bulle avec la photo de Paul,
-  sans modèle, reliée à Google Chat (espace « Website Chat ») par l'application Academy.
+  reliée à Google Chat (espace « Website Chat ») par l'application Academy. ⚠️ **Elle a une IA
+  depuis le 29/09/2026** (Sonnet 5.5, `vente-ia-server.ts` de l'application, connaissance lue dans
+  `/assistant-connaissance.json`) et une question d'ouverture écrite par l'IA depuis le 03/11 ; elle
+  n'écrit AUCUN prix (un montant hors liste blanche fait remplacer sa réponse).
   Sur tout le site depuis le 22/09/2026, pages de l'Academy comprises depuis le 02/10/2026
   (mode Academy, voir « Un seul chat sur tout le site »), sauf `/admin` (script de
   `BaseLayout.astro` ; `?assistant=0` l'éteint pour la visite). Règle de Paul : **deux appels à

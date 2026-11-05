@@ -212,7 +212,10 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
   const tracking = !dryRun;
   const extrait = !!focus?.length;
   const moi = useId();
-  const origineDevis: Origine = origine ?? { id: 'calculator', libelle: lang === 'fr' ? 'le calculateur' : 'the calculator' };
+  // Un devis composé par le conseiller IA (05/11/2026) arrive par l'événement du plan avec sa
+  // propre origine : le mail de Paul et GA4 savent qu'il vient de la conversation.
+  const [origineForcee, setOrigineForcee] = useState<Origine | null>(null);
+  const origineDevis: Origine = origineForcee ?? origine ?? { id: 'calculator', libelle: lang === 'fr' ? 'le calculateur' : 'the calculator' };
   // Sur une page de service, le devis s'ouvre sur ce service ; au navigateur, il reprend le
   // panier du visiteur (le même devis d'une page à l'autre).
   const [st, setSt] = useState<QuoteState>(() => (extrait ? { ...emptyState(), domains: inOrder(focus!), answers: { ...(preset ?? {}) } } : emptyState()));
@@ -449,7 +452,13 @@ export default function CalculatorV6({ lang, showEmptyVideoSlots = false, dryRun
     if (services.length) setDraft((d) => inOrder([...new Set([...(panier?.st.domains ?? d), ...services])]));
     pret.current = true;
     const surPlan = (e: Event) => {
-      const d = (e as CustomEvent<{ plan?: string; budget?: number }>).detail;
+      const d = (e as CustomEvent<{ plan?: string; budget?: number; origine?: Origine; audit?: Partial<typeof audit> }>).detail;
+      // Le conseiller IA passe aussi son origine et ce qu'il a appris (préremplit l'audit).
+      if (d?.origine) {
+        setOrigineForcee(d.origine);
+        fixerOrigineMesure(d.origine.id);
+      }
+      if (d?.audit) setAudit((a) => ({ ...a, ...Object.fromEntries(Object.entries(d.audit!).filter(([, v]) => typeof v === 'string' && v.trim())) }));
       if (d?.plan) appliquerPlan(d.plan, d.budget);
     };
     window.addEventListener('mdp-assistant:plan', surPlan);
