@@ -369,6 +369,13 @@ const canonical = canonicalURL || Astro.url.href;
 
       // Initial load
       wireAll();
+
+      // Réactivité mesurée chez les vrais visiteurs (INP, voir lib/mesure-reactivite.ts).
+      // Chargée au repos : l'observateur relit les interactions déjà passées (tampon du
+      // navigateur), donc rien n'est perdu à l'attendre, et le premier affichage n'en paie rien.
+      const mesurer = () => import('@/lib/mesure-reactivite').then((m) => m.relever()).catch(() => undefined);
+      if ('requestIdleCallback' in window) window.requestIdleCallback(mesurer, { timeout: 4000 });
+      else setTimeout(mesurer, 3000);
       // Re-run after View Transitions
       document.addEventListener('astro:page-load', wireAll);
     </script>
