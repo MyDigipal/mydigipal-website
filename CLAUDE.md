@@ -289,6 +289,18 @@ visiteur, quelle que soit la page où il le compose.
   l'envoie pas). Bilan par origine du 10/11 et façon de reconnaître nos tests : section `#bilan`
   du document de pilotage.
 - `?envoi=test` dans l'adresse : aucun envoi, le contenu va dans la console (toutes les pages).
+- **Nos visites ne comptent plus dans GA4 depuis le 10/11/2026** (GTM version 110). GA4 avait déjà
+  un filtre « Internal Traffic » ACTIF (`traffic_type` = `internal`), nourri par une règle
+  d'adresses IP qui n'est plus à jour. Le conteneur marque maintenant le navigateur lui-même : le
+  témoin `mdp_interne=1` (400 jours, `.mydigipal.com`, donc l'Academy aussi) ou une adresse qui
+  porte `?interne=1`, `?envoi=test` ou `utm_source=test-...` font partir `traffic_type=internal`
+  sur la balise « GA4 - Configuration » (variable 287, balise 289, déclencheur 288) ; `?interne=0`
+  retire le témoin. ⚠️ Le filtre étant actif, une visite marquée est perdue pour de bon : le code
+  de la variable et de la balise est versionné avec ses essais dans `scripts/gtm-trafic-interne/`
+  (`node test.cjs`), à rejouer avant tout changement, et après toute publication vérifier qu'une
+  visite ordinaire ne porte pas `tt` dans `/g/collect`. Un navigateur marqué ne se voit plus dans
+  GA4 (**Realtime** compris) : `?interne=0` pour se revoir. Les balises publicitaires ne lisent
+  pas ce marquage : elles comptent encore nos essais de devis.
 
 ## 3 bis. Ce qui reste de la v5 (le reste est supprimé)
 
