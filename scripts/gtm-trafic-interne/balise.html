@@ -1,0 +1,16 @@
+<script>
+(function () {
+  try {
+    var q = window.location.search || '';
+    var retire = /[?&]interne=0(&|$)/.test(q);
+    var pose = /[?&](interne=1|envoi=test)(&|$)/.test(q) || /[?&]utm_source=test-/.test(q);
+    if (!retire && !pose) { return; }
+    var attributs = '; path=/; SameSite=Lax';
+    if (/(^|[.])mydigipal[.]com$/.test(window.location.hostname)) { attributs += '; domain=.mydigipal.com'; }
+    if (window.location.protocol === 'https:') { attributs += '; Secure'; }
+    document.cookie = retire
+      ? 'mdp_interne=; max-age=0' + attributs
+      : 'mdp_interne=1; max-age=34560000' + attributs;
+  } catch (e) {}
+})();
+</script>
