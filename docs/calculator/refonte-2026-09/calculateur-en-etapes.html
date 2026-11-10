@@ -57,6 +57,19 @@ section{margin-top:76px;scroll-margin-top:20px}
 .tbl .note{display:block;font-size:13px;color:var(--muted);font-weight:400}
 .done{display:flex;gap:10px;align-items:flex-start;background:var(--ok-soft);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:15px;margin:4px 0 16px}
 .done svg{color:var(--ok);flex:none;margin-top:4px}
+#bilan h3{margin:30px 0 10px}
+#bilan li{margin-bottom:8px}
+#bilan .tbl th.n,#bilan .tbl td.n{padding-left:14px}
+#bilan .tbl.serre{min-width:0}
+@media (max-width:760px){
+  #bilan .tbl.pile{min-width:0}
+  #bilan .tbl.pile thead{display:none}
+  #bilan .tbl.pile tr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px 6px;border-top:1px solid var(--line);padding:10px 0}
+  #bilan .tbl.pile td{display:block;border:0;padding:0}
+  #bilan .tbl.pile td:first-child{grid-column:1/-1;margin-bottom:6px}
+  #bilan .tbl.pile td.n{text-align:left;padding-left:0;font-weight:600}
+  #bilan .tbl.pile td[data-l]::before{content:attr(data-l);display:block;font-size:11.5px;font-weight:600;color:var(--muted)}
+}
 
 /* aujourd'hui */
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 28px;margin:22px 0 30px}
@@ -409,6 +422,7 @@ footer.end{margin-top:70px;font-size:13px;color:var(--muted)}
     <p class="lede">Le document de pilotage de la refonte : où on en est, la version ordinateur, les prix à valider, et les maquettes mobile. Toutes les maquettes tournent avec les vrais services et les vrais prix : clique dedans comme un visiteur.</p>
     <ul class="toc">
       <li><a href="#etat">Où on en est</a></li>
+      <li><a href="#bilan">Bilan du devis unique</a></li>
       <li><a href="#ordinateur">Version ordinateur</a></li>
       <li><a href="#prix">Prix à valider</a></li>
       <li><a href="#mail">Mail des devis</a></li>
@@ -424,6 +438,7 @@ footer.end{margin-top:70px;font-size:13px;color:var(--muted)}
   <section id="etat" class="prose">
     <h2>Où on en est</h2>
     <dl class="etat">
+      <div class="etat-row"><dt>Bilan du devis unique</dt><dd><span class="pill-st st-open">Relevé du 10/11</span>Aucun vrai devis du 20/10 au 10/11 : les 2 envois vus par GA4 et par le CRM sont nos tests du 20/10. Sur le calculateur, 12 visiteurs et 1 seul arrivé au formulaire ; 5 visiteurs ont eu un extrait à l’écran, aucun n’est allé au formulaire. Détail et suites : <a href="#bilan">le devis unique, trois semaines après</a>.</dd></div>
       <div class="etat-row"><dt>Devis unique</dt><dd><span class="pill-st st-done">En ligne depuis le 20/10</span>Ta demande du 20/10 : « le calculateur, c’est le truc global, mais chaque page peut avoir un extrait », et tout centralisé. Chaque page de service et automobile porte un extrait du calculateur (section « Chiffrez … pour votre cas », ancre <code>#devis</code>) à la place du ruban : les questions du service de la page, puis « Ajouter un autre service ? ». Les simulateurs de la formation et de la créa gardent leur présentation mais écrivent dans le même devis, qui suit le visiteur d’une page à l’autre et se rouvre dans le calculateur. Un seul envoi (les mails disent de quelle page vient le devis, et mettent en tête le montant ponctuel quand il n’y a pas de mensuel) et une seule mesure : <code>calculator_form_submit</code> avec <code>calculator_origin</code>, GTM version 105, dimension GA4 « Calculator Origine du devis ». Testé en production le 20/10 depuis la page AI Training : GA4, deux mails, CRM, bulle Chat. Détail technique : section 3 ter du CLAUDE.md du site.</dd></div>
       <div class="etat-row"><dt>Version mobile</dt><dd><span class="pill-st st-done">Décidé</span>B, une question à la fois. Ton choix du 22/09.</dd></div>
       <div class="etat-row"><dt>Version ordinateur</dt><dd><span class="pill-st st-done">Décidé</span>D1, le guide à côté. Ton choix du 22/09.</dd></div>
@@ -437,6 +452,74 @@ footer.end{margin-top:70px;font-size:13px;color:var(--muted)}
       <div class="etat-row"><dt>Total faux</dt><dd><span class="pill-st st-done">Corrigé</span>Le bug du lead ai-coustics, commit <code>8e259ff</code>, en ligne.</dd></div>
       <div class="etat-row"><dt>GA4 et BigQuery</dt><dd><span class="pill-st st-wait">À vérifier</span>Aucun export dans le projet Google Cloud <code>mydigipal</code>. Le compte ouvert dans ton Chrome n’a que la lecture sur la propriété 281550532, donc la rubrique <b>BigQuery links</b> n’y apparaît pas.</dd></div>
     </dl>
+  </section>
+
+  <section id="bilan" class="prose">
+    <h2>Le devis unique, trois semaines après</h2>
+    <p>Relevé du 10/11/2026, sur la période du 20/10 au 10/11 (le 10/11 est partiel). Sources : GA4 par son API (propriété 281550532, événement <code>Calculator</code>, dimension <code>calculator_origin</code>) et le CRM dans BigQuery (<code>prospection.calculator_quotes</code>, <code>contacts</code>, <code>opportunities_current</code>).</p>
+    <p><b>Aucun vrai devis en trois semaines.</b> GA4 et le CRM comptent les deux mêmes envois, à la minute près, et ce sont nos tests du 20/10 au soir. L’origine se mesure donc bien, mais il n’y a rien à répartir : le sujet est l’absence d’envoi. Ce creux ne vient pas du devis unique, parce que <code>calculator_quotes</code> ne contient aucun vrai devis non plus entre sa création le 23/09 et le 20/10.</p>
+
+    <h3>Les devis envoyés, par origine</h3>
+    <div class="tbl-wrap">
+      <table class="tbl serre">
+        <thead><tr><th>Origine</th><th class="n">GA4</th><th class="n">CRM</th><th class="n">Dont tests</th></tr></thead>
+        <tbody>
+          <tr><td><code>formation</code><span class="note">le 20/10 à 20&nbsp;h&nbsp;52, heure de Londres : 1&nbsp;200&nbsp;€</span></td><td class="n">1</td><td class="n">1</td><td class="n">1</td></tr>
+          <tr><td><code>creative</code><span class="note">le 20/10 à 21&nbsp;h&nbsp;36 : 1&nbsp;750&nbsp;€, formation et créa dans le même devis</span></td><td class="n">1</td><td class="n">1</td><td class="n">1</td></tr>
+          <tr><td><code>calculator</code></td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+          <tr><td><code>service:…</code><span class="note">les extraits des pages de service</span></td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+          <tr><td><code>automotive:…</code><span class="note">les extraits des pages automobile</span></td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+          <tr class="sum"><td>Vrais devis</td><td class="n">0</td><td class="n">0</td><td class="n"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted small">Les deux lignes du CRM portent « TEST Claude, à ignorer ». Le seul devis qui réunit plusieurs services est le second test.</p>
+
+    <h3>Jusqu’où vont les visiteurs, par origine</h3>
+    <p>Utilisateurs GA4 sur <code>calculator_step</code>, nos tests retirés. Sur un extrait, « bloc vu » et « configuré » partent ensemble dès que le bloc entre à l’écran : ils disent que le visiteur a eu l’extrait sous les yeux, pas qu’il a répondu.</p>
+    <div class="tbl-wrap">
+      <table class="tbl pile">
+        <thead><tr><th>Origine</th><th class="n">Vues</th><th class="n">Bloc vu</th><th class="n">Configuré</th><th class="n">Formulaire</th><th class="n">Envoyé</th></tr></thead>
+        <tbody>
+          <tr><td>Calculateur<span class="note"><code>calculator</code></span></td><td class="n" data-l="Vues">27</td><td class="n" data-l="Bloc vu">12</td><td class="n" data-l="Configuré">3</td><td class="n" data-l="Formulaire">1</td><td class="n" data-l="Envoyé">0</td></tr>
+          <tr><td>Extraits, 8 pages de service<span class="note">ai-solutions, tracking-reporting et b2b-abm : 1 visiteur chacune</span></td><td class="n" data-l="Vues">86</td><td class="n" data-l="Bloc vu">3</td><td class="n" data-l="Configuré">3</td><td class="n" data-l="Formulaire">0</td><td class="n" data-l="Envoyé">0</td></tr>
+          <tr><td>Extraits, 3 pages automobile<span class="note">paid-social et google-ads : 1 visiteur chacune</span></td><td class="n" data-l="Vues">18</td><td class="n" data-l="Bloc vu">2</td><td class="n" data-l="Configuré">2</td><td class="n" data-l="Formulaire">0</td><td class="n" data-l="Envoyé">0</td></tr>
+          <tr><td>Simulateurs formation et créa<span class="note">rien n’est mesuré entre la page et l’envoi</span></td><td class="n" data-l="Vues">41</td><td class="n" data-l="Bloc vu">?</td><td class="n" data-l="Configuré">?</td><td class="n" data-l="Formulaire">?</td><td class="n" data-l="Envoyé">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted small">« Vues » compte les vues de page, nos tests compris ; les autres colonnes comptent des visiteurs, tests retirés.</p>
+    <ul>
+      <li>Le seul visiteur arrivé au formulaire du calculateur vient de Glasgow, par Bing, le 30/10. Il est reparti sans envoyer. Une visite de Glasgow est revenue le 04/11 par Google et s’est arrêtée à la configuration ; GA4 les compte comme deux personnes.</li>
+      <li>4 des 12 visiteurs du calculateur viennent de Google Ads (google / cpc, sur téléphone : Singapour 2, Londres 1, Dublin 1). Aucun n’a dépassé le premier écran.</li>
+      <li>3 visites directes viennent de Columbus et de Boardman, deux villes de centres de données : probablement des robots.</li>
+    </ul>
+
+    <h3>Ce qu’il faut retirer avant de lire</h3>
+    <p>Nos tests ne sont pas filtrés dans GA4. Ils se reconnaissent à la source de la session : <code>test-claude</code>, <code>test-local</code> et <code>tagassistant.google.com</code> (l’aperçu de GTM), toujours depuis Londres sur ordinateur. Sur la période, cela fait toute la journée du 20/10, puis au moins 6 visites, dont les trois passages sur <code>service:ai-content</code> et <code>automotive:dynamic-ads</code> et l’un des deux passages au formulaire du calculateur.</p>
+
+    <h3>Les leads du site au CRM, par source</h3>
+    <div class="tbl-wrap">
+      <table class="tbl serre">
+        <thead><tr><th>Source</th><th class="n">Contacts créés</th></tr></thead>
+        <tbody>
+          <tr><td><code>calculator</code><span class="note">les deux tests</span></td><td class="n">2</td></tr>
+          <tr><td><code>contact-form</code><span class="note">6 se retrouvent dans GA4 (<code>Contact</code>) à la minute près. À la lecture, aucun prospect net : 2 marques écrites deux fois depuis des domaines voisins, 2 démarchages, 1 hors sujet, 1 avec un lien externe à ne pas ouvrir</span></td><td class="n">8</td></tr>
+          <tr><td><code>academy</code><span class="note">une question posée depuis la page de vente</span></td><td class="n">1</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Opportunités créées sur la période : 7 (audit 5, client 1, réseau 1). Aucune n’a le site pour origine.</p>
+
+    <h3>Ce que la mesure ne voit pas encore</h3>
+    <ul>
+      <li><b>L’origine manque sur quatre événements</b> : <code>calculator_service_toggle</code>, <code>calculator_channel_toggle</code>, <code>calculator_budget_set</code> et <code>calculator_mode_selected</code>, 14 événements sur 14 en « (not set) ». Le site l’envoie sur tous ; les balises GTM de ces quatre-là ne la relaient pas (version 108 en ligne, balise 170 vérifiée).</li>
+      <li><b>Le conseiller IA et les simulateurs sont hors mesure.</b> Rien ne remonte dans GA4 pour le conseiller, en ligne depuis le 05/11 (<code>calculator_advisor_message</code>, <code>calculator_advisor_plan</code>), ni pour les réglages des simulateurs de la formation et de la créa : aucune balise GTM ne les écoute.</li>
+      <li><b>L’origine ne se lit que par l’API de GA4.</b> Elle n’est ni dans la table <code>site_funnel</code> de BigQuery ni en colonne de <code>calculator_quotes</code> : au CRM, elle n’existe que dans la note du contact (« depuis la page AI Training »).</li>
+      <li><b>Le nom à chercher.</b> Dans GA4 le devis s’appelle <code>Calculator</code>. <code>calculator_form_submit</code> est le nom du dataLayer et n’arrive jamais dans GA4 : le chercher rend toujours zéro.</li>
+    </ul>
+    <p>Les suites sont dans <a href="#trancher">À trancher</a>, points 7 à 9.</p>
+    <p class="muted small">Non vérifié : les montants côté GA4 (rien à lire sans vrai devis) et la nature des visites directes de Londres du 03/11, peut-être internes.</p>
   </section>
 
   <section id="ordinateur">
@@ -678,6 +761,9 @@ footer.end{margin-top:70px;font-size:13px;color:var(--muted)}
       <li><b>Le formulaire.</b> Dans le bloc, en dernière étape (maquettes), ou dans la fenêtre qui s’ouvre aujourd’hui.</li>
       <li><b>Le mail.</b> Le passer dans le CRM avec la refonte, et choisir l’expéditeur : marketing@ avec réponse vers toi, ou ta boîte.</li>
       <li><b>GA4 et BigQuery.</b> Regarder avec ton compte administrateur dans GA4 (<b>Admin</b>, <b>Product links</b>, <b>BigQuery links</b>). S’il n’y a rien, créer le lien avant la mise en ligne : l’export ne remonte pas dans le passé. Et vérifier dans GTM pourquoi <code>generate_lead</code> ne part plus.</li>
+      <li><b>La mesure du devis unique.</b> Compléter GTM : l’origine sur les quatre événements qui ne la portent pas, et des balises pour le conseiller IA et pour les simulateurs. Sans cela, le prochain relevé ne dira pas où les visiteurs décrochent. Voir <a href="#bilan">le bilan du 10/11</a>.</li>
+      <li><b>Nos propres visites.</b> Les exclure de GA4, par un filtre de trafic interne ou un paramètre de test, pour ne plus avoir à les retirer à la main.</li>
+      <li><b>Le trafic du calculateur.</b> 27 vues en trois semaines, et 4 visiteurs venus de Google Ads sur téléphone (Singapour, Londres, Dublin) qui repartent au premier écran : regarder quelle campagne envoie vers le calculateur, et pour qui.</li>
     </ol>
   </section>
 
@@ -691,7 +777,7 @@ footer.end{margin-top:70px;font-size:13px;color:var(--muted)}
     </ul>
   </section>
 
-  <footer class="end">Sources : mails du 22/09/2026, workflow n8n « Marketing Calculator - Quote Request V7 », <code>Calculator.tsx</code> et <code>data/*.ts</code> au commit <code>8e259ff</code>, relevé Playwright de la production le 22/09, table <code>googleAnalytics_v2.events</code> du 04/08 au 21/09, workflow n8n corrigé le 22/09 (version publiée <code>09a5d627</code>).</footer>
+  <footer class="end">Sources : mails du 22/09/2026, workflow n8n « Marketing Calculator - Quote Request V7 », <code>Calculator.tsx</code> et <code>data/*.ts</code> au commit <code>8e259ff</code>, relevé Playwright de la production le 22/09, table <code>googleAnalytics_v2.events</code> du 04/08 au 21/09, workflow n8n corrigé le 22/09 (version publiée <code>09a5d627</code>). Bilan du devis unique : API GA4 de la propriété 281550532, tables <code>prospection.calculator_quotes</code>, <code>contacts</code> et <code>opportunities_current</code>, version 108 du conteneur GTM, relevés le 10/11/2026.</footer>
 </main>
 
 <script>
