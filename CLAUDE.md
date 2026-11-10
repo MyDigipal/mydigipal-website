@@ -218,7 +218,7 @@ MxYDYDkDtsgygVRL6wgNjT). Mémoire détaillée : `calculator_refonte_etapes_sept2
   l'audit prérempli par ce que le visiteur a dit. Un visiteur qui arrive avec une intention (`#plan=`,
   `?service=`, panier non vide, `#ajouter`) voit directement le calculateur classique ; IA
   indisponible (503) : le conseiller le dit et propose le calculateur. Mesure : `calculator_advisor_message`,
-  `calculator_advisor_plan` (dataLayer, pas encore relayés par GTM). Maquette :
+  `calculator_advisor_plan` (relayés à GA4 depuis la version 109 de GTM, 10/11/2026 : balises 283 et 284). Maquette :
   https://claude.ai/artifact/2steZLd6kxCNzGazuEJqGB.
 - **Anciennes adresses** : l'ancien calculateur est supprimé (section 3 bis) ;
   `/{lang}/calculator-v6` renvoie vers `/calculator` en gardant l'ancre.
@@ -281,6 +281,13 @@ visiteur, quelle que soit la page où il le compose.
   portent l'origine (`fixerOrigineMesure`). `calculator_total` est dans la devise envoyée avec
   lui. GTM version 105 (balises 111, 168, 169, 173 ; variables 250 et 251), dimension GA4
   `calculator_origin`. `training_quote_submit` et `creative_quote_submit` n'existent plus.
+  ⚠️ Dans GA4 le devis s'appelle `Calculator` : `calculator_form_submit` est le nom du dataLayer et
+  n'arrive jamais dans GA4. GTM version 109 (10/11/2026) : l'origine est relayée aussi par les
+  balises 131, 170, 171 et 172 (elle manquait sur `calculator_service_toggle`, `_channel_toggle`,
+  `_budget_set` et `_mode_selected`), et les simulateurs sont mesurés (balises 285 et 286 : une par
+  simulateur, nom d'événement `{{Event}}`, origine posée en dur parce que leur `pousser` ne
+  l'envoie pas). Bilan par origine du 10/11 et façon de reconnaître nos tests : section `#bilan`
+  du document de pilotage.
 - `?envoi=test` dans l'adresse : aucun envoi, le contenu va dans la console (toutes les pages).
 
 ## 3 bis. Ce qui reste de la v5 (le reste est supprimé)
