@@ -300,7 +300,9 @@ visiteur, quelle que soit la page où il le compose.
   (`node test.cjs`), à rejouer avant tout changement, et après toute publication vérifier qu'une
   visite ordinaire ne porte pas `tt` dans `/g/collect`. Un navigateur marqué ne se voit plus dans
   GA4 (**Realtime** compris) : `?interne=0` pour se revoir. Les balises publicitaires ne lisent
-  pas ce marquage : elles comptent encore nos essais de devis.
+  pas ce marquage : elles comptent encore nos essais de devis, et Paul a choisi de le laisser ainsi
+  (10/11/2026), comme de ne rien demander à l'équipe, qui ne va pas sur le site. Ne pas reproposer
+  l'un ni l'autre.
 
 ## 3 bis. Ce qui reste de la v5 (le reste est supprimé)
 
