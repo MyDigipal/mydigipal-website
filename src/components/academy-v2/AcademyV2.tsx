@@ -221,7 +221,6 @@ export default function AcademyV2({
         data={data}
         ancreTarifs="tarifs"
         sousEntete
-        cta2VersTarifs
         cta2={c.tarifs.gratuitCourt(leconsGratuit(data), data.essai_heures ?? 48)}
         prixAffiche={`${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, devise), locale)} ${SYMBOLE[devise]}`}
         film={
