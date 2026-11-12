@@ -15,6 +15,7 @@
 // questions sont donc rangées en familles (`categoriesVente`), et le panneau
 // ouvre sur ces familles plutôt que sur une liste de huit questions.
 
+import { avecSuffixe, taxeDe } from '../academy/taxe';
 import { SYMBOLE, leconsComplement, leconsGratuit, leconsProgramme, prixDe, type Devise, type Jour30Data, type Locale } from '../academy/data';
 import { formatPrice } from '../academy/offres';
 
@@ -158,7 +159,9 @@ export function questionCopy(locale: Locale): Copie {
  */
 export function faqVente(locale: Locale, d: Jour30Data, devise: Devise, modulesAuto: number): QuestionFaq[] {
   const fr = locale === 'fr';
-  const prix = (minor: number) => `${formatPrice(minor, locale)} ${SYMBOLE[devise]}`;
+  // « HT » quand l'API sert des prix hors taxes (12/11/2026), rien sinon.
+  const taxe = taxeDe(d, devise, locale);
+  const prix = (minor: number) => avecSuffixe(`${formatPrice(minor, locale)} ${SYMBOLE[devise]}`, taxe);
   const programme = d.offres.find((o) => o.id === 'programme');
   const construire = d.offres.find((o) => o.id === 'construire');
   const pMethode = programme ? prixDe(programme, devise) : 0;

@@ -328,10 +328,14 @@ const FR = {
     survolTactile: 'Touchez une ligne pour voir l’écran',
     // ⚠️ Disait « en euros » quelle que soit la devise affichée (15/09/2026).
     // En dollars aucune TVA n'est facturée : le tunnel le dit dans ces termes.
-    rappel: (devise: 'EUR' | 'GBP' | 'USD') =>
+    // ⚠️ `ht` vient de l'API (12/11/2026) : hors taxes, la TVA du pays s'ajoute au
+    // paiement ; sinon les prix restent toutes taxes comprises, comme avant.
+    rappel: (devise: 'EUR' | 'GBP' | 'USD', ht = false) =>
       devise === 'USD'
         ? 'L’assistant IA est compris dans les trois. Les prix sont en dollars américains, et le montant affiché est le montant payé.'
-        : `L’assistant IA est compris dans les trois. Les prix sont en ${devise === 'GBP' ? 'livres sterling' : 'euros'}, toutes taxes comprises.`,
+        : ht
+          ? `L’assistant IA est compris dans les trois. Les prix sont en ${devise === 'GBP' ? 'livres sterling' : 'euros'}, hors taxes : la TVA de votre pays s’ajoute au paiement, et le total s’affiche avant de payer.`
+          : `L’assistant IA est compris dans les trois. Les prix sont en ${devise === 'GBP' ? 'livres sterling' : 'euros'}, toutes taxes comprises.`,
     /**
      * La bande de réassurance, sous les cartes (21/09/2026).
      *
@@ -349,7 +353,7 @@ const FR = {
       },
       {
         titre: 'Facture au nom de votre société',
-        detail: 'Émise automatiquement après le paiement, TVA comprise.',
+        detail: 'Émise automatiquement après le paiement, avec la TVA détaillée.',
       },
       {
         titre: 'Paiement par carte',
@@ -664,10 +668,12 @@ const EN: typeof FR = {
       'Beyond ten licences the price is built with you: the seats, the pace, the support your team needs. Tell us what you are looking for, Paul answers within one working day.',
     survol: 'Hover a line to see the screen',
     survolTactile: 'Touch a line to see the screen',
-    rappel: (devise) =>
+    rappel: (devise, ht = false) =>
       devise === 'USD'
         ? 'The AI assistant is included in all three. Prices are in US dollars, and the amount shown is the amount you pay.'
-        : `The AI assistant is included in all three. Prices are in ${devise === 'GBP' ? 'pounds sterling' : 'euros'}, all taxes included.`,
+        : ht
+          ? `The AI assistant is included in all three. Prices are in ${devise === 'GBP' ? 'pounds sterling' : 'euros'}, excluding VAT: your country’s VAT is added at checkout, and the total is shown before you pay.`
+          : `The AI assistant is included in all three. Prices are in ${devise === 'GBP' ? 'pounds sterling' : 'euros'}, all taxes included.`,
     rassure: (garantie) => [
       {
         titre: `${garantie.heures} hours to change your mind`,
@@ -675,7 +681,7 @@ const EN: typeof FR = {
       },
       {
         titre: 'Invoice in your company name',
-        detail: 'Issued automatically after payment, VAT included.',
+        detail: 'Issued automatically after payment, with VAT itemised.',
       },
       {
         titre: 'Pay by card',

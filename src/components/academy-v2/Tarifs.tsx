@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { SANS_TAXE, type Taxe } from '../academy/taxe';
 import { pointeurGrossier } from '../academy/motion';
 import { formatPrice, teamDiscount } from '../academy/offres';
 import { SYMBOLE, type Devise } from '../academy/data';
@@ -52,6 +53,7 @@ const PLACES = [1, 2, 3, 5, 10];
 
 export default function Tarifs({
   locale,
+  taxe = SANS_TAXE,
   prixProgrammeMinor,
   prixAutoMinor,
   prixLotMinor,
@@ -83,6 +85,8 @@ export default function Tarifs({
   accesJours: number;
   /** La devise choisie dans la barre. Le symbole se pose APRÈS le montant. */
   devise: Devise;
+  /** Hors taxes ou toutes taxes : lu dans l'API par la page (voir `taxe.ts`). */
+  taxe?: Taxe;
   paliersEquipe: Array<{ seats: number; discount: number }>;
   leconsProgramme: number;
   heuresProgramme: string;
@@ -419,6 +423,7 @@ export default function Tarifs({
               déduites. Avec un code, il vient du total renvoyé par
               l'application, divisé par le nombre de licences. */}
           {montant(rp ? Math.round(rp.total / places) : parLicence(minor))}
+          {taxe.suffixe && <small className="ml-1.5 text-[15px] font-medium text-corps-nuit">{taxe.suffixe}</small>}
         </span>
         {(remise > 0 || rp) && (
           <span className="font-ac-mono text-[15px] tabular-nums text-brume-nuit line-through">
@@ -426,6 +431,12 @@ export default function Tarifs({
           </span>
         )}
       </div>
+      {/* Le toutes taxes, juste sous le hors taxes : un particulier doit pouvoir le lire. */}
+      {taxe.rappel(0) && (
+        <div className="mt-1.5 font-ac-mono text-[12.5px] tabular-nums text-brume-nuit">
+          {taxe.rappel(rp ? Math.round(rp.total / places) : parLicence(minor))}
+        </div>
+      )}
       <div className={`mt-1.5 font-ac-mono text-[12.5px] ${or ? 'text-or' : 'text-avance'}`}>
         {c.duree(jours)}
         {places > 1 ? ` · ${c.parPlace}` : ''}
@@ -625,6 +636,7 @@ export default function Tarifs({
             <div className="flex flex-none flex-wrap items-baseline gap-x-2.5 gap-y-1">
               <span className="text-[32px] font-semibold tabular-nums leading-none text-ivoire">
                 {montant(promo?.lot ? Math.round(promo.lot.total / places) : parLicence(prixLotMinor))}
+                {taxe.suffixe && <small className="ml-1.5 text-[14px] font-medium text-corps-nuit">{taxe.suffixe}</small>}
               </span>
               {/* Le prix plein barré est la somme des deux achetés séparément.
                   Il doit rester vérifiable : les deux se vendent vraiment à ce
@@ -653,6 +665,11 @@ export default function Tarifs({
                 )
               )}
             </span>
+            {taxe.rappel(0) && (
+              <span className="tabular-nums text-brume-nuit">
+                {taxe.rappel(promo?.lot ? Math.round(promo.lot.total / places) : parLicence(prixLotMinor))}
+              </span>
+            )}
             <span className="text-brume-nuit">{c.duree(jours)}</span>
             <span className="text-brume-nuit">
               {fr
@@ -720,7 +737,7 @@ export default function Tarifs({
         </div>
 
         <p className="mt-5 text-[14px] leading-[1.6] text-brume-nuit">
-          {c.rappel(devise)} {c.cgvAvant}{' '}
+          {c.rappel(devise, taxe.ht)} {c.cgvAvant}{' '}
           <a
             href={c.cgvLien}
             className="text-or underline decoration-or/50 underline-offset-4 hover:decoration-or"

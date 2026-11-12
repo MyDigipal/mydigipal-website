@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { taxeDe } from './taxe';
 import { SYMBOLE, enDevise, prixDe, type Devise, leconsProgramme, leconsGratuit } from './data';
 import { jour30Copy } from './copy';
 import type { Jour30Data, Locale } from './data';
@@ -97,6 +98,10 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
   }
 
   const sym = SYMBOLE[devise];
+  // « € HT » quand l'API sert des prix hors taxes (12/11/2026), « € TTC » sinon :
+  // la mention suit `prix_base`, jamais une supposition (voir `taxe.ts`).
+  const taxe = taxeDe(data, devise, locale);
+  const libelleTaxe = taxe.ht ? (taxe.suffixe ? `${sym} ${taxe.suffixe}` : sym) : enDevise(c.ttc, devise);
   // Le serveur dit quelles devises il sait facturer ; sans lui (page servie
   // depuis un ancien instantané), on n'en propose qu'une plutôt que d'afficher
   // un prix qu'on ne saurait pas encaisser.
@@ -318,7 +323,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
           <span className="block font-ac-mono text-[22px] font-bold leading-none tabular-nums text-or">
             {promo && <s className="mr-1.5 text-[14px] font-normal text-brume-nuit">{formatPrice(totaux.unique, locale)}</s>}
             {formatPrice(promo ? promo.total : totaux.unique, locale)}{' '}
-            <span className="text-[11px] text-brume-nuit">{enDevise(c.ttc, devise)}</span>
+            <span className="text-[11px] text-brume-nuit">{libelleTaxe}</span>
           </span>
           <span className="mt-1 block truncate font-ac-mono text-[10.5px] text-brume-nuit">
             {totaux.mensuel ? `+ ${formatPrice(totaux.mensuel, locale)} ${enDevise(c.parMois, devise)}` : places > 1 ? c.uniquePlaces(places, data.acces_jours ?? 90) : c.unique(data.acces_jours ?? 90)}
@@ -339,7 +344,7 @@ export default function ConfigurateurNuit({ locale, data }: { locale: Locale; da
           <span className="font-ac-mono text-[38px] font-bold leading-none tabular-nums text-or">
             {formatPrice(promo ? promo.total : totaux.unique, locale)}
           </span>
-          <span className="font-ac-mono text-[12px] text-brume-nuit">{enDevise(c.ttc, devise)}</span>
+          <span className="font-ac-mono text-[12px] text-brume-nuit">{libelleTaxe}</span>
         </div>
         {/* Le code et ce qu'il porte, dit en toutes lettres : une remise dont on
             ne sait pas d'où elle vient inquiète autant qu'elle réjouit. */}

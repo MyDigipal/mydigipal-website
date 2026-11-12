@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { avecSuffixe, taxeDe } from '../academy/taxe';
 import {
   AVIS_REPLI,
   ENDPOINT,
@@ -189,6 +190,8 @@ export default function AcademyV2({
    * mène à une caisse à 480 €. Le repli sur l'addition ne sert qu'aux
    * instantanés de build d'avant ce jour.
    */
+  // Hors taxes ou toutes taxes : c'est l'API qui le dit, la page ne le suppose pas.
+  const taxe = taxeDe(data, devise, locale);
   const somme = (programme ? prixDe(programme, devise) : 0) + (construire ? prixDe(construire, devise) : 0);
   const prixLot = data.lot?.prix?.[devise] ?? somme;
   const pleinLot = data.lot?.plein?.[devise] ?? somme;
@@ -222,7 +225,7 @@ export default function AcademyV2({
         ancreTarifs="tarifs"
         sousEntete
         cta2={c.tarifs.gratuitCourt(leconsGratuit(data), data.essai_heures ?? 48)}
-        prixAffiche={`${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, devise), locale)} ${SYMBOLE[devise]}`}
+        prixAffiche={avecSuffixe(`${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, devise), locale)} ${SYMBOLE[devise]}`, taxe)}
         film={
           c.films.presentation ? (
             <Presentation video={c.films.presentation} lire={c.films.lire} pause={c.films.pause ?? c.films.lire} />
@@ -252,6 +255,7 @@ export default function AcademyV2({
       <OffreCourte
         locale={locale}
         devise={devise}
+        taxe={taxe}
         prixProgrammeMinor={programme ? prixDe(programme, devise) : 0}
         prixAutoMinor={construire ? prixDe(construire, devise) : 0}
         prixLotMinor={prixLot}
@@ -279,6 +283,7 @@ export default function AcademyV2({
       <Questionnaire
         locale={locale}
         devise={devise}
+        taxe={taxe}
         prixMethodeMinor={programme ? prixDe(programme, devise) : 0}
         prixAvanceeMinor={prixLot}
         accesJours={data.acces_jours ?? 90}
@@ -398,6 +403,7 @@ export default function AcademyV2({
       <Tarifs
         locale={locale}
         devise={devise}
+        taxe={taxe}
         prixProgrammeMinor={programme ? prixDe(programme, devise) : 0}
         prixAutoMinor={construire ? prixDe(construire, devise) : 0}
         prixLotMinor={prixLot}

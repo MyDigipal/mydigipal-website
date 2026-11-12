@@ -10,6 +10,7 @@
  *   puis relus dans le navigateur (script de `Portes.astro`).
  * Ce fichier ne contient que des libellés, des choix d'ordre et des chemins.
  */
+import { avecSuffixe, taxeDe } from '@/components/academy/taxe';
 import { getCollection } from 'astro:content';
 import {
   DOMAIN_ORDER,
@@ -312,7 +313,8 @@ export function faitsAcademy(d: Jour30Data, lang: Lang) {
   const minor = programme ? prixDe(programme, lang === 'fr' ? 'EUR' : 'USD') : undefined;
   const avis = d.avis ?? AVIS_REPLI;
   return {
-    prix: minor ? prixAffiche(minor, lang) : null,
+    // « HT » quand l'API sert des prix hors taxes (12/11/2026) : voir `academy/taxe.ts`.
+    prix: minor ? avecSuffixe(prixAffiche(minor, lang), taxeDe(d, lang === 'fr' ? 'EUR' : 'USD', lang)) : null,
     lecons: d.faits.lessons,
     modules: d.faits.modules,
     prompts: d.faits.prompts,
