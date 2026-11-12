@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { SANS_TAXE, type Taxe } from '../academy/taxe';
 import { formatPrice } from '../academy/offres';
 import { SYMBOLE, type Devise } from '../academy/data';
 import { allerA } from '../academy/ancre';
@@ -27,6 +28,7 @@ import { copyV2, type Locale } from './copy-v2';
 export default function OffreCourte({
   locale,
   devise,
+  taxe = SANS_TAXE,
   prixProgrammeMinor,
   prixAutoMinor,
   prixLotMinor,
@@ -41,6 +43,7 @@ export default function OffreCourte({
 }: {
   locale: Locale;
   devise: Devise;
+  taxe?: Taxe;
   prixProgrammeMinor: number;
   prixAutoMinor: number;
   prixLotMinor: number;
@@ -123,12 +126,17 @@ export default function OffreCourte({
               <div className="row-span-2 text-right lg:row-span-1 lg:mt-3 lg:text-left">
                 <span className="block text-[28px] font-semibold tabular-nums leading-none text-ivoire lg:inline lg:text-[36px]">
                   {montant(p.minor)}
+                  {taxe.suffixe && <small className="ml-1.5 text-[13px] font-medium text-corps-nuit">{taxe.suffixe}</small>}
                 </span>
                 {p.plein ? (
                   <span className="mt-1 block font-ac-mono text-[13px] tabular-nums text-brume-nuit line-through lg:ml-2.5 lg:inline">
                     {montant(p.plein)}
                   </span>
                 ) : null}
+                {/* Le toutes taxes, sous le hors taxes : un particulier doit pouvoir le lire. */}
+                {taxe.rappel(0) && (
+                  <span className="mt-1 block font-ac-mono text-[11.5px] tabular-nums text-brume-nuit">{taxe.rappel(p.minor)}</span>
+                )}
               </div>
               <p className="m-0 font-ac-mono text-[12px] text-brume-nuit">
                 {p.lecons ? `${p.lecons}, ` : ''}

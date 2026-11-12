@@ -47,6 +47,11 @@ export interface Offre {
    * parce qu'un champ manque serait un remède pire que le mal.
    */
   prix?: Partial<Record<Devise, number>>;
+  /**
+   * Le même prix, toutes taxes, au pays de référence de la devise. Présent
+   * seulement quand `prix_base` vaut `ht` (12/11/2026) : voir `taxe.ts`.
+   */
+  prix_ttc?: Partial<Record<Devise, number>>;
   monthly_questions: number | null;
   requires_course: boolean;
 }
@@ -148,9 +153,19 @@ export interface Jour30Data {
    * Optionnel : un instantané de build d'avant ce jour ne le porte pas, et le
    * repli reste l'addition.
    */
+  /**
+   * La base des prix (12/11/2026). `ht` : tous les `prix` sont hors taxes et la
+   * TVA du pays de l'acheteur s'ajoute au paiement. Absent : les prix sont
+   * toutes taxes comprises, comme avant. La page lit ce champ avant d'écrire
+   * « HT » ou « TVA comprise » : voir `taxe.ts`.
+   */
+  prix_base?: 'ht';
+  /** Le pays de référence de chaque devise et son taux ; `null` quand rien ne s'ajoute. */
+  tva?: Partial<Record<Devise, { pays: string; taux: number } | null>>;
   lot?: {
     items: string[];
     prix: Partial<Record<Devise, number>>;
+    prix_ttc?: Partial<Record<Devise, number>>;
     plein: Partial<Record<Devise, number>>;
     second: Partial<Record<Devise, { programme: number; construire: number }>>;
   };

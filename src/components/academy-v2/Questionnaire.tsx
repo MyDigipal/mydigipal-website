@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { SANS_TAXE, type Taxe } from '../academy/taxe';
 import { SYMBOLE, type Devise, type Locale } from '../academy/data';
 import { formatPrice } from '../academy/offres';
 import { paramGarde, useLienApp } from '../academy/track';
@@ -38,6 +39,7 @@ import {
 export default function Questionnaire({
   locale,
   devise,
+  taxe = SANS_TAXE,
   prixMethodeMinor,
   prixAvanceeMinor,
   accesJours = 60,
@@ -45,6 +47,7 @@ export default function Questionnaire({
 }: {
   locale: Locale;
   devise: Devise;
+  taxe?: Taxe;
   /** Les mêmes montants que la grille de tarifs, dans la devise affichée. */
   prixMethodeMinor: number;
   prixAvanceeMinor: number;
@@ -393,12 +396,14 @@ export default function Questionnaire({
                     return (
                       <p className="m-0 mt-1.5 flex flex-wrap items-baseline gap-2.5 text-[31px] font-medium tracking-[-0.02em] text-or">
                         {montant(remise2 ?? plein)}
+                        {taxe.suffixe && <small className="text-[15px] font-normal tracking-normal text-brume-nuit">{taxe.suffixe}</small>}
                         {remise2 != null && (
                           <span className="text-[17px] font-normal text-brume-nuit line-through">
                             {montant(plein)}
                           </span>
                         )}
                         <small className="text-[14px] font-normal tracking-normal text-brume-nuit">
+                          {taxe.rappel(0) ? `${taxe.rappel(remise2 ?? plein)} · ` : ''}
                           {c.duree(Math.max(accesJours, remise?.jours ?? 0))}
                           {remise2 != null && code ? ` · ${c.avecCode(code)}` : ''}
                         </small>

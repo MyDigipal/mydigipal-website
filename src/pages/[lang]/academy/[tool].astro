@@ -17,6 +17,7 @@ import {
   type Jour30Data,
 } from '@/components/academy/data';
 import { formatPrice } from '@/components/academy/offres';
+import { avecSuffixe, taxeDe } from '@/components/academy/taxe';
 import secoursFr from '@/data/academy/jour30-fr.json';
 import secoursEn from '@/data/academy/jour30-en.json';
 import leconsOutils from '@/data/academy/lecons-outils.json';
@@ -77,7 +78,11 @@ async function lire(): Promise<Jour30Data> {
 const data = await lire();
 
 const programme = data.offres.find((o) => o.id === 'programme');
-const prixTexte = `${formatPrice(prixDe(programme ?? { ttc_minor: 0 }, 'EUR'), locale)} €`;
+// « HT » et le rappel du toutes taxes quand l'API sert des prix hors taxes (12/11/2026).
+const taxeEur = taxeDe(data, 'EUR', locale);
+const prixMinorEur = prixDe(programme ?? { ttc_minor: 0 }, 'EUR');
+const prixTexte = avecSuffixe(`${formatPrice(prixMinorEur, locale)} €`, taxeEur);
+const prixRappel = taxeEur.rappel(prixMinorEur) ?? '';
 // Les trois montants partent dans le HTML : le sélecteur de devise doit répondre
 // au premier clic, pas après un aller-retour avec l'application.
 const prixDevises = {
@@ -530,6 +535,7 @@ const schema = {
             {c.tarifs.formule}
           </p>
           <p class="m-0 font-ac-mono text-[38px] leading-none text-ivoire" data-fait="prix">{prixTexte}</p>
+          <p class="m-0 mt-2 font-ac-mono text-[12.5px] text-brume-nuit" data-fait="prixRappel" data-base={JSON.stringify({ prix_base: data.prix_base, tva: data.tva })}>{prixRappel}</p>
           <ul class="my-4 list-none p-0">
             {
               c.tarifs
@@ -614,6 +620,7 @@ const schema = {
     type Jour30Data,
   } from '@/components/academy/data';
   import { formatPrice } from '@/components/academy/offres';
+  import { avecSuffixe, taxeDe } from '@/components/academy/taxe';
   import { captureAdClickIds, withAdClickIds } from '@/components/academy/track';
 
   captureAdClickIds();
@@ -654,12 +661,23 @@ const schema = {
   }
   let data: Jour30Data | null = null;
   let devise: Devise = 'EUR';
+  // La base des prix connue au build (hors taxes ou non), en attendant l'application.
+  let baseBuild: Pick<Jour30Data, 'prix_base' | 'tva'> = {};
+  try {
+    baseBuild = JSON.parse(document.querySelector<HTMLElement>('[data-base]')?.dataset.base || '{}');
+  } catch {
+    baseBuild = {};
+  }
 
   function appliquer() {
     const montant = prix[devise];
     const valeurs: Record<string, string> = {};
     if (typeof montant === 'number') {
-      valeurs.prix = `${formatPrice(montant, locale)} ${SYMBOLE[devise]}`;
+      // La mention suit la base servie par l'application, jamais une supposition.
+      const taxe = taxeDe(data ?? baseBuild, devise, locale);
+      valeurs.prix = avecSuffixe(`${formatPrice(montant, locale)} ${SYMBOLE[devise]}`, taxe);
+      const rappel = taxe.rappel(montant) ?? '';
+      for (const el of document.querySelectorAll<HTMLElement>('[data-fait="prixRappel"]')) el.textContent = rappel;
     }
     if (data) {
       const avis = data.avis ?? AVIS_REPLI;

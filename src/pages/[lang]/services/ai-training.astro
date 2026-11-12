@@ -43,9 +43,17 @@ const { title, description, hero, seo } = fiche.data;
 // L'Academy : faits et prix publics lus dans son API au build, instantané en secours.
 const academy = await lireAcademy(lang);
 const faits = faitsAcademy(academy, lang);
-const programme = academy.offres?.find((o) => o.id === 'programme') as { prix?: Record<string, number> } | undefined;
-const academyTtc: PrixAcademy = programme?.prix?.EUR && programme.prix.GBP && programme.prix.USD
-  ? { EUR: programme.prix.EUR / 100, GBP: programme.prix.GBP / 100, USD: programme.prix.USD / 100 }
+const programme = academy.offres?.find((o) => o.id === 'programme') as
+  | { prix?: Record<string, number>; prix_ttc?: Record<string, number> }
+  | undefined;
+// ⚠️ Le moteur de la formation part d'un prix TOUTES TAXES et en retire 20 % pour
+// donner le prix d'entreprise (`academyHT`). Depuis le 12/11/2026 l'API sert des
+// prix hors taxes (`prix_base: 'ht'`) : on lui passe alors `prix_ttc`, pour que le
+// hors taxes qu'il recalcule soit exactement celui de la grille, et non un hors
+// taxes amputé une seconde fois de la TVA.
+const prixPublic = academy.prix_base === 'ht' ? programme?.prix_ttc : programme?.prix;
+const academyTtc: PrixAcademy = prixPublic?.EUR && prixPublic.GBP && prixPublic.USD
+  ? { EUR: prixPublic.EUR / 100, GBP: prixPublic.GBP / 100, USD: prixPublic.USD / 100 }
   : ACADEMY_REPLI;
 
 const tableauHero = lang === 'fr'

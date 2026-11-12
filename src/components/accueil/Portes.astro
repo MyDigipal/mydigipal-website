@@ -489,6 +489,7 @@ const calculateur = `/${lang}/calculator`;
    */
   import { AVIS_REPLI, ENDPOINT, noteLocale, prixDe, type Jour30Data } from '@/components/academy/data';
   import { formatPrice } from '@/components/academy/offres';
+  import { avecSuffixe, taxeDe } from '@/components/academy/taxe';
 
   document.querySelectorAll<HTMLElement>('[data-porte-calc]').forEach((porte) => {
     const lien = porte.querySelector<HTMLAnchorElement>('[data-lien-calc]');
@@ -528,10 +529,12 @@ const calculateur = `/${lang}/calculator`;
         if (d.faits.lessonsGratuit) valeurs.gratuites = String(d.faits.lessonsGratuit);
         // En dollars sur la page anglaise, comme `prixAffiche()` au build.
         if (programme) {
-          valeurs.prix =
+          valeurs.prix = avecSuffixe(
             locale === 'fr'
               ? `${formatPrice(prixDe(programme, 'EUR'), locale)}\u00a0€`
-              : `$${formatPrice(prixDe(programme, 'USD'), locale)}`;
+              : `$${formatPrice(prixDe(programme, 'USD'), locale)}`,
+            taxeDe(d, locale === 'fr' ? 'EUR' : 'USD', locale)
+          );
         }
         for (const el of document.querySelectorAll<HTMLElement>('[data-fait]')) {
           const v = valeurs[el.dataset.fait || ''];
